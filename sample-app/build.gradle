@@ -1,0 +1,8 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = "se.crisp.app.SampleApp"
+
+sourceCompatibility = 1.5
+
+run.jvmArgs = ["-javaagent:$rootDir/duck-agent/build/distributions/duck-agent-1.0-shadow.jar=packagePrefix=se.crisp"]

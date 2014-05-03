@@ -1,0 +1,3 @@
+rootProject.name = 'duck'
+include ':duck-agent'
+include ':sample-app'
