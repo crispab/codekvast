@@ -17,44 +17,53 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class UsageRegistry {
 
+    private static final Long BEGINNING_OF_TIME = 0L;
+
     private UsageRegistry() {
         // Utility class with only static methods
     }
 
     private static String packagePrefix;
-    private static Map<String, Boolean> invokedTypes;
-    private static Map<String, Boolean> invokedMethods;
+    private static Map<String, Long> invokedTypes;
+    private static Map<String, Long> invokedMethods;
 
     public static void registerMethodExecution(String declaringType, String methodSignature) {
         if (invokedTypes == null) {
             scanClassPathForPublicMethods();
         }
-        invokedTypes.put(declaringType, true);
-        invokedMethods.put(methodSignature, true);
+        Long now = System.currentTimeMillis();
+        invokedTypes.put(declaringType, now);
+        invokedMethods.put(methodSignature, now);
     }
 
     private static synchronized void scanClassPathForPublicMethods() {
-        invokedTypes = new ConcurrentHashMap<String, Boolean>();
-        invokedMethods = new ConcurrentHashMap<String, Boolean>();
+        if (invokedTypes == null) {
+            long startedAt = System.currentTimeMillis();
+            invokedTypes = new ConcurrentHashMap<String, Long>();
+            invokedMethods = new ConcurrentHashMap<String, Long>();
 
-        Reflections reflections = new Reflections(ClasspathHelper.forPackage(packagePrefix), new SubTypesScanner(false));
+            Reflections reflections = new Reflections(ClasspathHelper.forPackage(packagePrefix), new SubTypesScanner(false));
 
-        for (Class<?> clazz : reflections.getSubTypesOf(Object.class)) {
-            invokedTypes.put(clazz.getName(), false);
+            for (Class<?> clazz : reflections.getSubTypesOf(Object.class)) {
+                invokedTypes.put(clazz.getName(), BEGINNING_OF_TIME);
 
-            for (Method method : clazz.getDeclaredMethods()) {
-                if (method.toGenericString().contains("public")) {
-                    MethodSignature signature = new Factory(null, clazz).makeMethodSig(
-                            method.getModifiers(),
-                            method.getName(),
-                            method.getDeclaringClass(),
-                            method.getParameterTypes(),
-                            null,
-                            method.getExceptionTypes(),
-                            method.getReturnType());
-                    invokedMethods.put(signature.toLongString(), false);
+                for (Method method : clazz.getDeclaredMethods()) {
+                    if (method.toGenericString().contains("public")) {
+                        MethodSignature signature = new Factory(null, clazz).makeMethodSig(
+                                method.getModifiers(),
+                                method.getName(),
+                                method.getDeclaringClass(),
+                                method.getParameterTypes(),
+                                null,
+                                method.getExceptionTypes(),
+                                method.getReturnType());
+                        invokedMethods.put(signature.toLongString(), BEGINNING_OF_TIME);
+                    }
                 }
             }
+
+            System.out.printf("Classpath with package prefix %s scanned in %d ms, found %d public methods.%n",
+                    packagePrefix, System.currentTimeMillis() - startedAt, invokedMethods.size());
         }
     }
 
@@ -70,10 +79,10 @@ public class UsageRegistry {
         }
     }
 
-    private static void detectUnused(String what, Map<String, Boolean> invoked) {
+    private static void detectUnused(String what, Map<String, Long> invoked) {
         Set<String> unused = new TreeSet<String>();
-        for (Map.Entry<String, Boolean> entry : invoked.entrySet()) {
-            if (!entry.getValue()) {
+        for (Map.Entry<String, Long> entry : invoked.entrySet()) {
+            if (entry.getValue() == BEGINNING_OF_TIME) {
                 unused.add(entry.getKey());
             }
         }
