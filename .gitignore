@@ -1,2 +1,4 @@
 duck-agent/build
 sample-app/build
+.gradle
+.idea/workspace.xml
