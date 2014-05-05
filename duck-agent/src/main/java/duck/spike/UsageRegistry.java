@@ -7,6 +7,7 @@ import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ClasspathHelper;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -48,7 +49,7 @@ public class UsageRegistry {
                 invokedTypes.put(clazz.getName(), BEGINNING_OF_TIME);
 
                 for (Method method : clazz.getDeclaredMethods()) {
-                    if (method.toGenericString().contains("public")) {
+                    if (Modifier.isPublic(method.getModifiers())) {
                         MethodSignature signature = new Factory(null, clazz).makeMethodSig(
                                 method.getModifiers(),
                                 method.getName(),
