@@ -2,6 +2,8 @@ package duck.spike;
 
 import org.aspectj.bridge.Constants;
 import org.aspectj.weaver.loadtime.Agent;
+import sun.misc.Signal;
+import sun.misc.SignalHandler;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -34,12 +36,22 @@ public class DuckAgent {
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             public void run() {
-                UsageRegistry.dumpUnusedCode();
+                UsageRegistry.dumpUnusedCode(true, true);
             }
         }));
 
+        Signal.handle(new Signal("POLL"), new SignalHandler() {
+            @Override
+            public void handle(Signal signal) {
+                UsageRegistry.dumpUnusedCode(true, false);
+            }
+        });
+
         System.setProperty("org.aspectj.weaver.loadtime.configuration", Constants.AOP_USER_XML + ";" + Constants.AOP_AJC_XML + ";" +
-                Constants.AOP_OSGI_XML + ";" + createConcreteDuckAspect(packagePrefix));
+                        Constants.AOP_OSGI_XML + ";" +
+
+                        createConcreteDuckAspect(packagePrefix)
+        );
 
         System.out.printf("DuckAgent will detect useless code in packages %s..*" +
                 "\nnow delegating to AspectJ load-time weaver agent%n", packagePrefix);

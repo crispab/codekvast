@@ -70,17 +70,23 @@ public class UsageRegistry {
 
     public static void setPackagePrefix(String packagePrefix) {
         UsageRegistry.packagePrefix = packagePrefix;
+        // Cannot scan classpath here, it breaks the aspect :(
+        // scanClassPathForPublicMethods();
     }
 
-    public static void dumpUnusedCode() {
+    public static void dumpUnusedCode(boolean dumpTypes, boolean dumpMethods) {
         if (invokedTypes != null) {
             System.out.printf("%nDumping code usage:%n");
-            detectUnused("types", invokedTypes);
-            detectUnused("methods", invokedMethods);
+            if (dumpTypes) {
+                dumpUnused("types", invokedTypes);
+            }
+            if (dumpMethods) {
+                dumpUnused("methods", invokedMethods);
+            }
         }
     }
 
-    private static void detectUnused(String what, Map<String, Long> invoked) {
+    private static void dumpUnused(String what, Map<String, Long> invoked) {
         Set<String> unused = new TreeSet<String>();
         for (Map.Entry<String, Long> entry : invoked.entrySet()) {
             if (entry.getValue() == BEGINNING_OF_TIME) {
