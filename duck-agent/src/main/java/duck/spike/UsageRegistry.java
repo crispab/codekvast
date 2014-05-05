@@ -1,5 +1,6 @@
 package duck.spike;
 
+import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.aspectj.runtime.reflect.Factory;
 import org.reflections.Reflections;
@@ -8,8 +9,8 @@ import org.reflections.util.ClasspathHelper;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,87 +19,92 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class UsageRegistry {
 
-    private static final Long BEGINNING_OF_TIME = 0L;
-
     private UsageRegistry() {
         // Utility class with only static methods
     }
 
-    private static String packagePrefix;
-    private static Map<String, Long> invokedTypes;
-    private static Map<String, Long> invokedMethods;
+    private static Map<String, Boolean> invokedPackages = new ConcurrentHashMap<String, Boolean>();
+    private static Map<String, Boolean> invokedTypes = new ConcurrentHashMap<String, Boolean>();
+    private static Map<String, Boolean> invokedMethods = new ConcurrentHashMap<String, Boolean>();
 
-    public static void registerMethodExecution(String declaringType, String methodSignature) {
-        if (invokedTypes == null) {
-            scanClassPathForPublicMethods();
-        }
-        Long now = System.currentTimeMillis();
-        invokedTypes.put(declaringType, now);
-        invokedMethods.put(methodSignature, now);
-    }
+    /**
+     * Scans the classpath for types in packages starting with packagePrefix, and initializes internal usage data for fast,
+     * thread-safe usage data recording.
+     * All detected types and methods are initially in unused (useless) state.
+     * <p/>
+     * NOTE: This method must <em>not</em> be invoked before loading the aspectjweaver, or else Duck will not work!
+     * <p/>
+     * Thread-safe.
+     */
+    public synchronized static void scanClasspath(String packagePrefix) {
+        long startedAt = System.currentTimeMillis();
 
-    private static synchronized void scanClassPathForPublicMethods() {
-        if (invokedTypes == null) {
-            long startedAt = System.currentTimeMillis();
-            invokedTypes = new ConcurrentHashMap<String, Long>();
-            invokedMethods = new ConcurrentHashMap<String, Long>();
+        invokedPackages.clear();
+        invokedTypes.clear();
+        invokedMethods.clear();
 
-            Reflections reflections = new Reflections(ClasspathHelper.forPackage(packagePrefix), new SubTypesScanner(false));
+        Reflections reflections = new Reflections(ClasspathHelper.forPackage(packagePrefix), new SubTypesScanner(false));
 
-            for (Class<?> clazz : reflections.getSubTypesOf(Object.class)) {
-                invokedTypes.put(clazz.getName(), BEGINNING_OF_TIME);
+        for (Class<?> clazz : reflections.getSubTypesOf(Object.class)) {
+            invokedPackages.put(clazz.getPackage().getName(), Boolean.FALSE);
+            invokedTypes.put(clazz.getName(), Boolean.FALSE);
 
-                for (Method method : clazz.getDeclaredMethods()) {
-                    if (Modifier.isPublic(method.getModifiers())) {
-                        MethodSignature signature = new Factory(null, clazz).makeMethodSig(
-                                method.getModifiers(),
-                                method.getName(),
-                                method.getDeclaringClass(),
-                                method.getParameterTypes(),
-                                null,
-                                method.getExceptionTypes(),
-                                method.getReturnType());
-                        invokedMethods.put(signature.toLongString(), BEGINNING_OF_TIME);
-                    }
+            for (Method method : clazz.getDeclaredMethods()) {
+                if (Modifier.isPublic(method.getModifiers())) {
+                    // Use AspectJ for creating the same signature as AbstractDuckAspect...
+                    MethodSignature signature = new Factory(null, clazz)
+                            .makeMethodSig(method.getModifiers(), method.getName(), method.getDeclaringClass(), method.getParameterTypes(),
+                                           null, method.getExceptionTypes(), method.getReturnType());
+
+                    invokedMethods.put(signature.toLongString(), Boolean.FALSE);
                 }
             }
-
-            System.out.printf("Classpath with package prefix %s scanned in %d ms, found %d public methods.%n",
-                    packagePrefix, System.currentTimeMillis() - startedAt, invokedMethods.size());
         }
+
+        System.out.printf("Classpath with package prefix '%s' scanned in %d ms, found %d packages, %d types and %d public methods.%n",
+                          packagePrefix, System.currentTimeMillis() - startedAt, invokedTypes.size(), invokedTypes.size(),
+                          invokedMethods.size());
     }
 
-    public static void setPackagePrefix(String packagePrefix) {
-        UsageRegistry.packagePrefix = packagePrefix;
-        // Cannot scan classpath here, it breaks the aspect :(
-        // scanClassPathForPublicMethods();
+    /**
+     * This method is invoked by {@link duck.spike.AbstractDuckAspect#recordMethodCall(org.aspectj.lang.JoinPoint)}.
+     * It will exclude a certain type and method from being reported as useless.
+     * <p/>
+     * Thread-safe.
+     */
+    public static void registerMethodExecution(Signature signature) {
+        assert !invokedMethods.isEmpty() : "Must invoke scanClasspath(String packagePrefix) first!";
+
+        Class<?> declaringType = signature.getDeclaringType();
+
+        invokedPackages.put(declaringType.getPackage().getName(), Boolean.TRUE);
+        invokedTypes.put(declaringType.getName(), Boolean.TRUE);
+        invokedMethods.put(signature.toLongString(), Boolean.TRUE);
     }
 
-    public static void dumpUnusedCode(boolean dumpTypes, boolean dumpMethods) {
-        if (invokedTypes != null) {
-            System.out.printf("%nDumping code usage:%n");
-            if (dumpTypes) {
-                dumpUnused("types", invokedTypes);
-            }
-            if (dumpMethods) {
-                dumpUnused("methods", invokedMethods);
-            }
-        }
+    /**
+     * Dumps unused packages, types and methods on System.out.
+     * <p/>
+     * Thread-safe.
+     */
+    public static synchronized void dumpUnusedCode() {
+        System.out.printf("%nDuck result:%n");
+        dumpUnused("packages", invokedPackages);
+        dumpUnused("types", invokedTypes);
+        dumpUnused("methods", invokedMethods);
     }
 
-    private static void dumpUnused(String what, Map<String, Long> invoked) {
-        Set<String> unused = new TreeSet<String>();
-        for (Map.Entry<String, Long> entry : invoked.entrySet()) {
-            if (entry.getValue() == BEGINNING_OF_TIME) {
+    private static void dumpUnused(String what, Map<String, Boolean> invoked) {
+        Collection<String> unused = new TreeSet<String>();
+        for (Map.Entry<String, Boolean> entry : invoked.entrySet()) {
+            if (!entry.getValue()) {
                 unused.add(entry.getKey());
             }
         }
 
-        if (!unused.isEmpty()) {
-            System.out.printf("  Unused %s:%n", what);
-            for (String name : unused) {
-                System.out.printf("    %s%n", name);
-            }
+        System.out.printf("Useless %s:%n", what);
+        for (String name : unused) {
+            System.out.printf("  %s%n", name);
         }
     }
 

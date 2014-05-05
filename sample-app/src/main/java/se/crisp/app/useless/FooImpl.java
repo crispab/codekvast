@@ -1,9 +1,9 @@
-package se.crisp.app;
+package se.crisp.app.useless;
 
 /**
  * @author Olle Hallin
  */
-public class Foo {
+public class FooImpl implements Foo {
     public int doSomeStuff() {
         return 42;
     }

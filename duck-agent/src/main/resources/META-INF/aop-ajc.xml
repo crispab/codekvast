@@ -1,5 +1,0 @@
-<aspectj>
-    <aspects>
-        <aspect name="duck.spike.AbstractDuckAspect"/>
-    </aspects>
-</aspectj>

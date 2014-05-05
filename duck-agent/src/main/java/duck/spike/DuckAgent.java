@@ -2,8 +2,6 @@ package duck.spike;
 
 import org.aspectj.bridge.Constants;
 import org.aspectj.weaver.loadtime.Agent;
-import sun.misc.Signal;
-import sun.misc.SignalHandler;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -14,73 +12,93 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * This is a Java agent that hooks up duck to the app.
+ * This is a Java agent that hooks up Duck to the app.
+ *
  * Usage:
- * Add the following line to the Java command line:
+ * Add the following option to the Java command line:
  * <pre><code>
- *    -javaagent:/path/to/duck-agent-shadow.jar=packagePrefix=packagePrefix
+ *    -javaagent:/path/to/duck-agent-n.n-shadow.jar=packagePrefix=com.acme
  * </code></pre>
  *
  * @author Olle Hallin
  */
 public class DuckAgent {
 
+    private static final String MY_SIMPLE_NAME = DuckAgent.class.getSimpleName();
+
     private DuckAgent() {
         // Not possible to instantiate a javaagent
     }
 
+    /**
+     * This method is invoked by the JVM as part of the bootstrapping
+     */
     public static void premain(String args, Instrumentation inst) {
         String packagePrefix = parsePackagePrefix(args);
 
-        UsageRegistry.setPackagePrefix(packagePrefix);
+        loadAspectjWeaver(args, inst, packagePrefix);
+
+        System.out.printf("%s will now scan classpath for packagePrefix '%s'%n", MY_SIMPLE_NAME, packagePrefix);
+        UsageRegistry.scanClasspath(packagePrefix);
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             public void run() {
-                UsageRegistry.dumpUnusedCode(true, true);
+                UsageRegistry.dumpUnusedCode();
             }
         }));
+        System.out.printf("%s is ready to detect useless code within(%s..*)%n", MY_SIMPLE_NAME, packagePrefix);
+    }
 
-        Signal.handle(new Signal("POLL"), new SignalHandler() {
-            @Override
-            public void handle(Signal signal) {
-                UsageRegistry.dumpUnusedCode(true, false);
-            }
-        });
-
-        System.setProperty("org.aspectj.weaver.loadtime.configuration", Constants.AOP_USER_XML + ";" + Constants.AOP_AJC_XML + ";" +
-                        Constants.AOP_OSGI_XML + ";" +
-
-                        createConcreteDuckAspect(packagePrefix)
-        );
-
-        System.out.printf("DuckAgent will detect useless code in packages %s..*" +
-                "\nnow delegating to AspectJ load-time weaver agent%n", packagePrefix);
-
+    private static void loadAspectjWeaver(String args, Instrumentation inst, String packagePrefix) {
+        System.out.printf("%s loaded, now loading aspectjweaver%n", MY_SIMPLE_NAME);
+        System.setProperty("org.aspectj.weaver.loadtime.configuration", join(createConcreteDuckAspect(packagePrefix),
+                                                                             Constants.AOP_USER_XML,
+                                                                             Constants.AOP_AJC_XML,
+                                                                             Constants.AOP_OSGI_XML));
         Agent.premain(args, inst);
     }
 
+    private static String join(String... args) {
+        StringBuilder sb = new StringBuilder();
+        String delimiter = "";
+        for (String arg : args) {
+            sb.append(delimiter).append(arg);
+            delimiter = ";";
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Creates a concrete implementation of the AbstractDuckAspect, using the packagePrefix for specifying the
+     * abstract pointcut 'scope'.
+     *
+     * @return A file: URL to a temporary aop-ajc.xml file. The file is deleted on JVM exit.
+     */
     private static String createConcreteDuckAspect(String packagePrefix) {
-        String xml = String.format("<aspectj>\n"
-                + "  <aspects>\n"
-                + "     <concrete-aspect name='duck.spike.DuckAspect' extends='duck.spike.AbstractDuckAspect'>\n"
-                + "       <pointcut name='scope' expression='within(%1$s..*)'/>\n"
-                + "     </concrete-aspect>\n"
-                + "  </aspects>\n"
-                + "  <weaver options='-verbose'>\n"
-                + "     <include within='%1$s..*' />\n"
-                + "     <include within='duck.spike..*' />\n"
-                + "  </weaver>\n"
-                + "</aspectj>\n", packagePrefix);
+        String xml = String.format(
+                "<aspectj>\n"
+                        + "  <aspects>\n"
+                        + "     <concrete-aspect name='duck.spike.DuckAspect' extends='duck.spike.AbstractDuckAspect'>\n"
+                        + "       <pointcut name='scope' expression='within(%1$s..*)'/>\n"
+                        + "     </concrete-aspect>\n"
+                        + "  </aspects>\n"
+                        + "  <weaver options='-verbose'>\n"
+                        + "     <include within='%1$s..*' />\n"
+                        + "     <include within='duck.spike..*' />\n"
+                        + "  </weaver>\n"
+                        + "</aspectj>\n",
+                packagePrefix
+        );
 
         try {
-            File file = File.createTempFile("duck", ".xml");
+            File file = File.createTempFile("aop-duck", ".xml");
             BufferedWriter writer = new BufferedWriter(new FileWriter(file));
             writer.write(xml);
             writer.close();
             file.deleteOnExit();
             return "file:" + file.getAbsolutePath();
         } catch (IOException e) {
-            throw new RuntimeException("Cannot create custom aspect", e);
+            throw new RuntimeException("Cannot create custom aspect XML", e);
         }
     }
 
