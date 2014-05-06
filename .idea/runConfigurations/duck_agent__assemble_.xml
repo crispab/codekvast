@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="duck:agent [assemble]" type="GradleRunConfiguration" factoryName="Gradle">
     <ExternalSystemSettings>
-      <option name="externalProjectPath" value="$PROJECT_DIR$/agent" />
+      <option name="externalProjectPath" value="$PROJECT_DIR$/duck-agent" />
       <option name="externalSystemIdString" value="GRADLE" />
       <option name="scriptParameters" value="" />
       <option name="taskDescriptions">

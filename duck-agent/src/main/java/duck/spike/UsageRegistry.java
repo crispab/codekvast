@@ -8,7 +8,6 @@ import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ClasspathHelper;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Map;
 import java.util.TreeSet;
@@ -50,7 +49,7 @@ public class UsageRegistry {
             invokedTypes.put(clazz.getName(), Boolean.FALSE);
 
             for (Method method : clazz.getDeclaredMethods()) {
-                if (Modifier.isPublic(method.getModifiers())) {
+                if (isNotAspectJInjectedMethod(method)) {
                     // Use AspectJ for creating the same signature as AbstractDuckAspect...
                     MethodSignature signature = new Factory(null, clazz)
                             .makeMethodSig(method.getModifiers(), method.getName(), method.getDeclaringClass(), method.getParameterTypes(),
@@ -61,9 +60,13 @@ public class UsageRegistry {
             }
         }
 
-        System.out.printf("Classpath with package prefix '%s' scanned in %d ms, found %d packages, %d types and %d public methods.%n",
+        System.out.printf("Classpath with package prefix '%s' scanned in %d ms, found %d packages, %d types and %d methods.%n",
                           packagePrefix, System.currentTimeMillis() - startedAt, invokedTypes.size(), invokedTypes.size(),
                           invokedMethods.size());
+    }
+
+    private static boolean isNotAspectJInjectedMethod(Method method) {
+        return !method.isSynthetic();
     }
 
     /**
