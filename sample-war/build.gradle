@@ -20,7 +20,7 @@ configurations {
 }
 
 jettyRun {
-    reload "automatic"
-    scanIntervalSeconds 5
+    reload = "automatic"
+    scanIntervalSeconds = 5
     contextPath = ""
 }
