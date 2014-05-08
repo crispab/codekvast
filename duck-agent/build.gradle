@@ -16,11 +16,19 @@ dependencies {
     compile 'org.reflections:reflections:0.9.9-RC1'
 }
 
+//task collectDependencies(type: Sync) {
+//    from configurations.runtime
+//    into "$buildDir/dependencies"
+//}
+
 jar {
     manifest {
         attributes("Premain-Class": "duck.spike.DuckAgent")
     }
+
+//    dependsOn collectDependencies
+//    from "$buildDir/dependencies", { into "lib" }
 }
 
-// Make a fat jar consisting of duck and it's dependencies...
+// Make a shadow jar consisting of duck and it's dependencies...
 assemble.dependsOn shadowJar
