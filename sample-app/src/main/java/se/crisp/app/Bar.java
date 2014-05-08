@@ -20,8 +20,8 @@ public class Bar {
         return 17;
     }
 
-    private String privateMethodNeverUsed() {
-        return "never called";
+    private Bar privateMethodNeverUsed() {
+        return null;
     }
 
     private String privateMethodUsed() {
