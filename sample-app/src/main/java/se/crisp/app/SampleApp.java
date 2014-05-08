@@ -14,14 +14,22 @@ public class SampleApp {
         tryToLoadClass("org.reflections.Reflections", false);
     }
 
-    private static void tryToLoadClass(String className, boolean expectedResult) {
+    private static void tryToLoadClass(String className, boolean shouldBeAvailable) {
         try {
             Class.forName(className);
-            String result = expectedResult ? "unavoidable" : "BAD!";
-            System.out.printf("%s can load class %s, which is %s.%n", SampleApp.class.getName(), className, result);
+
+            String verdict = shouldBeAvailable ? "GOOD:" : "BAD: ";
+            String result = shouldBeAvailable
+                    ? "is unavoidable."
+                    : "has leaked into my class path from -javaagent:duck-agent.jar";
+            System.out.printf("%s %s can load class %s, which %s%n", verdict, SampleApp.class.getName(), className, result);
         } catch (ClassNotFoundException e) {
-            String result = expectedResult ? "an ERROR" : "desirable";
-            System.out.printf("%s cannot load class %s, which is %s.%n", SampleApp.class.getName(), className, result);
+
+            String verdict = shouldBeAvailable ? "BAD: " : "GOOD:";
+            String result = shouldBeAvailable
+                    ? ", which indicates that duck-agent is not enabled!"
+                    : ". We don't want duck-agent internals to leak into the application.";
+            System.out.printf("%s %s cannot load class %s%s%n", verdict, SampleApp.class.getName(), className, result);
         }
     }
 

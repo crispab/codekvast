@@ -2,33 +2,25 @@ buildscript {
     repositories { jcenter() }
     dependencies { classpath 'com.github.jengelman.gradle.plugins:shadow:0.8' }
 }
+repositories { jcenter() }
 
 apply plugin: 'java'
 apply plugin: 'shadow'
 
 sourceCompatibility = 1.5
+targetCompatibility = 1.5
 version = 1.0
-
-repositories { mavenCentral() }
 
 dependencies {
     compile "org.aspectj:aspectjweaver:1.8.0"
     compile 'org.reflections:reflections:0.9.9-RC1'
 }
 
-//task collectDependencies(type: Sync) {
-//    from configurations.runtime
-//    into "$buildDir/dependencies"
-//}
-
 jar {
     manifest {
         attributes("Premain-Class": "duck.spike.DuckAgent")
     }
-
-//    dependsOn collectDependencies
-//    from "$buildDir/dependencies", { into "lib" }
 }
 
-// Make a shadow jar consisting of duck and it's dependencies...
+// Make a shadow jar consisting of duck-agent and it's dependencies...
 assemble.dependsOn shadowJar

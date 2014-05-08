@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * @author Olle Hallin
@@ -22,40 +23,27 @@ public class UsageRegistry {
         // Utility class with only static methods
     }
 
-    private static Map<String, Boolean> invokedPackages = new ConcurrentHashMap<String, Boolean>();
-    private static Map<String, Boolean> invokedTypes = new ConcurrentHashMap<String, Boolean>();
-    private static Map<String, Boolean> invokedMethods = new ConcurrentHashMap<String, Boolean>();
+    private static ConcurrentMap<String, Boolean> invokedPackages = new ConcurrentHashMap<String, Boolean>();
+    private static ConcurrentMap<String, Boolean> invokedTypes = new ConcurrentHashMap<String, Boolean>();
+    private static ConcurrentMap<String, Boolean> invokedMethods = new ConcurrentHashMap<String, Boolean>();
 
-    /**
-     * Scans the classpath for types in packages starting with packagePrefix, and initializes internal usage data for fast,
-     * thread-safe usage data recording.
-     * All detected types and methods are initially in unused (useless) state.
-     * <p/>
-     * NOTE: This method must <em>not</em> be invoked before loading the aspectjweaver, or else Duck will not work!
-     * <p/>
-     * Thread-safe.
-     */
-    public synchronized static void scanClasspath(String packagePrefix) {
+    private static void scanClasspath(String packagePrefix) {
         long startedAt = System.currentTimeMillis();
-
-        invokedPackages.clear();
-        invokedTypes.clear();
-        invokedMethods.clear();
 
         Reflections reflections = new Reflections(ClasspathHelper.forPackage(packagePrefix), new SubTypesScanner(false));
 
         for (Class<?> clazz : reflections.getSubTypesOf(Object.class)) {
-            invokedPackages.put(clazz.getPackage().getName(), Boolean.FALSE);
-            invokedTypes.put(clazz.getName(), Boolean.FALSE);
+            invokedPackages.putIfAbsent(makePackageKey(clazz), Boolean.FALSE);
+            invokedTypes.putIfAbsent(makeTypeKey(clazz), Boolean.FALSE);
 
             for (Method method : clazz.getDeclaredMethods()) {
-                if (isNotAspectJInjectedMethod(method)) {
+                if (!method.isSynthetic()) {
                     // Use AspectJ for creating the same signature as AbstractDuckAspect...
                     MethodSignature signature = new Factory(null, clazz)
                             .makeMethodSig(method.getModifiers(), method.getName(), method.getDeclaringClass(), method.getParameterTypes(),
                                            null, method.getExceptionTypes(), method.getReturnType());
 
-                    invokedMethods.put(signature.toLongString(), Boolean.FALSE);
+                    invokedMethods.putIfAbsent(makeMethodKey(signature), Boolean.FALSE);
                 }
             }
         }
@@ -65,8 +53,8 @@ public class UsageRegistry {
                           invokedMethods.size());
     }
 
-    private static boolean isNotAspectJInjectedMethod(Method method) {
-        return !method.isSynthetic();
+    private static String makeTypeKey(Class<?> clazz) {
+        return clazz.getName();
     }
 
     /**
@@ -76,13 +64,19 @@ public class UsageRegistry {
      * Thread-safe.
      */
     public static void registerMethodExecution(Signature signature) {
-        assert !invokedMethods.isEmpty() : "Must invoke scanClasspath(String packagePrefix) first!";
-
         Class<?> declaringType = signature.getDeclaringType();
 
-        invokedPackages.put(declaringType.getPackage().getName(), Boolean.TRUE);
-        invokedTypes.put(declaringType.getName(), Boolean.TRUE);
-        invokedMethods.put(signature.toLongString(), Boolean.TRUE);
+        invokedPackages.put(makePackageKey(declaringType), Boolean.TRUE);
+        invokedTypes.put(makeTypeKey(declaringType), Boolean.TRUE);
+        invokedMethods.put(makeMethodKey(signature), Boolean.TRUE);
+    }
+
+    private static String makeMethodKey(Signature signature) {
+        return signature.toLongString();
+    }
+
+    private static String makePackageKey(Class<?> type) {
+        return type.getPackage().getName();
     }
 
     /**
@@ -90,8 +84,11 @@ public class UsageRegistry {
      * <p/>
      * Thread-safe.
      */
-    public static synchronized void dumpUnusedCode() {
+    public static synchronized void dumpUnusedCode(String packagePrefix) {
         System.out.printf("%nDuck result:%n");
+
+        scanClasspath(packagePrefix);
+
         dumpUnused("packages", invokedPackages);
         dumpUnused("types", invokedTypes);
         dumpUnused("methods", invokedMethods);
