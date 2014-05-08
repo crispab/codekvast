@@ -3,11 +3,15 @@ package duck.spike;
 import org.aspectj.bridge.Constants;
 import org.aspectj.weaver.loadtime.Agent;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.instrument.Instrumentation;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,20 +37,74 @@ public class DuckAgent {
     /**
      * This method is invoked by the JVM as part of the bootstrapping
      */
-    public static void premain(String args, Instrumentation inst) {
-        String packagePrefix = parsePackagePrefix(args);
+    public static void premain(String args, Instrumentation inst) throws IOException {
+        installPrivateClassLoader();
+        try {
+            String packagePrefix = parsePackagePrefix(args);
+            loadAspectjWeaver(args, inst, packagePrefix);
 
-        loadAspectjWeaver(args, inst, packagePrefix);
+            System.out.printf("%s will now scan classpath for packagePrefix '%s'%n", MY_SIMPLE_NAME, packagePrefix);
+            UsageRegistry.scanClasspath(packagePrefix);
 
-        System.out.printf("%s will now scan classpath for packagePrefix '%s'%n", MY_SIMPLE_NAME, packagePrefix);
-        UsageRegistry.scanClasspath(packagePrefix);
+            Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+                public void run() {
+                    UsageRegistry.dumpUnusedCode();
+                }
+            }));
+            System.out.printf("%s is ready to detect useless code within(%s..*)%n", MY_SIMPLE_NAME, packagePrefix);
+        } finally {
+            Thread.currentThread().setContextClassLoader(Thread.currentThread().getContextClassLoader().getParent());
+        }
+    }
 
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            public void run() {
-                UsageRegistry.dumpUnusedCode();
+    private static void installPrivateClassLoader() throws IOException {
+        List<URL> urls = new ArrayList<URL>();
+        File tmpDir = new File(System.getProperty("java.io.tmpdir"), "duck");
+
+        URL jarLocation = DuckAgent.class.getProtectionDomain().getCodeSource().getLocation();
+        JarFile jarFile = new JarFile(jarLocation.getFile());
+        for (Enumeration<JarEntry> entries = jarFile.entries(); entries.hasMoreElements(); ) {
+            JarEntry jarEntry = entries.nextElement();
+            if (!jarEntry.isDirectory() && jarEntry.getName().matches("lib/.*\\.jar$")) {
+                File externalJar = new File(tmpDir, jarEntry.getName());
+                if (externalJar.isFile() && externalJar.length() == jarEntry.getSize()) {
+                    System.out.printf("%s is already exported to %s%n", jarEntry, tmpDir);
+                } else {
+                    writeExternalJar(jarFile, jarEntry, externalJar);
+                }
+                urls.add(externalJar.toURI().toURL());
             }
-        }));
-        System.out.printf("%s is ready to detect useless code within(%s..*)%n", MY_SIMPLE_NAME, packagePrefix);
+        }
+
+        ClassLoader parent = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(new URLClassLoader(urls.toArray(new URL[urls.size()]), parent));
+    }
+
+    private static void writeExternalJar(JarFile jarFile, JarEntry jarEntry, File externalJar) throws IOException {
+        externalJar.getParentFile().mkdirs();
+        InputStream inputStream = null;
+        OutputStream outputStream = null;
+
+        try {
+            inputStream = new BufferedInputStream(jarFile.getInputStream(jarEntry));
+            outputStream = new BufferedOutputStream(new FileOutputStream(externalJar));
+
+            byte buffer[] = new byte[1024];
+            int len;
+
+            while ((len = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, len);
+            }
+
+        } finally {
+            if (outputStream != null) {
+                outputStream.close();
+            }
+            if (inputStream != null) {
+                inputStream.close();
+            }
+        }
+        System.out.printf("Created %s%n", externalJar);
     }
 
     private static void loadAspectjWeaver(String args, Instrumentation inst, String packagePrefix) {
