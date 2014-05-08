@@ -39,7 +39,11 @@ public class DuckAgent {
         loadAspectjWeaver(args, inst, packagePrefix);
         createUsageDumperThread(packagePrefix);
 
-        System.out.printf("%s is ready to detect useless code within(%s..*)%n", MY_SIMPLE_NAME, packagePrefix);
+        System.out.printf("%s is ready to detect useless code within(%s..*)%n" +
+                                  "Now handing over to main()%n" +
+                                  "--------------------------------------------------------------%n",
+                          MY_SIMPLE_NAME, packagePrefix
+        );
     }
 
     private static void createUsageDumperThread(final String packagePrefix) throws IOException {

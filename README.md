@@ -13,7 +13,7 @@ Spiken består av två moduler:
 
 ## Hur man testar
 
-./gradlew :sample-app:run
+./gradlew run
 
 Om allt fungerar skall det komma ut en sammanställning av useless code på slutet.
 

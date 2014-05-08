@@ -8,9 +8,9 @@ import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ClasspathHelper;
 
 import java.lang.reflect.Method;
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.TreeSet;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -19,13 +19,23 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class UsageRegistry {
 
+    private static class Usage {
+        private final Class<?> declaringClass;
+        private final boolean used;
+
+        private Usage(Class<?> declaringClass, boolean used) {
+            this.declaringClass = declaringClass;
+            this.used = used;
+        }
+    }
+
     private UsageRegistry() {
         // Utility class with only static methods
     }
 
-    private static ConcurrentMap<String, Boolean> invokedPackages = new ConcurrentHashMap<String, Boolean>();
-    private static ConcurrentMap<String, Boolean> invokedTypes = new ConcurrentHashMap<String, Boolean>();
-    private static ConcurrentMap<String, Boolean> invokedMethods = new ConcurrentHashMap<String, Boolean>();
+    private static ConcurrentMap<String, Usage> invokedPackages = new ConcurrentHashMap<String, Usage>();
+    private static ConcurrentMap<String, Usage> invokedTypes = new ConcurrentHashMap<String, Usage>();
+    private static ConcurrentMap<String, Usage> invokedMethods = new ConcurrentHashMap<String, Usage>();
 
     private static void scanClasspath(String packagePrefix) {
         long startedAt = System.currentTimeMillis();
@@ -33,8 +43,9 @@ public class UsageRegistry {
         Reflections reflections = new Reflections(ClasspathHelper.forPackage(packagePrefix), new SubTypesScanner(false));
 
         for (Class<?> clazz : reflections.getSubTypesOf(Object.class)) {
-            invokedPackages.putIfAbsent(makePackageKey(clazz), Boolean.FALSE);
-            invokedTypes.putIfAbsent(makeTypeKey(clazz), Boolean.FALSE);
+            Usage notUsed = new Usage(clazz, false);
+            invokedPackages.putIfAbsent(makePackageKey(clazz), notUsed);
+            invokedTypes.putIfAbsent(makeTypeKey(clazz), notUsed);
 
             for (Method method : clazz.getDeclaredMethods()) {
                 if (!method.isSynthetic()) {
@@ -43,7 +54,7 @@ public class UsageRegistry {
                             .makeMethodSig(method.getModifiers(), method.getName(), method.getDeclaringClass(), method.getParameterTypes(),
                                            null, method.getExceptionTypes(), method.getReturnType());
 
-                    invokedMethods.putIfAbsent(makeMethodKey(signature), Boolean.FALSE);
+                    invokedMethods.putIfAbsent(makeMethodKey(signature), notUsed);
                 }
             }
         }
@@ -66,9 +77,10 @@ public class UsageRegistry {
     public static void registerMethodExecution(Signature signature) {
         Class<?> declaringType = signature.getDeclaringType();
 
-        invokedPackages.put(makePackageKey(declaringType), Boolean.TRUE);
-        invokedTypes.put(makeTypeKey(declaringType), Boolean.TRUE);
-        invokedMethods.put(makeMethodKey(signature), Boolean.TRUE);
+        Usage used = new Usage(declaringType, true);
+        invokedPackages.put(makePackageKey(declaringType), used);
+        invokedTypes.put(makeTypeKey(declaringType), used);
+        invokedMethods.put(makeMethodKey(signature), used);
     }
 
     private static String makeMethodKey(Signature signature) {
@@ -85,26 +97,47 @@ public class UsageRegistry {
      * Thread-safe.
      */
     public static synchronized void dumpUnusedCode(String packagePrefix) {
-        System.out.printf("%nDuck result:%n");
+        System.out.printf("--------------------------------------------------------------%n" +
+                                  "Duck result:%n");
 
         scanClasspath(packagePrefix);
 
-        dumpUnused("packages", invokedPackages);
-        dumpUnused("types", invokedTypes);
-        dumpUnused("methods", invokedMethods);
-    }
-
-    private static void dumpUnused(String what, Map<String, Boolean> invoked) {
-        Collection<String> unused = new TreeSet<String>();
-        for (Map.Entry<String, Boolean> entry : invoked.entrySet()) {
-            if (!entry.getValue()) {
-                unused.add(entry.getKey());
+        System.out.println("Useless packages (and all types they contain):");
+        Set<Package> unusedPackages = new HashSet<Package>();
+        for (Map.Entry<String, Usage> entry : invokedPackages.entrySet()) {
+            if (!entry.getValue().used) {
+                Package p = entry.getValue().declaringClass.getPackage();
+                unusedPackages.add(p);
+                System.out.printf("  %s%n", p);
             }
         }
 
-        System.out.printf("Useless %s:%n", what);
-        for (String name : unused) {
-            System.out.printf("  %s%n", name);
+        System.out.println("Useless types (and all methods they contain):");
+        Set<Class> unusedTypes = new HashSet<Class>();
+        for (Map.Entry<String, Usage> entry : invokedTypes.entrySet()) {
+            Usage usage = entry.getValue();
+            if (!usage.used) {
+                unusedTypes.add(usage.declaringClass);
+                if (!unusedPackages.contains(usage.declaringClass.getPackage())) {
+                    System.out.printf("  %s%n", usage.declaringClass);
+                }
+            }
+        }
+
+        System.out.println("Useless methods:");
+        for (Map.Entry<String, Usage> entry : invokedMethods.entrySet()) {
+            Usage usage = entry.getValue();
+            if (!usage.used && !unusedTypes.contains(usage.declaringClass)) {
+                System.out.printf("  %s%n", entry.getKey());
+            }
+        }
+
+        System.out.println("Used methods:");
+        for (Map.Entry<String, Usage> entry : invokedMethods.entrySet()) {
+            Usage usage = entry.getValue();
+            if (usage.used) {
+                System.out.printf("  %s%n", entry.getKey());
+            }
         }
     }
 
