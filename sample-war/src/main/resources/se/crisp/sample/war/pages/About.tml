@@ -1,0 +1,14 @@
+<t:layout xmlns:t="http://tapestry.apache.org/schema/tapestry_5_1_0.xsd">
+    <h2>Om Crisp Sample WAR</h2>
+
+    <p>
+        Detta är en liten Tapestry-app som är till för att testa duck-agent i en lite mer komplex miljö.
+    </p>
+
+    <p>
+        Tapestry använder ju själv en massa bytekod-trixande och custom classloaders, så det är spännande att se om det lirar ihop
+        med duck-agent och aspectjweaver.
+    </p>
+    <t:pagelink page="Start">Till startsidan</t:pagelink>
+</t:layout>
+

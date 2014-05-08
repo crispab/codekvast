@@ -2,6 +2,7 @@
   <dictionary name="olle">
     <words>
       <w>loadtime</w>
+      <w>untracked</w>
     </words>
   </dictionary>
 </component>
