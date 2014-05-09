@@ -8,12 +8,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * This is a Java agent that hooks up Duck to the app.
- *
+ * <p/>
  * Usage:
  * Add the following option to the Java command line:
  * <pre><code>
@@ -34,26 +36,37 @@ public class DuckAgent {
      * This method is invoked by the JVM as part of the bootstrapping
      */
     public static void premain(String args, Instrumentation inst) throws IOException {
-        final String packagePrefix = parsePackagePrefix(args);
+        String packagePrefix = parsePackagePrefix(args);
+        File outputFile = parseOutputFile(args);
+
+        UsageRegistry.initialize(packagePrefix, outputFile);
 
         loadAspectjWeaver(args, inst, packagePrefix);
-        createUsageDumperThread(packagePrefix);
 
-        System.out.printf("%s is ready to detect useless code within(%s..*)%n" +
+        createUsageDumpers(parseDumpIntervalSeconds(args));
+
+        System.err.printf("%s is ready to detect useless code within(%s..*)%n" +
                                   "Now handing over to main()%n" +
                                   "--------------------------------------------------------------%n",
                           MY_SIMPLE_NAME, packagePrefix
         );
     }
 
-    private static void createUsageDumperThread(final String packagePrefix) throws IOException {
-        Thread usageDumper = new Thread(new UsageDumper(packagePrefix));
-        usageDumper.setName("Duck Usage Dumper");
-        Runtime.getRuntime().addShutdownHook(usageDumper);
+    private static void createUsageDumpers(int dumpIntervalSeconds) throws IOException {
+        UsageDumper usageDumper = new UsageDumper();
+
+        Timer timer = new Timer("Duck usage dumper", true);
+
+        long dumpDelayMillis = dumpIntervalSeconds * 1000L;
+        timer.scheduleAtFixedRate(usageDumper, dumpDelayMillis, dumpDelayMillis);
+
+        Thread shutdownHook = new Thread(usageDumper);
+        shutdownHook.setName("Duck shutdown hook");
+        Runtime.getRuntime().addShutdownHook(shutdownHook);
     }
 
     private static void loadAspectjWeaver(String args, Instrumentation inst, String packagePrefix) {
-        System.out.printf("%s loaded, now loading aspectjweaver%n", MY_SIMPLE_NAME);
+        System.err.printf("%s loaded, now loading aspectjweaver%n", MY_SIMPLE_NAME);
         System.setProperty("org.aspectj.weaver.loadtime.configuration", join(createConcreteDuckAspect(packagePrefix),
                                                                              Constants.AOP_USER_XML,
                                                                              Constants.AOP_AJC_XML,
@@ -106,7 +119,7 @@ public class DuckAgent {
     }
 
     private static String parsePackagePrefix(CharSequence args) {
-        Pattern pattern = Pattern.compile("packagePrefix=([\\w.]+)");
+        Pattern pattern = Pattern.compile(".*packagePrefix=([^,]+).*");
         Matcher matcher = pattern.matcher(args);
         if (!matcher.matches()) {
             throw new IllegalArgumentException("Usage: javaagent:/path/to/duck-agent.jar=packagePrefix=<package>");
@@ -114,15 +127,25 @@ public class DuckAgent {
         return matcher.group(1);
     }
 
-    private static class UsageDumper implements Runnable {
-        private final String packagePrefix;
+    private static int parseDumpIntervalSeconds(CharSequence args) {
+        Pattern pattern = Pattern.compile(".*dumpIntervalSeconds=([\\d]+).*");
+        Matcher matcher = pattern.matcher(args);
+        String result = matcher.matches() ? matcher.group(1) : "600";
+        System.err.printf("Will dump usage data every %s seconds%n", result);
+        return Integer.parseInt(result);
+    }
 
-        private UsageDumper(String packagePrefix) {
-            this.packagePrefix = packagePrefix;
-        }
+    private static File parseOutputFile(String args) {
+        Pattern pattern = Pattern.compile(".*outputFile=([^,]+).*");
+        Matcher matcher = pattern.matcher(args);
+        File result = matcher.matches() ? new File(matcher.group(1)) : new File("duck-data.txt");
+        System.err.printf("Will dump usage data to %s%n", result.getAbsolutePath());
+        return result;
+    }
 
+    private static class UsageDumper extends TimerTask {
         public void run() {
-            UsageRegistry.dumpUnusedCode(packagePrefix);
+            UsageRegistry.dumpCodeUsage();
         }
     }
 }

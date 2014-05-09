@@ -6,6 +6,7 @@
     <JAVADOC />
     <SOURCES>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tapestry/tapestry-json/5.3.6/e8592c69574fb8f8b0d9ff0da6267fd65bc1bb2b/tapestry-json-5.3.6-sources.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tapestry/tapestry-json/5.3.6/e8592c69574fb8f8b0d9ff0da6267fd65bc1bb2b/tapestry-json-5.3.6-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

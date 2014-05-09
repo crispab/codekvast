@@ -6,6 +6,7 @@
     <JAVADOC />
     <SOURCES>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tapestry/tapestry-ioc/5.3.6/5e67d7b5f8949f08aaa64f778a1ecf38031a10c5/tapestry-ioc-5.3.6-sources.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tapestry/tapestry-ioc/5.3.6/5e67d7b5f8949f08aaa64f778a1ecf38031a10c5/tapestry-ioc-5.3.6-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

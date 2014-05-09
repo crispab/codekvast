@@ -9,15 +9,20 @@ public class SampleApp {
 
     static int sum = 0;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         System.out.printf("Hello, World! from %s%n%n", SampleApp.class.getName());
-        new Bar().m1();
 
         tryToLoadClass("duck.spike.DuckAgent", true);
         tryToLoadClass("org.aspectj.weaver.loadtime.Agent", true);
         tryToLoadClass("org.reflections.Reflections", false);
 
         measureMethodCallTrackingOverhead();
+
+        System.out.printf("%s sleeps 20 seconds...%n", SampleApp.class.getSimpleName());
+        Thread.sleep(20000L);
+        System.out.printf("%s wakes up%n", SampleApp.class.getSimpleName());
+
+        new Bar().m1();
     }
 
     private static void measureMethodCallTrackingOverhead() {
@@ -31,7 +36,7 @@ public class SampleApp {
 
         long untrackedElapsedMillis = invokeUntracked(count);
         long trackedElapsedMillis = invokeTracked(count);
-        double overheadMicros = (trackedElapsedMillis - untrackedElapsedMillis) / (double) count * 1000d;
+        double overheadMicros = (trackedElapsedMillis - untrackedElapsedMillis) * 1000d / (double) count;
 
         System.out.printf("Invoked a trivial untracked method %d times in %5d ms%n", count, untrackedElapsedMillis);
         System.out.printf("Invoked a trivial   tracked method %d times in %5d ms%n", count, trackedElapsedMillis);

@@ -16,13 +16,12 @@
           <element id="library" level="project" name="Gradle: tapestry5-annotations-5.3.6" />
           <element id="library" level="project" name="Gradle: slf4j-api-1.6.1" />
           <element id="library" level="project" name="Gradle: tapestry-func-5.3.6" />
-          <element id="library" level="project" name="Gradle: log4j-1.2.16" />
-          <element id="library" level="project" name="Gradle: slf4j-log4j12-1.6.1" />
           <element id="library" level="project" name="Gradle: javax.inject-1" />
           <element id="library" level="project" name="Gradle: plastic-5.3.6" />
           <element id="library" level="project" name="Gradle: javassist-3.12.1.GA" />
           <element id="library" level="project" name="Gradle: tapestry-ioc-5.3.6" />
           <element id="library" level="project" name="Gradle: commons-codec-1.5" />
+          <element id="library" level="project" name="Gradle: logback-core-1.1.2" />
         </element>
       </element>
       <element id="directory" name="META-INF">

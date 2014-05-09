@@ -1,20 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module external.linked.project.path="$MODULE_DIR$" external.root.project.path="$WORKSPACE_ROOT$/crisp/duck" external.system.id="GRADLE" external.system.module.group="duck" external.system.module.version="1.0" type="JAVA_MODULE" version="4">
+<module external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$/.." external.system.id="GRADLE" external.system.module.group="duck" external.system.module.version="1.0" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
-    <facet type="web" name="Web Gradle : sample-war-1.0.war">
-      <configuration>
-        <webroots />
-        <sourceRoots>
-          <root url="file://$MODULE_DIR$/src/main/java" />
-          <root url="file://$MODULE_DIR$/src/main/resources" />
-        </sourceRoots>
-      </configuration>
-    </facet>
     <facet type="tapestry" name="Tapestry">
       <configuration>
         <setting name="filterName" value="sample-war" />
         <setting name="applicationPackage" value="" />
         <setting name="version" value="5.3.6" />
+      </configuration>
+    </facet>
+    <facet type="web" name="Web Gradle : sample-war-1.0.war">
+      <configuration>
+        <descriptors>
+          <deploymentDescriptor name="web.xml" url="$MODULE_DIR$/src/main/webapp/WEB-INF/web.xml" />
+        </descriptors>
+        <webroots>
+          <root url="file://$MODULE_DIR$/src/main/webapp" relative="/" />
+        </webroots>
+        <sourceRoots>
+          <root url="file://$MODULE_DIR$/src/main/java" />
+          <root url="file://$MODULE_DIR$/src/main/resources" />
+        </sourceRoots>
       </configuration>
     </facet>
   </component>
@@ -38,13 +43,13 @@
     <orderEntry type="library" exported="" name="Gradle: tapestry5-annotations-5.3.6" level="project" />
     <orderEntry type="library" exported="" name="Gradle: slf4j-api-1.6.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: tapestry-func-5.3.6" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: log4j-1.2.16" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: slf4j-log4j12-1.6.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: javax.inject-1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: plastic-5.3.6" level="project" />
     <orderEntry type="library" exported="" name="Gradle: javassist-3.12.1.GA" level="project" />
     <orderEntry type="library" exported="" name="Gradle: tapestry-ioc-5.3.6" level="project" />
     <orderEntry type="library" exported="" name="Gradle: commons-codec-1.5" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: logback-core-1.1.2" level="project" />
+    <orderEntry type="library" exported="" scope="RUNTIME" name="Gradle: logback-core-1.1.2" level="project" />
   </component>
   <component name="org.twodividedbyzero.idea.findbugs">
     <option name="_basePreferences">
