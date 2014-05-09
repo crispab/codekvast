@@ -16,6 +16,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Olle Hallin
@@ -23,19 +25,28 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class UsageRegistry {
 
     private static class Usage {
-        private final Signature signature;
+        private final static Pattern PATTERN = Pattern.compile("^\\s*([\\d]+):(.*)");
+
+        private final String signature;
         private final long usedAtMillis;
 
-        private Usage(Signature signature, long usedAtMillis) {
+        private Usage(String signature, long usedAtMillis) {
             this.signature = signature;
             this.usedAtMillis = usedAtMillis;
         }
 
         @Override
         public String toString() {
-            return String.format("%14d %s", usedAtMillis, makeMethodKey(signature));
+            return String.format("%14d:%s", usedAtMillis, signature);
+        }
+
+        public static Usage parse(String line) {
+            Matcher m = PATTERN.matcher(line);
+            return m.matches() ? new Usage(m.group(2), Long.parseLong(m.group(1))) : null;
         }
     }
+
+    private static final String MY_NAME = UsageRegistry.class.getName();
 
     private UsageRegistry() {
         // Utility class with only static methods
@@ -55,6 +66,27 @@ public class UsageRegistry {
         if (parent != null && !parent.exists()) {
             parent.mkdirs();
         }
+        if (outputFile.exists()) {
+            // Continue from previous JVM run...
+            initializeTrackedMethodsFrom(outputFile);
+        }
+    }
+
+    private static void initializeTrackedMethodsFrom(File file) {
+        System.err.printf("%s: Found %s, will continue from that%n", MY_NAME, file.getAbsolutePath());
+
+        try {
+            BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+            String line;
+            while ((line = in.readLine()) != null) {
+                Usage usage = Usage.parse(line);
+                if (usage != null) {
+                    trackedMethods.put(usage.signature, usage);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace(System.err);
+        }
     }
 
     /**
@@ -64,7 +96,8 @@ public class UsageRegistry {
      * Thread-safe.
      */
     public static void registerMethodExecution(Signature signature) {
-        trackedMethods.put(makeMethodKey(signature), new Usage(signature, System.currentTimeMillis()));
+        Usage usage = new Usage(makeMethodKey(signature), System.currentTimeMillis());
+        trackedMethods.put(usage.signature, usage);
     }
 
     private static String makeMethodKey(Signature signature) {
@@ -93,6 +126,8 @@ public class UsageRegistry {
             // Only iterate over trackedMethods once, it could be updated anytime
             List<Usage> usages = new ArrayList<Usage>(trackedMethods.values());
 
+            out.println("# lastUsedMillis signature");
+
             out.println("# Unused methods:");
             int unused = 0;
             for (Usage usage : usages) {
@@ -102,7 +137,7 @@ public class UsageRegistry {
                 }
             }
 
-            out.println("# Used methods (first column is millis since epoch):");
+            out.println("# Used methods:");
             int used = 0;
             for (Usage usage : usages) {
                 if (usage.usedAtMillis > 0L) {
@@ -117,7 +152,7 @@ public class UsageRegistry {
             out.close();
 
             if (!tmpFile.renameTo(outputFile)) {
-                System.err.printf("%s: Could not rename %s to %sms%n", UsageRegistry.class.getName(), tmpFile.getAbsolutePath(),
+                System.err.printf("%s: Could not rename %s to %sms%n", MY_NAME, tmpFile.getAbsolutePath(),
                                   outputFile.getAbsolutePath());
             }
 
@@ -146,14 +181,15 @@ public class UsageRegistry {
                             .makeMethodSig(method.getModifiers(), method.getName(), method.getDeclaringClass(), method.getParameterTypes(),
                                            null, method.getExceptionTypes(), method.getReturnType());
 
-                    trackedMethods.putIfAbsent(makeMethodKey(signature), new Usage(signature, 0L));
+                    Usage usage = new Usage(makeMethodKey(signature), 0L);
+                    trackedMethods.putIfAbsent(usage.signature, usage);
                     count += 1;
                 }
             }
         }
 
         System.err.printf("%s: Classpath with package prefix '%s' scanned in %d ms, found %d methods.%n",
-                          UsageRegistry.class.getName(), packagePrefix, System.currentTimeMillis() - startedAt, count);
+                          MY_NAME, packagePrefix, System.currentTimeMillis() - startedAt, count);
     }
 
 }
