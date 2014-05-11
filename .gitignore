@@ -1,5 +1,7 @@
-duck-agent/build
-sample-app/build
+build/**
+**/build/**
 .gradle
+.idea/libraries/
 .idea/workspace.xml
-build
+.idea/gradle.xml
+.idea/tasks.xml
