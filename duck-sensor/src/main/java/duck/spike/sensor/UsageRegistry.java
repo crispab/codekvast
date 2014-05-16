@@ -1,4 +1,4 @@
-package duck.spike;
+package duck.spike.sensor;
 
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -90,7 +90,7 @@ public class UsageRegistry {
     }
 
     /**
-     * This method is invoked by {@link duck.spike.AbstractDuckAspect#recordMethodCall(org.aspectj.lang.JoinPoint)}.
+     * This method is invoked by {@link duck.spike.sensor.AbstractDuckAspect#recordMethodCall(org.aspectj.lang.JoinPoint)}.
      * It will exclude a certain type and method from being reported as useless.
      * <p/>
      * Thread-safe.

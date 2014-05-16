@@ -1,4 +1,4 @@
-package duck.spike;
+package duck.spike.sensor;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -11,7 +11,7 @@ import org.aspectj.lang.annotation.Pointcut;
  * It is weaved into the target app by the AspectJ load-time weaver.
  *
  * @author Olle Hallin
- * @see duck.spike.DuckAgent
+ * @see DuckSensor
  */
 @Aspect
 public abstract class AbstractDuckAspect {
@@ -19,7 +19,7 @@ public abstract class AbstractDuckAspect {
     /**
      * This abstract pointcut specifies the scope for what dead code to detect.
      * <p/>
-     * It is concreted in an XML file, which is created on-the-fly by {@link duck.spike.DuckAgent} before delegating
+     * It is concreted in an XML file, which is created on-the-fly by {@link DuckSensor} before delegating
      * to the AspectJ load-time weaving agent.
      */
     @Pointcut
