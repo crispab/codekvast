@@ -1,5 +1,7 @@
 build/**
 **/build/**
+**/*/.iml
+*.iml
 .gradle
 .idea/libraries/
 .idea/workspace.xml
