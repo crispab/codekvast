@@ -1,6 +1,8 @@
 build/**
 **/build/**
 **/*.iml
+**/target
+**/*.iml
 *.iml
 .gradle
 .idea/libraries/
