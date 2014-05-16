@@ -1,9 +1,10 @@
 package duck.spike.sensor;
 
+import duck.spike.util.AspectjUtils;
 import duck.spike.util.Configuration;
+import duck.spike.util.Usage;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.aspectj.runtime.reflect.Factory;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ClasspathHelper;
@@ -17,35 +18,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author Olle Hallin
  */
 public class UsageRegistry {
-
-    private static class Usage {
-        private final static Pattern PATTERN = Pattern.compile("^\\s*([\\d]+):(.*)");
-
-        private final String signature;
-        private final long usedAtMillis;
-
-        private Usage(String signature, long usedAtMillis) {
-            this.signature = signature;
-            this.usedAtMillis = usedAtMillis;
-        }
-
-        @Override
-        public String toString() {
-            return String.format("%14d:%s", usedAtMillis, signature);
-        }
-
-        public static Usage parse(String line) {
-            Matcher m = PATTERN.matcher(line);
-            return m.matches() ? new Usage(m.group(2), Long.parseLong(m.group(1))) : null;
-        }
-    }
 
     private static final String MY_NAME = UsageRegistry.class.getName();
 
@@ -67,24 +44,8 @@ public class UsageRegistry {
         }
         if (config.getDataFile().exists()) {
             // Continue from previous JVM run...
-            initializeTrackedMethodsFrom(config.getDataFile());
-        }
-    }
-
-    private static void initializeTrackedMethodsFrom(File file) {
-        System.err.printf("%s: Found %s, will continue from that%n", MY_NAME, file.getAbsolutePath());
-
-        try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-            String line;
-            while ((line = in.readLine()) != null) {
-                Usage usage = Usage.parse(line);
-                if (usage != null) {
-                    trackedMethods.put(usage.signature, usage);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace(System.err);
+            System.err.printf("%s: Found %s, will continue from that%n", UsageRegistry.MY_NAME, config.getDataFile().getAbsolutePath());
+            Usage.initializeUsagesFrom(trackedMethods, config.getDataFile());
         }
     }
 
@@ -95,12 +56,8 @@ public class UsageRegistry {
      * Thread-safe.
      */
     public static void registerMethodExecution(Signature signature) {
-        Usage usage = new Usage(makeMethodKey(signature), System.currentTimeMillis());
-        trackedMethods.put(usage.signature, usage);
-    }
-
-    private static String makeMethodKey(Signature signature) {
-        return signature.toLongString();
+        Usage usage = new Usage(AspectjUtils.makeMethodKey(signature), System.currentTimeMillis());
+        trackedMethods.put(usage.getSignature(), usage);
     }
 
     /**
@@ -130,7 +87,7 @@ public class UsageRegistry {
             out.println("# Unused methods:");
             int unused = 0;
             for (Usage usage : usages) {
-                if (usage.usedAtMillis == 0L) {
+                if (usage.getUsedAtMillis() == 0L) {
                     out.println(usage);
                     unused += 1;
                 }
@@ -139,7 +96,7 @@ public class UsageRegistry {
             out.println("# Used methods:");
             int used = 0;
             for (Usage usage : usages) {
-                if (usage.usedAtMillis > 0L) {
+                if (usage.getUsedAtMillis() > 0L) {
                     out.println(usage);
                     used += 1;
                 }
@@ -177,13 +134,11 @@ public class UsageRegistry {
         for (Class<?> clazz : reflections.getSubTypesOf(Object.class)) {
             for (Method method : clazz.getDeclaredMethods()) {
                 if (!method.isSynthetic()) {
-                    // Use AspectJ for creating the same signature as AbstractDuckAspect...
-                    MethodSignature signature = new Factory(null, clazz)
-                            .makeMethodSig(method.getModifiers(), method.getName(), method.getDeclaringClass(), method.getParameterTypes(),
-                                           null, method.getExceptionTypes(), method.getReturnType());
+                    MethodSignature signature = AspectjUtils.getMethodSignature(clazz, method);
 
-                    Usage usage = new Usage(makeMethodKey(signature), 0L);
-                    trackedMethods.putIfAbsent(usage.signature, usage);
+
+                    Usage usage = new Usage(AspectjUtils.makeMethodKey(signature), 0L);
+                    trackedMethods.putIfAbsent(usage.getSignature(), usage);
                     count += 1;
                 }
             }

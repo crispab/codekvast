@@ -1,9 +1,11 @@
 build/**
 **/build/**
-**/*/.iml
+**/*.iml
 *.iml
 .gradle
 .idea/libraries/
 .idea/workspace.xml
 .idea/gradle.xml
 .idea/tasks.xml
+.idea/dictionaries/
+**/*.bak
