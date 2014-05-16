@@ -2,9 +2,10 @@
 
 Visar att man kan använda AspectJ och lite reflectionmagi för att detektera död kod.
 
-Spiken består av två moduler:
+Spiken består av tre moduler:
 
-* duck-agent (en javaagent som innehåller aspectjweaver.jar)
+* duck-sensor (en javaagent som innehåller aspectjweaver.jar)
+* duck-agent (en fristående java app som skickar insamlade användningsdata till datalagret)
 * sample-app (en stand-alone Java-app med lite useless code)
 
 ## Hur man bygger
@@ -19,5 +20,5 @@ Om allt fungerar skall det komma ut en sammanställning av useless code på slut
 
 ## Förutsättningar
 
-Spiken kräver att minst Java 5 är installerat i PATH. Utvecklat och testat med Oracle Java 7.
-
+Spiken kräver att minst Java 5 är installerat i PATH.
+Utvecklat och testat med Oracle Java 7.

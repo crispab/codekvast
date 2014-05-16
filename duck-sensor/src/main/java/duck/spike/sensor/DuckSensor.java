@@ -1,4 +1,4 @@
-package duck.spike;
+package duck.spike.sensor;
 
 import org.aspectj.bridge.Constants;
 import org.aspectj.weaver.loadtime.Agent;
@@ -19,16 +19,16 @@ import java.util.regex.Pattern;
  * Usage:
  * Add the following option to the Java command line:
  * <pre><code>
- *    -javaagent:/path/to/duck-agent-n.n-shadow.jar=packagePrefix=com.acme
+ *    -javaagent:/path/to/duck-sensor-n.n-shadow.jar=packagePrefix=com.acme
  * </code></pre>
  *
  * @author Olle Hallin
  */
-public class DuckAgent {
+public class DuckSensor {
 
-    private static final String MY_SIMPLE_NAME = DuckAgent.class.getSimpleName();
+    private static final String MY_SIMPLE_NAME = DuckSensor.class.getSimpleName();
 
-    private DuckAgent() {
+    private DuckSensor() {
         // Not possible to instantiate a javaagent
     }
 
@@ -94,7 +94,7 @@ public class DuckAgent {
         String xml = String.format(
                 "<aspectj>\n"
                         + "  <aspects>\n"
-                        + "     <concrete-aspect name='duck.spike.DuckAspect' extends='duck.spike.AbstractDuckAspect'>\n"
+                        + "     <concrete-aspect name='duck.spike.DuckAspect' extends='duck.spike.sensor.AbstractDuckAspect'>\n"
                         + "       <pointcut name='scope' expression='within(%1$s..*)'/>\n"
                         + "     </concrete-aspect>\n"
                         + "  </aspects>\n"
@@ -122,7 +122,7 @@ public class DuckAgent {
         Pattern pattern = Pattern.compile(".*packagePrefix=([^,]+).*");
         Matcher matcher = pattern.matcher(args);
         if (!matcher.matches()) {
-            throw new IllegalArgumentException("Usage: javaagent:/path/to/duck-agent.jar=packagePrefix=<package>");
+            throw new IllegalArgumentException("Usage: javaagent:/path/to/duck-sensor.jar=packagePrefix=<package>");
         }
         return matcher.group(1);
     }

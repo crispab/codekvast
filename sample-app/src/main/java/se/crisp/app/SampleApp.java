@@ -12,7 +12,7 @@ public class SampleApp {
     public static void main(String[] args) throws InterruptedException {
         System.out.printf("Hello, World! from %s%n%n", SampleApp.class.getName());
 
-        tryToLoadClass("duck.spike.DuckAgent", true);
+        tryToLoadClass("duck.spike.sensor.DuckSensor", true);
         tryToLoadClass("org.aspectj.weaver.loadtime.Agent", true);
         tryToLoadClass("org.reflections.Reflections", false);
 
@@ -40,7 +40,7 @@ public class SampleApp {
 
         System.out.printf("Invoked a trivial untracked method %d times in %5d ms%n", count, untrackedElapsedMillis);
         System.out.printf("Invoked a trivial   tracked method %d times in %5d ms%n", count, trackedElapsedMillis);
-        System.out.printf("Duck instrumentation adds roughly %.2f us to a method call%n", overheadMicros);
+        System.out.printf("Duck sensor adds roughly %.2f us to a method call%n", overheadMicros);
     }
 
     private static long invokeUntracked(int count) {
@@ -71,14 +71,14 @@ public class SampleApp {
             String verdict = shouldBeAvailable ? "GOOD:" : "BAD: ";
             String result = shouldBeAvailable
                     ? "is unavoidable."
-                    : "has leaked into my class path from -javaagent:duck-agent.jar";
+                    : "has leaked into my class path from -javaagent:duck-sensor.jar";
             System.out.printf("%s %s can load class %s, which %s%n", verdict, SampleApp.class.getName(), className, result);
         } catch (ClassNotFoundException e) {
 
             String verdict = shouldBeAvailable ? "BAD: " : "GOOD:";
             String result = shouldBeAvailable
-                    ? ", which indicates that duck-agent is not enabled!"
-                    : ". We don't want duck-agent internals to leak into the application.";
+                    ? ", which indicates that duck-sensor is not enabled!"
+                    : ". We don't want duck-sensor internals to leak into the application.";
             System.out.printf("%s %s cannot load class %s%s%n", verdict, SampleApp.class.getName(), className, result);
         }
     }

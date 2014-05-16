@@ -18,9 +18,9 @@ dependencies {
 
 jar {
     manifest {
-        attributes("Premain-Class": "duck.spike.DuckAgent")
+        attributes("Premain-Class": "duck.spike.sensor.DuckSensor")
     }
 }
 
-// Make a shadow jar consisting of duck-agent and it's dependencies...
+// Make a shadow jar consisting of duck-sensor and it's dependencies...
 assemble.dependsOn shadowJar
