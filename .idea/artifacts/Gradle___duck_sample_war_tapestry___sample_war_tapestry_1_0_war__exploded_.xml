@@ -8,20 +8,20 @@
           <element id="module-output" name="sample-war-tapestry" />
         </element>
         <element id="directory" name="lib">
-          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tapestry/tapestry-core/5.3.6/c9c5914943d9f9241de9586e4f895acae18ed99c/tapestry-core-5.3.6.jar" />
-          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/ch.qos.logback/logback-core/1.1.2/2d23694879c2c12f125dac5076bdfd5d771cc4cb/logback-core-1.1.2.jar" />
-          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tapestry/tapestry-json/5.3.6/537405b50b8fb92ed9cf867e5b9a911309ce3e01/tapestry-json-5.3.6.jar" />
-          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.antlr/antlr-runtime/3.3/ccd65b08cbc9b7e90b9facd4d125a133c6f87228/antlr-runtime-3.3.jar" />
-          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tapestry/tapestry-ioc/5.3.6/d3acaa2631a5996946ddd23c7a5cd67837ab072b/tapestry-ioc-5.3.6.jar" />
-          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.5/cf993e250ff71804754ec2734a16f23c0be99f70/commons-codec-1.5.jar" />
-          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.antlr/stringtemplate/3.2.1/59ec8083721eae215c6f3caee944c410d2be34de/stringtemplate-3.2.1.jar" />
-          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tapestry/tapestry5-annotations/5.3.6/cc46d180ae349916aacb5b1c2851b742476a054b/tapestry5-annotations-5.3.6.jar" />
-          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.6.1/6f3b8a24bf970f17289b234284c94f43eb42f0e4/slf4j-api-1.6.1.jar" />
-          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tapestry/tapestry-func/5.3.6/c315e4448d783abadfa3cc5713033b951d7abf6c/tapestry-func-5.3.6.jar" />
-          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/javax.inject/javax.inject/1/6975da39a7040257bd51d21a231b76c915872d38/javax.inject-1.jar" />
-          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tapestry/plastic/5.3.6/427f327157fa3c01eaa2a8c34ca81b024a3375d5/plastic-5.3.6.jar" />
-          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/javassist/javassist/3.12.1.GA/526633327faa61aee448a519e8a4d53ec3057885/javassist-3.12.1.GA.jar" />
-          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/antlr/antlr/2.7.7/83cd2cd674a217ade95a4bb83a8a14f351f48bd0/antlr-2.7.7.jar" />
+          <element id="library" level="project" name="Gradle: tapestry-core-5.3.6" />
+          <element id="library" level="project" name="Gradle: tapestry-json-5.3.6" />
+          <element id="library" level="project" name="Gradle: antlr-2.7.7" />
+          <element id="library" level="project" name="Gradle: stringtemplate-3.2.1" />
+          <element id="library" level="project" name="Gradle: antlr-runtime-3.3" />
+          <element id="library" level="project" name="Gradle: tapestry5-annotations-5.3.6" />
+          <element id="library" level="project" name="Gradle: slf4j-api-1.6.1" />
+          <element id="library" level="project" name="Gradle: tapestry-func-5.3.6" />
+          <element id="library" level="project" name="Gradle: javax.inject-1" />
+          <element id="library" level="project" name="Gradle: plastic-5.3.6" />
+          <element id="library" level="project" name="Gradle: javassist-3.12.1.GA" />
+          <element id="library" level="project" name="Gradle: tapestry-ioc-5.3.6" />
+          <element id="library" level="project" name="Gradle: commons-codec-1.5" />
+          <element id="library" level="project" name="Gradle: logback-core-1.1.2" />
         </element>
       </element>
       <element id="directory" name="META-INF">
