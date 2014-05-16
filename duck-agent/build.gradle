@@ -10,5 +10,6 @@ mainClassName = "duck.spike.agent.AgentMain"
 repositories { jcenter() }
 
 dependencies {
-    compile 'org.reflections:reflections:0.9.9-RC1'
+    compile project(":duck-util")
+    compile "org.reflections:reflections:0.9.9-RC1"
 }

@@ -120,7 +120,7 @@ public class UsageRegistry {
             int num = dumpCount.incrementAndGet();
             Date dumpedAt = new Date();
 
-            out.printf("# Duck usage results #%d for %s at %s:%n", num, config.getAppName(), dumpedAt);
+            out.printf("# Duck usage results #%d for '%s' at %s:%n", num, config.getAppName(), dumpedAt);
 
             // Only iterate over trackedMethods once, it could be updated anytime
             List<Usage> usages = new ArrayList<Usage>(trackedMethods.values());
@@ -145,7 +145,8 @@ public class UsageRegistry {
                 }
             }
             long elapsed = System.currentTimeMillis() - startedAt;
-            out.printf("# Dump #%d at %s took %d ms, unused methods: %d, used methods: %d%n", num, dumpedAt, elapsed, unused, used);
+            out.printf("# Dump #%d for '%s' at %s took %d ms, unused methods: %d, used methods: %d%n", num, config.getAppName(), dumpedAt,
+                       elapsed, unused, used);
 
             out.flush();
             out.close();
@@ -154,6 +155,7 @@ public class UsageRegistry {
                 System.err.printf("%s: Could not rename %s to %sms%n", MY_NAME, tmpFile.getAbsolutePath(),
                                   config.getDataFile().getAbsolutePath());
             }
+            System.err.printf("%s: Dumping usage data #%d to %s%n", MY_NAME, num, config.getDataFile().toURI());
 
         } catch (IOException e) {
             e.printStackTrace(System.err);
