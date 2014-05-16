@@ -12,8 +12,9 @@ targetCompatibility = 1.5
 version = 1.0
 
 dependencies {
+    compile project(":duck-util")
     compile "org.aspectj:aspectjweaver:1.8.0"
-    compile 'org.reflections:reflections:0.9.9-RC1'
+    compile "org.reflections:reflections:0.9.9-RC1"
 }
 
 jar {

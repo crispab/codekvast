@@ -1,5 +1,6 @@
 package duck.spike.sensor;
 
+import duck.spike.util.Configuration;
 import org.aspectj.bridge.Constants;
 import org.aspectj.weaver.loadtime.Agent;
 
@@ -10,8 +11,6 @@ import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * This is a Java agent that hooks up Duck to the app.
@@ -19,7 +18,7 @@ import java.util.regex.Pattern;
  * Usage:
  * Add the following option to the Java command line:
  * <pre><code>
- *    -javaagent:/path/to/duck-sensor-n.n-shadow.jar=packagePrefix=com.acme
+ *    -javaagent:/path/to/duck-sensor-n.n-shadow.jar=path/to/duck.config
  * </code></pre>
  *
  * @author Olle Hallin
@@ -36,26 +35,23 @@ public class DuckSensor {
      * This method is invoked by the JVM as part of the bootstrapping
      */
     public static void premain(String args, Instrumentation inst) throws IOException {
-        String packagePrefix = parsePackagePrefix(args);
-        File outputFile = parseOutputFile(args);
+        Configuration config = Configuration.parseConfigFile(args);
 
-        UsageRegistry.initialize(packagePrefix, outputFile);
-
-        loadAspectjWeaver(args, inst, packagePrefix);
-
-        createUsageDumpers(parseDumpIntervalSeconds(args));
+        UsageRegistry.initialize(config);
+        loadAspectjWeaver(args, inst, config.getPackagePrefix());
+        createUsageDumpers(config.getDumpIntervalSeconds());
 
         System.err.printf("%s is ready to detect useless code within(%s..*)%n" +
                                   "Now handing over to main()%n" +
                                   "--------------------------------------------------------------%n",
-                          MY_SIMPLE_NAME, packagePrefix
+                          MY_SIMPLE_NAME, config.getPackagePrefix()
         );
     }
 
     private static void createUsageDumpers(int dumpIntervalSeconds) throws IOException {
         UsageDumper usageDumper = new UsageDumper();
 
-        Timer timer = new Timer("Duck usage dumper", true);
+        Timer timer = new Timer("Duck Sensor", true);
 
         long dumpDelayMillis = dumpIntervalSeconds * 1000L;
         timer.scheduleAtFixedRate(usageDumper, dumpDelayMillis, dumpDelayMillis);
@@ -107,7 +103,7 @@ public class DuckSensor {
         );
 
         try {
-            File file = File.createTempFile("aop-duck", ".xml");
+            File file = File.createTempFile("duck-sensor", ".xml");
             BufferedWriter writer = new BufferedWriter(new FileWriter(file));
             writer.write(xml);
             writer.close();
@@ -118,32 +114,8 @@ public class DuckSensor {
         }
     }
 
-    private static String parsePackagePrefix(CharSequence args) {
-        Pattern pattern = Pattern.compile(".*packagePrefix=([^,]+).*");
-        Matcher matcher = pattern.matcher(args);
-        if (!matcher.matches()) {
-            throw new IllegalArgumentException("Usage: javaagent:/path/to/duck-sensor.jar=packagePrefix=<package>");
-        }
-        return matcher.group(1);
-    }
-
-    private static int parseDumpIntervalSeconds(CharSequence args) {
-        Pattern pattern = Pattern.compile(".*dumpIntervalSeconds=([\\d]+).*");
-        Matcher matcher = pattern.matcher(args);
-        String result = matcher.matches() ? matcher.group(1) : "600";
-        System.err.printf("Will dump usage data every %s seconds%n", result);
-        return Integer.parseInt(result);
-    }
-
-    private static File parseOutputFile(String args) {
-        Pattern pattern = Pattern.compile(".*outputFile=([^,]+).*");
-        Matcher matcher = pattern.matcher(args);
-        File result = matcher.matches() ? new File(matcher.group(1)) : new File("duck-data.txt");
-        System.err.printf("Will dump usage data to %s%n", result.getAbsolutePath());
-        return result;
-    }
-
     private static class UsageDumper extends TimerTask {
+        @Override
         public void run() {
             UsageRegistry.dumpCodeUsage();
         }

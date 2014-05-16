@@ -1,5 +1,6 @@
 package duck.spike.sensor;
 
+import duck.spike.util.Configuration;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.aspectj.runtime.reflect.Factory;
@@ -52,23 +53,21 @@ public class UsageRegistry {
         // Utility class with only static methods
     }
 
-    private static String packagePrefix;
-    private static File outputFile;
+    private static Configuration config;
     private static ConcurrentMap<String, Usage> trackedMethods = new ConcurrentHashMap<String, Usage>();
     private static AtomicBoolean classpathScanned = new AtomicBoolean(false);
     private static AtomicInteger dumpCount = new AtomicInteger();
 
-    public static void initialize(String packagePrefix, File outputFile) {
-        UsageRegistry.packagePrefix = packagePrefix;
-        UsageRegistry.outputFile = outputFile;
+    public static void initialize(Configuration config) {
+        UsageRegistry.config = config;
 
-        File parent = outputFile.getParentFile();
+        File parent = config.getDataFile().getParentFile();
         if (parent != null && !parent.exists()) {
             parent.mkdirs();
         }
-        if (outputFile.exists()) {
+        if (config.getDataFile().exists()) {
             // Continue from previous JVM run...
-            initializeTrackedMethodsFrom(outputFile);
+            initializeTrackedMethodsFrom(config.getDataFile());
         }
     }
 
@@ -115,13 +114,13 @@ public class UsageRegistry {
         try {
             long startedAt = System.currentTimeMillis();
 
-            File tmpFile = File.createTempFile("duck", ".tmp", outputFile.getAbsoluteFile().getParentFile());
+            File tmpFile = File.createTempFile("duck", ".tmp", config.getDataFile().getAbsoluteFile().getParentFile());
 
             PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(tmpFile)));
             int num = dumpCount.incrementAndGet();
             Date dumpedAt = new Date();
 
-            out.printf("# Duck usage results #%d at %s:%n", num, dumpedAt);
+            out.printf("# Duck usage results #%d for %s at %s:%n", num, config.getAppName(), dumpedAt);
 
             // Only iterate over trackedMethods once, it could be updated anytime
             List<Usage> usages = new ArrayList<Usage>(trackedMethods.values());
@@ -151,9 +150,9 @@ public class UsageRegistry {
             out.flush();
             out.close();
 
-            if (!tmpFile.renameTo(outputFile)) {
+            if (!tmpFile.renameTo(config.getDataFile())) {
                 System.err.printf("%s: Could not rename %s to %sms%n", MY_NAME, tmpFile.getAbsolutePath(),
-                                  outputFile.getAbsolutePath());
+                                  config.getDataFile().getAbsolutePath());
             }
 
         } catch (IOException e) {
@@ -170,7 +169,7 @@ public class UsageRegistry {
 
         long startedAt = System.currentTimeMillis();
 
-        Reflections reflections = new Reflections(ClasspathHelper.forPackage(packagePrefix), new SubTypesScanner(false));
+        Reflections reflections = new Reflections(ClasspathHelper.forPackage(config.getPackagePrefix()), new SubTypesScanner(false));
 
         int count = 0;
         for (Class<?> clazz : reflections.getSubTypesOf(Object.class)) {
@@ -189,7 +188,7 @@ public class UsageRegistry {
         }
 
         System.err.printf("%s: Classpath with package prefix '%s' scanned in %d ms, found %d methods.%n",
-                          MY_NAME, packagePrefix, System.currentTimeMillis() - startedAt, count);
+                          MY_NAME, config.getPackagePrefix(), System.currentTimeMillis() - startedAt, count);
     }
 
 }
