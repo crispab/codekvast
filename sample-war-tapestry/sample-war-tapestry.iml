@@ -3,12 +3,12 @@
   <component name="FacetManager">
     <facet type="tapestry" name="Tapestry">
       <configuration>
-        <setting name="filterName" value="sample-war" />
+        <setting name="filterName" value="sample-war-tapestry" />
         <setting name="applicationPackage" value="" />
         <setting name="version" value="5.3.6" />
       </configuration>
     </facet>
-    <facet type="web" name="Web Gradle : sample-war-1.0.war">
+    <facet type="web" name="Web Gradle : sample-war-tapestry-1.0.war">
       <configuration>
         <descriptors>
           <deploymentDescriptor name="web.xml" url="$MODULE_DIR$/src/main/webapp/WEB-INF/web.xml" />

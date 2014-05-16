@@ -4,8 +4,9 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/duck.iml" filepath="$PROJECT_DIR$/duck.iml" />
       <module fileurl="file://$PROJECT_DIR$/duck-agent/duck-agent.iml" filepath="$PROJECT_DIR$/duck-agent/duck-agent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/duck-sensor/duck-sensor.iml" filepath="$PROJECT_DIR$/duck-sensor/duck-sensor.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample-app/sample-app.iml" filepath="$PROJECT_DIR$/sample-app/sample-app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/sample-war/sample-war.iml" filepath="$PROJECT_DIR$/sample-war/sample-war.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sample-war-tapestry/sample-war-tapestry.iml" filepath="$PROJECT_DIR$/sample-war-tapestry/sample-war-tapestry.iml" />
     </modules>
   </component>
 </project>
