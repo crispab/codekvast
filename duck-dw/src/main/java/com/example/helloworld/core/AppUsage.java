@@ -24,6 +24,9 @@ public class AppUsage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column( name = "hostName", nullable = false)
+    private String hostName;
+
     @Column(name = "appName", nullable = false)
     private String appName;
 
