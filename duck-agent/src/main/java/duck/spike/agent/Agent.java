@@ -4,14 +4,14 @@ package duck.spike.agent;
 import duck.spike.util.AspectjUtils;
 import duck.spike.util.Configuration;
 import duck.spike.util.Usage;
-import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.Value;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -23,27 +23,30 @@ import java.util.TimerTask;
 /**
  * @author Olle Hallin
  */
-@Value
-@EqualsAndHashCode(callSuper = false)
+@RequiredArgsConstructor
 public class Agent extends TimerTask {
-    private static final String MY_NAME = Agent.class.getSimpleName();
-
     private final Configuration config;
-    private final Timer timer = new Timer(MY_NAME, false);
+    private final Timer timer = new Timer(getClass().getSimpleName(), false);
     private final Map<String, Usage> usages = new HashMap<>();
+
+    private long dataFileModifiedAt;
 
     private void start() {
         long intervalMillis = config.getWarehouseUploadIntervalSeconds() * 1000L;
         scanCodeBase();
         timer.scheduleAtFixedRate(this, intervalMillis, intervalMillis);
-        System.out.printf("%s started, config=%s%n", MY_NAME, config);
+        System.out.printf("Started, config=%s%n", config);
     }
 
     @Override
     public void run() {
-        Usage.readUsagesFromFile(usages, config.getDataFile());
-        System.out.printf("%s: Uploading usage data for %d methods from %s... in %s to %s%n", MY_NAME, usages.size(),
-                          config.getPackagePrefix(), config.getAppName(), config.getWarehouseUri());
+        long modifiedAt = config.getDataFile().lastModified();
+        if (modifiedAt != dataFileModifiedAt) {
+            Usage.readUsagesFromFile(usages, config.getDataFile());
+            System.out.printf("Posting usage data for %d methods in %s to %s%n", usages.size(),
+                              config.getAppName(), config.getWarehouseUri());
+            dataFileModifiedAt = modifiedAt;
+        }
     }
 
     @SneakyThrows(MalformedURLException.class)
@@ -61,7 +64,7 @@ public class Agent extends TimerTask {
         int count = 0;
         for (Class<?> clazz : reflections.getSubTypesOf(Object.class)) {
             for (Method method : clazz.getDeclaredMethods()) {
-                if (!method.isSynthetic()) {
+                if (Modifier.isPublic(method.getModifiers()) && !method.isSynthetic()) {
                     MethodSignature signature = AspectjUtils.getMethodSignature(clazz, method);
 
 
@@ -72,8 +75,8 @@ public class Agent extends TimerTask {
             }
         }
 
-        System.err.printf("%s: Code base %s with package prefix '%s' scanned in %d ms, found %d methods.%n",
-                          MY_NAME, config.getCodeBaseUri(), config.getPackagePrefix(), System.currentTimeMillis() - startedAt, count);
+        System.out.printf("Code base %s with package prefix '%s' scanned in %d ms, found %d methods.%n",
+                          config.getCodeBaseUri(), config.getPackagePrefix(), System.currentTimeMillis() - startedAt, count);
     }
 
     public static void main(String[] args) {

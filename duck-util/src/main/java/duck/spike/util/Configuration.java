@@ -33,7 +33,7 @@ public class Configuration {
 
         return Configuration.builder()
                             .appName("Crisp Sample App")
-                            .codeBaseUri(new URI("file:../sample-app/build/libs/sample-app.jar"))
+                            .codeBaseUri(new URI("jar:file:../sample-app/build/libs/sample-app.jar!/"))
                             .packagePrefix("se.crisp")
                             .sensorDumpIntervalSeconds(10)
                             .dataPath(new File(System.getProperty("java.io.tmpdir"), "duck"))
