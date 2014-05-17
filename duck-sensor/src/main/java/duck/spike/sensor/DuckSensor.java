@@ -23,6 +23,7 @@ import java.util.TimerTask;
  *
  * @author Olle Hallin
  */
+@SuppressWarnings({"UseOfSystemOutOrSystemErr", "FeatureEnvy"})
 public class DuckSensor {
 
     private static final String MY_SIMPLE_NAME = DuckSensor.class.getSimpleName();
@@ -39,26 +40,22 @@ public class DuckSensor {
 
         UsageRegistry.initialize(config);
         loadAspectjWeaver(args, inst, config.getPackagePrefix());
-        createUsageDumpers(config.getSensorDumpIntervalSeconds());
+        createTimerTask(config.getSensorDumpIntervalSeconds());
 
-        System.err.printf("%s is ready to detect useless code within(%s..*)%n" +
-                                  "Now handing over to main()%n" +
+        System.err.printf("%s is ready to detect used code within(%s..*)%n" +
                                   "--------------------------------------------------------------%n",
                           MY_SIMPLE_NAME, config.getPackagePrefix()
         );
     }
 
-    private static void createUsageDumpers(int dumpIntervalSeconds) throws IOException {
-        UsageDumper usageDumper = new UsageDumper();
+    private static void createTimerTask(int dumpIntervalSeconds) throws IOException {
+        UsageDumpingTimerTask timerTask = new UsageDumpingTimerTask();
 
+        long delayMillis = dumpIntervalSeconds * 1000L;
         Timer timer = new Timer("Duck Sensor", true);
+        timer.scheduleAtFixedRate(timerTask, delayMillis, delayMillis);
 
-        long dumpDelayMillis = dumpIntervalSeconds * 1000L;
-        timer.scheduleAtFixedRate(usageDumper, dumpDelayMillis, dumpDelayMillis);
-
-        Thread shutdownHook = new Thread(usageDumper);
-        shutdownHook.setName("Duck shutdown hook");
-        Runtime.getRuntime().addShutdownHook(shutdownHook);
+        Runtime.getRuntime().addShutdownHook(new Thread(timerTask, "Duck shutdown hook"));
     }
 
     private static void loadAspectjWeaver(String args, Instrumentation inst, String packagePrefix) {
@@ -114,10 +111,10 @@ public class DuckSensor {
         }
     }
 
-    private static class UsageDumper extends TimerTask {
+    private static class UsageDumpingTimerTask extends TimerTask {
         @Override
         public void run() {
-            UsageRegistry.dumpCodeUsage();
+            UsageRegistry.instance.dumpDataToDisk();
         }
     }
 }

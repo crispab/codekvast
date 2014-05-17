@@ -15,6 +15,7 @@ import java.net.URISyntaxException;
 @Builder
 public class Configuration {
     private final String appName;
+    private final String environment;
     private final URI codeBaseUri;
     private final String packagePrefix;
     private final File dataPath;
@@ -23,7 +24,11 @@ public class Configuration {
     private final URI warehouseUri;
 
     public File getDataFile() {
-        return new File(dataPath, "usage.txt");
+        return new File(dataPath, "usage.dat");
+    }
+
+    public File getSensorFile() {
+        return new File(dataPath, "sensor.properties");
     }
 
     @SneakyThrows(URISyntaxException.class)
@@ -36,8 +41,10 @@ public class Configuration {
         if (pos > 0) {
             userDir = userDir.substring(0, pos);
         }
+
         return Configuration.builder()
                             .appName("Crisp Sample App")
+                            .environment("Development environment")
                             .codeBaseUri(new URI(String.format("file:%s/sample-app/build/libs/sample-app.jar", userDir)))
                             .packagePrefix("se.crisp")
                             .sensorDumpIntervalSeconds(10)

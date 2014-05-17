@@ -2,100 +2,146 @@ package duck.spike.sensor;
 
 import duck.spike.util.AspectjUtils;
 import duck.spike.util.Configuration;
+import duck.spike.util.SensorRun;
 import duck.spike.util.Usage;
 import org.aspectj.lang.Signature;
 
 import java.io.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Olle Hallin
  */
+@SuppressWarnings({"UseOfSystemOutOrSystemErr", "Singleton", "FeatureEnvy"})
 public class UsageRegistry {
 
-    private static final String MY_NAME = UsageRegistry.class.getName();
+    private static final String MY_NAME = UsageRegistry.class.getSimpleName();
 
-    private UsageRegistry() {
-        // Utility class with only static methods
-    }
+    public static UsageRegistry instance;
 
-    private static Configuration config;
-    private static ConcurrentMap<String, Usage> trackedMethods = new ConcurrentHashMap<String, Usage>();
-    private static AtomicBoolean classpathScanned = new AtomicBoolean(false);
-    private static AtomicInteger dumpCount = new AtomicInteger();
+    private final Configuration config;
+    private final SensorRun sensorRun;
 
-    public static void initialize(Configuration config) {
-        UsageRegistry.config = config;
+    private final ConcurrentMap<String, Usage> usages = new ConcurrentHashMap<String, Usage>();
+    private int dumpCount = 0;
+
+    private UsageRegistry(Configuration config, SensorRun sensorRun) {
+        this.config = config;
+        this.sensorRun = sensorRun;
 
         File parent = config.getDataFile().getParentFile();
         if (parent != null && !parent.exists()) {
             parent.mkdirs();
         }
-        if (config.getDataFile().exists()) {
-            // Continue from previous JVM run...
-            System.err.printf("%s: Found %s, will continue from that%n", UsageRegistry.MY_NAME, config.getDataFile().getAbsolutePath());
-            Usage.readUsagesFromFile(trackedMethods, config.getDataFile());
+    }
+
+    public static void initialize(Configuration config) {
+        UsageRegistry.instance = new UsageRegistry(config,
+                                                   SensorRun.builder()
+                                                            .hostName(getHostName())
+                                                            .appName(config.getAppName())
+                                                            .environment(config.getEnvironment())
+                                                            .uuid(UUID.randomUUID())
+                                                            .startedAtMillis(System.currentTimeMillis())
+                                                            .build()
+        );
+    }
+
+    private static String getHostName() {
+        try {
+            return InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            System.err.println("Cannot get local hostname: " + e);
+            return "-- unknown --";
         }
     }
 
     /**
      * This method is invoked by {@link duck.spike.sensor.AbstractDuckAspect#recordMethodCall(org.aspectj.lang.JoinPoint)}.
-     * It will exclude a certain type and method from being reported as useless.
+     * It will exclude a certain method from being reported as useless.
      * <p/>
      * Thread-safe.
      */
-    public static void registerMethodExecution(Signature signature) {
-        Usage usage = new Usage(AspectjUtils.makeMethodKey(signature), System.currentTimeMillis());
-        trackedMethods.put(usage.getSignature(), usage);
+    public void registerMethodExecution(Signature signature) {
+        String sig = AspectjUtils.makeMethodKey(signature);
+        usages.put(sig, new Usage(sig, System.currentTimeMillis()));
     }
 
     /**
-     * Dumps method usage in outputFile
+     * Dumps method usage to a file on disk.
      * <p/>
      * Thread-safe.
      */
-    public static void dumpCodeUsage() {
-        try {
-            long startedAt = System.currentTimeMillis();
+    public synchronized void dumpDataToDisk() {
+        instance.dumpSensorRun();
+        instance.dumpUsageData();
+    }
 
-            File tmpFile = File.createTempFile("duck", ".tmp", config.getDataFile().getAbsoluteFile().getParentFile());
+    private void dumpSensorRun() {
+        File file = config.getSensorFile();
+        sensorRun.setOutputAtMillis(System.currentTimeMillis());
+
+        try {
+            File tmpFile = File.createTempFile("duck", ".tmp", file.getAbsoluteFile().getParentFile());
+
+            sensorRun.saveTo(tmpFile);
+
+            renameFile(tmpFile, file);
+        } catch (IOException e) {
+            System.err.println("Cannot save " + file + ": " + e);
+        }
+    }
+
+    private void dumpUsageData() {
+        dumpCount += 1;
+        long startedAt = System.currentTimeMillis();
+        File file = config.getDataFile();
+
+        try {
+            File tmpFile = File.createTempFile("duck", ".tmp", file.getAbsoluteFile().getParentFile());
 
             PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(tmpFile)));
-            int num = dumpCount.incrementAndGet();
+            System.err.printf(Locale.ENGLISH, "%s: Dumping usage data #%d to %s%n", MY_NAME, dumpCount, file.toURI());
+
             Date dumpedAt = new Date();
 
-            out.printf("# Duck usage results #%d for '%s' at %s:%n", num, config.getAppName(), dumpedAt);
+            out.printf(Locale.ENGLISH, "# Duck usage results #%d for '%s' at %s%n", dumpCount, config.getAppName(), dumpedAt);
+            out.printf(Locale.ENGLISH, "# lastUsedMillis:signature%n");
 
-            // Only iterate over trackedMethods once, it could be updated anytime
-            List<Usage> usages = new ArrayList<Usage>(trackedMethods.values());
+            // Only iterate over trackedMethods once
+            Iterable<Usage> usages = new ArrayList<Usage>(this.usages.values());
 
-            out.println("# lastUsedMillis signature");
             int count = 0;
             for (Usage usage : usages) {
-                    out.println(usage);
+                out.println(usage);
                 count += 1;
             }
             long elapsed = System.currentTimeMillis() - startedAt;
-            out.printf("# Dump #%d for '%s' at %s took %d ms, number of methods: %d%n", num, config.getAppName(), dumpedAt,
+            out.printf(Locale.ENGLISH, "# Dump #%d for '%s' at %s took %d ms, number of methods: %d%n", dumpCount, config.getAppName(),
+                       dumpedAt,
                        elapsed, count);
 
             out.flush();
             out.close();
 
-            if (!tmpFile.renameTo(config.getDataFile())) {
-                System.err.printf("%s: Could not rename %s to %sms%n", MY_NAME, tmpFile.getAbsolutePath(),
-                                  config.getDataFile().getAbsolutePath());
-            }
-            System.err.printf("%s: Dumping usage data #%d to %s%n", MY_NAME, num, config.getDataFile().toURI());
-
+            renameFile(tmpFile, file);
         } catch (IOException e) {
-            e.printStackTrace(System.err);
+            System.err.println("Cannot dump usage data to " + file + ": " + e);
+        }
+    }
+
+    private void renameFile(File from, File to) {
+        if (!from.renameTo(to)) {
+            System.err.printf(Locale.ENGLISH, "%s: Could not rename %s to %s%n", MY_NAME, from.getAbsolutePath(),
+                              to.getAbsolutePath());
+            from.delete();
         }
     }
 

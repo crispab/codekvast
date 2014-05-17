@@ -17,15 +17,15 @@ import org.aspectj.lang.annotation.Pointcut;
 public abstract class AbstractDuckAspect {
 
     /**
-     * This abstract pointcut specifies the scope for what dead code to detect.
+     * This abstract pointcut specifies the scope for what method executions to detect.
      * <p/>
-     * It is concreted in an XML file, which is created on-the-fly by {@link DuckSensor} before delegating
-     * to the AspectJ load-time weaving agent.
+     * It is concreted in an XML file, which is created on-the-fly by {@link DuckSensor} before loading
+     * the AspectJ load-time weaving agent.
      */
     @Pointcut
     public abstract void scope();
 
-    @Pointcut("execution(* *..*(..))")
+    @Pointcut("execution(public * *..*(..))")
     private void methodExecution() {
     }
 
@@ -36,7 +36,7 @@ public abstract class AbstractDuckAspect {
      */
     @Before("scope() && methodExecution()")
     public void recordMethodCall(JoinPoint jp) {
-        UsageRegistry.registerMethodExecution(jp.getSignature());
+        UsageRegistry.instance.registerMethodExecution(jp.getSignature());
     }
 
 }
