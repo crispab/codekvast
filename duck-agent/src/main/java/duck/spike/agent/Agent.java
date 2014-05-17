@@ -10,6 +10,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
@@ -43,7 +44,20 @@ public class Agent extends TimerTask {
         long modifiedAt = config.getDataFile().lastModified();
         if (modifiedAt != dataFileModifiedAt) {
             Usage.readUsagesFromFile(usages, config.getDataFile());
-            System.out.printf("Posting usage data for %d methods in %s to %s%n", usages.size(),
+
+            int unused = 0;
+            int used = 0;
+
+            for (Usage usage : usages.values()) {
+                if (usage.getUsedAtMillis() == 0L) {
+                    unused += 1;
+                }
+                if (usage.getUsedAtMillis() != 0L) {
+                    used += 1;
+                }
+            }
+
+            System.out.printf("Posting usage data for %d unused and %d used methods in %s to %s%n", unused, used,
                               config.getAppName(), config.getWarehouseUri());
             dataFileModifiedAt = modifiedAt;
         }
@@ -52,9 +66,12 @@ public class Agent extends TimerTask {
     @SneakyThrows(MalformedURLException.class)
     private void scanCodeBase() {
 
+        File codeBase = new File(config.getCodeBaseUri());
+        assert codeBase.exists();
+
         long startedAt = System.currentTimeMillis();
 
-        URLClassLoader appClassLoader = new URLClassLoader(new URL[]{config.getCodeBaseUri().toURL()}, System.class.getClassLoader());
+        URLClassLoader appClassLoader = new URLClassLoader(new URL[]{codeBase.toURI().toURL()}, System.class.getClassLoader());
 
         Reflections reflections = new Reflections(
                 config.getPackagePrefix(),
@@ -67,10 +84,10 @@ public class Agent extends TimerTask {
                 if (Modifier.isPublic(method.getModifiers()) && !method.isSynthetic()) {
                     MethodSignature signature = AspectjUtils.getMethodSignature(clazz, method);
 
-
                     Usage usage = new Usage(AspectjUtils.makeMethodKey(signature), 0L);
                     usages.put(usage.getSignature(), usage);
                     count += 1;
+                    System.out.printf("  Found %s%n", usage.getSignature());
                 }
             }
         }

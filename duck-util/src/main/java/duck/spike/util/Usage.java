@@ -1,6 +1,5 @@
 package duck.spike.util;
 
-import lombok.SneakyThrows;
 import lombok.Value;
 
 import java.io.*;
@@ -28,15 +27,19 @@ public class Usage {
         return String.format("%14d:%s", usedAtMillis, signature);
     }
 
-    @SneakyThrows(IOException.class)
     public static void readUsagesFromFile(Map<String, Usage> usages, File file) {
-        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-        String line;
-        while ((line = in.readLine()) != null) {
-            Usage usage = parse(line);
-            if (usage != null) {
-                usages.put(usage.getSignature(), usage);
+        try {
+            BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+            String line;
+            while ((line = in.readLine()) != null) {
+                Usage usage = parse(line);
+                if (usage != null) {
+                    // Replace whatever usage was there
+                    usages.put(usage.getSignature(), usage);
+                }
             }
+        } catch (IOException ignore) {
+            // ignore
         }
     }
 

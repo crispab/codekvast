@@ -13,7 +13,6 @@ version = 1.0
 dependencies {
     compile project(":duck-util")
     compile "org.aspectj:aspectjweaver:1.8.0"
-    compile "org.reflections:reflections:0.9.9-RC1"
 }
 
 jar {
@@ -24,3 +23,6 @@ jar {
 
 // Make a shadow jar consisting of duck-sensor and it's dependencies...
 assemble.dependsOn shadowJar
+
+// TODO: exclude lombok from shadow jar
+

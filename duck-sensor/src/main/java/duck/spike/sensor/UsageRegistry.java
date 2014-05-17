@@ -4,13 +4,8 @@ import duck.spike.util.AspectjUtils;
 import duck.spike.util.Configuration;
 import duck.spike.util.Usage;
 import org.aspectj.lang.Signature;
-import org.aspectj.lang.reflect.MethodSignature;
-import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
-import org.reflections.util.ClasspathHelper;
 
 import java.io.*;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -66,8 +61,6 @@ public class UsageRegistry {
      * Thread-safe.
      */
     public static void dumpCodeUsage() {
-        detectUnusedMethods();
-
         try {
             long startedAt = System.currentTimeMillis();
 
@@ -83,27 +76,14 @@ public class UsageRegistry {
             List<Usage> usages = new ArrayList<Usage>(trackedMethods.values());
 
             out.println("# lastUsedMillis signature");
-
-            out.println("# Unused methods:");
-            int unused = 0;
+            int count = 0;
             for (Usage usage : usages) {
-                if (usage.getUsedAtMillis() == 0L) {
                     out.println(usage);
-                    unused += 1;
-                }
-            }
-
-            out.println("# Used methods:");
-            int used = 0;
-            for (Usage usage : usages) {
-                if (usage.getUsedAtMillis() > 0L) {
-                    out.println(usage);
-                    used += 1;
-                }
+                count += 1;
             }
             long elapsed = System.currentTimeMillis() - startedAt;
-            out.printf("# Dump #%d for '%s' at %s took %d ms, unused methods: %d, used methods: %d%n", num, config.getAppName(), dumpedAt,
-                       elapsed, unused, used);
+            out.printf("# Dump #%d for '%s' at %s took %d ms, number of methods: %d%n", num, config.getAppName(), dumpedAt,
+                       elapsed, count);
 
             out.flush();
             out.close();
@@ -117,35 +97,6 @@ public class UsageRegistry {
         } catch (IOException e) {
             e.printStackTrace(System.err);
         }
-    }
-
-    private static void detectUnusedMethods() {
-
-        if (classpathScanned.getAndSet(true)) {
-            // classpath was already scanned
-            return;
-        }
-
-        long startedAt = System.currentTimeMillis();
-
-        Reflections reflections = new Reflections(ClasspathHelper.forPackage(config.getPackagePrefix()), new SubTypesScanner(false));
-
-        int count = 0;
-        for (Class<?> clazz : reflections.getSubTypesOf(Object.class)) {
-            for (Method method : clazz.getDeclaredMethods()) {
-                if (!method.isSynthetic()) {
-                    MethodSignature signature = AspectjUtils.getMethodSignature(clazz, method);
-
-
-                    Usage usage = new Usage(AspectjUtils.makeMethodKey(signature), 0L);
-                    trackedMethods.putIfAbsent(usage.getSignature(), usage);
-                    count += 1;
-                }
-            }
-        }
-
-        System.err.printf("%s: Classpath with package prefix '%s' scanned in %d ms, found %d methods.%n",
-                          MY_NAME, config.getPackagePrefix(), System.currentTimeMillis() - startedAt, count);
     }
 
 }

@@ -23,7 +23,7 @@ public class Configuration {
     private final URI warehouseUri;
 
     public File getDataFile() {
-        return new File(dataPath, "duck-usage.txt");
+        return new File(dataPath, "usage.txt");
     }
 
     @SneakyThrows(URISyntaxException.class)
@@ -31,9 +31,14 @@ public class Configuration {
 
         // TODO: read properties from configFile
 
+        String userDir = System.getProperty("user.dir");
+        int pos = userDir.indexOf("/duck-agent");
+        if (pos > 0) {
+            userDir = userDir.substring(0, pos);
+        }
         return Configuration.builder()
                             .appName("Crisp Sample App")
-                            .codeBaseUri(new URI("jar:file:../sample-app/build/libs/sample-app.jar!/"))
+                            .codeBaseUri(new URI(String.format("file:%s/sample-app/build/libs/sample-app.jar", userDir)))
                             .packagePrefix("se.crisp")
                             .sensorDumpIntervalSeconds(10)
                             .dataPath(new File(System.getProperty("java.io.tmpdir"), "duck"))
