@@ -33,9 +33,12 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        <rollback>
-            <dropTable tableName="appusage"/>
-        </rollback>
+    </changeSet>
+
+    <changeSet id="3" author="maxwenzin">
+        <addColumn tableName="appusage">
+            <column name="hostName" type="varchar(255)"/>
+        </addColumn>
     </changeSet>
 
 </databaseChangeLog>
