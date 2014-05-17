@@ -5,7 +5,7 @@ sourceCompatibility = 1.7
 targetCompatibility = 1.7
 version = '1.0'
 
-mainClassName = "duck.spike.agent.AgentMain"
+mainClassName = "duck.spike.agent.Agent"
 
 repositories { jcenter() }
 

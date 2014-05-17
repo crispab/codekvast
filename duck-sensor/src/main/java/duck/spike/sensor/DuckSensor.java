@@ -39,7 +39,7 @@ public class DuckSensor {
 
         UsageRegistry.initialize(config);
         loadAspectjWeaver(args, inst, config.getPackagePrefix());
-        createUsageDumpers(config.getDumpIntervalSeconds());
+        createUsageDumpers(config.getSensorDumpIntervalSeconds());
 
         System.err.printf("%s is ready to detect useless code within(%s..*)%n" +
                                   "Now handing over to main()%n" +
