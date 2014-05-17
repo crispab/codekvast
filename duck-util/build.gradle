@@ -3,9 +3,7 @@ apply plugin: 'java'
 sourceCompatibility = 1.6
 version = '1.0'
 
-repositories {
-    mavenCentral()
-}
+repositories { jcenter() }
 
 dependencies {
     compile "org.projectlombok:lombok:1.12.6"

@@ -9,8 +9,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
-* @author Olle Hallin
-*/
+ * @author Olle Hallin
+ */
 @Value
 public class Usage {
     private final static Pattern PATTERN = Pattern.compile("^\\s*([\\d]+):(.*)");
@@ -29,7 +29,7 @@ public class Usage {
     }
 
     @SneakyThrows(IOException.class)
-    public static void initializeUsagesFrom(Map<String, Usage> usages, File file) {
+    public static void readUsagesFromFile(Map<String, Usage> usages, File file) {
         BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
         String line;
         while ((line = in.readLine()) != null) {

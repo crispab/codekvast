@@ -45,7 +45,7 @@ public class UsageRegistry {
         if (config.getDataFile().exists()) {
             // Continue from previous JVM run...
             System.err.printf("%s: Found %s, will continue from that%n", UsageRegistry.MY_NAME, config.getDataFile().getAbsolutePath());
-            Usage.initializeUsagesFrom(trackedMethods, config.getDataFile());
+            Usage.readUsagesFromFile(trackedMethods, config.getDataFile());
         }
     }
 

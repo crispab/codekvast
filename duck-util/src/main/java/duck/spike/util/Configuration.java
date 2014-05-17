@@ -15,6 +15,7 @@ import java.net.URISyntaxException;
 @Builder
 public class Configuration {
     private final String appName;
+    private final URI codeBaseUri;
     private final String packagePrefix;
     private final File dataPath;
     private final int sensorDumpIntervalSeconds;
@@ -32,6 +33,7 @@ public class Configuration {
 
         return Configuration.builder()
                             .appName("Crisp Sample App")
+                            .codeBaseUri(new URI("file:../sample-app/build/libs/sample-app.jar"))
                             .packagePrefix("se.crisp")
                             .sensorDumpIntervalSeconds(10)
                             .dataPath(new File(System.getProperty("java.io.tmpdir"), "duck"))
