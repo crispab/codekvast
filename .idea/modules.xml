@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/duck.iml" filepath="$PROJECT_DIR$/duck.iml" />
       <module fileurl="file://$PROJECT_DIR$/duck-agent/duck-agent.iml" filepath="$PROJECT_DIR$/duck-agent/duck-agent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/duck-dw/duck-dw.iml" filepath="$PROJECT_DIR$/duck-dw/duck-dw.iml" />
       <module fileurl="file://$PROJECT_DIR$/duck-sensor/duck-sensor.iml" filepath="$PROJECT_DIR$/duck-sensor/duck-sensor.iml" />
       <module fileurl="file://$PROJECT_DIR$/duck-util/duck-util.iml" filepath="$PROJECT_DIR$/duck-util/duck-util.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample-app/sample-app.iml" filepath="$PROJECT_DIR$/sample-app/sample-app.iml" />
