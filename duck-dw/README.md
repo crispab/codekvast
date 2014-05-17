@@ -43,10 +43,10 @@ To test the example application run the following commands.
 
 * To hit the Hello World example (hit refresh a few times).
 
-	http://localhost:8080/hello-world
+	http://localhost:8180/hello-world
 
 * To post data into the application.
 
-	curl -H "Content-Type: application/json" -X POST -d '{"fullName":"Other Person","jobTitle":"Other Title"}' http://localhost:8080/people
+	curl -H "Content-Type: application/json" -X POST -d '{"fullName":"Other Person","jobTitle":"Other Title"}' http://localhost:8180/people
 	
-	open http://localhost:8080/people
+	open http://localhost:8180/people
