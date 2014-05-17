@@ -2,8 +2,10 @@ package com.example.helloworld;
 
 import com.example.helloworld.auth.ExampleAuthenticator;
 import com.example.helloworld.cli.RenderCommand;
+import com.example.helloworld.core.AppUsage;
 import com.example.helloworld.core.Person;
 import com.example.helloworld.core.Template;
+import com.example.helloworld.db.AppUsageDAO;
 import com.example.helloworld.db.PersonDAO;
 import com.example.helloworld.health.TemplateHealthCheck;
 import com.example.helloworld.resources.*;
@@ -30,6 +32,15 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
                 }
             };
 
+    // TODO: Fix ugly name and duplication
+    private final HibernateBundle<HelloWorldConfiguration> hibernateBundle2 =
+            new HibernateBundle<HelloWorldConfiguration>(AppUsage.class) {
+                @Override
+                public DataSourceFactory getDataSourceFactory(HelloWorldConfiguration configuration) {
+                    return configuration.getDataSourceFactory();
+                }
+            };
+
     @Override
     public String getName() {
         return "hello-world";
@@ -46,6 +57,7 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
             }
         });
         bootstrap.addBundle(hibernateBundle);
+        bootstrap.addBundle(hibernateBundle2);
         bootstrap.addBundle(new ViewBundle());
     }
 
@@ -53,6 +65,7 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
     public void run(HelloWorldConfiguration configuration,
                     Environment environment) throws ClassNotFoundException {
         final PersonDAO dao = new PersonDAO(hibernateBundle.getSessionFactory());
+        final AppUsageDAO appUsageDAO = new AppUsageDAO(hibernateBundle2.getSessionFactory());
         final Template template = configuration.buildTemplate();
 
         environment.healthChecks().register("template", new TemplateHealthCheck(template));
@@ -64,5 +77,6 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
         environment.jersey().register(new ProtectedResource());
         environment.jersey().register(new PeopleResource(dao));
         environment.jersey().register(new PersonResource(dao));
+        environment.jersey().register(new AppUsagesResource(appUsageDAO));
     }
 }
