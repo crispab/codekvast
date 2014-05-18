@@ -13,3 +13,5 @@ dependencies {
     compile project(":duck-util")
     compile "org.reflections:reflections:0.9.9-RC1"
 }
+
+run.args "$rootDir/duck-util/build/tmp/duck/duck.properties"

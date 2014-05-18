@@ -41,7 +41,7 @@ public class Agent extends TimerTask {
         timer = new Timer(getClass().getSimpleName(), false);
         long intervalMillis = config.getWarehouseUploadIntervalSeconds() * 1000L;
         timer.scheduleAtFixedRate(this, intervalMillis, intervalMillis);
-        System.out.printf("Started, config=%s%n", config);
+        System.out.printf("Started with %s%n", config);
     }
 
     @Override
@@ -101,13 +101,26 @@ public class Agent extends TimerTask {
         checkState(count > 0,
                    "Code base at " + codeBase + " does not contain any classes with package prefix " + config.getPackagePrefix());
 
-        System.out.printf("Code base %s with package prefix '%s' scanned in %d ms, found %d methods.%n",
+        System.out.printf("Code base at %s with package prefix '%s' scanned in %d ms, found %d public methods.%n",
                           config.getCodeBaseUri(), config.getPackagePrefix(), System.currentTimeMillis() - startedAt, count);
     }
 
     public static void main(String[] args) {
-        // TODO: get path to config file somehow
-        new Agent(Configuration.parseConfigFile("/path/to/duck.properties")).start();
+        if (args == null || args.length < 1) {
+            System.err.println("Usage: agent <path/to/duck.properties>");
+            System.exit(1);
+        }
+
+        Configuration config = null;
+
+        try {
+            config = Configuration.parseConfigFile(args[0]);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
+
+        new Agent(config).start();
     }
 
 }

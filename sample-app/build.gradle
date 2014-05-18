@@ -5,4 +5,7 @@ mainClassName = "se.crisp.app.SampleApp"
 
 sourceCompatibility = 1.6
 
-run.jvmArgs = ["-javaagent:$rootDir/duck-sensor/build/distributions/duck-sensor-1.0-shadow.jar=$projectDir/duck.properties"]
+run {
+    dependsOn = [":duck-sensor:assemble"]
+    jvmArgs = ["-javaagent:$rootDir/duck-sensor/build/distributions/duck-sensor-1.0-shadow.jar=$rootDir/duck-util/build/tmp/duck/duck.properties"]
+}

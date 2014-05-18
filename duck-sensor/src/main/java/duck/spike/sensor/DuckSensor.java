@@ -37,6 +37,7 @@ public class DuckSensor {
      */
     public static void premain(String args, Instrumentation inst) throws IOException {
         Configuration config = Configuration.parseConfigFile(args);
+        System.err.printf("%s initializes with %s%n", MY_SIMPLE_NAME, config);
 
         UsageRegistry.initialize(config);
         loadAspectjWeaver(args, inst, config.getPackagePrefix());
