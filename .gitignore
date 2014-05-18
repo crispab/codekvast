@@ -1,6 +1,5 @@
 build/**
 **/build/**
-**/*.iml
 **/target
 **/*.iml
 *.iml
