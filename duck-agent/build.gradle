@@ -2,16 +2,14 @@ apply plugin: 'java'
 apply plugin: 'application'
 
 sourceCompatibility = 1.7
-targetCompatibility = 1.7
-version = '1.0'
+version = duckVersion
 
 mainClassName = "duck.spike.agent.Agent"
-
-repositories { jcenter() }
 
 dependencies {
     compile project(":duck-util")
     compile "org.reflections:reflections:0.9.9-RC1"
 }
 
+// We sensor the Sample Crisp App by default...
 run.args "$rootDir/duck-util/build/tmp/duck/duck.properties"

@@ -1,18 +1,19 @@
 buildscript {
-    repositories { jcenter() }
     dependencies { classpath 'com.github.jengelman.gradle.plugins:shadow:0.8' }
 }
-repositories { jcenter() }
 
 apply plugin: 'java'
 apply plugin: 'shadow'
 
 sourceCompatibility = 1.6
-version = 1.0
+version = duckVersion
 
 dependencies {
     compile project(":duck-util")
-    compile "org.aspectj:aspectjweaver:1.8.0"
+
+    // Absolutely NO other compile or runtime dependencies are allowed here!
+    // All transitive compile and runtime dependencies will end up in the sensored app's system
+    // class path.
 }
 
 jar {
@@ -21,8 +22,14 @@ jar {
     }
 }
 
+// Exclude Lombok from the shadow jar. It is not needed in runtime, and we don't want to risk classpath
+// conflicts in the sensored app. (It also shaves off 1.1 MB from the resulting shadow jar.)
+shadow {
+    artifactSet {
+        exclude "org.projectlombok"
+    }
+}
+
 // Make a shadow jar consisting of duck-sensor and it's dependencies...
 assemble.dependsOn shadowJar
-
-// TODO: exclude lombok from shadow jar
 

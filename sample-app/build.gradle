@@ -7,5 +7,5 @@ sourceCompatibility = 1.6
 
 run {
     dependsOn = [":duck-sensor:assemble"]
-    jvmArgs = ["-javaagent:$rootDir/duck-sensor/build/distributions/duck-sensor-1.0-shadow.jar=$rootDir/duck-util/build/tmp/duck/duck.properties"]
+    jvmArgs = ["-javaagent:$rootDir/duck-sensor/build/distributions/duck-sensor-$duckVersion-shadow.jar=$rootDir/duck-util/build/tmp/duck/duck.properties"]
 }

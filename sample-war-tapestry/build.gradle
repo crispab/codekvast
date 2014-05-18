@@ -4,8 +4,6 @@ apply plugin: 'jetty'
 sourceCompatibility = 1.6
 version = '1.0'
 
-repositories { jcenter() }
-
 dependencies {
     compile "org.apache.tapestry:tapestry-core:5.3.6"
     runtime "ch.qos.logback:logback-core:1.1.2"
