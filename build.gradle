@@ -7,6 +7,8 @@ subprojects {
     repositories { jcenter() }
 
     ext {
-        duckVersion = '1.0'
+        duckVersion = "1.0"
+        aspectjVersion = "1.8.0"
+        lombokVersion = "1.12.6"
     }
 }

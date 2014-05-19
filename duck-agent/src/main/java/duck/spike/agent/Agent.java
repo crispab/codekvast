@@ -12,15 +12,13 @@ import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkState;
 
@@ -34,18 +32,23 @@ public class Agent extends TimerTask {
 
     private Timer timer;
     private long dataFileModifiedAtMillis;
+    private UUID lastSeenSensorUUID;
 
     private void start() {
-        scanCodeBase();
-
         timer = new Timer(getClass().getSimpleName(), false);
         long intervalMillis = config.getWarehouseUploadIntervalSeconds() * 1000L;
-        timer.scheduleAtFixedRate(this, intervalMillis, intervalMillis);
+        timer.scheduleAtFixedRate(this, 0L, intervalMillis);
         System.out.printf("Started with %s%n", config);
     }
 
     @Override
     public void run() {
+        SensorRun sensorRun = scanClasspathIfNewSensorRun();
+        if (sensorRun == null) {
+            System.out.printf("%s not found%n", config.getSensorFile());
+            return;
+        }
+
         long modifiedAt = config.getDataFile().lastModified();
         if (modifiedAt != dataFileModifiedAtMillis) {
             Usage.readUsagesFromFile(usages, config.getDataFile());
@@ -64,12 +67,26 @@ public class Agent extends TimerTask {
             System.out.printf("Posting usage data for %d unused and %d used methods in %s to %s%n", unused, used,
                               config.getAppName(), config.getWarehouseUri());
 
-            SensorRun sensorRun = SensorRun.readFrom(config.getSensorFile());
-
             // TODO: post sensorRun and usages to data warehouse
 
             dataFileModifiedAtMillis = modifiedAt;
         }
+    }
+
+    private SensorRun scanClasspathIfNewSensorRun() {
+        SensorRun sensorRun;
+        try {
+            sensorRun = SensorRun.readFrom(config.getSensorFile());
+        } catch (IOException e) {
+            return null;
+        }
+
+        if (lastSeenSensorUUID == null || !lastSeenSensorUUID.equals(sensorRun.getUuid())) {
+            System.out.printf("Scanning code base at %s%n", config.getCodeBaseUri());
+            scanCodeBase();
+            lastSeenSensorUUID = sensorRun.getUuid();
+        }
+        return sensorRun;
     }
 
     @SneakyThrows(MalformedURLException.class)

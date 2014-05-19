@@ -3,7 +3,6 @@ package duck.spike.util;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.SneakyThrows;
 import lombok.experimental.Builder;
 
 import java.io.*;
@@ -52,8 +51,7 @@ public class SensorRun {
         }
     }
 
-    @SneakyThrows(IOException.class)
-    public static SensorRun readFrom(File file) {
+    public static SensorRun readFrom(File file) throws IOException {
 
         Properties props = new Properties();
         props.load(new BufferedInputStream(new FileInputStream(file)));

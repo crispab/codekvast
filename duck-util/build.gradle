@@ -4,8 +4,8 @@ sourceCompatibility = 1.6
 version = duckVersion
 
 dependencies {
-    compile "org.projectlombok:lombok:1.12.6"
-    compile "org.aspectj:aspectjweaver:1.8.0"
+    compile "org.projectlombok:lombok:$lombokVersion"
+    compile "org.aspectj:aspectjweaver:$aspectjVersion"
 
     // Absolutely NO other compile or runtime dependencies are allowed here!
 
