@@ -1,57 +1,47 @@
 package duck.spike.agent;
 
 
-import duck.spike.util.AspectjUtils;
 import duck.spike.util.Configuration;
 import duck.spike.util.SensorRun;
 import duck.spike.util.Usage;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import org.aspectj.lang.Signature;
-import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
+import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.*;
-
-import static com.google.common.base.Preconditions.checkState;
 
 /**
  * @author Olle Hallin
  */
 @RequiredArgsConstructor
+@Slf4j
 public class Agent extends TimerTask {
     private final Configuration config;
     private final Map<String, Usage> usages = new HashMap<>();
 
-    private Timer timer;
     private long dataFileModifiedAtMillis;
     private UUID lastSeenSensorUUID;
 
     private void start() {
-        timer = new Timer(getClass().getSimpleName(), false);
+        Timer timer = new Timer(getClass().getSimpleName(), false);
         long intervalMillis = config.getWarehouseUploadIntervalSeconds() * 1000L;
-        timer.scheduleAtFixedRate(this, 0L, intervalMillis);
-        System.out.printf("Started with %s%n", config);
+        timer.scheduleAtFixedRate(this, 10L, intervalMillis);
+        log.info("Started with {}", config);
     }
 
     @Override
     public void run() {
         SensorRun sensorRun = scanClasspathIfNewSensorRun();
         if (sensorRun == null) {
-            System.out.printf("%s not found%n", config.getSensorFile());
+            log.info("{} not found", config.getSensorFile());
             return;
         }
 
         long modifiedAt = config.getDataFile().lastModified();
         if (modifiedAt != dataFileModifiedAtMillis) {
-            Usage.readUsagesFromFile(usages, config.getDataFile());
+            // Overwrite with the latest usages
+            usages.putAll(Usage.readUsagesFromFile(config.getDataFile()));
+
             int unused = 0;
             int used = 0;
 
@@ -64,8 +54,8 @@ public class Agent extends TimerTask {
                 }
             }
 
-            System.out.printf("Posting usage data for %d unused and %d used methods in %s to %s%n", unused, used,
-                              config.getAppName(), config.getWarehouseUri());
+            log.info("Posting usage data for {} unused and {} used methods in {} to {}", unused, used,
+                     config.getAppName(), config.getWarehouseUri());
 
             // TODO: post sensorRun and usages to data warehouse
 
@@ -78,66 +68,34 @@ public class Agent extends TimerTask {
         try {
             sensorRun = SensorRun.readFrom(config.getSensorFile());
         } catch (IOException e) {
+            // Cannot read sensor file, do nothing now...
             return null;
         }
 
         if (lastSeenSensorUUID == null || !lastSeenSensorUUID.equals(sensorRun.getUuid())) {
-            System.out.printf("Scanning code base at %s%n", config.getCodeBaseUri());
-            scanCodeBase();
+            log.debug("Scanning code base at {}", config.getCodeBaseUri());
+            usages.clear();
+            usages.putAll(new CodeBaseScanner(config).scanCodeBase());
             lastSeenSensorUUID = sensorRun.getUuid();
         }
         return sensorRun;
     }
 
-    @SneakyThrows(MalformedURLException.class)
-    private void scanCodeBase() {
-
-        File codeBase = new File(config.getCodeBaseUri());
-        checkState(codeBase.exists(), "Code base at " + codeBase + " does not exist");
-
-        long startedAt = System.currentTimeMillis();
-
-        URLClassLoader appClassLoader = new URLClassLoader(new URL[]{codeBase.toURI().toURL()}, System.class.getClassLoader());
-
-        Reflections reflections = new Reflections(config.getPackagePrefix(), appClassLoader, new SubTypesScanner(false));
-
-        int count = 0;
-        for (Class<?> clazz : reflections.getSubTypesOf(Object.class)) {
-            for (Method method : clazz.getDeclaredMethods()) {
-                if (Modifier.isPublic(method.getModifiers()) && !method.isSynthetic()) {
-                    Signature signature = AspectjUtils.makeMethodSignature(clazz, method);
-
-                    Usage usage = new Usage(AspectjUtils.makeMethodKey(signature), 0L);
-                    usages.put(usage.getSignature(), usage);
-                    count += 1;
-                    System.out.printf("  Found %s%n", usage.getSignature());
-                }
-            }
-        }
-
-        checkState(count > 0,
-                   "Code base at " + codeBase + " does not contain any classes with package prefix " + config.getPackagePrefix());
-
-        System.out.printf("Code base at %s with package prefix '%s' scanned in %d ms, found %d public methods.%n",
-                          config.getCodeBaseUri(), config.getPackagePrefix(), System.currentTimeMillis() - startedAt, count);
-    }
-
+    @SuppressWarnings("UseOfSystemOutOrSystemErr")
     public static void main(String[] args) {
         if (args == null || args.length < 1) {
             System.err.println("Usage: agent <path/to/duck.properties>");
             System.exit(1);
         }
 
-        Configuration config = null;
-
         try {
-            config = Configuration.parseConfigFile(args[0]);
+            Configuration config = Configuration.parseConfigFile(args[0]);
+            new Agent(config).start();
         } catch (Exception e) {
+            log.error("Cannot start agent", e);
             System.err.println(e.getMessage());
-            System.exit(1);
+            System.exit(2);
         }
-
-        new Agent(config).start();
     }
 
 }
