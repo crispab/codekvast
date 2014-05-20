@@ -5,7 +5,35 @@ mainClassName = "se.crisp.app.SampleApp"
 
 sourceCompatibility = 1.6
 
+task generateDuckConfig {
+    group "Build"
+    description "Generates a duck.properties for test"
+
+    ext.configFile = file("build/tmp/duck/duck.properties")
+
+    inputs.file file("$projectDir/build.gradle")
+    outputs.file configFile
+
+    doLast {
+        configFile.parentFile.mkdirs()
+        configFile.text = """# Run Duck against Crisp Sample App
+appName = Crisp Sample App
+environment = development
+codeBaseUri = file:$jar.outputs.files.asPath
+packagePrefix = se.crisp
+warehouseUri = http://localhost:8180
+sensorDumpIntervalSeconds = 10
+warehouseUploadIntervalSeconds = 5
+aspectjOptions = -verbose
+verbose = true
+"""
+    }
+}
+
+processResources.dependsOn generateDuckConfig
+
 run {
-    dependsOn = [":duck-sensor:assemble"]
-    jvmArgs = ["-javaagent:$rootDir/duck-sensor/build/distributions/duck-sensor-$duckVersion-shadow.jar=$rootDir/duck-util/build/tmp/duck/duck.properties"]
+    dependsOn = [":duck-sensor:assemble", "generateDuckConfig"]
+    def duckSensor = tasks.getByPath(":duck-sensor:shadowJar").outputs.files.asPath
+    jvmArgs = ["-javaagent:$duckSensor=$generateDuckConfig.configFile"]
 }

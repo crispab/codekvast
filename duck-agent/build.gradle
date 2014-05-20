@@ -11,8 +11,15 @@ dependencies {
     compile "org.reflections:reflections:0.9.9-RC1"
     compile "org.slf4j:slf4j-api:1.7.7"
 
-    runtime "ch.qos.logback:logback-core:1.1.2"
+    runtime "ch.qos.logback:logback-classic:1.1.2"
+}
+
+jar {
+    exclude "lombok"
 }
 
 // We sensor the Sample Crisp App by default...
-run.args "$rootDir/duck-util/build/tmp/duck/duck.properties"
+run {
+    dependsOn = [":sample-app:generateDuckConfig"]
+    args tasks.getByPath(":sample-app:generateDuckConfig").configFile
+}

@@ -54,7 +54,7 @@ public class CodeBaseScanner {
                     Usage usage = new Usage(AspectjUtils.makeMethodKey(signature), 0L);
                     result.put(usage.getSignature(), usage);
                     count += 1;
-                    log.debug("  Found {}", usage.getSignature());
+                    log.trace("  Found {}", usage.getSignature());
                 }
             }
         }

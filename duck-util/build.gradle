@@ -14,28 +14,3 @@ dependencies {
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }
-
-task generateTestDuckProperties {
-    group "Build"
-    description "Generates a duck.properties for test"
-
-    def configFile = file("$projectDir/build/tmp/duck/duck.properties")
-
-    inputs.file file("$projectDir/build.gradle")
-    outputs.file configFile
-
-    doLast {
-        configFile.parentFile.mkdirs()
-        configFile.text = """# Run Duck against Crisp Sample App
-appName = Crisp Sample App
-environment = development
-codeBaseUri = file:$rootDir/sample-app/build/libs/sample-app.jar
-packagePrefix = se.crisp
-warehouseUri = http://localhost:8180
-sensorDumpIntervalSeconds = 10
-warehouseUploadIntervalSeconds = 5
-"""
-    }
-}
-
-processResources.dependsOn generateTestDuckProperties

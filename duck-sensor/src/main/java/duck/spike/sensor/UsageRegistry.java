@@ -101,6 +101,8 @@ public class UsageRegistry {
             File tmpFile = File.createTempFile("duck", ".tmp", file.getAbsoluteFile().getParentFile());
             PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(tmpFile)));
 
+            DuckSensor.out.printf("%s dumps output #%d to %s%n", DuckSensor.NAME, dumpCount, config.getDataFile().getAbsolutePath());
+
             Date dumpedAt = new Date();
             out.printf(Locale.ENGLISH, "# Duck usage results #%d for '%s' at %s%n", dumpCount, config.getAppName(), dumpedAt);
             out.println("# lastUsedMillis:signature");
