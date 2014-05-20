@@ -18,10 +18,12 @@ import java.util.Properties;
 @Value
 @Builder
 public class Configuration {
+    private final boolean verbose;
     private final String appName;
     private final String environment;
     private final URI codeBaseUri;
     private final String packagePrefix;
+    private final String aspectjOptions;
     private final File dataPath;
     private final int sensorDumpIntervalSeconds;
     private final int warehouseUploadIntervalSeconds;
@@ -61,10 +63,12 @@ public class Configuration {
                                 .environment(getStringValue(props, "environment"))
                                 .codeBaseUri(getUriValue(props, "codeBaseUri"))
                                 .packagePrefix(getStringValue(props, "packagePrefix"))
+                                .aspectjOptions(props.getProperty("aspectjOptions", ""))
                                 .sensorDumpIntervalSeconds(getIntValue(props, "sensorDumpIntervalSeconds", 600))
                                 .dataPath(new File(props.getProperty("dataPath", getDefaultDataPath(appName))))
                                 .warehouseUploadIntervalSeconds(getIntValue(props, "warehouseUploadIntervalSeconds", 3600))
                                 .warehouseUri(getUriValue(props, "warehouseUri"))
+                                .verbose(Boolean.parseBoolean(props.getProperty("verbose", "false")))
                                 .build();
         } catch (Exception e) {
             throw new IllegalArgumentException(String.format("Cannot parse %s: %s", file.getAbsolutePath(), e.getMessage()));

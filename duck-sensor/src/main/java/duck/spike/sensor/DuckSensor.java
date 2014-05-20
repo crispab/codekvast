@@ -3,10 +3,7 @@ package duck.spike.sensor;
 import duck.spike.util.Configuration;
 import org.aspectj.bridge.Constants;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.instrument.Instrumentation;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -22,10 +19,11 @@ import java.util.TimerTask;
  *
  * @author Olle Hallin
  */
-@SuppressWarnings({"UseOfSystemOutOrSystemErr", "FeatureEnvy"})
 public class DuckSensor {
 
-    private static final String MY_NAME = DuckSensor.class.getSimpleName();
+    public static final String NAME = "DUCK";
+
+    public static PrintStream out;
 
     private DuckSensor() {
         // Not possible to instantiate a javaagent
@@ -36,37 +34,40 @@ public class DuckSensor {
      */
     public static void premain(String args, Instrumentation inst) throws IOException {
         Configuration config = Configuration.parseConfigFile(args);
-        System.err.printf("%s initializes with %s%n", MY_NAME, config);
+
+        //noinspection UseOfSystemOutOrSystemErr
+        DuckSensor.out = config.isVerbose() ? System.err : new PrintStream(new NullOutputStream());
 
         UsageRegistry.initialize(config);
-        System.err.printf("%s loaded, now loading aspectjweaver%n", MY_NAME);
-        loadAspectjWeaver(args, inst, config.getPackagePrefix());
+
+        DuckSensor.out.printf("%s is loading aspectjweaver%n", NAME);
+        loadAspectjWeaver(args, inst, config);
 
         int firstResultInSeconds = createTimerTask(config.getSensorDumpIntervalSeconds());
 
-        System.err.printf("%s is ready to detect used code within(%s..*)%n" +
-                                  "First write to %s in %d seconds, after that every %d seconds" +
-                                  "--------------------------------------------------------------%n",
-                          MY_NAME, config.getPackagePrefix(), config.getDataFile(), firstResultInSeconds,
-                          config.getSensorDumpIntervalSeconds()
+        DuckSensor.out.printf("%s is ready to detect used code within(%s..*).%n" +
+                                      "First write to %s will be in %d seconds, thereafter every %d seconds.%n" +
+                                      "-------------------------------------------------------------------------------%n",
+                              NAME, config.getPackagePrefix(), config.getDataFile(), firstResultInSeconds,
+                              config.getSensorDumpIntervalSeconds()
         );
     }
 
     private static int createTimerTask(int dumpIntervalSeconds) throws IOException {
         UsageDumpingTimerTask timerTask = new UsageDumpingTimerTask();
 
-        Timer timer = new Timer(MY_NAME, true);
+        Timer timer = new Timer(NAME, true);
 
         int initialDelaySeconds = 5;
         timer.scheduleAtFixedRate(timerTask, initialDelaySeconds * 1000L, dumpIntervalSeconds * 1000L);
 
-        Runtime.getRuntime().addShutdownHook(new Thread(timerTask, MY_NAME + " shutdown hook"));
+        Runtime.getRuntime().addShutdownHook(new Thread(timerTask, NAME + " shutdown hook"));
 
         return initialDelaySeconds;
     }
 
-    private static void loadAspectjWeaver(String args, Instrumentation inst, String packagePrefix) {
-        System.setProperty("org.aspectj.weaver.loadtime.configuration", join(createConcreteDuckAspect(packagePrefix),
+    private static void loadAspectjWeaver(String args, Instrumentation inst, Configuration config) {
+        System.setProperty("org.aspectj.weaver.loadtime.configuration", join(createConcreteDuckAspect(config),
                                                                              Constants.AOP_USER_XML,
                                                                              Constants.AOP_AJC_XML,
                                                                              Constants.AOP_OSGI_XML));
@@ -89,7 +90,7 @@ public class DuckSensor {
      *
      * @return A file: URI to a temporary aop-ajc.xml file. The file is deleted on JVM exit.
      */
-    private static String createConcreteDuckAspect(String packagePrefix) {
+    private static String createConcreteDuckAspect(Configuration config) {
         String xml = String.format(
                 "<aspectj>\n"
                         + "  <aspects>\n"
@@ -97,12 +98,13 @@ public class DuckSensor {
                         + "       <pointcut name='scope' expression='within(%1$s..*)'/>\n"
                         + "     </concrete-aspect>\n"
                         + "  </aspects>\n"
-                        + "  <weaver options='-verbose'>\n"
+                        + "  <weaver options='%2$s'>\n"
                         + "     <include within='%1$s..*' />\n"
                         + "     <include within='duck.spike..*' />\n"
                         + "  </weaver>\n"
                         + "</aspectj>\n",
-                packagePrefix
+                config.getPackagePrefix(),
+                config.getAspectjOptions()
         );
 
         try {
@@ -113,14 +115,18 @@ public class DuckSensor {
             file.deleteOnExit();
             return "file:" + file.getAbsolutePath();
         } catch (IOException e) {
-            throw new RuntimeException(MY_NAME + " cannot create custom aop-ajc.xml", e);
+            throw new RuntimeException(NAME + " cannot create custom aop-ajc.xml", e);
         }
     }
 
     private static class UsageDumpingTimerTask extends TimerTask {
+
+        private int dumpCount;
+
         @Override
         public void run() {
-            UsageRegistry.instance.dumpDataToDisk();
+            dumpCount += 1;
+            UsageRegistry.instance.dumpDataToDisk(dumpCount);
         }
     }
 }
