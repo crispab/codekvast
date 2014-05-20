@@ -2,7 +2,6 @@ package duck.spike.sensor;
 
 import duck.spike.util.Configuration;
 import org.aspectj.bridge.Constants;
-import org.aspectj.weaver.loadtime.Agent;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -26,46 +25,52 @@ import java.util.TimerTask;
 @SuppressWarnings({"UseOfSystemOutOrSystemErr", "FeatureEnvy"})
 public class DuckSensor {
 
-    private static final String MY_SIMPLE_NAME = DuckSensor.class.getSimpleName();
+    private static final String MY_NAME = DuckSensor.class.getSimpleName();
 
     private DuckSensor() {
         // Not possible to instantiate a javaagent
     }
 
     /**
-     * This method is invoked by the JVM as part of the bootstrapping
+     * This method is invoked by the JVM as part of bootstrapping the -javaagent
      */
     public static void premain(String args, Instrumentation inst) throws IOException {
         Configuration config = Configuration.parseConfigFile(args);
-        System.err.printf("%s initializes with %s%n", MY_SIMPLE_NAME, config);
+        System.err.printf("%s initializes with %s%n", MY_NAME, config);
 
         UsageRegistry.initialize(config);
+        System.err.printf("%s loaded, now loading aspectjweaver%n", MY_NAME);
         loadAspectjWeaver(args, inst, config.getPackagePrefix());
-        createTimerTask(config.getSensorDumpIntervalSeconds());
+
+        int firstResultInSeconds = createTimerTask(config.getSensorDumpIntervalSeconds());
 
         System.err.printf("%s is ready to detect used code within(%s..*)%n" +
+                                  "First write to %s in %d seconds, after that every %d seconds" +
                                   "--------------------------------------------------------------%n",
-                          MY_SIMPLE_NAME, config.getPackagePrefix()
+                          MY_NAME, config.getPackagePrefix(), config.getDataFile(), firstResultInSeconds,
+                          config.getSensorDumpIntervalSeconds()
         );
     }
 
-    private static void createTimerTask(int dumpIntervalSeconds) throws IOException {
+    private static int createTimerTask(int dumpIntervalSeconds) throws IOException {
         UsageDumpingTimerTask timerTask = new UsageDumpingTimerTask();
 
-        long delayMillis = dumpIntervalSeconds * 1000L;
-        Timer timer = new Timer("Duck Sensor", true);
-        timer.scheduleAtFixedRate(timerTask, delayMillis, delayMillis);
+        Timer timer = new Timer(MY_NAME, true);
 
-        Runtime.getRuntime().addShutdownHook(new Thread(timerTask, "Duck shutdown hook"));
+        int initialDelaySeconds = 5;
+        timer.scheduleAtFixedRate(timerTask, initialDelaySeconds * 1000L, dumpIntervalSeconds * 1000L);
+
+        Runtime.getRuntime().addShutdownHook(new Thread(timerTask, MY_NAME + " shutdown hook"));
+
+        return initialDelaySeconds;
     }
 
     private static void loadAspectjWeaver(String args, Instrumentation inst, String packagePrefix) {
-        System.err.printf("%s loaded, now loading aspectjweaver%n", MY_SIMPLE_NAME);
         System.setProperty("org.aspectj.weaver.loadtime.configuration", join(createConcreteDuckAspect(packagePrefix),
                                                                              Constants.AOP_USER_XML,
                                                                              Constants.AOP_AJC_XML,
                                                                              Constants.AOP_OSGI_XML));
-        Agent.premain(args, inst);
+        org.aspectj.weaver.loadtime.Agent.premain(args, inst);
     }
 
     private static String join(String... args) {
@@ -82,7 +87,7 @@ public class DuckSensor {
      * Creates a concrete implementation of the AbstractDuckAspect, using the packagePrefix for specifying the
      * abstract pointcut 'scope'.
      *
-     * @return A file: URL to a temporary aop-ajc.xml file. The file is deleted on JVM exit.
+     * @return A file: URI to a temporary aop-ajc.xml file. The file is deleted on JVM exit.
      */
     private static String createConcreteDuckAspect(String packagePrefix) {
         String xml = String.format(
@@ -108,7 +113,7 @@ public class DuckSensor {
             file.deleteOnExit();
             return "file:" + file.getAbsolutePath();
         } catch (IOException e) {
-            throw new RuntimeException("Cannot create custom aspect XML", e);
+            throw new RuntimeException(MY_NAME + " cannot create custom aop-ajc.xml", e);
         }
     }
 

@@ -42,12 +42,13 @@ public class UsageRegistry {
         }
     }
 
+    /**
+     * Must be called before handing over to the AspectJ load-time weaver.
+     */
     public static void initialize(Configuration config) {
         UsageRegistry.instance = new UsageRegistry(config,
                                                    SensorRun.builder()
                                                             .hostName(getHostName())
-                                                            .appName(config.getAppName())
-                                                            .environment(config.getEnvironment())
                                                             .uuid(UUID.randomUUID())
                                                             .startedAtMillis(System.currentTimeMillis())
                                                             .build()
@@ -58,7 +59,7 @@ public class UsageRegistry {
         try {
             return InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException e) {
-            System.err.println("Cannot get local hostname: " + e);
+            System.err.println(MY_NAME + ": Cannot get local hostname: " + e);
             return "-- unknown --";
         }
     }
@@ -86,16 +87,13 @@ public class UsageRegistry {
 
     private void dumpSensorRun() {
         File file = config.getSensorFile();
-        sensorRun.setOutputAtMillis(System.currentTimeMillis());
 
         try {
             File tmpFile = File.createTempFile("duck", ".tmp", file.getAbsoluteFile().getParentFile());
-
             sensorRun.saveTo(tmpFile);
-
             renameFile(tmpFile, file);
         } catch (IOException e) {
-            System.err.println("Cannot save " + file + ": " + e);
+            System.err.println(MY_NAME + ": Cannot save " + file + ": " + e);
         }
     }
 
@@ -133,7 +131,7 @@ public class UsageRegistry {
 
             renameFile(tmpFile, file);
         } catch (IOException e) {
-            System.err.println("Cannot dump usage data to " + file + ": " + e);
+            System.err.println(MY_NAME + ": Cannot dump usage data to " + file + ": " + e);
         }
     }
 

@@ -18,8 +18,12 @@ public class AspectjUtils {
         return signature.toLongString();
     }
 
+    /**
+     * Use AspectJ for creating the same signature as AbstractDuckAspect.
+     *
+     * @return The same signature object as an AspectJ execution pointcut will provide in JoinPoint.getSignature()
+     */
     public static Signature makeMethodSignature(Class<?> clazz, Method method) {
-        // Use AspectJ for creating the same signature as AbstractDuckAspect...
         return new Factory(null, clazz)
                 .makeMethodSig(method.getModifiers(), method.getName(), method.getDeclaringClass(), method.getParameterTypes(),
                                null, method.getExceptionTypes(), method.getReturnType());

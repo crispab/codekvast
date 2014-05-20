@@ -40,7 +40,7 @@ public class Agent extends TimerTask {
         long modifiedAt = config.getDataFile().lastModified();
         if (modifiedAt != dataFileModifiedAtMillis) {
             // Overwrite with the latest usages
-            usages.putAll(Usage.readUsagesFromFile(config.getDataFile()));
+            usages.putAll(Usage.readFromFile(config.getDataFile()));
 
             int unused = 0;
             int used = 0;
