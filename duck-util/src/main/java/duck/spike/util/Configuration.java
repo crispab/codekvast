@@ -33,6 +33,10 @@ public class Configuration {
         return new File(dataPath, "usage.dat");
     }
 
+    public File getCodeBaseFile() {
+        return new File(dataPath, "codebase.dat");
+    }
+
     public File getSensorFile() {
         return new File(dataPath, "sensor.properties");
     }
@@ -76,7 +80,7 @@ public class Configuration {
     }
 
     private static String getDefaultDataPath(String appName) {
-        String normalizedAppName = appName.replaceAll("[^a-zA-Z0-9]", "");
+        String normalizedAppName = appName.replace(" ", "_").replaceAll("[^a-zA-Z0-9_\\-]", "");
         return System.getProperty("java.io.tmpdir") + File.separator + "duck" + File.separator + normalizedAppName;
     }
 
