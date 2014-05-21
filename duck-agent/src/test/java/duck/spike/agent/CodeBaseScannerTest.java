@@ -1,14 +1,13 @@
 package duck.spike.agent;
 
 import duck.spike.util.Configuration;
-import duck.spike.util.Usage;
 import org.junit.Test;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Map;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -58,9 +57,9 @@ public class CodeBaseScannerTest {
                                             .packagePrefix("se.crisp")
                                             .codeBaseUri(new File(SAMPLE_APP_JAR).toURI())
                                             .build();
-        Map<String, Usage> usageMap = scanner.scanCodeBase(config);
-        assertThat(usageMap, notNullValue());
-        assertThat(usageMap.size(), is(7));
+        List<String> signatures = scanner.getPublicMethodSignatures(config);
+        assertThat(signatures, notNullValue());
+        assertThat(signatures.size(), is(7));
     }
 
     @Test
@@ -69,8 +68,8 @@ public class CodeBaseScannerTest {
                                             .packagePrefix("se.crisp")
                                             .codeBaseUri(new File(SAMPLE_APP_LIB).toURI())
                                             .build();
-        Map<String, Usage> usageMap = scanner.scanCodeBase(config);
-        assertThat(usageMap, notNullValue());
-        assertThat(usageMap.size(), is(7));
+        List<String> signatures = scanner.getPublicMethodSignatures(config);
+        assertThat(signatures, notNullValue());
+        assertThat(signatures.size(), is(7));
     }
 }

@@ -2,7 +2,6 @@ package duck.spike.agent;
 
 import duck.spike.util.AspectjUtils;
 import duck.spike.util.Configuration;
-import duck.spike.util.Usage;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.Signature;
@@ -18,8 +17,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
@@ -31,7 +28,7 @@ import static com.google.common.base.Preconditions.checkState;
 public class CodeBaseScanner {
 
     @SneakyThrows(MalformedURLException.class)
-    Map<String, Usage> scanCodeBase(Configuration config) {
+    List<String> getPublicMethodSignatures(Configuration config) {
 
         File codeBase = new File(config.getCodeBaseUri());
         checkState(codeBase.exists(), "Code base at " + codeBase + " does not exist");
@@ -42,26 +39,25 @@ public class CodeBaseScanner {
 
         Reflections reflections = new Reflections(config.getPackagePrefix(), appClassLoader, new SubTypesScanner(false));
 
-        int count = 0;
-        Map<String, Usage> result = new TreeMap<>();
+        List<String> result = new ArrayList<>();
         for (Class<?> clazz : reflections.getSubTypesOf(Object.class)) {
             for (Method method : clazz.getDeclaredMethods()) {
                 if (Modifier.isPublic(method.getModifiers()) && !method.isSynthetic()) {
                     Signature signature = AspectjUtils.makeMethodSignature(clazz, method);
 
-                    Usage usage = new Usage(AspectjUtils.makeMethodKey(signature), 0L);
-                    result.put(usage.getSignature(), usage);
-                    count += 1;
-                    log.trace("  Found {}", usage.getSignature());
+                    String methodString = AspectjUtils.makeMethodKey(signature);
+                    log.trace("  Found {}", methodString);
+
+                    result.add(methodString);
                 }
             }
         }
 
-        checkState(count > 0,
+        checkState(!result.isEmpty(),
                    "Code base at " + codeBase + " does not contain any classes with package prefix " + config.getPackagePrefix());
 
         log.debug("Code base at {} with package prefix '{}' scanned in {} ms, found {} public methods.",
-                  config.getCodeBaseUri(), config.getPackagePrefix(), System.currentTimeMillis() - startedAt, count);
+                  config.getCodeBaseUri(), config.getPackagePrefix(), System.currentTimeMillis() - startedAt, result.size());
         return result;
     }
 
@@ -91,11 +87,11 @@ public class CodeBaseScanner {
         File[] jarFiles = directory.listFiles(new FileFilter() {
             @Override
             public boolean accept(File file) {
-                boolean result = file.isFile() && file.getName().endsWith(".jar");
-                if (!result) {
-                    log.debug("  Ignoring {}, not a jar...", file);
+                boolean isJar = file.isFile() && file.getName().endsWith(".jar");
+                if (!isJar) {
+                    log.debug("  Ignoring {}, not a jar file", file);
                 }
-                return result;
+                return isJar;
             }
         });
 

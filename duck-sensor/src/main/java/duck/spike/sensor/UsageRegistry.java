@@ -1,15 +1,15 @@
 package duck.spike.sensor;
 
-import duck.spike.util.*;
+import duck.spike.util.AspectjUtils;
+import duck.spike.util.Configuration;
+import duck.spike.util.SensorRun;
+import duck.spike.util.UsageUtils;
 import org.aspectj.lang.Signature;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -75,18 +75,12 @@ public class UsageRegistry {
      * Thread-safe.
      */
     public synchronized void dumpDataToDisk(int dumpCount) {
-        List<Usage> data = new ArrayList<Usage>();
-        for (Map.Entry<String, Long> entry : usages.entrySet()) {
-            data.add(new Usage(entry.getKey(), entry.getValue()));
-        }
-
-        instance.dumpSensorRun();
-        UsageUtils.dumpUsageData(config.getDataFile(), dumpCount, data);
+        dumpSensorRun();
+        UsageUtils.dumpUsageData(config.getDataFile(), dumpCount, usages);
     }
 
     private void dumpSensorRun() {
         File file = config.getSensorFile();
-
         try {
             File tmpFile = File.createTempFile("duck", ".tmp", file.getAbsoluteFile().getParentFile());
             sensorRun.saveTo(tmpFile);

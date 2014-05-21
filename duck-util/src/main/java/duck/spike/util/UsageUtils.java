@@ -1,10 +1,7 @@
 package duck.spike.util;
 
 import java.io.*;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * @author Olle Hallin
@@ -16,16 +13,15 @@ public class UsageUtils {
         // Utility class
     }
 
-    public static Map<String, Usage> readFromFile(File file) {
-        Map<String, Usage> result = new TreeMap<String, Usage>();
+    public static List<Usage> readFromFile(File file) {
+        List<Usage> result = new ArrayList<Usage>();
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
             String line;
             while ((line = in.readLine()) != null) {
                 Usage usage = Usage.parse(line);
                 if (usage != null) {
-                    // Replace whatever usage was there
-                    result.put(usage.getSignature(), usage);
+                    result.add(usage);
                 }
             }
         } catch (Exception ignore) {
@@ -34,7 +30,7 @@ public class UsageUtils {
         return result;
     }
 
-    public static void dumpUsageData(File file, int dumpCount, Iterable<Usage> usages) {
+    public static void dumpUsageData(File file, int dumpCount, Map<String, Long> usages) {
         long startedAt = System.currentTimeMillis();
 
         try {
@@ -46,8 +42,8 @@ public class UsageUtils {
             out.println("# lastUsedMillis:signature");
 
             int count = 0;
-            for (Usage usage : usages) {
-                out.println(usage);
+            for (Map.Entry<String, Long> entry : usages.entrySet()) {
+                out.println(new Usage(entry.getKey(), entry.getValue()));
                 count += 1;
             }
 

@@ -3,7 +3,7 @@ package duck.spike.util;
 import org.junit.Test;
 
 import java.io.File;
-import java.util.Map;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -44,7 +44,7 @@ public class UsageTest {
 
     @Test
     public void testReadNullFile() throws Exception {
-        Map<String, Usage> result = UsageUtils.readFromFile(null);
+        List<Usage> result = UsageUtils.readFromFile(null);
         assertThat(result.isEmpty(), is(true));
     }
 
@@ -52,11 +52,10 @@ public class UsageTest {
     public void testReadFileUsage1() throws Exception {
         File file = new File(getClass().getResource("/usage1.dat").toURI());
 
-        Map<String, Usage> result = UsageUtils.readFromFile(file);
+        List<Usage> result = UsageUtils.readFromFile(file);
 
         assertThat(result.size(), is(2));
-        assertThat(result.get("signature1").getUsedAtMillis(), is(1000L));
-        assertThat(result.get("signature2").getUsedAtMillis(), is(0L));
-        assertThat(result.get("signature3"), nullValue());
+        assertThat(result.get(0).getUsedAtMillis(), is(1000L));
+        assertThat(result.get(1).getUsedAtMillis(), is(0L));
     }
 }

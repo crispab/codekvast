@@ -8,6 +8,7 @@ import duck.spike.util.UsageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -18,8 +19,8 @@ import java.util.*;
 @Slf4j
 public class Agent extends TimerTask {
     private final Configuration config;
-    private final Map<String, Usage> codeBase = new HashMap<>();
-    private final CodeBaseScanner codeBaseScanner = new CodeBaseScanner();
+    private final Map<String, Long> codeBase = new TreeMap<>();
+    private final CodeBaseScanner codeBaseScanner;
 
     private long dataFileModifiedAtMillis;
     private UUID lastSeenSensorUUID;
@@ -35,37 +36,21 @@ public class Agent extends TimerTask {
 
     @Override
     public void run() {
-        SensorRun sensorRun = scanClasspathIfNewSensorRun();
+        SensorRun sensorRun = getLatestSensorRun();
         if (sensorRun == null) {
-            log.info("{} not found", config.getSensorFile());
+            log.info("Waiting for {} to start", config.getAppName());
             return;
         }
 
-        long modifiedAt = config.getDataFile().lastModified();
+        importCodeBaseIfNew(sensorRun);
+        processUsageDataIfNew(config.getDataFile());
+    }
+
+    private void processUsageDataIfNew(File dataFile) {
+        long modifiedAt = dataFile.lastModified();
         if (modifiedAt != dataFileModifiedAtMillis) {
-            // Overwrite with the latest usages from the sensor
-
-            Map<String, Usage> usages = UsageUtils.readFromFile(config.getDataFile());
-            for (Map.Entry<String, Usage> entry : usages.entrySet()) {
-                if (codeBase.put(entry.getKey(), entry.getValue()) == null) {
-                    log.warn("Unrecognized runtime signature: {}", entry.getKey());
-                }
-            }
-
-            int unused = 0;
-            int used = 0;
-
-            for (Usage usage : codeBase.values()) {
-                if (usage.getUsedAtMillis() == 0L) {
-                    unused += 1;
-                }
-                if (usage.getUsedAtMillis() != 0L) {
-                    used += 1;
-                }
-            }
-
-            log.info("Posting usage data for {} unused and {} used methods in {} to {}", unused, used,
-                     config.getAppName(), config.getWarehouseUri());
+            applyLatestSensorDataToCodeBase(config.getDataFile());
+            logStatistics();
 
             // TODO: post sensorRun and usages to data warehouse
 
@@ -73,23 +58,60 @@ public class Agent extends TimerTask {
         }
     }
 
-    private SensorRun scanClasspathIfNewSensorRun() {
-        SensorRun sensorRun;
+    int applyLatestSensorDataToCodeBase(File dataFile) {
+        List<Usage> usages = UsageUtils.readFromFile(dataFile);
+        int recognized = 0;
+        int unrecognized = 0;
+        for (Usage usage : usages) {
+            if (codeBase.put(usage.getSignature(), usage.getUsedAtMillis()) == null) {
+                log.warn("Unrecognized runtime signature: {}", usage.getSignature());
+                unrecognized += 1;
+            } else {
+                recognized += 1;
+            }
+        }
+        log.info("{} recognized and {} unrecognized signatures found", recognized, unrecognized);
+        return unrecognized;
+    }
+
+    private void logStatistics() {
+        int unused = 0;
+        int used = 0;
+
+        for (Long usedAtMillis : codeBase.values()) {
+            if (usedAtMillis == 0L) {
+                unused += 1;
+            } else {
+                used += 1;
+            }
+        }
+        log.info("Posting usage data for {} unused and {} used methods in {} to {}", unused, used,
+                 config.getAppName(), config.getWarehouseUri());
+    }
+
+    private void importCodeBaseIfNew(SensorRun sensorRun) {
+        if (lastSeenSensorUUID == null || !lastSeenSensorUUID.equals(sensorRun.getUuid())) {
+            log.debug("Scanning code base at {}", config.getCodeBaseUri());
+            prepareCodeBase(codeBaseScanner.getPublicMethodSignatures(config));
+            UsageUtils.dumpUsageData(config.getCodeBaseFile(), 0, codeBase);
+            lastSeenSensorUUID = sensorRun.getUuid();
+        }
+    }
+
+    void prepareCodeBase(List<String> signatures) {
+        codeBase.clear();
+        for (String signature : signatures) {
+            codeBase.put(signature, 0L);
+        }
+    }
+
+    private SensorRun getLatestSensorRun() {
         try {
-            sensorRun = SensorRun.readFrom(config.getSensorFile());
+            return SensorRun.readFrom(config.getSensorFile());
         } catch (IOException e) {
             // Cannot read sensor file, do nothing now...
             return null;
         }
-
-        if (lastSeenSensorUUID == null || !lastSeenSensorUUID.equals(sensorRun.getUuid())) {
-            log.debug("Scanning code base at {}", config.getCodeBaseUri());
-            codeBase.clear();
-            codeBase.putAll(codeBaseScanner.scanCodeBase(config));
-            UsageUtils.dumpUsageData(config.getCodeBaseFile(), 0, codeBase.values());
-            lastSeenSensorUUID = sensorRun.getUuid();
-        }
-        return sensorRun;
     }
 
     @SuppressWarnings("UseOfSystemOutOrSystemErr")
@@ -101,7 +123,7 @@ public class Agent extends TimerTask {
 
         try {
             Configuration config = Configuration.parseConfigFile(args[0]);
-            new Agent(config).start();
+            new Agent(config, new CodeBaseScanner()).start();
         } catch (Exception e) {
             log.error("Cannot start agent", e);
             System.err.println(e.getMessage());
