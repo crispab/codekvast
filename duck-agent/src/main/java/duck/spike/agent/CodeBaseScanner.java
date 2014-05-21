@@ -79,7 +79,6 @@ public class CodeBaseScanner {
             result.add(codeBase.toURI().toURL());
         }
 
-        log.debug("Scanning urls {}", result);
         return result.toArray(new URL[result.size()]);
     }
 
@@ -94,7 +93,7 @@ public class CodeBaseScanner {
             public boolean accept(File file) {
                 boolean result = file.isFile() && file.getName().endsWith(".jar");
                 if (!result) {
-                    log.debug("Ignoring {}, not a jar...", file);
+                    log.debug("  Ignoring {}, not a jar...", file);
                 }
                 return result;
             }
@@ -102,7 +101,7 @@ public class CodeBaseScanner {
 
         for (File jarFile : jarFiles) {
             if (jarFile.canRead()) {
-                log.debug("Found {}", jarFile);
+                log.debug("  Found {}", jarFile);
                 result.add(jarFile.toURI().toURL());
             } else {
                 log.warn("Ignoring {} since it cannot be read", jarFile);

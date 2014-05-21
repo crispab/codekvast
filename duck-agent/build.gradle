@@ -21,7 +21,7 @@ jar {
 
 // We sensor the Sample Crisp App by default...
 run {
-    dependsOn = [":sample-app:generateDuckConfig"]
+    dependsOn = [":sample-app:installApp", ":sample-app:generateDuckConfig"]
     args tasks.getByPath(":sample-app:generateDuckConfig").configFile
 }
 

@@ -1,16 +1,23 @@
 package duck.spike.agent;
 
+import duck.spike.util.Configuration;
+import duck.spike.util.Usage;
 import org.junit.Test;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 public class CodeBaseScannerTest {
+
+    public static final String SAMPLE_APP_LIB = "src/test/resources/sample-app/lib";
+    public static final String SAMPLE_APP_JAR = SAMPLE_APP_LIB + "/sample-app.jar";
 
     private final CodeBaseScanner scanner = new CodeBaseScanner();
 
@@ -33,8 +40,37 @@ public class CodeBaseScannerTest {
 
     @Test
     public void testGetUrlsForDirectoryContainingJars() throws MalformedURLException {
-        URL[] urls = scanner.getUrlsForCodeBase(new File("src/test/resources/lib1"));
+        URL[] urls = scanner.getUrlsForCodeBase(new File(SAMPLE_APP_LIB));
         assertThat(urls, notNullValue());
         assertThat(urls.length, is(3));
+    }
+
+    @Test
+    public void testGetUrlsForSingleJar() throws MalformedURLException {
+        URL[] urls = scanner.getUrlsForCodeBase(new File(SAMPLE_APP_JAR));
+        assertThat(urls, notNullValue());
+        assertThat(urls.length, is(1));
+    }
+
+    @Test
+    public void testScanCodeBaseForSingleJar() throws URISyntaxException {
+        Configuration config = Configuration.builder()
+                                            .packagePrefix("se.crisp")
+                                            .codeBaseUri(new File(SAMPLE_APP_JAR).toURI())
+                                            .build();
+        Map<String, Usage> usageMap = scanner.scanCodeBase(config);
+        assertThat(usageMap, notNullValue());
+        assertThat(usageMap.size(), is(7));
+    }
+
+    @Test
+    public void testScanCodeBaseForDirectoryContainingMultipleJars() throws URISyntaxException {
+        Configuration config = Configuration.builder()
+                                            .packagePrefix("se.crisp")
+                                            .codeBaseUri(new File(SAMPLE_APP_LIB).toURI())
+                                            .build();
+        Map<String, Usage> usageMap = scanner.scanCodeBase(config);
+        assertThat(usageMap, notNullValue());
+        assertThat(usageMap.size(), is(7));
     }
 }

@@ -24,7 +24,7 @@ task generateDuckConfig {
         configFile.text = """# Run Duck against Crisp Sample App
 appName = Crisp Sample App
 environment = development
-codeBaseUri = file:$jar.outputs.files.asPath
+codeBaseUri = file:${file("build/install/${project.name}/lib/")}
 packagePrefix = se.crisp
 warehouseUri = http://localhost:8180
 sensorDumpIntervalSeconds = 10
