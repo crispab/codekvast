@@ -17,9 +17,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
@@ -43,7 +43,7 @@ public class CodeBaseScanner {
         Reflections reflections = new Reflections(config.getPackagePrefix(), appClassLoader, new SubTypesScanner(false));
 
         int count = 0;
-        Map<String, Usage> result = new HashMap<>();
+        Map<String, Usage> result = new TreeMap<>();
         for (Class<?> clazz : reflections.getSubTypesOf(Object.class)) {
             for (Method method : clazz.getDeclaredMethods()) {
                 if (Modifier.isPublic(method.getModifiers()) && !method.isSynthetic()) {

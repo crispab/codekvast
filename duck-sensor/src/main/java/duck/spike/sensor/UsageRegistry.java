@@ -1,17 +1,15 @@
 package duck.spike.sensor;
 
-import duck.spike.util.AspectjUtils;
-import duck.spike.util.Configuration;
-import duck.spike.util.SensorRun;
-import duck.spike.util.Usage;
+import duck.spike.util.*;
 import org.aspectj.lang.Signature;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -26,7 +24,7 @@ public class UsageRegistry {
     private final Configuration config;
     private final SensorRun sensorRun;
 
-    private final ConcurrentMap<String, Usage> usages = new ConcurrentHashMap<String, Usage>();
+    private final ConcurrentMap<String, Long> usages = new ConcurrentHashMap<String, Long>();
 
     private UsageRegistry(Configuration config, SensorRun sensorRun) {
         this.config = config;
@@ -68,7 +66,7 @@ public class UsageRegistry {
      */
     public void registerMethodExecution(Signature signature) {
         String sig = AspectjUtils.makeMethodKey(signature);
-        usages.put(sig, new Usage(sig, System.currentTimeMillis()));
+        usages.put(sig, System.currentTimeMillis());
     }
 
     /**
@@ -77,63 +75,24 @@ public class UsageRegistry {
      * Thread-safe.
      */
     public synchronized void dumpDataToDisk(int dumpCount) {
-        instance.dumpSensorRun(dumpCount);
-        instance.dumpUsageData(dumpCount);
+        List<Usage> data = new ArrayList<Usage>();
+        for (Map.Entry<String, Long> entry : usages.entrySet()) {
+            data.add(new Usage(entry.getKey(), entry.getValue()));
+        }
+
+        instance.dumpSensorRun();
+        UsageUtils.dumpUsageData(config.getDataFile(), dumpCount, data);
     }
 
-    private void dumpSensorRun(int dumpCount) {
+    private void dumpSensorRun() {
         File file = config.getSensorFile();
 
         try {
             File tmpFile = File.createTempFile("duck", ".tmp", file.getAbsoluteFile().getParentFile());
             sensorRun.saveTo(tmpFile);
-            renameFile(tmpFile, file);
+            UsageUtils.renameFile(tmpFile, file);
         } catch (IOException e) {
             DuckSensor.out.println(DuckSensor.NAME + " cannot save " + file + ": " + e);
-        }
-    }
-
-    private void dumpUsageData(int dumpCount) {
-        long startedAt = System.currentTimeMillis();
-        File file = config.getDataFile();
-
-        try {
-            File tmpFile = File.createTempFile("duck", ".tmp", file.getAbsoluteFile().getParentFile());
-            PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(tmpFile)));
-
-            DuckSensor.out.printf("%s dumps output #%d to %s%n", DuckSensor.NAME, dumpCount, config.getDataFile().getAbsolutePath());
-
-            Date dumpedAt = new Date();
-            out.printf(Locale.ENGLISH, "# Duck usage results #%d for '%s' at %s%n", dumpCount, config.getAppName(), dumpedAt);
-            out.println("# lastUsedMillis:signature");
-
-            // Only iterate over trackedMethods once
-            Iterable<Usage> usages = new ArrayList<Usage>(this.usages.values());
-
-            int count = 0;
-            for (Usage usage : usages) {
-                out.println(usage);
-                count += 1;
-            }
-
-            out.flush();
-            out.close();
-
-            renameFile(tmpFile, file);
-
-            long elapsed = System.currentTimeMillis() - startedAt;
-            out.printf(Locale.ENGLISH, "# Dump #%d for '%s' at %s took %d ms, number of methods: %d%n", dumpCount, config.getAppName(),
-                       dumpedAt, elapsed, count);
-        } catch (IOException e) {
-            DuckSensor.out.println(DuckSensor.NAME + " cannot dump usage data to " + file + ": " + e);
-        }
-    }
-
-    private void renameFile(File from, File to) {
-        if (!from.renameTo(to)) {
-            DuckSensor.out.printf(Locale.ENGLISH, "%s cannot rename %s to %s%n", DuckSensor.NAME, from.getAbsolutePath(),
-                              to.getAbsolutePath());
-            from.delete();
         }
     }
 

@@ -4,6 +4,7 @@ package duck.spike.agent;
 import duck.spike.util.Configuration;
 import duck.spike.util.SensorRun;
 import duck.spike.util.Usage;
+import duck.spike.util.UsageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,7 +18,7 @@ import java.util.*;
 @Slf4j
 public class Agent extends TimerTask {
     private final Configuration config;
-    private final Map<String, Usage> usages = new HashMap<>();
+    private final Map<String, Usage> codeBase = new HashMap<>();
     private final CodeBaseScanner codeBaseScanner = new CodeBaseScanner();
 
     private long dataFileModifiedAtMillis;
@@ -42,13 +43,19 @@ public class Agent extends TimerTask {
 
         long modifiedAt = config.getDataFile().lastModified();
         if (modifiedAt != dataFileModifiedAtMillis) {
-            // Overwrite with the latest usages
-            usages.putAll(Usage.readFromFile(config.getDataFile()));
+            // Overwrite with the latest usages from the sensor
+
+            Map<String, Usage> usages = UsageUtils.readFromFile(config.getDataFile());
+            for (Map.Entry<String, Usage> entry : usages.entrySet()) {
+                if (codeBase.put(entry.getKey(), entry.getValue()) == null) {
+                    log.warn("Unrecognized runtime signature: {}", entry.getKey());
+                }
+            }
 
             int unused = 0;
             int used = 0;
 
-            for (Usage usage : usages.values()) {
+            for (Usage usage : codeBase.values()) {
                 if (usage.getUsedAtMillis() == 0L) {
                     unused += 1;
                 }
@@ -77,8 +84,9 @@ public class Agent extends TimerTask {
 
         if (lastSeenSensorUUID == null || !lastSeenSensorUUID.equals(sensorRun.getUuid())) {
             log.debug("Scanning code base at {}", config.getCodeBaseUri());
-            usages.clear();
-            usages.putAll(codeBaseScanner.scanCodeBase(config));
+            codeBase.clear();
+            codeBase.putAll(codeBaseScanner.scanCodeBase(config));
+            UsageUtils.dumpUsageData(config.getCodeBaseFile(), 0, codeBase.values());
             lastSeenSensorUUID = sensorRun.getUuid();
         }
         return sensorRun;

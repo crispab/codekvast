@@ -44,7 +44,7 @@ public class UsageTest {
 
     @Test
     public void testReadNullFile() throws Exception {
-        Map<String, Usage> result = Usage.readFromFile(null);
+        Map<String, Usage> result = UsageUtils.readFromFile(null);
         assertThat(result.isEmpty(), is(true));
     }
 
@@ -52,7 +52,7 @@ public class UsageTest {
     public void testReadFileUsage1() throws Exception {
         File file = new File(getClass().getResource("/usage1.dat").toURI());
 
-        Map<String, Usage> result = Usage.readFromFile(file);
+        Map<String, Usage> result = UsageUtils.readFromFile(file);
 
         assertThat(result.size(), is(2));
         assertThat(result.get("signature1").getUsedAtMillis(), is(1000L));
