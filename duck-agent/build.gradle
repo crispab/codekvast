@@ -22,3 +22,20 @@ run {
     dependsOn = [":sample-app:generateDuckConfig"]
     args tasks.getByPath(":sample-app:generateDuckConfig").configFile
 }
+
+applicationDistribution.from("src/main/resources") {
+    into "conf"
+    include "logback.xml"
+    rename { "${it}.sample" }
+}
+
+startScripts {
+    doLast {
+        outputs.files.each { script ->
+            println "Adjusting CLASSPATH in $script.name to start with \$APP_HOME/conf/ ..."
+            def text = script.text
+            text = text.replace('CLASSPATH=$APP_HOME/lib', 'CLASSPATH=$APP_HOME/conf/:$APP_HOME/lib')
+            script.text = text
+        }
+    }
+}

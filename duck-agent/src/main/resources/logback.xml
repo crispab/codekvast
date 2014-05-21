@@ -1,6 +1,6 @@
-<configuration>
+<configuration debug="false" scan="true" scanPeriod="30 seconds">
 
-    <define name="LOG_PATH" class="duck.spike.agent.logback.LogPathDefiner"/>
+<define name="LOG_PATH" class="duck.spike.agent.logback.LogPathDefiner"/>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_PATH}/duck-agent.log</file>
