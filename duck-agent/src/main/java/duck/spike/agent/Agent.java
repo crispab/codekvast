@@ -18,6 +18,7 @@ import java.util.*;
 public class Agent extends TimerTask {
     private final Configuration config;
     private final Map<String, Usage> usages = new HashMap<>();
+    private final CodeBaseScanner codeBaseScanner = new CodeBaseScanner();
 
     private long dataFileModifiedAtMillis;
     private UUID lastSeenSensorUUID;
@@ -77,7 +78,7 @@ public class Agent extends TimerTask {
         if (lastSeenSensorUUID == null || !lastSeenSensorUUID.equals(sensorRun.getUuid())) {
             log.debug("Scanning code base at {}", config.getCodeBaseUri());
             usages.clear();
-            usages.putAll(new CodeBaseScanner(config).scanCodeBase());
+            usages.putAll(codeBaseScanner.scanCodeBase(config));
             lastSeenSensorUUID = sensorRun.getUuid();
         }
         return sensorRun;
