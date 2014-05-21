@@ -26,6 +26,8 @@ public class Agent extends TimerTask {
         Timer timer = new Timer(getClass().getSimpleName(), false);
         long intervalMillis = config.getWarehouseUploadIntervalSeconds() * 1000L;
         timer.scheduleAtFixedRate(this, 10L, intervalMillis);
+
+        Runtime.getRuntime().addShutdownHook(new Thread(new ShutdownHook()));
         log.info("Started with {}", config);
     }
 
@@ -98,4 +100,10 @@ public class Agent extends TimerTask {
         }
     }
 
+    private class ShutdownHook implements Runnable {
+        @Override
+        public void run() {
+            log.info("Shutting down");
+        }
+    }
 }
