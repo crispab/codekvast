@@ -9,8 +9,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.*;
 import java.net.URISyntaxException;
-import java.util.Set;
-import java.util.TreeSet;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -50,13 +48,13 @@ public class AgentTest {
     @Test
     @Ignore("Broken until Agent.normalizeSignature() is debugged")
     public void testPrepareCodeBase() throws Exception {
-        Set<String> signatures = readSignatures(getResource("/customer1/app1/signatures-guice-aop-1.dat"));
-        assertTrue(signatures.contains(
+        CodeBaseScanner.Result result = readScannerResult(getResource("/customer1/app1/signatures-guice-aop.dat"));
+        assertTrue(result.signatures.contains(
                 "public void se.transmode.tnm.module.l1mgr.connectivity.persistence.TrailEAO.removeTrails(java.util.Collection)"));
 
-        agent.resetSignatureUsage(signatures);
+        agent.resetSignatureUsage(result);
 
-        int unrecognized = agent.applyRecordedUsage(SensorUtils.readUsageFrom(getResource("/customer1/app1/usage-guice-aop-1.dat")));
+        int unrecognized = agent.applyRecordedUsage(SensorUtils.readUsageFrom(getResource("/customer1/app1/usage-guice-aop.dat")));
 
         assertThat(unrecognized, is(0));
     }
@@ -65,12 +63,22 @@ public class AgentTest {
         return new File(getClass().getResource(resource).toURI());
     }
 
-    private Set<String> readSignatures(File file) throws IOException {
-        Set<String> result = new TreeSet<>();
+    private CodeBaseScanner.Result readScannerResult(File file) throws IOException {
+        CodeBaseScanner.Result result = new CodeBaseScanner.Result();
         try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
             String line;
+            boolean signaturePhase = true;
             while ((line = in.readLine()) != null) {
-                result.add(line);
+                if (line.startsWith("#") || line.trim().isEmpty()) {
+                    // ignore comment
+                } else if (line.contains("-----------")) {
+                    signaturePhase = false;
+                } else if (signaturePhase) {
+                    result.signatures.add(line);
+                } else {
+                    String parts[] = line.split("->");
+                    result.overriddenSignatures.put(parts[0].trim(), parts[1].trim());
+                }
             }
         }
         return result;

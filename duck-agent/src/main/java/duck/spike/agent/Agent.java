@@ -20,10 +20,18 @@ import java.util.regex.Pattern;
 public class Agent extends TimerTask {
     private final Configuration config;
     private final Map<String, Long> signatureUsage = new TreeMap<>();
+    private final Map<String, String> baseSignatures = new HashMap<>();
     private final CodeBaseScanner codeBaseScanner;
 
     private long dataFileModifiedAtMillis;
     private UUID lastSeenSensorUUID;
+
+    private final Pattern[] enhanceByGuicePatterns = {
+            Pattern.compile(".*\\.\\.FastClassByGuice.*\\.getIndex\\(java\\.lang\\.Class\\[\\]\\)$"),
+            Pattern.compile(".*\\.\\.FastClassByGuice.*\\.newInstance\\(int, java\\.lang\\.Object\\[\\]\\)$"),
+            Pattern.compile(".*\\.\\.FastClassByGuice.*\\.invoke\\(int, java\\.lang\\.Object, java\\.lang\\.Object\\[\\]\\)$"),
+            Pattern.compile(".*\\(com\\.google\\.inject\\.internal\\.cglib.*\\)$"),
+    };
 
     private void start() {
         Timer timer = new Timer(getClass().getSimpleName(), false);
@@ -62,6 +70,7 @@ public class Agent extends TimerTask {
         int recognized = 0;
         int unrecognized = 0;
         int ignored = 0;
+        int overridden = 0;
 
         for (Usage usage : usages) {
             String rawSignature = usage.getSignature();
@@ -69,15 +78,22 @@ public class Agent extends TimerTask {
 
             if (normalizedSignature == null) {
                 ignored += 1;
-            } else if (!signatureUsage.containsKey(normalizedSignature)) {
-                if (normalizedSignature.equals(rawSignature)) {
+            } else if (signatureUsage.containsKey(normalizedSignature)) {
+                recognized += 1;
+            } else {
+                String baseSignature = baseSignatures.get(normalizedSignature);
+                if (baseSignature != null) {
+                    log.debug("{} replaced by {}", normalizedSignature, baseSignature);
+
+                    overridden += 1;
+                    normalizedSignature = normalizeSignature(baseSignature);
+                } else if (normalizedSignature.equals(rawSignature)) {
+                    unrecognized += 1;
                     log.warn("Unrecognized normalized signature: {}", normalizedSignature);
                 } else {
+                    unrecognized += 1;
                     log.warn("Unrecognized normalized signature: {} (was {})", normalizedSignature, rawSignature);
                 }
-                unrecognized += 1;
-            } else {
-                recognized += 1;
             }
 
             if (normalizedSignature != null) {
@@ -86,19 +102,13 @@ public class Agent extends TimerTask {
         }
 
         if (unrecognized > 0) {
-            log.warn("{} recognized, {} unrecognized and {} ignored signature usages applied", recognized, unrecognized, ignored);
+            log.warn("{} recognized, {} overridden, {} unrecognized and {} ignored signature usages applied", recognized, overridden,
+                     unrecognized, ignored);
         } else {
-            log.info("{} signature usages applied ({} ignored)", recognized, ignored);
+            log.info("{} signature usages applied ({} overridden, {} ignored)", recognized, overridden, ignored);
         }
         return unrecognized;
     }
-
-    private final Pattern[] enhanceByGuicePatterns = {
-            Pattern.compile(".*\\.\\.FastClassByGuice.*\\.getIndex\\(java\\.lang\\.Class\\[\\]\\)$"),
-            Pattern.compile(".*\\.\\.FastClassByGuice.*\\.newInstance\\(int, java\\.lang\\.Object\\[\\]\\)$"),
-            Pattern.compile(".*\\.\\.FastClassByGuice.*\\.invoke\\(int, java\\.lang\\.Object, java\\.lang\\.Object\\[\\]\\)$"),
-            Pattern.compile(".*\\(com\\.google\\.inject\\.internal\\.cglib.*\\)$"),
-    };
 
     String normalizeSignature(String signature) {
         for (Pattern pattern : enhanceByGuicePatterns) {
@@ -126,23 +136,32 @@ public class Agent extends TimerTask {
 
     private void importSignaturesIfNew(SensorRun sensorRun) {
         if (lastSeenSensorUUID == null || !lastSeenSensorUUID.equals(sensorRun.getUuid())) {
-            Set<String> signatures = codeBaseScanner.getPublicMethodSignatures(config);
+            CodeBaseScanner.Result scannerResult = codeBaseScanner.getPublicMethodSignatures(config);
 
-            resetSignatureUsage(signatures);
-            writeSignaturesTo(signatures, config.getSignatureFile());
+            resetSignatureUsage(scannerResult);
+            writeSignaturesTo(scannerResult, config.getSignatureFile());
 
             lastSeenSensorUUID = sensorRun.getUuid();
         }
     }
 
-    private void writeSignaturesTo(Set<String> signatures, File file) {
+    private void writeSignaturesTo(CodeBaseScanner.Result scannerResult, File file) {
         PrintStream out = null;
         try {
             File tmpFile = File.createTempFile("duck", ".tmp", file.getAbsoluteFile().getParentFile());
             out = new PrintStream(new BufferedOutputStream(new FileOutputStream(tmpFile)));
 
-            for (String signature : signatures) {
+            out.println("# Signatures:");
+            for (String signature : scannerResult.signatures) {
                 out.println(signature);
+            }
+
+            out.println();
+            out.println("------------------------------------------------------------------------------------------------");
+            out.println("# Overridden signatures:");
+            out.println("# child() -> base()");
+            for (Map.Entry<String, String> entry : scannerResult.overriddenSignatures.entrySet()) {
+                out.printf("%s -> %s%n", entry.getKey(), entry.getValue());
             }
 
             if (!tmpFile.renameTo(file)) {
@@ -158,11 +177,13 @@ public class Agent extends TimerTask {
         }
     }
 
-    void resetSignatureUsage(Set<String> signatures) {
+    void resetSignatureUsage(CodeBaseScanner.Result result) {
         signatureUsage.clear();
-        for (String signature : signatures) {
+        for (String signature : result.signatures) {
             signatureUsage.put(normalizeSignature(signature), 0L);
         }
+        baseSignatures.clear();
+        baseSignatures.putAll(result.overriddenSignatures);
     }
 
     private SensorRun getLatestSensorRun() {

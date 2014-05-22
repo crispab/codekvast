@@ -18,7 +18,6 @@ import java.util.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
-import static java.util.Arrays.asList;
 
 /**
  * @author Olle Hallin
@@ -26,8 +25,13 @@ import static java.util.Arrays.asList;
 @Slf4j
 public class CodeBaseScanner {
 
+    public static class Result {
+        public final Set<String> signatures = new TreeSet<>();
+        public final Map<String, String> overriddenSignatures = new HashMap<>();
+    }
+
     @SneakyThrows(MalformedURLException.class)
-    Set<String> getPublicMethodSignatures(Configuration config) {
+    Result getPublicMethodSignatures(Configuration config) {
         File codeBase = new File(config.getCodeBaseUri());
         checkState(codeBase.exists(), "Code base at " + codeBase + " does not exist");
 
@@ -37,35 +41,76 @@ public class CodeBaseScanner {
         URLClassLoader appClassLoader = new URLClassLoader(getUrlsForCodeBase(codeBase), System.class.getClassLoader());
         Reflections reflections = new Reflections(config.getPackagePrefix(), appClassLoader, new SubTypesScanner(false));
 
-        Set<String> debugNames = new HashSet<>(asList("EAOBase", "CalculationAlgorithm", "LayerRate", "FlowDirection"));
+        Result result = new Result();
 
-        Set<String> result = new TreeSet<>();
         for (Class<?> clazz : reflections.getSubTypesOf(Object.class)) {
-            if (debugNames.contains(clazz.getSimpleName())) {
-                log.debug("Analyzing " + clazz);
-            }
-            for (Method method : clazz.getMethods()) {
-                if (Modifier.isPublic(method.getModifiers())) {
-                    addSignature(clazz, method, result, config.getPackagePrefix());
-                }
-            }
+            findPublicMethods(clazz, result.signatures, result.overriddenSignatures, config.getPackagePrefix());
         }
 
-        checkState(!result.isEmpty(),
+        checkState(!result.signatures.isEmpty(),
                    "Code base at " + codeBase + " does not contain any classes with package prefix " + config.getPackagePrefix());
 
         log.debug("Code base at {} with package prefix '{}' scanned in {} ms, found {} public methods.",
-                  config.getCodeBaseUri(), config.getPackagePrefix(), System.currentTimeMillis() - startedAt, result.size());
+                  config.getCodeBaseUri(), config.getPackagePrefix(), System.currentTimeMillis() - startedAt, result.signatures.size());
         return result;
     }
 
-    private void addSignature(Class<?> clazz, Method method, Set<String> result, String packagePrefix) {
-        if (method.getDeclaringClass().getPackage().getName().startsWith(packagePrefix)) {
-            String signature = AspectjUtils.makeMethodKey(AspectjUtils.makeMethodSignature(method));
-            if (result.add(signature)) {
-                log.trace("  Found {}", signature);
+    void findPublicMethods(Class<?> clazz, Set<String> result, Map<String, String> overriddenMethods, String packagePrefix) {
+        for (Method method : clazz.getMethods()) {
+            if (Modifier.isPublic(method.getModifiers())) {
+                String signature = AspectjUtils.makeMethodKey(AspectjUtils.makeMethodSignature(method));
+                if (result.add(signature)) {
+                    log.trace("  Found {}", signature);
+
+                    findParentMethods(signature, method, clazz.getSuperclass(), overriddenMethods, packagePrefix);
+                }
             }
         }
+    }
+
+    /**
+     * Find super class methods with same signature and associate them to this signature.
+     * <p/>
+     * Some AOP frameworks (read: Guice) will push down intercepted methods in a base class to the Guice-enhanced subclass.
+     * <p/>
+     * The sensor will record an execution of e.g. "public void somepkg.SubClass..EnhancedByGuice..12347.foo()" when foo
+     * () actually is @Transactional somepkg.BaseClass.foo().
+     * <p/>
+     * When such a usage is detected, the signature must be normalized (remove "EnhancedByGuice..."),
+     * and the original method "public void some.pkg.BaseClass.foo()" attributed the usage.
+     */
+    void findParentMethods(String childSignature, Method childMethod, Class<?> clazz, Map<String, String> overriddenMethods,
+                           String packagePrefix) {
+        if (clazz != null && clazz.getPackage().getName().startsWith(packagePrefix)) {
+            boolean found = false;
+            for (Method parentMethod : clazz.getMethods()) {
+                if (Modifier.isPublic(parentMethod.getModifiers())
+                        && parentMethod.getName().equals(childMethod.getName())
+                        && equalParameterTypes(parentMethod.getParameterTypes(), childMethod.getParameterTypes())
+                        && parentMethod.getReturnType().equals(childMethod.getReturnType())) {
+
+                    log.trace("  Found base class for {} in {}", childSignature, clazz);
+                    String signature = AspectjUtils.makeMethodKey(AspectjUtils.makeMethodSignature(parentMethod));
+                    overriddenMethods.put(childSignature, signature);
+                    found = true;
+                }
+            }
+            if (!found) {
+                findParentMethods(childSignature, childMethod, clazz.getSuperclass(), overriddenMethods, packagePrefix);
+            }
+        }
+    }
+
+    private boolean equalParameterTypes(Class<?>[] types1, Class<?>[] types2) {
+        if (types1.length != types2.length) {
+            return false;
+        }
+        for (int i = 0; i < types1.length; i++) {
+            if (!types1[i].equals(types2[i])) {
+                return false;
+            }
+        }
+        return true;
     }
 
     URL[] getUrlsForCodeBase(File codeBase) throws MalformedURLException {

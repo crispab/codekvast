@@ -3,6 +3,7 @@
     <words>
       <w>guice</w>
       <w>loadtime</w>
+      <w>somepkg</w>
       <w>untracked</w>
     </words>
   </dictionary>
