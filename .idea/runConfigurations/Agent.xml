@@ -16,7 +16,7 @@
     </extension>
     <option name="MAIN_CLASS_NAME" value="duck.spike.agent.Agent" />
     <option name="VM_PARAMETERS" value="" />
-    <option name="PROGRAM_PARAMETERS" value="../sample-app/build/tmp/duck/duck.properties" />
+    <option name="PROGRAM_PARAMETERS" value="/usr/local/src/ws/trunk/tnm_mainserver_main/duck.properties" />
     <option name="WORKING_DIRECTORY" value="file://$MODULE_DIR$" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" value="" />
@@ -30,6 +30,9 @@
       <option name="DEBUG_PORT" value="" />
       <option name="TRANSPORT" value="0" />
       <option name="LOCAL" value="true" />
+    </RunnerSettings>
+    <RunnerSettings RunnerId="JProfiler">
+      <option name="WINDOW" value="false" />
     </RunnerSettings>
     <RunnerSettings RunnerId="JRebel Debug">
       <option name="DEBUG_PORT" value="" />

@@ -7,7 +7,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -57,9 +57,9 @@ public class CodeBaseScannerTest {
                                             .packagePrefix("se.crisp")
                                             .codeBaseUri(new File(SAMPLE_APP_JAR).toURI())
                                             .build();
-        List<String> signatures = scanner.getPublicMethodSignatures(config);
+        Set<String> signatures = scanner.getPublicMethodSignatures(config);
         assertThat(signatures, notNullValue());
-        assertThat(signatures.size(), is(7));
+        assertThat(signatures.size(), is(8));
     }
 
     @Test
@@ -68,8 +68,8 @@ public class CodeBaseScannerTest {
                                             .packagePrefix("se.crisp")
                                             .codeBaseUri(new File(SAMPLE_APP_LIB).toURI())
                                             .build();
-        List<String> signatures = scanner.getPublicMethodSignatures(config);
+        Set<String> signatures = scanner.getPublicMethodSignatures(config);
         assertThat(signatures, notNullValue());
-        assertThat(signatures.size(), is(7));
+        assertThat(signatures.size(), is(8));
     }
 }

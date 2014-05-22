@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * @author Olle Hallin
@@ -60,31 +61,52 @@ public class Agent extends TimerTask {
     int applyRecordedUsage(List<Usage> usages) {
         int recognized = 0;
         int unrecognized = 0;
+        int ignored = 0;
 
         for (Usage usage : usages) {
             String rawSignature = usage.getSignature();
             String normalizedSignature = normalizeSignature(rawSignature);
 
-            if (!signatureUsage.containsKey(normalizedSignature)) {
-                log.warn("Unrecognized normalized signature: {} (was {})", normalizedSignature, rawSignature);
+            if (normalizedSignature == null) {
+                ignored += 1;
+            } else if (!signatureUsage.containsKey(normalizedSignature)) {
+                if (normalizedSignature.equals(rawSignature)) {
+                    log.warn("Unrecognized normalized signature: {}", normalizedSignature);
+                } else {
+                    log.warn("Unrecognized normalized signature: {} (was {})", normalizedSignature, rawSignature);
+                }
                 unrecognized += 1;
             } else {
                 recognized += 1;
             }
 
-            signatureUsage.put(normalizedSignature, usage.getUsedAtMillis());
+            if (normalizedSignature != null) {
+                signatureUsage.put(normalizedSignature, usage.getUsedAtMillis());
+            }
         }
 
         if (unrecognized > 0) {
-            log.warn("{} recognized and {} unrecognized signature usages applied", recognized, unrecognized);
+            log.warn("{} recognized, {} unrecognized and {} ignored signature usages applied", recognized, unrecognized, ignored);
         } else {
-            log.info("{} signature usages applied", recognized);
+            log.info("{} signature usages applied ({} ignored)", recognized, ignored);
         }
         return unrecognized;
     }
 
+    private final Pattern[] enhanceByGuicePatterns = {
+            Pattern.compile(".*\\.\\.FastClassByGuice.*\\.getIndex\\(java\\.lang\\.Class\\[\\]\\)$"),
+            Pattern.compile(".*\\.\\.FastClassByGuice.*\\.newInstance\\(int, java\\.lang\\.Object\\[\\]\\)$"),
+            Pattern.compile(".*\\.\\.FastClassByGuice.*\\.invoke\\(int, java\\.lang\\.Object, java\\.lang\\.Object\\[\\]\\)$"),
+            Pattern.compile(".*\\(com\\.google\\.inject\\.internal\\.cglib.*\\)$"),
+    };
+
     String normalizeSignature(String signature) {
-        return signature;
+        for (Pattern pattern : enhanceByGuicePatterns) {
+            if (pattern.matcher(signature).matches()) {
+                return null;
+            }
+        }
+        return signature.replaceAll(" final ", " ").replaceAll("\\.\\.EnhancerByGuice\\.\\..*[0-9a-f]\\.([\\w]+\\()", ".$1");
     }
 
     private void logStatistics() {
@@ -104,7 +126,7 @@ public class Agent extends TimerTask {
 
     private void importSignaturesIfNew(SensorRun sensorRun) {
         if (lastSeenSensorUUID == null || !lastSeenSensorUUID.equals(sensorRun.getUuid())) {
-            List<String> signatures = codeBaseScanner.getPublicMethodSignatures(config);
+            Set<String> signatures = codeBaseScanner.getPublicMethodSignatures(config);
 
             resetSignatureUsage(signatures);
             writeSignaturesTo(signatures, config.getSignatureFile());
@@ -113,7 +135,7 @@ public class Agent extends TimerTask {
         }
     }
 
-    private void writeSignaturesTo(List<String> signatures, File file) {
+    private void writeSignaturesTo(Set<String> signatures, File file) {
         PrintStream out = null;
         try {
             File tmpFile = File.createTempFile("duck", ".tmp", file.getAbsoluteFile().getParentFile());
@@ -136,10 +158,10 @@ public class Agent extends TimerTask {
         }
     }
 
-    void resetSignatureUsage(List<String> signatures) {
+    void resetSignatureUsage(Set<String> signatures) {
         signatureUsage.clear();
         for (String signature : signatures) {
-            signatureUsage.put(signature, 0L);
+            signatureUsage.put(normalizeSignature(signature), 0L);
         }
     }
 

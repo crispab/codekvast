@@ -4,7 +4,6 @@ import duck.spike.util.AspectjUtils;
 import duck.spike.util.Configuration;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.Signature;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 
@@ -15,11 +14,11 @@ import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
+import static java.util.Arrays.asList;
 
 /**
  * @author Olle Hallin
@@ -28,7 +27,7 @@ import static com.google.common.base.Preconditions.checkState;
 public class CodeBaseScanner {
 
     @SneakyThrows(MalformedURLException.class)
-    List<String> getPublicMethodSignatures(Configuration config) {
+    Set<String> getPublicMethodSignatures(Configuration config) {
         File codeBase = new File(config.getCodeBaseUri());
         checkState(codeBase.exists(), "Code base at " + codeBase + " does not exist");
 
@@ -38,16 +37,16 @@ public class CodeBaseScanner {
         URLClassLoader appClassLoader = new URLClassLoader(getUrlsForCodeBase(codeBase), System.class.getClassLoader());
         Reflections reflections = new Reflections(config.getPackagePrefix(), appClassLoader, new SubTypesScanner(false));
 
-        List<String> result = new ArrayList<>();
+        Set<String> debugNames = new HashSet<>(asList("EAOBase", "CalculationAlgorithm", "LayerRate", "FlowDirection"));
+
+        Set<String> result = new TreeSet<>();
         for (Class<?> clazz : reflections.getSubTypesOf(Object.class)) {
-            for (Method method : clazz.getDeclaredMethods()) {
-                if (Modifier.isPublic(method.getModifiers()) && !method.isSynthetic()) {
-                    Signature signature = AspectjUtils.makeMethodSignature(clazz, method);
-
-                    String methodString = AspectjUtils.makeMethodKey(signature);
-                    log.trace("  Found {}", methodString);
-
-                    result.add(methodString);
+            if (debugNames.contains(clazz.getSimpleName())) {
+                log.debug("Analyzing " + clazz);
+            }
+            for (Method method : clazz.getMethods()) {
+                if (Modifier.isPublic(method.getModifiers())) {
+                    addSignature(clazz, method, result, config.getPackagePrefix());
                 }
             }
         }
@@ -58,6 +57,15 @@ public class CodeBaseScanner {
         log.debug("Code base at {} with package prefix '{}' scanned in {} ms, found {} public methods.",
                   config.getCodeBaseUri(), config.getPackagePrefix(), System.currentTimeMillis() - startedAt, result.size());
         return result;
+    }
+
+    private void addSignature(Class<?> clazz, Method method, Set<String> result, String packagePrefix) {
+        if (method.getDeclaringClass().getPackage().getName().startsWith(packagePrefix)) {
+            String signature = AspectjUtils.makeMethodKey(AspectjUtils.makeMethodSignature(method));
+            if (result.add(signature)) {
+                log.trace("  Found {}", signature);
+            }
+        }
     }
 
     URL[] getUrlsForCodeBase(File codeBase) throws MalformedURLException {

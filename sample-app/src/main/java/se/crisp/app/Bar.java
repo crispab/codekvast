@@ -5,7 +5,7 @@ package se.crisp.app;
  */
 public class Bar {
 
-    public int m1() {
+    public int declaredOnBar() {
         if (true) {
             privateMethodUsed();
         } else {
@@ -28,7 +28,7 @@ public class Bar {
         return "called";
     }
 
-    public int m2() {
+    public int publicMethodUnusedDeclaredOnBar() {
         return 4711;
     }
 

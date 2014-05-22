@@ -17,5 +17,6 @@
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.7" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
+  <component name="RegexUtilComponent" text="public int se.transmode.tnm.module.l1mgr.connectivity.persistence.TrailEAO..EnhancerByGuice..a219ec4a..FastClassByGuice..2d349e96.getIndex(java.lang.Class[])" flags="0" regex="\.\.EnhancerByGuice.*FastClassByGuice.*\.getIndex\(java\.lang\.Class\[\]\)$" mode="0" />
 </project>
 
