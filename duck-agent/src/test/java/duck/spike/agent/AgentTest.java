@@ -24,9 +24,9 @@ public class AgentTest {
     @Test
     @Ignore("Broken until signature normalization is implemented")
     public void testPrepareCodeBase() throws Exception {
-        List<String> signatures = readSignatures(getResource("/signatures-guice-aop.dat"));
+        List<String> signatures = readSignatures(getResource("/customer1/app1/signatures-guice-aop.dat"));
         agent.resetSignatureUsage(signatures);
-        int unrecognized = agent.applyRecordedUsage(SensorUtils.readUsageFrom(getResource("/usage-guice-aop.dat")));
+        int unrecognized = agent.applyRecordedUsage(SensorUtils.readUsageFrom(getResource("/customer1/app1/usage-guice-aop.dat")));
         assertThat(unrecognized, is(0));
     }
 
