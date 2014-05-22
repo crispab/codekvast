@@ -33,8 +33,8 @@ public class Configuration {
         return new File(dataPath, "usage.dat");
     }
 
-    public File getCodeBaseFile() {
-        return new File(dataPath, "codebase.dat");
+    public File getSignatureFile() {
+        return new File(dataPath, "signatures.dat");
     }
 
     public File getSensorFile() {

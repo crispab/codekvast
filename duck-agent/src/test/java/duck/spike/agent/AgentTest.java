@@ -1,17 +1,14 @@
 package duck.spike.agent;
 
+import duck.spike.util.SensorUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,21 +24,19 @@ public class AgentTest {
     @Test
     @Ignore("Broken until signature normalization is implemented")
     public void testPrepareCodeBase() throws Exception {
-        List<String> signatures = getSignaturesFromResource("/signatures-guice-aop.dat");
-        agent.prepareCodeBase(signatures);
-        int unrecognized = agent.applyLatestSensorDataToCodeBase(getResourceFile("/usage-guice-aop.dat"));
+        List<String> signatures = readSignatures(getResource("/signatures-guice-aop.dat"));
+        agent.resetSignatureUsage(signatures);
+        int unrecognized = agent.applyRecordedUsage(SensorUtils.readUsageFrom(getResource("/usage-guice-aop.dat")));
         assertThat(unrecognized, is(0));
     }
 
-    private File getResourceFile(String resource) throws URISyntaxException {
-        URL url = getClass().getResource(resource);
-        return new File(url.toURI());
+    private File getResource(String resource) throws URISyntaxException {
+        return new File(getClass().getResource(resource).toURI());
     }
 
-    private List<String> getSignaturesFromResource(String resource) throws IOException {
+    private List<String> readSignatures(File file) throws IOException {
         List<String> result = new ArrayList<>();
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(
-                getClass().getResourceAsStream(resource)))) {
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
             String line;
             while ((line = in.readLine()) != null) {
                 result.add(line);

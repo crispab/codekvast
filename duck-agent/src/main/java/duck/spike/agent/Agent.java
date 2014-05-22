@@ -3,13 +3,12 @@ package duck.spike.agent;
 
 import duck.spike.util.Configuration;
 import duck.spike.util.SensorRun;
+import duck.spike.util.SensorUtils;
 import duck.spike.util.Usage;
-import duck.spike.util.UsageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -19,7 +18,7 @@ import java.util.*;
 @Slf4j
 public class Agent extends TimerTask {
     private final Configuration config;
-    private final Map<String, Long> codeBase = new TreeMap<>();
+    private final Map<String, Long> signatureUsage = new TreeMap<>();
     private final CodeBaseScanner codeBaseScanner;
 
     private long dataFileModifiedAtMillis;
@@ -42,14 +41,14 @@ public class Agent extends TimerTask {
             return;
         }
 
-        importCodeBaseIfNew(sensorRun);
+        importSignaturesIfNew(sensorRun);
         processUsageDataIfNew(config.getDataFile());
     }
 
     private void processUsageDataIfNew(File dataFile) {
         long modifiedAt = dataFile.lastModified();
         if (modifiedAt != dataFileModifiedAtMillis) {
-            applyLatestSensorDataToCodeBase(config.getDataFile());
+            applyRecordedUsage(SensorUtils.readUsageFrom(config.getDataFile()));
             logStatistics();
 
             // TODO: post sensorRun and usages to data warehouse
@@ -58,27 +57,41 @@ public class Agent extends TimerTask {
         }
     }
 
-    int applyLatestSensorDataToCodeBase(File dataFile) {
-        List<Usage> usages = UsageUtils.readFromFile(dataFile);
+    int applyRecordedUsage(List<Usage> usages) {
         int recognized = 0;
         int unrecognized = 0;
+
         for (Usage usage : usages) {
-            if (codeBase.put(usage.getSignature(), usage.getUsedAtMillis()) == null) {
-                log.warn("Unrecognized runtime signature: {}", usage.getSignature());
+            String rawSignature = usage.getSignature();
+            String normalizedSignature = normalizeSignature(rawSignature);
+
+            if (!signatureUsage.containsKey(normalizedSignature)) {
+                log.warn("Unrecognized normalized signature: {} (was {})", normalizedSignature, rawSignature);
                 unrecognized += 1;
             } else {
                 recognized += 1;
             }
+
+            signatureUsage.put(normalizedSignature, usage.getUsedAtMillis());
         }
-        log.info("{} recognized and {} unrecognized signatures found", recognized, unrecognized);
+
+        if (unrecognized > 0) {
+            log.warn("{} recognized and {} unrecognized signature usages applied", recognized, unrecognized);
+        } else {
+            log.info("{} signature usages applied", recognized);
+        }
         return unrecognized;
+    }
+
+    String normalizeSignature(String signature) {
+        return signature;
     }
 
     private void logStatistics() {
         int unused = 0;
         int used = 0;
 
-        for (Long usedAtMillis : codeBase.values()) {
+        for (Long usedAtMillis : signatureUsage.values()) {
             if (usedAtMillis == 0L) {
                 unused += 1;
             } else {
@@ -89,19 +102,44 @@ public class Agent extends TimerTask {
                  config.getAppName(), config.getWarehouseUri());
     }
 
-    private void importCodeBaseIfNew(SensorRun sensorRun) {
+    private void importSignaturesIfNew(SensorRun sensorRun) {
         if (lastSeenSensorUUID == null || !lastSeenSensorUUID.equals(sensorRun.getUuid())) {
-            log.debug("Scanning code base at {}", config.getCodeBaseUri());
-            prepareCodeBase(codeBaseScanner.getPublicMethodSignatures(config));
-            UsageUtils.dumpUsageData(config.getCodeBaseFile(), 0, codeBase);
+            List<String> signatures = codeBaseScanner.getPublicMethodSignatures(config);
+
+            resetSignatureUsage(signatures);
+            writeSignaturesTo(signatures, config.getSignatureFile());
+
             lastSeenSensorUUID = sensorRun.getUuid();
         }
     }
 
-    void prepareCodeBase(List<String> signatures) {
-        codeBase.clear();
+    private void writeSignaturesTo(List<String> signatures, File file) {
+        PrintStream out = null;
+        try {
+            File tmpFile = File.createTempFile("duck", ".tmp", file.getAbsoluteFile().getParentFile());
+            out = new PrintStream(new BufferedOutputStream(new FileOutputStream(tmpFile)));
+
+            for (String signature : signatures) {
+                out.println(signature);
+            }
+
+            if (!tmpFile.renameTo(file)) {
+                log.error("Cannot rename {} to {}", tmpFile.getAbsolutePath(), file.getAbsolutePath());
+                tmpFile.delete();
+            }
+        } catch (IOException e) {
+            log.error("Cannot create " + file, e);
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+        }
+    }
+
+    void resetSignatureUsage(List<String> signatures) {
+        signatureUsage.clear();
         for (String signature : signatures) {
-            codeBase.put(signature, 0L);
+            signatureUsage.put(signature, 0L);
         }
     }
 

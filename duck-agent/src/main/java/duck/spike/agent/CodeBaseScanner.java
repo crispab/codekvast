@@ -29,14 +29,13 @@ public class CodeBaseScanner {
 
     @SneakyThrows(MalformedURLException.class)
     List<String> getPublicMethodSignatures(Configuration config) {
-
         File codeBase = new File(config.getCodeBaseUri());
         checkState(codeBase.exists(), "Code base at " + codeBase + " does not exist");
 
         long startedAt = System.currentTimeMillis();
+        log.info("Scanning code base at {}", config.getCodeBaseUri());
 
         URLClassLoader appClassLoader = new URLClassLoader(getUrlsForCodeBase(codeBase), System.class.getClassLoader());
-
         Reflections reflections = new Reflections(config.getPackagePrefix(), appClassLoader, new SubTypesScanner(false));
 
         List<String> result = new ArrayList<>();

@@ -44,7 +44,7 @@ public class UsageTest {
 
     @Test
     public void testReadNullFile() throws Exception {
-        List<Usage> result = UsageUtils.readFromFile(null);
+        List<Usage> result = SensorUtils.readUsageFrom(null);
         assertThat(result.isEmpty(), is(true));
     }
 
@@ -52,7 +52,7 @@ public class UsageTest {
     public void testReadFileUsage1() throws Exception {
         File file = new File(getClass().getResource("/usage1.dat").toURI());
 
-        List<Usage> result = UsageUtils.readFromFile(file);
+        List<Usage> result = SensorUtils.readUsageFrom(file);
 
         assertThat(result.size(), is(2));
         assertThat(result.get(0).getUsedAtMillis(), is(1000L));

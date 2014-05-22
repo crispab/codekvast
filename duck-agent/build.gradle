@@ -35,7 +35,7 @@ applicationDistribution.from("src/main/resources") {
 startScripts {
     doLast {
         outputs.files.each { script ->
-            println "Adjusting CLASSPATH in $script.name to start with \$APP_HOME/conf/ ..."
+            logger.info "Adjusting CLASSPATH in {} to start with \$APP_HOME/conf/ ...", script.name
             def text = script.text
             text = text.replace('CLASSPATH=$APP_HOME/lib', 'CLASSPATH=$APP_HOME/conf/:$APP_HOME/lib')
             script.text = text

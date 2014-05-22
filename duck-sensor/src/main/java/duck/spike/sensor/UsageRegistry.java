@@ -3,7 +3,7 @@ package duck.spike.sensor;
 import duck.spike.util.AspectjUtils;
 import duck.spike.util.Configuration;
 import duck.spike.util.SensorRun;
-import duck.spike.util.UsageUtils;
+import duck.spike.util.SensorUtils;
 import org.aspectj.lang.Signature;
 
 import java.io.File;
@@ -76,7 +76,7 @@ public class UsageRegistry {
      */
     public synchronized void dumpDataToDisk(int dumpCount) {
         dumpSensorRun();
-        UsageUtils.dumpUsageData(config.getDataFile(), dumpCount, usages);
+        SensorUtils.dumpUsageData(config.getDataFile(), dumpCount, usages);
     }
 
     private void dumpSensorRun() {
@@ -84,7 +84,7 @@ public class UsageRegistry {
         try {
             File tmpFile = File.createTempFile("duck", ".tmp", file.getAbsoluteFile().getParentFile());
             sensorRun.saveTo(tmpFile);
-            UsageUtils.renameFile(tmpFile, file);
+            SensorUtils.renameFile(tmpFile, file);
         } catch (IOException e) {
             DuckSensor.out.println(DuckSensor.NAME + " cannot save " + file + ": " + e);
         }

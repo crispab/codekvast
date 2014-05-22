@@ -7,13 +7,13 @@ import java.util.*;
  * @author Olle Hallin
  */
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
-public class UsageUtils {
+public class SensorUtils {
 
-    private UsageUtils() {
+    private SensorUtils() {
         // Utility class
     }
 
-    public static List<Usage> readFromFile(File file) {
+    public static List<Usage> readUsageFrom(File file) {
         List<Usage> result = new ArrayList<Usage>();
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
