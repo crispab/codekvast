@@ -42,6 +42,7 @@
     <RunnerSettings RunnerId="Run" />
     <ConfigurationWrapper RunnerId="Chronon" />
     <ConfigurationWrapper RunnerId="Debug" />
+    <ConfigurationWrapper RunnerId="JRebel Debug" />
     <ConfigurationWrapper RunnerId="Run" />
     <method />
   </configuration>

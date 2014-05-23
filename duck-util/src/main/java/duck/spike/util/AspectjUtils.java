@@ -23,9 +23,9 @@ public class AspectjUtils {
      *
      * @return The same signature object as an AspectJ execution pointcut will provide in JoinPoint.getSignature()
      */
-    public static Signature makeMethodSignature(Method method) {
-        return new Factory(null, method.getDeclaringClass())
-                .makeMethodSig(method.getModifiers(), method.getName(), method.getDeclaringClass(), method.getParameterTypes(),
+    public static Signature makeMethodSignature(Class clazz, Method method) {
+        return new Factory(null, clazz)
+                .makeMethodSig(method.getModifiers(), method.getName(), clazz, method.getParameterTypes(),
                                null, method.getExceptionTypes(), method.getReturnType());
     }
 }

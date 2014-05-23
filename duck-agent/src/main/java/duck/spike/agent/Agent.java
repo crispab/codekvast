@@ -89,10 +89,10 @@ public class Agent extends TimerTask {
                     normalizedSignature = normalizeSignature(baseSignature);
                 } else if (normalizedSignature.equals(rawSignature)) {
                     unrecognized += 1;
-                    log.warn("Unrecognized normalized signature: {}", normalizedSignature);
+                    log.warn("Unrecognized signature: {}", normalizedSignature);
                 } else {
                     unrecognized += 1;
-                    log.warn("Unrecognized normalized signature: {} (was {})", normalizedSignature, rawSignature);
+                    log.warn("Unrecognized signature: {} (was {})", normalizedSignature, rawSignature);
                 }
             }
 

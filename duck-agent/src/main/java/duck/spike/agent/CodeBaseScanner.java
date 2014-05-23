@@ -56,61 +56,24 @@ public class CodeBaseScanner {
     }
 
     void findPublicMethods(Class<?> clazz, Set<String> result, Map<String, String> overriddenMethods, String packagePrefix) {
+        String prefix = " " + packagePrefix;
         for (Method method : clazz.getMethods()) {
             if (Modifier.isPublic(method.getModifiers())) {
-                String signature = AspectjUtils.makeMethodKey(AspectjUtils.makeMethodSignature(method));
-                if (result.add(signature)) {
-                    log.trace("  Found {}", signature);
+                String declaringSignature =
+                        AspectjUtils.makeMethodKey(AspectjUtils.makeMethodSignature(method.getDeclaringClass(), method));
+                String thisSignature = AspectjUtils.makeMethodKey(AspectjUtils.makeMethodSignature(clazz, method));
 
-                    findParentMethods(signature, method, clazz.getSuperclass(), overriddenMethods, packagePrefix);
+                if (!thisSignature.equals(declaringSignature) && declaringSignature.contains(prefix)) {
+                    // Some AOP frameworks (e.g., Guice) create subclasses on the fly containing overridden methods from the base class.
+                    // We need to map those back to the original signature in the base class, or else the base method will look unused.
+                    overriddenMethods.put(thisSignature, declaringSignature);
+                }
+
+                if (result.add(declaringSignature)) {
+                    log.trace("  Found {}", declaringSignature);
                 }
             }
         }
-    }
-
-    /**
-     * Find super class methods with same signature and associate them to this signature.
-     * <p/>
-     * Some AOP frameworks (read: Guice) will push down intercepted methods in a base class to the Guice-enhanced subclass.
-     * <p/>
-     * The sensor will record an execution of e.g. "public void somepkg.SubClass..EnhancedByGuice..12347.foo()" when foo
-     * () actually is @Transactional somepkg.BaseClass.foo().
-     * <p/>
-     * When such a usage is detected, the signature must be normalized (remove "EnhancedByGuice..."),
-     * and the original method "public void some.pkg.BaseClass.foo()" attributed the usage.
-     */
-    void findParentMethods(String childSignature, Method childMethod, Class<?> clazz, Map<String, String> overriddenMethods,
-                           String packagePrefix) {
-        if (clazz != null && clazz.getPackage().getName().startsWith(packagePrefix)) {
-            boolean found = false;
-            for (Method parentMethod : clazz.getMethods()) {
-                if (Modifier.isPublic(parentMethod.getModifiers())
-                        && parentMethod.getName().equals(childMethod.getName())
-                        && equalParameterTypes(parentMethod.getParameterTypes(), childMethod.getParameterTypes())
-                        && parentMethod.getReturnType().equals(childMethod.getReturnType())) {
-
-                    log.trace("  Found base class for {} in {}", childSignature, clazz);
-                    String signature = AspectjUtils.makeMethodKey(AspectjUtils.makeMethodSignature(parentMethod));
-                    overriddenMethods.put(childSignature, signature);
-                    found = true;
-                }
-            }
-            if (!found) {
-                findParentMethods(childSignature, childMethod, clazz.getSuperclass(), overriddenMethods, packagePrefix);
-            }
-        }
-    }
-
-    private boolean equalParameterTypes(Class<?>[] types1, Class<?>[] types2) {
-        if (types1.length != types2.length) {
-            return false;
-        }
-        for (int i = 0; i < types1.length; i++) {
-            if (!types1[i].equals(types2[i])) {
-                return false;
-            }
-        }
-        return true;
     }
 
     URL[] getUrlsForCodeBase(File codeBase) throws MalformedURLException {

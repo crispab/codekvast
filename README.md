@@ -28,3 +28,17 @@ Utvecklat och testat med Oracle Java 7.
 * Java 6
 * Lombok-plugin i IDE
 
+# Lärdomar från spiken
+
+Jag har haft möjlighet att testa DUCK-spiken på Transmode Network Manager, och funnit följande saker:
+
+* Klasser skickas över RMI (och som därför måste vara Serializable) **måste** ha serialVersionUID, annars krashar RMI-anropet på
+klientsidan (om inte den också kör DUCK förstås).
+
+* Guice AOP är ganska aggressivt i sin bytekodmanipulering. Den genererar i runtime nya subklasser med metoder som inte finns med i källkoden.
+Detta måste DUCK hantera.
+
+* Frågan är hur det är med andra ramverk som gör bytekodmanipulering: Spring, JBoss, Tapestry5 etc. Vi behöver bygga en realistisk sample app.
+
+
+
