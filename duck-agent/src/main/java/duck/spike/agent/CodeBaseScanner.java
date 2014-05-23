@@ -76,9 +76,9 @@ public class CodeBaseScanner {
     void findPublicMethods(Result result, String packagePrefix, Class<?> clazz) {
         log.debug("Analyzing {}", clazz);
 
-        Set<String> problematicClasses = of("LayerRate", "OperatingSystems");
+        Set<String> problematicClasses = of("MmsServerRmiCtrl", "PceServerRmiCtrl");
         for (String s : problematicClasses) {
-            if (clazz.getName().endsWith(s)) {
+            if (clazz.getName().contains(s)) {
                 log.debug("About to analyze {}", clazz);
             }
         }

@@ -20,7 +20,7 @@ jar {
     exclude "lombok"
 }
 
-// We sensor the Sample Crisp App by default...
+// We sensor the Sample App by default...
 run {
     dependsOn = [":sample-app:installApp", ":sample-app:generateDuckConfig"]
     args tasks.getByPath(":sample-app:generateDuckConfig").configFile
