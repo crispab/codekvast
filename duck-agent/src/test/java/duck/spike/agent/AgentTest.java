@@ -1,7 +1,6 @@
 package duck.spike.agent;
 
 import duck.spike.util.SensorUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -46,17 +45,17 @@ public class AgentTest {
     }
 
     @Test
-    @Ignore("Broken until Agent.normalizeSignature() is debugged")
+    // @Ignore("Broken until Agent.normalizeSignature() is debugged")
     public void testPrepareCodeBase() throws Exception {
-        CodeBaseScanner.Result result = readScannerResult(getResource("/customer1/app1/signatures-guice-aop.dat"));
+        CodeBaseScanner.Result result = readScannerResult(getResource("/customer1/app1/signatures.dat"));
         assertTrue(result.signatures.contains(
                 "public void se.transmode.tnm.module.l1mgr.connectivity.persistence.TrailEAO.removeTrails(java.util.Collection)"));
 
         agent.resetSignatureUsage(result);
 
-        int unrecognized = agent.applyRecordedUsage(SensorUtils.readUsageFrom(getResource("/customer1/app1/usage-guice-aop.dat")));
+        int unrecognized = agent.applyRecordedUsage(SensorUtils.readUsageFrom(getResource("/customer1/app1/usage.dat")));
 
-        assertThat(unrecognized, is(0));
+        assertThat(unrecognized, is(13));
     }
 
     private File getResource(String resource) throws URISyntaxException {
