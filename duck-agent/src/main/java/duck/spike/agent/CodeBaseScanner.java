@@ -1,9 +1,10 @@
 package duck.spike.agent;
 
-import duck.spike.util.AspectjUtils;
 import duck.spike.util.Configuration;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.lang.Signature;
+import org.aspectj.runtime.reflect.Factory;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 
@@ -25,6 +26,18 @@ import static com.google.common.base.Preconditions.checkState;
 @Slf4j
 public class CodeBaseScanner {
 
+    /**
+     * Uses AspectJ for creating the same signature as AbstractDuckAspect.
+     *
+     * @return The same signature object as an AspectJ execution pointcut will provide in JoinPoint.getSignature().
+     * Returns null unless the method is public.
+     */
+    private Signature makeSignature(Class clazz, Method method) {
+        return Modifier.isPublic(method.getModifiers()) ? new Factory(null, clazz)
+                .makeMethodSig(method.getModifiers(), method.getName(), clazz, method.getParameterTypes(),
+                               null, method.getExceptionTypes(), method.getReturnType()) : null;
+    }
+
     public static class Result {
         public final Set<String> signatures = new TreeSet<>();
         public final Map<String, String> overriddenSignatures = new HashMap<>();
@@ -44,7 +57,7 @@ public class CodeBaseScanner {
         Result result = new Result();
 
         for (Class<?> clazz : reflections.getSubTypesOf(Object.class)) {
-            findPublicMethods(clazz, result.signatures, result.overriddenSignatures, config.getPackagePrefix());
+            findPublicMethods(result, config.getPackagePrefix(), clazz);
         }
 
         checkState(!result.signatures.isEmpty(),
@@ -55,21 +68,27 @@ public class CodeBaseScanner {
         return result;
     }
 
-    void findPublicMethods(Class<?> clazz, Set<String> result, Map<String, String> overriddenMethods, String packagePrefix) {
+    void findPublicMethods(Result result, String packagePrefix, Class<?> clazz) {
         String prefix = " " + packagePrefix;
         for (Method method : clazz.getMethods()) {
             if (Modifier.isPublic(method.getModifiers())) {
-                String declaringSignature =
-                        AspectjUtils.makeMethodKey(AspectjUtils.makeMethodSignature(method.getDeclaringClass(), method));
-                String thisSignature = AspectjUtils.makeMethodKey(AspectjUtils.makeMethodSignature(clazz, method));
 
-                if (!thisSignature.equals(declaringSignature) && declaringSignature.contains(prefix)) {
-                    // Some AOP frameworks (e.g., Guice) create subclasses on the fly containing overridden methods from the base class.
-                    // We need to map those back to the original signature in the base class, or else the base method will look unused.
-                    overriddenMethods.put(thisSignature, declaringSignature);
+                // Some AOP frameworks (e.g., Guice) create subclasses on the fly containing enhanced,
+                // overridden methods from the base class.
+                // We need to map those back to the original declaring signature, or else the declared method will look unused.
+
+                String declaringSignature = makeSignature(method.getDeclaringClass(), method).toLongString();
+                String thisSignature = makeSignature(clazz, method).toLongString();
+
+                if (declaringSignature != null
+                        && thisSignature != null
+                        && !thisSignature.equals(declaringSignature)
+                        && declaringSignature.contains(prefix)) {
+                    log.trace("  Adding {} -> {} to overridden signatures", thisSignature, declaringSignature);
+                    result.overriddenSignatures.put(thisSignature, declaringSignature);
                 }
 
-                if (result.add(declaringSignature)) {
+                if (declaringSignature != null && result.signatures.add(declaringSignature)) {
                     log.trace("  Found {}", declaringSignature);
                 }
             }
@@ -99,16 +118,7 @@ public class CodeBaseScanner {
         result.add(directory.toURI().toURL());
 
         // Look for jars in that directory
-        File[] jarFiles = directory.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File file) {
-                boolean isJar = file.isFile() && file.getName().endsWith(".jar");
-                if (!isJar) {
-                    log.debug("  Ignoring {}, not a jar file", file);
-                }
-                return isJar;
-            }
-        });
+        File[] jarFiles = directory.listFiles(new JarNameFilter());
 
         for (File jarFile : jarFiles) {
             if (jarFile.canRead()) {
@@ -120,4 +130,14 @@ public class CodeBaseScanner {
         }
     }
 
+    private static class JarNameFilter implements FileFilter {
+        @Override
+        public boolean accept(File file) {
+            boolean isJar = file.isFile() && file.getName().endsWith(".jar");
+            if (!isJar) {
+                log.debug("  Ignoring {}, not a jar file", file);
+            }
+            return isJar;
+        }
+    }
 }

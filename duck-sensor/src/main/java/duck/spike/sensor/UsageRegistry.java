@@ -1,6 +1,5 @@
 package duck.spike.sensor;
 
-import duck.spike.util.AspectjUtils;
 import duck.spike.util.Configuration;
 import duck.spike.util.SensorRun;
 import duck.spike.util.SensorUtils;
@@ -65,8 +64,7 @@ public class UsageRegistry {
      * Thread-safe.
      */
     public void registerMethodExecution(Signature signature) {
-        String sig = AspectjUtils.makeMethodKey(signature);
-        usages.put(sig, System.currentTimeMillis());
+        usages.put(signature.toLongString(), System.currentTimeMillis());
     }
 
     /**
