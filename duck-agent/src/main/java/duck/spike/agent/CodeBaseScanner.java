@@ -19,6 +19,7 @@ import java.util.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.ImmutableSet.of;
 
 /**
  * @author Olle Hallin
@@ -60,6 +61,10 @@ public class CodeBaseScanner {
             findPublicMethods(result, config.getPackagePrefix(), clazz);
         }
 
+        for (Class<?> clazz : reflections.getSubTypesOf(Enum.class)) {
+            findPublicMethods(result, config.getPackagePrefix(), clazz);
+        }
+
         checkState(!result.signatures.isEmpty(),
                    "Code base at " + codeBase + " does not contain any classes with package prefix " + config.getPackagePrefix());
 
@@ -69,6 +74,15 @@ public class CodeBaseScanner {
     }
 
     void findPublicMethods(Result result, String packagePrefix, Class<?> clazz) {
+        log.debug("Analyzing {}", clazz);
+
+        Set<String> problematicClasses = of("LayerRate", "OperatingSystems");
+        for (String s : problematicClasses) {
+            if (clazz.getName().endsWith(s)) {
+                log.debug("About to analyze {}", clazz);
+            }
+        }
+
         String prefix = " " + packagePrefix;
         for (Method method : clazz.getMethods()) {
             if (Modifier.isPublic(method.getModifiers())) {
