@@ -9,7 +9,7 @@ sourceCompatibility = 1.6
 version = duckVersion
 
 dependencies {
-    compile project(":duck-util"), { transitive = false }
+    compile project(":agent:util"), { transitive = false }
     compile "org.aspectj:aspectjweaver:$aspectjVersion"
 
     // Absolutely NO other compile or runtime dependencies are allowed here!

@@ -7,7 +7,7 @@ version = duckVersion
 mainClassName = "duck.spike.agent.Agent"
 
 dependencies {
-    compile project(":duck-util")
+    compile project(":agent:util")
     compile "org.reflections:reflections:0.9.9-RC1"
     compile "org.slf4j:slf4j-api:1.7.7"
     compile "ch.qos.logback:logback-classic:1.1.2"
@@ -22,8 +22,8 @@ jar {
 
 // We sensor the Sample App by default...
 run {
-    dependsOn = [":sample-app:installApp", ":sample-app:generateDuckConfig"]
-    args tasks.getByPath(":sample-app:generateDuckConfig").configFile
+    dependsOn = [":sample:standalone-app:installApp", ":sample:standalone-app:generateDuckConfig"]
+    args tasks.getByPath(":sample:standalone-app:generateDuckConfig").configFile
 }
 
 applicationDistribution.from("src/main/resources") {

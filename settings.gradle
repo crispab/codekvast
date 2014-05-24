@@ -1,8 +1,8 @@
 rootProject.name = 'duck'
-include 'duck-util'
-include 'duck-sensor'
-include 'duck-agent'
+include ':agent:util'
+include ':agent:sensor'
+include ':agent:service'
 
-include 'sample-app'
-include 'sample-war-tapestry'
+include ':sample:standalone-app'
+include ':sample:tapestry5-war'
 
