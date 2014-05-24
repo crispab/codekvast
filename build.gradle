@@ -3,12 +3,16 @@ task wrapper(type: Wrapper) {
 }
 
 subprojects {
+    buildscript {
+        dependencies { classpath 'com.github.jengelman.gradle.plugins:shadow:0.8' }
+    }
+
+    apply from: "$rootDir/gradle/libs.gradle"
+
     buildscript { repositories { jcenter() } }
     repositories { jcenter() }
 
     ext {
         duckVersion = "1.0"
-        aspectjVersion = "1.8.0"
-        lombokVersion = "1.12.6"
     }
 }

@@ -1,7 +1,3 @@
-buildscript {
-    dependencies { classpath 'com.github.jengelman.gradle.plugins:shadow:0.8' }
-}
-
 apply plugin: 'java'
 apply plugin: 'shadow'
 
@@ -10,7 +6,7 @@ version = duckVersion
 
 dependencies {
     compile project(":agent:util"), { transitive = false }
-    compile "org.aspectj:aspectjweaver:$aspectjVersion"
+    compile libs['aspectjweaver']
 
     // Absolutely NO other compile or runtime dependencies are allowed here!
     // All (transitive) compile and runtime dependencies will end up in the sensored app's system

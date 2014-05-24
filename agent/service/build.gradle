@@ -7,13 +7,14 @@ version = duckVersion
 mainClassName = "duck.spike.agent.Agent"
 
 dependencies {
+    compile libs['aspectjweaver']
+    compile libs['logback']
+    compile libs['reflections']
+    compile libs['slf4j-api']
     compile project(":agent:util")
-    compile "org.reflections:reflections:0.9.9-RC1"
-    compile "org.slf4j:slf4j-api:1.7.7"
-    compile "ch.qos.logback:logback-classic:1.1.2"
 
-    testCompile "junit:junit:4.11"
-    testCompile "org.mockito:mockito-core:1.9.5"
+    testCompile libs['junit']
+    testCompile libs['mockito']
 }
 
 jar {

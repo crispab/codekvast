@@ -2,13 +2,21 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/agent/agent.iml" filepath="$PROJECT_DIR$/agent/agent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/server/agent-api/server/agent-api.iml" filepath="$PROJECT_DIR$/server/agent-api/server/agent-api.iml" />
       <module fileurl="file://$PROJECT_DIR$/duck.iml" filepath="$PROJECT_DIR$/duck.iml" />
       <module fileurl="file://$PROJECT_DIR$/duck-agent/duck-agent.iml" filepath="$PROJECT_DIR$/duck-agent/duck-agent.iml" />
       <module fileurl="file://$PROJECT_DIR$/duck-dw/duck-dw.iml" filepath="$PROJECT_DIR$/duck-dw/duck-dw.iml" />
       <module fileurl="file://$PROJECT_DIR$/duck-sensor/duck-sensor.iml" filepath="$PROJECT_DIR$/duck-sensor/duck-sensor.iml" />
       <module fileurl="file://$PROJECT_DIR$/duck-util/duck-util.iml" filepath="$PROJECT_DIR$/duck-util/duck-util.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sample/sample.iml" filepath="$PROJECT_DIR$/sample/sample.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample-app/sample-app.iml" filepath="$PROJECT_DIR$/sample-app/sample-app.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample-war-tapestry/sample-war-tapestry.iml" filepath="$PROJECT_DIR$/sample-war-tapestry/sample-war-tapestry.iml" />
+      <module fileurl="file://$PROJECT_DIR$/agent/sensor/sensor.iml" filepath="$PROJECT_DIR$/agent/sensor/sensor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/agent/service/service.iml" filepath="$PROJECT_DIR$/agent/service/service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sample/standalone-app/standalone-app.iml" filepath="$PROJECT_DIR$/sample/standalone-app/standalone-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sample/tapestry5-war/tapestry5-war.iml" filepath="$PROJECT_DIR$/sample/tapestry5-war/tapestry5-war.iml" />
+      <module fileurl="file://$PROJECT_DIR$/agent/util/util.iml" filepath="$PROJECT_DIR$/agent/util/util.iml" />
     </modules>
   </component>
 </project>

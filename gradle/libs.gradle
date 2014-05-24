@@ -1,0 +1,9 @@
+ext.libs = [
+    'aspectjweaver': 'org.aspectj:aspectjweaver:1.8.0',
+    'junit' : 'junit:junit:4.11',
+    'logback': 'ch.qos.logback:logback-classic:1.1.2',
+    'lombok': 'org.projectlombok:lombok:1.12.6',
+    'mockito': 'org.mockito:mockito-core:1.9.5',
+    'reflections': 'org.reflections:reflections:0.9.9-RC1',
+    'slf4j-api': 'org.slf4j:slf4j-api:1.7.7',
+]
