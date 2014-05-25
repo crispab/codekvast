@@ -1,6 +1,7 @@
 buildscript { dependencies { classpath "org.springframework.boot:spring-boot-gradle-plugin:1.0.2.RELEASE" } }
 apply plugin: 'java'
 apply plugin: 'spring-boot'
+apply plugin: 'application'
 
 sourceCompatibility = 1.7
 version = duckVersion
@@ -8,6 +9,24 @@ version = duckVersion
 dependencies {
     compile "org.springframework.boot:spring-boot-starter-web"
     compile "org.springframework.boot:spring-boot-starter-actuator"
+    compile libs['logback']
 
     testCompile("org.springframework.boot:spring-boot-starter-test")
+}
+
+applicationDistribution.from("src/main/resources") {
+    into "conf"
+    include "logback.xml"
+    rename { "${it}.sample" }
+}
+
+startScripts {
+    doLast {
+        outputs.files.each { script ->
+            logger.info "Adjusting CLASSPATH in {} to start with \$APP_HOME/conf/ ...", script.name
+            def text = script.text
+            text = text.replace('CLASSPATH=$APP_HOME/lib', 'CLASSPATH=$APP_HOME/conf/:$APP_HOME/lib')
+            script.text = text
+        }
+    }
 }
