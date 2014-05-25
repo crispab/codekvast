@@ -1,0 +1,13 @@
+buildscript { dependencies { classpath "org.springframework.boot:spring-boot-gradle-plugin:1.0.2.RELEASE" } }
+apply plugin: 'java'
+apply plugin: 'spring-boot'
+
+sourceCompatibility = 1.7
+version = duckVersion
+
+dependencies {
+    compile "org.springframework.boot:spring-boot-starter-web"
+    compile "org.springframework.boot:spring-boot-starter-actuator"
+
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+}

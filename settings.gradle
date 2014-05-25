@@ -6,6 +6,5 @@ include ':agent:service'
 include ':sample:standalone-app'
 include ':sample:tapestry5-war'
 
-include 'server/agent-api'
-rootProject.children.find { it.name == 'server/agent-api' }.name = 'agent-api'
+include ':server:duck-server'
 

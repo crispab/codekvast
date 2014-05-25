@@ -1,8 +1,0 @@
-apply plugin: 'java'
-
-sourceCompatibility = 1.7
-version = "$duckVersion"
-
-dependencies {
-    compile libs['lombok']
-}
