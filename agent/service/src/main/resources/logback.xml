@@ -1,6 +1,6 @@
 <configuration debug="false" scan="true" scanPeriod="30 seconds">
 
-<define name="LOG_PATH" class="duck.spike.agent.logback.LogPathDefiner"/>
+    <define name="LOG_PATH" class="se.crisp.duck.agent.service.logback.LogPathDefiner"/>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_PATH}/duck-agent.log</file>
@@ -30,7 +30,7 @@
     <logger name="org.reflections" level="DEBUG"/>
 
     <root level="WARN">
-    <appender-ref ref="STDOUT"/>
+        <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
     </root>
 </configuration>

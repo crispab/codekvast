@@ -15,7 +15,7 @@ dependencies {
 
 jar {
     manifest {
-        attributes("Premain-Class": "duck.spike.sensor.DuckSensor")
+        attributes("Premain-Class": "se.crisp.duck.agent.sensor.DuckSensor")
     }
 }
 

@@ -14,7 +14,7 @@
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
-    <option name="MAIN_CLASS_NAME" value="duck.spike.agent.Agent" />
+    <option name="MAIN_CLASS_NAME" value="se.crisp.duck.agent.service.Agent" />
     <option name="VM_PARAMETERS" value="" />
     <option name="PROGRAM_PARAMETERS" value="/usr/local/src/ws/trunk/tnm_mainserver_main/duck.properties" />
     <option name="WORKING_DIRECTORY" value="file://$MODULE_DIR$" />
@@ -23,7 +23,7 @@
     <option name="ENABLE_SWING_INSPECTOR" value="false" />
     <option name="ENV_VARIABLES" />
     <option name="PASS_PARENT_ENVS" value="true" />
-    <module name="duck-agent" />
+    <module name="service" />
     <envs />
     <RunnerSettings RunnerId="Chronon" />
     <RunnerSettings RunnerId="Debug">

@@ -4,7 +4,7 @@ apply plugin: 'application'
 sourceCompatibility = 1.7
 version = duckVersion
 
-mainClassName = "duck.spike.agent.Agent"
+mainClassName = "se.crisp.duck.agent.service.Agent"
 
 dependencies {
     compile libs['aspectjweaver']
