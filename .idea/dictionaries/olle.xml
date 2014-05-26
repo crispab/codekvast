@@ -1,8 +1,10 @@
 <component name="ProjectDictionaryState">
   <dictionary name="olle">
     <words>
+      <w>datasource</w>
       <w>guice</w>
       <w>loadtime</w>
+      <w>migrator</w>
       <w>projectlombok</w>
       <w>somepkg</w>
       <w>untracked</w>

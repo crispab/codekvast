@@ -27,7 +27,8 @@
     </appender>
 
     <logger name="duck" level="DEBUG"/>
-    <logger name="org.reflections" level="DEBUG"/>
+    <logger name="org.flyway" level="INFO"/>
+    <logger name="h2database" level="INFO"/>
 
     <root level="INFO">
     <appender-ref ref="STDOUT"/>

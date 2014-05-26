@@ -1,5 +1,8 @@
 ext.libs = [
     'aspectjweaver': 'org.aspectj:aspectjweaver:1.8.0',
+    'flyway':'org.flywaydb:flyway-core:3.0',
+    'h2database': 'com.h2database:h2:1.4.178',
+    'javax-inject': 'javax.inject:javax.inject:1',
     'junit' : 'junit:junit:4.11',
     'logback': 'ch.qos.logback:logback-classic:1.1.2',
     'lombok': 'org.projectlombok:lombok:1.12.6',

@@ -2,12 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/agent/agent.iml" filepath="$PROJECT_DIR$/agent/agent.iml" group="Agent" />
-      <module fileurl="file://$PROJECT_DIR$/duck.iml" filepath="$PROJECT_DIR$/duck.iml" group="Server" />
       <module fileurl="file://$PROJECT_DIR$/server/duck-server/duck-server.iml" filepath="$PROJECT_DIR$/server/duck-server/duck-server.iml" group="Server" />
-      <module fileurl="file://$PROJECT_DIR$/sample/sample.iml" filepath="$PROJECT_DIR$/sample/sample.iml" group="sample" />
       <module fileurl="file://$PROJECT_DIR$/agent/sensor/sensor.iml" filepath="$PROJECT_DIR$/agent/sensor/sensor.iml" group="Agent" />
-      <module fileurl="file://$PROJECT_DIR$/server/server.iml" filepath="$PROJECT_DIR$/server/server.iml" group="Server" />
       <module fileurl="file://$PROJECT_DIR$/agent/service/service.iml" filepath="$PROJECT_DIR$/agent/service/service.iml" group="Agent" />
       <module fileurl="file://$PROJECT_DIR$/sample/standalone-app/standalone-app.iml" filepath="$PROJECT_DIR$/sample/standalone-app/standalone-app.iml" group="sample" />
       <module fileurl="file://$PROJECT_DIR$/sample/tapestry5-war/tapestry5-war.iml" filepath="$PROJECT_DIR$/sample/tapestry5-war/tapestry5-war.iml" group="sample" />
