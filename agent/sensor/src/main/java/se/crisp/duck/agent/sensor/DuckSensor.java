@@ -94,7 +94,8 @@ public class DuckSensor {
         String xml = String.format(
                 "<aspectj>\n"
                         + "  <aspects>\n"
-                        + "     <concrete-aspect name='duck.spike.DuckAspect' extends='se.crisp.duck.agent.sensor.AbstractDuckAspect'>\n"
+                        + "     <concrete-aspect name='se.crisp.duck.agent.sensor.DuckAspect' extends='se.crisp.duck.agent.sensor" +
+                        ".AbstractDuckAspect'>\n"
                         + "       <pointcut name='scope' expression='within(%1$s..*)'/>\n"
                         + "     </concrete-aspect>\n"
                         + "  </aspects>\n"

@@ -12,7 +12,7 @@ public class SampleApp {
     public static void main(String[] args) throws InterruptedException {
         System.out.printf("Hello, World! from %s%n%n", SampleApp.class.getName());
 
-        tryToLoadClass("duck.spike.sensor.DuckSensor", true);
+        tryToLoadClass("se.crisp.duck.agent.sensor.DuckSensor", true);
         tryToLoadClass("org.aspectj.weaver.loadtime.Agent", true);
         tryToLoadClass("org.reflections.Reflections", false);
 

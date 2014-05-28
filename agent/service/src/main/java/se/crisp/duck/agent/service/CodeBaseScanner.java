@@ -75,18 +75,25 @@ public class CodeBaseScanner {
 
     void findPublicMethods(Result result, String packagePrefix, Class<?> clazz) {
         log.debug("Analyzing {}", clazz);
+        Method[] methods = clazz.getMethods();
 
         Set<String> problematicClasses = of("MmsServerRmiCtrl", "PceServerRmiCtrl");
+        boolean isProblematicClass = false;
         for (String s : problematicClasses) {
             if (clazz.getName().contains(s)) {
                 log.debug("About to analyze {}", clazz);
+                isProblematicClass = true;
+                break;
             }
         }
 
         String prefix = " " + packagePrefix;
-        for (Method method : clazz.getMethods()) {
+        for (Method method : methods) {
             if (Modifier.isPublic(method.getModifiers())) {
 
+                if (isProblematicClass) {
+                    log.debug("About to analyze {}", method);
+                }
                 // Some AOP frameworks (e.g., Guice) create subclasses on the fly containing enhanced,
                 // overridden methods from the base class.
                 // We need to map those back to the original declaring signature, or else the declared method will look unused.
@@ -94,16 +101,15 @@ public class CodeBaseScanner {
                 String declaringSignature = makeSignature(method.getDeclaringClass(), method).toLongString();
                 String thisSignature = makeSignature(clazz, method).toLongString();
 
-                if (declaringSignature != null
-                        && thisSignature != null
-                        && !thisSignature.equals(declaringSignature)
-                        && declaringSignature.contains(prefix)) {
-                    log.trace("  Adding {} -> {} to overridden signatures", thisSignature, declaringSignature);
-                    result.overriddenSignatures.put(thisSignature, declaringSignature);
-                }
+                if (declaringSignature != null && declaringSignature.contains(prefix)) {
+                    if (!declaringSignature.equals(thisSignature)) {
+                        log.trace("  Adding {} -> {} to overridden signatures", thisSignature, declaringSignature);
+                        result.overriddenSignatures.put(thisSignature, declaringSignature);
+                    }
 
-                if (declaringSignature != null && result.signatures.add(declaringSignature)) {
-                    log.trace("  Found {}", declaringSignature);
+                    if (result.signatures.add(declaringSignature)) {
+                        log.trace("  Found {}", declaringSignature);
+                    }
                 }
             }
         }
