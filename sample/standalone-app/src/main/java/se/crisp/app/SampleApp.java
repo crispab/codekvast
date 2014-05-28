@@ -22,9 +22,9 @@ public class SampleApp {
         Thread.sleep(20000L);
         System.out.printf("%s wakes up%n", SampleApp.class.getSimpleName());
 
-        new Bar().declaredOnBar();
-        new SubBar().declaredOnBar();
-        new SubBar().declaredOnSubBar();
+        new Bar1().declaredOnBar();
+        new Bar2().declaredOnBar();
+        new Bar2().declaredOnBar2();
     }
 
     private static void measureMethodCallTrackingOverhead() {

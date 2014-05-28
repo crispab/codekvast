@@ -3,7 +3,7 @@ package se.crisp.app;
 /**
  * @author Olle Hallin
  */
-public class Bar {
+public class Bar1 {
 
     public int declaredOnBar() {
         if (true) {
@@ -20,7 +20,10 @@ public class Bar {
         return 17;
     }
 
-    private Bar privateMethodNeverUsed() {
+    public void m1() {
+    }
+
+    private Bar1 privateMethodNeverUsed() {
         return null;
     }
 

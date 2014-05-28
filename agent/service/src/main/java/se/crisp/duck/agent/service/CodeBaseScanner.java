@@ -2,7 +2,6 @@ package se.crisp.duck.agent.service;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.Signature;
 import org.aspectj.runtime.reflect.Factory;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
@@ -19,7 +18,6 @@ import java.util.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
-import static com.google.common.collect.ImmutableSet.of;
 
 /**
  * @author Olle Hallin
@@ -33,10 +31,10 @@ public class CodeBaseScanner {
      * @return The same signature object as an AspectJ execution pointcut will provide in JoinPoint.getSignature().
      * Returns null unless the method is public.
      */
-    private Signature makeSignature(Class clazz, Method method) {
-        return Modifier.isPublic(method.getModifiers()) ? new Factory(null, clazz)
+    private String makeSignature(Class clazz, Method method) {
+        return clazz != null && Modifier.isPublic(method.getModifiers()) ? new Factory(null, clazz)
                 .makeMethodSig(method.getModifiers(), method.getName(), clazz, method.getParameterTypes(),
-                               null, method.getExceptionTypes(), method.getReturnType()) : null;
+                               null, method.getExceptionTypes(), method.getReturnType()).toLongString() : null;
     }
 
     public static class Result {
@@ -53,23 +51,25 @@ public class CodeBaseScanner {
         log.info("Scanning code base at {}", config.getCodeBaseUri());
 
         URLClassLoader appClassLoader = new URLClassLoader(getUrlsForCodeBase(codeBase), System.class.getClassLoader());
-        Reflections reflections = new Reflections(config.getPackagePrefix(), appClassLoader, new SubTypesScanner(false));
+        String packagePrefix = config.getPackagePrefix();
+
+        Reflections reflections = new Reflections(packagePrefix, appClassLoader, new SubTypesScanner(false));
 
         Result result = new Result();
 
         for (Class<?> clazz : reflections.getSubTypesOf(Object.class)) {
-            findPublicMethods(result, config.getPackagePrefix(), clazz);
+            findPublicMethods(result, packagePrefix, clazz);
         }
 
         for (Class<?> clazz : reflections.getSubTypesOf(Enum.class)) {
-            findPublicMethods(result, config.getPackagePrefix(), clazz);
+            findPublicMethods(result, packagePrefix, clazz);
         }
 
         checkState(!result.signatures.isEmpty(),
-                   "Code base at " + codeBase + " does not contain any classes with package prefix " + config.getPackagePrefix());
+                   "Code base at " + codeBase + " does not contain any classes with package prefix " + packagePrefix);
 
         log.debug("Code base at {} with package prefix '{}' scanned in {} ms, found {} public methods.",
-                  config.getCodeBaseUri(), config.getPackagePrefix(), System.currentTimeMillis() - startedAt, result.signatures.size());
+                  config.getCodeBaseUri(), packagePrefix, System.currentTimeMillis() - startedAt, result.signatures.size());
         return result;
     }
 
@@ -77,31 +77,16 @@ public class CodeBaseScanner {
         log.debug("Analyzing {}", clazz);
         Method[] methods = clazz.getMethods();
 
-        Set<String> problematicClasses = of("MmsServerRmiCtrl", "PceServerRmiCtrl");
-        boolean isProblematicClass = false;
-        for (String s : problematicClasses) {
-            if (clazz.getName().contains(s)) {
-                log.debug("About to analyze {}", clazz);
-                isProblematicClass = true;
-                break;
-            }
-        }
-
-        String prefix = " " + packagePrefix;
         for (Method method : methods) {
             if (Modifier.isPublic(method.getModifiers())) {
 
-                if (isProblematicClass) {
-                    log.debug("About to analyze {}", method);
-                }
-                // Some AOP frameworks (e.g., Guice) create subclasses on the fly containing enhanced,
-                // overridden methods from the base class.
-                // We need to map those back to the original declaring signature, or else the declared method will look unused.
+                // Some AOP frameworks (e.g., Guice) push methods from a base class down to a subclass created in runtime.
+                // We need to map those back to the original declaring signature, or else the original, declared method will look unused.
 
-                String declaringSignature = makeSignature(method.getDeclaringClass(), method).toLongString();
-                String thisSignature = makeSignature(clazz, method).toLongString();
+                String thisSignature = makeSignature(clazz, method);
+                String declaringSignature = makeSignature(findDeclaringClass(method.getDeclaringClass(), method, packagePrefix), method);
 
-                if (declaringSignature != null && declaringSignature.contains(prefix)) {
+                if (declaringSignature != null) {
                     if (!declaringSignature.equals(thisSignature)) {
                         log.trace("  Adding {} -> {} to overridden signatures", thisSignature, declaringSignature);
                         result.overriddenSignatures.put(thisSignature, declaringSignature);
@@ -113,6 +98,22 @@ public class CodeBaseScanner {
                 }
             }
         }
+    }
+
+    private Class findDeclaringClass(Class<?> clazz, Method method, String packagePrefix) {
+        if (clazz == null) {
+            return null;
+        }
+        String pkg = clazz.getPackage().getName();
+        if (!pkg.startsWith(packagePrefix)) {
+            return null;
+        }
+        try {
+            clazz.getDeclaredMethod(method.getName(), method.getParameterTypes());
+            return clazz;
+        } catch (NoSuchMethodException ignore) {
+        }
+        return findDeclaringClass(clazz.getSuperclass(), method, packagePrefix);
     }
 
     URL[] getUrlsForCodeBase(File codeBase) throws MalformedURLException {
