@@ -11,3 +11,7 @@ build/**
 .idea/dictionaries/
 **/*.bak
 **/*.log
+**/build**
+**/build/**
+**/build/
+*/*/build
