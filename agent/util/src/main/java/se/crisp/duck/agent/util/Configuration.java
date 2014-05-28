@@ -81,7 +81,8 @@ public class Configuration {
 
     private static String getDefaultDataPath(String appName) {
         String normalizedAppName = appName.replace(" ", "_").replaceAll("[^a-zA-Z0-9_\\-]", "");
-        return System.getProperty("java.io.tmpdir") + File.separator + "duck" + File.separator + normalizedAppName;
+        return System
+                .getProperty("java.io.tmpdir") + File.separator + "duck" + File.separator + "agent" + File.separator + normalizedAppName;
     }
 
     private static URI getUriValue(Properties props, String key) {

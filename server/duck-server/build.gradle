@@ -22,8 +22,11 @@ dependencies {
 
 applicationDistribution.from("src/main/resources") {
     into "conf"
-    include "logback.xml"
-    rename { "${it}.sample" }
+    include "logback.xml", "default.properties"
+    rename {
+        def name = it == "default.properties" ? "application.properties" : it
+        "${name}.default"
+    }
 }
 
 startScripts {
