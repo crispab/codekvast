@@ -40,7 +40,7 @@ public class DatabaseInitializer {
     @Bean
     @DependsOn("flyway")
     public JdbcTemplate jdbcTemplate(DataSource dataSource) {
-        log.info("Creates a JdbcTemplate");
+        log.debug("Creates a JdbcTemplate");
         return new JdbcTemplate(dataSource);
     }
 
@@ -50,6 +50,7 @@ public class DatabaseInitializer {
     @Bean
     @DependsOn("flyway")
     public NamedParameterJdbcTemplate namedParameterJdbcTemplate(DataSource dataSource) {
+        log.debug("Creates a NamedParameterJdbcTemplate");
         return new NamedParameterJdbcTemplate(dataSource);
     }
 
