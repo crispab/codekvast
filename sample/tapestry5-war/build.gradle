@@ -2,7 +2,7 @@ apply plugin: 'war'
 apply plugin: 'jetty'
 
 sourceCompatibility = 1.6
-version = '1.0'
+archivesBaseName = "sample"
 
 dependencies {
     compile "org.apache.tapestry:tapestry-core:5.3.6"
@@ -20,4 +20,49 @@ jettyRun {
     reload = "automatic"
     scanIntervalSeconds = 5
     contextPath = ""
+}
+
+task generateDuckConfig {
+    group "Build"
+    description "Generates a duck.properties for test"
+
+    ext.configFile = file("build/libs/duck.properties")
+
+    inputs.file file("$projectDir/build.gradle")
+    outputs.file configFile
+
+    doLast {
+        configFile.parentFile.mkdirs()
+        configFile.text = """# Run Duck against Crisp Sample App
+appName = Crisp Sample Tapestry5 App
+environment = development
+codeBaseUri = file:/maven/${archivesBaseName}.war
+dataPath = /duck-data
+packagePrefix = se.crisp
+warehouseUri = http://localhost:8180
+sensorDumpIntervalSeconds = 10
+warehouseUploadIntervalSeconds = 5
+aspectjOptions = -verbose
+verbose = true
+"""
+    }
+}
+
+assemble.dependsOn generateDuckConfig
+
+task runWarInTomcat7InDocker(type: Exec) {
+    description = "Deploys the sample war to Tomcat7 inside a Docker container, accessible at http://localhost:8080"
+    group = "Test"
+    dependsOn assemble
+
+    executable = "docker"
+    args = ["run", "--rm",
+            "-v", "/tmp/duck/agent/sample/tapestry5-war:/duck-data",
+            "-v", "$buildDir/libs:/maven",
+            "-v", "$rootDir/agent/sensor/build/distributions/:/duck",
+            "-e", "JAVA_OPTS=-javaagent:/duck/sensor-$duckVersion-shadow.jar=/maven/duck.properties",
+            "-e", "LANG=C.UTF-8",
+            "-p", "8080:8080",
+            "jolokia/tomcat-7.0",
+    ]
 }
