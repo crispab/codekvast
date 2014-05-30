@@ -53,7 +53,7 @@ verbose = true
 assemble.dependsOn generateDuckConfig
 
 task runWarInTomcat7InDocker(type: Exec) {
-    description = "Deploys the sample war to Tomcat7 inside a Docker container, accessible at http://localhost:8080"
+    description = "Deploys the sample war to Tomcat7 inside a Docker container, accessible at http://localhost:8080/sample"
     group = "Test"
     dependsOn assemble
 
@@ -67,4 +67,8 @@ task runWarInTomcat7InDocker(type: Exec) {
             "-p", "8080:8080",
             "jolokia/tomcat-7.0",
     ]
+
+    doFirst {
+        println "Deploying $project.name to Tomcat7, access it at http://localhost:8080/sample"
+    }
 }
