@@ -12,6 +12,7 @@
       <module fileurl="file://$PROJECT_DIR$/sample/standalone-app/standalone-app.iml" filepath="$PROJECT_DIR$/sample/standalone-app/standalone-app.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/tapestry5-war/tapestry5-war.iml" filepath="$PROJECT_DIR$/sample/tapestry5-war/tapestry5-war.iml" />
       <module fileurl="file://$PROJECT_DIR$/agent/util/util.iml" filepath="$PROJECT_DIR$/agent/util/util.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sample/vanilla-jsp/sample/vanilla-jsp.iml" filepath="$PROJECT_DIR$/sample/vanilla-jsp/sample/vanilla-jsp.iml" />
     </modules>
   </component>
 </project>

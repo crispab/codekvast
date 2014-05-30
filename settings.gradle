@@ -3,8 +3,11 @@ include ':agent:util'
 include ':agent:sensor'
 include ':agent:service'
 
+include ':server:duck-server'
+
 include ':sample:standalone-app'
 include ':sample:tapestry5-war'
+include ':sample:vanilla-jsp'
 
-include ':server:duck-server'
+
 

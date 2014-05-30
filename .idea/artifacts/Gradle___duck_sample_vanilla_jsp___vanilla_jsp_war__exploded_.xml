@@ -1,0 +1,16 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="Gradle : duck.sample:vanilla-jsp : vanilla-jsp.war (exploded)">
+    <output-path>$PROJECT_DIR$/build/classes/artifacts/vanilla-jsp/exploded/vanilla-jsp.war</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="vanilla-jsp/web/Web Gradle : vanilla-jsp.war" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="vanilla-jsp" />
+        </element>
+      </element>
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/build/classes/artifacts/vanilla-jsp/exploded/vanilla-jsp.war/META-INF/MANIFEST.MF" />
+      </element>
+    </root>
+  </artifact>
+</component>

@@ -4,6 +4,7 @@
       <w>datasource</w>
       <w>guice</w>
       <w>jdbc</w>
+      <w>jolokia</w>
       <w>loadtime</w>
       <w>migrator</w>
       <w>projectlombok</w>

@@ -1,8 +1,8 @@
 <component name="ArtifactManager">
-  <artifact type="exploded-war" name="Gradle : duck.sample:tapestry5-war : tapestry5-war-1.0.war (exploded)">
-    <output-path>$PROJECT_DIR$/build/classes/artifacts/tapestry5-war/exploded/tapestry5-war-1.0.war</output-path>
+  <artifact type="exploded-war" name="Gradle : duck.sample:tapestry5-war : sample.war (exploded)">
+    <output-path>$PROJECT_DIR$/build/classes/artifacts/tapestry5-war/exploded/sample.war</output-path>
     <root id="root">
-      <element id="javaee-facet-resources" facet="tapestry5-war/web/Web Gradle : tapestry5-war-1.0.war" />
+      <element id="javaee-facet-resources" facet="tapestry5-war/web/Web Gradle : sample.war" />
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
           <element id="module-output" name="tapestry5-war" />
@@ -25,7 +25,7 @@
         </element>
       </element>
       <element id="directory" name="META-INF">
-        <element id="file-copy" path="$PROJECT_DIR$/build/classes/artifacts/tapestry5-war/exploded/tapestry5-war-1.0.war/META-INF/MANIFEST.MF" />
+        <element id="file-copy" path="$PROJECT_DIR$/build/classes/artifacts/tapestry5-war/exploded/sample.war/META-INF/MANIFEST.MF" />
       </element>
     </root>
   </artifact>

@@ -25,8 +25,8 @@ jettyRun {
 ext.duckDataPath = "/tmp/duck/agent/Crisp_Sample_Tapestry5-war"
 
 task generateDuckConfig {
-    group "Build"
-    description "Generates a duck.properties for test"
+    group = "Build"
+    description = "Generates a duck.properties for test"
 
     ext.configFile = file("build/libs/duck.properties")
 
