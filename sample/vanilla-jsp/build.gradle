@@ -1,0 +1,56 @@
+apply plugin: 'war'
+apply plugin: 'jetty'
+
+sourceCompatibility = 1.5
+archivesBaseName = "sample"
+
+ext.duckDataPath = "/tmp/duck/agent/Crisp_Sample_vanilla_jsp"
+
+task generateDuckConfig {
+    group = "Build"
+    description = "Generates a duck.properties for test"
+
+    ext.configFile = file("build/libs/duck.properties")
+
+    inputs.file file("$projectDir/build.gradle")
+    outputs.file configFile
+
+    doLast {
+        configFile.parentFile.mkdirs()
+        configFile.text = """# Run Duck against Crisp Sample App
+appName = Crisp Sample Vanilla JSP
+environment = development
+codeBaseUri = file:/maven/${archivesBaseName}.war
+dataPath = $duckDataPath
+packagePrefix = org.apache.jsp
+warehouseUri = http://localhost:8180
+sensorDumpIntervalSeconds = 10
+warehouseUploadIntervalSeconds = 5
+aspectjOptions = -verbose
+verbose = true
+"""
+    }
+}
+
+assemble.dependsOn generateDuckConfig
+
+task runWarInTomcat7InDocker(type: Exec) {
+    description = "Deploys the sample war to Tomcat7 inside a Docker container, accessible at http://localhost:8080/sample"
+    group = "Test"
+    dependsOn assemble
+
+    executable = "docker"
+    args = ["run", "--rm",
+            "-v", "$duckDataPath:$duckDataPath",
+            "-v", "$buildDir/libs:/maven",
+            "-v", "$rootDir/agent/sensor/build/distributions/:/duck",
+            "-e", "JAVA_OPTS=-javaagent:/duck/sensor-$duckVersion-shadow.jar=/maven/duck.properties",
+            "-e", "LANG=C.UTF-8",
+            "-p", "8080:8080",
+            "jolokia/tomcat-7.0",
+    ]
+
+    doFirst {
+        println "Deploying $project.name to Tomcat7, access it at http://localhost:8080/sample"
+    }
+}
