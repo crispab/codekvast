@@ -22,6 +22,8 @@ jettyRun {
     contextPath = ""
 }
 
+ext.duckDataPath = "/tmp/duck/agent/Crisp_Sample_Tapestry5-war"
+
 task generateDuckConfig {
     group "Build"
     description "Generates a duck.properties for test"
@@ -37,8 +39,8 @@ task generateDuckConfig {
 appName = Crisp Sample Tapestry5 App
 environment = development
 codeBaseUri = file:/maven/${archivesBaseName}.war
-dataPath = /duck-data
-packagePrefix = se.crisp
+dataPath = $duckDataPath
+packagePrefix = se.crisp.sample
 warehouseUri = http://localhost:8180
 sensorDumpIntervalSeconds = 10
 warehouseUploadIntervalSeconds = 5
@@ -57,7 +59,7 @@ task runWarInTomcat7InDocker(type: Exec) {
 
     executable = "docker"
     args = ["run", "--rm",
-            "-v", "/tmp/duck/agent/sample/tapestry5-war:/duck-data",
+            "-v", "$duckDataPath:$duckDataPath",
             "-v", "$buildDir/libs:/maven",
             "-v", "$rootDir/agent/sensor/build/distributions/:/duck",
             "-e", "JAVA_OPTS=-javaagent:/duck/sensor-$duckVersion-shadow.jar=/maven/duck.properties",
