@@ -29,12 +29,16 @@ public abstract class AbstractDuckAspect {
     private void methodExecution() {
     }
 
+    @Pointcut("within(se.crisp.duck.agent..*)")
+    private void withinDuck() {
+    }
+
     /**
      * Register that this method has been invoked.
      *
      * @param jp The join point
      */
-    @Before("scope() && methodExecution()")
+    @Before("scope() && methodExecution() && !withinDuck()")
     public void recordMethodCall(JoinPoint jp) {
         UsageRegistry.instance.registerMethodExecution(jp.getSignature());
     }

@@ -94,18 +94,20 @@ public class DuckSensor {
         String xml = String.format(
                 "<aspectj>\n"
                         + "  <aspects>\n"
-                        + "     <concrete-aspect name='se.crisp.duck.agent.sensor.DuckAspect' extends='se.crisp.duck.agent.sensor" +
-                        ".AbstractDuckAspect'>\n"
-                        + "       <pointcut name='scope' expression='within(%1$s..*)'/>\n"
+                        + "     <concrete-aspect name='se.crisp.duck.agent.sensor.DuckAspect' extends='%1$s'>\n"
+                        + "       <pointcut name='scope' expression='within(%3$s..*) || withincode(* org.apache.jsp..*_jsp(..))'/>\n"
                         + "     </concrete-aspect>\n"
                         + "  </aspects>\n"
-                        + "  <weaver options='%2$s'>\n"
-                        + "     <include within='%1$s..*' />\n"
-                        + "     <include within='duck.spike..*' />\n"
+                        + "  <weaver options='%4$s'>\n"
+                        + "     <include within='%2$s..*' />\n"
+                        + "     <include within='%3$s..*' />\n"
                         + "  </weaver>\n"
                         + "</aspectj>\n",
+                AbstractDuckAspect.class.getName(),
+                AbstractDuckAspect.class.getPackage().getName(),
                 config.getPackagePrefix(),
-                config.getAspectjOptions()
+                config.getAspectjOptions(),
+                "org.apache.jsp"
         );
 
         try {

@@ -10,6 +10,7 @@
       <w>projectlombok</w>
       <w>somepkg</w>
       <w>untracked</w>
+      <w>withincode</w>
     </words>
   </dictionary>
 </component>
