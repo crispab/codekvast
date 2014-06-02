@@ -1,4 +1,13 @@
-apply plugin: 'java'
+buildscript {
+    repositories { maven { url "https://maven.eveoh.nl/content/repositories/releases" } }
+    dependencies { classpath "nl.eveoh:gradle-aspectj:1.4" }
+}
+
+project.ext {
+    aspectjVersion = '1.8.0'
+}
+
+apply plugin: 'aspectj'
 apply plugin: 'shadow'
 
 sourceCompatibility = 1.6
@@ -13,11 +22,7 @@ dependencies {
     // class path, which is unacceptable.
 }
 
-jar {
-    manifest {
-        attributes("Premain-Class": "se.crisp.duck.agent.sensor.DuckSensor")
-    }
-}
+jar { manifest { attributes("Premain-Class": "se.crisp.duck.agent.sensor.DuckSensor") } }
 
 // Make a shadow jar consisting of duck-sensor and it's dependencies...
 assemble.dependsOn shadowJar

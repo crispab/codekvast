@@ -59,7 +59,7 @@ public class UsageRegistry {
     }
 
     /**
-     * This method is invoked by {@link AbstractMethodExecutionAspect#recordMethodCall(org.aspectj.lang.JoinPoint)}.
+     * This method is invoked by {@link se.crisp.duck.agent.sensor.aspects.AbstractMethodExecutionAspect#recordMethodCall(org.aspectj.lang.JoinPoint)}.
      * It will exclude a certain method from being reported as useless.
      * <p/>
      * Thread-safe.
@@ -69,7 +69,7 @@ public class UsageRegistry {
     }
 
     /**
-     * This method is invoked by {@link se.crisp.duck.agent.sensor.JasperExecutionAspect#recordJspInvocation(org.aspectj.lang.JoinPoint)}
+     * This method is invoked by {@link se.crisp.duck.agent.sensor.aspects.JasperExecutionAspect#recordJspInvocation(org.aspectj.lang.JoinPoint)}
      * It will exclude a certain JSP page from being reported as useless.
      * <p/>
      * Thread-safe.

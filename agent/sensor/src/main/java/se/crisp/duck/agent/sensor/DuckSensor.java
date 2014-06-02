@@ -1,6 +1,8 @@
 package se.crisp.duck.agent.sensor;
 
 import org.aspectj.bridge.Constants;
+import se.crisp.duck.agent.sensor.aspects.AbstractMethodExecutionAspect;
+import se.crisp.duck.agent.sensor.aspects.JasperExecutionAspect;
 import se.crisp.duck.agent.util.Configuration;
 
 import java.io.*;
@@ -95,21 +97,20 @@ public class DuckSensor {
                 "<aspectj>\n"
                         + "  <aspects>\n"
                         + "    <aspect name='%1$s'/>\n"
-                        + "    <concrete-aspect name='se.crisp.duck.agent.sensor.MethodExecutionAspect' extends='%2$s'>\n"
+                        + "    <concrete-aspect name='se.crisp.duck.agent.sensor.aspects.MethodExecutionAspect' extends='%2$s'>\n"
                         + "      <pointcut name='scope' expression='within(%3$s..*)'/>\n"
                         + "    </concrete-aspect>\n"
                         + "  </aspects>\n"
                         + "  <weaver options='%4$s'>\n"
                         + "    <include within='%3$s..*' />\n"
                         + "    <include within='%5$s..*' />\n"
-                        + "    <include within='org.apache.jsp..*' />\n"
                         + "  </weaver>\n"
                         + "</aspectj>\n",
                 JasperExecutionAspect.class.getName(),
                 AbstractMethodExecutionAspect.class.getName(),
                 config.getPackagePrefix(),
                 config.getAspectjOptions(),
-                AbstractDuckAspect.class.getPackage().getName()
+                JasperExecutionAspect.JASPER_BASE_PACKAGE
         );
 
         try {
