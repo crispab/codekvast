@@ -46,7 +46,6 @@ public class AgentTest {
     }
 
     @Test
-    // @Ignore("Broken until Agent.normalizeSignature() is debugged")
     public void testPrepareCodeBase() throws Exception {
         CodeBaseScanner.Result result = readScannerResult(getResource("/customer1/app1/signatures.dat"));
         assertTrue(result.signatures.contains(
@@ -56,7 +55,7 @@ public class AgentTest {
 
         int unrecognized = agent.applyRecordedUsage(SensorUtils.readUsageFrom(getResource("/customer1/app1/usage.dat")));
 
-        assertThat(unrecognized, is(9));
+        assertThat(unrecognized, is(27));
     }
 
     private File getResource(String resource) throws URISyntaxException {
