@@ -85,7 +85,7 @@ public class DuckSensor {
     }
 
     /**
-     * Creates a concrete implementation of the AbstractDuckAspect, using the packagePrefix for specifying the
+     * Creates a concrete implementation of the AbstractMethodExecutionAspect, using the packagePrefix for specifying the
      * abstract pointcut 'scope'.
      *
      * @return A file: URI to a temporary aop-ajc.xml file. The file is deleted on JVM exit.
@@ -94,20 +94,21 @@ public class DuckSensor {
         String xml = String.format(
                 "<aspectj>\n"
                         + "  <aspects>\n"
-                        + "     <concrete-aspect name='se.crisp.duck.agent.sensor.DuckAspect' extends='%1$s'>\n"
-                        + "       <pointcut name='scope' expression='within(%3$s..*) || withincode(* org.apache.jsp..*_jsp(..))'/>\n"
+                        + "     <aspect name='%1$s'/>"
+                        + "     <concrete-aspect name='se.crisp.duck.agent.sensor.DuckAspect' extends='%2$s'>\n"
+                        + "       <pointcut name='scope' expression='within(%3$s..*)'/>\n"
                         + "     </concrete-aspect>\n"
                         + "  </aspects>\n"
                         + "  <weaver options='%4$s'>\n"
-                        + "     <include within='%2$s..*' />\n"
                         + "     <include within='%3$s..*' />\n"
+                        + "     <include within='%5$s..*' />\n"
                         + "  </weaver>\n"
                         + "</aspectj>\n",
-                AbstractDuckAspect.class.getName(),
-                AbstractDuckAspect.class.getPackage().getName(),
+                JasperExecutionAspect.class.getName(),
+                AbstractMethodExecutionAspect.class.getName(),
                 config.getPackagePrefix(),
                 config.getAspectjOptions(),
-                "org.apache.jsp"
+                AbstractMethodExecutionAspect.class.getPackage().getName()
         );
 
         try {

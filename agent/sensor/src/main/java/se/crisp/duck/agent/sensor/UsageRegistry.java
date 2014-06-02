@@ -59,13 +59,23 @@ public class UsageRegistry {
     }
 
     /**
-     * This method is invoked by {@link se.crisp.duck.agent.sensor.AbstractDuckAspect#recordMethodCall(org.aspectj.lang.JoinPoint)}.
+     * This method is invoked by {@link AbstractMethodExecutionAspect#recordMethodCall(org.aspectj.lang.JoinPoint)}.
      * It will exclude a certain method from being reported as useless.
      * <p/>
      * Thread-safe.
      */
     public void registerMethodExecution(Signature signature) {
         usages.put(signature.toLongString(), System.currentTimeMillis());
+    }
+
+    /**
+     * This method is invoked by {@link se.crisp.duck.agent.sensor.JasperExecutionAspect#recordJspInvocation(org.aspectj.lang.JoinPoint)}
+     * It will exclude a certain JSP page from being reported as useless.
+     * <p/>
+     * Thread-safe.
+     */
+    public void registerJspPageExecution(String pageName) {
+        usages.put(pageName, System.currentTimeMillis());
     }
 
     /**
@@ -88,5 +98,4 @@ public class UsageRegistry {
             DuckSensor.out.println(DuckSensor.NAME + " cannot save " + file + ": " + e);
         }
     }
-
 }

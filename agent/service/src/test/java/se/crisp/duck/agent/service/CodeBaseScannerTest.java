@@ -81,7 +81,7 @@ public class CodeBaseScannerTest {
                                             .build();
         CodeBaseScanner.Result result = scanner.getPublicMethodSignatures(config);
         assertThat(result.signatures, notNullValue());
-        assertThat(result.signatures.size(), is(8));
+        assertThat(result.signatures.size(), is(10));
     }
 
     @Test

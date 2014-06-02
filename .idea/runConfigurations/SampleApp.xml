@@ -15,7 +15,7 @@
       </pattern>
     </extension>
     <option name="MAIN_CLASS_NAME" value="se.crisp.app.SampleApp" />
-    <option name="VM_PARAMETERS" value="-javaagent:../duck-agent/build/distributions/duck-agent-1.0-shadow.jar=packagePrefix=se.crisp" />
+    <option name="VM_PARAMETERS" value="-javaagent:$MODULE_DIR$/../../agent/sensor/build/distributions/sensor-1.0-shadow.jar=build/tmp/duck/duck.properties" />
     <option name="PROGRAM_PARAMETERS" value="" />
     <option name="WORKING_DIRECTORY" value="file://$MODULE_DIR$" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
@@ -23,7 +23,7 @@
     <option name="ENABLE_SWING_INSPECTOR" value="false" />
     <option name="ENV_VARIABLES" />
     <option name="PASS_PARENT_ENVS" value="true" />
-    <module name="sample-app" />
+    <module name="standalone-app" />
     <envs />
     <RunnerSettings RunnerId="Debug">
       <option name="DEBUG_PORT" value="" />
