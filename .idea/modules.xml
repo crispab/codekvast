@@ -2,17 +2,14 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/agent/agent.iml" filepath="$PROJECT_DIR$/agent/agent.iml" />
-      <module fileurl="file://$PROJECT_DIR$/duck.iml" filepath="$PROJECT_DIR$/duck.iml" />
-      <module fileurl="file://$PROJECT_DIR$/server/duck-server/duck-server.iml" filepath="$PROJECT_DIR$/server/duck-server/duck-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/server/duck-server/duck-server.iml" filepath="$PROJECT_DIR$/server/duck-server/duck-server.iml" group="Duck/Server" />
       <module fileurl="file://$PROJECT_DIR$/sample/sample.iml" filepath="$PROJECT_DIR$/sample/sample.iml" />
-      <module fileurl="file://$PROJECT_DIR$/agent/sensor/sensor.iml" filepath="$PROJECT_DIR$/agent/sensor/sensor.iml" />
-      <module fileurl="file://$PROJECT_DIR$/server/server.iml" filepath="$PROJECT_DIR$/server/server.iml" />
-      <module fileurl="file://$PROJECT_DIR$/agent/service/service.iml" filepath="$PROJECT_DIR$/agent/service/service.iml" />
-      <module fileurl="file://$PROJECT_DIR$/sample/standalone-app/standalone-app.iml" filepath="$PROJECT_DIR$/sample/standalone-app/standalone-app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/sample/tapestry5-war/tapestry5-war.iml" filepath="$PROJECT_DIR$/sample/tapestry5-war/tapestry5-war.iml" />
-      <module fileurl="file://$PROJECT_DIR$/agent/util/util.iml" filepath="$PROJECT_DIR$/agent/util/util.iml" />
-      <module fileurl="file://$PROJECT_DIR$/sample/vanilla-jsp/sample/vanilla-jsp.iml" filepath="$PROJECT_DIR$/sample/vanilla-jsp/sample/vanilla-jsp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/agent/sensor/sensor.iml" filepath="$PROJECT_DIR$/agent/sensor/sensor.iml" group="Duck/Agent" />
+      <module fileurl="file://$PROJECT_DIR$/agent/service/service.iml" filepath="$PROJECT_DIR$/agent/service/service.iml" group="Duck/Agent" />
+      <module fileurl="file://$PROJECT_DIR$/sample/standalone-app/standalone-app.iml" filepath="$PROJECT_DIR$/sample/standalone-app/standalone-app.iml" group="Sample" />
+      <module fileurl="file://$PROJECT_DIR$/sample/tapestry5-war/tapestry5-war.iml" filepath="$PROJECT_DIR$/sample/tapestry5-war/tapestry5-war.iml" group="Sample" />
+      <module fileurl="file://$PROJECT_DIR$/agent/util/util.iml" filepath="$PROJECT_DIR$/agent/util/util.iml" group="Duck/Agent" />
+      <module fileurl="file://$PROJECT_DIR$/sample/vanilla-jsp/sample/vanilla-jsp.iml" filepath="$PROJECT_DIR$/sample/vanilla-jsp/sample/vanilla-jsp.iml" group="Sample" />
     </modules>
   </component>
 </project>
