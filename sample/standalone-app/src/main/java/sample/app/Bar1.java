@@ -1,4 +1,4 @@
-package se.crisp.app;
+package sample.app;
 
 /**
  * @author Olle Hallin

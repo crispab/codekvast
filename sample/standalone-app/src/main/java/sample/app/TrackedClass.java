@@ -1,4 +1,4 @@
-package se.crisp.app;
+package sample.app;
 
 /**
  * This class is outside of the packagePrefix that the Duck agent monitors.

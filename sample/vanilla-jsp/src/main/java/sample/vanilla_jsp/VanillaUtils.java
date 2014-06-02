@@ -1,4 +1,4 @@
-package se.crisp.sample.vanilla_jsp;
+package sample.vanilla_jsp;
 
 import java.util.Date;
 

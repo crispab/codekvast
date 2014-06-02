@@ -94,21 +94,22 @@ public class DuckSensor {
         String xml = String.format(
                 "<aspectj>\n"
                         + "  <aspects>\n"
-                        + "     <aspect name='%1$s'/>"
-                        + "     <concrete-aspect name='se.crisp.duck.agent.sensor.DuckAspect' extends='%2$s'>\n"
-                        + "       <pointcut name='scope' expression='within(%3$s..*)'/>\n"
-                        + "     </concrete-aspect>\n"
+                        + "    <aspect name='%1$s'/>\n"
+                        + "    <concrete-aspect name='se.crisp.duck.agent.sensor.MethodExecutionAspect' extends='%2$s'>\n"
+                        + "      <pointcut name='scope' expression='within(%3$s..*)'/>\n"
+                        + "    </concrete-aspect>\n"
                         + "  </aspects>\n"
                         + "  <weaver options='%4$s'>\n"
-                        + "     <include within='%3$s..*' />\n"
-                        + "     <include within='%5$s..*' />\n"
+                        + "    <include within='%3$s..*' />\n"
+                        + "    <include within='%5$s..*' />\n"
+                        + "    <include within='org.apache.jsp..*' />\n"
                         + "  </weaver>\n"
                         + "</aspectj>\n",
                 JasperExecutionAspect.class.getName(),
                 AbstractMethodExecutionAspect.class.getName(),
                 config.getPackagePrefix(),
                 config.getAspectjOptions(),
-                AbstractMethodExecutionAspect.class.getPackage().getName()
+                AbstractDuckAspect.class.getPackage().getName()
         );
 
         try {

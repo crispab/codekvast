@@ -16,7 +16,9 @@ import org.aspectj.lang.annotation.Pointcut;
 @Aspect
 public class JasperExecutionAspect extends AbstractDuckAspect {
 
-    @Pointcut("execution(public void org.apache.jsp.._jspService(..))")
+    @Pointcut("execution(public void org.apache.jsp.._jspService("
+                      + "javax.servlet.http.HttpServletRequest, "
+                      + "javax.servlet.http.HttpServletResponse))")
     public void jasperPageExecution() {
     }
 

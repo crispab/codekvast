@@ -1,4 +1,6 @@
-package se.crisp.app;
+package sample.app;
+
+import sample.app.Bar2;
 
 /**
  * @author Olle Hallin (qolha), olle.hallin@crisp.se
