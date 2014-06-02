@@ -76,12 +76,12 @@ public class CodeBaseScannerTest {
     @Test
     public void testScanCodeBaseForDirectoryWithClassFiles() {
         Configuration config = Configuration.builder()
-                                            .packagePrefix("se.crisp")
+                                            .packagePrefix("sample")
                                             .codeBaseUri(new File(SAMPLE_APP_CLASSES).toURI())
                                             .build();
         CodeBaseScanner.Result result = scanner.getPublicMethodSignatures(config);
         assertThat(result.signatures, notNullValue());
-        assertThat(result.signatures.size(), is(10));
+        assertThat(result.signatures.size(), is(8));
     }
 
     @Test
