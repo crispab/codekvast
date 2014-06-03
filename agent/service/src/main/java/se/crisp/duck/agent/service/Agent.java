@@ -50,7 +50,7 @@ public class Agent extends TimerTask {
             return;
         }
 
-        importSignaturesIfNew(sensorRun);
+        importSignaturesIfNeeded(new CodeBase(config.getCodeBaseUri().getPath()));
         processUsageDataIfNew(config.getDataFile());
     }
 
@@ -134,8 +134,7 @@ public class Agent extends TimerTask {
                  config.getAppName(), config.getWarehouseUri());
     }
 
-    private void importSignaturesIfNew(SensorRun sensorRun) {
-        CodeBase newCodeBase = new CodeBase(config.getCodeBaseUri().getPath());
+    private void importSignaturesIfNeeded(CodeBase newCodeBase) {
         if (!newCodeBase.equals(codeBase)) {
             CodeBaseScanner.Result scannerResult = codeBaseScanner.getPublicMethodSignatures(config, newCodeBase);
 

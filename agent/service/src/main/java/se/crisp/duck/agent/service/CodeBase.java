@@ -1,98 +1,103 @@
 package se.crisp.duck.agent.service;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static java.lang.Math.max;
 
 /**
  * @author Olle Hallin (qolha), olle.hallin@crisp.se
  */
-@ToString(of = "file", includeFieldNames = false)
-@EqualsAndHashCode
+@ToString(of = "codeBaseFile", includeFieldNames = false)
+@EqualsAndHashCode(of = "fingerprint")
 @Slf4j
 public class CodeBase {
-    private final File file;
-    private List<URL> urls = null;
-    private long lastModifiedAtMillis;
-    private long totalSize;
+
+    @ToString
+    @EqualsAndHashCode
+    public static class Fingerprint {
+        private int count;
+        private long size;
+        private long lastModified;
+
+        private void record(File file) {
+            count += 1;
+            size += file.length();
+            lastModified = max(lastModified, file.lastModified());
+            log.trace("Recorded {}, {}", file, this);
+        }
+    }
+
+    private final File codeBaseFile;
+    private List<URL> urls;
+    @Getter
+    private Fingerprint fingerprint;
+    private boolean needsExploding = false;
 
     public CodeBase(String codeBasePath) {
-        this.file = new File(codeBasePath);
-        checkArgument(file.exists(), "Code base at " + file + " does not exist");
-        initUrls();
+        this.codeBaseFile = new File(codeBasePath);
+        checkArgument(codeBaseFile.exists(), "Code base at " + codeBaseFile + " does not exist");
+
+        init();
     }
 
     public URL[] getUrls() {
+        if (needsExploding) {
+            throw new UnsupportedOperationException("Exploding WAR or EAR not yet implemented");
+        }
         return urls.toArray(new URL[urls.size()]);
     }
 
-    @SneakyThrows(MalformedURLException.class)
-    private void initUrls() {
+    private void init() {
+        long startedAt = System.currentTimeMillis();
 
         urls = new ArrayList<>();
-        lastModifiedAtMillis = 0L;
-        totalSize = 0L;
+        fingerprint = new Fingerprint();
 
-        if (file.isDirectory()) {
-            scanExplodedDirectory();
-        } else if (file.getName().endsWith(".jar")) {
-            updateFingerprint(file);
-            addUrl(file);
-        } else if (file.getName().endsWith(".war")) {
-            updateFingerprint(file);
-            throw new UnsupportedOperationException("Scanning WAR not yet supported");
-        } else if (file.getName().endsWith(".ear")) {
-            updateFingerprint(file);
-            throw new UnsupportedOperationException("Scanning EAR not yet supported");
+        if (codeBaseFile.isDirectory()) {
+            addUrl(codeBaseFile);
+            traverse(codeBaseFile.listFiles());
+        } else if (codeBaseFile.getName().endsWith(".jar")) {
+            fingerprint.record(codeBaseFile);
+            addUrl(codeBaseFile);
+        } else if (codeBaseFile.getName().endsWith(".war")) {
+            fingerprint.record(codeBaseFile);
+            needsExploding = true;
+        } else if (codeBaseFile.getName().endsWith(".ear")) {
+            fingerprint.record(codeBaseFile);
+            needsExploding = true;
         }
+        log.debug("Scanned code base at {} in {} ms, fingerprint={}", codeBaseFile, System.currentTimeMillis() - startedAt, fingerprint);
     }
 
-    private void addUrl(File file) throws MalformedURLException {
+    @SneakyThrows(MalformedURLException.class)
+    private void addUrl(File file) {
+        log.trace("Adding URL {}", file);
         urls.add(file.toURI().toURL());
     }
 
-    private void updateFingerprint(File file) {
-        lastModifiedAtMillis = Math.max(lastModifiedAtMillis, file.lastModified());
-        totalSize += file.length();
-        log.debug("Added {}, totalSize is now {}, lastModified is now {}", file, totalSize, lastModifiedAtMillis);
-    }
-
-    private void scanExplodedDirectory() throws MalformedURLException {
-        log.debug("Scanning directory {}...", file);
-
-        addUrl(file);
-
-        // Look for jars in that directory
-        File[] jarFiles = file.listFiles(new JarNameFilter());
-
-        for (File jarFile : jarFiles) {
-            if (jarFile.canRead()) {
-                updateFingerprint(jarFile);
-                addUrl(jarFile);
-            } else {
-                log.warn("Ignoring {} since it cannot be read", jarFile);
+    private void traverse(File[] files) {
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile() && file.getName().endsWith(".class")) {
+                    fingerprint.record(file);
+                } else if (file.isFile() && file.getName().endsWith(".jar")) {
+                    fingerprint.record(file);
+                    addUrl(file);
+                } else if (file.isDirectory()) {
+                    traverse(file.listFiles());
+                }
             }
-        }
-    }
-
-    private static class JarNameFilter implements FileFilter {
-        @Override
-        public boolean accept(File file) {
-            boolean isJar = file.isFile() && file.getName().endsWith(".jar");
-            if (!isJar) {
-                log.debug("  Ignoring {}, not a jar file", file);
-            }
-            return isJar;
         }
     }
 
