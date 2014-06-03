@@ -41,6 +41,10 @@ public class Configuration {
         return new File(dataPath, "sensor.properties");
     }
 
+    public File getAspectFile() {
+        return new File(dataPath, "aop.xml");
+    }
+
     public static Configuration parseConfigFile(String configFile) {
         File file = new File(configFile);
 

@@ -18,7 +18,7 @@ public aspect JasperExecutionAspect extends AbstractDuckAspect {
 
     public static final String JASPER_BASE_PACKAGE = "org.apache.jsp";
 
-    private static final Pattern JSP_NAME_PATTERN = Pattern.compile(JASPER_BASE_PACKAGE.replace(".", "\\.") + "\\.(.*)_jsp");
+    private static final Pattern JSP_NAME_PATTERN = Pattern.compile(JASPER_BASE_PACKAGE.replace(".", "\\.") + "(\\..*)_jsp");
 
     pointcut jasperPageExecution(): execution(public void org.apache.jsp.._jspService(javax.servlet.http.HttpServletRequest, javax .servlet.http.HttpServletResponse));
 
@@ -30,8 +30,9 @@ public aspect JasperExecutionAspect extends AbstractDuckAspect {
     }
 
     private String getJspPageName(JoinPoint jp) {
-        Matcher m = JSP_NAME_PATTERN.matcher(jp.getSignature().getDeclaringTypeName());
-        String result = m.matches() ? m.group(1) : jp.getSignature().getDeclaringTypeName();
-        return result + ".jsp";
+        String declaringTypeName = jp.getSignature().getDeclaringTypeName();
+        Matcher m = JSP_NAME_PATTERN.matcher(declaringTypeName);
+        String result = m.matches() ? m.group(1) : declaringTypeName;
+        return result.replace(".", "/") + ".jsp";
     }
 }

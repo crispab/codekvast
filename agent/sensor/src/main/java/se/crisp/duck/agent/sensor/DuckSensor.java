@@ -69,7 +69,7 @@ public class DuckSensor {
     }
 
     private static void loadAspectjWeaver(String args, Instrumentation inst, Configuration config) {
-        System.setProperty("org.aspectj.weaver.loadtime.configuration", join(createConcreteDuckAspect(config),
+        System.setProperty("org.aspectj.weaver.loadtime.configuration", join(createAopXml(config),
                                                                              Constants.AOP_USER_XML,
                                                                              Constants.AOP_AJC_XML,
                                                                              Constants.AOP_OSGI_XML));
@@ -92,12 +92,13 @@ public class DuckSensor {
      *
      * @return A file: URI to a temporary aop-ajc.xml file. The file is deleted on JVM exit.
      */
-    private static String createConcreteDuckAspect(Configuration config) {
+    private static String createAopXml(Configuration config) {
         String xml = String.format(
                 "<aspectj>\n"
                         + "  <aspects>\n"
                         + "    <aspect name='%1$s'/>\n"
-                        + "    <concrete-aspect name='se.crisp.duck.agent.sensor.aspects.MethodExecutionAspect' extends='%2$s'>\n"
+                        + "    <concrete-aspect name='se.crisp.duck.agent.sensor.aspects.PublicMethodExecutionAspect'\n"
+                        + "                     extends='%2$s'>\n"
                         + "      <pointcut name='scope' expression='within(%3$s..*)'/>\n"
                         + "    </concrete-aspect>\n"
                         + "  </aspects>\n"
@@ -113,15 +114,20 @@ public class DuckSensor {
                 JasperExecutionAspect.JASPER_BASE_PACKAGE
         );
 
+        File file = config.getAspectFile();
+        if (!file.canRead()) {
+            writeToFile(xml, file);
+        }
+        return "file:" + file.getAbsolutePath();
+    }
+
+    private static void writeToFile(String text, File file) {
         try {
-            File file = File.createTempFile("duck-sensor", ".xml");
             BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-            writer.write(xml);
+            writer.write(text);
             writer.close();
-            file.deleteOnExit();
-            return "file:" + file.getAbsolutePath();
         } catch (IOException e) {
-            throw new RuntimeException(NAME + " cannot create custom aop-ajc.xml", e);
+            throw new RuntimeException(NAME + " cannot create " + file, e);
         }
     }
 
