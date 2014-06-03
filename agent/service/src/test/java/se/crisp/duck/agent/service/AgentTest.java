@@ -55,7 +55,7 @@ public class AgentTest {
 
         int unrecognized = agent.applyRecordedUsage(SensorUtils.readUsageFrom(getResource("/customer1/app1/usage.dat")));
 
-        assertThat(unrecognized, is(16));
+        assertThat(unrecognized, is(1));
     }
 
     private File getResource(String resource) throws URISyntaxException {

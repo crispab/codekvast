@@ -26,8 +26,8 @@ test.dependsOn ":sample:standalone-app:jar"
 // We sensor the Sample App by default...
 run {
     dependsOn = [":sample:standalone-app:installApp", ":sample:standalone-app:generateDuckConfig"]
-    args tasks.getByPath(":sample:standalone-app:generateDuckConfig").configFile
-    // args "/usr/local/src/ws/tnm/tnm_mainserver_main/duck.properties"
+    // args tasks.getByPath(":sample:standalone-app:generateDuckConfig").configFile
+    args "/usr/local/src/ws/tnm/tnm_mainserver_main/duck.properties"
 }
 
 applicationDistribution.from("src/main/resources") {

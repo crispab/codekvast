@@ -4,9 +4,7 @@ import org.junit.Test;
 import se.crisp.duck.agent.util.Configuration;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URL;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -20,44 +18,13 @@ public class CodeBaseScannerTest {
 
     private final CodeBaseScanner scanner = new CodeBaseScanner();
 
-    @Test(expected = NullPointerException.class)
-    public void testGetUrlsForNullFile() throws Exception {
-        scanner.getUrlsForCodeBase(null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testGetUrlsForMissingFile() throws Exception {
-        scanner.getUrlsForCodeBase(new File("   "));
-    }
-
-    @Test
-    public void testGetUrlsForDirectoryWithoutJars() throws MalformedURLException {
-        URL[] urls = scanner.getUrlsForCodeBase(new File("build/classes/main"));
-        assertThat(urls, notNullValue());
-        assertThat(urls.length, is(1));
-    }
-
-    @Test
-    public void testGetUrlsForDirectoryContainingJars() throws MalformedURLException {
-        URL[] urls = scanner.getUrlsForCodeBase(new File(SAMPLE_APP_LIB));
-        assertThat(urls, notNullValue());
-        assertThat(urls.length, is(3));
-    }
-
-    @Test
-    public void testGetUrlsForSingleJar() throws MalformedURLException {
-        URL[] urls = scanner.getUrlsForCodeBase(new File(SAMPLE_APP_JAR));
-        assertThat(urls, notNullValue());
-        assertThat(urls.length, is(1));
-    }
-
     @Test
     public void testScanCodeBaseForSingleJar() throws URISyntaxException {
         Configuration config = Configuration.builder()
                                             .packagePrefix("se.crisp")
                                             .codeBaseUri(new File(SAMPLE_APP_JAR).toURI())
                                             .build();
-        CodeBaseScanner.Result result = scanner.getPublicMethodSignatures(config);
+        CodeBaseScanner.Result result = scanner.getPublicMethodSignatures(config, new CodeBase(config.getCodeBaseUri().getPath()));
         assertThat(result.signatures, notNullValue());
         assertThat(result.signatures.size(), is(8));
     }
@@ -68,7 +35,7 @@ public class CodeBaseScannerTest {
                                             .packagePrefix("se.crisp")
                                             .codeBaseUri(new File(SAMPLE_APP_LIB).toURI())
                                             .build();
-        CodeBaseScanner.Result result = scanner.getPublicMethodSignatures(config);
+        CodeBaseScanner.Result result = scanner.getPublicMethodSignatures(config, new CodeBase(config.getCodeBaseUri().getPath()));
         assertThat(result.signatures, notNullValue());
         assertThat(result.signatures.size(), is(8));
     }
@@ -79,7 +46,7 @@ public class CodeBaseScannerTest {
                                             .packagePrefix("sample")
                                             .codeBaseUri(new File(SAMPLE_APP_CLASSES).toURI())
                                             .build();
-        CodeBaseScanner.Result result = scanner.getPublicMethodSignatures(config);
+        CodeBaseScanner.Result result = scanner.getPublicMethodSignatures(config, new CodeBase(config.getCodeBaseUri().getPath()));
         assertThat(result.signatures, notNullValue());
         assertThat(result.signatures.size(), is(8));
     }
@@ -106,16 +73,19 @@ public class CodeBaseScannerTest {
                    is("public void se.crisp.duck.agent.service.CodeBaseScannerTest.Class2.m2()"));
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     private static class Class1 {
         public void m1() {
         }
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     private static class Class2 extends Class1 {
         public void m2() {
         }
     }
 
+    @SuppressWarnings({"ClassTooDeepInInheritanceTree", "UnusedDeclaration"})
     private static class Class3 extends Class2 {
         public void m3() {
         }

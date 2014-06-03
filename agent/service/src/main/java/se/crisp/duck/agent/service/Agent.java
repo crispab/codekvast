@@ -24,7 +24,7 @@ public class Agent extends TimerTask {
     private final CodeBaseScanner codeBaseScanner;
 
     private long dataFileModifiedAtMillis;
-    private UUID lastSeenSensorUUID;
+    private CodeBase codeBase;
 
     private final Pattern[] enhanceByGuicePatterns = {
             Pattern.compile(".*\\.\\.FastClassByGuice.*\\.getIndex\\(java\\.lang\\.Class\\[\\]\\)$"),
@@ -135,13 +135,14 @@ public class Agent extends TimerTask {
     }
 
     private void importSignaturesIfNew(SensorRun sensorRun) {
-        if (lastSeenSensorUUID == null || !lastSeenSensorUUID.equals(sensorRun.getUuid())) {
-            CodeBaseScanner.Result scannerResult = codeBaseScanner.getPublicMethodSignatures(config);
+        CodeBase newCodeBase = new CodeBase(config.getCodeBaseUri().getPath());
+        if (!newCodeBase.equals(codeBase)) {
+            CodeBaseScanner.Result scannerResult = codeBaseScanner.getPublicMethodSignatures(config, newCodeBase);
 
             resetSignatureUsage(scannerResult);
             writeSignaturesTo(scannerResult, config.getSignatureFile());
 
-            lastSeenSensorUUID = sensorRun.getUuid();
+            codeBase = newCodeBase;
         }
     }
 
