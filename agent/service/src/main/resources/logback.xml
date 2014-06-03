@@ -16,17 +16,17 @@
         </triggeringPolicy>
 
         <encoder>
-            <pattern>%date %level %logger [%file:%line] %msg%n</pattern>
+            <pattern>%date %level %logger.%method\(\) [%line] %msg%n</pattern>
         </encoder>
     </appender>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%date %level %logger [%file:%line] %msg%n</pattern>
+            <pattern>%date %level %logger.%method\(\) [%line] %msg%n</pattern>
         </encoder>
     </appender>
 
-    <logger name="duck" level="DEBUG"/>
+    <logger name="se.crisp.duck" level="DEBUG"/>
     <logger name="org.reflections" level="DEBUG"/>
 
     <root level="WARN">

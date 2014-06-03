@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.runtime.reflect.Factory;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
+import org.xml.sax.helpers.DefaultHandler;
 import se.crisp.duck.agent.util.Configuration;
 
 import java.io.File;
@@ -18,6 +19,7 @@ import java.util.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
+import static java.util.Arrays.asList;
 
 /**
  * @author Olle Hallin
@@ -50,19 +52,16 @@ public class CodeBaseScanner {
         long startedAt = System.currentTimeMillis();
         log.info("Scanning code base at {}", config.getCodeBaseUri());
 
-        URLClassLoader appClassLoader = new URLClassLoader(getUrlsForCodeBase(codeBase), System.class.getClassLoader());
         String packagePrefix = config.getPackagePrefix();
+        URLClassLoader appClassLoader = new URLClassLoader(getUrlsForCodeBase(codeBase), System.class.getClassLoader());
 
         Reflections reflections = new Reflections(packagePrefix, appClassLoader, new SubTypesScanner(false));
 
         Result result = new Result();
-
-        for (Class<?> clazz : reflections.getSubTypesOf(Object.class)) {
-            findPublicMethods(result, packagePrefix, clazz);
-        }
-
-        for (Class<?> clazz : reflections.getSubTypesOf(Enum.class)) {
-            findPublicMethods(result, packagePrefix, clazz);
+        for (Class<?> rootClass : asList(Object.class, Enum.class, Thread.class, DefaultHandler.class, Exception.class)) {
+            for (Class<?> clazz : reflections.getSubTypesOf(rootClass)) {
+                findPublicMethods(result, packagePrefix, clazz);
+            }
         }
 
         checkState(!result.signatures.isEmpty(),
@@ -97,6 +96,10 @@ public class CodeBaseScanner {
                     }
                 }
             }
+        }
+
+        for (Class<?> innerClass : clazz.getDeclaredClasses()) {
+            findPublicMethods(result, packagePrefix, innerClass);
         }
     }
 
