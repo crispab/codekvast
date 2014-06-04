@@ -40,7 +40,7 @@ verbose = true
 processResources.dependsOn generateDuckConfig
 
 run {
-    dependsOn = [":agent:sensor:assemble", "generateDuckConfig"]
-    def duckSensor = tasks.getByPath(":agent:sensor:shadowJar").outputs.files.asPath
+    dependsOn = [":product:agent:sensor:assemble", "generateDuckConfig"]
+    def duckSensor = tasks.getByPath(":product:agent:sensor:shadowJar").outputs.files.asPath
     jvmArgs = ["-javaagent:$duckSensor=$generateDuckConfig.configFile"]
 }

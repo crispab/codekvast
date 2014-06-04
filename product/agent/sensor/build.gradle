@@ -16,7 +16,7 @@ version = duckVersion
 configurations { tools }
 
 dependencies {
-    compile project(":agent:util"), { transitive = false }
+    compile project(":product:agent:util"), { transitive = false }
     compile libs['aspectjweaver']
 
     // Absolutely NO other compile or runtime dependencies are allowed here!

@@ -11,7 +11,7 @@ dependencies {
     compile libs['logback']
     compile libs['reflections']
     compile libs['slf4j-api']
-    compile project(":agent:util")
+    compile project(":product:agent:util")
 
     testCompile libs['junit']
     testCompile libs['mockito']

@@ -1,9 +1,8 @@
 rootProject.name = 'duck'
-include ':agent:util'
-include ':agent:sensor'
-include ':agent:service'
-
-include ':server:duck-server'
+include ':product:agent:util'
+include ':product:agent:sensor'
+include ':product:agent:service'
+include ':product:server:duck-server'
 
 include ':sample:standalone-app'
 include ':sample:tapestry5-war'
