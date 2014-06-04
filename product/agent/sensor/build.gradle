@@ -31,12 +31,12 @@ jar { manifest { attributes("Premain-Class": "se.crisp.duck.agent.sensor.DuckSen
 // Make a shadow jar consisting of duck-sensor and it's dependencies...
 assemble.dependsOn shadowJar
 
-task downloadAjcCompiler(type: Sync) {
+task downloadTools(type: Sync) {
     description = "Downloads certain tools so that IDE:s can find them in a well-known location"
     group "IDE support"
 
     from configurations.tools
-    into "build/tools"
+    into "$rootDir/gradle/tools"
 }
 
-build.dependsOn downloadAjcCompiler
+build.dependsOn downloadTools
