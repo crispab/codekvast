@@ -3,7 +3,7 @@ apply plugin: 'java'
 apply plugin: 'spring-boot'
 apply plugin: 'application'
 
-description = "The Duck server"
+description = "The main Duck server"
 archivesBaseName = "duck-server"
 version = project.parent.parent.version
 sourceCompatibility = 1.7

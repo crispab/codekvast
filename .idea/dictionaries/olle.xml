@@ -1,7 +1,9 @@
 <component name="ProjectDictionaryState">
   <dictionary name="olle">
     <words>
+      <w>aspectjtools</w>
       <w>datasource</w>
+      <w>flywaydb</w>
       <w>guice</w>
       <w>jdbc</w>
       <w>jolokia</w>
