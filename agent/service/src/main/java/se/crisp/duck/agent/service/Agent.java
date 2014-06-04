@@ -35,7 +35,7 @@ public class Agent extends TimerTask {
 
     private void start() {
         Timer timer = new Timer(getClass().getSimpleName(), false);
-        long intervalMillis = config.getWarehouseUploadIntervalSeconds() * 1000L;
+        long intervalMillis = config.getServerUploadIntervalSeconds() * 1000L;
         timer.scheduleAtFixedRate(this, 10L, intervalMillis);
 
         Runtime.getRuntime().addShutdownHook(new Thread(new ShutdownHook()));
@@ -131,7 +131,7 @@ public class Agent extends TimerTask {
             }
         }
         log.info("Posting usage data for {} unused and {} used methods in {} to {}", unused, used,
-                 config.getAppName(), config.getWarehouseUri());
+                 config.getAppName(), config.getServerUri());
     }
 
     private void importSignaturesIfNeeded(CodeBase newCodeBase) {

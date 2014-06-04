@@ -13,6 +13,6 @@ subprojects {
     repositories { jcenter() }
 
     ext {
-        duckVersion = "1.0"
+        duckVersion = "0.2"
     }
 }

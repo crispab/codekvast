@@ -2,6 +2,7 @@ apply plugin: 'java'
 apply plugin: 'application'
 
 mainClassName = "sample.app.SampleApp"
+archivesBaseName = "standalone-app"
 
 sourceCompatibility = 1.6
 
@@ -14,7 +15,7 @@ task generateDuckConfig {
     group "Build"
     description "Generates a duck.properties for test"
 
-    ext.configFile = file("build/tmp/duck/duck.properties")
+    ext.configFile = file("build/libs/duck.properties")
 
     inputs.file file("$projectDir/build.gradle")
     outputs.file configFile
@@ -22,7 +23,8 @@ task generateDuckConfig {
     doLast {
         configFile.parentFile.mkdirs()
         configFile.text = """# Run Duck against Crisp Sample App
-appName = Crisp Sample App
+customerName = Crisp
+appName = $archivesBaseName
 environment = development
 codeBaseUri = file:${file("build/install/${project.name}/lib/")}
 packagePrefix = sample

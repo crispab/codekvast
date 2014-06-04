@@ -13,6 +13,8 @@ apply plugin: 'shadow'
 sourceCompatibility = 1.6
 version = duckVersion
 
+configurations { tools }
+
 dependencies {
     compile project(":agent:util"), { transitive = false }
     compile libs['aspectjweaver']
@@ -20,9 +22,21 @@ dependencies {
     // Absolutely NO other compile or runtime dependencies are allowed here!
     // All (transitive) compile and runtime dependencies will end up in the sensored app's system
     // class path, which is unacceptable.
+
+    tools libs['aspectjtools']
 }
 
 jar { manifest { attributes("Premain-Class": "se.crisp.duck.agent.sensor.DuckSensor") } }
 
 // Make a shadow jar consisting of duck-sensor and it's dependencies...
 assemble.dependsOn shadowJar
+
+task downloadAjcCompiler(type: Sync) {
+    description = "Downloads certain tools so that IDE:s can find them in a well-known location"
+    group "IDE support"
+
+    from configurations.tools
+    into "build/tools"
+}
+
+build.dependsOn downloadAjcCompiler

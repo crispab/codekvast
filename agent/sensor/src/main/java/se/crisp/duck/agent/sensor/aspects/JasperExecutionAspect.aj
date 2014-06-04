@@ -20,7 +20,7 @@ public aspect JasperExecutionAspect extends AbstractDuckAspect {
 
     private static final Pattern JSP_NAME_PATTERN = Pattern.compile(JASPER_BASE_PACKAGE.replace(".", "\\.") + "(\\..*)_jsp");
 
-    pointcut jasperPageExecution(): execution(public void org.apache.jsp.._jspService(javax.servlet.http.HttpServletRequest, javax .servlet.http.HttpServletResponse));
+    pointcut jasperPageExecution(): execution(public void org.apache.jsp.._jspService(*, *));
 
     /**
      * Register that this JSP page has been invoked.

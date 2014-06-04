@@ -2,7 +2,7 @@ apply plugin: 'war'
 apply plugin: 'jetty'
 
 sourceCompatibility = 1.6
-archivesBaseName = "sample"
+archivesBaseName = "sample-t5"
 
 dependencies {
     compile "org.apache.tapestry:tapestry-core:5.3.6"
@@ -22,7 +22,7 @@ jettyRun {
     contextPath = ""
 }
 
-ext.duckDataPath = "/tmp/duck/agent/Crisp_Sample_Tapestry5-war"
+ext.duckDataPath = "/tmp/duck/agent/Crisp/" + archivesBaseName
 
 task generateDuckConfig {
     group = "Build"
@@ -36,7 +36,8 @@ task generateDuckConfig {
     doLast {
         configFile.parentFile.mkdirs()
         configFile.text = """# Run Duck against Crisp Sample App
-appName = Crisp Sample Tapestry5 App
+customerName = Crisp
+appName = $archivesBaseName
 environment = development
 codeBaseUri = file:/maven/${archivesBaseName}.war
 dataPath = $duckDataPath

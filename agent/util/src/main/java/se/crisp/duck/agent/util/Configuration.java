@@ -19,6 +19,7 @@ import java.util.Properties;
 @Builder
 public class Configuration {
     private final boolean verbose;
+    private final String customerName;
     private final String appName;
     private final String environment;
     private final URI codeBaseUri;
@@ -26,8 +27,8 @@ public class Configuration {
     private final String aspectjOptions;
     private final File dataPath;
     private final int sensorDumpIntervalSeconds;
-    private final int warehouseUploadIntervalSeconds;
-    private final URI warehouseUri;
+    private final int serverUploadIntervalSeconds;
+    private final URI serverUri;
 
     public File getDataFile() {
         return new File(dataPath, "usage.dat");
@@ -64,18 +65,21 @@ public class Configuration {
             Properties props = new Properties();
             InputStream is = new BufferedInputStream(new FileInputStream(file));
             props.load(is);
+            is.close();
 
+            String customerName = getStringValue(props, "customerName");
             String appName = getStringValue(props, "appName");
             return Configuration.builder()
+                                .customerName(customerName)
                                 .appName(appName)
                                 .environment(getStringValue(props, "environment"))
                                 .codeBaseUri(getUriValue(props, "codeBaseUri"))
                                 .packagePrefix(getStringValue(props, "packagePrefix"))
                                 .aspectjOptions(props.getProperty("aspectjOptions", ""))
                                 .sensorDumpIntervalSeconds(getIntValue(props, "sensorDumpIntervalSeconds", 600))
-                                .dataPath(new File(props.getProperty("dataPath", getDefaultDataPath(appName))))
-                                .warehouseUploadIntervalSeconds(getIntValue(props, "warehouseUploadIntervalSeconds", 3600))
-                                .warehouseUri(getUriValue(props, "warehouseUri"))
+                                .dataPath(new File(props.getProperty("dataPath", getDefaultDataPath(customerName, appName))))
+                                .serverUploadIntervalSeconds(getIntValue(props, "serverUploadIntervalSeconds", 3600))
+                                .serverUri(getUriValue(props, "serverUri"))
                                 .verbose(Boolean.parseBoolean(props.getProperty("verbose", "false")))
                                 .build();
         } catch (Exception e) {
@@ -83,10 +87,17 @@ public class Configuration {
         }
     }
 
-    private static String getDefaultDataPath(String appName) {
-        String normalizedAppName = appName.replace(" ", "_").replaceAll("[^a-zA-Z0-9_\\-]", "");
+    private static String getDefaultDataPath(String customerName, String appName) {
         return System
-                .getProperty("java.io.tmpdir") + File.separator + "duck" + File.separator + "agent" + File.separator + normalizedAppName;
+                .getProperty("java.io.tmpdir") + File.separator
+                + "duck" + File.separator
+                + "agent" + File.separator
+                + normalizePathName(customerName) + File.separator
+                + normalizePathName(appName);
+    }
+
+    private static String normalizePathName(String path) {
+        return path.replace(" ", "_").replaceAll("[^a-zA-Z0-9_\\-]", "");
     }
 
     private static URI getUriValue(Properties props, String key) {
