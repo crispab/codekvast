@@ -16,10 +16,12 @@ import java.util.Properties;
 @Value
 @Builder
 public class Configuration {
-    private static final int DEFAULT_DUMP_INTERVAL_SECONDS = 600;
-    private static final int DEFAULT_UPLOAD_INTERVAL_SECONDS = 3600;
-    private static final String DEFAULT_ASPECTJ_OPTIONS = "";
-    private static final boolean DEFAULT_VERBOSE = false;
+    public static final int DEFAULT_DUMP_INTERVAL_SECONDS = 600;
+    public static final int DEFAULT_UPLOAD_INTERVAL_SECONDS = 3600;
+    public static final String DEFAULT_ASPECTJ_OPTIONS = "";
+    public static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
+    public static final boolean DEFAULT_VERBOSE = false;
+
     private final boolean verbose;
     private final String customerName;
     private final String appName;
@@ -90,7 +92,7 @@ public class Configuration {
                             .environment("environment name")
                             .packagePrefix("com.acme")
                             .codeBaseUri(new URI("file:/path/to/my-precious.war"))
-                            .aspectjOptions("-verbose -showWeaveInfo")
+                            .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
                             .dataPath(new File(getDefaultDataPath(customerName, appName)))
                             .sensorDumpIntervalSeconds(DEFAULT_DUMP_INTERVAL_SECONDS)
                             .serverUploadIntervalSeconds(DEFAULT_UPLOAD_INTERVAL_SECONDS)

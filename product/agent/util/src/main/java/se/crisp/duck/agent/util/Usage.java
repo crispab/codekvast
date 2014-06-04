@@ -15,11 +15,6 @@ public class Usage {
     private final String signature;
     private final long usedAtMillis;
 
-    public Usage(String signature, long usedAtMillis) {
-        this.signature = signature;
-        this.usedAtMillis = usedAtMillis;
-    }
-
     /**
      * Formats for CSV output. Will be recognized by {@link #parse(String)}
      *
