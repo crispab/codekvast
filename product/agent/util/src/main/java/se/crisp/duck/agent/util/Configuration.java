@@ -81,7 +81,7 @@ public class Configuration {
     }
 
     @SneakyThrows(URISyntaxException.class)
-    public static Configuration getSampleConfiguration() {
+    public static Configuration createSampleConfiguration() {
         String customerName = "Customer Name";
         String appName = "Application Name räksmörgås";
         return Configuration.builder()

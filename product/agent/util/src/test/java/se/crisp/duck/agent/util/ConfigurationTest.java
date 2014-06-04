@@ -11,9 +11,8 @@ public class ConfigurationTest {
 
     @Test
     public void testSaveSampleConfigToFile() throws IOException {
-        Configuration config1 = Configuration.getSampleConfiguration();
-        File file = File.createTempFile("duck", ".properties");
-        file.deleteOnExit();
+        Configuration config1 = Configuration.createSampleConfiguration();
+        File file = new File("build", "duck.properties.sample");
         config1.saveTo(file);
 
         Configuration config2 = Configuration.parseConfigFile(file.getPath());

@@ -36,6 +36,10 @@ applicationDistribution.from("src/main/resources") {
     rename { "${it}.sample" }
 }
 
+applicationDistribution.from(tasks.getByPath(":product:agent:util:test").sampleConfigFile) {
+    into "conf"
+}
+
 startScripts {
     doLast {
         outputs.files.each { script ->
