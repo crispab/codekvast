@@ -4,7 +4,7 @@ apply plugin: 'spring-boot'
 apply plugin: 'application'
 
 sourceCompatibility = 1.7
-version = duckVersion
+version = project.parent.parent.version
 
 dependencies {
     compile "org.springframework.boot:spring-boot-starter-web"

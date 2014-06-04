@@ -1,6 +1,8 @@
 package se.crisp.duck.agent.util;
 
 import java.io.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 /**
@@ -8,6 +10,8 @@ import java.util.*;
  */
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
 public class SensorUtils {
+
+    private static final String CHARSET_NAME = "UTF-8";
 
     private SensorUtils() {
         // Utility class
@@ -65,5 +69,48 @@ public class SensorUtils {
                               to.getAbsolutePath());
             from.delete();
         }
+    }
+
+    public static void writePropertiesTo(File file, Object object, String comment) {
+        try {
+            Properties props = new Properties();
+            for (Field field : object.getClass().getDeclaredFields()) {
+                if (!Modifier.isStatic(field.getModifiers())) {
+                    field.setAccessible(true);
+                    props.put(field.getName(), field.get(object).toString());
+                }
+            }
+            writePropertiesToFile(file, props, comment);
+        } catch (IOException e) {
+            System.err.println("Cannot write " + file + ": " + e);
+        } catch (IllegalAccessException e) {
+            System.err.println("Cannot write " + file + ": " + e);
+        }
+    }
+
+    private static void writePropertiesToFile(File file, Properties props, String comment) throws IOException {
+        Writer out = new OutputStreamWriter(new FileOutputStream(file), CHARSET_NAME);
+        props.store(out, comment);
+        out.close();
+    }
+
+    public static Properties readPropertiesFrom(File file) throws IOException {
+        if (!file.exists()) {
+            throw new IllegalArgumentException(String.format("'%s' does not exist", file.getAbsolutePath()));
+        }
+
+        if (!file.isFile()) {
+            throw new IllegalArgumentException(String.format("'%s' is not a file", file.getAbsolutePath()));
+        }
+
+        if (!file.canRead()) {
+            throw new IllegalArgumentException(String.format("Cannot read '%s'", file.getAbsolutePath()));
+        }
+
+        Properties props = new Properties();
+        Reader reader = new InputStreamReader(new FileInputStream(file), CHARSET_NAME);
+        props.load(reader);
+        reader.close();
+        return props;
     }
 }

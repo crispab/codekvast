@@ -40,6 +40,8 @@ task dockerRunWarInTomcat7(type: Exec) {
     group = "Test"
     dependsOn "assemble", ":product:agent:sensor:assemble"
 
+    def duckVersion = rootProject.childProjects["product"].version
+
     executable = "docker"
     args = ["run", "--rm",
             "-v", "$duckDataPath:$duckDataPath",

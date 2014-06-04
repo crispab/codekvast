@@ -1,12 +1,10 @@
 package se.crisp.duck.agent.util;
 
+import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.experimental.Builder;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Properties;
@@ -18,6 +16,10 @@ import java.util.Properties;
 @Value
 @Builder
 public class Configuration {
+    private static final int DEFAULT_DUMP_INTERVAL_SECONDS = 600;
+    private static final int DEFAULT_UPLOAD_INTERVAL_SECONDS = 3600;
+    private static final String DEFAULT_ASPECTJ_OPTIONS = "";
+    private static final boolean DEFAULT_VERBOSE = false;
     private final boolean verbose;
     private final String customerName;
     private final String appName;
@@ -46,45 +48,60 @@ public class Configuration {
         return new File(dataPath, "aop.xml");
     }
 
+    public void saveTo(File file) {
+        SensorUtils.writePropertiesTo(file, this, "Duck Configuration");
+    }
+
+
     public static Configuration parseConfigFile(String configFile) {
         File file = new File(configFile);
-
-        if (!file.exists()) {
-            throw new IllegalArgumentException(String.format("Configuration file '%s' does not exist", file.getAbsolutePath()));
-        }
-
-        if (!file.isFile()) {
-            throw new IllegalArgumentException(String.format("'%s' is not a file", file.getAbsolutePath()));
-        }
-
-        if (!file.canRead()) {
-            throw new IllegalArgumentException(String.format("Cannot read configuration file '%s'", file.getAbsolutePath()));
-        }
-
         try {
-            Properties props = new Properties();
-            InputStream is = new BufferedInputStream(new FileInputStream(file));
-            props.load(is);
-            is.close();
+            Properties props = SensorUtils.readPropertiesFrom(file);
 
-            String customerName = getStringValue(props, "customerName");
-            String appName = getStringValue(props, "appName");
+            String customerName = getMandatoryStringValue(props, "customerName");
+            String appName = getMandatoryStringValue(props, "appName");
             return Configuration.builder()
                                 .customerName(customerName)
                                 .appName(appName)
-                                .environment(getStringValue(props, "environment"))
-                                .codeBaseUri(getUriValue(props, "codeBaseUri"))
-                                .packagePrefix(getStringValue(props, "packagePrefix"))
-                                .aspectjOptions(props.getProperty("aspectjOptions", ""))
-                                .sensorDumpIntervalSeconds(getIntValue(props, "sensorDumpIntervalSeconds", 600))
-                                .dataPath(new File(props.getProperty("dataPath", getDefaultDataPath(customerName, appName))))
-                                .serverUploadIntervalSeconds(getIntValue(props, "serverUploadIntervalSeconds", 3600))
-                                .serverUri(getUriValue(props, "serverUri"))
-                                .verbose(Boolean.parseBoolean(props.getProperty("verbose", "false")))
+                                .environment(getMandatoryStringValue(props, "environment"))
+                                .codeBaseUri(getMandatoryUriValue(props, "codeBaseUri"))
+                                .packagePrefix(getMandatoryStringValue(props, "packagePrefix"))
+                                .aspectjOptions(getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
+                                .sensorDumpIntervalSeconds(getOptionalIntValue(props, "sensorDumpIntervalSeconds",
+                                                                               DEFAULT_DUMP_INTERVAL_SECONDS))
+                                .dataPath(new File(getOptionalStringValue(props, "dataPath", getDefaultDataPath(customerName, appName))))
+                                .serverUploadIntervalSeconds(getOptionalIntValue(props, "serverUploadIntervalSeconds",
+                                                                                 DEFAULT_UPLOAD_INTERVAL_SECONDS))
+                                .serverUri(getMandatoryUriValue(props, "serverUri"))
+                                .verbose(Boolean.parseBoolean(getOptionalStringValue(props, "verbose", Boolean.toString(DEFAULT_VERBOSE))))
                                 .build();
         } catch (Exception e) {
             throw new IllegalArgumentException(String.format("Cannot parse %s: %s", file.getAbsolutePath(), e.getMessage()));
         }
+    }
+
+    @SneakyThrows(URISyntaxException.class)
+    public static Configuration getSampleConfiguration() {
+        String customerName = "Customer Name";
+        String appName = "Application Name räksmörgås";
+        return Configuration.builder()
+                            .customerName(customerName)
+                            .appName(appName)
+                            .environment("environment name")
+                            .packagePrefix("com.acme")
+                            .codeBaseUri(new URI("file:/path/to/my-precious.war"))
+                            .aspectjOptions("-verbose -showWeaveInfo")
+                            .dataPath(new File(getDefaultDataPath(customerName, appName)))
+                            .sensorDumpIntervalSeconds(DEFAULT_DUMP_INTERVAL_SECONDS)
+                            .serverUploadIntervalSeconds(DEFAULT_UPLOAD_INTERVAL_SECONDS)
+                            .serverUri(new URI("http://some-duck-server"))
+                            .verbose(DEFAULT_VERBOSE)
+                            .build();
+
+    }
+
+    private static String getOptionalStringValue(Properties props, String key, String defaultValue) {
+        return props.getProperty(key, defaultValue);
     }
 
     private static String getDefaultDataPath(String customerName, String appName) {
@@ -97,11 +114,11 @@ public class Configuration {
     }
 
     private static String normalizePathName(String path) {
-        return path.replace(" ", "_").replaceAll("[^a-zA-Z0-9_\\-]", "");
+        return path.replace(" ", "_").replaceAll("[^a-zA-Z0-9_\\-]", "").toLowerCase();
     }
 
-    private static URI getUriValue(Properties props, String key) {
-        String value = getStringValue(props, key);
+    private static URI getMandatoryUriValue(Properties props, String key) {
+        String value = getMandatoryStringValue(props, key);
         try {
             return new URI(value);
         } catch (URISyntaxException e) {
@@ -109,7 +126,7 @@ public class Configuration {
         }
     }
 
-    private static int getIntValue(Properties props, String key, int defaultValue) {
+    private static int getOptionalIntValue(Properties props, String key, int defaultValue) {
         String value = props.getProperty(key);
         if (value != null) {
             try {
@@ -121,7 +138,7 @@ public class Configuration {
         return defaultValue;
     }
 
-    private static String getStringValue(Properties props, String key) {
+    private static String getMandatoryStringValue(Properties props, String key) {
         String value = props.getProperty(key);
         if (value == null || value.trim().length() == 0) {
             throw new IllegalArgumentException("Missing property: " + key);

@@ -1,0 +1,20 @@
+apply plugin: 'distribution'
+
+version = "0.2"
+
+distributions {
+    agent {
+        baseName = 'duck-agent'
+        contents {
+            from tasks.getByPath(":product:agent:service:distZip")
+            from tasks.getByPath(":product:agent:sensor:shadowJar")
+        }
+    }
+
+    server {
+        baseName = 'duck-server'
+        contents {
+            from tasks.getByPath(":product:server:duck-server:distZip")
+        }
+    }
+}

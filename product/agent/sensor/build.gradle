@@ -3,15 +3,11 @@ buildscript {
     dependencies { classpath "nl.eveoh:gradle-aspectj:1.4" }
 }
 
-project.ext {
-    aspectjVersion = '1.8.0'
-}
-
 apply plugin: 'aspectj'
 apply plugin: 'shadow'
 
 sourceCompatibility = 1.6
-version = duckVersion
+version = project.parent.parent.version
 
 configurations { tools }
 

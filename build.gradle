@@ -11,8 +11,4 @@ subprojects {
 
     buildscript { repositories { jcenter() } }
     repositories { jcenter() }
-
-    ext {
-        duckVersion = "0.2"
-    }
 }

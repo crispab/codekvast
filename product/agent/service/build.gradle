@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'application'
 
 sourceCompatibility = 1.7
-version = duckVersion
+version = project.parent.parent.version
 
 mainClassName = "se.crisp.duck.agent.service.Agent"
 
