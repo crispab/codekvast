@@ -96,15 +96,15 @@ public class SensorUtils {
 
     public static Properties readPropertiesFrom(File file) throws IOException {
         if (!file.exists()) {
-            throw new IllegalArgumentException(String.format("'%s' does not exist", file.getAbsolutePath()));
+            throw new IOException(String.format("'%s' does not exist", file.getAbsolutePath()));
         }
 
         if (!file.isFile()) {
-            throw new IllegalArgumentException(String.format("'%s' is not a file", file.getAbsolutePath()));
+            throw new IOException(String.format("'%s' is not a file", file.getAbsolutePath()));
         }
 
         if (!file.canRead()) {
-            throw new IllegalArgumentException(String.format("Cannot read '%s'", file.getAbsolutePath()));
+            throw new IOException(String.format("Cannot read '%s'", file.getAbsolutePath()));
         }
 
         Properties props = new Properties();

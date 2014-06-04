@@ -6,7 +6,7 @@ distributions {
     agent {
         baseName = 'duck-agent'
         contents {
-            from tasks.getByPath(":product:agent:service:distZip")
+            from tasks.getByPath(":product:agent:duck-agent:distZip")
             from tasks.getByPath(":product:agent:sensor:shadowJar")
         }
     }
@@ -17,4 +17,10 @@ distributions {
             from tasks.getByPath(":product:server:duck-server:distZip")
         }
     }
+}
+
+task build(dependsOn: [agentDistZip, serverDistZip]) {
+    description = "Builds distribution zips for agent and server"
+    group "build"
+
 }

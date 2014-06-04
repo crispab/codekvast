@@ -1,0 +1,18 @@
+apply plugin: 'java-base'
+
+description = "Downloads certain tools for easier IDE setup"
+configurations { tools }
+
+dependencies {
+    tools libs['aspectjtools']
+}
+
+task downloadTools(type: Sync) {
+    description = "Downloads certain tools so that IDE:s can find them in a well-known location"
+    group "IDE support"
+
+    from configurations.tools
+    into file("downloaded")
+}
+
+build.dependsOn downloadTools

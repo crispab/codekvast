@@ -6,10 +6,10 @@ buildscript {
 apply plugin: 'aspectj'
 apply plugin: 'shadow'
 
-sourceCompatibility = 1.6
+description = "The javaagent part of Duck agent"
+archivesBaseName = "duck-agent-sensor"
 version = project.parent.parent.version
-
-configurations { tools }
+sourceCompatibility = 1.6
 
 dependencies {
     compile project(":product:agent:util"), { transitive = false }
@@ -18,21 +18,9 @@ dependencies {
     // Absolutely NO other compile or runtime dependencies are allowed here!
     // All (transitive) compile and runtime dependencies will end up in the sensored app's system
     // class path, which is unacceptable.
-
-    tools libs['aspectjtools']
 }
 
 jar { manifest { attributes("Premain-Class": "se.crisp.duck.agent.sensor.DuckSensor") } }
 
-// Make a shadow jar consisting of duck-sensor and it's dependencies...
+// Make a shadow jar consisting of duck-agent-sensor and it's dependencies...
 assemble.dependsOn shadowJar
-
-task downloadTools(type: Sync) {
-    description = "Downloads certain tools so that IDE:s can find them in a well-known location"
-    group "IDE support"
-
-    from configurations.tools
-    into "$rootDir/gradle/tools"
-}
-
-build.dependsOn downloadTools

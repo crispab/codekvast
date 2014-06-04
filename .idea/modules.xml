@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/product/agent/agent.iml" filepath="$PROJECT_DIR$/product/agent/agent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/product/server/agent-delegate/product/server/agent-delegate.iml" filepath="$PROJECT_DIR$/product/server/agent-delegate/product/server/agent-delegate.iml" />
       <module fileurl="file://$PROJECT_DIR$/duck.iml" filepath="$PROJECT_DIR$/duck.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/server/duck-server/duck-server.iml" filepath="$PROJECT_DIR$/product/server/duck-server/duck-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/product.iml" filepath="$PROJECT_DIR$/product/product.iml" />
@@ -12,6 +13,7 @@
       <module fileurl="file://$PROJECT_DIR$/product/agent/service/service.iml" filepath="$PROJECT_DIR$/product/agent/service/service.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/standalone-app/standalone-app.iml" filepath="$PROJECT_DIR$/sample/standalone-app/standalone-app.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/tapestry5-war/tapestry5-war.iml" filepath="$PROJECT_DIR$/sample/tapestry5-war/tapestry5-war.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tools/tools.iml" filepath="$PROJECT_DIR$/tools/tools.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/agent/util/util.iml" filepath="$PROJECT_DIR$/product/agent/util/util.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/vanilla-jsp/vanilla-jsp.iml" filepath="$PROJECT_DIR$/sample/vanilla-jsp/vanilla-jsp.iml" />
     </modules>

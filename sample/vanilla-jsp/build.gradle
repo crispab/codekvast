@@ -24,9 +24,9 @@ environment = development
 codeBaseUri = file:/maven/${archivesBaseName}.war
 dataPath = $duckDataPath
 packagePrefix = sample
-warehouseUri = http://localhost:8180
+serverUri = http://localhost:8180
 sensorDumpIntervalSeconds = 10
-warehouseUploadIntervalSeconds = 5
+serverUploadIntervalSeconds = 5
 aspectjOptions = -verbose -showWeaveInfo
 verbose = true
 """

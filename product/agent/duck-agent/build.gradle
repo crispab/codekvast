@@ -1,8 +1,10 @@
 apply plugin: 'java'
 apply plugin: 'application'
 
-sourceCompatibility = 1.7
+description = "The Duck agent"
+archivesBaseName = "duck-agent"
 version = project.parent.parent.version
+sourceCompatibility = 1.7
 
 mainClassName = "se.crisp.duck.agent.service.Agent"
 
@@ -12,9 +14,9 @@ dependencies {
     compile libs['reflections']
     compile libs['slf4j-api']
     compile project(":product:agent:util")
+    compile project(":product:server:agent-delegate")
 
-    testCompile libs['junit']
-    testCompile libs['mockito']
+    testCompile testLibs
 }
 
 jar {
@@ -23,7 +25,7 @@ jar {
 
 test.dependsOn ":sample:standalone-app:jar"
 
-// We sensor the Sample App by default...
+// We sensor the sample standalone-app by default...
 run {
     dependsOn = [":sample:standalone-app:installApp", ":sample:standalone-app:generateDuckConfig"]
     args tasks.getByPath(":sample:standalone-app:generateDuckConfig").configFile

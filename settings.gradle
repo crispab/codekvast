@@ -1,13 +1,14 @@
 rootProject.name = 'duck'
+
+include ':product'
 include ':product:agent:util'
 include ':product:agent:sensor'
-include ':product:agent:service'
+include ':product:agent:duck-agent'
 include ':product:server:duck-server'
-include ':product'
+include ':product:server:agent-delegate'
+
+include ':tools'
 
 include ':sample:standalone-app'
 include ':sample:tapestry5-war'
 include ':sample:vanilla-jsp'
-
-
-

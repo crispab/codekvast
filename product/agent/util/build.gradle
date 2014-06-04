@@ -1,7 +1,9 @@
 apply plugin: 'java'
 
-sourceCompatibility = 1.6
+description = "Code that is shared between duck-agent and the sensor"
+archivesBaseName = "duck-agent-util"
 version = project.parent.parent.version
+sourceCompatibility = 1.6
 
 dependencies {
     compile libs['lombok']
@@ -11,10 +13,13 @@ dependencies {
     // All transitive compile and runtime dependencies will end up in the sensored app's system
     // class path. (Lombok will be excluded when assembling the duck-sensor shadow jar).
 
-    testCompile group: 'junit', name: 'junit', version: '4.11'
+    testCompile testLibs
 }
 
 test {
     // Make it possible to retrieve the sample config file produced by a test
     ext.sampleConfigFile = file("$buildDir/duck.properties.sample")
+
+    // Also make the file name available to the test that produces it...
+    systemProperty 'sampleConfigFile.path', sampleConfigFile.absolutePath
 }

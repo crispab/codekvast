@@ -28,9 +28,10 @@ appName = $archivesBaseName
 environment = development
 codeBaseUri = file:${file("build/install/${project.name}/lib/")}
 packagePrefix = sample
-warehouseUri = http://localhost:8180
+dataPath = ${file("$buildDir/duck")}
+serverUri = http://localhost:8180
 sensorDumpIntervalSeconds = 10
-warehouseUploadIntervalSeconds = 5
+serverUploadIntervalSeconds = 5
 aspectjOptions = -verbose
 verbose = true
 """

@@ -3,9 +3,7 @@ task wrapper(type: Wrapper) {
 }
 
 subprojects {
-    buildscript {
-        dependencies { classpath 'com.github.jengelman.gradle.plugins:shadow:0.8' }
-    }
+    buildscript { dependencies { classpath 'com.github.jengelman.gradle.plugins:shadow:0.8' } }
 
     apply from: "$rootDir/gradle/libs.gradle"
 

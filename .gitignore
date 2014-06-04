@@ -16,3 +16,4 @@ build/**
 **/build/
 */*/build
 gradle/tools/
+tools/downloaded/

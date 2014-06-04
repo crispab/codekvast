@@ -1,0 +1,10 @@
+apply plugin: 'java'
+
+description = "The agent-side business delegate of the Duck server"
+archivesBaseName = "duck-server-agent-delegate"
+version = project.parent.parent.version
+sourceCompatibility = 1.7
+
+dependencies {
+    testCompile testLibs
+}
