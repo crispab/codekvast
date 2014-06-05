@@ -32,6 +32,8 @@ run {
     // args "/usr/local/src/ws/tnm/tnm_mainserver_main/duck.properties"
 }
 
+jar.dependsOn tasks.getByPath(":product:agent:util:test")
+
 applicationDistribution.from("src/main/resources") {
     into "conf"
     include "logback.xml"

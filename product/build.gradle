@@ -6,15 +6,15 @@ distributions {
     agent {
         baseName = 'duck-agent'
         contents {
-            from tasks.getByPath(":product:agent:duck-agent:distZip")
-            from tasks.getByPath(":product:agent:sensor:shadowJar")
+            from tasks.getByPath(":product:agent:duck-agent:installApp")
+            from tasks.getByPath(":product:agent:sensor:shadowJar"), { into "endorsed" }
         }
     }
 
     server {
         baseName = 'duck-server'
         contents {
-            from tasks.getByPath(":product:server:duck-server:distZip")
+            from tasks.getByPath(":product:server:duck-server:installApp")
         }
     }
 }
