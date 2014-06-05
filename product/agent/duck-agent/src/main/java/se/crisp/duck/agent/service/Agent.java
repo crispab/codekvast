@@ -2,6 +2,7 @@ package se.crisp.duck.agent.service;
 
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import se.crisp.duck.agent.util.Configuration;
 import se.crisp.duck.agent.util.SensorRun;
@@ -187,13 +188,16 @@ public class Agent extends TimerTask {
         baseSignatures.putAll(result.overriddenSignatures);
     }
 
+    @SneakyThrows(IOException.class)
     private SensorRun getLatestSensorRun() {
-        try {
-            return SensorRun.readFrom(config.getSensorFile());
-        } catch (IOException e) {
-            // Cannot read sensor file, do nothing now...
-            return null;
-        }
+        File[] sensorFiles = config.getSensorsPath().listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".properties");
+            }
+        });
+
+        return sensorFiles.length == 0 ? null : SensorRun.readFrom(sensorFiles[0]);
     }
 
     @SuppressWarnings("UseOfSystemOutOrSystemErr")

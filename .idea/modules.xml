@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/product/agent/agent.iml" filepath="$PROJECT_DIR$/product/agent/agent.iml" />
-      <module fileurl="file://$PROJECT_DIR$/product/server/agent-delegate/product/server/agent-delegate.iml" filepath="$PROJECT_DIR$/product/server/agent-delegate/product/server/agent-delegate.iml" />
+      <module fileurl="file://$PROJECT_DIR$/product/server/agent-delegate/agent-delegate.iml" filepath="$PROJECT_DIR$/product/server/agent-delegate/agent-delegate.iml" />
       <module fileurl="file://$PROJECT_DIR$/duck.iml" filepath="$PROJECT_DIR$/duck.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/agent/duck-agent/duck-agent.iml" filepath="$PROJECT_DIR$/product/agent/duck-agent/duck-agent.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/server/duck-server/duck-server.iml" filepath="$PROJECT_DIR$/product/server/duck-server/duck-server.iml" />

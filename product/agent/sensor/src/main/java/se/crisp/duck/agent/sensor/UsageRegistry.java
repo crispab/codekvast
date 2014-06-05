@@ -12,6 +12,7 @@ import java.net.UnknownHostException;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author Olle Hallin
@@ -23,6 +24,7 @@ public class UsageRegistry {
 
     private final Configuration config;
     private final SensorRun sensorRun;
+    private final AtomicLong currentTimeMillis = new AtomicLong(System.currentTimeMillis());
 
     private final ConcurrentMap<String, Long> usages = new ConcurrentHashMap<String, Long>();
 
@@ -30,9 +32,9 @@ public class UsageRegistry {
         this.config = config;
         this.sensorRun = sensorRun;
 
-        File parent = config.getDataFile().getParentFile();
-        if (parent != null && !parent.exists()) {
-            parent.mkdirs();
+        File sensorsPath = config.getSensorsPath();
+        if (sensorsPath != null && !sensorsPath.exists()) {
+            sensorsPath.mkdirs();
         }
     }
 
@@ -42,6 +44,7 @@ public class UsageRegistry {
     public static void initialize(Configuration config) {
         UsageRegistry.instance = new UsageRegistry(config,
                                                    SensorRun.builder()
+                                                            .appName(config.getAppName())
                                                             .hostName(getHostName())
                                                             .uuid(UUID.randomUUID())
                                                             .startedAtMillis(System.currentTimeMillis())
@@ -59,23 +62,25 @@ public class UsageRegistry {
     }
 
     /**
-     * This method is invoked by {@link se.crisp.duck.agent.sensor.aspects.AbstractMethodExecutionAspect#recordMethodCall(org.aspectj.lang.JoinPoint)}.
+     * This method is invoked by an aspect.
+     *
      * It will exclude a certain method from being reported as useless.
      * <p/>
      * Thread-safe.
      */
     public void registerMethodExecution(Signature signature) {
-        usages.put(signature.toLongString(), System.currentTimeMillis());
+        usages.put(signature.toLongString(), currentTimeMillis.longValue());
     }
 
     /**
-     * This method is invoked by {@link se.crisp.duck.agent.sensor.aspects.JasperExecutionAspect#recordJspInvocation(org.aspectj.lang.JoinPoint)}
+     * This method is invoked by an aspect.
+     *
      * It will exclude a certain JSP page from being reported as useless.
      * <p/>
      * Thread-safe.
      */
     public void registerJspPageExecution(String pageName) {
-        usages.put(pageName, System.currentTimeMillis());
+        usages.put(pageName, currentTimeMillis.longValue());
     }
 
     /**
@@ -86,6 +91,7 @@ public class UsageRegistry {
     public synchronized void dumpDataToDisk(int dumpCount) {
         dumpSensorRun();
         SensorUtils.dumpUsageData(config.getDataFile(), dumpCount, usages);
+        currentTimeMillis.set(System.currentTimeMillis());
     }
 
     private void dumpSensorRun() {

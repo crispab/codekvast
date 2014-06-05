@@ -15,6 +15,7 @@ public class SensorRunTest {
         File file = File.createTempFile("sensorRun", ".properties");
         file.deleteOnExit();
         SensorRun sr1 = SensorRun.builder()
+                                 .appName("appName")
                                  .hostName("hostName")
                                  .uuid(UUID.randomUUID())
                                  .startedAtMillis(System.currentTimeMillis())

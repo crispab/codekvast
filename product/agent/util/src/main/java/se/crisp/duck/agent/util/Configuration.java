@@ -1,5 +1,7 @@
 package se.crisp.duck.agent.util;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.experimental.Builder;
@@ -15,6 +17,7 @@ import java.util.Properties;
 @SuppressWarnings({"UseOfSystemOutOrSystemErr", "UnusedDeclaration"})
 @Value
 @Builder
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class Configuration {
     public static final int DEFAULT_DUMP_INTERVAL_SECONDS = 600;
     public static final int DEFAULT_UPLOAD_INTERVAL_SECONDS = 3600;
@@ -35,15 +38,15 @@ public class Configuration {
     private final URI serverUri;
 
     public File getDataFile() {
-        return new File(dataPath, "usage.dat");
+        return new File(getSensorsPath(), appName + ".dat");
+    }
+
+    public File getSensorFile() {
+        return new File(getSensorsPath(), appName + ".properties");
     }
 
     public File getSignatureFile() {
         return new File(dataPath, "signatures.dat");
-    }
-
-    public File getSensorFile() {
-        return new File(dataPath, "sensor.properties");
     }
 
     public File getAspectFile() {
@@ -54,6 +57,9 @@ public class Configuration {
         SensorUtils.writePropertiesTo(file, this, "Duck Configuration");
     }
 
+    public File getSensorsPath() {
+        return new File(dataPath, "sensors");
+    }
 
     public static Configuration parseConfigFile(String configFile) {
         File file = new File(configFile);
@@ -61,7 +67,12 @@ public class Configuration {
             Properties props = SensorUtils.readPropertiesFrom(file);
 
             String customerName = getMandatoryStringValue(props, "customerName");
-            String appName = getMandatoryStringValue(props, "appName");
+
+            String appName = System.getProperty("duck.appName", getMandatoryStringValue(props, "appName"));
+            if (!appName.equals(normalizePathName(appName))) {
+                throw new IllegalArgumentException("Illegal appName '" + appName + "': only digits, letters, '-' and '_' allowed");
+            }
+
             return Configuration.builder()
                                 .customerName(customerName)
                                 .appName(appName)
@@ -71,7 +82,7 @@ public class Configuration {
                                 .aspectjOptions(getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
                                 .sensorDumpIntervalSeconds(getOptionalIntValue(props, "sensorDumpIntervalSeconds",
                                                                                DEFAULT_DUMP_INTERVAL_SECONDS))
-                                .dataPath(new File(getOptionalStringValue(props, "dataPath", getDefaultDataPath(customerName, appName))))
+                                .dataPath(new File(getOptionalStringValue(props, "dataPath", getDefaultDataPath(customerName))))
                                 .serverUploadIntervalSeconds(getOptionalIntValue(props, "serverUploadIntervalSeconds",
                                                                                  DEFAULT_UPLOAD_INTERVAL_SECONDS))
                                 .serverUri(getMandatoryUriValue(props, "serverUri"))
@@ -85,15 +96,14 @@ public class Configuration {
     @SneakyThrows(URISyntaxException.class)
     public static Configuration createSampleConfiguration() {
         String customerName = "Customer Name";
-        String appName = "Application Name räksmörgås";
         return Configuration.builder()
                             .customerName(customerName)
-                            .appName(appName)
-                            .environment("environment name")
+                            .appName("app-name")
+                            .environment("environment")
                             .packagePrefix("com.acme")
-                            .codeBaseUri(new URI("file:/path/to/my-precious.war"))
+                            .codeBaseUri(new URI("file:/path/to/my/code/base"))
                             .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
-                            .dataPath(new File(getDefaultDataPath(customerName, appName)))
+                            .dataPath(new File("/var/lib/duck", normalizePathName(customerName)))
                             .sensorDumpIntervalSeconds(DEFAULT_DUMP_INTERVAL_SECONDS)
                             .serverUploadIntervalSeconds(DEFAULT_UPLOAD_INTERVAL_SECONDS)
                             .serverUri(new URI("http://some-duck-server"))
@@ -106,17 +116,16 @@ public class Configuration {
         return props.getProperty(key, defaultValue);
     }
 
-    private static String getDefaultDataPath(String customerName, String appName) {
-        return System
-                .getProperty("java.io.tmpdir") + File.separator
-                + "duck" + File.separator
-                + "agent" + File.separator
-                + normalizePathName(customerName) + File.separator
-                + normalizePathName(appName);
+    private static String getDefaultDataPath(String customerName) {
+        File basePath = new File("/var/lib");
+        if (!basePath.canWrite()) {
+            basePath = new File(System.getProperty("java.io.tmpdir"));
+        }
+        return new File(basePath, "duck/" + normalizePathName(customerName)).getAbsolutePath();
     }
 
     private static String normalizePathName(String path) {
-        return path.replace(" ", "_").replaceAll("[^a-zA-Z0-9_\\-]", "").toLowerCase();
+        return path.replaceAll("[^a-zA-Z0-9_\\-]", "").toLowerCase();
     }
 
     private static URI getMandatoryUriValue(Properties props, String key) {

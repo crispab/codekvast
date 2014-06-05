@@ -20,6 +20,7 @@ import java.util.UUID;
 @Setter(AccessLevel.NONE)
 @Builder
 public class SensorRun {
+    private final String appName;
     private final String hostName;
     private final UUID uuid;
     private final long startedAtMillis;
@@ -34,6 +35,7 @@ public class SensorRun {
         Properties props = SensorUtils.readPropertiesFrom(file);
 
         return SensorRun.builder()
+                        .appName(props.getProperty("appName"))
                         .hostName(props.getProperty("hostName"))
                         .uuid(UUID.fromString(props.getProperty("uuid")))
                         .startedAtMillis(Long.parseLong(props.getProperty("startedAtMillis")))
