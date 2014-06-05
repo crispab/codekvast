@@ -2,13 +2,11 @@ package se.crisp.duck.agent.sensor;
 
 import org.aspectj.lang.Signature;
 import se.crisp.duck.agent.util.Configuration;
-import se.crisp.duck.agent.util.SensorRun;
+import se.crisp.duck.agent.util.Sensor;
 import se.crisp.duck.agent.util.SensorUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -23,19 +21,18 @@ public class UsageRegistry {
     public static UsageRegistry instance;
 
     private final Configuration config;
-    private final SensorRun sensorRun;
+    private final Sensor sensor;
+    private final File sensorFile;
     private final AtomicLong currentTimeMillis = new AtomicLong(System.currentTimeMillis());
 
     private final ConcurrentMap<String, Long> usages = new ConcurrentHashMap<String, Long>();
 
-    private UsageRegistry(Configuration config, SensorRun sensorRun) {
+    public UsageRegistry(Configuration config, Sensor sensor) {
         this.config = config;
-        this.sensorRun = sensorRun;
+        this.sensor = sensor;
 
-        File sensorsPath = config.getSensorsPath();
-        if (sensorsPath != null && !sensorsPath.exists()) {
-            sensorsPath.mkdirs();
-        }
+        this.sensorFile = config.getSensorFile();
+        sensorFile.deleteOnExit();
     }
 
     /**
@@ -43,27 +40,17 @@ public class UsageRegistry {
      */
     public static void initialize(Configuration config) {
         UsageRegistry.instance = new UsageRegistry(config,
-                                                   SensorRun.builder()
-                                                            .appName(config.getAppName())
-                                                            .hostName(getHostName())
-                                                            .uuid(UUID.randomUUID())
-                                                            .startedAtMillis(System.currentTimeMillis())
-                                                            .build()
-        );
-    }
-
-    private static String getHostName() {
-        try {
-            return InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-            DuckSensor.out.println(DuckSensor.NAME + " cannot get local hostname: " + e);
-            return "-- unknown --";
-        }
+                                                   Sensor.builder()
+                                                         .appName(config.getAppName())
+                                                         .hostName(SensorUtils.getHostName())
+                                                         .uuid(UUID.randomUUID())
+                                                         .startedAtMillis(System.currentTimeMillis())
+                                                         .build());
     }
 
     /**
      * This method is invoked by an aspect.
-     *
+     * <p/>
      * It will exclude a certain method from being reported as useless.
      * <p/>
      * Thread-safe.
@@ -74,7 +61,7 @@ public class UsageRegistry {
 
     /**
      * This method is invoked by an aspect.
-     *
+     * <p/>
      * It will exclude a certain JSP page from being reported as useless.
      * <p/>
      * Thread-safe.
@@ -88,20 +75,29 @@ public class UsageRegistry {
      * <p/>
      * Thread-safe.
      */
-    public synchronized void dumpDataToDisk(int dumpCount) {
-        dumpSensorRun();
-        SensorUtils.dumpUsageData(config.getDataFile(), dumpCount, usages);
-        currentTimeMillis.set(System.currentTimeMillis());
+    public void dumpDataToDisk(int dumpCount) {
+        File sensorsPath = config.getSensorsPath();
+        sensorsPath.mkdirs();
+        if (!sensorsPath.exists()) {
+            DuckSensor.out.println("Cannot dump usage data, " + sensorsPath + " cannot be created");
+        } else {
+            dumpSensorRun();
+            SensorUtils.dumpUsageData(config.getUsageFile(), dumpCount, usages);
+            currentTimeMillis.set(System.currentTimeMillis());
+        }
     }
 
     private void dumpSensorRun() {
-        File file = config.getSensorFile();
+        File tmpFile = null;
         try {
-            File tmpFile = File.createTempFile("duck", ".tmp", file.getAbsoluteFile().getParentFile());
-            sensorRun.saveTo(tmpFile);
-            SensorUtils.renameFile(tmpFile, file);
+            tmpFile = File.createTempFile("duck", ".tmp", sensorFile.getParentFile());
+            sensor.saveTo(tmpFile);
+            SensorUtils.renameFile(tmpFile, sensorFile);
         } catch (IOException e) {
-            DuckSensor.out.println(DuckSensor.NAME + " cannot save " + file + ": " + e);
+            DuckSensor.out.println(DuckSensor.NAME + " cannot save " + sensorFile + ": " + e);
+        } finally {
+            SensorUtils.safeDelete(tmpFile);
         }
     }
+
 }

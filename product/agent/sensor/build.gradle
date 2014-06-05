@@ -12,19 +12,17 @@ version = project.parent.parent.version
 sourceCompatibility = 1.6
 
 dependencies {
+    // cannot use lombok here, since this is an AspectJ project
     compile project(":product:agent:util"), { transitive = false }
     compile libs['aspectjweaver']
 
     // Absolutely NO other compile or runtime dependencies are allowed here!
-    // All (transitive) compile and runtime dependencies will end up in the sensored app's system
+    // All (transitive) compile and runtime dependencies will end up in the instrumented app's system
     // class path, which is unacceptable.
 }
 
 jar { manifest { attributes("Premain-Class": "se.crisp.duck.agent.sensor.DuckSensor") } }
-
-shadow {
-    outputFile = file("$buildDir/distributions/duck-sensor-${version}.jar")
-}
+shadow { outputFile = file("$buildDir/distributions/duck-sensor-${version}.jar") }
 
 // Make a shadow jar consisting of duck-agent-sensor and it's dependencies...
 assemble.dependsOn shadowJar

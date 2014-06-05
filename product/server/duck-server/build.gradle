@@ -7,6 +7,7 @@ description = "The main Duck server"
 archivesBaseName = "duck-server"
 version = project.parent.parent.version
 sourceCompatibility = 1.7
+mainClassName = "se.crisp.duck.server.DuckServer"
 
 dependencies {
     compile "org.springframework.boot:spring-boot-starter-web"

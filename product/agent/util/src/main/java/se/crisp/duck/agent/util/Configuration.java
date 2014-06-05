@@ -14,16 +14,20 @@ import java.util.Properties;
 /**
  * @author Olle Hallin
  */
-@SuppressWarnings({"UseOfSystemOutOrSystemErr", "UnusedDeclaration"})
+@SuppressWarnings({"UseOfSystemOutOrSystemErr", "UnusedDeclaration", "ClassWithTooManyFields", "ClassWithTooManyMethods"})
 @Value
 @Builder
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class Configuration {
-    public static final int DEFAULT_DUMP_INTERVAL_SECONDS = 600;
+    public static final String USAGE_FILE_SUFFIX = ".usage.dat";
+    public static final String SENSOR_FILE_SUFFIX = ".sensor.properties";
+
+    public static final int DEFAULT_SENSOR_RESOLUTION_INTERVAL_SECONDS = 600;
     public static final int DEFAULT_UPLOAD_INTERVAL_SECONDS = 3600;
     public static final String DEFAULT_ASPECTJ_OPTIONS = "";
     public static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
     public static final boolean DEFAULT_VERBOSE = false;
+
 
     private final boolean verbose;
     private final String customerName;
@@ -33,16 +37,16 @@ public class Configuration {
     private final String packagePrefix;
     private final String aspectjOptions;
     private final File dataPath;
-    private final int sensorDumpIntervalSeconds;
+    private final int sensorResolutionIntervalSeconds;
     private final int serverUploadIntervalSeconds;
     private final URI serverUri;
 
-    public File getDataFile() {
-        return new File(getSensorsPath(), appName + ".dat");
+    public File getUsageFile() {
+        return new File(getSensorsPath(), appName + USAGE_FILE_SUFFIX);
     }
 
     public File getSensorFile() {
-        return new File(getSensorsPath(), appName + ".properties");
+        return new File(getSensorsPath(), appName + SENSOR_FILE_SUFFIX);
     }
 
     public File getSignatureFile() {
@@ -80,8 +84,8 @@ public class Configuration {
                                 .codeBaseUri(getMandatoryUriValue(props, "codeBaseUri"))
                                 .packagePrefix(getMandatoryStringValue(props, "packagePrefix"))
                                 .aspectjOptions(getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
-                                .sensorDumpIntervalSeconds(getOptionalIntValue(props, "sensorDumpIntervalSeconds",
-                                                                               DEFAULT_DUMP_INTERVAL_SECONDS))
+                                .sensorResolutionIntervalSeconds(getOptionalIntValue(props, "sensorResolutionIntervalSeconds",
+                                                                                     DEFAULT_SENSOR_RESOLUTION_INTERVAL_SECONDS))
                                 .dataPath(new File(getOptionalStringValue(props, "dataPath", getDefaultDataPath(customerName))))
                                 .serverUploadIntervalSeconds(getOptionalIntValue(props, "serverUploadIntervalSeconds",
                                                                                  DEFAULT_UPLOAD_INTERVAL_SECONDS))
@@ -104,7 +108,7 @@ public class Configuration {
                             .codeBaseUri(new URI("file:/path/to/my/code/base"))
                             .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
                             .dataPath(new File("/var/lib/duck", normalizePathName(customerName)))
-                            .sensorDumpIntervalSeconds(DEFAULT_DUMP_INTERVAL_SECONDS)
+                            .sensorResolutionIntervalSeconds(DEFAULT_SENSOR_RESOLUTION_INTERVAL_SECONDS)
                             .serverUploadIntervalSeconds(DEFAULT_UPLOAD_INTERVAL_SECONDS)
                             .serverUri(new URI("http://some-duck-server"))
                             .verbose(DEFAULT_VERBOSE)

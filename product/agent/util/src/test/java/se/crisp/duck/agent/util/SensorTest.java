@@ -8,20 +8,20 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
-public class SensorRunTest {
+public class SensorTest {
 
     @Test
     public void testSaveAndRestore() throws IOException {
         File file = File.createTempFile("sensorRun", ".properties");
         file.deleteOnExit();
-        SensorRun sr1 = SensorRun.builder()
-                                 .appName("appName")
-                                 .hostName("hostName")
-                                 .uuid(UUID.randomUUID())
-                                 .startedAtMillis(System.currentTimeMillis())
-                                 .build();
+        Sensor sr1 = Sensor.builder()
+                           .appName("appName")
+                           .hostName("hostName")
+                           .uuid(UUID.randomUUID())
+                           .startedAtMillis(System.currentTimeMillis())
+                           .build();
         sr1.saveTo(file);
-        SensorRun sr2 = SensorRun.readFrom(file);
+        Sensor sr2 = Sensor.readFrom(file);
         assertEquals(sr1, sr2);
     }
 

@@ -19,27 +19,27 @@ import java.util.UUID;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Setter(AccessLevel.NONE)
 @Builder
-public class SensorRun {
+public class Sensor {
     private final String appName;
     private final String hostName;
     private final UUID uuid;
     private final long startedAtMillis;
-    private long savedAtMillis;
+    private long dumpedAtMillis;
 
     public void saveTo(File file) {
-        savedAtMillis = System.currentTimeMillis();
+        dumpedAtMillis = System.currentTimeMillis();
         SensorUtils.writePropertiesTo(file, this, "Duck Sensor Run");
     }
 
-    public static SensorRun readFrom(File file) throws IOException {
+    public static Sensor readFrom(File file) throws IOException {
         Properties props = SensorUtils.readPropertiesFrom(file);
 
-        return SensorRun.builder()
-                        .appName(props.getProperty("appName"))
-                        .hostName(props.getProperty("hostName"))
-                        .uuid(UUID.fromString(props.getProperty("uuid")))
-                        .startedAtMillis(Long.parseLong(props.getProperty("startedAtMillis")))
-                        .savedAtMillis(Long.parseLong(props.getProperty("savedAtMillis")))
-                        .build();
+        return Sensor.builder()
+                     .appName(props.getProperty("appName"))
+                     .hostName(props.getProperty("hostName"))
+                     .uuid(UUID.fromString(props.getProperty("uuid")))
+                     .startedAtMillis(Long.parseLong(props.getProperty("startedAtMillis")))
+                     .dumpedAtMillis(Long.parseLong(props.getProperty("dumpedAtMillis")))
+                     .build();
     }
 }

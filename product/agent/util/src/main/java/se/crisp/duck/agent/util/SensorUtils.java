@@ -3,6 +3,8 @@ package se.crisp.duck.agent.util;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.*;
 
 /**
@@ -19,8 +21,9 @@ public class SensorUtils {
 
     public static List<Usage> readUsageFrom(File file) {
         List<Usage> result = new ArrayList<Usage>();
+        BufferedReader in = null;
         try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+            in = new BufferedReader(new InputStreamReader(new FileInputStream(file), CHARSET_NAME));
             String line;
             while ((line = in.readLine()) != null) {
                 Usage usage = Usage.parse(line);
@@ -30,6 +33,8 @@ public class SensorUtils {
             }
         } catch (Exception ignore) {
             // ignore all exceptions
+        } finally {
+            safeClose(in);
         }
         return result;
     }
@@ -37,9 +42,12 @@ public class SensorUtils {
     public static void dumpUsageData(File file, int dumpCount, Map<String, Long> usages) {
         long startedAt = System.currentTimeMillis();
 
+        File tmpFile = null;
+        PrintStream out = null;
+
         try {
-            File tmpFile = File.createTempFile("duck", ".tmp", file.getAbsoluteFile().getParentFile());
-            PrintStream out = new PrintStream(new BufferedOutputStream(new FileOutputStream(tmpFile)));
+            tmpFile = File.createTempFile("duck", ".tmp", file.getParentFile());
+            out = new PrintStream(tmpFile, CHARSET_NAME);
 
             Date dumpedAt = new Date();
             out.printf(Locale.ENGLISH, "# Duck usage results #%d at %s%n", dumpCount, dumpedAt);
@@ -51,15 +59,21 @@ public class SensorUtils {
                 count += 1;
             }
 
-            out.flush();
-            out.close();
-
-            renameFile(tmpFile, file);
-
             long elapsed = System.currentTimeMillis() - startedAt;
             out.printf(Locale.ENGLISH, "# Dump #%d at %s took %d ms, number of methods: %d%n", dumpCount, dumpedAt, elapsed, count);
+            out.flush();
         } catch (IOException e) {
             System.err.println("DUCK cannot dump usage data to " + file + ": " + e);
+        } finally {
+            safeClose(out);
+        }
+
+        safeRename(tmpFile, file);
+    }
+
+    private static void safeRename(File from, File to) {
+        if (from != null && to != null) {
+            renameFile(from, to);
         }
     }
 
@@ -91,7 +105,7 @@ public class SensorUtils {
     private static void writePropertiesToFile(File file, Properties props, String comment) throws IOException {
         Writer out = new OutputStreamWriter(new FileOutputStream(file), CHARSET_NAME);
         props.store(out, comment);
-        out.close();
+        safeClose(out);
     }
 
     public static Properties readPropertiesFrom(File file) throws IOException {
@@ -108,9 +122,51 @@ public class SensorUtils {
         }
 
         Properties props = new Properties();
-        Reader reader = new InputStreamReader(new FileInputStream(file), CHARSET_NAME);
-        props.load(reader);
-        reader.close();
+        Reader reader = null;
+        try {
+            reader = new InputStreamReader(new FileInputStream(file), CHARSET_NAME);
+            props.load(reader);
+        } finally {
+            safeClose(reader);
+        }
         return props;
+    }
+
+    private static void safeClose(Closeable closeable) {
+        if (closeable != null) {
+            try {
+                closeable.close();
+            } catch (IOException e) {
+                // ignore
+            }
+        }
+    }
+
+    public static String getHostName() {
+        try {
+            return InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            return "localhost";
+        }
+    }
+
+    public static void safeDelete(File file) {
+        if (file != null && file.exists()) {
+            file.delete();
+        }
+    }
+
+    public static void writeToFile(String text, File file) {
+        Writer writer = null;
+        try {
+            file.getParentFile().mkdirs();
+            writer = new OutputStreamWriter(new FileOutputStream(file), CHARSET_NAME);
+            writer.write(text);
+            writer.flush();
+        } catch (IOException e) {
+            throw new RuntimeException("DUCK cannot create " + file, e);
+        } finally {
+            safeClose(writer);
+        }
     }
 }

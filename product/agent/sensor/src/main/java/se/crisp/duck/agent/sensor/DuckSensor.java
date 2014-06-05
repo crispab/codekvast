@@ -4,8 +4,11 @@ import org.aspectj.bridge.Constants;
 import se.crisp.duck.agent.sensor.aspects.AbstractMethodExecutionAspect;
 import se.crisp.duck.agent.sensor.aspects.JasperExecutionAspect;
 import se.crisp.duck.agent.util.Configuration;
+import se.crisp.duck.agent.util.SensorUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.lang.instrument.Instrumentation;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -45,17 +48,17 @@ public class DuckSensor {
         DuckSensor.out.printf("%s is loading aspectjweaver%n", NAME);
         loadAspectjWeaver(args, inst, config);
 
-        int firstResultInSeconds = createTimerTask(config.getSensorDumpIntervalSeconds());
+        int firstResultInSeconds = createTimerTask(config.getSensorResolutionIntervalSeconds());
 
         DuckSensor.out.printf("%s is ready to detect used code within(%s..*).%n" +
                                       "First write to %s will be in %d seconds, thereafter every %d seconds.%n" +
                                       "-------------------------------------------------------------------------------%n",
-                              NAME, config.getPackagePrefix(), config.getDataFile(), firstResultInSeconds,
-                              config.getSensorDumpIntervalSeconds()
+                              NAME, config.getPackagePrefix(), config.getUsageFile(), firstResultInSeconds,
+                              config.getSensorResolutionIntervalSeconds()
         );
     }
 
-    private static int createTimerTask(int dumpIntervalSeconds) throws IOException {
+    private static int createTimerTask(int dumpIntervalSeconds) {
         UsageDumpingTimerTask timerTask = new UsageDumpingTimerTask();
 
         Timer timer = new Timer(NAME, true);
@@ -116,19 +119,9 @@ public class DuckSensor {
 
         File file = config.getAspectFile();
         if (!file.canRead()) {
-            writeToFile(xml, file);
+            SensorUtils.writeToFile(xml, file);
         }
         return "file:" + file.getAbsolutePath();
-    }
-
-    private static void writeToFile(String text, File file) {
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-            writer.write(text);
-            writer.close();
-        } catch (IOException e) {
-            throw new RuntimeException(NAME + " cannot create " + file, e);
-        }
     }
 
     private static class UsageDumpingTimerTask extends TimerTask {

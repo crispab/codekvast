@@ -2,10 +2,9 @@ package se.crisp.duck.agent.service;
 
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import se.crisp.duck.agent.util.Configuration;
-import se.crisp.duck.agent.util.SensorRun;
+import se.crisp.duck.agent.util.Sensor;
 import se.crisp.duck.agent.util.SensorUtils;
 import se.crisp.duck.agent.util.Usage;
 
@@ -46,20 +45,20 @@ public class Agent extends TimerTask {
 
     @Override
     public void run() {
-        SensorRun sensorRun = getLatestSensorRun();
-        if (sensorRun == null) {
-            log.info("Waiting for {} to start", config.getAppName());
+        List<Sensor> sensors = getRunningSensors();
+        if (sensors.isEmpty()) {
+            log.debug("Waiting some sensor to start");
             return;
         }
 
         importSignaturesIfNeeded(new CodeBase(config.getCodeBaseUri().getPath()));
-        processUsageDataIfNew(config.getDataFile());
+        processUsageDataIfNew(config.getUsageFile());
     }
 
     private void processUsageDataIfNew(File dataFile) {
         long modifiedAt = dataFile.lastModified();
         if (modifiedAt != dataFileModifiedAtMillis) {
-            applyRecordedUsage(SensorUtils.readUsageFrom(config.getDataFile()));
+            applyRecordedUsage(SensorUtils.readUsageFrom(config.getUsageFile()));
             logStatistics();
 
             // TODO: post sensorRun and usages to data warehouse
@@ -188,16 +187,27 @@ public class Agent extends TimerTask {
         baseSignatures.putAll(result.overriddenSignatures);
     }
 
-    @SneakyThrows(IOException.class)
-    private SensorRun getLatestSensorRun() {
+    private List<Sensor> getRunningSensors() {
+        List<Sensor> result = new ArrayList<>();
+
         File[] sensorFiles = config.getSensorsPath().listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
-                return name.endsWith(".properties");
+                return name.endsWith(Configuration.SENSOR_FILE_SUFFIX);
             }
         });
 
-        return sensorFiles.length == 0 ? null : SensorRun.readFrom(sensorFiles[0]);
+        if (sensorFiles != null) {
+            for (File file : sensorFiles) {
+                try {
+                    result.add(Sensor.readFrom(file));
+                } catch (IOException e) {
+                    log.warn("Cannot read {}: {}", file, e.toString());
+                }
+            }
+        }
+
+        return result;
     }
 
     @SuppressWarnings("UseOfSystemOutOrSystemErr")
