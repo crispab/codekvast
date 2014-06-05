@@ -22,5 +22,9 @@ dependencies {
 
 jar { manifest { attributes("Premain-Class": "se.crisp.duck.agent.sensor.DuckSensor") } }
 
+shadow {
+    outputFile = file("$buildDir/distributions/duck-sensor-${version}.jar")
+}
+
 // Make a shadow jar consisting of duck-agent-sensor and it's dependencies...
 assemble.dependsOn shadowJar

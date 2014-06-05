@@ -11,7 +11,7 @@ dependencies {
     // Absolutely NO other compile or runtime dependencies are allowed here!
 
     // All transitive compile and runtime dependencies will end up in the sensored app's system
-    // class path. (Lombok will be excluded when assembling the duck-sensor shadow jar).
+    // class path. (Lombok will be excluded when assembling the duck-sensor jar).
 
     testCompile testLibs
 }

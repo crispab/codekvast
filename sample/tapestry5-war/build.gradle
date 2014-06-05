@@ -54,24 +54,29 @@ verbose = true
 assemble.dependsOn generateDuckConfig
 
 task dockerRunWarInTomcat7(type: Exec) {
-    description = "Deploys the sample war to Tomcat7 inside a Docker container, accessible at http://localhost:8080/sample"
-    group = "Test"
-    dependsOn assemble
+    def tomcatVersion = "tomcat-7.0"
+    def port = 8080
 
-    def duckVersion = rootProject.childProjects["product"].version
+    description = "Deploys $project.name to $tomcatVersion inside a Docker container, access it at http://localhost:$port/$project.name"
+    group = "Web application"
+    dependsOn "assemble", ":product:agent:sensor:assemble"
+
+    def duckSensor = new File(tasks.getByPath(":product:agent:sensor:shadowJar").outputs.files.asPath)
 
     executable = "docker"
     args = ["run", "--rm",
             "-v", "$duckDataPath:$duckDataPath",
             "-v", "$buildDir/libs:/maven",
-            "-v", "$rootDir/agent/sensor/build/distributions/:/duck",
-            "-e", "JAVA_OPTS=-javaagent:/duck/sensor-$duckVersion-shadow.jar=/maven/duck.properties",
+            "-v", "$duckSensor.parentFile:/duck",
+            "-e", "JAVA_OPTS=-javaagent:/duck/$duckSensor.name=/maven/duck.properties",
             "-e", "LANG=C.UTF-8",
-            "-p", "8080:8080",
-            "jolokia/tomcat-7.0",
+            "-p", "$port:8080",
+            "jolokia/$tomcatVersion",
     ]
 
     doFirst {
-        println "Deploying $project.name to Tomcat7, access it at http://localhost:8080/sample"
+        new File(duckDataPath).mkdirs()
+        logger.lifecycle description
+        logger.info "{} {}", executable, args.join(" ")
     }
 }
