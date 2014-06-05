@@ -9,6 +9,7 @@ import se.crisp.duck.agent.util.SensorUtils;
 import se.crisp.duck.agent.util.Usage;
 
 import java.io.*;
+import java.net.URL;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -197,19 +198,30 @@ public class Agent extends TimerTask {
 
     @SuppressWarnings("UseOfSystemOutOrSystemErr")
     public static void main(String[] args) {
-        if (args == null || args.length < 1) {
-            System.err.println("Usage: agent <path/to/duck.properties>");
-            System.exit(1);
-        }
-
         try {
-            Configuration config = Configuration.parseConfigFile(args[0]);
+            Configuration config = Configuration.parseConfigFile(locateConfigFile(args));
             new Agent(config, new CodeBaseScanner()).start();
         } catch (Exception e) {
             log.error("Cannot start agent", e);
             System.err.println(e.getMessage());
             System.exit(2);
         }
+    }
+
+    private static String locateConfigFile(String[] args) {
+        String result = args == null || args.length < 1 ? null : args[0];
+        if (result == null) {
+            URL url = Agent.class.getResource("/duck.properties");
+            if (url != null) {
+                result = url.getFile();
+            }
+        }
+
+        if (result == null) {
+            System.err.println("Cannot locate duck.properties.\nEither put it in conf/ or specify the path on the command line");
+            System.exit(1);
+        }
+        return result;
     }
 
     private class ShutdownHook implements Runnable {
