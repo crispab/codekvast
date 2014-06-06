@@ -113,12 +113,12 @@ public class DuckSensor {
                 JasperExecutionAspect.class.getName(),
                 AbstractMethodExecutionAspect.class.getName(),
                 config.getPackagePrefix(),
-                config.getAspectjOptions(),
+                config.getAspectjOptions() + " -XmessageHandlerClass:" + AspectjMessageHandler.class.getName(),
                 JasperExecutionAspect.JASPER_BASE_PACKAGE
         );
 
         File file = config.getAspectFile();
-        if (!file.canRead()) {
+        if (config.isClobberAopXml() || !file.canRead()) {
             SensorUtils.writeToFile(xml, file);
         }
         return "file:" + file.getAbsolutePath();

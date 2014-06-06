@@ -32,7 +32,7 @@ dataPath = ${file("$buildDir/duck")}
 serverUri = http://localhost:8180
 sensorDumpIntervalSeconds = 10
 serverUploadIntervalSeconds = 5
-aspectjOptions = -verbose
+aspectjOptions = -verbose -showWeaveInfo
 verbose = true
 """
     }

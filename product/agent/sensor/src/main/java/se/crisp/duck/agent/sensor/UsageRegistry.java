@@ -87,6 +87,10 @@ public class UsageRegistry {
         }
     }
 
+    public Configuration getConfig() {
+        return config;
+    }
+
     private void dumpSensorRun() {
         File tmpFile = null;
         try {

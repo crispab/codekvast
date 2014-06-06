@@ -25,9 +25,9 @@ public class Configuration {
     public static final int DEFAULT_SENSOR_RESOLUTION_INTERVAL_SECONDS = 600;
     public static final int DEFAULT_UPLOAD_INTERVAL_SECONDS = 3600;
     public static final String DEFAULT_ASPECTJ_OPTIONS = "";
-    public static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
+    public static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo -XmessageHandlerClass:fqcn";
     public static final boolean DEFAULT_VERBOSE = false;
-
+    public static final boolean DEFAULT_CLOBBER_AOP_XML = true;
 
     private final boolean verbose;
     private final String customerName;
@@ -40,6 +40,7 @@ public class Configuration {
     private final int sensorResolutionIntervalSeconds;
     private final int serverUploadIntervalSeconds;
     private final URI serverUri;
+    private final boolean clobberAopXml;
 
     public File getUsageFile() {
         return new File(getSensorsPath(), appName + USAGE_FILE_SUFFIX);
@@ -57,12 +58,16 @@ public class Configuration {
         return new File(dataPath, "aop.xml");
     }
 
-    public void saveTo(File file) {
-        SensorUtils.writePropertiesTo(file, this, "Duck Configuration");
-    }
-
     public File getSensorsPath() {
         return new File(dataPath, "sensors");
+    }
+
+    public File getSensorLogFile() {
+        return new File(dataPath, "duck-sensor.log");
+    }
+
+    public void saveTo(File file) {
+        SensorUtils.writePropertiesTo(file, this, "Duck Configuration");
     }
 
     public static Configuration parseConfigFile(String configFile) {
@@ -91,6 +96,8 @@ public class Configuration {
                                                                                  DEFAULT_UPLOAD_INTERVAL_SECONDS))
                                 .serverUri(getMandatoryUriValue(props, "serverUri"))
                                 .verbose(Boolean.parseBoolean(getOptionalStringValue(props, "verbose", Boolean.toString(DEFAULT_VERBOSE))))
+                                .clobberAopXml(Boolean.parseBoolean(getOptionalStringValue(props, "clobberAopXml",
+                                                                                           Boolean.toString(DEFAULT_CLOBBER_AOP_XML))))
                                 .build();
         } catch (Exception e) {
             throw new IllegalArgumentException(String.format("Cannot parse %s: %s", file.getAbsolutePath(), e.getMessage()));
@@ -112,6 +119,7 @@ public class Configuration {
                             .serverUploadIntervalSeconds(DEFAULT_UPLOAD_INTERVAL_SECONDS)
                             .serverUri(new URI("http://some-duck-server"))
                             .verbose(DEFAULT_VERBOSE)
+                            .clobberAopXml(DEFAULT_CLOBBER_AOP_XML)
                             .build();
 
     }
