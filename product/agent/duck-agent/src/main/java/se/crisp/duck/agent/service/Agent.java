@@ -19,7 +19,7 @@ import java.util.*;
 @Slf4j
 public class Agent extends TimerTask {
     private final Configuration config;
-    private final Map<File, Long> dataFileModifiedAtMillis = new HashMap<>();
+    private final Map<String, Long> dataFileModifiedAtMillis = new HashMap<>();
     private final CodeBaseScanner codeBaseScanner;
     private final Map<String, AppUsage> appUsages = new HashMap<>();
     private CodeBase codeBase;
@@ -44,7 +44,7 @@ public class Agent extends TimerTask {
 
     private void processUsageDataIfNew(File usageFile) {
         long modifiedAt = usageFile.lastModified();
-        Long oldModifiedAt = dataFileModifiedAtMillis.get(usageFile);
+        Long oldModifiedAt = dataFileModifiedAtMillis.get(usageFile.getPath());
         if (oldModifiedAt == null || oldModifiedAt != modifiedAt) {
             String appName = getAppName(usageFile);
 
@@ -52,7 +52,7 @@ public class Agent extends TimerTask {
 
             // TODO: post sensorRun and usages to data warehouse
 
-            dataFileModifiedAtMillis.put(usageFile, modifiedAt);
+            dataFileModifiedAtMillis.put(usageFile.getPath(), modifiedAt);
         }
     }
 
@@ -66,7 +66,8 @@ public class Agent extends TimerTask {
     }
 
     private String getAppName(File usageFile) {
-        return usageFile.getName();
+        String name = usageFile.getName();
+        return name.substring(0, name.length() - Configuration.USAGE_FILE_SUFFIX.length());
     }
 
     int applyRecordedUsage(CodeBase codeBase, AppUsage appUsage, List<Usage> usages) {

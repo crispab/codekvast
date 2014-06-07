@@ -13,7 +13,6 @@ import java.net.URL;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 
 /**
@@ -43,7 +42,6 @@ public class CodeBase {
     public CodeBase(Configuration config) {
         this.config = config;
         this.codeBaseFile = new File(config.getCodeBaseUri());
-        checkArgument(codeBaseFile.exists(), "Code base at " + codeBaseFile + " does not exist");
     }
 
     public URL[] getUrls() {
