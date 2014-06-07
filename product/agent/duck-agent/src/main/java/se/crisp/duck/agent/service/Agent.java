@@ -46,14 +46,27 @@ public class Agent extends TimerTask {
         long modifiedAt = usageFile.lastModified();
         Long oldModifiedAt = dataFileModifiedAtMillis.get(usageFile.getPath());
         if (oldModifiedAt == null || oldModifiedAt != modifiedAt) {
-            String appName = getAppName(usageFile);
+            AppUsage appUsage = getAppUsage(getAppName(usageFile));
 
-            applyRecordedUsage(codeBase, getAppUsage(appName), SensorUtils.readUsageFrom(usageFile));
+            applyRecordedUsage(codeBase, appUsage, SensorUtils.readUsageFrom(usageFile));
 
-            // TODO: post sensorRun and usages to data warehouse
+            uploadUsedSignatures(appUsage);
 
             dataFileModifiedAtMillis.put(usageFile.getPath(), modifiedAt);
         }
+    }
+
+    private void uploadUsedSignatures(AppUsage appUsage) {
+        int count = 0;
+        for (Map.Entry<String, Long> entry : appUsage.getNotUploadedSignatures().entrySet()) {
+            // TODO: convert to server format
+            count += 1;
+        }
+
+        log.info("Uploading {} new usages to {}", count, config.getServerUri());
+        // TODO: upload to server
+
+        appUsage.allSignaturesAreUploaded();
     }
 
     private AppUsage getAppUsage(String appName) {
@@ -115,7 +128,15 @@ public class Agent extends TimerTask {
     private void analyzeCodeBaseIfNeeded(CodeBase newCodeBase) {
         if (!newCodeBase.equals(codeBase)) {
             newCodeBase.initSignatures(codeBaseScanner);
+            uploadSignatures(newCodeBase);
             codeBase = newCodeBase;
+        }
+    }
+
+    private void uploadSignatures(CodeBase codeBase) {
+        if (codeBase.numSignatures() > 0) {
+            log.info("Uploading {} signatures for {} to {}", codeBase.numSignatures(), codeBase, config.getServerUri());
+            // TODO: upload all signatures to server
         }
     }
 

@@ -13,8 +13,6 @@ import java.net.URL;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import static com.google.common.base.Preconditions.checkState;
-
 /**
  * @author Olle Hallin (qolha), olle.hallin@crisp.se
  */
@@ -131,13 +129,14 @@ public class CodeBase {
 
         codeBaseScanner.getPublicMethodSignatures(this);
 
-        checkState(!signatures.isEmpty(),
-                   "Code base at " + codeBaseFile + " does not contain any classes with package prefix " + config.getPackagePrefix());
+        if (signatures.isEmpty()) {
+            log.warn("Code base at {} does not contain any classes with package prefix '{}'", codeBaseFile, config.getPackagePrefix());
+        } else {
+            writeSignaturesTo(config.getSignatureFile());
 
-        writeSignaturesTo(config.getSignatureFile());
-
-        log.debug("Code base {} with package prefix '{}' scanned in {} ms, found {} public methods.",
-                  codeBaseFile, config.getPackagePrefix(), System.currentTimeMillis() - startedAt, signatures.size());
+            log.debug("Code base {} with package prefix '{}' scanned in {} ms, found {} public methods.",
+                      codeBaseFile, config.getPackagePrefix(), System.currentTimeMillis() - startedAt, signatures.size());
+        }
     }
 
     void addSignature(String thisSignature, String declaringSignature) {
@@ -156,7 +155,10 @@ public class CodeBase {
     private void writeSignaturesTo(File file) {
         PrintWriter out = null;
         try {
-            File tmpFile = File.createTempFile("duck", ".tmp", file.getAbsoluteFile().getParentFile());
+            File directory = file.getAbsoluteFile().getParentFile();
+            directory.mkdirs();
+
+            File tmpFile = File.createTempFile("duck", ".tmp", directory);
             out = new PrintWriter(tmpFile, "UTF-8");
 
             out.println("# Signatures:");
@@ -225,5 +227,9 @@ public class CodeBase {
             }
         }
 
+    }
+
+    public int numSignatures() {
+        return signatures.size();
     }
 }
