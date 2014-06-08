@@ -44,7 +44,7 @@ dataPath = $duckDataPath
 packagePrefix = se.crisp.sample
 serverUri = http://localhost:8180
 sensorDumpIntervalSeconds = 10
-serverUploadIntervalSeconds = 5
+serverUploadIntervalMillis = 5000
 aspectjOptions = -verbose
 verbose = true
 """

@@ -1,4 +1,4 @@
-package se.crisp.duck.server.db;
+package se.crisp.duck.server.duck_server.db;
 
 import lombok.extern.slf4j.Slf4j;
 import org.flywaydb.core.Flyway;
@@ -13,11 +13,12 @@ import java.sql.SQLException;
 
 /**
  * Initializes the database.
- *
+ * <p/>
  * <ol>
  * <li>runs Flyway.migrate().</li>
  * <li>creates a JdbcTemplate bean</li>
- *</ol>
+ * </ol>
+ *
  * @author Olle Hallin
  */
 @Configuration

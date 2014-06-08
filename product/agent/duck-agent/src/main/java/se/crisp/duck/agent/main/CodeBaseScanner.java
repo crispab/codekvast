@@ -1,10 +1,11 @@
-package se.crisp.duck.agent.service;
+package se.crisp.duck.agent.main;
 
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.runtime.reflect.Factory;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
+import org.springframework.stereotype.Component;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.lang.reflect.Method;
@@ -18,6 +19,7 @@ import static java.util.Arrays.asList;
  */
 @Slf4j
 @Value
+@Component
 public class CodeBaseScanner {
 
     /**

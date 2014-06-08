@@ -18,12 +18,12 @@ import java.util.Properties;
 @Value
 @Builder
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class Configuration {
+public class AgentConfig {
     public static final String USAGE_FILE_SUFFIX = ".usage.dat";
     public static final String SENSOR_FILE_SUFFIX = ".sensor.properties";
 
     public static final int DEFAULT_SENSOR_RESOLUTION_INTERVAL_SECONDS = 600;
-    public static final int DEFAULT_UPLOAD_INTERVAL_SECONDS = 3600;
+    public static final int DEFAULT_UPLOAD_INTERVAL_MILLIS = 3600000;
     public static final String DEFAULT_ASPECTJ_OPTIONS = "";
     public static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo -XmessageHandlerClass:fqcn";
     public static final boolean DEFAULT_VERBOSE = false;
@@ -38,7 +38,7 @@ public class Configuration {
     private final String aspectjOptions;
     private final File dataPath;
     private final int sensorResolutionIntervalSeconds;
-    private final int serverUploadIntervalSeconds;
+    private final int serverUploadIntervalMillis;
     private final URI serverUri;
     private final boolean clobberAopXml;
 
@@ -67,13 +67,12 @@ public class Configuration {
     }
 
     public void saveTo(File file) {
-        SensorUtils.writePropertiesTo(file, this, "Duck Configuration");
+        SensorUtils.writePropertiesTo(file, this, "Duck AgentConfig");
     }
 
-    public static Configuration parseConfigFile(String configFile) {
-        File file = new File(configFile);
+    public static AgentConfig parseConfigFile(URI uri) {
         try {
-            Properties props = SensorUtils.readPropertiesFrom(file);
+            Properties props = SensorUtils.readPropertiesFrom(uri);
 
             String customerName = getMandatoryStringValue(props, "customerName");
 
@@ -82,7 +81,7 @@ public class Configuration {
                 throw new IllegalArgumentException("Illegal appName '" + appName + "': only digits, letters, '-' and '_' allowed");
             }
 
-            return Configuration.builder()
+            return AgentConfig.builder()
                                 .customerName(customerName)
                                 .appName(appName)
                                 .environment(getMandatoryStringValue(props, "environment"))
@@ -92,22 +91,22 @@ public class Configuration {
                                 .sensorResolutionIntervalSeconds(getOptionalIntValue(props, "sensorResolutionIntervalSeconds",
                                                                                      DEFAULT_SENSOR_RESOLUTION_INTERVAL_SECONDS))
                                 .dataPath(new File(getOptionalStringValue(props, "dataPath", getDefaultDataPath(customerName))))
-                                .serverUploadIntervalSeconds(getOptionalIntValue(props, "serverUploadIntervalSeconds",
-                                                                                 DEFAULT_UPLOAD_INTERVAL_SECONDS))
+                                .serverUploadIntervalMillis(getOptionalIntValue(props, "serverUploadIntervalMillis",
+                                                                                DEFAULT_UPLOAD_INTERVAL_MILLIS))
                                 .serverUri(getMandatoryUriValue(props, "serverUri"))
                                 .verbose(Boolean.parseBoolean(getOptionalStringValue(props, "verbose", Boolean.toString(DEFAULT_VERBOSE))))
                                 .clobberAopXml(Boolean.parseBoolean(getOptionalStringValue(props, "clobberAopXml",
                                                                                            Boolean.toString(DEFAULT_CLOBBER_AOP_XML))))
                                 .build();
         } catch (Exception e) {
-            throw new IllegalArgumentException(String.format("Cannot parse %s: %s", file.getAbsolutePath(), e.getMessage()));
+            throw new IllegalArgumentException(String.format("Cannot parse %s: %s", uri, e.getMessage()));
         }
     }
 
     @SneakyThrows(URISyntaxException.class)
-    public static Configuration createSampleConfiguration() {
+    public static AgentConfig createSampleConfiguration() {
         String customerName = "Customer Name";
-        return Configuration.builder()
+        return AgentConfig.builder()
                             .customerName(customerName)
                             .appName("app-name")
                             .environment("environment")
@@ -116,7 +115,7 @@ public class Configuration {
                             .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
                             .dataPath(new File("/var/lib/duck", normalizePathName(customerName)))
                             .sensorResolutionIntervalSeconds(DEFAULT_SENSOR_RESOLUTION_INTERVAL_SECONDS)
-                            .serverUploadIntervalSeconds(DEFAULT_UPLOAD_INTERVAL_SECONDS)
+                            .serverUploadIntervalMillis(DEFAULT_UPLOAD_INTERVAL_MILLIS)
                             .serverUri(new URI("http://some-duck-server"))
                             .verbose(DEFAULT_VERBOSE)
                             .clobberAopXml(DEFAULT_CLOBBER_AOP_XML)

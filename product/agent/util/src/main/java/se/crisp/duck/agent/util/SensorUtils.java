@@ -4,6 +4,7 @@ import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.InetAddress;
+import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.*;
 
@@ -108,6 +109,10 @@ public class SensorUtils {
         safeClose(out);
     }
 
+    public static Properties readPropertiesFrom(String path) throws IOException {
+        return readPropertiesFrom(new File(path));
+    }
+
     public static Properties readPropertiesFrom(File file) throws IOException {
         if (!file.exists()) {
             throw new IOException(String.format("'%s' does not exist", file.getAbsolutePath()));
@@ -130,6 +135,10 @@ public class SensorUtils {
             safeClose(reader);
         }
         return props;
+    }
+
+    public static Properties readPropertiesFrom(URI uri) throws IOException {
+        return readPropertiesFrom(new File(uri));
     }
 
     private static void safeClose(Closeable closeable) {
@@ -169,4 +178,5 @@ public class SensorUtils {
             safeClose(writer);
         }
     }
+
 }

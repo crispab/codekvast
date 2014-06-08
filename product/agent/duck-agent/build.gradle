@@ -1,22 +1,27 @@
+buildscript { dependencies { classpath "org.springframework.boot:spring-boot-gradle-plugin:1.0.2.RELEASE" } }
 apply plugin: 'java'
+apply plugin: 'spring-boot'
 apply plugin: 'application'
 
 description = "The Duck agent"
 archivesBaseName = "duck-agent"
 version = project.parent.parent.version
 sourceCompatibility = 1.7
-
-mainClassName = "se.crisp.duck.agent.service.Agent"
+mainClassName = "se.crisp.duck.agent.main.DuckAgentMain"
 
 dependencies {
-    compile libs['aspectjweaver']
+    compile "org.springframework.boot:spring-boot-starter"
     compile libs['logback']
+    compile libs['lombok']
+    compile libs['javax-inject']
+    compile libs['aspectjweaver']
     compile libs['reflections']
     compile libs['slf4j-api']
     compile project(":product:agent:util")
     compile project(":product:server:agent-delegate")
 
     testCompile testLibs
+    testCompile("org.springframework.boot:spring-boot-starter-test")
 }
 
 jar {

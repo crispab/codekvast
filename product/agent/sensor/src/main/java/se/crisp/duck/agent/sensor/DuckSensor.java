@@ -3,13 +3,15 @@ package se.crisp.duck.agent.sensor;
 import org.aspectj.bridge.Constants;
 import se.crisp.duck.agent.sensor.aspects.AbstractMethodExecutionAspect;
 import se.crisp.duck.agent.sensor.aspects.JasperExecutionAspect;
-import se.crisp.duck.agent.util.Configuration;
+import se.crisp.duck.agent.util.AgentConfig;
 import se.crisp.duck.agent.util.SensorUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.instrument.Instrumentation;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -37,8 +39,8 @@ public class DuckSensor {
     /**
      * This method is invoked by the JVM as part of bootstrapping the -javaagent
      */
-    public static void premain(String args, Instrumentation inst) throws IOException {
-        Configuration config = Configuration.parseConfigFile(args);
+    public static void premain(String args, Instrumentation inst) throws IOException, URISyntaxException {
+        AgentConfig config = AgentConfig.parseConfigFile(new URI(args));
 
         //noinspection UseOfSystemOutOrSystemErr
         DuckSensor.out = config.isVerbose() ? System.err : new PrintStream(new NullOutputStream());
@@ -71,7 +73,7 @@ public class DuckSensor {
         return initialDelaySeconds;
     }
 
-    private static void loadAspectjWeaver(String args, Instrumentation inst, Configuration config) {
+    private static void loadAspectjWeaver(String args, Instrumentation inst, AgentConfig config) {
         System.setProperty("org.aspectj.weaver.loadtime.configuration", join(createAopXml(config),
                                                                              Constants.AOP_USER_XML,
                                                                              Constants.AOP_AJC_XML,
@@ -95,7 +97,7 @@ public class DuckSensor {
      *
      * @return A file: URI to a temporary aop-ajc.xml file. The file is deleted on JVM exit.
      */
-    private static String createAopXml(Configuration config) {
+    private static String createAopXml(AgentConfig config) {
         String xml = String.format(
                 "<aspectj>\n"
                         + "  <aspects>\n"

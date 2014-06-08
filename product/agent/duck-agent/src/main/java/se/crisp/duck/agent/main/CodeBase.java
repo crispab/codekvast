@@ -1,11 +1,11 @@
-package se.crisp.duck.agent.service;
+package se.crisp.duck.agent.main;
 
 import com.google.common.annotations.VisibleForTesting;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import se.crisp.duck.agent.util.Configuration;
+import se.crisp.duck.agent.util.AgentConfig;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -29,7 +29,8 @@ public class CodeBase {
 
     private final File codeBaseFile;
     @Getter
-    private final Configuration config;
+    private final AgentConfig config;
+    @Getter
     final Set<String> signatures = new HashSet<>();
     final Map<String, String> overriddenSignatures = new HashMap<>();
 
@@ -37,7 +38,7 @@ public class CodeBase {
     private List<URL> urls;
     private boolean needsExploding = false;
 
-    public CodeBase(Configuration config) {
+    public CodeBase(AgentConfig config) {
         this.config = config;
         this.codeBaseFile = new File(config.getCodeBaseUri());
     }
@@ -227,9 +228,5 @@ public class CodeBase {
             }
         }
 
-    }
-
-    public int numSignatures() {
-        return signatures.size();
     }
 }

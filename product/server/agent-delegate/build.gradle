@@ -1,4 +1,4 @@
-apply plugin: 'groovy'
+apply plugin: 'java'
 
 description = "The agent-side business delegate of the Duck server"
 archivesBaseName = "duck-server-agent-delegate"
@@ -6,7 +6,8 @@ version = project.parent.parent.version
 sourceCompatibility = 1.7
 
 dependencies {
-    compile libs['groovy-all']
+    compile libs['lombok']
+    compile libs['slf4j-api']
 
     testCompile testLibs
 }

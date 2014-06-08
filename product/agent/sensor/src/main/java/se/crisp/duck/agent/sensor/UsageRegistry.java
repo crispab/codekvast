@@ -1,7 +1,7 @@
 package se.crisp.duck.agent.sensor;
 
 import org.aspectj.lang.Signature;
-import se.crisp.duck.agent.util.Configuration;
+import se.crisp.duck.agent.util.AgentConfig;
 import se.crisp.duck.agent.util.Sensor;
 import se.crisp.duck.agent.util.SensorUtils;
 
@@ -20,14 +20,14 @@ public class UsageRegistry {
 
     public static UsageRegistry instance;
 
-    private final Configuration config;
+    private final AgentConfig config;
     private final Sensor sensor;
     private final File sensorFile;
     private final AtomicLong currentTimeMillis = new AtomicLong(System.currentTimeMillis());
 
     private final ConcurrentMap<String, Long> usages = new ConcurrentHashMap<String, Long>();
 
-    public UsageRegistry(Configuration config, Sensor sensor) {
+    public UsageRegistry(AgentConfig config, Sensor sensor) {
         this.config = config;
         this.sensor = sensor;
 
@@ -38,7 +38,7 @@ public class UsageRegistry {
     /**
      * Must be called before handing over to the AspectJ load-time weaver.
      */
-    public static void initialize(Configuration config) {
+    public static void initialize(AgentConfig config) {
         UsageRegistry.instance = new UsageRegistry(config,
                                                    Sensor.builder()
                                                          .appName(config.getAppName())
@@ -87,7 +87,7 @@ public class UsageRegistry {
         }
     }
 
-    public Configuration getConfig() {
+    public AgentConfig getConfig() {
         return config;
     }
 

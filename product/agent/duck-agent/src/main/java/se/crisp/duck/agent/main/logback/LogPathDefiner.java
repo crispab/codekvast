@@ -1,4 +1,4 @@
-package se.crisp.duck.agent.service.logback;
+package se.crisp.duck.agent.main.logback;
 
 import ch.qos.logback.core.PropertyDefinerBase;
 

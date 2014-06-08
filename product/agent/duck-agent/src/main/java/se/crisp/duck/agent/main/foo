@@ -1,0 +1,20 @@
+        environment.getPropertySources().addLast(new PropertySource("agentConfig", agentConfig) {
+            @Override
+            public Object getProperty(String name) {
+                String prefix = "duck.";
+                if (name.startsWith(prefix)) {
+                    try {
+                        Field field = AgentConfig.class.getField(name.substring(prefix.length()));
+                        if (Modifier.isPublic(field.getModifiers()) && !Modifier.isStatic(field.getModifiers())) {
+                            return field.get(getSource());
+                        }
+                    } catch (NoSuchFieldException e) {
+                        return null;
+                    } catch (IllegalAccessException e) {
+                        return null;
+                    }
+                }
+                return null;
+            }
+        });
+

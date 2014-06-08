@@ -1,40 +1,43 @@
-package se.crisp.duck.agent.service;
+package se.crisp.duck.agent.main;
 
-
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import se.crisp.duck.agent.util.Configuration;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+import se.crisp.duck.agent.util.AgentConfig;
 import se.crisp.duck.agent.util.SensorUtils;
 import se.crisp.duck.agent.util.Usage;
+import se.crisp.duck.server.agent.AgentDelegate;
 
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
 import java.io.File;
 import java.io.FilenameFilter;
-import java.net.URL;
 import java.util.*;
 
 /**
  * @author Olle Hallin
  */
-@RequiredArgsConstructor
+@Component
 @Slf4j
-public class Agent extends TimerTask {
-    private final Configuration config;
+public class AgentWorker {
+    private final AgentConfig config;
     private final Map<String, Long> dataFileModifiedAtMillis = new HashMap<>();
     private final CodeBaseScanner codeBaseScanner;
+    private final AgentDelegate agentDelegate;
     private final Map<String, AppUsage> appUsages = new HashMap<>();
+
     private CodeBase codeBase;
 
-    private void start() {
-        Timer timer = new Timer(getClass().getSimpleName(), false);
-        long intervalMillis = config.getServerUploadIntervalSeconds() * 1000L;
-        timer.scheduleAtFixedRate(this, 10L, intervalMillis);
-
-        Runtime.getRuntime().addShutdownHook(new Thread(new ShutdownHook()));
-        log.info("Started with {}", config);
+    @Inject
+    public AgentWorker(AgentConfig config, CodeBaseScanner codeBaseScanner, AgentDelegate agentDelegate) {
+        this.config = config;
+        this.codeBaseScanner = codeBaseScanner;
+        this.agentDelegate = agentDelegate;
     }
 
-    @Override
-    public void run() {
+    @Scheduled(initialDelay = 10L, fixedDelayString = "${duck.serverUploadIntervalMillis}")
+    public void uploadUsageDataToServer() {
+        log.debug("Uploading data to server");
         analyzeCodeBaseIfNeeded(new CodeBase(config));
 
         for (File usageFile : getUsageFiles()) {
@@ -80,7 +83,7 @@ public class Agent extends TimerTask {
 
     private String getAppName(File usageFile) {
         String name = usageFile.getName();
-        return name.substring(0, name.length() - Configuration.USAGE_FILE_SUFFIX.length());
+        return name.substring(0, name.length() - AgentConfig.USAGE_FILE_SUFFIX.length());
     }
 
     int applyRecordedUsage(CodeBase codeBase, AppUsage appUsage, List<Usage> usages) {
@@ -134,9 +137,10 @@ public class Agent extends TimerTask {
     }
 
     private void uploadSignatures(CodeBase codeBase) {
-        if (codeBase.numSignatures() > 0) {
-            log.info("Uploading {} signatures for {} to {}", codeBase.numSignatures(), codeBase, config.getServerUri());
-            // TODO: upload all signatures to server
+        Collection<String> signatures = codeBase.getSignatures();
+        if (signatures.size() > 0) {
+            log.info("Uploading {} signatures for {} to {}", signatures.size(), codeBase, config.getServerUri());
+            agentDelegate.uploadSignatures(signatures);
         }
     }
 
@@ -145,51 +149,20 @@ public class Agent extends TimerTask {
         File[] usageFiles = config.getSensorsPath().listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
-                return name.endsWith(Configuration.USAGE_FILE_SUFFIX);
+                return name.endsWith(AgentConfig.USAGE_FILE_SUFFIX);
             }
         });
 
         if (usageFiles != null) {
-            for (File file : usageFiles) {
-                result.add(file);
-            }
+            Collections.addAll(result, usageFiles);
         }
 
         return result;
     }
 
-    @SuppressWarnings("UseOfSystemOutOrSystemErr")
-    public static void main(String[] args) {
-        try {
-            Configuration config = Configuration.parseConfigFile(locateConfigFile(args));
-            new Agent(config, new CodeBaseScanner()).start();
-        } catch (Exception e) {
-            log.error("Cannot start agent", e);
-            System.err.println(e.getMessage());
-            System.exit(2);
-        }
+    @PreDestroy
+    public void shuttingDown() {
+        log.info("Shuts down");
     }
 
-    private static String locateConfigFile(String[] args) {
-        String result = args == null || args.length < 1 ? null : args[0];
-        if (result == null) {
-            URL url = Agent.class.getResource("/duck.properties");
-            if (url != null) {
-                result = url.getFile();
-            }
-        }
-
-        if (result == null) {
-            System.err.println("Cannot locate duck.properties.\nEither put it in conf/ or specify the path on the command line");
-            System.exit(1);
-        }
-        return result;
-    }
-
-    private class ShutdownHook implements Runnable {
-        @Override
-        public void run() {
-            log.info("Shutting down");
-        }
-    }
 }

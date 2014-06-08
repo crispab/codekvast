@@ -26,7 +26,7 @@ dataPath = $duckDataPath
 packagePrefix = sample
 serverUri = http://localhost:8180
 sensorDumpIntervalSeconds = 10
-serverUploadIntervalSeconds = 5
+serverUploadIntervalMillis = 5000
 aspectjOptions = -verbose -showWeaveInfo
 verbose = true
 """

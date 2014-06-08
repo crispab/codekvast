@@ -1,4 +1,4 @@
-package se.crisp.duck.agent.service;
+package se.crisp.duck.agent.main;
 
 import lombok.RequiredArgsConstructor;
 

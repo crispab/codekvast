@@ -1,7 +1,7 @@
-package se.crisp.duck.agent.service;
+package se.crisp.duck.agent.main;
 
 import org.junit.Test;
-import se.crisp.duck.agent.util.Configuration;
+import se.crisp.duck.agent.util.AgentConfig;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -24,8 +24,8 @@ public class CodeBaseTest {
                     ".2d349e96.getIndex(java.lang.Class[])",
     };
 
-    private Configuration getConfig(String codeBase) {
-        return Configuration.builder().codeBaseUri(new File(codeBase).toURI()).build();
+    private AgentConfig getConfig(String codeBase) {
+        return AgentConfig.builder().codeBaseUri(new File(codeBase).toURI()).build();
     }
 
     @Test
@@ -53,10 +53,10 @@ public class CodeBaseTest {
         codeBase = new CodeBase(null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testGetUrlsForMissingFile() throws Exception {
         codeBase = new CodeBase(getConfig("foobar"));
-        codeBase.getUrls();
+        assertThat(codeBase.getUrls().length, is(0));
     }
 
     @Test

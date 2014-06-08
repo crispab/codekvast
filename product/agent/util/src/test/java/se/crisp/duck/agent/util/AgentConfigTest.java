@@ -7,17 +7,16 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 
-public class ConfigurationTest {
+public class AgentConfigTest {
 
     @Test
     public void testSaveSampleConfigToFile() throws IOException {
-        Configuration config1 = Configuration.createSampleConfiguration();
+        AgentConfig config1 = AgentConfig.createSampleConfiguration();
         File file = new File(System.getProperty("sampleConfigFile.path", "build/duck.properties.sample"));
         config1.saveTo(file);
 
-        Configuration config2 = Configuration.parseConfigFile(file.getPath());
+        AgentConfig config2 = AgentConfig.parseConfigFile(file.toURI());
         assertEquals(config1, config2);
-
     }
 
 }

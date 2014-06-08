@@ -1,6 +1,6 @@
 <configuration debug="false" scan="true" scanPeriod="30 seconds">
 
-    <define name="LOG_PATH" class="se.crisp.duck.agent.service.logback.LogPathDefiner"/>
+    <define name="LOG_PATH" class="se.crisp.duck.agent.main.logback.LogPathDefiner"/>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_PATH}/duck-agent.log</file>
