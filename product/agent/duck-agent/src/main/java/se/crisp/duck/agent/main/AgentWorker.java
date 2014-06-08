@@ -12,8 +12,9 @@ import se.crisp.duck.server.agent.ServerDelegateException;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import java.io.File;
-import java.io.FilenameFilter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Olle Hallin
@@ -37,12 +38,23 @@ public class AgentWorker {
     }
 
     @Scheduled(initialDelay = 10L, fixedDelayString = "${duck.serverUploadIntervalMillis}")
-    public void uploadUsageDataToServer() {
-        log.debug("Uploading data to server");
+    public void analyseSensorData() {
+        log.debug("Analyzing sensor data");
+
         analyzeCodeBaseIfNeeded(new CodeBase(config));
 
-        for (File usageFile : getUsageFiles()) {
-            processUsageDataIfNew(usageFile);
+        processUsageDataIfNew(config.getUsageFile());
+    }
+
+    private void analyzeCodeBaseIfNeeded(CodeBase newCodeBase) {
+        if (!newCodeBase.equals(codeBase)) {
+            newCodeBase.scanSignatures(codeBaseScanner);
+            try {
+                serverDelegate.uploadSignatures(newCodeBase.getSignatures());
+                codeBase = newCodeBase;
+            } catch (ServerDelegateException e) {
+                log.error("Could not upload signatures", e);
+            }
         }
     }
 
@@ -50,7 +62,7 @@ public class AgentWorker {
         long modifiedAt = usageFile.lastModified();
         Long oldModifiedAt = dataFileModifiedAtMillis.get(usageFile.getPath());
         if (oldModifiedAt == null || oldModifiedAt != modifiedAt) {
-            AppUsage appUsage = getAppUsage(getAppName(usageFile));
+            AppUsage appUsage = getAppUsage(config.getAppName());
 
             applyRecordedUsage(codeBase, appUsage, SensorUtils.readUsageFrom(usageFile));
 
@@ -80,11 +92,6 @@ public class AgentWorker {
             appUsages.put(appName, result);
         }
         return result;
-    }
-
-    private String getAppName(File usageFile) {
-        String name = usageFile.getName();
-        return name.substring(0, name.length() - AgentConfig.USAGE_FILE_SUFFIX.length());
     }
 
     int applyRecordedUsage(CodeBase codeBase, AppUsage appUsage, List<Usage> usages) {
@@ -127,42 +134,6 @@ public class AgentWorker {
             log.info("{} signature usages applied ({} overridden, {} ignored)", recognized, overridden, ignored);
         }
         return unrecognized;
-    }
-
-    private void analyzeCodeBaseIfNeeded(CodeBase newCodeBase) {
-        if (!newCodeBase.equals(codeBase)) {
-            newCodeBase.initSignatures(codeBaseScanner);
-            try {
-                uploadSignatures(newCodeBase);
-                codeBase = newCodeBase;
-            } catch (ServerDelegateException e) {
-                log.error("Could not upload signatures", e);
-            }
-        }
-    }
-
-    private void uploadSignatures(CodeBase codeBase) throws ServerDelegateException {
-        Collection<String> signatures = codeBase.getSignatures();
-        if (signatures.size() > 0) {
-            log.info("Uploading {} signatures for {} to {}", signatures.size(), codeBase, config.getServerUri());
-            serverDelegate.uploadSignatures(signatures);
-        }
-    }
-
-    private List<File> getUsageFiles() {
-        List<File> result = new ArrayList<>();
-        File[] usageFiles = config.getSensorsPath().listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(AgentConfig.USAGE_FILE_SUFFIX);
-            }
-        });
-
-        if (usageFiles != null) {
-            Collections.addAll(result, usageFiles);
-        }
-
-        return result;
     }
 
     @PreDestroy

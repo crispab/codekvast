@@ -2,6 +2,7 @@ package se.crisp.duck.server.agent.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
+import se.crisp.duck.server.agent.model.v1.SignatureData;
 
 import java.io.IOException;
 import java.util.Arrays;

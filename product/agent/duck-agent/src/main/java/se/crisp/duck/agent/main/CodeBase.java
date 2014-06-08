@@ -124,7 +124,7 @@ public class CodeBase {
         }
     }
 
-    public void initSignatures(CodeBaseScanner codeBaseScanner) {
+    public void scanSignatures(CodeBaseScanner codeBaseScanner) {
         long startedAt = System.currentTimeMillis();
         log.info("Scanning code base {}", this);
 

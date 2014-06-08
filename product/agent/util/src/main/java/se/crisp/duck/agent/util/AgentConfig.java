@@ -16,13 +16,10 @@ import java.util.Properties;
 @Builder
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class AgentConfig {
-    public static final String USAGE_FILE_SUFFIX = ".usage.dat";
-    public static final String SENSOR_FILE_SUFFIX = ".sensor.properties";
-
     public static final int DEFAULT_SENSOR_RESOLUTION_INTERVAL_SECONDS = 600;
     public static final int DEFAULT_UPLOAD_INTERVAL_MILLIS = 3600000;
     public static final String DEFAULT_ASPECTJ_OPTIONS = "";
-    public static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo -XmessageHandlerClass:fqcn";
+    public static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
     public static final boolean DEFAULT_VERBOSE = false;
     public static final boolean DEFAULT_CLOBBER_AOP_XML = true;
 
@@ -48,11 +45,11 @@ public class AgentConfig {
     private final boolean verbose;
 
     public File getUsageFile() {
-        return new File(getSensorsPath(), appName + USAGE_FILE_SUFFIX);
+        return new File(dataPath, "usage.dat");
     }
 
     public File getSensorFile() {
-        return new File(getSensorsPath(), appName + SENSOR_FILE_SUFFIX);
+        return new File(dataPath, "sensor.dat");
     }
 
     public File getSignatureFile() {
@@ -61,10 +58,6 @@ public class AgentConfig {
 
     public File getAspectFile() {
         return new File(dataPath, "aop.xml");
-    }
-
-    public File getSensorsPath() {
-        return new File(dataPath, "sensors");
     }
 
     public File getSensorLogFile() {
@@ -78,13 +71,8 @@ public class AgentConfig {
     public static AgentConfig parseConfigFile(URI uri) {
         try {
             Properties props = SensorUtils.readPropertiesFrom(uri);
-
             String customerName = getMandatoryStringValue(props, "customerName");
-
-            String appName = System.getProperty("duck.appName", getMandatoryStringValue(props, "appName"));
-            if (!appName.equals(normalizePathName(appName))) {
-                throw new IllegalArgumentException("Illegal appName '" + appName + "': only digits, letters, '-' and '_' allowed");
-            }
+            String appName = getMandatoryStringValue(props, "appName");
 
             return AgentConfig.builder()
                               .customerName(customerName)
@@ -95,7 +83,7 @@ public class AgentConfig {
                               .aspectjOptions(getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
                               .sensorResolutionIntervalSeconds(getOptionalIntValue(props, "sensorResolutionIntervalSeconds",
                                                                                    DEFAULT_SENSOR_RESOLUTION_INTERVAL_SECONDS))
-                              .dataPath(new File(getOptionalStringValue(props, "dataPath", getDefaultDataPath(customerName))))
+                              .dataPath(new File(getOptionalStringValue(props, "dataPath", getDefaultDataPath(customerName, appName))))
                               .serverUploadIntervalMillis(getOptionalIntValue(props, "serverUploadIntervalMillis",
                                                                               DEFAULT_UPLOAD_INTERVAL_MILLIS))
                               .serverUri(getMandatoryUriValue(props, "serverUri", true))
@@ -111,14 +99,15 @@ public class AgentConfig {
     @SneakyThrows(URISyntaxException.class)
     public static AgentConfig createSampleConfiguration() {
         String customerName = "Customer Name";
+        String appName = "app-name";
         return AgentConfig.builder()
                           .customerName(customerName)
-                          .appName("app-name")
+                          .appName(appName)
                           .environment("environment")
                           .packagePrefix("com.acme")
                           .codeBaseUri(new URI("file:/path/to/my/code/base"))
                           .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
-                          .dataPath(new File("/var/lib/duck", normalizePathName(customerName)))
+                          .dataPath(new File("/var/lib", getDataChildPath(customerName, appName)))
                           .sensorResolutionIntervalSeconds(DEFAULT_SENSOR_RESOLUTION_INTERVAL_SECONDS)
                           .serverUploadIntervalMillis(DEFAULT_UPLOAD_INTERVAL_MILLIS)
                           .serverUri(new URI("http://some-duck-server"))
@@ -132,12 +121,16 @@ public class AgentConfig {
         return props.getProperty(key, defaultValue);
     }
 
-    private static String getDefaultDataPath(String customerName) {
+    private static String getDefaultDataPath(String customerName, String appName) {
         File basePath = new File("/var/lib");
         if (!basePath.canWrite()) {
             basePath = new File(System.getProperty("java.io.tmpdir"));
         }
-        return new File(basePath, "duck/" + normalizePathName(customerName)).getAbsolutePath();
+        return new File(basePath, getDataChildPath(customerName, appName)).getAbsolutePath();
+    }
+
+    private static String getDataChildPath(String customerName, String appName) {
+        return "duck/" + normalizePathName(customerName) + "/" + normalizePathName(appName);
     }
 
     private static String normalizePathName(String path) {

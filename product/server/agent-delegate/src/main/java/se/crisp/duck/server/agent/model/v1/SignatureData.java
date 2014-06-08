@@ -1,4 +1,4 @@
-package se.crisp.duck.server.agent.model;
+package se.crisp.duck.server.agent.model.v1;
 
 import lombok.*;
 import lombok.experimental.Builder;
@@ -13,6 +13,7 @@ import java.util.Collection;
 @Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
+@ToString(exclude = "signatures")
 public class SignatureData {
     private String customerName;
     private String appName;
