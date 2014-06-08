@@ -10,6 +10,8 @@ sourceCompatibility = 1.7
 mainClassName = "se.crisp.duck.agent.main.DuckAgentMain"
 
 dependencies {
+    compile project(":product:agent:util")
+    compile project(":product:server:agent-delegate")
     compile "org.springframework.boot:spring-boot-starter"
     compile libs['logback']
     compile libs['lombok']
@@ -17,8 +19,6 @@ dependencies {
     compile libs['aspectjweaver']
     compile libs['reflections']
     compile libs['slf4j-api']
-    compile project(":product:agent:util")
-    compile project(":product:server:agent-delegate")
 
     testCompile testLibs
     testCompile("org.springframework.boot:spring-boot-starter-test")
