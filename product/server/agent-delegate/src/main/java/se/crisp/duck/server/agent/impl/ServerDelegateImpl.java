@@ -7,7 +7,7 @@ import org.springframework.web.client.RestTemplate;
 import se.crisp.duck.server.agent.AgentRestEndpoints;
 import se.crisp.duck.server.agent.ServerDelegate;
 import se.crisp.duck.server.agent.ServerDelegateException;
-import se.crisp.duck.server.agent.model.UploadSignatureData;
+import se.crisp.duck.server.agent.model.SignatureData;
 
 import javax.inject.Inject;
 import java.net.URI;
@@ -38,11 +38,11 @@ public class ServerDelegateImpl implements ServerDelegate {
         try {
             long startedAt = System.currentTimeMillis();
 
-            UploadSignatureData data = UploadSignatureData.builder()
-                                                          .customerName(config.getCustomerName())
-                                                          .appName(config.getAppName())
-                                                          .environment(config.getEnvironment())
-                                                          .signatures(signatures).build();
+            SignatureData data = SignatureData.builder()
+                                              .customerName(config.getCustomerName())
+                                              .appName(config.getAppName())
+                                              .environment(config.getEnvironment())
+                                              .signatures(signatures).build();
 
             restTemplate.postForLocation(new URI(endPoint), data);
             log.info("Uploaded {} signatures to {} in {} ms", signatures.size(), endPoint, System.currentTimeMillis() - startedAt);

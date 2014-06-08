@@ -1,14 +1,16 @@
 ext {
     aspectjVersion = '1.8.0'
     springVersion = "4.0.3.RELEASE"
-
+    jacksonVersion = "2.3.3"
     libs = [
             'aspectjweaver' : "org.aspectj:aspectjweaver:$aspectjVersion",
             'aspectjtools'  : "org.aspectj:aspectjtools:$aspectjVersion",
             'flyway'        : "org.flywaydb:flyway-core:3.0",
             'groovy-all'    : "org.codehaus.groovy:groovy-all:2.3.2",
             'h2database'    : "com.h2database:h2:1.4.178",
-            'jackson-datatype-json-org': "com.fasterxml.jackson:jackson-datatype-json-org:1.8.0",
+            'jackson-annotations': "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion",
+            'jackson-databind'   : "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion",
+            'jackson-core'       : "com.fasterxml.jackson.core:jackson-core:$jacksonVersion",
             'javax-inject'  : "javax.inject:javax.inject:1",
             'junit'         : "junit:junit:4.11",
             'logback'       : "ch.qos.logback:logback-classic:1.1.2",
@@ -18,7 +20,7 @@ ext {
             'slf4j-api'     : "org.slf4j:slf4j-api:1.7.7",
             'spring-core'   : "org.springframework:spring-core:$springVersion",
             'spring-context': "org.springframework:spring-context:$springVersion",
-            'spring-web'               : "org.springframework:spring-web:$springVersion",
+            'spring-web'         : "org.springframework:spring-web:$springVersion",
     ]
 
     testLibs = [libs['junit'], libs['mockito']]

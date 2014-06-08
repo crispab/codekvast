@@ -11,8 +11,8 @@ dependencies {
     compile libs['javax-inject']
     compile libs['lombok']
     compile libs['slf4j-api']
-
-    runtime libs['jackson-datatype-json-org']
+    compile libs['jackson-annotations']
+    compile libs['jackson-databind']
 
     testCompile testLibs
 }

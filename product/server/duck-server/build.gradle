@@ -20,8 +20,6 @@ dependencies {
     compile libs['javax-inject']
     compile libs['h2database']
 
-    runtime libs['jackson-datatype-json-org']
-
     testCompile("org.springframework.boot:spring-boot-starter-test")
 }
 
