@@ -98,7 +98,7 @@ public class CodeBase {
         }
         CodeBaseFingerprint result = builder.build();
 
-        log.debug("Scanned code base at {} in {} ms, fingerprint={}", codeBaseFile, System.currentTimeMillis() - startedAt,
+        log.debug("Made fingerprint of code base at {} in {} ms, fingerprint={}", codeBaseFile, System.currentTimeMillis() - startedAt,
                   result);
         return result;
     }
