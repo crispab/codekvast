@@ -4,7 +4,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.runners.MockitoJUnitRunner;
-import se.crisp.duck.agent.util.AgentConfig;
 import se.crisp.duck.agent.util.SensorUtils;
 
 import java.io.File;
@@ -22,7 +21,7 @@ public class DuckAgentMainTest {
 
     @Test
     public void testApplyRecordedUsage() throws Exception {
-        CodeBase codeBase = new CodeBase(getConfig("build/classes/main"));
+        CodeBase codeBase = new CodeBase(CodeBaseTest.buildAgentConfig("build/classes/main"));
         codeBase.readScannerResult(getResource("/customer1/app1/signatures.dat"));
         assertTrue(codeBase.hasSignature(
                 "public void se.transmode.tnm.module.l1mgr.connectivity.persistence.TrailEAO.removeTrails(java.util.Collection)"));
@@ -35,10 +34,6 @@ public class DuckAgentMainTest {
 
     private File getResource(String resource) throws URISyntaxException {
         return new File(getClass().getResource(resource).toURI());
-    }
-
-    private AgentConfig getConfig(String codeBase) {
-        return AgentConfig.builder().codeBaseUri(new File(codeBase).toURI()).build();
     }
 
 }

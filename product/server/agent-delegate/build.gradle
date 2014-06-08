@@ -6,8 +6,13 @@ version = project.parent.parent.version
 sourceCompatibility = 1.7
 
 dependencies {
+    compile libs['spring-context']
+    compile libs['spring-web']
+    compile libs['javax-inject']
     compile libs['lombok']
     compile libs['slf4j-api']
+
+    runtime libs['jackson-datatype-json-org']
 
     testCompile testLibs
 }

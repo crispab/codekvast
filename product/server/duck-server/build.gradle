@@ -13,12 +13,14 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-web"
     compile "org.springframework.boot:spring-boot-starter-jdbc"
     compile "org.springframework.boot:spring-boot-starter-actuator"
+    compile project(":product:server:agent-delegate")
     compile libs['logback']
     compile libs['lombok']
     compile libs['flyway']
     compile libs['javax-inject']
-
     compile libs['h2database']
+
+    runtime libs['jackson-datatype-json-org']
 
     testCompile("org.springframework.boot:spring-boot-starter-test")
 }

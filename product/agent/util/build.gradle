@@ -17,7 +17,7 @@ dependencies {
 }
 
 test {
-    // Make it possible to retrieve the sample config file produced by a test
+    // Make it possible to retrieve the sample spring file produced by a test
     ext.sampleConfigFile = file("$buildDir/duck.properties.sample")
 
     // Also make the file name available to the test that produces it...

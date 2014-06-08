@@ -6,7 +6,8 @@ import org.springframework.stereotype.Component;
 import se.crisp.duck.agent.util.AgentConfig;
 import se.crisp.duck.agent.util.SensorUtils;
 import se.crisp.duck.agent.util.Usage;
-import se.crisp.duck.server.agent.AgentDelegate;
+import se.crisp.duck.server.agent.ServerDelegate;
+import se.crisp.duck.server.agent.ServerDelegateException;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -23,16 +24,16 @@ public class AgentWorker {
     private final AgentConfig config;
     private final Map<String, Long> dataFileModifiedAtMillis = new HashMap<>();
     private final CodeBaseScanner codeBaseScanner;
-    private final AgentDelegate agentDelegate;
+    private final ServerDelegate serverDelegate;
     private final Map<String, AppUsage> appUsages = new HashMap<>();
 
     private CodeBase codeBase;
 
     @Inject
-    public AgentWorker(AgentConfig config, CodeBaseScanner codeBaseScanner, AgentDelegate agentDelegate) {
+    public AgentWorker(AgentConfig config, CodeBaseScanner codeBaseScanner, ServerDelegate serverDelegate) {
         this.config = config;
         this.codeBaseScanner = codeBaseScanner;
-        this.agentDelegate = agentDelegate;
+        this.serverDelegate = serverDelegate;
     }
 
     @Scheduled(initialDelay = 10L, fixedDelayString = "${duck.serverUploadIntervalMillis}")
@@ -131,16 +132,20 @@ public class AgentWorker {
     private void analyzeCodeBaseIfNeeded(CodeBase newCodeBase) {
         if (!newCodeBase.equals(codeBase)) {
             newCodeBase.initSignatures(codeBaseScanner);
-            uploadSignatures(newCodeBase);
-            codeBase = newCodeBase;
+            try {
+                uploadSignatures(newCodeBase);
+                codeBase = newCodeBase;
+            } catch (ServerDelegateException e) {
+                log.error("Could not upload signatures", e);
+            }
         }
     }
 
-    private void uploadSignatures(CodeBase codeBase) {
+    private void uploadSignatures(CodeBase codeBase) throws ServerDelegateException {
         Collection<String> signatures = codeBase.getSignatures();
         if (signatures.size() > 0) {
             log.info("Uploading {} signatures for {} to {}", signatures.size(), codeBase, config.getServerUri());
-            agentDelegate.uploadSignatures(signatures);
+            serverDelegate.uploadSignatures(signatures);
         }
     }
 

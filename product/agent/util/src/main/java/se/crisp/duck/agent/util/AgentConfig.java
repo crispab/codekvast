@@ -1,9 +1,6 @@
 package se.crisp.duck.agent.util;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.Value;
+import lombok.*;
 import lombok.experimental.Builder;
 
 import java.io.File;
@@ -29,18 +26,26 @@ public class AgentConfig {
     public static final boolean DEFAULT_VERBOSE = false;
     public static final boolean DEFAULT_CLOBBER_AOP_XML = true;
 
-    private final boolean verbose;
+    @NonNull
     private final String customerName;
+    @NonNull
     private final String appName;
+    @NonNull
     private final String environment;
+    @NonNull
     private final URI codeBaseUri;
+    @NonNull
     private final String packagePrefix;
+    @NonNull
     private final String aspectjOptions;
+    @NonNull
     private final File dataPath;
+    @NonNull
+    private final URI serverUri;
     private final int sensorResolutionIntervalSeconds;
     private final int serverUploadIntervalMillis;
-    private final URI serverUri;
     private final boolean clobberAopXml;
+    private final boolean verbose;
 
     public File getUsageFile() {
         return new File(getSensorsPath(), appName + USAGE_FILE_SUFFIX);
@@ -82,22 +87,22 @@ public class AgentConfig {
             }
 
             return AgentConfig.builder()
-                                .customerName(customerName)
-                                .appName(appName)
-                                .environment(getMandatoryStringValue(props, "environment"))
-                                .codeBaseUri(getMandatoryUriValue(props, "codeBaseUri"))
-                                .packagePrefix(getMandatoryStringValue(props, "packagePrefix"))
-                                .aspectjOptions(getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
-                                .sensorResolutionIntervalSeconds(getOptionalIntValue(props, "sensorResolutionIntervalSeconds",
-                                                                                     DEFAULT_SENSOR_RESOLUTION_INTERVAL_SECONDS))
-                                .dataPath(new File(getOptionalStringValue(props, "dataPath", getDefaultDataPath(customerName))))
-                                .serverUploadIntervalMillis(getOptionalIntValue(props, "serverUploadIntervalMillis",
-                                                                                DEFAULT_UPLOAD_INTERVAL_MILLIS))
-                                .serverUri(getMandatoryUriValue(props, "serverUri"))
-                                .verbose(Boolean.parseBoolean(getOptionalStringValue(props, "verbose", Boolean.toString(DEFAULT_VERBOSE))))
-                                .clobberAopXml(Boolean.parseBoolean(getOptionalStringValue(props, "clobberAopXml",
-                                                                                           Boolean.toString(DEFAULT_CLOBBER_AOP_XML))))
-                                .build();
+                              .customerName(customerName)
+                              .appName(appName)
+                              .environment(getMandatoryStringValue(props, "environment"))
+                              .codeBaseUri(getMandatoryUriValue(props, "codeBaseUri", false))
+                              .packagePrefix(getMandatoryStringValue(props, "packagePrefix"))
+                              .aspectjOptions(getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
+                              .sensorResolutionIntervalSeconds(getOptionalIntValue(props, "sensorResolutionIntervalSeconds",
+                                                                                   DEFAULT_SENSOR_RESOLUTION_INTERVAL_SECONDS))
+                              .dataPath(new File(getOptionalStringValue(props, "dataPath", getDefaultDataPath(customerName))))
+                              .serverUploadIntervalMillis(getOptionalIntValue(props, "serverUploadIntervalMillis",
+                                                                              DEFAULT_UPLOAD_INTERVAL_MILLIS))
+                              .serverUri(getMandatoryUriValue(props, "serverUri", true))
+                              .verbose(Boolean.parseBoolean(getOptionalStringValue(props, "verbose", Boolean.toString(DEFAULT_VERBOSE))))
+                              .clobberAopXml(Boolean.parseBoolean(getOptionalStringValue(props, "clobberAopXml",
+                                                                                         Boolean.toString(DEFAULT_CLOBBER_AOP_XML))))
+                              .build();
         } catch (Exception e) {
             throw new IllegalArgumentException(String.format("Cannot parse %s: %s", uri, e.getMessage()));
         }
@@ -107,19 +112,19 @@ public class AgentConfig {
     public static AgentConfig createSampleConfiguration() {
         String customerName = "Customer Name";
         return AgentConfig.builder()
-                            .customerName(customerName)
-                            .appName("app-name")
-                            .environment("environment")
-                            .packagePrefix("com.acme")
-                            .codeBaseUri(new URI("file:/path/to/my/code/base"))
-                            .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
-                            .dataPath(new File("/var/lib/duck", normalizePathName(customerName)))
-                            .sensorResolutionIntervalSeconds(DEFAULT_SENSOR_RESOLUTION_INTERVAL_SECONDS)
-                            .serverUploadIntervalMillis(DEFAULT_UPLOAD_INTERVAL_MILLIS)
-                            .serverUri(new URI("http://some-duck-server"))
-                            .verbose(DEFAULT_VERBOSE)
-                            .clobberAopXml(DEFAULT_CLOBBER_AOP_XML)
-                            .build();
+                          .customerName(customerName)
+                          .appName("app-name")
+                          .environment("environment")
+                          .packagePrefix("com.acme")
+                          .codeBaseUri(new URI("file:/path/to/my/code/base"))
+                          .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
+                          .dataPath(new File("/var/lib/duck", normalizePathName(customerName)))
+                          .sensorResolutionIntervalSeconds(DEFAULT_SENSOR_RESOLUTION_INTERVAL_SECONDS)
+                          .serverUploadIntervalMillis(DEFAULT_UPLOAD_INTERVAL_MILLIS)
+                          .serverUri(new URI("http://some-duck-server"))
+                          .verbose(DEFAULT_VERBOSE)
+                          .clobberAopXml(DEFAULT_CLOBBER_AOP_XML)
+                          .build();
 
     }
 
@@ -139,8 +144,11 @@ public class AgentConfig {
         return path.replaceAll("[^a-zA-Z0-9_\\-]", "").toLowerCase();
     }
 
-    private static URI getMandatoryUriValue(Properties props, String key) {
+    private static URI getMandatoryUriValue(Properties props, String key, boolean removeTrailingSlash) {
         String value = getMandatoryStringValue(props, key);
+        if (removeTrailingSlash && value.endsWith("/")) {
+            value = value.substring(0, value.length() - 1);
+        }
         try {
             return new URI(value);
         } catch (URISyntaxException e) {

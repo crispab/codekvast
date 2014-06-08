@@ -3,7 +3,6 @@ package se.crisp.duck.agent.main;
 import org.junit.Test;
 import se.crisp.duck.agent.util.AgentConfig;
 
-import java.io.File;
 import java.net.URISyntaxException;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -16,18 +15,13 @@ public class CodeBaseScannerTest {
     public static final String SAMPLE_APP_CLASSES = "../../../sample/standalone-app/build/classes/main/";
     public static final String SAMPLE_APP_JAR = SAMPLE_APP_LIB + "/sample-app.jar";
 
-    private static final AgentConfig NOT_USED_CONFIG = AgentConfig.builder()
-                                                                  .codeBaseUri(new File(SAMPLE_APP_JAR).toURI())
-                                                                  .build();
+    private static final AgentConfig NOT_USED_CONFIG = CodeBaseTest.buildAgentConfig(SAMPLE_APP_JAR);
 
     private final CodeBaseScanner scanner = new CodeBaseScanner();
 
     @Test
     public void testScanCodeBaseForSingleJar() throws URISyntaxException {
-        AgentConfig config = AgentConfig.builder()
-                                        .packagePrefix("se.crisp")
-                                        .codeBaseUri(new File(SAMPLE_APP_JAR).toURI())
-                                        .build();
+        AgentConfig config = CodeBaseTest.buildAgentConfig(SAMPLE_APP_JAR);
         CodeBase codeBase = new CodeBase(config);
         scanner.getPublicMethodSignatures(codeBase);
         assertThat(codeBase.signatures, notNullValue());
@@ -36,10 +30,7 @@ public class CodeBaseScannerTest {
 
     @Test
     public void testScanCodeBaseForDirectoryContainingMultipleJars() throws URISyntaxException {
-        AgentConfig config = AgentConfig.builder()
-                                        .packagePrefix("se.crisp")
-                                        .codeBaseUri(new File(SAMPLE_APP_LIB).toURI())
-                                        .build();
+        AgentConfig config = CodeBaseTest.buildAgentConfig(SAMPLE_APP_LIB);
         CodeBase codeBase = new CodeBase(config);
         scanner.getPublicMethodSignatures(codeBase);
         assertThat(codeBase.signatures, notNullValue());
@@ -48,10 +39,7 @@ public class CodeBaseScannerTest {
 
     @Test
     public void testScanCodeBaseForDirectoryWithClassFiles() {
-        AgentConfig config = AgentConfig.builder()
-                                        .packagePrefix("sample")
-                                        .codeBaseUri(new File(SAMPLE_APP_CLASSES).toURI())
-                                        .build();
+        AgentConfig config = CodeBaseTest.buildAgentConfig(SAMPLE_APP_CLASSES);
         CodeBase codeBase = new CodeBase(config);
         scanner.getPublicMethodSignatures(codeBase);
         assertThat(codeBase.signatures, notNullValue());
