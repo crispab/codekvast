@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import se.crisp.duck.server.agent.AgentRestEndpoints;
 import se.crisp.duck.server.agent.model.v1.SignatureData;
-import se.crisp.duck.server.duck_server.db.AgentService;
+import se.crisp.duck.server.duck_server.service.AgentService;
 
 import javax.inject.Inject;
 
