@@ -30,6 +30,8 @@ public class AgentConfig {
     @NonNull
     private final String environment;
     @NonNull
+    private final String codeBaseName;
+    @NonNull
     private final URI codeBaseUri;
     @NonNull
     private final String packagePrefix;
@@ -82,6 +84,7 @@ public class AgentConfig {
                               .customerName(customerName)
                               .appName(appName)
                               .environment(getMandatoryStringValue(props, "environment"))
+                              .codeBaseName(getMandatoryStringValue(props, "codeBaseName"))
                               .codeBaseUri(getMandatoryUriValue(props, "codeBaseUri", false))
                               .packagePrefix(getMandatoryStringValue(props, "packagePrefix"))
                               .aspectjOptions(getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
@@ -109,6 +112,7 @@ public class AgentConfig {
                           .appName(appName)
                           .environment("environment")
                           .packagePrefix("com.acme")
+                          .codeBaseName("my-code-base-name")
                           .codeBaseUri(new URI("file:/path/to/my/code/base"))
                           .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
                           .dataPath(new File("/var/lib", getDataChildPath(customerName, appName)))
@@ -118,7 +122,6 @@ public class AgentConfig {
                           .verbose(DEFAULT_VERBOSE)
                           .clobberAopXml(DEFAULT_CLOBBER_AOP_XML)
                           .build();
-
     }
 
     private static String getOptionalStringValue(Properties props, String key, String defaultValue) {

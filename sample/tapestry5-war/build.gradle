@@ -39,6 +39,7 @@ task generateDuckConfig {
 customerName = Crisp
 appName = $archivesBaseName
 environment = development
+codeBaseName = sample
 codeBaseUri = file:/maven/${archivesBaseName}.war
 dataPath = $duckDataPath
 packagePrefix = se.crisp.sample

@@ -43,7 +43,9 @@ public class ServerDelegateImpl implements ServerDelegate {
                                                   .customerName(config.getCustomerName())
                                                   .appName(config.getAppName())
                                                   .environment(config.getEnvironment())
-                                                  .signatures(signatures).build();
+                                                  .codeBaseName(config.getCodeBaseName())
+                                                  .signatures(signatures)
+                                                  .build();
 
                 restTemplate.postForLocation(new URI(endPoint), data);
 

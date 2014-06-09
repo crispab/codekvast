@@ -15,8 +15,14 @@ import java.util.Collection;
 @AllArgsConstructor
 @ToString(exclude = "signatures")
 public class SignatureData {
+    @NonNull
     private String customerName;
+    @NonNull
     private String appName;
+    @NonNull
+    private String codeBaseName;
+    @NonNull
     private String environment;
+    @NonNull
     private Collection<String> signatures;
 }

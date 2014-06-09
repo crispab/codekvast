@@ -62,6 +62,7 @@ public class DuckAgentMain {
         return ServerDelegate.Config.builder()
                                     .customerName(agentConfig.getCustomerName())
                                     .appName(agentConfig.getAppName())
+                                    .codeBaseName(agentConfig.getCodeBaseName())
                                     .environment(agentConfig.getEnvironment())
                                     .serverUri(agentConfig.getServerUri())
                                     .build();

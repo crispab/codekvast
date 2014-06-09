@@ -34,6 +34,7 @@ public class CodeBaseTest {
                           .dataPath(new File("dataPath"))
                           .serverUri(new File("foobar").toURI())
                           .codeBaseUri(new File(codeBaseUri).toURI())
+                          .codeBaseName("codeBaseName")
                           .build();
     }
 

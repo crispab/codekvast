@@ -20,6 +20,7 @@ public class SignatureDataTest {
                                            .customerName("customerName")
                                            .appName("appName")
                                            .environment("environment")
+                                           .codeBaseName("codeBaseName")
                                            .signatures(Arrays.asList("sig1", "sig2"))
                                            .build();
         String json = objectMapper.writeValueAsString(data1);

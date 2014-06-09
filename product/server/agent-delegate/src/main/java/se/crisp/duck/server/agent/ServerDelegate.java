@@ -35,6 +35,9 @@ public interface ServerDelegate {
         private final String appName;
 
         @NonNull
+        private final String codeBaseName;
+
+        @NonNull
         private final String environment;
 
         @NonNull
