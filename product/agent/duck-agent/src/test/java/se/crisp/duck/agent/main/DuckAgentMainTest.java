@@ -4,7 +4,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.runners.MockitoJUnitRunner;
-import se.crisp.duck.agent.util.SensorUtils;
+import se.crisp.duck.agent.util.FileUtils;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -27,7 +27,7 @@ public class DuckAgentMainTest {
                 "public void se.transmode.tnm.module.l1mgr.connectivity.persistence.TrailEAO.removeTrails(java.util.Collection)"));
 
         int unrecognized = agentWorker.applyRecordedUsage(codeBase, new AppUsage("appName"),
-                                                          SensorUtils.readUsageFrom(getResource("/customer1/app1/usage.dat")));
+                                                          FileUtils.readUsageDataFrom(getResource("/customer1/app1/usage.dat")));
 
         assertThat(unrecognized, is(1));
     }

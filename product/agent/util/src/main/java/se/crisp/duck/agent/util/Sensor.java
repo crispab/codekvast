@@ -28,11 +28,11 @@ public class Sensor {
 
     public void saveTo(File file) {
         dumpedAtMillis = System.currentTimeMillis();
-        SensorUtils.writePropertiesTo(file, this, "Duck Sensor Run");
+        FileUtils.writePropertiesTo(file, this, "Duck Sensor Run");
     }
 
     public static Sensor readFrom(File file) throws IOException {
-        Properties props = SensorUtils.readPropertiesFrom(file);
+        Properties props = FileUtils.readPropertiesFrom(file);
 
         return Sensor.builder()
                      .appName(props.getProperty("appName"))

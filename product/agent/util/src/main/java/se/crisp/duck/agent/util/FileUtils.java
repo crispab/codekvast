@@ -3,24 +3,22 @@ package se.crisp.duck.agent.util;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.net.InetAddress;
 import java.net.URI;
-import java.net.UnknownHostException;
 import java.util.*;
 
 /**
  * @author Olle Hallin
  */
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
-public class SensorUtils {
+public class FileUtils {
 
     private static final String CHARSET_NAME = "UTF-8";
 
-    private SensorUtils() {
+    private FileUtils() {
         // Utility class
     }
 
-    public static List<Usage> readUsageFrom(File file) {
+    public static List<Usage> readUsageDataFrom(File file) {
         List<Usage> result = new ArrayList<Usage>();
         BufferedReader in = null;
         try {
@@ -40,7 +38,7 @@ public class SensorUtils {
         return result;
     }
 
-    public static void dumpUsageData(File file, int dumpCount, Map<String, Long> usages) {
+    public static void writeUsageDataTo(File file, int dumpCount, Map<String, Long> usages) {
         long startedAt = System.currentTimeMillis();
 
         File tmpFile = null;
@@ -87,30 +85,32 @@ public class SensorUtils {
     }
 
     public static void writePropertiesTo(File file, Object object, String comment) {
+        Writer out = null;
         try {
-            Properties props = new Properties();
+            // Write the properties alphabetically
+            Set<String> lines = new TreeSet<String>();
+
             for (Field field : object.getClass().getDeclaredFields()) {
                 if (!Modifier.isStatic(field.getModifiers())) {
                     field.setAccessible(true);
-                    props.put(field.getName(), field.get(object).toString());
+                    lines.add(String.format("%s = %s", field.getName(), field.get(object).toString().replace(":", "\\:")));
                 }
             }
-            writePropertiesToFile(file, props, comment);
+
+            out = new OutputStreamWriter(new FileOutputStream(file), CHARSET_NAME);
+            out.write(String.format("# %s%n", comment));
+            out.write(String.format("#%n"));
+            for (String line : lines) {
+                out.write(String.format("%s%n", line));
+            }
+
         } catch (IOException e) {
             System.err.println("Cannot write " + file + ": " + e);
         } catch (IllegalAccessException e) {
             System.err.println("Cannot write " + file + ": " + e);
+        } finally {
+            safeClose(out);
         }
-    }
-
-    private static void writePropertiesToFile(File file, Properties props, String comment) throws IOException {
-        Writer out = new OutputStreamWriter(new FileOutputStream(file), CHARSET_NAME);
-        props.store(out, comment);
-        safeClose(out);
-    }
-
-    public static Properties readPropertiesFrom(String path) throws IOException {
-        return readPropertiesFrom(new File(path));
     }
 
     public static Properties readPropertiesFrom(File file) throws IOException {
@@ -126,18 +126,25 @@ public class SensorUtils {
             throw new IOException(String.format("Cannot read '%s'", file.getAbsolutePath()));
         }
 
-        Properties props = new Properties();
+        return readPropertiesFrom(new FileInputStream(file));
+    }
+
+    private static Properties readPropertiesFrom(InputStream inputStream) throws IOException {
+        Properties result = new Properties();
         Reader reader = null;
         try {
-            reader = new InputStreamReader(new FileInputStream(file), CHARSET_NAME);
-            props.load(reader);
+            reader = new InputStreamReader(inputStream, CHARSET_NAME);
+            result.load(reader);
         } finally {
             safeClose(reader);
         }
-        return props;
+        return result;
     }
 
     public static Properties readPropertiesFrom(URI uri) throws IOException {
+        if (uri.getScheme().equals("classpath")) {
+            return readPropertiesFrom(FileUtils.class.getResourceAsStream(uri.getPath()));
+        }
         return readPropertiesFrom(new File(uri));
     }
 
@@ -148,14 +155,6 @@ public class SensorUtils {
             } catch (IOException e) {
                 // ignore
             }
-        }
-    }
-
-    public static String getHostName() {
-        try {
-            return InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-            return "localhost";
         }
     }
 

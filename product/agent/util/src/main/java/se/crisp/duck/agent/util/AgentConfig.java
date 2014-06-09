@@ -67,7 +67,7 @@ public class AgentConfig {
     }
 
     public void saveTo(File file) {
-        SensorUtils.writePropertiesTo(file, this, "Duck AgentConfig");
+        FileUtils.writePropertiesTo(file, this, "Duck AgentConfig");
     }
 
     public static AgentConfig parseConfigFile(String file) {
@@ -76,7 +76,7 @@ public class AgentConfig {
 
     public static AgentConfig parseConfigFile(URI uri) {
         try {
-            Properties props = SensorUtils.readPropertiesFrom(uri);
+            Properties props = FileUtils.readPropertiesFrom(uri);
             String customerName = getMandatoryStringValue(props, "customerName");
             String appName = getMandatoryStringValue(props, "appName");
 

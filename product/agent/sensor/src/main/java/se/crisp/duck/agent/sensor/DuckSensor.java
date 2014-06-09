@@ -4,7 +4,7 @@ import org.aspectj.bridge.Constants;
 import se.crisp.duck.agent.sensor.aspects.AbstractMethodExecutionAspect;
 import se.crisp.duck.agent.sensor.aspects.JasperExecutionAspect;
 import se.crisp.duck.agent.util.AgentConfig;
-import se.crisp.duck.agent.util.SensorUtils;
+import se.crisp.duck.agent.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -120,7 +120,7 @@ public class DuckSensor {
 
         File file = config.getAspectFile();
         if (config.isClobberAopXml() || !file.canRead()) {
-            SensorUtils.writeToFile(xml, file);
+            FileUtils.writeToFile(xml, file);
         }
         return "file:" + file.getAbsolutePath();
     }

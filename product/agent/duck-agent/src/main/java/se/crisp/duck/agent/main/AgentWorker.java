@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import se.crisp.duck.agent.util.AgentConfig;
-import se.crisp.duck.agent.util.SensorUtils;
+import se.crisp.duck.agent.util.FileUtils;
 import se.crisp.duck.agent.util.Usage;
 import se.crisp.duck.server.agent.ServerDelegate;
 import se.crisp.duck.server.agent.ServerDelegateException;
@@ -64,7 +64,7 @@ public class AgentWorker {
         if (oldModifiedAt == null || oldModifiedAt != modifiedAt) {
             AppUsage appUsage = getAppUsage(config.getAppName());
 
-            applyRecordedUsage(codeBase, appUsage, SensorUtils.readUsageFrom(usageFile));
+            applyRecordedUsage(codeBase, appUsage, FileUtils.readUsageDataFrom(usageFile));
 
             uploadUsedSignatures(appUsage);
 

@@ -2,11 +2,13 @@ package se.crisp.duck.agent.sensor;
 
 import org.aspectj.lang.Signature;
 import se.crisp.duck.agent.util.AgentConfig;
+import se.crisp.duck.agent.util.FileUtils;
 import se.crisp.duck.agent.util.Sensor;
-import se.crisp.duck.agent.util.SensorUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -42,10 +44,18 @@ public class UsageRegistry {
         UsageRegistry.instance = new UsageRegistry(config,
                                                    Sensor.builder()
                                                          .appName(config.getAppName())
-                                                         .hostName(SensorUtils.getHostName())
+                                                         .hostName(getHostName())
                                                          .uuid(UUID.randomUUID())
                                                          .startedAtMillis(System.currentTimeMillis())
                                                          .build());
+    }
+
+    private static String getHostName() {
+        try {
+            return InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            return "localhost";
+        }
     }
 
     /**
@@ -82,7 +92,7 @@ public class UsageRegistry {
             DuckSensor.out.println("Cannot dump usage data, " + outputPath + " cannot be created");
         } else {
             dumpSensorRun();
-            SensorUtils.dumpUsageData(config.getUsageFile(), dumpCount, usages);
+            FileUtils.writeUsageDataTo(config.getUsageFile(), dumpCount, usages);
             currentTimeMillis.set(System.currentTimeMillis());
         }
     }
@@ -96,11 +106,11 @@ public class UsageRegistry {
         try {
             tmpFile = File.createTempFile("duck", ".tmp", sensorFile.getParentFile());
             sensor.saveTo(tmpFile);
-            SensorUtils.renameFile(tmpFile, sensorFile);
+            FileUtils.renameFile(tmpFile, sensorFile);
         } catch (IOException e) {
             DuckSensor.out.println(DuckSensor.NAME + " cannot save " + sensorFile + ": " + e);
         } finally {
-            SensorUtils.safeDelete(tmpFile);
+            FileUtils.safeDelete(tmpFile);
         }
     }
 
