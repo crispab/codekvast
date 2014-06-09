@@ -6,6 +6,7 @@ import lombok.experimental.Builder;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * This is the business delegate interface used by a Duck agent for communicating with the server.
@@ -22,6 +23,16 @@ public interface ServerDelegate {
      * @throws ServerDelegateException Should the upload fail for some reason.
      */
     void uploadSignatures(Collection<String> signatures) throws ServerDelegateException;
+
+    /**
+     * Upload method usage to the server.
+     * <p/>
+     * This is done as soon as a new usage file is produced by the sensor.
+     *
+     * @param usage A map with signature as key and the time instant (millis since epoch) the method was invoked as value.
+     * @throws ServerDelegateException
+     */
+    void uploadUsage(Map<String, Long> usage) throws ServerDelegateException;
 
     @SuppressWarnings("SpringJavaAutowiringInspection")
     @Value

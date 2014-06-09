@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import se.crisp.duck.server.agent.AgentRestEndpoints;
 import se.crisp.duck.server.agent.model.v1.SignatureData;
+import se.crisp.duck.server.agent.model.v1.UsageData;
 import se.crisp.duck.server.duck_server.service.AgentService;
 
 import javax.inject.Inject;
@@ -25,10 +26,15 @@ public class AgentController {
         this.agentService = agentService;
     }
 
-    @RequestMapping(value = AgentRestEndpoints.UPLOAD_SIGNATURES_V1,
-                    method = RequestMethod.POST)
+    @RequestMapping(value = AgentRestEndpoints.UPLOAD_SIGNATURES_V1, method = RequestMethod.POST)
     public void receiveSignaturesV1(@RequestBody SignatureData data) {
         log.info("Received {}", data);
         agentService.storeSignatureData(data);
+    }
+
+    @RequestMapping(value = AgentRestEndpoints.UPLOAD_USAGE_V1, method = RequestMethod.POST)
+    public void receiveUsageV1(@RequestBody UsageData data) {
+        log.info("Received {}", data);
+        agentService.storeUsageData(data);
     }
 }

@@ -26,7 +26,7 @@ public class DuckAgentMainTest {
         assertTrue(codeBase.hasSignature(
                 "public void se.transmode.tnm.module.l1mgr.connectivity.persistence.TrailEAO.removeTrails(java.util.Collection)"));
 
-        int unrecognized = agentWorker.applyRecordedUsage(codeBase, new AppUsage("appName"),
+        int unrecognized = agentWorker.applyRecordedUsage(codeBase, new AppUsage(),
                                                           FileUtils.readUsageDataFrom(getResource("/customer1/app1/usage.dat")));
 
         assertThat(unrecognized, is(1));

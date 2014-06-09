@@ -12,9 +12,7 @@ import se.crisp.duck.server.agent.ServerDelegateException;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Olle Hallin
@@ -23,12 +21,12 @@ import java.util.Map;
 @Slf4j
 public class AgentWorker {
     private final AgentConfig config;
-    private final Map<String, Long> dataFileModifiedAtMillis = new HashMap<>();
     private final CodeBaseScanner codeBaseScanner;
     private final ServerDelegate serverDelegate;
-    private final Map<String, AppUsage> appUsages = new HashMap<>();
+    private final AppUsage appUsage = new AppUsage();
 
     private CodeBase codeBase;
+    private long usageFileModifiedAtMillis;
 
     @Inject
     public AgentWorker(AgentConfig config, CodeBaseScanner codeBaseScanner, ServerDelegate serverDelegate) {
@@ -60,38 +58,20 @@ public class AgentWorker {
 
     private void processUsageDataIfNew(File usageFile) {
         long modifiedAt = usageFile.lastModified();
-        Long oldModifiedAt = dataFileModifiedAtMillis.get(usageFile.getPath());
-        if (oldModifiedAt == null || oldModifiedAt != modifiedAt) {
-            AppUsage appUsage = getAppUsage(config.getAppName());
-
+        if (modifiedAt != usageFileModifiedAtMillis) {
             applyRecordedUsage(codeBase, appUsage, FileUtils.readUsageDataFrom(usageFile));
-
             uploadUsedSignatures(appUsage);
-
-            dataFileModifiedAtMillis.put(usageFile.getPath(), modifiedAt);
+            usageFileModifiedAtMillis = modifiedAt;
         }
     }
 
     private void uploadUsedSignatures(AppUsage appUsage) {
-        int count = 0;
-        for (Map.Entry<String, Long> entry : appUsage.getNotUploadedSignatures().entrySet()) {
-            // TODO: convert to server format
-            count += 1;
+        try {
+            serverDelegate.uploadUsage(appUsage.getNotUploadedSignatures());
+            appUsage.allSignaturesAreUploaded();
+        } catch (ServerDelegateException e) {
+            log.error("Could not upload usage data", e);
         }
-
-        log.info("Uploading {} new usages to {}", count, config.getServerUri());
-        // TODO: upload to server
-
-        appUsage.allSignaturesAreUploaded();
-    }
-
-    private AppUsage getAppUsage(String appName) {
-        AppUsage result = appUsages.get(appName);
-        if (result == null) {
-            result = new AppUsage(appName);
-            appUsages.put(appName, result);
-        }
-        return result;
     }
 
     int applyRecordedUsage(CodeBase codeBase, AppUsage appUsage, List<Usage> usages) {
@@ -137,8 +117,8 @@ public class AgentWorker {
     }
 
     @PreDestroy
-    public void shuttingDown() {
-        log.info("Shuts down");
+    public void shutdownHook() {
+        log.info("{} shuts down", getClass().getSimpleName());
     }
 
 }

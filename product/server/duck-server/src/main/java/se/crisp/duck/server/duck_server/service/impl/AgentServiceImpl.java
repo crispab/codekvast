@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import se.crisp.duck.server.agent.model.v1.SignatureData;
+import se.crisp.duck.server.agent.model.v1.UsageData;
 import se.crisp.duck.server.duck_server.service.AgentService;
 
 import javax.inject.Inject;
@@ -27,5 +28,13 @@ public class AgentServiceImpl implements AgentService {
     @Transactional
     public void storeSignatureData(SignatureData data) {
         log.debug("Storing {}", data);
+        // TODO: implement storing signature data
+    }
+
+    @Override
+    @Transactional
+    public void storeUsageData(UsageData data) {
+        log.debug("Storing {}", data);
+        // TODO: implement storing usage data
     }
 }

@@ -3,7 +3,7 @@ package se.crisp.duck.server.agent.model.v1;
 import lombok.*;
 import lombok.experimental.Builder;
 
-import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author Olle Hallin
@@ -13,11 +13,11 @@ import java.util.Collection;
 @Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@ToString(exclude = "signatures")
-public class SignatureData {
+@ToString(exclude = "usage")
+public class UsageData {
     @NonNull
     private Header header;
 
     @NonNull
-    private Collection<String> signatures;
+    private Map<String, Long> usage;
 }

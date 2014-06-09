@@ -12,7 +12,6 @@ import java.util.Set;
  */
 @RequiredArgsConstructor
 public class AppUsage {
-    private final String appName;
     private final Map<String, Long> signatureUsedAt = new HashMap<>();
     private final Set<String> notUploadedSignatures = new HashSet<>();
 

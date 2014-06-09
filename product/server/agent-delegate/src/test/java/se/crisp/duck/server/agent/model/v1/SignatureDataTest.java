@@ -1,8 +1,7 @@
-package se.crisp.duck.server.agent.model;
+package se.crisp.duck.server.agent.model.v1;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
-import se.crisp.duck.server.agent.model.v1.SignatureData;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -15,12 +14,13 @@ public class SignatureDataTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
-    public void SignatureDataShouldBeJsonSerializable() throws IOException {
+    public void signatureDataShouldBeJsonSerializable() throws IOException {
         SignatureData data1 = SignatureData.builder()
-                                           .customerName("customerName")
-                                           .appName("appName")
-                                           .environment("environment")
-                                           .codeBaseName("codeBaseName")
+                                           .header(Header.builder()
+                                                         .customerName("customerName")
+                                                         .appName("appName")
+                                                         .environment("environment")
+                                                         .codeBaseName("codeBaseName").build())
                                            .signatures(Arrays.asList("sig1", "sig2"))
                                            .build();
         String json = objectMapper.writeValueAsString(data1);
