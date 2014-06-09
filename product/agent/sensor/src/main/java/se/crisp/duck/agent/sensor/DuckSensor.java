@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.instrument.Instrumentation;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -40,7 +39,7 @@ public class DuckSensor {
      * This method is invoked by the JVM as part of bootstrapping the -javaagent
      */
     public static void premain(String args, Instrumentation inst) throws IOException, URISyntaxException {
-        AgentConfig config = AgentConfig.parseConfigFile(new URI(args));
+        AgentConfig config = AgentConfig.parseConfigFile(args);
 
         //noinspection UseOfSystemOutOrSystemErr
         DuckSensor.out = config.isVerbose() ? System.err : new PrintStream(new NullOutputStream());

@@ -12,7 +12,7 @@ import static org.junit.Assert.assertThat;
 public class CodeBaseScannerTest {
 
     public static final String SAMPLE_APP_LIB = "src/test/resources/sample-app/lib";
-    public static final String SAMPLE_APP_CLASSES = "../../../sample/standalone-app/build/classes/main/";
+    public static final String SAMPLE_APP_CLASSES = "src/test/resources/sample-app/classes/";
     public static final String SAMPLE_APP_JAR = SAMPLE_APP_LIB + "/sample-app.jar";
 
     private static final AgentConfig NOT_USED_CONFIG = CodeBaseTest.buildAgentConfig(SAMPLE_APP_JAR);

@@ -1,5 +1,6 @@
 package sample.app;
 
+import lombok.SneakyThrows;
 import untracked.UntrackedClass;
 
 /**
@@ -7,11 +8,15 @@ import untracked.UntrackedClass;
  */
 public class SampleApp {
 
-    static int sum = 0;
+    private int sum = 0;
 
-    public static void main(String[] args) throws InterruptedException {
-        System.out.printf("Hello, World! from %s%n%n", SampleApp.class.getName());
+    public static void main(String[] args) {
+        new SampleApp().run();
+    }
 
+    @SneakyThrows(InterruptedException.class)
+    public void run() {
+        System.out.printf("Hello, World! from %s%n%n", getClass().getName());
         tryToLoadClass("se.crisp.duck.agent.sensor.DuckSensor", true);
         tryToLoadClass("org.aspectj.weaver.loadtime.Agent", true);
         tryToLoadClass("org.reflections.Reflections", false);
@@ -27,7 +32,7 @@ public class SampleApp {
         new Bar2().declaredOnBar2();
     }
 
-    private static void measureMethodCallTrackingOverhead() {
+    private void measureMethodCallTrackingOverhead() {
         System.out.println("\nMeasuring method call tracking overhead...");
 
         int count = 10000000;
@@ -40,12 +45,12 @@ public class SampleApp {
         long trackedElapsedMillis = invokeTracked(count);
         double overheadMicros = (trackedElapsedMillis - untrackedElapsedMillis) * 1000d / (double) count;
 
-        System.out.printf("Invoked a trivial untracked method %d times in %5d ms%n", count, untrackedElapsedMillis);
-        System.out.printf("Invoked a trivial   tracked method %d times in %5d ms%n", count, trackedElapsedMillis);
+        System.out.printf("Invoked a trivial untracked method %,d times in %5d ms%n", count, untrackedElapsedMillis);
+        System.out.printf("Invoked a trivial   tracked method %,d times in %5d ms%n", count, trackedElapsedMillis);
         System.out.printf("Duck sensor adds roughly %.2f us to a method call%n", overheadMicros);
     }
 
-    private static long invokeUntracked(int count) {
+    private long invokeUntracked(int count) {
         long startedAt = System.currentTimeMillis();
         sum = 0;
         UntrackedClass untracked = new UntrackedClass();
@@ -55,7 +60,7 @@ public class SampleApp {
         return System.currentTimeMillis() - startedAt;
     }
 
-    private static long invokeTracked(int count) {
+    private long invokeTracked(int count) {
         long startedAt = System.currentTimeMillis();
 
         sum = 0;
@@ -66,7 +71,7 @@ public class SampleApp {
         return System.currentTimeMillis() - startedAt;
     }
 
-    private static void tryToLoadClass(String className, boolean shouldBeAvailable) {
+    private void tryToLoadClass(String className, boolean shouldBeAvailable) {
         try {
             Class.forName(className);
 

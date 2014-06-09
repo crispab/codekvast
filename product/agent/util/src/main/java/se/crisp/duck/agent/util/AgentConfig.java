@@ -68,6 +68,10 @@ public class AgentConfig {
         SensorUtils.writePropertiesTo(file, this, "Duck AgentConfig");
     }
 
+    public static AgentConfig parseConfigFile(String file) {
+        return parseConfigFile(new File(file).toURI());
+    }
+
     public static AgentConfig parseConfigFile(URI uri) {
         try {
             Properties props = SensorUtils.readPropertiesFrom(uri);
@@ -92,7 +96,7 @@ public class AgentConfig {
                                                                                          Boolean.toString(DEFAULT_CLOBBER_AOP_XML))))
                               .build();
         } catch (Exception e) {
-            throw new IllegalArgumentException(String.format("Cannot parse %s: %s", uri, e.getMessage()));
+            throw new IllegalArgumentException(String.format("Cannot parse %s: %s", uri, e.getMessage()), e);
         }
     }
 
@@ -168,4 +172,5 @@ public class AgentConfig {
         }
         return value;
     }
+
 }

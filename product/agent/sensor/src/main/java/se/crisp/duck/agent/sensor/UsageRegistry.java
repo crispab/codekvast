@@ -76,10 +76,10 @@ public class UsageRegistry {
      * Thread-safe.
      */
     public void dumpDataToDisk(int dumpCount) {
-        File sensorsPath = config.getSensorsPath();
-        sensorsPath.mkdirs();
-        if (!sensorsPath.exists()) {
-            DuckSensor.out.println("Cannot dump usage data, " + sensorsPath + " cannot be created");
+        File outputPath = config.getUsageFile().getParentFile();
+        outputPath.mkdirs();
+        if (!outputPath.exists()) {
+            DuckSensor.out.println("Cannot dump usage data, " + outputPath + " cannot be created");
         } else {
             dumpSensorRun();
             SensorUtils.dumpUsageData(config.getUsageFile(), dumpCount, usages);
