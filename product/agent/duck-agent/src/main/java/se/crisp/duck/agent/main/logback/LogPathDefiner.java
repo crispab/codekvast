@@ -10,17 +10,17 @@ import java.io.File;
  *
  * @author Olle Hallin
  */
-public class LogFileDefiner extends PropertyDefinerBase {
+public class LogPathDefiner extends PropertyDefinerBase {
 
-    public static final String LOG_FILE_PROPERTY = "duck.agentLogFile";
+    public static final String LOG_PATH_PROPERTY = "duck.agentLogPath";
 
     @Override
     public String getPropertyValue() {
-        String result = System.getProperty(LOG_FILE_PROPERTY);
-        if (result == null) {
+        String path = System.getProperty(LOG_PATH_PROPERTY);
+        if (path == null) {
             // Not started with an explicit log file, compute the logical location for the log file...
 
-            String path = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+            path = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
 
             if (path.endsWith(".jar")) {
                 // Running from start script
@@ -36,8 +36,13 @@ public class LogFileDefiner extends PropertyDefinerBase {
                 // Running from IDEA at $MODULE_DIR
                 path = path.replace("/build/classes/production/duck-agent/", "/duck-agent/build");
             }
-            result = path + File.separator + "duck-agent.log";
         }
-        return result;
+        File result = new File(path);
+        result.mkdirs();
+
+        System.out.println("-----------------------------------------------\n"
+                                   + "result = " + result
+                                   + "\n-----------------------------------------------");
+        return result.getAbsolutePath();
     }
 }

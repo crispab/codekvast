@@ -8,7 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import se.crisp.duck.agent.main.logback.LogFileDefiner;
+import se.crisp.duck.agent.main.logback.LogPathDefiner;
 import se.crisp.duck.agent.main.spring.AgentConfigPropertySource;
 import se.crisp.duck.agent.util.AgentConfig;
 import se.crisp.duck.server.agent.ServerDelegate;
@@ -30,18 +30,14 @@ public class DuckAgentMain {
 
     private static AgentConfig agentConfig;
 
-    private DuckAgentMain() {
-        // Prevent instantiation
-    }
-
     public static void main(String[] args) throws IOException, URISyntaxException {
-        // Reuse the same duck.properties as is used by the sensor...
+        // Use the same AgentConfig as is used by the sensor...
         URI location = getAgentConfigLocation(args);
         DuckAgentMain.agentConfig = AgentConfig.parseConfigFile(location);
 
         if (!location.getScheme().equals("classpath")) {
-            // Tell LogFileDefiner to use exactly this log file...
-            System.setProperty(LogFileDefiner.LOG_FILE_PROPERTY, agentConfig.getAgentLogFile().toString());
+            // Tell LogPathDefiner to use exactly this log path...
+            System.setProperty(LogPathDefiner.LOG_PATH_PROPERTY, agentConfig.getAgentLogFile().getParent());
         }
 
         SpringApplication application = new SpringApplication(DuckAgentMain.class);
@@ -60,14 +56,14 @@ public class DuckAgentMain {
     }
 
     @Bean
-    public static AgentConfig agentConfig(ConfigurableEnvironment environment) {
+    public AgentConfig agentConfig(ConfigurableEnvironment environment) {
         // Make the AgentConfig object usable in SpringEL expressions with duck. as prefix...
         environment.getPropertySources().addLast(new AgentConfigPropertySource(agentConfig, "duck."));
         return agentConfig;
     }
 
     @Bean
-    public static ServerDelegate.Config serverDelegateConfig(AgentConfig agentConfig) {
+    public ServerDelegate.Config serverDelegateConfig(AgentConfig agentConfig) {
         return ServerDelegate.Config.builder()
                                     .customerName(agentConfig.getCustomerName())
                                     .appName(agentConfig.getAppName())
