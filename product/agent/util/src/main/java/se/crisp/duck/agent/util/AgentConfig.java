@@ -62,6 +62,10 @@ public class AgentConfig {
         return new File(dataPath, "aop.xml");
     }
 
+    public File getAgentLogFile() {
+        return new File(dataPath, "duck-agent.log");
+    }
+
     public File getSensorLogFile() {
         return new File(dataPath, "duck-sensor.log");
     }

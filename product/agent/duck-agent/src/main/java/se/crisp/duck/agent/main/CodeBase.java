@@ -141,14 +141,17 @@ public class CodeBase {
     }
 
     void addSignature(String thisSignature, String declaringSignature) {
-        if (declaringSignature != null) {
-            if (!declaringSignature.equals(thisSignature)) {
-                log.trace("  Adding {} -> {} to overridden signatures", thisSignature, declaringSignature);
-                overriddenSignatures.put(thisSignature, declaringSignature);
+        String thisNormalizedSignature = normalizeSignature(thisSignature);
+        String declaringNormalizedSignature = normalizeSignature(declaringSignature);
+
+        if (declaringNormalizedSignature != null) {
+            if (!declaringNormalizedSignature.equals(thisNormalizedSignature) && thisNormalizedSignature != null) {
+                log.trace("  Adding {} -> {} to overridden signatures", thisNormalizedSignature, declaringNormalizedSignature);
+                overriddenSignatures.put(thisNormalizedSignature, declaringNormalizedSignature);
             }
 
-            if (signatures.add(declaringSignature)) {
-                log.trace("  Found {}", declaringSignature);
+            if (signatures.add(declaringNormalizedSignature)) {
+                log.trace("  Found {}", declaringNormalizedSignature);
             }
         }
     }

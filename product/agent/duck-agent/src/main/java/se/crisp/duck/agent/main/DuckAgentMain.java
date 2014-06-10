@@ -8,6 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import se.crisp.duck.agent.main.logback.LogFileDefiner;
 import se.crisp.duck.agent.main.spring.AgentConfigPropertySource;
 import se.crisp.duck.agent.util.AgentConfig;
 import se.crisp.duck.server.agent.ServerDelegate;
@@ -27,11 +28,21 @@ import java.util.Properties;
 @ComponentScan("se.crisp.duck")
 public class DuckAgentMain {
 
-    private static URI agentConfigLocation;
+    private static AgentConfig agentConfig;
+
+    private DuckAgentMain() {
+        // Prevent instantiation
+    }
 
     public static void main(String[] args) throws IOException, URISyntaxException {
         // Reuse the same duck.properties as is used by the sensor...
-        DuckAgentMain.agentConfigLocation = getAgentConfigLocation(args);
+        URI location = getAgentConfigLocation(args);
+        DuckAgentMain.agentConfig = AgentConfig.parseConfigFile(location);
+
+        if (!location.getScheme().equals("classpath")) {
+            // Tell LogFileDefiner to use exactly this log file...
+            System.setProperty(LogFileDefiner.LOG_FILE_PROPERTY, agentConfig.getAgentLogFile().toString());
+        }
 
         SpringApplication application = new SpringApplication(DuckAgentMain.class);
         application.setDefaultProperties(getDefaultProperties());
@@ -50,8 +61,6 @@ public class DuckAgentMain {
 
     @Bean
     public static AgentConfig agentConfig(ConfigurableEnvironment environment) {
-        AgentConfig agentConfig = AgentConfig.parseConfigFile(agentConfigLocation);
-
         // Make the AgentConfig object usable in SpringEL expressions with duck. as prefix...
         environment.getPropertySources().addLast(new AgentConfigPropertySource(agentConfig, "duck."));
         return agentConfig;
