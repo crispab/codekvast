@@ -8,6 +8,7 @@ import se.crisp.duck.server.agent.AgentRestEndpoints;
 import se.crisp.duck.server.agent.ServerDelegate;
 import se.crisp.duck.server.agent.ServerDelegateException;
 import se.crisp.duck.server.agent.model.v1.Header;
+import se.crisp.duck.server.agent.model.v1.SensorData;
 import se.crisp.duck.server.agent.model.v1.SignatureData;
 import se.crisp.duck.server.agent.model.v1.UsageData;
 
@@ -16,6 +17,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author Olle Hallin
@@ -31,6 +33,32 @@ public class ServerDelegateImpl implements ServerDelegate {
     public ServerDelegateImpl(Config config, RestTemplate restTemplate) {
         this.config = config;
         this.restTemplate = restTemplate;
+    }
+
+    @Override
+    public void uploadSensor(String hostName, long startedAtMillis, long dumpedAtMillis, UUID uuid) throws ServerDelegateException {
+        String endPoint = config.getServerUri() + AgentRestEndpoints.UPLOAD_SENSOR_V1;
+
+        log.debug("Uploading sensor data to {}", endPoint);
+
+        try {
+            long startedAt = System.currentTimeMillis();
+
+            SensorData data = SensorData.builder().header(buildHeader())
+                                        .hostName(hostName)
+                                        .startedAtMillis(startedAtMillis)
+                                        .dumpedAtMillis(dumpedAtMillis)
+                                        .uuid(uuid)
+                                        .build();
+
+            restTemplate.postForLocation(new URI(endPoint), data);
+
+            log.info("Uploaded {} to {} in {} ms", data, endPoint, System.currentTimeMillis() - startedAt);
+        } catch (URISyntaxException e) {
+            throw new ServerDelegateException("Illegal REST endpoint: " + endPoint, e);
+        } catch (RestClientException e) {
+            throw new ServerDelegateException("Failed to post sensor data", e);
+        }
     }
 
     @Override

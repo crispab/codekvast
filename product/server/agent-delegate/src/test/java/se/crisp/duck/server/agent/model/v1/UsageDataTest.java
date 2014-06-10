@@ -15,21 +15,18 @@ public class UsageDataTest {
 
     @Test
     public void usageDataShouldBeJsonSerializable() throws IOException {
+        // given
         Map<String, Long> usage = new HashMap<>();
         usage.put("sig1", 10000L);
         usage.put("sig2", 20000L);
 
-        UsageData data1 = UsageData.builder()
-                                   .header(Header.builder()
-                                                 .customerName("customerName")
-                                                 .appName("appName")
-                                                 .environment("environment")
-                                                 .codeBaseName("codeBaseName").build())
-                                   .usage(usage)
-                                   .build();
+        UsageData data1 = UsageData.builder().header(HeaderTest.HEADER).usage(usage).build();
+
+        // when
         String json = objectMapper.writeValueAsString(data1);
         UsageData data2 = objectMapper.readValue(json, UsageData.class);
 
+        // then
         assertThat(data1, is(data2));
     }
 

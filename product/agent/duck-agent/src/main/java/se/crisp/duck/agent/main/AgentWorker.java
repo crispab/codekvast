@@ -5,6 +5,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import se.crisp.duck.agent.util.AgentConfig;
 import se.crisp.duck.agent.util.FileUtils;
+import se.crisp.duck.agent.util.Sensor;
 import se.crisp.duck.agent.util.Usage;
 import se.crisp.duck.server.agent.ServerDelegate;
 import se.crisp.duck.server.agent.ServerDelegateException;
@@ -12,6 +13,7 @@ import se.crisp.duck.server.agent.ServerDelegateException;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -25,6 +27,7 @@ public class AgentWorker {
     private final ServerDelegate serverDelegate;
     private final AppUsage appUsage = new AppUsage();
 
+    private Sensor sensor;
     private CodeBase codeBase;
     private long usageFileModifiedAtMillis;
 
@@ -39,10 +42,29 @@ public class AgentWorker {
     public void analyseSensorData() {
         log.debug("Analyzing sensor data");
 
+        uploadSensorDataIfNew(config.getSensorFile());
+
         analyzeCodeBaseIfNeeded(new CodeBase(config));
 
         if (codeBase != null) {
             processUsageDataIfNew(config.getUsageFile());
+        }
+    }
+
+    private void uploadSensorDataIfNew(File sensorFile) {
+        try {
+            Sensor newSensor = Sensor.readFrom(sensorFile);
+            if (!newSensor.equals(sensor)) {
+                serverDelegate.uploadSensor(newSensor.getHostName(),
+                                            newSensor.getStartedAtMillis(),
+                                            newSensor.getDumpedAtMillis(),
+                                            newSensor.getUuid());
+                sensor = newSensor;
+            }
+        } catch (IOException e) {
+            log.debug("Cannot read {}: {}", sensorFile, e.toString());
+        } catch (ServerDelegateException e) {
+            log.error("Cannot upload sensor data: {}", getRootCause(e).toString());
         }
     }
 
@@ -53,7 +75,7 @@ public class AgentWorker {
                 serverDelegate.uploadSignatures(newCodeBase.getSignatures());
                 codeBase = newCodeBase;
             } catch (ServerDelegateException e) {
-                log.error("Could not upload signatures", e);
+                log.error("Cannot upload signatures: {}", getRootCause(e).toString());
             }
         }
     }
@@ -72,7 +94,7 @@ public class AgentWorker {
             serverDelegate.uploadUsage(appUsage.getNotUploadedSignatures());
             appUsage.allSignaturesAreUploaded();
         } catch (ServerDelegateException e) {
-            log.error("Could not upload usage data", e);
+            log.error("Cannot upload usage data: {}", getRootCause(e).toString());
         }
     }
 
@@ -123,4 +145,7 @@ public class AgentWorker {
         log.info("{} shuts down", getClass().getSimpleName());
     }
 
+    private Throwable getRootCause(Throwable t) {
+        return t.getCause() == null ? t : getRootCause(t.getCause());
+    }
 }

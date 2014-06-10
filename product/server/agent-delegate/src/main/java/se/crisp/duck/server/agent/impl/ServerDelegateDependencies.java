@@ -5,12 +5,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * This is a Spring @Configuration module
+ * This is a Spring @Configuration that creates the dependencies to inject into ServerDelegateImpl.
  *
  * @author Olle Hallin
  */
 @Configuration
-public class ServerDelegateModule {
+public class ServerDelegateDependencies {
 
     @Bean
     public RestTemplate restTemplate() {

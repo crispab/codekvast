@@ -32,9 +32,7 @@ public class UsageRegistry {
     public UsageRegistry(AgentConfig config, Sensor sensor) {
         this.config = config;
         this.sensor = sensor;
-
         this.sensorFile = config.getSensorFile();
-        sensorFile.deleteOnExit();
     }
 
     /**
@@ -43,7 +41,6 @@ public class UsageRegistry {
     public static void initialize(AgentConfig config) {
         UsageRegistry.instance = new UsageRegistry(config,
                                                    Sensor.builder()
-                                                         .appName(config.getAppName())
                                                          .hostName(getHostName())
                                                          .uuid(UUID.randomUUID())
                                                          .startedAtMillis(System.currentTimeMillis())

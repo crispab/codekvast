@@ -39,10 +39,6 @@ public class LogPathDefiner extends PropertyDefinerBase {
         }
         File result = new File(path);
         result.mkdirs();
-
-        System.out.println("-----------------------------------------------\n"
-                                   + "result = " + result
-                                   + "\n-----------------------------------------------");
         return result.getAbsolutePath();
     }
 }

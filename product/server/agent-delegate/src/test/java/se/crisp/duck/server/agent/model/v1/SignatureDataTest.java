@@ -15,17 +15,14 @@ public class SignatureDataTest {
 
     @Test
     public void signatureDataShouldBeJsonSerializable() throws IOException {
-        SignatureData data1 = SignatureData.builder()
-                                           .header(Header.builder()
-                                                         .customerName("customerName")
-                                                         .appName("appName")
-                                                         .environment("environment")
-                                                         .codeBaseName("codeBaseName").build())
-                                           .signatures(Arrays.asList("sig1", "sig2"))
-                                           .build();
+        // given
+        SignatureData data1 = SignatureData.builder().header(HeaderTest.HEADER).signatures(Arrays.asList("sig1", "sig2")).build();
+
+        // when
         String json = objectMapper.writeValueAsString(data1);
         SignatureData data2 = objectMapper.readValue(json, SignatureData.class);
 
+        // then
         assertThat(data1, is(data2));
     }
 }

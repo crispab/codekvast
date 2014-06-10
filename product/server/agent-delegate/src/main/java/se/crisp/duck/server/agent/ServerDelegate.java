@@ -7,6 +7,7 @@ import lombok.experimental.Builder;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * This is the business delegate interface used by a Duck agent for communicating with the server.
@@ -14,6 +15,17 @@ import java.util.Map;
  * @author Olle Hallin
  */
 public interface ServerDelegate {
+    /**
+     * Uploads data about a sensor to the server.
+     *
+     * @param hostName        The host name of the sensor
+     * @param startedAtMillis The instant the sensor was started
+     * @param dumpedAtMillis  The instant the latest usage dump was made
+     * @param uuid            The UUID of the sensor
+     * @throws ServerDelegateException
+     */
+    void uploadSensor(String hostName, long startedAtMillis, long dumpedAtMillis, UUID uuid) throws ServerDelegateException;
+
     /**
      * Upload a collection of signatures to the server.
      * <p/>
