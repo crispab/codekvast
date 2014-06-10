@@ -27,14 +27,14 @@ public class AgentServiceImpl implements AgentService {
     @Override
     @Transactional
     public void storeSignatureData(SignatureData data) {
-        log.debug("Storing {}", data);
+        log.debug("Storing {} signatures in {}", data.getSignatures().size(), data);
         // TODO: implement storing signature data
     }
 
     @Override
     @Transactional
     public void storeUsageData(UsageData data) {
-        log.debug("Storing {}", data);
+        log.debug("Storing {} usages in {}", data.getUsage().size(), data);
         // TODO: implement storing usage data
     }
 }

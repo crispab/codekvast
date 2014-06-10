@@ -41,7 +41,9 @@ public class AgentWorker {
 
         analyzeCodeBaseIfNeeded(new CodeBase(config));
 
-        processUsageDataIfNew(config.getUsageFile());
+        if (codeBase != null) {
+            processUsageDataIfNew(config.getUsageFile());
+        }
     }
 
     private void analyzeCodeBaseIfNeeded(CodeBase newCodeBase) {

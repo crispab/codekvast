@@ -48,23 +48,30 @@ public class CodeBaseScanner {
 
     void findPublicMethods(CodeBase codeBase, String packagePrefix, Class<?> clazz) {
         log.debug("Analyzing {}", clazz);
-        Method[] methods = clazz.getMethods();
+        try {
+            Method[] methods = clazz.getMethods();
 
-        for (Method method : methods) {
-            if (Modifier.isPublic(method.getModifiers())) {
+            for (Method method : methods) {
+                if (Modifier.isPublic(method.getModifiers())) {
 
-                // Some AOP frameworks (e.g., Guice) push methods from a base class down to a subclass created in runtime.
-                // We need to map those back to the original declaring signature, or else the original, declared method will look unused.
+                    // Some AOP frameworks (e.g., Guice) push methods from a base class down to a subclass created in runtime.
+                    // We need to map those back to the original declaring signature, or else the original,
+                    // declared method will look unused.
 
-                String thisSignature = makeSignature(clazz, method);
-                String declaringSignature = makeSignature(findDeclaringClass(method.getDeclaringClass(), method, packagePrefix), method);
 
-                codeBase.addSignature(thisSignature, declaringSignature);
+                    String thisSignature = makeSignature(clazz, method);
+                    String declaringSignature =
+                            makeSignature(findDeclaringClass(method.getDeclaringClass(), method, packagePrefix), method);
+
+                    codeBase.addSignature(thisSignature, declaringSignature);
+                }
             }
-        }
 
-        for (Class<?> innerClass : clazz.getDeclaredClasses()) {
-            findPublicMethods(codeBase, packagePrefix, innerClass);
+            for (Class<?> innerClass : clazz.getDeclaredClasses()) {
+                findPublicMethods(codeBase, packagePrefix, innerClass);
+            }
+        } catch (NoClassDefFoundError e) {
+            log.warn("Cannot analyze {}: {}", clazz, e.toString());
         }
     }
 
