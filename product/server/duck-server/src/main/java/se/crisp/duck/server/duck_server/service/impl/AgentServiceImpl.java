@@ -26,6 +26,7 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
+    @Transactional
     public void storeSensorData(SensorData data) {
         log.debug("Storing {}", data);
         // TODO: implement storing sensor data

@@ -20,6 +20,8 @@ dependencies {
     compile libs['javax-inject']
     compile libs['h2database']
 
+    runtime "org.hibernate:hibernate-validator"
+
     testCompile("org.springframework.boot:spring-boot-starter-test")
 }
 

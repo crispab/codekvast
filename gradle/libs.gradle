@@ -8,6 +8,7 @@ ext {
             'flyway'        : "org.flywaydb:flyway-core:3.0",
             'groovy-all'    : "org.codehaus.groovy:groovy-all:2.3.2",
             'h2database'    : "com.h2database:h2:1.4.178",
+            'hibernate-validator': "org.hibernate:hibernate-validator:5.0.2.Final",
             'jackson-annotations': "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion",
             'jackson-databind'   : "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion",
             'jackson-core'       : "com.fasterxml.jackson.core:jackson-core:$jacksonVersion",
@@ -21,6 +22,7 @@ ext {
             'spring-core'   : "org.springframework:spring-core:$springVersion",
             'spring-context': "org.springframework:spring-context:$springVersion",
             'spring-web'         : "org.springframework:spring-web:$springVersion",
+            'validation-api'     : "javax.validation:validation-api:1.1.0.Final",
     ]
 
     testLibs = [libs['junit'], libs['mockito']]

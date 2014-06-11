@@ -24,7 +24,7 @@ public interface ServerDelegate {
      * @param uuid            The UUID of the sensor
      * @throws ServerDelegateException
      */
-    void uploadSensor(String hostName, long startedAtMillis, long dumpedAtMillis, UUID uuid) throws ServerDelegateException;
+    void uploadSensorData(String hostName, long startedAtMillis, long dumpedAtMillis, UUID uuid) throws ServerDelegateException;
 
     /**
      * Upload a collection of signatures to the server.
@@ -34,7 +34,7 @@ public interface ServerDelegate {
      * @param signatures The complete set of signatures found in the application
      * @throws ServerDelegateException Should the upload fail for some reason.
      */
-    void uploadSignatures(Collection<String> signatures) throws ServerDelegateException;
+    void uploadSignatureData(Collection<String> signatures) throws ServerDelegateException;
 
     /**
      * Upload method usage to the server.
@@ -44,7 +44,7 @@ public interface ServerDelegate {
      * @param usage A map with signature as key and the time instant (millis since epoch) the method was invoked as value.
      * @throws ServerDelegateException
      */
-    void uploadUsage(Map<String, Long> usage) throws ServerDelegateException;
+    void uploadUsageData(Map<String, Long> usage) throws ServerDelegateException;
 
     @SuppressWarnings("SpringJavaAutowiringInspection")
     @Value

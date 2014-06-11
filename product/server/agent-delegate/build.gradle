@@ -13,6 +13,9 @@ dependencies {
     compile libs['slf4j-api']
     compile libs['jackson-annotations']
     compile libs['jackson-databind']
+    compile libs['validation-api']
+
+    runtime libs['hibernate-validator']
 
     testCompile testLibs
 }

@@ -55,16 +55,26 @@ public class AgentWorker {
         try {
             Sensor newSensor = Sensor.readFrom(sensorFile);
             if (!newSensor.equals(sensor)) {
-                serverDelegate.uploadSensor(newSensor.getHostName(),
-                                            newSensor.getStartedAtMillis(),
-                                            newSensor.getDumpedAtMillis(),
-                                            newSensor.getUuid());
+                serverDelegate.uploadSensorData(newSensor.getHostName(),
+                                                newSensor.getStartedAtMillis(),
+                                                newSensor.getDumpedAtMillis(),
+                                                newSensor.getUuid());
                 sensor = newSensor;
             }
         } catch (IOException e) {
-            log.debug("Cannot read {}: {}", sensorFile, e.toString());
+            logException("Cannot read " + sensorFile, e);
         } catch (ServerDelegateException e) {
-            log.error("Cannot upload sensor data: {}", getRootCause(e).toString());
+            logException("Cannot upload sensor data", e);
+        }
+    }
+
+    private void logException(String msg, Exception e) {
+        if (log.isDebugEnabled()) {
+            // log with full stack trace
+            log.error(msg, e);
+        } else {
+            // log a one-liner with the root cause
+            log.error("{}: {}", msg, getRootCause(e).toString());
         }
     }
 
@@ -72,10 +82,10 @@ public class AgentWorker {
         if (!newCodeBase.equals(codeBase)) {
             newCodeBase.scanSignatures(codeBaseScanner);
             try {
-                serverDelegate.uploadSignatures(newCodeBase.getSignatures());
+                serverDelegate.uploadSignatureData(newCodeBase.getSignatures());
                 codeBase = newCodeBase;
             } catch (ServerDelegateException e) {
-                log.error("Cannot upload signatures: {}", getRootCause(e).toString());
+                logException("Cannot upload signature data", e);
             }
         }
     }
@@ -91,10 +101,10 @@ public class AgentWorker {
 
     private void uploadUsedSignatures(AppUsage appUsage) {
         try {
-            serverDelegate.uploadUsage(appUsage.getNotUploadedSignatures());
+            serverDelegate.uploadUsageData(appUsage.getNotUploadedSignatures());
             appUsage.allSignaturesAreUploaded();
         } catch (ServerDelegateException e) {
-            log.error("Cannot upload usage data: {}", getRootCause(e).toString());
+            logException("Cannot upload usage data", e);
         }
     }
 

@@ -36,7 +36,7 @@ public class ServerDelegateImpl implements ServerDelegate {
     }
 
     @Override
-    public void uploadSensor(String hostName, long startedAtMillis, long dumpedAtMillis, UUID uuid) throws ServerDelegateException {
+    public void uploadSensorData(String hostName, long startedAtMillis, long dumpedAtMillis, UUID uuid) throws ServerDelegateException {
         String endPoint = config.getServerUri() + AgentRestEndpoints.UPLOAD_SENSOR_V1;
 
         log.debug("Uploading sensor data to {}", endPoint);
@@ -62,7 +62,7 @@ public class ServerDelegateImpl implements ServerDelegate {
     }
 
     @Override
-    public void uploadSignatures(Collection<String> signatures) throws ServerDelegateException {
+    public void uploadSignatureData(Collection<String> signatures) throws ServerDelegateException {
         if (!signatures.isEmpty()) {
             String endPoint = config.getServerUri() + AgentRestEndpoints.UPLOAD_SIGNATURES_V1;
             log.debug("Uploading {} signatures to {}", signatures.size(), endPoint);
@@ -84,7 +84,7 @@ public class ServerDelegateImpl implements ServerDelegate {
     }
 
     @Override
-    public void uploadUsage(Map<String, Long> usage) throws ServerDelegateException {
+    public void uploadUsageData(Map<String, Long> usage) throws ServerDelegateException {
         if (!usage.isEmpty()) {
             String endPoint = config.getServerUri() + AgentRestEndpoints.UPLOAD_USAGE_V1;
             log.debug("Uploading {} signatures to {}", usage.size(), endPoint);
