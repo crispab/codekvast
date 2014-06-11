@@ -15,18 +15,18 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Header {
     @NonNull
-    @Size(max = 2)
+    @Size(min = 1, max = Constraints.MAX_CUSTOMER_NAME_LENGTH)
     private String customerName;
 
     @NonNull
-    @Size(max = Constraints.MAX_APP_NAME_LENGTH)
+    @Size(min = 1, max = Constraints.MAX_APP_NAME_LENGTH)
     private String appName;
 
     @NonNull
-    @Size(max = Constraints.MAX_CODE_BASE_NAME_LENGTH)
+    @Size(min = 1, max = Constraints.MAX_CODE_BASE_NAME_LENGTH)
     private String codeBaseName;
 
     @NonNull
-    @Size(max = Constraints.MAX_ENVIRONMENT_NAME_LENGTH)
+    @Size(min = 1, max = Constraints.MAX_ENVIRONMENT_NAME_LENGTH)
     private String environment;
 }
