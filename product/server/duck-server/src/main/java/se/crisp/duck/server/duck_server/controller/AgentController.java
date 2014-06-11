@@ -1,7 +1,9 @@
 package se.crisp.duck.server.duck_server.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.Validator;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import se.crisp.duck.server.agent.AgentRestEndpoints;
@@ -30,8 +32,14 @@ public class AgentController {
     }
 
     @InitBinder
-    protected void initBinder(WebDataBinder binder) {
+    private void initBinder(WebDataBinder binder) {
         binder.setValidator(validator);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    private void onException(MethodArgumentNotValidException e) {
+        log.warn("Bad request: " + e);
     }
 
     @RequestMapping(value = AgentRestEndpoints.UPLOAD_SENSOR_V1, method = RequestMethod.POST)

@@ -5,6 +5,7 @@
       <w>aspectjtools</w>
       <w>datasource</w>
       <w>flywaydb</w>
+      <w>glassfish</w>
       <w>guice</w>
       <w>jdbc</w>
       <w>jolokia</w>
