@@ -8,4 +8,5 @@ public interface Constraints {
     int MAX_APP_NAME_LENGTH = 255;
     int MAX_CODE_BASE_NAME_LENGTH = 255;
     int MAX_ENVIRONMENT_NAME_LENGTH = 255;
+    int MAX_HOST_NAME_LENGTH = 255;
 }

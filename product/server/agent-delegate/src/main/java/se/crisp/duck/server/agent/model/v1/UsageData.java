@@ -3,6 +3,7 @@ package se.crisp.duck.server.agent.model.v1;
 import lombok.*;
 import lombok.experimental.Builder;
 
+import javax.validation.Valid;
 import java.util.Map;
 
 /**
@@ -16,6 +17,7 @@ import java.util.Map;
 @ToString(exclude = "usage")
 public class UsageData {
     @NonNull
+    @Valid
     private Header header;
 
     @NonNull

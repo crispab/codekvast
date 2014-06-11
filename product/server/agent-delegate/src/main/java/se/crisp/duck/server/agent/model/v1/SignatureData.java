@@ -3,6 +3,7 @@ package se.crisp.duck.server.agent.model.v1;
 import lombok.*;
 import lombok.experimental.Builder;
 
+import javax.validation.Valid;
 import java.util.Collection;
 
 /**
@@ -16,6 +17,7 @@ import java.util.Collection;
 @ToString(exclude = "signatures")
 public class SignatureData {
     @NonNull
+    @Valid
     private Header header;
 
     @NonNull

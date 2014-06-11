@@ -5,8 +5,13 @@
   </component>
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
-    <list size="1">
-      <item index="0" class="java.lang.String" itemvalue="org.springframework.context.annotation.Bean" />
+    <list size="6">
+      <item index="0" class="java.lang.String" itemvalue="javax.inject.Inject" />
+      <item index="1" class="java.lang.String" itemvalue="org.springframework.context.annotation.Bean" />
+      <item index="2" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.InitBinder" />
+      <item index="3" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.RequestMapping" />
+      <item index="4" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.RestController" />
+      <item index="5" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.RestController" />
     </list>
   </component>
   <component name="FrameworkDetectionExcludesConfiguration">
