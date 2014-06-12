@@ -38,7 +38,7 @@ public class AgentController {
 
     @ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    private void onException(MethodArgumentNotValidException e) {
+    private void onMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.warn("Bad request: " + e);
     }
 
