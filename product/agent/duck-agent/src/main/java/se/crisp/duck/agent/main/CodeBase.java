@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
  */
 @ToString(of = "codeBaseFile", includeFieldNames = false)
 @Slf4j
-public class CodeBase {
+class CodeBase {
 
     private static final Pattern[] ENHANCE_BY_GUICE_PATTERNS = {
             Pattern.compile(".*\\.\\.FastClassByGuice.*\\.getIndex\\(java\\.lang\\.Class\\[\\]\\)$"),
@@ -38,12 +38,12 @@ public class CodeBase {
     private List<URL> urls;
     private boolean needsExploding = false;
 
-    public CodeBase(AgentConfig config) {
+    CodeBase(AgentConfig config) {
         this.config = config;
         this.codeBaseFile = new File(config.getCodeBaseUri());
     }
 
-    public URL[] getUrls() {
+    URL[] getUrls() {
         getFingerprint();
         if (needsExploding) {
             throw new UnsupportedOperationException("Exploding WAR or EAR not yet implemented");
@@ -51,7 +51,7 @@ public class CodeBase {
         return urls.toArray(new URL[urls.size()]);
     }
 
-    public CodeBaseFingerprint getFingerprint() {
+    CodeBaseFingerprint getFingerprint() {
         if (fingerprint == null) {
             fingerprint = initUrls();
         }
@@ -124,7 +124,7 @@ public class CodeBase {
         }
     }
 
-    public void scanSignatures(CodeBaseScanner codeBaseScanner) {
+    void scanSignatures(CodeBaseScanner codeBaseScanner) {
         long startedAt = System.currentTimeMillis();
         log.info("Scanning code base {}", this);
 
@@ -191,16 +191,15 @@ public class CodeBase {
         }
     }
 
-
-    public boolean hasSignature(String signature) {
+    boolean hasSignature(String signature) {
         return signatures.contains(signature);
     }
 
-    public String getBaseSignature(String signature) {
+    String getBaseSignature(String signature) {
         return overriddenSignatures.get(signature);
     }
 
-    public String normalizeSignature(String signature) {
+    String normalizeSignature(String signature) {
         if (signature == null) {
             return null;
         }

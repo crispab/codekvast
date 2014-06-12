@@ -12,32 +12,32 @@ import static java.lang.Math.max;
  */
 @Value
 @Slf4j
-public class CodeBaseFingerprint {
+class CodeBaseFingerprint {
     private final int count;
     private final long size;
     private final long lastModified;
     private final int hashCode;
 
-    public static Builder builder() {
+    static Builder builder() {
         return new Builder();
     }
 
-    public static class Builder {
+    static class Builder {
         private int count;
         private long size;
         private long lastModified;
-        private int hashCode;
+        private long hashCode;
 
         public void record(File file) {
             count += 1;
             size += file.length();
             lastModified = max(lastModified, file.lastModified());
-            hashCode |= file.hashCode();
+            hashCode += file.hashCode();
             log.trace("Recorded {}, {}", file, this);
         }
 
         CodeBaseFingerprint build() {
-            return new CodeBaseFingerprint(count, size, lastModified, hashCode);
+            return new CodeBaseFingerprint(count, size, lastModified, Long.valueOf(hashCode).hashCode());
         }
     }
 }

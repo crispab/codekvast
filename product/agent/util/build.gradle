@@ -6,14 +6,15 @@ version = project.parent.parent.version
 sourceCompatibility = 1.6
 
 dependencies {
-    compile libs['lombok']
+    compile lombok
 
     // Absolutely NO other compile or runtime dependencies are allowed here!
 
     // All transitive compile and runtime dependencies will end up in the sensored app's system
     // class path. (Lombok will be excluded when assembling the duck-sensor jar).
 
-    testCompile testLibs
+    testCompile junit
+    testCompile mockito
 }
 
 test {

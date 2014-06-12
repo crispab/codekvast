@@ -1,4 +1,6 @@
+buildscript { dependencies { classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion" } }
 apply plugin: 'java'
+apply plugin: 'spring-boot'
 
 description = "The agent-side business delegate of the Duck server"
 archivesBaseName = "duck-server-agent-delegate"
@@ -6,16 +8,22 @@ version = project.parent.parent.version
 sourceCompatibility = 1.7
 
 dependencies {
-    compile libs['spring-context']
-    compile libs['spring-web']
-    compile libs['javax-inject']
-    compile libs['lombok']
-    compile libs['slf4j-api']
-    compile libs['jackson-annotations']
-    compile libs['jackson-databind']
-    compile libs['validation-api']
+    compile "com.fasterxml.jackson.core:jackson-annotations"
+    compile "com.fasterxml.jackson.core:jackson-databind"
+    compile "javax.inject:javax.inject:1"
+    compile "javax.validation:validation-api:1.1.0.Final"
+    compile "org.apache.httpcomponents:httpclient"
+    compile "org.slf4j:slf4j-api"
+    compile "org.springframework:spring-context"
+    compile "org.springframework:spring-web"
+    compile lombok
 
-    runtime libs['hibernate-validator']
+    runtime "org.hibernate:hibernate-validator"
 
-    testCompile testLibs
+    testCompile "junit:junit"
+    testCompile "org.mockito:mockito-core"
 }
+
+// Disable the bootRepackage task, since this isn't really a spring-boot app.
+// We just want the dependency management from spring-boot-starter
+bootRepackage { actions = [] }

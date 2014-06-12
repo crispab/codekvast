@@ -3,10 +3,14 @@
     <words>
       <w>app's</w>
       <w>aspectjtools</w>
+      <w>databind</w>
       <w>datasource</w>
+      <w>fasterxml</w>
       <w>flywaydb</w>
       <w>glassfish</w>
       <w>guice</w>
+      <w>httpclient</w>
+      <w>httpcomponents</w>
       <w>jdbc</w>
       <w>jolokia</w>
       <w>loadtime</w>

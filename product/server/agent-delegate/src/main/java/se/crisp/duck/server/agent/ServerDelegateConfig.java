@@ -30,4 +30,12 @@ public class ServerDelegateConfig {
 
     @NonNull
     private final URI serverUri;
+
+    public String getApiUsername() {
+        return "user";
+    }
+
+    public String getApiPassword() {
+        return "duck-agent";
+    }
 }

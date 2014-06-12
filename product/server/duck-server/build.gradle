@@ -1,4 +1,4 @@
-buildscript { dependencies { classpath "org.springframework.boot:spring-boot-gradle-plugin:1.0.2.RELEASE" } }
+buildscript { dependencies { classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion" } }
 apply plugin: 'java'
 apply plugin: 'spring-boot'
 apply plugin: 'application'
@@ -10,19 +10,19 @@ sourceCompatibility = 1.7
 mainClassName = "se.crisp.duck.server.duck_server.DuckServerMain"
 
 dependencies {
-    compile "org.springframework.boot:spring-boot-starter-web"
-    compile "org.springframework.boot:spring-boot-starter-jdbc"
+    compile "ch.qos.logback:logback-classic"
+    compile "com.h2database:h2"
+    compile "org.flywaydb:flyway-core"
     compile "org.springframework.boot:spring-boot-starter-actuator"
+    compile "org.springframework.boot:spring-boot-starter-jdbc"
+    compile "org.springframework.boot:spring-boot-starter-security"
+    compile "org.springframework.boot:spring-boot-starter-web"
+    compile lombok
     compile project(":product:server:agent-delegate")
-    compile libs['logback']
-    compile libs['lombok']
-    compile libs['flyway']
-    compile libs['javax-inject']
-    compile libs['h2database']
 
     runtime "org.hibernate:hibernate-validator"
 
-    testCompile("org.springframework.boot:spring-boot-starter-test")
+    testCompile "org.springframework.boot:spring-boot-starter-test"
 }
 
 applicationDistribution.from("src/main/resources") {

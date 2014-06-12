@@ -1,6 +1,9 @@
 buildscript {
-    repositories { maven { url "https://maven.eveoh.nl/content/repositories/releases" } }
-    dependencies { classpath "nl.eveoh:gradle-aspectj:1.4" }
+    repositories { maven { url 'https://maven.eveoh.nl/content/repositories/releases' } }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:0.8'
+        classpath 'nl.eveoh:gradle-aspectj:1.4'
+    }
 }
 
 apply plugin: 'aspectj'
@@ -14,7 +17,7 @@ sourceCompatibility = 1.6
 dependencies {
     // cannot use lombok here, since this is an AspectJ project
     compile project(":product:agent:util"), { transitive = false }
-    compile libs['aspectjweaver']
+    compile "org.aspectj:aspectjweaver:$aspectjVersion"
 
     // Absolutely NO other compile or runtime dependencies are allowed here!
     // All (transitive) compile and runtime dependencies will end up in the instrumented app's system

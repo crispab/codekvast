@@ -1,31 +1,14 @@
 ext {
+    springBootVersion = '1.1.1.RELEASE'
+
+    // This one is required by the aspectj-plugin
+    // Synchronize it with "org.springframework.boot:spring-boot-dependencies:$springBootVersion"
     aspectjVersion = '1.8.0'
-    springVersion = "4.0.3.RELEASE"
-    jacksonVersion = "2.3.3"
 
-    libs = [
-            'aspectjweaver'      : "org.aspectj:aspectjweaver:$aspectjVersion",
-            'aspectjtools'       : "org.aspectj:aspectjtools:$aspectjVersion",
-            'flyway'             : "org.flywaydb:flyway-core:3.0",
-            'groovy-all'         : "org.codehaus.groovy:groovy-all:2.3.2",
-            'h2database'         : "com.h2database:h2:1.4.178",
-            'hibernate-validator': "org.hibernate:hibernate-validator:5.0.3.Final",
-            'jackson-annotations': "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion",
-            'jackson-databind'   : "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion",
-            'jackson-core'       : "com.fasterxml.jackson.core:jackson-core:$jacksonVersion",
-            'javax-inject'       : "javax.inject:javax.inject:1",
-            'junit'              : "junit:junit:4.11",
-            'logback'            : "ch.qos.logback:logback-classic:1.1.2",
-            'lombok'             : "org.projectlombok:lombok:1.12.6",
-            'mockito'            : "org.mockito:mockito-core:1.9.5",
-            'reflections'        : "org.reflections:reflections:0.9.9-RC1",
-            'slf4j-api'          : "org.slf4j:slf4j-api:1.7.7",
-            'spring-core'        : "org.springframework:spring-core:$springVersion",
-            'spring-context'     : "org.springframework:spring-context:$springVersion",
-            'spring-web'         : "org.springframework:spring-web:$springVersion",
-            'validation-api'     : "javax.validation:validation-api:1.1.0.Final",
-    ]
-
-    testLibs = [libs['junit'], libs['mockito']]
+    // These are used by non-spring-boot modules. Make sure the version is synchronized with
+    // spring-boot-dependencies
+    junit = "junit:junit:4.11"
+    mockito = "org.mockito:mockito-core:1.9.5"
+    lombok = "org.projectlombok:lombok:1.12.6"
 }
 

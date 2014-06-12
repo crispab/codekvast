@@ -20,7 +20,7 @@ import static java.util.Arrays.asList;
 @Slf4j
 @Value
 @Component
-public class CodeBaseScanner {
+class CodeBaseScanner {
 
     /**
      * Uses AspectJ for creating the same signature as AbstractDuckAspect.
@@ -54,7 +54,7 @@ public class CodeBaseScanner {
             for (Method method : methods) {
                 if (Modifier.isPublic(method.getModifiers())) {
 
-                    // Some AOP frameworks (e.g., Guice) push methods from a base class down to a subclass created in runtime.
+                    // Some AOP frameworks (e.g., Guice) push methods from a base class down to the subclasses created in runtime.
                     // We need to map those back to the original declaring signature, or else the original,
                     // declared method will look unused.
 

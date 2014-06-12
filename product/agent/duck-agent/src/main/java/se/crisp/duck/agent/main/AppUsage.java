@@ -11,14 +11,14 @@ import java.util.Set;
 /**
  * @author Olle Hallin
  */
-public class AppUsage {
+class AppUsage {
 
     private final Map<String, UsageDataEntry> entries = new HashMap<>();
 
     @Getter
     private final Set<UsageDataEntry> notUploadedSignatures = new HashSet<>();
 
-    public void put(String signature, long usedAtMillis, int confidence) {
+    void put(String signature, long usedAtMillis, int confidence) {
         if (signature != null) {
             UsageDataEntry oldEntry = entries.get(signature);
             UsageDataEntry newEntry = new UsageDataEntry(signature, usedAtMillis, confidence);
@@ -31,7 +31,7 @@ public class AppUsage {
         }
     }
 
-    public void allSignaturesAreUploaded() {
+    void allSignaturesAreUploaded() {
         notUploadedSignatures.clear();
     }
 }
