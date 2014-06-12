@@ -26,10 +26,10 @@ public class ServerDelegateDependencies {
 
     @Bean
     public RestTemplate restTemplate() {
-        return new RestTemplate(createAuthenticatedHttpClient(config.getApiUsername(), config.getApiPassword()));
+        return new RestTemplate(createBasicAuthHttpClient(config.getApiUsername(), config.getApiPassword()));
     }
 
-    private HttpComponentsClientHttpRequestFactory createAuthenticatedHttpClient(final String username, final String password) {
+    private HttpComponentsClientHttpRequestFactory createBasicAuthHttpClient(final String username, final String password) {
         CredentialsProvider cp = new BasicCredentialsProvider();
         cp.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
         return new HttpComponentsClientHttpRequestFactory(HttpClients.custom().setDefaultCredentialsProvider(cp).build());
