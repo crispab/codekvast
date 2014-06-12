@@ -14,7 +14,6 @@ import java.util.Collection;
 @Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@ToString(exclude = "signatures")
 public class SignatureData {
     @NonNull
     @Valid
@@ -22,4 +21,22 @@ public class SignatureData {
 
     @NonNull
     private Collection<String> signatures;
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("SignatureData(");
+        sb.append("header=").append(header);
+        sb.append(", signatures.size=").append(signatures.size());
+        sb.append(')');
+        return sb.toString();
+    }
+
+    public String toLongString() {
+        final StringBuilder sb = new StringBuilder("SignatureData(");
+        sb.append("header=").append(header);
+        sb.append(", signatures.size=").append(signatures.size());
+        sb.append(", signatures=").append(signatures);
+        sb.append(')');
+        return sb.toString();
+    }
 }

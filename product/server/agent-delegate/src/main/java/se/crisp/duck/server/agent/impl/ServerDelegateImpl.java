@@ -7,16 +7,12 @@ import org.springframework.web.client.RestTemplate;
 import se.crisp.duck.server.agent.AgentRestEndpoints;
 import se.crisp.duck.server.agent.ServerDelegate;
 import se.crisp.duck.server.agent.ServerDelegateException;
-import se.crisp.duck.server.agent.model.v1.Header;
-import se.crisp.duck.server.agent.model.v1.SensorData;
-import se.crisp.duck.server.agent.model.v1.SignatureData;
-import se.crisp.duck.server.agent.model.v1.UsageData;
+import se.crisp.duck.server.agent.model.v1.*;
 
 import javax.inject.Inject;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -84,7 +80,7 @@ public class ServerDelegateImpl implements ServerDelegate {
     }
 
     @Override
-    public void uploadUsageData(Map<String, Long> usage) throws ServerDelegateException {
+    public void uploadUsageData(Collection<UsageDataEntry> usage) throws ServerDelegateException {
         if (!usage.isEmpty()) {
             String endPoint = config.getServerUri() + AgentRestEndpoints.UPLOAD_USAGE_V1;
             log.debug("Uploading {} signatures to {}", usage.size(), endPoint);

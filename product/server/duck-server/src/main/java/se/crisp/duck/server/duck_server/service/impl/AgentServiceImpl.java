@@ -36,14 +36,24 @@ public class AgentServiceImpl implements AgentService {
     @Override
     @Transactional
     public void storeSignatureData(SignatureData data) {
-        log.debug("Storing {} signatures from {}", data.getSignatures().size(), data);
+        if (log.isTraceEnabled()) {
+            log.trace("Storing {}", data.toLongString());
+        } else {
+            log.debug("Storing {}", data);
+        }
+
         // TODO: implement storing signature data
     }
 
     @Override
     @Transactional
     public void storeUsageData(UsageData data) {
-        log.debug("Storing {} usages from {}", data.getUsage().size(), data);
+        if (log.isTraceEnabled()) {
+            log.trace("Storing {}", data.toLongString());
+        } else {
+            log.debug("Storing ", data);
+        }
+
         // TODO: implement storing usage data
     }
 }

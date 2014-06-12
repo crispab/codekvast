@@ -4,9 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -16,11 +15,11 @@ public class UsageDataTest {
     @Test
     public void usageDataShouldBeJsonSerializable() throws IOException {
         // given
-        Map<String, Long> usage = new HashMap<>();
-        usage.put("sig1", 10000L);
-        usage.put("sig2", 20000L);
 
-        UsageData data1 = UsageData.builder().header(HeaderTest.HEADER).usage(usage).build();
+        UsageData data1 = UsageData.builder().header(HeaderTest.HEADER).usage(asList(
+                new UsageDataEntry("sig1", 10000L, UsageDataEntry.CONFIDENCE_EXACT_MATCH),
+                new UsageDataEntry("sig2", 20000L, UsageDataEntry.CONFIDENCE_FOUND_IN_PARENT_CLASS)))
+                                   .build();
 
         // when
         String json = objectMapper.writeValueAsString(data1);

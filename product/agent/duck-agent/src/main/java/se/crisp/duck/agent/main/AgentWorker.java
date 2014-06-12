@@ -9,6 +9,7 @@ import se.crisp.duck.agent.util.Sensor;
 import se.crisp.duck.agent.util.Usage;
 import se.crisp.duck.server.agent.ServerDelegate;
 import se.crisp.duck.server.agent.ServerDelegateException;
+import se.crisp.duck.server.agent.model.v1.UsageDataEntry;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -118,27 +119,32 @@ public class AgentWorker {
             String rawSignature = usage.getSignature();
             String normalizedSignature = codeBase.normalizeSignature(rawSignature);
 
+            int confidence = -1;
             if (normalizedSignature == null) {
                 ignored += 1;
             } else if (codeBase.hasSignature(normalizedSignature)) {
                 recognized += 1;
+                confidence = UsageDataEntry.CONFIDENCE_EXACT_MATCH;
             } else {
                 String baseSignature = codeBase.getBaseSignature(normalizedSignature);
                 if (baseSignature != null) {
                     log.debug("{} replaced by {}", normalizedSignature, baseSignature);
 
                     overridden += 1;
-                    normalizedSignature = codeBase.normalizeSignature(baseSignature);
+                    confidence = UsageDataEntry.CONFIDENCE_FOUND_IN_PARENT_CLASS;
+                    normalizedSignature = baseSignature;
                 } else if (normalizedSignature.equals(rawSignature)) {
                     unrecognized += 1;
+                    confidence = UsageDataEntry.CONFIDENCE_NOT_FOUND_IN_CODE_BASE;
                     log.warn("Unrecognized signature: {}", normalizedSignature);
                 } else {
                     unrecognized += 1;
+                    confidence = UsageDataEntry.CONFIDENCE_NOT_FOUND_IN_CODE_BASE;
                     log.warn("Unrecognized signature: {} (was {})", normalizedSignature, rawSignature);
                 }
             }
 
-            appUsage.put(normalizedSignature, usage.getUsedAtMillis());
+            appUsage.put(normalizedSignature, usage.getUsedAtMillis(), confidence);
         }
 
         if (unrecognized > 0) {

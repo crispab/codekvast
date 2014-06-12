@@ -1,6 +1,7 @@
 package se.crisp.duck.agent.main;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
+import se.crisp.duck.server.agent.model.v1.UsageDataEntry;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,29 +11,24 @@ import java.util.Set;
 /**
  * @author Olle Hallin
  */
-@RequiredArgsConstructor
 public class AppUsage {
-    private final Map<String, Long> signatureUsedAt = new HashMap<>();
-    private final Set<String> notUploadedSignatures = new HashSet<>();
 
-    public void put(String signature, long usedAtMillis) {
+    private final Map<String, UsageDataEntry> entries = new HashMap<>();
+
+    @Getter
+    private final Set<UsageDataEntry> notUploadedSignatures = new HashSet<>();
+
+    public void put(String signature, long usedAtMillis, int confidence) {
         if (signature != null) {
-            Long oldUsage = signatureUsedAt.get(signature);
+            UsageDataEntry oldEntry = entries.get(signature);
+            UsageDataEntry newEntry = new UsageDataEntry(signature, usedAtMillis, confidence);
 
-            signatureUsedAt.put(signature, usedAtMillis);
+            entries.put(signature, newEntry);
 
-            if (oldUsage == null || usedAtMillis != oldUsage) {
-                notUploadedSignatures.add(signature);
+            if (!newEntry.equals(oldEntry)) {
+                notUploadedSignatures.add(newEntry);
             }
         }
-    }
-
-    public Map<String, Long> getNotUploadedSignatures() {
-        Map<String, Long> result = new HashMap<>();
-        for (String signature : notUploadedSignatures) {
-            result.put(signature, signatureUsedAt.get(signature));
-        }
-        return result;
     }
 
     public void allSignaturesAreUploaded() {
