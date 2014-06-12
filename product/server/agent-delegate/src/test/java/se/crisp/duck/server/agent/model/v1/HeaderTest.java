@@ -7,6 +7,7 @@ public class HeaderTest {
     public static final Header HEADER = Header.builder()
                                               .customerName("customerName")
                                               .appName("appName")
+                                              .appVersion("appVersion")
                                               .environment("environment")
                                               .codeBaseName("codeBaseName").build();
 

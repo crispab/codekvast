@@ -38,6 +38,7 @@ task generateDuckConfig {
         configFile.text = """# Run Duck against Crisp Sample App
 customerName = Crisp
 appName = $archivesBaseName
+appVersion = $version
 environment = development
 codeBaseName = sample
 codeBaseUri = file:/maven/${archivesBaseName}.war

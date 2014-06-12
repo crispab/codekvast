@@ -25,19 +25,10 @@ public class UsageData {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("UsageData(");
-        sb.append("header=").append(header);
-        sb.append(", usage.size=").append(usage.size());
-        sb.append(')');
-        return sb.toString();
+        return getClass().getSimpleName() + "(header=" + header + ", usage.size=" + usage.size() + ')';
     }
 
     public String toLongString() {
-        final StringBuilder sb = new StringBuilder("UsageData(");
-        sb.append("header=").append(header);
-        sb.append(", usage.size=").append(usage.size());
-        sb.append(", usage=").append(usage);
-        sb.append(')');
-        return sb.toString();
+        return getClass().getSimpleName() + "(header=" + header + ", usage.size=" + usage.size() + ", usage=" + usage + ')';
     }
 }

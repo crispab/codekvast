@@ -23,6 +23,10 @@ public class Header {
     private String appName;
 
     @NonNull
+    @Size(min = 1, max = Constraints.MAX_APP_VERSION_LENGTH)
+    private String appVersion;
+
+    @NonNull
     @Size(min = 1, max = Constraints.MAX_CODE_BASE_NAME_LENGTH)
     private String codeBaseName;
 

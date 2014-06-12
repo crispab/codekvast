@@ -51,7 +51,7 @@ public class AgentServiceImpl implements AgentService {
         if (log.isTraceEnabled()) {
             log.trace("Storing {}", data.toLongString());
         } else {
-            log.debug("Storing ", data);
+            log.debug("Storing {}", data);
         }
 
         // TODO: implement storing usage data

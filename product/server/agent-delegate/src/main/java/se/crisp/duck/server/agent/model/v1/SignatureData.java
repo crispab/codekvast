@@ -24,19 +24,11 @@ public class SignatureData {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("SignatureData(");
-        sb.append("header=").append(header);
-        sb.append(", signatures.size=").append(signatures.size());
-        sb.append(')');
-        return sb.toString();
+        return getClass().getSimpleName() + "(header=" + header + ", signatures.size=" + signatures.size() + ')';
     }
 
     public String toLongString() {
-        final StringBuilder sb = new StringBuilder("SignatureData(");
-        sb.append("header=").append(header);
-        sb.append(", signatures.size=").append(signatures.size());
-        sb.append(", signatures=").append(signatures);
-        sb.append(')');
-        return sb.toString();
+        return getClass().getSimpleName() + "(header=" + header + ", signatures.size=" + signatures
+                .size() + ", signatures=" + signatures + ')';
     }
 }

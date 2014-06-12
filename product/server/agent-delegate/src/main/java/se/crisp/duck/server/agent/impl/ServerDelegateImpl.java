@@ -105,6 +105,7 @@ public class ServerDelegateImpl implements ServerDelegate {
         return Header.builder()
                      .customerName(config.getCustomerName())
                      .appName(config.getAppName())
+                     .appVersion(config.getAppVersion())
                      .environment(config.getEnvironment())
                      .codeBaseName(config.getCodeBaseName())
                      .build();

@@ -28,6 +28,7 @@ public class CodeBaseTest {
         return AgentConfig.builder()
                           .customerName("customerName")
                           .appName("appName")
+                          .appVersion("appVersion")
                           .environment("environment")
                           .packagePrefix("sample")
                           .aspectjOptions("aspectjOptions")

@@ -22,11 +22,14 @@ public class AgentConfig {
     public static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
     public static final boolean DEFAULT_VERBOSE = false;
     public static final boolean DEFAULT_CLOBBER_AOP_XML = true;
+    private static final String UNSPECIFIED_VERSION = "unspecified";
 
     @NonNull
     private final String customerName;
     @NonNull
     private final String appName;
+    @NonNull
+    private final String appVersion;
     @NonNull
     private final String environment;
     @NonNull
@@ -87,6 +90,7 @@ public class AgentConfig {
             return AgentConfig.builder()
                               .customerName(customerName)
                               .appName(appName)
+                              .appVersion(getOptionalStringValue(props, "appVersion", UNSPECIFIED_VERSION))
                               .environment(getMandatoryStringValue(props, "environment"))
                               .codeBaseName(getOptionalStringValue(props, "codeBaseName", customerName))
                               .codeBaseUri(getMandatoryUriValue(props, "codeBaseUri", false))
@@ -114,6 +118,7 @@ public class AgentConfig {
         return AgentConfig.builder()
                           .customerName(customerName)
                           .appName(appName)
+                          .appVersion("application version")
                           .environment("environment")
                           .packagePrefix("com.acme")
                           .codeBaseName("Optional: my-code-base-name")
