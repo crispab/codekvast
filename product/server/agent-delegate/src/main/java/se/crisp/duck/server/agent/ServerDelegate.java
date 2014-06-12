@@ -1,11 +1,7 @@
 package se.crisp.duck.server.agent;
 
-import lombok.NonNull;
-import lombok.Value;
-import lombok.experimental.Builder;
 import se.crisp.duck.server.agent.model.v1.UsageDataEntry;
 
-import java.net.URI;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -46,27 +42,4 @@ public interface ServerDelegate {
      */
     void uploadUsageData(Collection<UsageDataEntry> usage) throws ServerDelegateException;
 
-    @SuppressWarnings("SpringJavaAutowiringInspection")
-    @Value
-    @Builder
-    static class Config {
-
-        @NonNull
-        private final String customerName;
-
-        @NonNull
-        private final String appName;
-
-        @NonNull
-        private final String appVersion;
-
-        @NonNull
-        private final String codeBaseName;
-
-        @NonNull
-        private final String environment;
-
-        @NonNull
-        private final URI serverUri;
-    }
 }

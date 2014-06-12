@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import se.crisp.duck.agent.main.logback.LogPathDefiner;
 import se.crisp.duck.agent.main.spring.AgentConfigPropertySource;
 import se.crisp.duck.agent.util.AgentConfig;
-import se.crisp.duck.server.agent.ServerDelegate;
+import se.crisp.duck.server.agent.ServerDelegateConfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,8 +63,8 @@ public class DuckAgentMain {
     }
 
     @Bean
-    public ServerDelegate.Config serverDelegateConfig(AgentConfig agentConfig) {
-        return ServerDelegate.Config.builder()
+    public ServerDelegateConfig serverDelegateConfig(AgentConfig agentConfig) {
+        return ServerDelegateConfig.builder()
                                     .customerName(agentConfig.getCustomerName())
                                     .appName(agentConfig.getAppName())
                                     .appVersion(agentConfig.getAppVersion())

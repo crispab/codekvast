@@ -6,6 +6,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import se.crisp.duck.server.agent.AgentRestEndpoints;
 import se.crisp.duck.server.agent.ServerDelegate;
+import se.crisp.duck.server.agent.ServerDelegateConfig;
 import se.crisp.duck.server.agent.ServerDelegateException;
 import se.crisp.duck.server.agent.model.v1.*;
 
@@ -22,11 +23,11 @@ import java.util.UUID;
 @Component
 public class ServerDelegateImpl implements ServerDelegate {
 
-    private final ServerDelegate.Config config;
+    private final ServerDelegateConfig config;
     private final RestTemplate restTemplate;
 
     @Inject
-    public ServerDelegateImpl(Config config, RestTemplate restTemplate) {
+    public ServerDelegateImpl(ServerDelegateConfig config, RestTemplate restTemplate) {
         this.config = config;
         this.restTemplate = restTemplate;
     }
