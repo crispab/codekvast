@@ -22,7 +22,7 @@ public class AgentConfig {
     public static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
     public static final boolean DEFAULT_VERBOSE = false;
     public static final boolean DEFAULT_CLOBBER_AOP_XML = true;
-    private static final String UNSPECIFIED_VERSION = "unspecified";
+    public static final String UNSPECIFIED_VERSION = "unspecified";
 
     @NonNull
     private final String customerName;

@@ -7,10 +7,8 @@ import se.crisp.duck.agent.util.AgentConfig;
 import se.crisp.duck.agent.util.FileUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.instrument.Instrumentation;
-import java.net.URISyntaxException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -38,7 +36,7 @@ public class DuckSensor {
     /**
      * This method is invoked by the JVM as part of bootstrapping the -javaagent
      */
-    public static void premain(String args, Instrumentation inst) throws IOException, URISyntaxException {
+    public static void premain(String args, Instrumentation inst) {
         AgentConfig config = AgentConfig.parseConfigFile(args);
 
         //noinspection UseOfSystemOutOrSystemErr

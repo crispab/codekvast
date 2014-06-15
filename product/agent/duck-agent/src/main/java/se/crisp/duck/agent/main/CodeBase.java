@@ -218,7 +218,7 @@ class CodeBase {
             boolean signaturePhase = true;
             while ((line = in.readLine()) != null) {
                 if (line.startsWith("#") || line.trim().isEmpty()) {
-                    // ignore comment
+                    // Ignore comments and empty lines
                 } else if (line.contains("-----------")) {
                     signaturePhase = false;
                 } else if (signaturePhase) {
