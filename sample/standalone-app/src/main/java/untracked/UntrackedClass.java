@@ -1,7 +1,7 @@
 package untracked;
 
 /**
- * This class is outside of the packagePrefix that the Duck agent monitors.
+ * This class is outside of the packagePrefix that the CodeKvast agent monitors.
  *
  * @author Olle Hallin
  */

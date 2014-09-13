@@ -2,8 +2,8 @@ buildscript { dependencies { classpath "org.springframework.boot:spring-boot-gra
 apply plugin: 'java'
 apply plugin: 'spring-boot'
 
-description = "The agent-side business delegate of the Duck server"
-archivesBaseName = "duck-server-agent-delegate"
+description = "The agent-side business delegate of the CodeKvast server"
+archivesBaseName = "codekvast-server-agent-delegate"
 version = project.parent.parent.version
 sourceCompatibility = 1.7
 

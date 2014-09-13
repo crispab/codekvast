@@ -4,17 +4,17 @@ version = "0.2"
 
 distributions {
     agent {
-        baseName = 'duck-agent'
+        baseName = 'codekvast-agent'
         contents {
-            from tasks.getByPath(":product:agent:duck-agent:installApp")
+            from tasks.getByPath(":product:agent:codekvast-agent:installApp")
             from tasks.getByPath(":product:agent:sensor:shadowJar"), { into "endorsed" }
         }
     }
 
     server {
-        baseName = 'duck-server'
+        baseName = 'codekvast-server'
         contents {
-            from tasks.getByPath(":product:server:duck-server:installApp")
+            from tasks.getByPath(":product:server:codekvast-server:installApp")
         }
     }
 }

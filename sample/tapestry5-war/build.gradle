@@ -22,27 +22,27 @@ jettyRun {
     contextPath = ""
 }
 
-ext.duckDataPath = "/tmp/duck/agent/Crisp/" + archivesBaseName
+ext.codekvastDataPath = "/tmp/codekvast/agent/Crisp/" + archivesBaseName
 
-task generateDuckConfig {
+task generateCodeKvastConfig {
     group = "Build"
-    description = "Generates a duck.properties for test"
+    description = "Generates a codekvast.properties for test"
 
-    ext.configFile = file("build/libs/duck.properties")
+    ext.configFile = file("build/libs/codekvast.properties")
 
     inputs.file file("$projectDir/build.gradle")
     outputs.file configFile
 
     doLast {
         configFile.parentFile.mkdirs()
-        configFile.text = """# Run Duck against Crisp Sample App
+        configFile.text = """# Run CodeKvast against Crisp Sample App
 customerName = Crisp
 appName = $archivesBaseName
 appVersion = $version
 environment = development
 codeBaseName = sample
 codeBaseUri = file:/maven/${archivesBaseName}.war
-dataPath = $duckDataPath
+dataPath = $codekvastDataPath
 packagePrefix = se.crisp.sample
 serverUri = http://localhost:8080
 sensorResolutionIntervalSeconds = 10
@@ -53,7 +53,7 @@ verbose = true
     }
 }
 
-assemble.dependsOn generateDuckConfig
+assemble.dependsOn generateCodeKvastConfig
 
 task dockerRunWarInTomcat7(type: Exec) {
     def tomcatVersion = "tomcat-7.0"
@@ -63,21 +63,21 @@ task dockerRunWarInTomcat7(type: Exec) {
     group = "Web application"
     dependsOn "assemble", ":product:agent:sensor:assemble"
 
-    def duckSensor = new File(tasks.getByPath(":product:agent:sensor:shadowJar").outputs.files.asPath)
+    def codekvastSensor = new File(tasks.getByPath(":product:agent:sensor:shadowJar").outputs.files.asPath)
 
     executable = "docker"
     args = ["run", "--rm",
-            "-v", "$duckDataPath:$duckDataPath",
+            "-v", "$codekvastDataPath:$codekvastDataPath",
             "-v", "$buildDir/libs:/maven",
-            "-v", "$duckSensor.parentFile:/duck",
-            "-e", "JAVA_OPTS=-javaagent:/duck/$duckSensor.name=/maven/duck.properties",
+            "-v", "$codekvastSensor.parentFile:/codekvast",
+            "-e", "JAVA_OPTS=-javaagent:/codekvast/$codekvastSensor.name=/maven/codekvast.properties",
             "-e", "LANG=C.UTF-8",
             "-p", "$port:8080",
             "jolokia/$tomcatVersion",
     ]
 
     doFirst {
-        new File(duckDataPath).mkdirs()
+        new File(codekvastDataPath).mkdirs()
         logger.lifecycle description
         logger.info "{} {}", executable, args.join(" ")
     }

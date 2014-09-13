@@ -1,10 +1,10 @@
-rootProject.name = 'duck'
+rootProject.name = 'codekvast'
 
 include ':product'
 include ':product:agent:util'
 include ':product:agent:sensor'
-include ':product:agent:duck-agent'
-include ':product:server:duck-server'
+include ':product:agent:codekvast-agent'
+include ':product:server:codekvast-server'
 include ':product:server:agent-delegate'
 
 include ':tools'

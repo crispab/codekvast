@@ -3,6 +3,7 @@
     <words>
       <w>app's</w>
       <w>aspectjtools</w>
+      <w>codekvast</w>
       <w>databind</w>
       <w>datasource</w>
       <w>fasterxml</w>
@@ -13,6 +14,7 @@
       <w>httpcomponents</w>
       <w>jdbc</w>
       <w>jolokia</w>
+      <w>kvast</w>
       <w>loadtime</w>
       <w>migrator</w>
       <w>projectlombok</w>

@@ -13,18 +13,18 @@ dependencies {
     compile 'com.google.inject:guice:3.0'
 }
 
-task generateDuckConfig {
+task generateCodeKvastConfig {
     group "Build"
-    description "Generates a duck.properties for test"
+    description "Generates a codekvast.properties for test"
 
-    ext.configFile = file("build/libs/duck.properties")
+    ext.configFile = file("build/libs/codekvast.properties")
 
     inputs.file file("$projectDir/build.gradle")
     outputs.file configFile
 
     doLast {
         configFile.parentFile.mkdirs()
-        configFile.text = """# Run Duck against Crisp Sample App
+        configFile.text = """# Run CodeKvast against Crisp Sample App
 customerName = Crisp
 appName = $archivesBaseName
 appVersion = $version
@@ -32,7 +32,7 @@ environment = development
 codeBaseName = sample
 codeBaseUri = file:${file("build/install/${project.name}/lib/")}
 packagePrefix = sample
-dataPath = ${file("$buildDir/duck")}
+dataPath = ${file("$buildDir/codekvast")}
 serverUri = http://localhost:8080
 sensorResolutionIntervalSeconds = 10
 serverUploadIntervalMillis = 5000
@@ -42,10 +42,10 @@ verbose = true
     }
 }
 
-processResources.dependsOn generateDuckConfig
+processResources.dependsOn generateCodeKvastConfig
 
 run {
-    dependsOn = [":product:agent:sensor:assemble", "generateDuckConfig"]
-    def duckSensor = tasks.getByPath(":product:agent:sensor:shadowJar").outputs.files.asPath
-    jvmArgs = ["-javaagent:$duckSensor=$generateDuckConfig.configFile"]
+    dependsOn = [":product:agent:sensor:assemble", "generateCodeKvastConfig"]
+    def codekvastSensor = tasks.getByPath(":product:agent:sensor:shadowJar").outputs.files.asPath
+    jvmArgs = ["-javaagent:$codekvastSensor=$generateCodeKvastConfig.configFile"]
 }

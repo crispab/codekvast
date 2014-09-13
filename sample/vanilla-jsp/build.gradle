@@ -6,7 +6,7 @@ archivesBaseName = "sample-jsp"
 
 ext.duckDataPath = "/tmp/duck/agent/Crisp/" + archivesBaseName
 
-task generateDuckConfig {
+task generateCodeKvastConfig {
     group = "Build"
     description = "Generates a duck.properties for test"
 
@@ -17,7 +17,7 @@ task generateDuckConfig {
 
     doLast {
         configFile.parentFile.mkdirs()
-        configFile.text = """# Run Duck against Crisp Sample Vanilla JSP app
+        configFile.text = """# Run CodeKvast against Crisp Sample Vanilla JSP app
 customerName = Crisp
 appName = $archivesBaseName
 appVersion = $version
@@ -35,7 +35,7 @@ verbose = true
     }
 }
 
-assemble.dependsOn generateDuckConfig
+assemble.dependsOn generateCodeKvastConfig
 
 task dockerRunWarInTomcat7(type: Exec) {
     def tomcatVersion = "tomcat-7.0"

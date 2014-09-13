@@ -1,0 +1,46 @@
+buildscript { dependencies { classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion" } }
+apply plugin: 'java'
+apply plugin: 'spring-boot'
+apply plugin: 'application'
+
+description = "The main CodeKvast server"
+archivesBaseName = "codekvast-server"
+version = project.parent.parent.version
+sourceCompatibility = 1.7
+mainClassName = "se.crisp.codekvast.server.codekvast_server.CodeKvastServerMain"
+
+dependencies {
+    compile "ch.qos.logback:logback-classic"
+    compile "com.h2database:h2"
+    compile "org.flywaydb:flyway-core"
+    compile "org.springframework.boot:spring-boot-starter-actuator"
+    compile "org.springframework.boot:spring-boot-starter-jdbc"
+    compile "org.springframework.boot:spring-boot-starter-security"
+    compile "org.springframework.boot:spring-boot-starter-web"
+    compile lombok
+    compile project(":product:server:agent-delegate")
+
+    runtime "org.hibernate:hibernate-validator"
+
+    testCompile "org.springframework.boot:spring-boot-starter-test"
+}
+
+applicationDistribution.from("src/main/resources") {
+    into "conf"
+    include "logback.xml", "default.properties"
+    rename {
+        def name = it == "default.properties" ? "application.properties" : it
+        "${name}.default"
+    }
+}
+
+startScripts {
+    doLast {
+        outputs.files.each { script ->
+            logger.info "Adjusting CLASSPATH in {} to start with \$APP_HOME/conf/ ...", script.name
+            def text = script.text
+            text = text.replace('CLASSPATH=$APP_HOME/lib', 'CLASSPATH=$APP_HOME/conf/:$APP_HOME/lib')
+            script.text = text
+        }
+    }
+}

@@ -1,7 +1,7 @@
 apply plugin: 'java'
 
-description = "Code that is shared between duck-agent and the sensor"
-archivesBaseName = "duck-agent-util"
+description = "Code that is shared between codekvast-agent and the sensor"
+archivesBaseName = "codekvast-agent-util"
 version = project.parent.parent.version
 sourceCompatibility = 1.6
 
@@ -11,7 +11,7 @@ dependencies {
     // Absolutely NO other compile or runtime dependencies are allowed here!
 
     // All transitive compile and runtime dependencies will end up in the sensored app's system
-    // class path. (Lombok will be excluded when assembling the duck-sensor jar).
+    // class path. (Lombok will be excluded when assembling the codekvast-sensor jar).
 
     testCompile junit
     testCompile mockito
@@ -19,7 +19,7 @@ dependencies {
 
 test {
     // Make it possible to retrieve the sample spring file produced by a test
-    ext.sampleConfigFile = file("$buildDir/duck.properties.sample")
+    ext.sampleConfigFile = file("$buildDir/codekvast.properties.sample")
 
     // Also make the file name available to the test that produces it...
     systemProperty 'sampleConfigFile.path', sampleConfigFile.absolutePath
