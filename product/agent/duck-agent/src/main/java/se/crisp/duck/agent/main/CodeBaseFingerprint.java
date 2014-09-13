@@ -8,6 +8,8 @@ import java.io.File;
 import static java.lang.Math.max;
 
 /**
+ * An immutable fingerprint of a code base. Used for comparing different code bases for equality.
+ *
  * @author Olle Hallin
  */
 @Value
@@ -22,6 +24,9 @@ class CodeBaseFingerprint {
         return new Builder();
     }
 
+    /**
+     * Builder for incrementally building a CodeBaseFingerprint
+     */
     static class Builder {
         private int count;
         private long size;

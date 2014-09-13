@@ -9,6 +9,10 @@ import java.net.URISyntaxException;
 import java.util.Properties;
 
 /**
+ * Encapsulates the configuration that is shared between duck-agent and duck-sensor.
+ * <p/>
+ * It also contains methods for reading and writing agent configuration files.
+ *
  * @author Olle Hallin
  */
 @SuppressWarnings({"UseOfSystemOutOrSystemErr", "UnusedDeclaration", "ClassWithTooManyFields", "ClassWithTooManyMethods"})

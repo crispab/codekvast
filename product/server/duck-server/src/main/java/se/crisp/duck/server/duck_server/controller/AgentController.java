@@ -18,6 +18,8 @@ import javax.validation.Valid;
 /**
  * A HTTP REST Controller that handles requests from the DUCK Agent.
  *
+ * It validates the POST data and delegates to AgentService.
+ *
  * @author Olle Hallin
  */
 @RestController

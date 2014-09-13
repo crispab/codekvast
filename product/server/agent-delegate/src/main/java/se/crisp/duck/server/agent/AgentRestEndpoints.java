@@ -1,6 +1,8 @@
 package se.crisp.duck.server.agent;
 
 /**
+ * Defines the various REST endpoints the server exposes.
+ *
  * @author Olle Hallin
  */
 public interface AgentRestEndpoints {

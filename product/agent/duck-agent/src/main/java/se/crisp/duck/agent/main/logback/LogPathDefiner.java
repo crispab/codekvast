@@ -5,8 +5,7 @@ import ch.qos.logback.core.PropertyDefinerBase;
 import java.io.File;
 
 /**
- * Finds out where the code base is located and calculates an absolute path for the Logback log file.
- * See logback.xml
+ * Finds out where the duck-agent is installed and calculates an absolute path for the Logback log file. See logback.xml
  *
  * @author Olle Hallin
  */

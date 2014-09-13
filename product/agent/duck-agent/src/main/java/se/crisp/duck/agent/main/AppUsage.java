@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * Holds a map of usage data entries and which entries have not yet been uploaded to the duck-server.
+ *
  * @author Olle Hallin
  */
 class AppUsage {

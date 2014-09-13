@@ -12,6 +12,8 @@ import se.crisp.duck.server.duck_server.service.AgentService;
 import javax.inject.Inject;
 
 /**
+ * The implementation of the AgentService.
+ *
  * @author Olle Hallin
  */
 @Repository

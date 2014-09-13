@@ -6,6 +6,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * Holds data about the usage of one method signature.
+ * <p/>
+ * Also contains support methods for reading/writing the usage data from/to a CSV file.
+ *
  * @author Olle Hallin
  */
 @Value

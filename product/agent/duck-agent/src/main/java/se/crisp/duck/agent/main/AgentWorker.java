@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.util.List;
 
 /**
+ * This is the meat of the duck-agent. It contains a scheduled method that uploads changed data to the duck-server.
+ *
  * @author Olle Hallin
  */
 @Component

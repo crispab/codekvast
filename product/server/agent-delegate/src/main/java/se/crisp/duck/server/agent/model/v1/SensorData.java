@@ -8,6 +8,10 @@ import javax.validation.constraints.Size;
 import java.util.UUID;
 
 /**
+ * REST data about one sensor.
+ * <p/>
+ * Should be uploaded regularly during the lifetime of a sensor.
+ *
  * @author Olle Hallin
  */
 @Data

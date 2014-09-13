@@ -7,6 +7,8 @@ import java.net.URI;
 import java.util.*;
 
 /**
+ * Low-level file utlities used by the duck agent and sensor.
+ *
  * @author Olle Hallin
  */
 @SuppressWarnings("UseOfSystemOutOrSystemErr")

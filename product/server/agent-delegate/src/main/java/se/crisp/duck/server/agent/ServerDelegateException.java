@@ -9,8 +9,4 @@ public class ServerDelegateException extends Exception {
     public ServerDelegateException(String message, Throwable cause) {
         super(message, cause);
     }
-
-    public ServerDelegateException(String message) {
-        super(message);
-    }
 }

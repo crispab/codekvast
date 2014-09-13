@@ -12,6 +12,8 @@ import java.util.Properties;
 import java.util.UUID;
 
 /**
+ * Data about one run of an app that is instrumented with duck-sensor.
+ *
  * @author Olle Hallin
  */
 @SuppressWarnings("UseOfSystemOutOrSystemErr")

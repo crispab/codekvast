@@ -1,6 +1,8 @@
 package se.crisp.duck.server.agent.model.v1;
 
 /**
+ * Constraints of the REST interface.
+ *
  * @author Olle Hallin
  */
 public interface Constraints {

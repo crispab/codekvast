@@ -17,6 +17,10 @@ import java.util.Collection;
 import java.util.UUID;
 
 /**
+ * The implementation of the ServerDelegate.
+ * <p/>
+ * Uses a Spring RestTemplate for doing the REST calls.
+ *
  * @author Olle Hallin
  */
 @Slf4j
@@ -25,11 +29,19 @@ public class ServerDelegateImpl implements ServerDelegate {
 
     private final ServerDelegateConfig config;
     private final RestTemplate restTemplate;
+    private final Header header;
 
     @Inject
     public ServerDelegateImpl(ServerDelegateConfig config, RestTemplate restTemplate) {
         this.config = config;
         this.restTemplate = restTemplate;
+        this.header = Header.builder()
+                            .customerName(config.getCustomerName())
+                            .appName(config.getAppName())
+                            .appVersion(config.getAppVersion())
+                            .environment(config.getEnvironment())
+                            .codeBaseName(config.getCodeBaseName())
+                            .build();
     }
 
     @Override
@@ -41,7 +53,7 @@ public class ServerDelegateImpl implements ServerDelegate {
         try {
             long startedAt = System.currentTimeMillis();
 
-            SensorData data = SensorData.builder().header(buildHeader())
+            SensorData data = SensorData.builder().header(header)
                                         .hostName(hostName)
                                         .startedAtMillis(startedAtMillis)
                                         .dumpedAtMillis(dumpedAtMillis)
@@ -67,7 +79,7 @@ public class ServerDelegateImpl implements ServerDelegate {
             try {
                 long startedAt = System.currentTimeMillis();
 
-                SignatureData data = SignatureData.builder().header(buildHeader()).signatures(signatures).build();
+                SignatureData data = SignatureData.builder().header(header).signatures(signatures).build();
 
                 restTemplate.postForLocation(new URI(endPoint), data);
 
@@ -89,7 +101,7 @@ public class ServerDelegateImpl implements ServerDelegate {
             try {
                 long startedAt = System.currentTimeMillis();
 
-                UsageData data = UsageData.builder().header(buildHeader()).usage(usage).build();
+                UsageData data = UsageData.builder().header(header).usage(usage).build();
 
                 restTemplate.postForLocation(new URI(endPoint), data);
 
@@ -102,13 +114,4 @@ public class ServerDelegateImpl implements ServerDelegate {
         }
     }
 
-    private Header buildHeader() {
-        return Header.builder()
-                     .customerName(config.getCustomerName())
-                     .appName(config.getAppName())
-                     .appVersion(config.getAppVersion())
-                     .environment(config.getEnvironment())
-                     .codeBaseName(config.getCodeBaseName())
-                     .build();
-    }
 }

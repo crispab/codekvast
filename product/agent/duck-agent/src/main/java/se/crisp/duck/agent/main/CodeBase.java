@@ -14,6 +14,8 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 /**
+ * Handles a code base, i.e., the set of public methods of an application.
+ *
  * @author Olle Hallin (qolha), olle.hallin@crisp.se
  */
 @ToString(of = "codeBaseFile", includeFieldNames = false)

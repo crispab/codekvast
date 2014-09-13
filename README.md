@@ -17,13 +17,17 @@ Spiken består av följande moduler:
 
 ## Hur man testar
 
-I ett fönster startar man duck-servern:
+I ett fönster startar man duck-server som tar emot data from duck-agent:
 
     ./gradlew :product:server:duck-server:run
+    
+I nästa fönster startar man duck-agent som laddar upp sensordata till duck-server:
 
-I ett annat fönster kör man sample-appen och duck-agenten:
+    ./gradlew :product:agent:duck-agent:run
 
-    ./gradlew run
+I det tredje fönstret kör man sample-app som startar med -javaagent:duck-sensor och som därmed genererar sensordata:
+
+    ./gradlew :sample:standalone-app:run
 
 Om allt fungerar skall det komma ut en sammanställning av useless code på slutet.
 
@@ -34,7 +38,7 @@ Utvecklat och testat med Oracle Java 7.
 
 ## Utvecklingsmiljö
 
-* Java 6
+* Java 7
 * Lombok-plugin i IDE
 
 # Lärdomar från spiken

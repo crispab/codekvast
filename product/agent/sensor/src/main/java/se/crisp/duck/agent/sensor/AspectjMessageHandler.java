@@ -7,6 +7,8 @@ import org.aspectj.bridge.IMessageHandler;
 import java.io.*;
 
 /**
+ * This is a message handler which is plugged in to aspectjweaver so that messages from aspectjweaver are written to the correct log file.
+ *
  * @author Olle Hallin
  */
 @SuppressWarnings("UseOfSystemOutOrSystemErr")

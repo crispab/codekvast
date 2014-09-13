@@ -5,6 +5,8 @@ import se.crisp.duck.server.agent.model.v1.SignatureData;
 import se.crisp.duck.server.agent.model.v1.UsageData;
 
 /**
+ * The service layer interface for the agent REST API.
+ *
  * @author Olle Hallin
  */
 public interface AgentService {

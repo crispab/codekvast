@@ -20,6 +20,8 @@ import java.net.URISyntaxException;
 import java.util.Properties;
 
 /**
+ * The Spring Boot main program of the duck-agent.
+ *
  * @author Olle Hallin
  */
 @Configuration
@@ -46,6 +48,7 @@ public class DuckAgentMain {
     }
 
     private static URI getAgentConfigLocation(String[] args) throws URISyntaxException {
+        // TODO: Look for file:/etc/duck.conf if not in args
         return args == null || args.length < 1 ? new URI("classpath:/duck.properties") : new File(args[0]).toURI();
     }
 
@@ -55,23 +58,28 @@ public class DuckAgentMain {
         return result;
     }
 
+    /**
+     * Make the AgentConfig object usable in SpringEL expressions with duck. as prefix...
+     */
     @Bean
     public AgentConfig agentConfig(ConfigurableEnvironment environment) {
-        // Make the AgentConfig object usable in SpringEL expressions with duck. as prefix...
         environment.getPropertySources().addLast(new AgentConfigPropertySource(agentConfig, "duck."));
         return agentConfig;
     }
 
+    /**
+     * Converts an AgentConfig to a ServerDelegateConfig
+     */
     @Bean
     public ServerDelegateConfig serverDelegateConfig(AgentConfig agentConfig) {
         return ServerDelegateConfig.builder()
-                                    .customerName(agentConfig.getCustomerName())
-                                    .appName(agentConfig.getAppName())
-                                    .appVersion(agentConfig.getAppVersion())
-                                    .codeBaseName(agentConfig.getCodeBaseName())
-                                    .environment(agentConfig.getEnvironment())
-                                    .serverUri(agentConfig.getServerUri())
-                                    .build();
+                                   .customerName(agentConfig.getCustomerName())
+                                   .appName(agentConfig.getAppName())
+                                   .appVersion(agentConfig.getAppVersion())
+                                   .codeBaseName(agentConfig.getCodeBaseName())
+                                   .environment(agentConfig.getEnvironment())
+                                   .serverUri(agentConfig.getServerUri())
+                                   .build();
     }
 
 }

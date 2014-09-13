@@ -6,6 +6,8 @@ import lombok.experimental.Builder;
 import javax.validation.constraints.Size;
 
 /**
+ * The common header part of all REST messages.
+ *
  * @author Olle Hallin
  */
 @Data

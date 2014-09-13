@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
+ * The Spring Boot main for duck-server,
+ *
  * @author Olle Hallin
  */
 @Configuration

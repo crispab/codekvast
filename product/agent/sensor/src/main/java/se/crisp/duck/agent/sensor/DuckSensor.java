@@ -13,12 +13,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * This is a Java agent that hooks up Duck to the app.
+ * This is the Java agent that hooks up Duck to the app. It also loads aspectjweaver.
  * <p/>
- * Usage:
- * Add the following option to the Java command line:
+ * Usage: Add the following option to the Java command line:
  * <pre><code>
- *    -javaagent:/path/to/duck-sensor-n.n-shadow.jar=path/to/duck.properties
+ *    -javaagent:/path/to/duck-sensor-n.n-shadow.jar=path/to/duck-agent.properties
  * </code></pre>
  *
  * @author Olle Hallin
@@ -89,10 +88,10 @@ public class DuckSensor {
     }
 
     /**
-     * Creates a concrete implementation of the AbstractMethodExecutionAspect, using the packagePrefix for specifying the
-     * abstract pointcut 'scope'.
+     * Creates a concrete implementation of the AbstractMethodExecutionAspect, using the packagePrefix for specifying the abstract pointcut
+     * 'scope'.
      *
-     * @return A file: URI to a temporary aop-ajc.xml file. The file is deleted on JVM exit.
+     * @return A file URI to a temporary aop-ajc.xml file. The file is deleted on JVM exit.
      */
     private static String createAopXml(AgentConfig config) {
         String xml = String.format(
