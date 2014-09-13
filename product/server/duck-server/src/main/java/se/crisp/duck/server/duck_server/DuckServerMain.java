@@ -17,10 +17,6 @@ import java.util.Properties;
 @ComponentScan
 public class DuckServerMain {
 
-    private DuckServerMain() {
-        // utility class
-    }
-
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(DuckServerMain.class);
         application.setDefaultProperties(loadProperties("default.properties"));

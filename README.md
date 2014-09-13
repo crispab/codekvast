@@ -10,11 +10,17 @@ Spiken består av tre moduler:
 
 ## Hur man bygger
 
-./gradlew build
+    ./gradlew build
 
 ## Hur man testar
 
-./gradlew run
+I ett fönster:
+
+    ./gradlew :product:server:duck-server:run
+
+I ett annat fönster:
+
+    ./gradlew run
 
 Om allt fungerar skall det komma ut en sammanställning av useless code på slutet.
 
@@ -32,7 +38,7 @@ Utvecklat och testat med Oracle Java 7.
 
 Jag har haft möjlighet att testa DUCK-spiken på Transmode Network Manager, och funnit följande saker:
 
-* Klasser skickas över RMI (och som därför måste vara Serializable) **måste** ha serialVersionUID, annars krashar RMI-anropet på
+* Klasser som skickas över RMI (och som därför måste vara Serializable) **måste** ha serialVersionUID, annars krashar RMI-anropet på
 klientsidan (om inte den också kör DUCK förstås).
 
 * Guice AOP är ganska aggressivt i sin bytekodmanipulering. Den genererar i runtime nya subklasser med metoder som inte finns med i källkoden.
