@@ -2,11 +2,14 @@
 
 Visar att man kan använda AspectJ och lite reflectionmagi för att detektera död kod.
 
-Spiken består av tre moduler:
+Spiken består av följande moduler:
 
-* duck-sensor (en javaagent som innehåller aspectjweaver.jar)
-* duck-agent (en fristående java app som skickar insamlade användningsdata till datalagret)
-* sample-app (en stand-alone Java-app med lite useless code)
+* product/agent/sensor (en javaagent som innehåller aspectjweaver.jar)
+* product/agent/duck-agent (en fristående java app som skickar insamlade användningsdata till datalagret)
+* product/server/duck-server
+* sample/standalone-app (en stand-alone Java-app med lite useless code)
+* sample/tapestry5-war
+* sample/vanilla-jsp (en WAR med ett par vanliga JSP-sidor)
 
 ## Hur man bygger
 
@@ -14,11 +17,11 @@ Spiken består av tre moduler:
 
 ## Hur man testar
 
-I ett fönster:
+I ett fönster startar man duck-servern:
 
     ./gradlew :product:server:duck-server:run
 
-I ett annat fönster:
+I ett annat fönster kör man sample-appen och duck-agenten:
 
     ./gradlew run
 

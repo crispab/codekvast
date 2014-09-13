@@ -16,6 +16,8 @@ import javax.inject.Inject;
 import javax.validation.Valid;
 
 /**
+ * A HTTP REST Controller that handles requests from the DUCK Agent.
+ *
  * @author Olle Hallin
  */
 @RestController

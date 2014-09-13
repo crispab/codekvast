@@ -18,7 +18,7 @@ import java.util.TimerTask;
  * Usage:
  * Add the following option to the Java command line:
  * <pre><code>
- *    -javaagent:/path/to/duck-sensor-n.n-shadow.jar=path/to/duck.spring
+ *    -javaagent:/path/to/duck-sensor-n.n-shadow.jar=path/to/duck.properties
  * </code></pre>
  *
  * @author Olle Hallin
