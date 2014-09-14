@@ -1,13 +1,10 @@
 **/*.bak
-**/*.iml
 **/*.log
 **/*.log.*.zip
-*.iml
 .gradle
 .idea/dictionaries/
 .idea/gradle.xml
 .idea/libraries/
-.idea/modules.xml
 .idea/tasks.xml
 .idea/workspace.xml
 build/
