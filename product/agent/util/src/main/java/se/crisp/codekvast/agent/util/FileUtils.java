@@ -95,7 +95,7 @@ public class FileUtils {
             for (Field field : object.getClass().getDeclaredFields()) {
                 if (!Modifier.isStatic(field.getModifiers())) {
                     field.setAccessible(true);
-                    lines.add(String.format("%s = %s", field.getName(), field.get(object).toString().replace(":", "\\:")));
+                    lines.add(String.format("%s = %s", field.getName(), field.get(object).toString().replace("\\", "\\\\").replace(":", "\\:")));
                 }
             }
 
