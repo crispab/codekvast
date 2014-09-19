@@ -17,6 +17,7 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-jdbc"
     compile "org.springframework.boot:spring-boot-starter-security"
     compile "org.springframework.boot:spring-boot-starter-web"
+    compile "org.webjars:angularjs:1.2.25"
     compile lombok
     compile project(":product:server:agent-delegate")
 

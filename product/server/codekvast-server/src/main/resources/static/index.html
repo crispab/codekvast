@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html ng-app="codekvastApp">
+<head lang="en">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Welcome to CodeKvast!</title>
+    <script src="/webjars/angularjs/1.2.25/angular.min.js"></script>
+    <script src="/webjars/angularjs/1.2.25/angular-resource.min.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/controllers.js"></script>
+    <script src="js/services.js"></script>
+</head>
+<body ng-controller="SignaturesCtrl">
+
+<h1>Welcome to {{'Code' + 'Kvast!' }}</h1>
+
+<table>
+    <tr>
+        <th style="text-align: left">Signature</th>
+        <th>Used at</th>
+    </tr>
+    <tr ng-repeat="sig in signatures | orderBy:'usedAtMillis' ">
+        <td style="width: 50em">{{sig.signature}}</td>
+        <td>{{sig.usedAtMillis | date:"yyyy-MM-dd HH:mm:ss"}}</td>
+    </tr>
+</table>
+
+</body>
+</html>

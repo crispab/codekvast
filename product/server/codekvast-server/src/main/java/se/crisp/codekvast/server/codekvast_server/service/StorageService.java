@@ -3,6 +3,9 @@ package se.crisp.codekvast.server.codekvast_server.service;
 import se.crisp.codekvast.server.agent.model.v1.SensorRunData;
 import se.crisp.codekvast.server.agent.model.v1.SignatureData;
 import se.crisp.codekvast.server.agent.model.v1.UsageData;
+import se.crisp.codekvast.server.agent.model.v1.UsageDataEntry;
+
+import java.util.Collection;
 
 /**
  * The storage API.
@@ -31,4 +34,6 @@ public interface StorageService {
      * @param data The received usage data
      */
     void storeUsageData(UsageData data);
+
+    Collection<UsageDataEntry> getSignatures();
 }

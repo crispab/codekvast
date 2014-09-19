@@ -11,6 +11,7 @@ import se.crisp.codekvast.server.agent.model.v1.UsageDataEntry;
 import se.crisp.codekvast.server.codekvast_server.event.UsageDataUpdatedEvent;
 import se.crisp.codekvast.server.codekvast_server.service.StorageService;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,6 +64,13 @@ public class StorageServiceImpl implements StorageService, ApplicationContextAwa
             for (UsageDataEntry entry : data.getUsage()) {
                 storeUsageDataEntry(entry);
             }
+        }
+    }
+
+    @Override
+    public Collection<UsageDataEntry> getSignatures() {
+        synchronized (usageData) {
+            return usageData.values();
         }
     }
 
