@@ -15,7 +15,7 @@ import java.util.Properties;
  *
  * @author Olle Hallin
  */
-@SuppressWarnings({"UseOfSystemOutOrSystemErr", "UnusedDeclaration", "ClassWithTooManyFields", "ClassWithTooManyMethods"})
+@SuppressWarnings({"UnusedDeclaration", "ClassWithTooManyFields", "ClassWithTooManyMethods"})
 @Value
 @Builder
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

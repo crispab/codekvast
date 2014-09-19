@@ -1,12 +1,12 @@
 package se.crisp.codekvast.server.codekvast_server;
 
-import lombok.SneakyThrows;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 /**
@@ -19,17 +19,24 @@ import java.util.Properties;
 @ComponentScan
 public class CodeKvastServerMain {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         SpringApplication application = new SpringApplication(CodeKvastServerMain.class);
         application.setDefaultProperties(loadProperties("default.properties"));
         application.run(args);
     }
 
-    @SneakyThrows(IOException.class)
-    private static Properties loadProperties(String resource) {
+    private static Properties loadProperties(String resource) throws IOException {
         Properties result = new Properties();
-        result.load(CodeKvastServerMain.class.getClassLoader().getResourceAsStream(resource));
+        result.load(getInputStream(resource));
         result.setProperty("tmpDir", System.getProperty("java.io.tmpdir"));
+        return result;
+    }
+
+    private static InputStream getInputStream(String resource) throws IOException {
+        InputStream result = CodeKvastServerMain.class.getClassLoader().getResourceAsStream(resource);
+        if (result == null) {
+            throw new IOException("Cannot find " + resource);
+        }
         return result;
     }
 }
