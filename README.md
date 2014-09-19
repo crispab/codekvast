@@ -40,6 +40,7 @@ Utvecklat och testat med Oracle Java 7.
 
 * Java 7
 * Lombok-plugin i IDE
+* AspectJ-plugin i IDE
 
 # Lärdomar från spiken
 
