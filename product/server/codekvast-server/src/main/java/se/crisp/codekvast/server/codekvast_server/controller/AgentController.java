@@ -10,7 +10,7 @@ import se.crisp.codekvast.server.agent.AgentRestEndpoints;
 import se.crisp.codekvast.server.agent.model.v1.SensorRunData;
 import se.crisp.codekvast.server.agent.model.v1.SignatureData;
 import se.crisp.codekvast.server.agent.model.v1.UsageData;
-import se.crisp.codekvast.server.codekvast_server.service.AgentService;
+import se.crisp.codekvast.server.codekvast_server.service.StorageService;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -26,12 +26,12 @@ import javax.validation.Valid;
 @Slf4j
 public class AgentController {
 
-    private final AgentService agentService;
+    private final StorageService storageService;
     private final Validator validator;
 
     @Inject
-    public AgentController(AgentService agentService, Validator validator) {
-        this.agentService = agentService;
+    public AgentController(StorageService storageService, Validator validator) {
+        this.storageService = storageService;
         this.validator = validator;
     }
 
@@ -48,19 +48,19 @@ public class AgentController {
 
     @RequestMapping(value = AgentRestEndpoints.UPLOAD_SENSOR_RUN_V1, method = RequestMethod.POST)
     public void receiveSensorV1(@RequestBody @Valid SensorRunData data) {
-        log.info("Received {}", data);
-        agentService.storeSensorData(data);
+        log.debug("Received {}", data);
+        storageService.storeSensorData(data);
     }
 
     @RequestMapping(value = AgentRestEndpoints.UPLOAD_SIGNATURES_V1, method = RequestMethod.POST)
     public void receiveSignaturesV1(@RequestBody @Valid SignatureData data) {
-        log.info("Received {}", data);
-        agentService.storeSignatureData(data);
+        log.debug("Received {}", data);
+        storageService.storeSignatureData(data);
     }
 
     @RequestMapping(value = AgentRestEndpoints.UPLOAD_USAGE_V1, method = RequestMethod.POST)
     public void receiveUsageV1(@RequestBody @Valid UsageData data) {
-        log.info("Received {}", data);
-        agentService.storeUsageData(data);
+        log.debug("Received {}", data);
+        storageService.storeUsageData(data);
     }
 }

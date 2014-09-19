@@ -5,11 +5,11 @@ import se.crisp.codekvast.server.agent.model.v1.SignatureData;
 import se.crisp.codekvast.server.agent.model.v1.UsageData;
 
 /**
- * The service layer interface for the agent REST API.
+ * The storage API.
  *
  * @author Olle Hallin
  */
-public interface AgentService {
+public interface StorageService {
 
     /**
      * Stores sensor data received from an agent.
