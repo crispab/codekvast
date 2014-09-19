@@ -5,10 +5,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
 /**
  * The Spring Boot main for codekvast-server,
  *
@@ -34,6 +30,9 @@ public class CodeKvastServerMain {
 
     private static InputStream getInputStream(String resource) throws IOException {
         InputStream result = CodeKvastServerMain.class.getClassLoader().getResourceAsStream(resource);
+        if (result == null) {
+            result = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
+        }
         if (result == null) {
             throw new IOException("Cannot find " + resource);
         }
