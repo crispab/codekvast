@@ -3,7 +3,7 @@ package se.crisp.codekvast.agent.sensor;
 import org.aspectj.lang.Signature;
 import se.crisp.codekvast.agent.util.AgentConfig;
 import se.crisp.codekvast.agent.util.FileUtils;
-import se.crisp.codekvast.agent.util.Sensor;
+import se.crisp.codekvast.agent.util.SensorRun;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,14 +27,14 @@ public class UsageRegistry {
     public static UsageRegistry instance;
 
     private final AgentConfig config;
-    private final Sensor sensor;
+    private final SensorRun sensorRun;
     private final File sensorFile;
     private final AtomicLong currentTimeMillis = new AtomicLong(System.currentTimeMillis());
     private final ConcurrentMap<String, Long> usages = new ConcurrentHashMap<String, Long>();
 
-    public UsageRegistry(AgentConfig config, Sensor sensor) {
+    public UsageRegistry(AgentConfig config, SensorRun sensorRun) {
         this.config = config;
-        this.sensor = sensor;
+        this.sensorRun = sensorRun;
         this.sensorFile = config.getSensorFile();
     }
 
@@ -43,11 +43,11 @@ public class UsageRegistry {
      */
     public static void initialize(AgentConfig config) {
         UsageRegistry.instance = new UsageRegistry(config,
-                                                   Sensor.builder()
-                                                         .hostName(getHostName())
-                                                         .uuid(UUID.randomUUID())
-                                                         .startedAtMillis(System.currentTimeMillis())
-                                                         .build());
+                                                   SensorRun.builder()
+                                                            .hostName(getHostName())
+                                                            .uuid(UUID.randomUUID())
+                                                            .startedAtMillis(System.currentTimeMillis())
+                                                            .build());
     }
 
     private static String getHostName() {
@@ -98,13 +98,13 @@ public class UsageRegistry {
     }
 
     /**
-     * Dumps data about this sensor run to a disk file.
+     * Dumps data about this sensorRun run to a disk file.
      */
     private void dumpSensorRun() {
         File tmpFile = null;
         try {
             tmpFile = File.createTempFile("codekvast", ".tmp", sensorFile.getParentFile());
-            sensor.saveTo(tmpFile);
+            sensorRun.saveTo(tmpFile);
             FileUtils.renameFile(tmpFile, sensorFile);
         } catch (IOException e) {
             CodeKvastSensor.out.println(CodeKvastSensor.NAME + " cannot save " + sensorFile + ": " + e);

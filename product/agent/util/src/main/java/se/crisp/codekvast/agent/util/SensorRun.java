@@ -16,12 +16,11 @@ import java.util.UUID;
  *
  * @author Olle Hallin
  */
-@SuppressWarnings("UseOfSystemOutOrSystemErr")
 @Data
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Setter(AccessLevel.NONE)
 @Builder
-public class Sensor {
+public class SensorRun {
     private final String hostName;
     private final UUID uuid;
     private final long startedAtMillis;
@@ -29,17 +28,17 @@ public class Sensor {
 
     public void saveTo(File file) {
         dumpedAtMillis = System.currentTimeMillis();
-        FileUtils.writePropertiesTo(file, this, "CodeKvast Sensor Run");
+        FileUtils.writePropertiesTo(file, this, "CodeKvast SensorRun Run");
     }
 
-    public static Sensor readFrom(File file) throws IOException {
+    public static SensorRun readFrom(File file) throws IOException {
         Properties props = FileUtils.readPropertiesFrom(file);
 
-        return Sensor.builder()
-                     .hostName(props.getProperty("hostName"))
-                     .uuid(UUID.fromString(props.getProperty("uuid")))
-                     .startedAtMillis(Long.parseLong(props.getProperty("startedAtMillis")))
-                     .dumpedAtMillis(Long.parseLong(props.getProperty("dumpedAtMillis")))
-                     .build();
+        return SensorRun.builder()
+                        .hostName(props.getProperty("hostName"))
+                        .uuid(UUID.fromString(props.getProperty("uuid")))
+                        .startedAtMillis(Long.parseLong(props.getProperty("startedAtMillis")))
+                        .dumpedAtMillis(Long.parseLong(props.getProperty("dumpedAtMillis")))
+                        .build();
     }
 }

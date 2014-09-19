@@ -45,20 +45,20 @@ public class ServerDelegateImpl implements ServerDelegate {
     }
 
     @Override
-    public void uploadSensorData(String hostName, long startedAtMillis, long dumpedAtMillis, UUID uuid) throws ServerDelegateException {
-        String endPoint = config.getServerUri() + AgentRestEndpoints.UPLOAD_SENSOR_V1;
+    public void uploadSensorRunData(String hostName, long startedAtMillis, long dumpedAtMillis, UUID uuid) throws ServerDelegateException {
+        String endPoint = config.getServerUri() + AgentRestEndpoints.UPLOAD_SENSOR_RUN_V1;
 
-        log.debug("Uploading sensor data to {}", endPoint);
+        log.debug("Uploading sensor run data to {}", endPoint);
 
         try {
             long startedAt = System.currentTimeMillis();
 
-            SensorData data = SensorData.builder().header(header)
-                                        .hostName(hostName)
-                                        .startedAtMillis(startedAtMillis)
-                                        .dumpedAtMillis(dumpedAtMillis)
-                                        .uuid(uuid)
-                                        .build();
+            SensorRunData data = SensorRunData.builder().header(header)
+                                              .hostName(hostName)
+                                              .startedAtMillis(startedAtMillis)
+                                              .dumpedAtMillis(dumpedAtMillis)
+                                              .uuid(uuid)
+                                              .build();
 
             restTemplate.postForLocation(new URI(endPoint), data);
 

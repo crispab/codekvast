@@ -4,7 +4,7 @@
     <facet type="Spring" name="Spring">
       <configuration>
         <fileset id="fileset" name="Spring Application Context" removed="false">
-          <file>file://$WORKSPACE_ROOT$/crisp/duck/product/server/agent-delegate/src/main/java/se/crisp/codekvast/server/agent/impl/ServerDelegateModule.java</file>
+          <file>file://$MODULE_DIR$/src/main/java/se/crisp/codekvast/server/agent/impl/ServerDelegateModule.java</file>
           <file>file://$MODULE_DIR$/src/main/java/se/crisp/codekvast/agent/main/CodeKvastAgentMain.java</file>
         </fileset>
       </configuration>

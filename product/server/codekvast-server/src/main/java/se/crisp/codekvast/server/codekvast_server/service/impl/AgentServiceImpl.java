@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import se.crisp.codekvast.server.agent.model.v1.SensorData;
+import se.crisp.codekvast.server.agent.model.v1.SensorRunData;
 import se.crisp.codekvast.server.agent.model.v1.SignatureData;
 import se.crisp.codekvast.server.agent.model.v1.UsageData;
 import se.crisp.codekvast.server.codekvast_server.service.AgentService;
@@ -29,7 +29,7 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     @Transactional
-    public void storeSensorData(SensorData data) {
+    public void storeSensorData(SensorRunData data) {
         log.debug("Storing {}", data);
         // TODO: implement storing sensor data
 

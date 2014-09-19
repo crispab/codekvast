@@ -64,7 +64,7 @@ public class FileUtils {
             out.printf(Locale.ENGLISH, "# Dump #%d at %s took %d ms, number of methods: %d%n", dumpCount, dumpedAt, elapsed, count);
             out.flush();
         } catch (IOException e) {
-            System.err.println("DUCK cannot dump usage data to " + file + ": " + e);
+            System.err.println("CodeKvast cannot dump usage data to " + file + ": " + e);
         } finally {
             safeClose(out);
         }
@@ -80,7 +80,7 @@ public class FileUtils {
 
     public static void renameFile(File from, File to) {
         if (!from.renameTo(to)) {
-            System.err.printf(Locale.ENGLISH, "%s cannot rename %s to %s%n", "DUCK", from.getAbsolutePath(),
+            System.err.printf(Locale.ENGLISH, "%s cannot rename %s to %s%n", "CodeKvast", from.getAbsolutePath(),
                               to.getAbsolutePath());
             from.delete();
         }
@@ -174,7 +174,7 @@ public class FileUtils {
             writer.write(text);
             writer.flush();
         } catch (IOException e) {
-            throw new RuntimeException("DUCK cannot create " + file, e);
+            throw new RuntimeException("CodeKvast cannot create " + file, e);
         } finally {
             safeClose(writer);
         }

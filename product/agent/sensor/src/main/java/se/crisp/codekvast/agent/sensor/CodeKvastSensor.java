@@ -24,7 +24,7 @@ import java.util.TimerTask;
  */
 public class CodeKvastSensor {
 
-    public static final String NAME = "DUCK";
+    public static final String NAME = "CodeKvast";
 
     public static PrintStream out;
 

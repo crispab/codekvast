@@ -19,7 +19,7 @@ import java.util.UUID;
 @Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class SensorData {
+public class SensorRunData {
     @NonNull
     @Valid
     private Header header;

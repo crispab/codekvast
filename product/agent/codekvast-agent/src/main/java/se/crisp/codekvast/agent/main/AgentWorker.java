@@ -5,7 +5,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import se.crisp.codekvast.agent.util.AgentConfig;
 import se.crisp.codekvast.agent.util.FileUtils;
-import se.crisp.codekvast.agent.util.Sensor;
+import se.crisp.codekvast.agent.util.SensorRun;
 import se.crisp.codekvast.agent.util.Usage;
 import se.crisp.codekvast.server.agent.ServerDelegate;
 import se.crisp.codekvast.server.agent.ServerDelegateException;
@@ -30,7 +30,7 @@ public class AgentWorker {
     private final ServerDelegate serverDelegate;
     private final AppUsage appUsage = new AppUsage();
 
-    private Sensor sensor;
+    private SensorRun sensorRun;
     private CodeBase codeBase;
     private long usageFileModifiedAtMillis;
 
@@ -43,9 +43,9 @@ public class AgentWorker {
 
     @Scheduled(initialDelay = 10L, fixedDelayString = "${codekvast.serverUploadIntervalMillis}")
     public void analyseSensorData() {
-        log.debug("Analyzing sensor data");
+        log.debug("Analyzing sensorRun data");
 
-        uploadSensorDataIfNew(config.getSensorFile());
+        uploadSensorRunIfNew(config.getSensorFile());
 
         analyzeCodeBaseIfNeeded(new CodeBase(config));
 
@@ -54,20 +54,20 @@ public class AgentWorker {
         }
     }
 
-    private void uploadSensorDataIfNew(File sensorFile) {
+    private void uploadSensorRunIfNew(File sensorFile) {
         try {
-            Sensor newSensor = Sensor.readFrom(sensorFile);
-            if (!newSensor.equals(sensor)) {
-                serverDelegate.uploadSensorData(newSensor.getHostName(),
-                                                newSensor.getStartedAtMillis(),
-                                                newSensor.getDumpedAtMillis(),
-                                                newSensor.getUuid());
-                sensor = newSensor;
+            SensorRun newSensorRun = SensorRun.readFrom(sensorFile);
+            if (!newSensorRun.equals(sensorRun)) {
+                serverDelegate.uploadSensorRunData(newSensorRun.getHostName(),
+                                                   newSensorRun.getStartedAtMillis(),
+                                                   newSensorRun.getDumpedAtMillis(),
+                                                   newSensorRun.getUuid());
+                sensorRun = newSensorRun;
             }
         } catch (IOException e) {
             logException("Cannot read " + sensorFile, e);
         } catch (ServerDelegateException e) {
-            logException("Cannot upload sensor data", e);
+            logException("Cannot upload sensorRun data", e);
         }
     }
 

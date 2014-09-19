@@ -1,7 +1,7 @@
 #!/bin/sh
 cd $(dirname $0)/..
-DUCK_HOME=$PWD
-ENDORSED=${DUCK_HOME}/endorsed
+CODEKVAST_HOME=$PWD
+ENDORSED=${CODEKVAST_HOME}/endorsed
 SENSOR=$(find ${ENDORSED} -name *.jar)
-CONFIG=${DUCK_HOME}/conf/duck.properties
+CONFIG=${CODEKVAST_HOME}/conf/codekvast.properties
 echo -javaagent:${SENSOR}=${CONFIG} -Djava.endorsed.dirs=${ENDORSED}
