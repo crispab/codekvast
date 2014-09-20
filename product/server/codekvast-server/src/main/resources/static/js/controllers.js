@@ -8,9 +8,11 @@ codekvastControllers.controller('SignaturesCtrl', function ($scope) {
         stomp: null
     };
 
-    $scope.notify = function (data) {
+    $scope.updateSignatures = function (data) {
         console.log("Received signature data=%o", data)
-        $scope.signatures = data.body;
+        $scope.$apply(function () {
+            $scope.signatures = JSON.parse(data.body);
+        })
     };
 
     $scope.reconnect = function () {
@@ -27,7 +29,7 @@ codekvastControllers.controller('SignaturesCtrl', function ($scope) {
             passcode: '0000',
             'client-id': 'my-client-id'
         }, function () {
-            $scope.socket.stomp.subscribe("/topic/signatures", $scope.notify);
+            $scope.socket.stomp.subscribe("/topic/signatures", $scope.updateSignatures);
             $scope.socket.stomp.send("/app/hello", {}, "Hello!")
         }, function (error) {
             console.log("Cannot connect %o", error)
