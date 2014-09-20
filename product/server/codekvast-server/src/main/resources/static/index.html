@@ -9,7 +9,7 @@
     <script src="/webjars/stomp-websocket/2.3.1/stomp.js"></script>
     <script src="js/app.js"></script>
     <script src="js/controllers.js"></script>
-    <script src="js/services.js"></script>
+    <script src="js/filters.js"></script>
 </head>
 <body ng-app="codekvastApp">
 <h1>Welcome to {{'Code' + 'Kvast!' }}</h1>
@@ -21,7 +21,7 @@
     </tr>
     <tr ng-repeat="sig in signatures | orderBy:'usedAtMillis' ">
         <td style="width: 50em">{{sig.signature}}</td>
-        <td>{{sig.usedAtMillis | date:"yyyy-MM-dd HH:mm:ss"}}</td>
+        <td>{{sig.usedAtMillis | suppressEmptyDate | date:"yyyy-MM-dd HH:mm:ss"}}</td>
     </tr>
 </table>
 </body>

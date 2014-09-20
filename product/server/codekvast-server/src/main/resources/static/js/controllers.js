@@ -1,4 +1,4 @@
-var codekvastControllers = angular.module('codekvastControllers', ['codekvastServices']);
+var codekvastControllers = angular.module('codekvastControllers', []);
 
 codekvastControllers.controller('SignaturesCtrl', function ($scope) {
     $scope.signatures = [];

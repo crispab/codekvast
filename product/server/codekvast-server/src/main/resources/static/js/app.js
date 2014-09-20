@@ -1,3 +1,3 @@
-var codekvastApp = angular.module('codekvastApp', ['codekvastControllers', 'codekvastServices']);
+var codekvastApp = angular.module('codekvastApp', ['codekvastControllers', 'codekvastFilters']);
 
 
