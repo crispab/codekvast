@@ -8,7 +8,7 @@ import se.crisp.codekvast.server.agent.model.v1.SensorRunData;
 import se.crisp.codekvast.server.agent.model.v1.SignatureData;
 import se.crisp.codekvast.server.agent.model.v1.UsageData;
 import se.crisp.codekvast.server.agent.model.v1.UsageDataEntry;
-import se.crisp.codekvast.server.codekvast_server.event.UsageDataUpdatedEvent;
+import se.crisp.codekvast.server.codekvast_server.event.internal.UsageDataUpdatedEvent;
 import se.crisp.codekvast.server.codekvast_server.service.StorageService;
 
 import java.util.Collection;

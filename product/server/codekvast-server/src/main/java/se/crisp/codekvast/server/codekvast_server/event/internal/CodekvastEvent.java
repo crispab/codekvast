@@ -1,4 +1,4 @@
-package se.crisp.codekvast.server.codekvast_server.event;
+package se.crisp.codekvast.server.codekvast_server.event.internal;
 
 import org.springframework.context.ApplicationEvent;
 

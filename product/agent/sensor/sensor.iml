@@ -19,9 +19,9 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="Gradle: aspectjrt-1.8.0" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: aspectjweaver-1.8.0" level="project" />
     <orderEntry type="module" module-name="util" exported="" />
+    <orderEntry type="library" exported="" name="Gradle: aspectjrt-1.8.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: aspectjweaver-1.8.2" level="project" />
   </component>
   <component name="org.twodividedbyzero.idea.findbugs">
     <option name="_basePreferences">

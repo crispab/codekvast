@@ -11,13 +11,25 @@ mainClassName = "se.crisp.codekvast.server.codekvast_server.CodeKvastServerMain"
 
 dependencies {
     compile "ch.qos.logback:logback-classic"
-    compile "com.h2database:h2"
-    compile "org.flywaydb:flyway-core"
+    /**
+     * No database support for now
+     * compile "com.h2database:h2"
+     * compile "org.flywaydb:flyway-core"
+     * compile "org.springframework.boot:spring-boot-starter-jdbc"
+     */
+
+    /**
+     *  No web security for now
+     * compile "org.springframework.boot:spring-boot-starter-security"
+     */
+
+    compile "org.springframework.boot:spring-boot-starter-websocket"
     compile "org.springframework.boot:spring-boot-starter-actuator"
-    compile "org.springframework.boot:spring-boot-starter-jdbc"
-    compile "org.springframework.boot:spring-boot-starter-security"
     compile "org.springframework.boot:spring-boot-starter-web"
+    compile "org.springframework:spring-messaging"
     compile "org.webjars:angularjs:1.2.25"
+    compile "org.webjars:sockjs-client:0.3.4"
+    compile "org.webjars:stomp-websocket:2.3.1"
     compile lombok
     compile project(":product:server:agent-delegate")
 
