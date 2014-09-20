@@ -18,14 +18,10 @@ dependencies {
      * compile "org.springframework.boot:spring-boot-starter-jdbc"
      */
 
-    /**
-     *  No web security for now
-     * compile "org.springframework.boot:spring-boot-starter-security"
-     */
-
     compile "org.springframework.boot:spring-boot-starter-websocket"
     compile "org.springframework.boot:spring-boot-starter-actuator"
     compile "org.springframework.boot:spring-boot-starter-web"
+    compile "org.springframework.boot:spring-boot-starter-security"
     compile "org.springframework:spring-messaging"
     compile "org.webjars:angularjs:1.2.25"
     compile "org.webjars:sockjs-client:0.3.4"

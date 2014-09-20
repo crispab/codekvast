@@ -38,6 +38,6 @@ public class ServerDelegateConfig {
     }
 
     public String getApiPassword() {
-        return "codekvast-agent";
+        return "0000";
     }
 }

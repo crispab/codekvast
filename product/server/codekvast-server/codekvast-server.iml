@@ -74,6 +74,10 @@
     <orderEntry type="library" scope="TEST" name="Gradle: spring-test-4.0.7.RELEASE" level="project" />
     <orderEntry type="library" exported="" name="Gradle: sockjs-client-0.3.4" level="project" />
     <orderEntry type="library" exported="" name="Gradle: stomp-websocket-2.3.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: spring-boot-starter-security-1.1.6.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: spring-security-core-3.2.5.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: spring-security-config-3.2.5.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: spring-security-web-3.2.5.RELEASE" level="project" />
   </component>
   <component name="org.twodividedbyzero.idea.findbugs">
     <option name="_basePreferences">
