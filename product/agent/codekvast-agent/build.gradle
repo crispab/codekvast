@@ -1,5 +1,5 @@
 buildscript { dependencies { classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion" } }
-apply plugin: 'java'
+apply from: "$rootDir/gradle/java.gradle"
 apply plugin: 'spring-boot'
 apply plugin: 'application'
 

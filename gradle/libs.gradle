@@ -1,5 +1,5 @@
 ext {
-    springBootVersion = '1.1.6.RELEASE'
+    springBootVersion = '1.1.7.RELEASE'
 
     // This one is required by the aspectj-plugin
     // Synchronize it with "org.springframework.boot:spring-boot-dependencies:$springBootVersion"

@@ -1,4 +1,4 @@
-apply plugin: 'java'
+apply from: "$rootDir/gradle/java.gradle"
 apply plugin: 'application'
 
 mainClassName = "sample.app.SampleApp"

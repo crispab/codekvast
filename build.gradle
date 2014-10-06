@@ -3,8 +3,13 @@ task wrapper(type: Wrapper) {
 }
 
 subprojects {
+    buildscript {
+        repositories { jcenter() }
+        dependencies {
+            classpath('com.ofg:uptodate-gradle-plugin:1.1.0')
+        }
+    }
     apply from: "$rootDir/gradle/libs.gradle"
 
-    buildscript { repositories { jcenter() } }
     repositories { jcenter() }
 }

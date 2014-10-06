@@ -1,4 +1,5 @@
-apply plugin: 'java'
+apply from: "$rootDir/gradle/java.gradle"
+
 
 description = "Code that is shared between codekvast-agent and the sensor"
 archivesBaseName = "codekvast-agent-util"
