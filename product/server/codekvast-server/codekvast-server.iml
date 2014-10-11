@@ -44,9 +44,6 @@
     <orderEntry type="library" exported="" name="Gradle: classmate-1.0.0" level="project" />
     <orderEntry type="library" exported="" name="Gradle: hibernate-validator-5.0.3.Final" level="project" />
     <orderEntry type="library" exported="" name="Gradle: angularjs-1.2.25" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: spring-boot-starter-actuator-1.1.6.RELEASE" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: spring-boot-starter-web-1.1.6.RELEASE" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: spring-boot-starter-websocket-1.1.6.RELEASE" level="project" />
     <orderEntry type="library" exported="" name="Gradle: spring-messaging-4.0.7.RELEASE" level="project" />
     <orderEntry type="library" exported="" name="Gradle: lombok-1.14.8" level="project" />
     <orderEntry type="library" exported="" name="Gradle: spring-core-4.0.7.RELEASE" level="project" />
@@ -54,30 +51,33 @@
     <orderEntry type="library" exported="" name="Gradle: spring-expression-4.0.7.RELEASE" level="project" />
     <orderEntry type="library" exported="" name="Gradle: spring-aop-4.0.7.RELEASE" level="project" />
     <orderEntry type="library" exported="" name="Gradle: spring-context-4.0.7.RELEASE" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: spring-boot-1.1.6.RELEASE" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: spring-boot-autoconfigure-1.1.6.RELEASE" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: spring-boot-starter-logging-1.1.6.RELEASE" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: spring-boot-starter-1.1.6.RELEASE" level="project" />
     <orderEntry type="library" exported="" name="Gradle: jackson-core-2.3.4" level="project" />
     <orderEntry type="library" exported="" name="Gradle: jackson-annotations-2.3.4" level="project" />
     <orderEntry type="library" exported="" name="Gradle: jackson-databind-2.3.4" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: spring-boot-actuator-1.1.6.RELEASE" level="project" />
     <orderEntry type="library" exported="" name="Gradle: spring-web-4.0.7.RELEASE" level="project" />
     <orderEntry type="library" exported="" name="Gradle: tomcat-embed-core-7.0.55" level="project" />
     <orderEntry type="library" exported="" name="Gradle: tomcat-embed-el-7.0.55" level="project" />
     <orderEntry type="library" exported="" name="Gradle: tomcat-embed-logging-juli-7.0.55" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: spring-boot-starter-tomcat-1.1.6.RELEASE" level="project" />
     <orderEntry type="library" exported="" name="Gradle: spring-webmvc-4.0.7.RELEASE" level="project" />
     <orderEntry type="library" exported="" name="Gradle: spring-websocket-4.0.7.RELEASE" level="project" />
     <orderEntry type="library" exported="" name="Gradle: tomcat-embed-websocket-7.0.55" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: spring-boot-starter-test-1.1.6.RELEASE" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: spring-test-4.0.7.RELEASE" level="project" />
     <orderEntry type="library" exported="" name="Gradle: sockjs-client-0.3.4" level="project" />
     <orderEntry type="library" exported="" name="Gradle: stomp-websocket-2.3.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: spring-boot-starter-security-1.1.6.RELEASE" level="project" />
     <orderEntry type="library" exported="" name="Gradle: spring-security-core-3.2.5.RELEASE" level="project" />
     <orderEntry type="library" exported="" name="Gradle: spring-security-config-3.2.5.RELEASE" level="project" />
     <orderEntry type="library" exported="" name="Gradle: spring-security-web-3.2.5.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: spring-boot-starter-websocket-1.1.7.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: spring-boot-starter-actuator-1.1.7.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: spring-boot-starter-web-1.1.7.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: spring-boot-starter-security-1.1.7.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: spring-boot-starter-1.1.7.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: spring-boot-actuator-1.1.7.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: spring-boot-starter-tomcat-1.1.7.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: spring-boot-1.1.7.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: spring-boot-autoconfigure-1.1.7.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: spring-boot-starter-logging-1.1.7.RELEASE" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: spring-boot-starter-test-1.1.7.RELEASE" level="project" />
   </component>
   <component name="org.twodividedbyzero.idea.findbugs">
     <option name="_basePreferences">
