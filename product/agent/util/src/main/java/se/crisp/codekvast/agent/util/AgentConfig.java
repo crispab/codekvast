@@ -21,7 +21,7 @@ import java.util.Properties;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class AgentConfig {
     public static final int DEFAULT_SENSOR_RESOLUTION_INTERVAL_SECONDS = 600;
-    public static final int DEFAULT_UPLOAD_INTERVAL_MILLIS = 3600000;
+    public static final int DEFAULT_UPLOAD_INTERVAL_SECONDS = 3600;
     public static final String DEFAULT_ASPECTJ_OPTIONS = "";
     public static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
     public static final boolean DEFAULT_VERBOSE = false;
@@ -49,16 +49,20 @@ public class AgentConfig {
     @NonNull
     private final URI serverUri;
     private final int sensorResolutionIntervalSeconds;
-    private final int serverUploadIntervalMillis;
+    private final int serverUploadIntervalSeconds;
     private final boolean clobberAopXml;
     private final boolean verbose;
+
+    public int getServerUploadIntervalMillis() {
+        return serverUploadIntervalSeconds * 1000;
+    }
 
     public File getUsageFile() {
         return new File(dataPath, "usage.dat");
     }
 
-    public File getSensorFile() {
-        return new File(dataPath, "sensor.dat");
+    public File getJvmRunFile() {
+        return new File(dataPath, "jvm-run.dat");
     }
 
     public File getSignatureFile() {
@@ -103,8 +107,8 @@ public class AgentConfig {
                               .sensorResolutionIntervalSeconds(getOptionalIntValue(props, "sensorResolutionIntervalSeconds",
                                                                                    DEFAULT_SENSOR_RESOLUTION_INTERVAL_SECONDS))
                               .dataPath(new File(getOptionalStringValue(props, "dataPath", getDefaultDataPath(customerName, appName))))
-                              .serverUploadIntervalMillis(getOptionalIntValue(props, "serverUploadIntervalMillis",
-                                                                              DEFAULT_UPLOAD_INTERVAL_MILLIS))
+                              .serverUploadIntervalSeconds(getOptionalIntValue(props, "serverUploadIntervalSeconds",
+                                                                               DEFAULT_UPLOAD_INTERVAL_SECONDS))
                               .serverUri(getMandatoryUriValue(props, "serverUri", true))
                               .verbose(Boolean.parseBoolean(getOptionalStringValue(props, "verbose", Boolean.toString(DEFAULT_VERBOSE))))
                               .clobberAopXml(Boolean.parseBoolean(getOptionalStringValue(props, "clobberAopXml",
@@ -130,7 +134,7 @@ public class AgentConfig {
                           .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
                           .dataPath(new File("/var/lib", getDataChildPath(customerName, appName)))
                           .sensorResolutionIntervalSeconds(DEFAULT_SENSOR_RESOLUTION_INTERVAL_SECONDS)
-                          .serverUploadIntervalMillis(DEFAULT_UPLOAD_INTERVAL_MILLIS)
+                          .serverUploadIntervalSeconds(DEFAULT_UPLOAD_INTERVAL_SECONDS)
                           .serverUri(new URI("http://some-codekvast-server"))
                           .verbose(DEFAULT_VERBOSE)
                           .clobberAopXml(DEFAULT_CLOBBER_AOP_XML)

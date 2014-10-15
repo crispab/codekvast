@@ -9,23 +9,23 @@ import java.util.UUID;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class SensorRunDataTest {
+public class JvmRunDataTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test(expected = NullPointerException.class)
-    public void sensorRunDataShouldRejectNullHeader() {
-        SensorRunData.builder().header(null).build();
+    public void jvmRunDataShouldRejectNullHeader() {
+        JvmRunData.builder().header(null).build();
     }
 
     @Test(expected = NullPointerException.class)
-    public void sensorRunDataShouldRejectMissingValues() {
-        SensorRunData.builder().header(HeaderTest.HEADER).build();
+    public void jvmRunDataShouldRejectMissingValues() {
+        JvmRunData.builder().header(HeaderTest.HEADER).build();
     }
 
     @Test
-    public void sensorRunDataShouldBeJsonSerializable() throws IOException {
+    public void jvmRunDataShouldBeJsonSerializable() throws IOException {
         // given
-        SensorRunData data1 = SensorRunData.builder()
+        JvmRunData data1 = JvmRunData.builder()
                                            .header(HeaderTest.HEADER)
                                            .hostName("hostName")
                                            .startedAtMillis(1000L)
@@ -34,7 +34,7 @@ public class SensorRunDataTest {
                                            .build();
         // when
         String json = objectMapper.writeValueAsString(data1);
-        SensorRunData data2 = objectMapper.readValue(json, SensorRunData.class);
+        JvmRunData data2 = objectMapper.readValue(json, JvmRunData.class);
 
         // then
         assertThat(data1, is(data2));

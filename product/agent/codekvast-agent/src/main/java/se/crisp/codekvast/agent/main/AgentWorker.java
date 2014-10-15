@@ -5,7 +5,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import se.crisp.codekvast.agent.util.AgentConfig;
 import se.crisp.codekvast.agent.util.FileUtils;
-import se.crisp.codekvast.agent.util.SensorRun;
+import se.crisp.codekvast.agent.util.JvmRun;
 import se.crisp.codekvast.agent.util.Usage;
 import se.crisp.codekvast.server.agent.ServerDelegate;
 import se.crisp.codekvast.server.agent.ServerDelegateException;
@@ -30,7 +30,7 @@ public class AgentWorker {
     private final ServerDelegate serverDelegate;
     private final AppUsage appUsage = new AppUsage();
 
-    private SensorRun sensorRun;
+    private JvmRun jvmRun;
     private CodeBase codeBase;
     private long usageFileModifiedAtMillis;
 
@@ -42,32 +42,32 @@ public class AgentWorker {
     }
 
     @Scheduled(initialDelay = 10L, fixedDelayString = "${codekvast.serverUploadIntervalMillis}")
-    public void analyseSensorData() {
-        log.debug("Analyzing sensorRun data");
+    public void analyseJvmRunData() {
+        log.debug("Analyzing JvmRun data");
 
-        uploadSensorRunIfNew(config.getSensorFile());
+        uploadJvmRunIfNeeded(config.getJvmRunFile());
 
         analyzeCodeBaseIfNeeded(new CodeBase(config));
 
         if (codeBase != null) {
-            processUsageDataIfNew(config.getUsageFile());
+            processUsageDataIfNeeded(config.getUsageFile());
         }
     }
 
-    private void uploadSensorRunIfNew(File sensorFile) {
+    private void uploadJvmRunIfNeeded(File jvmRunFile) {
         try {
-            SensorRun newSensorRun = SensorRun.readFrom(sensorFile);
-            if (!newSensorRun.equals(sensorRun)) {
-                serverDelegate.uploadSensorRunData(newSensorRun.getHostName(),
-                                                   newSensorRun.getStartedAtMillis(),
-                                                   newSensorRun.getDumpedAtMillis(),
-                                                   newSensorRun.getUuid());
-                sensorRun = newSensorRun;
+            JvmRun newJvmRun = JvmRun.readFrom(jvmRunFile);
+            if (!newJvmRun.equals(jvmRun)) {
+                serverDelegate.uploadJvmRunData(newJvmRun.getHostName(),
+                                                newJvmRun.getStartedAtMillis(),
+                                                newJvmRun.getDumpedAtMillis(),
+                                                newJvmRun.getUuid());
+                jvmRun = newJvmRun;
             }
         } catch (IOException e) {
-            logException("Cannot read " + sensorFile, e);
+            logException("Cannot read " + jvmRunFile, e);
         } catch (ServerDelegateException e) {
-            logException("Cannot upload sensorRun data", e);
+            logException("Cannot upload JvmRun data", e);
         }
     }
 
@@ -93,7 +93,7 @@ public class AgentWorker {
         }
     }
 
-    private void processUsageDataIfNew(File usageFile) {
+    private void processUsageDataIfNeeded(File usageFile) {
         long modifiedAt = usageFile.lastModified();
         if (modifiedAt != usageFileModifiedAtMillis) {
             applyRecordedUsage(codeBase, appUsage, FileUtils.readUsageDataFrom(usageFile));

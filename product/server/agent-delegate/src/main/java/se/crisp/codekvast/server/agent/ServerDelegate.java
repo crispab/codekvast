@@ -12,15 +12,15 @@ import java.util.UUID;
  */
 public interface ServerDelegate {
     /**
-     * Uploads data about a sensor run to the server.
+     * Uploads data about a JVM run to the server.
      *
-     * @param hostName        The host name of the sensor
-     * @param startedAtMillis The instant the sensor was started
+     * @param hostName        The host name of the JVM
+     * @param startedAtMillis The instant the JVM was started
      * @param dumpedAtMillis  The instant the latest usage dump was made
-     * @param uuid            The UUID of the sensor
+     * @param uuid            The UUID of the JVM run
      * @throws ServerDelegateException
      */
-    void uploadSensorRunData(String hostName, long startedAtMillis, long dumpedAtMillis, UUID uuid) throws ServerDelegateException;
+    void uploadJvmRunData(String hostName, long startedAtMillis, long dumpedAtMillis, UUID uuid) throws ServerDelegateException;
 
     /**
      * Upload a collection of signatures to the server.

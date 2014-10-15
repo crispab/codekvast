@@ -1,6 +1,6 @@
 package se.crisp.codekvast.server.codekvast_server.service;
 
-import se.crisp.codekvast.server.agent.model.v1.SensorRunData;
+import se.crisp.codekvast.server.agent.model.v1.JvmRunData;
 import se.crisp.codekvast.server.agent.model.v1.SignatureData;
 import se.crisp.codekvast.server.agent.model.v1.UsageData;
 import se.crisp.codekvast.server.agent.model.v1.UsageDataEntry;
@@ -19,7 +19,7 @@ public interface StorageService {
      *
      * @param data The received sensor data
      */
-    void storeSensorData(SensorRunData data);
+    void storeSensorData(JvmRunData data);
 
     /**
      * Stores signature data received from an agent.

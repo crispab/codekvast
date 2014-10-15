@@ -3,7 +3,7 @@ package se.crisp.codekvast.agent.sensor;
 import org.aspectj.lang.Signature;
 import se.crisp.codekvast.agent.util.AgentConfig;
 import se.crisp.codekvast.agent.util.FileUtils;
-import se.crisp.codekvast.agent.util.SensorRun;
+import se.crisp.codekvast.agent.util.JvmRun;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,15 +27,15 @@ public class UsageRegistry {
     public static UsageRegistry instance;
 
     private final AgentConfig config;
-    private final SensorRun sensorRun;
-    private final File sensorFile;
+    private final JvmRun jvmRun;
+    private final File jvmRunFile;
     private final AtomicLong currentTimeMillis = new AtomicLong(System.currentTimeMillis());
     private final ConcurrentMap<String, Long> usages = new ConcurrentHashMap<String, Long>();
 
-    public UsageRegistry(AgentConfig config, SensorRun sensorRun) {
+    public UsageRegistry(AgentConfig config, JvmRun jvmRun) {
         this.config = config;
-        this.sensorRun = sensorRun;
-        this.sensorFile = config.getSensorFile();
+        this.jvmRun = jvmRun;
+        this.jvmRunFile = config.getJvmRunFile();
     }
 
     /**
@@ -43,7 +43,7 @@ public class UsageRegistry {
      */
     public static void initialize(AgentConfig config) {
         UsageRegistry.instance = new UsageRegistry(config,
-                                                   SensorRun.builder()
+                                                   JvmRun.builder()
                                                             .hostName(getHostName())
                                                             .uuid(UUID.randomUUID())
                                                             .startedAtMillis(System.currentTimeMillis())
@@ -87,7 +87,7 @@ public class UsageRegistry {
         if (!outputPath.exists()) {
             CodeKvastSensor.out.println("Cannot dump usage data, " + outputPath + " cannot be created");
         } else {
-            dumpSensorRun();
+            dumpJvmRun();
             FileUtils.writeUsageDataTo(config.getUsageFile(), dumpCount, usages);
             currentTimeMillis.set(System.currentTimeMillis());
         }
@@ -98,16 +98,16 @@ public class UsageRegistry {
     }
 
     /**
-     * Dumps data about this sensorRun run to a disk file.
+     * Dumps data about this JVM run to a disk file.
      */
-    private void dumpSensorRun() {
+    private void dumpJvmRun() {
         File tmpFile = null;
         try {
-            tmpFile = File.createTempFile("codekvast", ".tmp", sensorFile.getParentFile());
-            sensorRun.saveTo(tmpFile);
-            FileUtils.renameFile(tmpFile, sensorFile);
+            tmpFile = File.createTempFile("codekvast", ".tmp", jvmRunFile.getParentFile());
+            jvmRun.saveTo(tmpFile);
+            FileUtils.renameFile(tmpFile, jvmRunFile);
         } catch (IOException e) {
-            CodeKvastSensor.out.println(CodeKvastSensor.NAME + " cannot save " + sensorFile + ": " + e);
+            CodeKvastSensor.out.println(CodeKvastSensor.NAME + " cannot save " + jvmRunFile + ": " + e);
         } finally {
             FileUtils.safeDelete(tmpFile);
         }

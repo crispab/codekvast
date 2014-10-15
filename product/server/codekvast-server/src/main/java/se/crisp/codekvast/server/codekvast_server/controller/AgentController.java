@@ -7,7 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import se.crisp.codekvast.server.agent.AgentRestEndpoints;
-import se.crisp.codekvast.server.agent.model.v1.SensorRunData;
+import se.crisp.codekvast.server.agent.model.v1.JvmRunData;
 import se.crisp.codekvast.server.agent.model.v1.SignatureData;
 import se.crisp.codekvast.server.agent.model.v1.UsageData;
 import se.crisp.codekvast.server.codekvast_server.service.StorageService;
@@ -46,8 +46,8 @@ public class AgentController {
         log.warn("Bad request: " + e);
     }
 
-    @RequestMapping(value = AgentRestEndpoints.UPLOAD_SENSOR_RUN_V1, method = RequestMethod.POST)
-    public void receiveSensorV1(@RequestBody @Valid SensorRunData data) {
+    @RequestMapping(value = AgentRestEndpoints.UPLOAD_JVM_RUN_V1, method = RequestMethod.POST)
+    public void receiveSensorV1(@RequestBody @Valid JvmRunData data) {
         log.debug("Received {}", data);
         storageService.storeSensorData(data);
     }

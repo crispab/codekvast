@@ -46,7 +46,7 @@ dataPath = $codekvastDataPath
 packagePrefix = se.crisp.sample
 serverUri = http://localhost:8080
 sensorResolutionIntervalSeconds = 10
-serverUploadIntervalMillis = 5000
+serverUploadIntervalSeconds = 5
 aspectjOptions = -verbose
 verbose = true
 """

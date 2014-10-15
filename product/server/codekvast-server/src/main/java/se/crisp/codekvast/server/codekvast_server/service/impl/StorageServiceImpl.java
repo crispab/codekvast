@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Repository;
-import se.crisp.codekvast.server.agent.model.v1.SensorRunData;
+import se.crisp.codekvast.server.agent.model.v1.JvmRunData;
 import se.crisp.codekvast.server.agent.model.v1.SignatureData;
 import se.crisp.codekvast.server.agent.model.v1.UsageData;
 import se.crisp.codekvast.server.agent.model.v1.UsageDataEntry;
@@ -31,7 +31,7 @@ public class StorageServiceImpl implements StorageService, ApplicationContextAwa
     private ApplicationContext applicationContext;
 
     @Override
-    public void storeSensorData(SensorRunData data) {
+    public void storeSensorData(JvmRunData data) {
         log.debug("Storing {}", data);
 
         // TODO: store in database

@@ -20,7 +20,7 @@ import java.util.UUID;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Setter(AccessLevel.NONE)
 @Builder
-public class SensorRun {
+public class JvmRun {
     private final String hostName;
     private final UUID uuid;
     private final long startedAtMillis;
@@ -28,13 +28,13 @@ public class SensorRun {
 
     public void saveTo(File file) {
         dumpedAtMillis = System.currentTimeMillis();
-        FileUtils.writePropertiesTo(file, this, "CodeKvast SensorRun Run");
+        FileUtils.writePropertiesTo(file, this, "CodeKvast-instrumented JVM run");
     }
 
-    public static SensorRun readFrom(File file) throws IOException {
+    public static JvmRun readFrom(File file) throws IOException {
         Properties props = FileUtils.readPropertiesFrom(file);
 
-        return SensorRun.builder()
+        return JvmRun.builder()
                         .hostName(props.getProperty("hostName"))
                         .uuid(UUID.fromString(props.getProperty("uuid")))
                         .startedAtMillis(Long.parseLong(props.getProperty("startedAtMillis")))

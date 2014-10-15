@@ -8,9 +8,9 @@ package se.crisp.codekvast.server.agent;
 public interface AgentRestEndpoints {
 
     /**
-     * POST a {@link se.crisp.codekvast.server.agent.model.v1.SensorRunData} object to this endpoint.
+     * POST a {@link se.crisp.codekvast.server.agent.model.v1.JvmRunData} object to this endpoint.
      */
-    final String UPLOAD_SENSOR_RUN_V1 = "/agent/sensor-run/v1";
+    final String UPLOAD_JVM_RUN_V1 = "/agent/jvm-run/v1";
 
     /**
      * POST a {@link se.crisp.codekvast.server.agent.model.v1.SignatureData} object to this endpoint.

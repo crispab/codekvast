@@ -8,9 +8,9 @@ import javax.validation.constraints.Size;
 import java.util.UUID;
 
 /**
- * REST data about one sensor.
+ * REST data about one instrumented JVM.
  * <p/>
- * Should be uploaded regularly during the lifetime of a sensor.
+ * Should be uploaded regularly during the lifetime of a JVM.
  *
  * @author Olle Hallin
  */
@@ -19,7 +19,7 @@ import java.util.UUID;
 @Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class SensorRunData {
+public class JvmRunData {
     @NonNull
     @Valid
     private Header header;

@@ -8,19 +8,19 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
-public class SensorRunTest {
+public class JvmRunTest {
 
     @Test
     public void testSaveAndRestore() throws IOException {
-        File file = File.createTempFile("sensorRun", ".properties");
+        File file = File.createTempFile("jvm-run", ".properties");
         file.deleteOnExit();
-        SensorRun sr1 = SensorRun.builder()
+        JvmRun sr1 = JvmRun.builder()
                                  .hostName("hostName")
                                  .uuid(UUID.randomUUID())
                                  .startedAtMillis(System.currentTimeMillis())
                                  .build();
         sr1.saveTo(file);
-        SensorRun sr2 = SensorRun.readFrom(file);
+        JvmRun sr2 = JvmRun.readFrom(file);
         assertEquals(sr1, sr2);
     }
 
