@@ -17,12 +17,10 @@ mainClassName = "se.crisp.codekvast.server.codekvast_server.CodeKvastServerMain"
 
 dependencies {
     compile "ch.qos.logback:logback-classic"
-    /**
-     * No database support for now
-     * compile "com.h2database:h2"
-     * compile "org.flywaydb:flyway-core"
-     * compile "org.springframework.boot:spring-boot-starter-jdbc"
-     */
+
+    compile "com.h2database:h2"
+    compile "org.flywaydb:flyway-core"
+    compile "org.springframework.boot:spring-boot-starter-jdbc"
 
     compile "org.springframework.boot:spring-boot-starter-websocket"
     compile "org.springframework.boot:spring-boot-starter-actuator"
