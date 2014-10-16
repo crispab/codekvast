@@ -2,12 +2,14 @@
 **/*.log
 **/*.log.*.zip
 **/*.iml
+**/*.ids
 .gradle
-.idea/dictionaries/
+.idea/dictionaries/**
 .idea/gradle.xml
-.idea/libraries/
+.idea/libraries/**
 .idea/tasks.xml
 .idea/workspace.xml
+.idea/dataSources.*
 build/
 tools/downloaded/
 target/
