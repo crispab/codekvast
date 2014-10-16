@@ -1,4 +1,9 @@
-buildscript { dependencies { classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion" } }
+buildscript {
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
+        classpath "org.ajoberstar:grgit:0.3.1"
+    }
+}
 apply from: "$rootDir/gradle/java.gradle"
 apply plugin: 'spring-boot'
 apply plugin: 'application'
@@ -6,6 +11,7 @@ apply plugin: 'application'
 description = "The main CodeKvast server"
 archivesBaseName = "codekvast-server"
 version = project.parent.parent.version
+ext.gitCommit = getLatestGitCommit()
 sourceCompatibility = 1.7
 mainClassName = "se.crisp.codekvast.server.codekvast_server.CodeKvastServerMain"
 
@@ -34,12 +40,36 @@ dependencies {
     testCompile "org.springframework.boot:spring-boot-starter-test"
 }
 
+
+import org.ajoberstar.grgit.Grgit
+import org.apache.tools.ant.filters.ReplaceTokens
+
+import java.text.SimpleDateFormat
+
+processResources {
+    from(sourceSets.main.resources.srcDirs) {
+        include '**/default.properties'
+        filter(ReplaceTokens, tokens: [
+                "gradle.name"       : project.name,
+                "gradle.description": project.description,
+                "gradle.version"    : project.version,
+                "git.id"            : "$gitCommit.id".toString(),
+                "git.committer"     : "$gitCommit.committer.name <$gitCommit.committer.email>".toString(),
+                "git.shortMessage"  : "$gitCommit.shortMessage".toString(),
+                "git.time"          : "${new SimpleDateFormat('yyyy-MM-dd hh:mm:ss').format(new Date(gitCommit.time * 1000L))}".toString(),
+        ])
+    }
+}
+
 applicationDistribution.from("src/main/resources") {
     into "conf"
     include "logback.xml", "default.properties"
     rename {
         def name = it == "default.properties" ? "application.properties" : it
         "${name}.default"
+    }
+    filter { line ->
+        line.startsWith('info.build.') ? "" : line
     }
 }
 
@@ -52,4 +82,9 @@ startScripts {
             script.text = text
         }
     }
+}
+
+def getLatestGitCommit() {
+    def grgit = Grgit.open("$rootDir")
+    grgit.log(maxCommits: 1)[0]
 }
