@@ -1,4 +1,4 @@
-package se.crisp.codekvast.server.codekvast_server.db;
+package se.crisp.codekvast.server.codekvast_server.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.flywaydb.core.Flyway;
