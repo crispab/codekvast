@@ -7,9 +7,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
+import java.sql.*;
 
 /**
  * Initializes the database.
@@ -21,26 +22,55 @@ import java.sql.SQLException;
 @Configuration
 @Slf4j
 public class DatabaseInitializer {
-    public static final String MIGRATION_LOCATION = DatabaseInitializer.class.getPackage().getName() + ".migration";
+    public static final String JAVA_MIGRATION_LOCATION = DatabaseInitializer.class.getPackage().getName() + ".migration";
+    public static final String SQL_MIGRATION_LOCATION = "database.migration";
 
-    @Bean(initMethod = "migrate")
-    public Flyway flyway(DataSource dataSource) throws SQLException {
+    @Bean
+    public Flyway flyway(PasswordEncoder passwordEncoder, DataSource dataSource) throws SQLException {
         log.info("Migrating database at {}", dataSource.getConnection().getMetaData().getURL());
         Flyway flyway = new Flyway();
         flyway.setDataSource(dataSource);
-        flyway.setLocations(MIGRATION_LOCATION);
+        flyway.setLocations(SQL_MIGRATION_LOCATION, JAVA_MIGRATION_LOCATION);
         flyway.migrate();
+
+        encodePlaintextPasswords(passwordEncoder, dataSource.getConnection());
+
         return flyway;
     }
 
     /**
-     * Override the default JdbcTemplate created by Spring Boot, to make sure that Flyway.migrate() has run first-
+     * Override the default JdbcTemplate created by Spring Boot, to make sure that plaintext passwords have been encoded.
      */
     @Bean
     @DependsOn("flyway")
-    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
-        log.debug("Creates a JdbcTemplate");
+    public JdbcTemplate jdbcTemplate(DataSource dataSource) throws SQLException {
+        log.debug("Create a JdbcTemplate");
         return new JdbcTemplate(dataSource);
+    }
+
+    private void encodePlaintextPasswords(PasswordEncoder passwordEncoder, Connection connection) throws SQLException {
+        log.debug("Encoding plaintext passwords...");
+
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT username, password FROM users WHERE plaintextPassword = TRUE");
+             PreparedStatement update = connection
+                     .prepareStatement("UPDATE users SET password = ?, plaintextPassword = FALSE WHERE username = ?")) {
+
+            while (resultSet.next()) {
+                String username = resultSet.getString(1);
+                String rawPassword = resultSet.getString(2);
+
+                update.setString(1, passwordEncoder.encode(rawPassword));
+                update.setString(2, username);
+                int updated = update.executeUpdate();
+                if (updated == 0) {
+                    log.error("Could not encode password for {}", username);
+                } else {
+                    log.info("Encoded password for {}", username);
+                }
+            }
+        }
+
     }
 
     /**
