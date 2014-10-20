@@ -25,7 +25,7 @@ public interface ServerDelegate {
     /**
      * Upload a collection of signatures to the server.
      * <p/>
-     * This is typically done when the agent starts and then each time it detects a change in the code base.
+     * This should typically be done when the agent starts and then each time it detects a change in the code base.
      *
      * @param signatures The complete set of signatures found in the application
      * @throws ServerDelegateException Should the upload fail for some reason.
@@ -35,7 +35,7 @@ public interface ServerDelegate {
     /**
      * Upload method usage to the server.
      * <p/>
-     * This is done as soon as a new usage file is produced by the sensor.
+     * This should be done as soon as a new usage file is produced by the sensor.
      *
      * @param usage A collection of usage data entries
      * @throws ServerDelegateException

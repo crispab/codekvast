@@ -27,6 +27,8 @@ public class AgentConfig {
     public static final boolean DEFAULT_VERBOSE = false;
     public static final boolean DEFAULT_CLOBBER_AOP_XML = true;
     public static final String UNSPECIFIED_VERSION = "unspecified";
+    public static final String DEFAULT_API_USERNAME = "agent";
+    public static final String DEFAULT_API_PASSWORD = "0000";
 
     @NonNull
     private final String customerName;
@@ -48,6 +50,10 @@ public class AgentConfig {
     private final File dataPath;
     @NonNull
     private final URI serverUri;
+    @NonNull
+    private final String apiUsername;
+    @NonNull
+    private final String apiPassword;
     private final int sensorResolutionIntervalSeconds;
     private final int serverUploadIntervalSeconds;
     private final boolean clobberAopXml;
@@ -110,6 +116,8 @@ public class AgentConfig {
                               .serverUploadIntervalSeconds(getOptionalIntValue(props, "serverUploadIntervalSeconds",
                                                                                DEFAULT_UPLOAD_INTERVAL_SECONDS))
                               .serverUri(getMandatoryUriValue(props, "serverUri", true))
+                              .apiUsername(getOptionalStringValue(props, "apiUsername", DEFAULT_API_USERNAME))
+                              .apiPassword(getOptionalStringValue(props, "apiPassword", DEFAULT_API_PASSWORD))
                               .verbose(Boolean.parseBoolean(getOptionalStringValue(props, "verbose", Boolean.toString(DEFAULT_VERBOSE))))
                               .clobberAopXml(Boolean.parseBoolean(getOptionalStringValue(props, "clobberAopXml",
                                                                                          Boolean.toString(DEFAULT_CLOBBER_AOP_XML))))
@@ -135,7 +143,9 @@ public class AgentConfig {
                           .dataPath(new File("/var/lib", getDataChildPath(customerName, appName)))
                           .sensorResolutionIntervalSeconds(DEFAULT_SENSOR_RESOLUTION_INTERVAL_SECONDS)
                           .serverUploadIntervalSeconds(DEFAULT_UPLOAD_INTERVAL_SECONDS)
-                          .serverUri(new URI("http://some-codekvast-server"))
+                          .serverUri(new URI("http://localhost:8080"))
+                          .apiUsername(DEFAULT_API_USERNAME)
+                          .apiPassword(DEFAULT_API_PASSWORD)
                           .verbose(DEFAULT_VERBOSE)
                           .clobberAopXml(DEFAULT_CLOBBER_AOP_XML)
                           .build();

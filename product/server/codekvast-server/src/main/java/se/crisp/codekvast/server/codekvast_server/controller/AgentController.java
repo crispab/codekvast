@@ -7,6 +7,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import se.crisp.codekvast.server.agent.AgentRestEndpoints;
+import se.crisp.codekvast.server.agent.model.test.Ping;
+import se.crisp.codekvast.server.agent.model.test.Pong;
 import se.crisp.codekvast.server.agent.model.v1.JvmRunData;
 import se.crisp.codekvast.server.agent.model.v1.SignatureData;
 import se.crisp.codekvast.server.agent.model.v1.UsageData;
@@ -62,5 +64,11 @@ public class AgentController {
     public void receiveUsageV1(@RequestBody @Valid UsageData data) {
         log.debug("Received {}", data);
         storageService.storeUsageData(data);
+    }
+
+    @RequestMapping(value = AgentRestEndpoints.PING, method = RequestMethod.POST)
+    public Pong ping(@RequestBody @Valid Ping data) {
+        log.debug("Received {}", data);
+        return Pong.builder().message(data.getMessage()).build();
     }
 }

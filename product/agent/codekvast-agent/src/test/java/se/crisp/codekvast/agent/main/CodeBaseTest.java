@@ -34,6 +34,8 @@ public class CodeBaseTest {
                           .aspectjOptions("aspectjOptions")
                           .dataPath(new File("dataPath"))
                           .serverUri(new File("foobar").toURI())
+                          .apiUsername("apiUsername")
+                          .apiPassword("apiPassword")
                           .codeBaseUri(new File(codeBaseUri).toURI())
                           .codeBaseName("codeBaseName")
                           .build();

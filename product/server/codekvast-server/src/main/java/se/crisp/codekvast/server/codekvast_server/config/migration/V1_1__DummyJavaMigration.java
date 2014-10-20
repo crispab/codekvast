@@ -13,6 +13,6 @@ import java.sql.Connection;
 public class V1_1__DummyJavaMigration implements JdbcMigration {
     @Override
     public void migrate(Connection connection) throws Exception {
-        // PLACEHOLDER
+        // NOTHING HERE!
     }
 }

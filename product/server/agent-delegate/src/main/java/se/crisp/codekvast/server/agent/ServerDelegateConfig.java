@@ -33,11 +33,9 @@ public class ServerDelegateConfig {
     @NonNull
     private final URI serverUri;
 
-    public String getApiUsername() {
-        return "user";
-    }
+    @NonNull
+    private final String apiUsername;
 
-    public String getApiPassword() {
-        return "0000";
-    }
+    @NonNull
+    private final String apiPassword;
 }

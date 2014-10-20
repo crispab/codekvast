@@ -1,6 +1,13 @@
 package se.crisp.codekvast.server.agent.impl;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClients;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -28,13 +35,14 @@ import java.util.UUID;
 public class ServerDelegateImpl implements ServerDelegate {
 
     private final ServerDelegateConfig config;
-    private final RestTemplate restTemplate;
     private final Header header;
 
+    @Getter
+    private final RestTemplate restTemplate;
+
     @Inject
-    public ServerDelegateImpl(ServerDelegateConfig config, RestTemplate restTemplate) {
+    public ServerDelegateImpl(ServerDelegateConfig config) {
         this.config = config;
-        this.restTemplate = restTemplate;
         this.header = Header.builder()
                             .customerName(config.getCustomerName())
                             .appName(config.getAppName())
@@ -42,6 +50,13 @@ public class ServerDelegateImpl implements ServerDelegate {
                             .environment(config.getEnvironment())
                             .codeBaseName(config.getCodeBaseName())
                             .build();
+        this.restTemplate = new RestTemplate(createBasicAuthHttpClient(config.getApiUsername(), config.getApiPassword()));
+    }
+
+    HttpComponentsClientHttpRequestFactory createBasicAuthHttpClient(final String username, final String password) {
+        CredentialsProvider cp = new BasicCredentialsProvider();
+        cp.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
+        return new HttpComponentsClientHttpRequestFactory(HttpClients.custom().setDefaultCredentialsProvider(cp).build());
     }
 
     @Override
