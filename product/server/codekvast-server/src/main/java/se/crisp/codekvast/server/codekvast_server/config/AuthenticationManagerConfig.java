@@ -18,7 +18,7 @@ import javax.sql.DataSource;
 public class AuthenticationManagerConfig extends WebSecurityConfigurerAdapter {
 
     /**
-     * @param passwordEncoder The password encoder to use for matching login requests.
+     * @param passwordEncoder The password encoder to use for encoding plaintext passwords received in login requests.
      * @param dataSource      The dataSource to use.
      * @param auth            The object to configure.
      * @throws Exception
@@ -28,8 +28,8 @@ public class AuthenticationManagerConfig extends WebSecurityConfigurerAdapter {
             throws Exception {
         auth.jdbcAuthentication().dataSource(dataSource)
             .usersByUsernameQuery("SELECT username, password, enabled FROM users WHERE username = ?")
-            .authoritiesByUsernameQuery("SELECT users.username, users_roles.role FROM users_roles, users " +
-                                                " WHERE users_roles.userId = users.id AND users.username = ?")
+            .authoritiesByUsernameQuery("SELECT users.username, users_roles.role FROM users, users_roles " +
+                                                " WHERE users.id = users_roles.userId AND users.username = ?")
             .rolePrefix("ROLE_")
             .passwordEncoder(passwordEncoder);
     }
