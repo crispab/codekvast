@@ -35,7 +35,6 @@ public class ServerDelegateTest {
     private int port;
 
     private ServerDelegateConfig config;
-    private ServerDelegateImpl serverDelegate;
     private RestTemplate restTemplate;
 
     private void createCollaborators(String apiUsername, String apiPassword) throws URISyntaxException {
@@ -50,38 +49,46 @@ public class ServerDelegateTest {
                                      .apiPassword(apiPassword)
                                      .build();
 
-        serverDelegate = new ServerDelegateImpl(config);
-        restTemplate = serverDelegate.getRestTemplate();
+        restTemplate = new ServerDelegateImpl(config).getRestTemplate();
     }
 
     @Test
-    public void testCredentialsOk() throws URISyntaxException {
+    public void testCredentialsOkForUserNameAgent() throws URISyntaxException {
         createCollaborators("agent", "0000");
         ResponseEntity<Pong> response = restTemplate.postForEntity(config.getServerUri() + AgentRestEndpoints.PING,
                                                                    Ping.builder().message("Hello!").build(),
                                                                    Pong.class);
-        assertThat(response.getBody().getMessage(), is("Hello!"));
+        assertThat(response.getBody().getMessage(), is("You said Hello!"));
     }
 
     @Test
-    public void testCredentialsOkButTooLongPingMessage() throws URISyntaxException {
+    public void testCredentialsOkForUserNameSystem() throws URISyntaxException {
+        createCollaborators("system", "0000");
+        ResponseEntity<Pong> response = restTemplate.postForEntity(config.getServerUri() + AgentRestEndpoints.PING,
+                                                                   Ping.builder().message("Hello!").build(),
+                                                                   Pong.class);
+        assertThat(response.getBody().getMessage(), is("You said Hello!"));
+    }
+
+    @Test
+    public void testCredentialsOkButInvalidPayload() throws URISyntaxException {
         createCollaborators("agent", "0000");
-        assertThatPingThrows("Hello, World!", "400 Bad Request");
+        assertThatPingThrowsHttpClientErrorException("Hello, Brave New World!", "400 Bad Request");
     }
 
     @Test
     public void testBadCredentials() throws URISyntaxException {
         createCollaborators("agent", "0000foobar");
-        assertThatPingThrows("Hello!", "401 Unauthorized");
+        assertThatPingThrowsHttpClientErrorException("Hello!", "401 Unauthorized");
     }
 
     @Test
     public void testCredentialsOkButWrongRole() throws URISyntaxException {
         createCollaborators("user", "0000");
-        assertThatPingThrows("Hello!", "403 Forbidden");
+        assertThatPingThrowsHttpClientErrorException("Hello!", "403 Forbidden");
     }
 
-    private void assertThatPingThrows(String pingMessage, String expectedExceptionMessage) {
+    private void assertThatPingThrowsHttpClientErrorException(String pingMessage, String expectedExceptionMessage) {
         try {
             restTemplate.postForEntity(config.getServerUri() + AgentRestEndpoints.PING,
                                        Ping.builder().message(pingMessage).build(),

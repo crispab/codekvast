@@ -69,6 +69,6 @@ public class AgentController {
     @RequestMapping(value = AgentRestEndpoints.PING, method = RequestMethod.POST)
     public Pong ping(@RequestBody @Valid Ping data) {
         log.debug("Received {}", data);
-        return Pong.builder().message(data.getMessage()).build();
+        return Pong.builder().message("You said " + data.getMessage()).build();
     }
 }

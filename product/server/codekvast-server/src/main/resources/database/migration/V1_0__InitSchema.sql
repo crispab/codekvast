@@ -1,8 +1,10 @@
+//--- Roles ----------------------------------------------------------------------------------------------------
 DROP TABLE IF EXISTS roles;
 CREATE TABLE roles (
   name VARCHAR(30) NOT NULL UNIQUE,
 );
 
+//--- Organisations --------------------------------------------------------------------------------------------
 DROP TABLE IF EXISTS organisations;
 CREATE TABLE organisations (
   id        INTEGER                             NOT NULL IDENTITY,
@@ -11,6 +13,7 @@ CREATE TABLE organisations (
   updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
+//--- Users ----------------------------------------------------------------------------------------------------
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
   id                INTEGER                             NOT NULL IDENTITY,
@@ -44,11 +47,11 @@ CREATE TABLE users_roles (
 DROP INDEX IF EXISTS ix_users_roles;
 CREATE UNIQUE INDEX ix_users_roles ON users_roles (userId, role);
 
-// Create some system data
+//--- System data ----------------------------------------------------------------------------------------------
 INSERT INTO roles (name) VALUES ('SUPERUSER');
-INSERT INTO roles (name) VALUES ('MONITOR');
 INSERT INTO roles (name) VALUES ('AGENT');
 INSERT INTO roles (name) VALUES ('USER');
+INSERT INTO roles (name) VALUES ('MONITOR');
 INSERT INTO organisations (id, name) VALUES (0, 'CodeKvast');
 INSERT INTO organisations (id, name) VALUES (1, 'Demo');
 // The plaintext passwords will be hashed when the application starts
@@ -61,6 +64,9 @@ INSERT INTO users_organisations (userId, organisationId) VALUES (1, 0);
 INSERT INTO users_organisations (userId, organisationId) VALUES (2, 0);
 INSERT INTO users_organisations (userId, organisationId) VALUES (3, 0);
 INSERT INTO users_roles (userId, role) VALUES (0, 'SUPERUSER');
+INSERT INTO users_roles (userId, role) VALUES (0, 'AGENT');
+INSERT INTO users_roles (userId, role) VALUES (0, 'USER');
+INSERT INTO users_roles (userId, role) VALUES (0, 'MONITOR');
 INSERT INTO users_roles (userId, role) VALUES (1, 'AGENT');
 INSERT INTO users_roles (userId, role) VALUES (2, 'USER');
 INSERT INTO users_roles (userId, role) VALUES (3, 'MONITOR');
