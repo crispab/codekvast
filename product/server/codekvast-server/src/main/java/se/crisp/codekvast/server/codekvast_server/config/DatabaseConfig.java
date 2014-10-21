@@ -42,25 +42,26 @@ public class DatabaseConfig {
         flyway.setLocations(SQL_MIGRATION_LOCATION, JAVA_MIGRATION_LOCATION);
         flyway.migrate();
 
-        encodePlaintextPasswords(passwordEncoder, dataSource.getConnection());
+        replacePlaintextPasswords(passwordEncoder, dataSource.getConnection());
 
         return flyway;
     }
 
-    private void encodePlaintextPasswords(PasswordEncoder passwordEncoder, Connection connection) throws SQLException {
-        log.debug("Encoding plaintext passwords...");
+    private void replacePlaintextPasswords(PasswordEncoder passwordEncoder, Connection connection) throws SQLException {
+        log.debug("Replacing plaintext passwords...");
 
         try (
                 ResultSet resultSet = connection.createStatement()
-                                                .executeQuery("SELECT username, password FROM users WHERE plaintextPassword = TRUE");
+                                                .executeQuery(
+                                                        "SELECT username, plaintext_password FROM users WHERE plaintext_password IS NOT NULL");
                 PreparedStatement update = connection
-                        .prepareStatement("UPDATE users SET password = ?, plaintextPassword = FALSE WHERE username = ?")) {
+                        .prepareStatement("UPDATE users SET encoded_password = ?, plaintext_password = NULL WHERE username = ?")) {
 
             while (resultSet.next()) {
                 String username = resultSet.getString(1);
-                String rawPassword = resultSet.getString(2);
+                String plaintextPassword = resultSet.getString(2);
 
-                update.setString(1, passwordEncoder.encode(rawPassword));
+                update.setString(1, passwordEncoder.encode(plaintextPassword));
                 update.setString(2, username);
                 int updated = update.executeUpdate();
                 if (updated == 0) {

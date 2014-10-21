@@ -27,9 +27,9 @@ public class AuthenticationManagerConfig extends WebSecurityConfigurerAdapter {
     public void configureGlobal(PasswordEncoder passwordEncoder, DataSource dataSource, AuthenticationManagerBuilder auth)
             throws Exception {
         auth.jdbcAuthentication().dataSource(dataSource)
-            .usersByUsernameQuery("SELECT username, password, enabled FROM users WHERE username = ?")
-            .authoritiesByUsernameQuery("SELECT users.username, users_roles.role FROM users, users_roles " +
-                                                " WHERE users.id = users_roles.userId AND users.username = ?")
+            .usersByUsernameQuery("SELECT username, encoded_password, enabled FROM users WHERE username = ?")
+            .authoritiesByUsernameQuery("SELECT users.username, user_roles.role FROM users, user_roles " +
+                                                " WHERE users.id = user_roles.user_id AND users.username = ?")
             .rolePrefix("ROLE_")
             .passwordEncoder(passwordEncoder);
     }
