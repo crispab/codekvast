@@ -25,6 +25,7 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-websocket"
     compile "org.springframework.boot:spring-boot-starter-actuator"
     compile "org.springframework.boot:spring-boot-starter-web"
+    compile "org.springframework.boot:spring-boot-starter-thymeleaf"
     compile "org.springframework.boot:spring-boot-starter-security"
     compile "org.springframework:spring-messaging"
     compile "org.webjars:angularjs:1.3.0"
