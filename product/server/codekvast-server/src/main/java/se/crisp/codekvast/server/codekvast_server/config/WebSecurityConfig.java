@@ -28,12 +28,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Inject
     public void configureGlobal(PasswordEncoder passwordEncoder, DataSource dataSource, AuthenticationManagerBuilder auth)
             throws Exception {
+        // @formatter:off
         auth.jdbcAuthentication().dataSource(dataSource)
             .usersByUsernameQuery("SELECT username, encoded_password, enabled FROM users WHERE username = ?")
+
             .authoritiesByUsernameQuery("SELECT users.username, user_roles.role FROM users, user_roles " +
-                                                " WHERE users.id = user_roles.user_id AND users.username = ?")
+                                        "WHERE users.id = user_roles.user_id " +
+                                            "AND users.username = ?")
             .rolePrefix("ROLE_")
             .passwordEncoder(passwordEncoder);
+        // @formatter:on
     }
 
     @Override
@@ -41,20 +45,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // @formatter:off
         http.csrf().disable()
             .authorizeRequests()
-            .antMatchers("/static/**").permitAll()
-            .antMatchers("/templates/**").permitAll()
-            .antMatchers("/agent/**").hasRole("AGENT")
-            .antMatchers("/**").hasRole("USER")
-            .and()
+                .antMatchers("/webjars/**").permitAll()
+                .antMatchers("/static/**").permitAll()
+                .antMatchers("/agent/**").hasRole("AGENT")
+                .antMatchers("/**").hasRole("USER")
+                .and()
             .formLogin()
-            .loginPage("/login").permitAll()
-            .and()
+                .loginPage("/login").permitAll()
+                .and()
             .httpBasic()
-            .realmName("CodeKvast")
-            .and()
+                .realmName("CodeKvast")
+                .and()
             .logout()
-            .permitAll();
-
+                .permitAll();
         // @formatter:on
     }
 }
