@@ -63,7 +63,7 @@ public class CodeKvastAgentMain {
      */
     @Bean
     public AgentConfig agentConfig(ConfigurableEnvironment environment) {
-        environment.getPropertySources().addLast(new AgentConfigPropertySource(agentConfig, "codekvast."));
+        environment.getPropertySources().addLast(new AgentConfigPropertySource(agentConfig));
         return agentConfig;
     }
 

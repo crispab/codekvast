@@ -9,18 +9,17 @@ import java.lang.reflect.Method;
 
 /**
  * Make an AgentConfig usable in a Spring Environment, so that AgentConfig properties are injectable as e.g.,
- * @Value("${codekvast.packagePrefix}")
+ * {@code @Value("${codekvast.packagePrefix}")}
  *
  * @author Olle Hallin
  */
 @Slf4j
 public class AgentConfigPropertySource extends PropertySource<AgentConfig> {
 
-    private final String prefix;
+    private final String prefix = "codekvast.";
 
-    public AgentConfigPropertySource(AgentConfig agentConfig, String prefix) {
+    public AgentConfigPropertySource(AgentConfig agentConfig) {
         super("agentConfig", agentConfig);
-        this.prefix = prefix;
     }
 
     @Override

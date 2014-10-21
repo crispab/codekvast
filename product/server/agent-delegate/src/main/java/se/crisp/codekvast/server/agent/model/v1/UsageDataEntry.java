@@ -16,6 +16,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @ToString
+@EqualsAndHashCode(of = "signature")
 public class UsageDataEntry {
 
     /**
@@ -25,14 +26,14 @@ public class UsageDataEntry {
 
     /**
      * The used signature was <em>not</em> found as-is in the scanned code base. It was found however, when searching upwards in the class
-     * hierarchy. The reason for not finding it in the first place could be that the method was synthesized at runtime by some bytecode
+     * hierarchy. The reason for not finding it in the first place could be that the method was synthesized at runtime by some byte code
      * manipulating AOP framework (like Guice).
      */
     public static final int CONFIDENCE_FOUND_IN_PARENT_CLASS = 1;
 
     /**
-     * The used signature was <em>not</em> found at all in the scanned code base. This indicates a problem with the code base scanner, which
-     * requires access to the source code to be resolved.
+     * The used signature was <em>not</em> found at all in the scanned code base. This indicates a problem with the code base scanner.
+     * Access to the source code is required in order to resolve the problem.
      */
     public static final int CONFIDENCE_NOT_FOUND_IN_CODE_BASE = 2;
 

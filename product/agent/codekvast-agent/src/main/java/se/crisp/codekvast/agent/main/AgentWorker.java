@@ -28,7 +28,7 @@ public class AgentWorker {
     private final AgentConfig config;
     private final CodeBaseScanner codeBaseScanner;
     private final ServerDelegate serverDelegate;
-    private final AppUsage appUsage = new AppUsage();
+    private final SignatureUsage signatureUsage = new SignatureUsage();
 
     private JvmRun jvmRun;
     private CodeBase codeBase;
@@ -42,8 +42,8 @@ public class AgentWorker {
     }
 
     @Scheduled(initialDelay = 10L, fixedDelayString = "${codekvast.serverUploadIntervalMillis}")
-    public void analyseJvmRunData() {
-        log.debug("Analyzing JvmRun data");
+    public void analyseSensorData() {
+        log.debug("Analyzing sensor data");
 
         uploadJvmRunIfNeeded(config.getJvmRunFile());
 
@@ -96,22 +96,22 @@ public class AgentWorker {
     private void processUsageDataIfNeeded(File usageFile) {
         long modifiedAt = usageFile.lastModified();
         if (modifiedAt != usageFileModifiedAtMillis) {
-            applyRecordedUsage(codeBase, appUsage, FileUtils.readUsageDataFrom(usageFile));
-            uploadUsedSignatures(appUsage);
+            applyRecordedUsage(codeBase, signatureUsage, FileUtils.readUsageDataFrom(usageFile));
+            uploadUsedSignatures(signatureUsage);
             usageFileModifiedAtMillis = modifiedAt;
         }
     }
 
-    private void uploadUsedSignatures(AppUsage appUsage) {
+    private void uploadUsedSignatures(SignatureUsage signatureUsage) {
         try {
-            serverDelegate.uploadUsageData(appUsage.getNotUploadedSignatures());
-            appUsage.allSignaturesAreUploaded();
+            serverDelegate.uploadUsageData(signatureUsage.getNotUploadedSignatures());
+            signatureUsage.clearNotUploadedSignatures();
         } catch (ServerDelegateException e) {
             logException("Cannot upload usage data", e);
         }
     }
 
-    int applyRecordedUsage(CodeBase codeBase, AppUsage appUsage, List<Usage> usages) {
+    int applyRecordedUsage(CodeBase codeBase, SignatureUsage signatureUsage, List<Usage> usages) {
         int recognized = 0;
         int unrecognized = 0;
         int ignored = 0;
@@ -146,7 +146,7 @@ public class AgentWorker {
                 }
             }
 
-            appUsage.put(normalizedSignature, usage.getUsedAtMillis(), confidence);
+            signatureUsage.put(normalizedSignature, usage.getUsedAtMillis(), confidence);
         }
 
         if (unrecognized > 0) {

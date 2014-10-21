@@ -1,6 +1,7 @@
 package se.crisp.codekvast.agent.main;
 
 import com.google.common.annotations.VisibleForTesting;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.ToString;
@@ -19,6 +20,7 @@ import java.util.regex.Pattern;
  * @author Olle Hallin (qolha), olle.hallin@crisp.se
  */
 @ToString(of = "codeBaseFile", includeFieldNames = false)
+@EqualsAndHashCode(of = "fingerprint")
 @Slf4j
 class CodeBase {
 
@@ -46,37 +48,17 @@ class CodeBase {
     }
 
     URL[] getUrls() {
-        getFingerprint();
+        updateFingerprint();
         if (needsExploding) {
             throw new UnsupportedOperationException("Exploding WAR or EAR not yet implemented");
         }
         return urls.toArray(new URL[urls.size()]);
     }
 
-    CodeBaseFingerprint getFingerprint() {
+    void updateFingerprint() {
         if (fingerprint == null) {
             fingerprint = initUrls();
         }
-        return fingerprint;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        CodeBase that = (CodeBase) o;
-
-        return this.getFingerprint().equals(that.getFingerprint());
-    }
-
-    @Override
-    public int hashCode() {
-        return getFingerprint().hashCode();
     }
 
     private CodeBaseFingerprint initUrls() {
