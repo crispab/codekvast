@@ -7,7 +7,7 @@ import java.net.URI;
 import java.util.*;
 
 /**
- * Low-level file utlities used by the codekvast agent and sensor.
+ * Low-level file utilities used by the codekvast agent and sensor.
  *
  * @author Olle Hallin
  */
@@ -40,7 +40,7 @@ public class FileUtils {
         return result;
     }
 
-    public static void writeUsageDataTo(File file, int dumpCount, Long signatureUsedAtMillis, Set<String> signatures) {
+    public static void writeUsageDataTo(File file, int dumpCount, Long recordingStartedAtMillis, Set<String> signatures) {
         long startedAt = System.currentTimeMillis();
 
         File tmpFile = null;
@@ -51,13 +51,13 @@ public class FileUtils {
             out = new PrintStream(tmpFile, CHARSET_NAME);
 
             Date dumpedAt = new Date();
-            Date usedAt = new Date(signatureUsedAtMillis);
-            out.printf(Locale.ENGLISH, "# CodeKvast usage results #%d at %s, methods used since %s%n", dumpCount, dumpedAt, usedAt);
+            Date recordedAt = new Date(recordingStartedAtMillis);
+            out.printf(Locale.ENGLISH, "# CodeKvast usage results #%d at %s, methods used since %s%n", dumpCount, dumpedAt, recordedAt);
             out.println("# lastUsedMillis:signature");
 
             int count = 0;
             for (String sig : signatures) {
-                out.println(new Usage(sig, signatureUsedAtMillis));
+                out.println(new Usage(sig, recordingStartedAtMillis));
                 count += 1;
             }
 
