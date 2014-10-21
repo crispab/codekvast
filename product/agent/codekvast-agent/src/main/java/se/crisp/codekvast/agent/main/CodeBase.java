@@ -45,20 +45,14 @@ class CodeBase {
     CodeBase(AgentConfig config) {
         this.config = config;
         this.codeBaseFile = new File(config.getCodeBaseUri());
+        this.fingerprint = initUrls();
     }
 
     URL[] getUrls() {
-        updateFingerprint();
         if (needsExploding) {
             throw new UnsupportedOperationException("Exploding WAR or EAR not yet implemented");
         }
         return urls.toArray(new URL[urls.size()]);
-    }
-
-    void updateFingerprint() {
-        if (fingerprint == null) {
-            fingerprint = initUrls();
-        }
     }
 
     private CodeBaseFingerprint initUrls() {

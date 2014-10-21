@@ -18,7 +18,7 @@ class CodeBaseFingerprint {
     private final int count;
     private final long size;
     private final long lastModified;
-    private final int hashCode;
+    private final int cachedHashCode;
 
     static Builder builder() {
         return new Builder();
@@ -31,18 +31,19 @@ class CodeBaseFingerprint {
         private int count;
         private long size;
         private long lastModified;
-        private long hashCode;
+        private long hashCodeSum;
 
-        public void record(File file) {
+        public Builder record(File file) {
             count += 1;
             size += file.length();
             lastModified = max(lastModified, file.lastModified());
-            hashCode += file.hashCode();
+            hashCodeSum += file.hashCode();
             log.trace("Recorded {}, {}", file, this);
+            return this;
         }
 
         CodeBaseFingerprint build() {
-            return new CodeBaseFingerprint(count, size, lastModified, Long.valueOf(hashCode).hashCode());
+            return new CodeBaseFingerprint(count, size, lastModified, Long.valueOf(hashCodeSum).hashCode());
         }
     }
 }

@@ -47,7 +47,7 @@ public class AgentWorker {
 
         uploadJvmRunIfNeeded(config.getJvmRunFile());
 
-        analyzeCodeBaseIfNeeded(new CodeBase(config));
+        analyzeAndUploadCodeBaseIfNeeded(new CodeBase(config));
 
         if (codeBase != null) {
             processUsageDataIfNeeded(config.getUsageFile());
@@ -81,7 +81,7 @@ public class AgentWorker {
         }
     }
 
-    private void analyzeCodeBaseIfNeeded(CodeBase newCodeBase) {
+    private void analyzeAndUploadCodeBaseIfNeeded(CodeBase newCodeBase) {
         if (!newCodeBase.equals(codeBase)) {
             newCodeBase.scanSignatures(codeBaseScanner);
             try {
