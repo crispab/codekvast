@@ -1,5 +1,6 @@
 package se.crisp.codekvast.server.codekvast_server.controller;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.Validator;
@@ -17,6 +18,8 @@ import se.crisp.codekvast.server.codekvast_server.service.StorageService;
 import javax.inject.Inject;
 import javax.validation.Valid;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * A HTTP REST Controller that handles requests from the CodeKvast Agent.
  * <p/>
@@ -28,8 +31,12 @@ import javax.validation.Valid;
 @Slf4j
 public class AgentController {
 
-    private final StorageService storageService;
-    private final Validator validator;
+    private final
+    @NonNull
+    StorageService storageService;
+    private final
+    @NonNull
+    Validator validator;
 
     @Inject
     public AgentController(StorageService storageService, Validator validator) {
@@ -39,7 +46,7 @@ public class AgentController {
 
     @InitBinder
     private void initBinder(WebDataBinder binder) {
-        binder.setValidator(validator);
+        binder.setValidator(checkNotNull(validator, "validator is null"));
     }
 
     @ExceptionHandler

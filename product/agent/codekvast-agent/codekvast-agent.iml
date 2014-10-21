@@ -49,14 +49,14 @@
     <orderEntry type="library" exported="" name="Gradle: spring-context-4.0.7.RELEASE" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: spring-test-4.0.7.RELEASE" level="project" />
     <orderEntry type="library" exported="" name="Gradle: reflections-0.9.9" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: spring-boot-starter-1.1.7.RELEASE" level="project" />
     <orderEntry type="library" exported="" name="Gradle: guava-15.0" level="project" />
     <orderEntry type="library" exported="" name="Gradle: javassist-3.18.2-GA" level="project" />
     <orderEntry type="library" exported="" name="Gradle: annotations-2.0.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: spring-boot-1.1.7.RELEASE" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: spring-boot-autoconfigure-1.1.7.RELEASE" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: spring-boot-starter-logging-1.1.7.RELEASE" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: spring-boot-starter-test-1.1.7.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: spring-boot-starter-1.1.8.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: spring-boot-1.1.8.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: spring-boot-autoconfigure-1.1.8.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: spring-boot-starter-logging-1.1.8.RELEASE" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: spring-boot-starter-test-1.1.8.RELEASE" level="project" />
   </component>
   <component name="org.twodividedbyzero.idea.findbugs">
     <option name="_basePreferences">

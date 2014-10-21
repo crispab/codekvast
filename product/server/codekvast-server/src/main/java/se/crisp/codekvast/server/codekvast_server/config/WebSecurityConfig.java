@@ -2,6 +2,7 @@ package se.crisp.codekvast.server.codekvast_server.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -15,7 +16,8 @@ import javax.sql.DataSource;
  */
 @Configuration
 @EnableWebSecurity
-public class AuthenticationManagerConfig extends WebSecurityConfigurerAdapter {
+@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * @param passwordEncoder The password encoder to use for encoding plaintext passwords received in login requests.
@@ -36,10 +38,23 @@ public class AuthenticationManagerConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        // @formatter:off
         http.csrf().disable()
-            .httpBasic().realmName("CodeKvast")
-            .and().authorizeRequests().antMatchers("/agent/**").hasRole("AGENT").antMatchers("/webui/**").hasRole("USER");
+            .authorizeRequests()
+            .antMatchers("/static/**").permitAll()
+            .antMatchers("/templates/**").permitAll()
+            .antMatchers("/agent/**").hasRole("AGENT")
+            .antMatchers("/**").hasRole("USER")
+            .and()
+            .formLogin()
+            .loginPage("/login").permitAll()
+            .and()
+            .httpBasic()
+            .realmName("CodeKvast")
+            .and()
+            .logout()
+            .permitAll();
 
+        // @formatter:on
     }
-
 }

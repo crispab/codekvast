@@ -4,7 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
 import se.crisp.codekvast.server.agent.model.v1.UsageDataEntry;
 import se.crisp.codekvast.server.codekvast_server.service.StorageService;
 
@@ -18,6 +21,7 @@ import java.util.Collection;
  * @author Olle Hallin
  */
 @Controller
+@Secured("ROLE_USER")
 @Slf4j
 public class WebController {
     public static final String TOPIC_SIGNATURES = "/topic/signatures";
@@ -36,4 +40,8 @@ public class WebController {
         return storageService.getSignatures();
     }
 
+    @RequestMapping({"/", "/index"})
+    public String index(ModelMap model) {
+        return "index";
+    }
 }
