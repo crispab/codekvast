@@ -19,7 +19,7 @@ var codekvastApp = angular.module('codekvastApp', [])
         };
 
         $scope.initSockets = function () {
-            $scope.socket.client = new SockJS("/webui", null, {debug: true});
+            $scope.socket.client = new SockJS("/websocket", null, {debug: true});
 
             $scope.socket.stomp = Stomp.over($scope.socket.client);
 

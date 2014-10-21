@@ -4,11 +4,10 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>Welcome to CodeKvast!</title>
     <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/3.2.0/css/bootstrap.min.css"/>
-    <style>
-        .ng-cloak {
-            display: none
-        }
-    </style>
+    <script src="/webjars/angularjs/1.3.0/angular.min.js"></script>
+    <script src="/webjars/sockjs-client/0.3.4/sockjs.js"></script>
+    <script src="/webjars/stomp-websocket/2.3.1/stomp.js"></script>
+    <script src="/js/codekvast.js"></script>
 </head>
 <body>
 <div th:if="${#httpServletRequest.remoteUser != null}">
@@ -20,23 +19,21 @@
         <input type="submit" value="Log out"/>
     </form>
 </div>
-<div ng-app="codekvastApp" class="ng-cloak">
-    <h1>Welcome to {{'Code' + 'Kvast!' }}</h1>
+<div ng-app="codekvastApp">
+    <div class="ng-cloak">
+        <h1>Welcome to {{'Code' + 'Kvast!' }}</h1>
 
-<table ng-controller="SignaturesCtrl">
-    <tr>
-        <th style="text-align: left">Signature</th>
-        <th>Used at</th>
-    </tr>
-    <tr ng-repeat="sig in signatures | orderBy:'usedAtMillis' ">
-        <td style="width: 50em">{{sig.signature}}</td>
-        <td>{{sig.usedAtMillis | suppressEmptyDate | date:"yyyy-MM-dd HH:mm:ss"}}</td>
-    </tr>
-</table>
+        <table ng-controller="SignaturesCtrl">
+            <tr>
+                <th style="text-align: left">Signature</th>
+                <th>Used at</th>
+            </tr>
+            <tr ng-repeat="sig in signatures | orderBy:'usedAtMillis' ">
+                <td style="width: 50em">{{sig.signature}}</td>
+                <td>{{sig.usedAtMillis | suppressEmptyDate | date:"yyyy-MM-dd HH:mm:ss"}}</td>
+            </tr>
+        </table>
+    </div>
 </div>
-<script src="/webjars/angularjs/1.3.0/angular.min.js"></script>
-<script src="/webjars/sockjs-client/0.3.4/sockjs.js"></script>
-<script src="/webjars/stomp-websocket/2.3.1/stomp.js"></script>
-<script src="/static/js/app.js"></script>
 </body>
 </html>
