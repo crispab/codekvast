@@ -40,7 +40,7 @@ public class FileUtils {
         return result;
     }
 
-    public static void writeUsageDataTo(File file, int dumpCount, Map<String, Long> usages) {
+    public static void writeUsageDataTo(File file, int dumpCount, Long signatureUsedAtMillis, Set<String> signatures) {
         long startedAt = System.currentTimeMillis();
 
         File tmpFile = null;
@@ -51,12 +51,13 @@ public class FileUtils {
             out = new PrintStream(tmpFile, CHARSET_NAME);
 
             Date dumpedAt = new Date();
-            out.printf(Locale.ENGLISH, "# CodeKvast usage results #%d at %s%n", dumpCount, dumpedAt);
+            Date usedAt = new Date(signatureUsedAtMillis);
+            out.printf(Locale.ENGLISH, "# CodeKvast usage results #%d at %s, methods used since %s%n", dumpCount, dumpedAt, usedAt);
             out.println("# lastUsedMillis:signature");
 
             int count = 0;
-            for (Map.Entry<String, Long> entry : usages.entrySet()) {
-                out.println(new Usage(entry.getKey(), entry.getValue()));
+            for (String sig : signatures) {
+                out.println(new Usage(sig, signatureUsedAtMillis));
                 count += 1;
             }
 

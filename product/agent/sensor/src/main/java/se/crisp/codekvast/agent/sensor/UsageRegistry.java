@@ -12,7 +12,6 @@ import java.net.UnknownHostException;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * This is the target of the method execution recording aspects.
@@ -29,13 +28,24 @@ public class UsageRegistry {
     private final AgentConfig config;
     private final JvmRun jvmRun;
     private final File jvmRunFile;
-    private final AtomicLong currentTimeMillis = new AtomicLong(System.currentTimeMillis());
-    private final ConcurrentMap<String, Long> usages = new ConcurrentHashMap<String, Long>();
+
+    // We really want to store signature usage in a ConcurrentSet, but that is not available in JDK 1.5 so we use a ConcurrentMap as a
+    // set instead, with dummy objects as values. We are only interested in the key set.
+    private final Object dummyObject = new Object();
+
+    // Toggle between two usage maps to avoid synchronisation
+    private final ConcurrentMap[] usages = new ConcurrentMap[2];
+    private volatile int currentUsageIndex = 0;
+    private long recordingIntervalStartedAtMillis = System.currentTimeMillis();
 
     public UsageRegistry(AgentConfig config, JvmRun jvmRun) {
         this.config = config;
         this.jvmRun = jvmRun;
         this.jvmRunFile = config.getJvmRunFile();
+
+        for (int i = 0; i < usages.length; i++) {
+            this.usages[i] = new ConcurrentHashMap<String, Object>();
+        }
     }
 
     /**
@@ -44,10 +54,10 @@ public class UsageRegistry {
     public static void initialize(AgentConfig config) {
         UsageRegistry.instance = new UsageRegistry(config,
                                                    JvmRun.builder()
-                                                            .hostName(getHostName())
-                                                            .uuid(UUID.randomUUID())
-                                                            .startedAtMillis(System.currentTimeMillis())
-                                                            .build());
+                                                         .hostName(getHostName())
+                                                         .uuid(UUID.randomUUID())
+                                                         .startedAtMillis(System.currentTimeMillis())
+                                                         .build());
     }
 
     private static String getHostName() {
@@ -59,21 +69,23 @@ public class UsageRegistry {
     }
 
     /**
-     * Record that this method signature was invoked at current time.
+     * Record that this method signature was invoked at current recording interval.
      * <p/>
      * Thread-safe.
      */
     public void registerMethodExecution(Signature signature) {
-        usages.put(signature.toLongString(), currentTimeMillis.longValue());
+        //noinspection unchecked
+        usages[currentUsageIndex].put(signature.toLongString(), dummyObject);
     }
 
     /**
-     * Record that this JPS page was invoked at current time.
+     * Record that this JPS page was invoked at current recording interval.
      * <p/>
      * Thread-safe.
      */
     public void registerJspPageExecution(String pageName) {
-        usages.put(pageName, currentTimeMillis.longValue());
+        //noinspection unchecked
+        usages[currentUsageIndex].put(pageName, dummyObject);
     }
 
     /**
@@ -87,10 +99,23 @@ public class UsageRegistry {
         if (!outputPath.exists()) {
             CodeKvastSensor.out.println("Cannot dump usage data, " + outputPath + " cannot be created");
         } else {
+            long oldRecordingIntervalStartedAtMillis = recordingIntervalStartedAtMillis;
+            int oldIndex = currentUsageIndex;
+
+            toggleUsageIndex();
+
             dumpJvmRun();
-            FileUtils.writeUsageDataTo(config.getUsageFile(), dumpCount, usages);
-            currentTimeMillis.set(System.currentTimeMillis());
+
+            //noinspection unchecked
+            FileUtils.writeUsageDataTo(config.getUsageFile(), dumpCount, oldRecordingIntervalStartedAtMillis, usages[oldIndex].keySet());
+
+            usages[oldIndex].clear();
         }
+    }
+
+    private void toggleUsageIndex() {
+        recordingIntervalStartedAtMillis = System.currentTimeMillis();
+        currentUsageIndex = currentUsageIndex == 0 ? 1 : 0;
     }
 
     public AgentConfig getConfig() {
