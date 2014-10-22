@@ -37,10 +37,11 @@ public interface ServerDelegate {
      * <p/>
      * This should be done as soon as a new usage file is produced by the sensor.
      *
+     * @param jvmRunUuid The UUID of the JVM that produced this usage data.
      * @param usage A collection of usage data entries
      * @throws ServerDelegateException
      */
-    void uploadUsageData(Collection<UsageDataEntry> usage) throws ServerDelegateException;
+    void uploadUsageData(UUID jvmRunUuid, Collection<UsageDataEntry> usage) throws ServerDelegateException;
 
     /**
      * Pings the server.

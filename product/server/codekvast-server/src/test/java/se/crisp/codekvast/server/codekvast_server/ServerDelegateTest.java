@@ -41,6 +41,7 @@ public class ServerDelegateTest {
 
     private final String signature1 = "public String com.acme.Foo.foo()";
     private final String signature2 = "public void com.acme.Foo.bar()";
+    private final UUID uuid = UUID.randomUUID();
 
     @Value("${local.server.port}")
     private int port;
@@ -92,7 +93,7 @@ public class ServerDelegateTest {
     @Test
     public void testUploadJvmRunData() throws ServerDelegateException, URISyntaxException {
         // when
-        serverDelegate.uploadJvmRunData("hostName", System.currentTimeMillis(), System.currentTimeMillis(), UUID.randomUUID());
+        serverDelegate.uploadJvmRunData("hostName", System.currentTimeMillis(), System.currentTimeMillis(), uuid);
 
         // then
         // TODO: assert the result
@@ -114,7 +115,7 @@ public class ServerDelegateTest {
         Collection<UsageDataEntry> usage = Arrays.asList(new UsageDataEntry(signature1, now, UsageConfidence.EXACT_MATCH),
                                                          new UsageDataEntry(signature2, now, UsageConfidence.EXACT_MATCH));
         // when
-        serverDelegate.uploadUsageData(usage);
+        serverDelegate.uploadUsageData(uuid, usage);
 
         // then
         assertThat(storageService.getSignatures(), hasSize(2));

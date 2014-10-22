@@ -5,6 +5,7 @@ import lombok.experimental.Builder;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.UUID;
 
 /**
  * REST data about used signatures.
@@ -21,16 +22,19 @@ public class UsageData {
     @Valid
     private Header header;
 
+    private UUID jvmRunUuid;
+
     @NonNull
     @Valid
     private Collection<UsageDataEntry> usage;
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(header=" + header + ", usage.size=" + usage.size() + ')';
+        return getClass().getSimpleName() + "(header=" + header + ", jvmRunUuid=" + jvmRunUuid + ", usage.size=" + usage.size() + ')';
     }
 
     public String toLongString() {
-        return getClass().getSimpleName() + "(header=" + header + ", usage.size=" + usage.size() + ", usage=" + usage + ')';
+        return getClass().getSimpleName() + "(header=" + header + ", jvmRunUuid=" + jvmRunUuid + ", usage.size=" + usage
+                .size() + ", usage=" + usage + ')';
     }
 }

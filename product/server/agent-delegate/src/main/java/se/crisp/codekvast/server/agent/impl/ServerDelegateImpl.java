@@ -1,6 +1,7 @@
 package se.crisp.codekvast.server.agent.impl;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -113,7 +114,7 @@ public class ServerDelegateImpl implements ServerDelegate {
     }
 
     @Override
-    public void uploadUsageData(Collection<UsageDataEntry> usage) throws ServerDelegateException {
+    public void uploadUsageData(@NonNull UUID jvmRunUuid, Collection<UsageDataEntry> usage) throws ServerDelegateException {
         if (usage.isEmpty()) {
             log.debug("Not uploading empty usage");
             return;
@@ -125,7 +126,7 @@ public class ServerDelegateImpl implements ServerDelegate {
         try {
             long startedAt = System.currentTimeMillis();
 
-            UsageData data = UsageData.builder().header(header).usage(usage).build();
+            UsageData data = UsageData.builder().header(header).jvmRunUuid(jvmRunUuid).usage(usage).build();
 
             restTemplate.postForEntity(new URI(endPoint), data, Void.class);
 

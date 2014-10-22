@@ -104,7 +104,7 @@ public class AgentWorker {
 
     private void uploadUsedSignatures(SignatureUsage signatureUsage) {
         try {
-            serverDelegate.uploadUsageData(signatureUsage.getNotUploadedSignatures());
+            serverDelegate.uploadUsageData(jvmRun.getUuid(), signatureUsage.getNotUploadedSignatures());
             signatureUsage.clearNotUploadedSignatures();
         } catch (ServerDelegateException e) {
             logException("Cannot upload usage data", e);
