@@ -67,7 +67,7 @@ CREATE TABLE jvm_runs (
   customer_id    INTEGER      NOT NULL REFERENCES customers (id),
   application_id INTEGER      NOT NULL REFERENCES applications (id),
   host_name      VARCHAR(255) NOT NULL,
-  uuid           VARCHAR(40)  NOT NULL,
+  uuid UUID NOT NULL,
   started_at     TIMESTAMP    NOT NULL,
   dumped_at      TIMESTAMP    NOT NULL
 );
@@ -82,6 +82,7 @@ CREATE TABLE signatures (
   customer_id    INTEGER      NOT NULL REFERENCES customers (id),
   application_id INTEGER      NOT NULL REFERENCES applications (id),
   signature      VARCHAR(255) NOT NULL,
+  jvm_run_uuid UUID,
   used_at        TIMESTAMP,
   confidence     TINYINT
 );

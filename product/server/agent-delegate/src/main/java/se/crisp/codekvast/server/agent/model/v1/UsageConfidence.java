@@ -25,11 +25,14 @@ public enum UsageConfidence {
     /**
      * Converts a UsageConfidence.ordinal() back to the enum constant.
      *
-     * @param ordinal An integer returned by UsageConfidence.ordinal()
-     * @return The proper enum constant
-     * @throws java.lang.IllegalArgumentException If invalid ordinal value.
+     * @param ordinal An Integer returned by UsageConfidence.ordinal(). May be null.
+     * @return The proper enum constant or null if {@code ordinal} is null.
+     * @throws java.lang.IllegalArgumentException If invalid ordinal value other than null.
      */
-    public static UsageConfidence fromOrdinal(int ordinal) {
+    public static UsageConfidence fromOrdinal(Integer ordinal) {
+        if (ordinal == null) {
+            return null;
+        }
         for (UsageConfidence confidence : UsageConfidence.values()) {
             if (confidence.ordinal() == ordinal) {
                 return confidence;

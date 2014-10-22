@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkState;
 
@@ -47,28 +48,30 @@ public class StorageDAOImpl implements StorageDAO {
     @Override
     @Transactional
     public void storeJvmRunData(JvmRunData data) throws CodekvastException {
-        long customerId = getOrCreateCustomer(data.getHeader().getCustomerName(), true);
-        long appId = getOrCreateApp(customerId, data.getHeader(), true);
+        long customerId = getOrCreateCustomer(data.getHeader().getCustomerName());
+        long appId = getOrCreateApp(customerId, data.getHeader());
         storeJvmRunData(customerId, appId, data);
     }
 
     @Override
+    @Transactional
     public Collection<UsageDataEntry> storeUsageData(UsageData usageData) throws CodekvastException {
         final Collection<UsageDataEntry> result = new ArrayList<>();
 
-        long customerId = getOrCreateCustomer(usageData.getHeader().getCustomerName(), true);
-        long appId = getOrCreateApp(customerId, usageData.getHeader(), true);
+        long customerId = getOrCreateCustomer(usageData.getHeader().getCustomerName());
+        long appId = getOrCreateApp(customerId, usageData.getHeader());
         for (UsageDataEntry entry : usageData.getUsage()) {
-            storeOrUpdateUsageDataEntry(result, customerId, appId, entry);
+            storeOrUpdateUsageDataEntry(result, customerId, appId, usageData.getJvmRunUuid(), entry);
         }
         return result;
     }
 
-    private void storeOrUpdateUsageDataEntry(Collection<UsageDataEntry> result, long customerId, long appId, UsageDataEntry entry) {
+    private void storeOrUpdateUsageDataEntry(Collection<UsageDataEntry> result, long customerId, long appId, UUID jvmRunUuid,
+                                             UsageDataEntry entry) {
         Date usedAt = entry.getUsedAtMillis() == null ? null : new Date(entry.getUsedAtMillis());
         Integer confidence = entry.getConfidence() == null ? null : entry.getConfidence().ordinal();
 
-        int updated = attemptToUpdateSignature(customerId, appId, entry, usedAt, confidence);
+        int updated = attemptToUpdateSignature(customerId, appId, jvmRunUuid, entry, usedAt, confidence);
 
         if (updated > 0) {
             log.debug("Updated {}", entry);
@@ -77,8 +80,8 @@ public class StorageDAOImpl implements StorageDAO {
         }
 
         try {
-            jdbcTemplate.update("INSERT INTO signatures(customer_id, application_id, signature, used_at, confidence) " +
-                                        "VALUES(?, ?, ?, ?, ?)", customerId, appId, entry.getSignature(), usedAt,
+            jdbcTemplate.update("INSERT INTO signatures(customer_id, application_id, signature, jvm_run_uuid, used_at, confidence) " +
+                                        "VALUES(?, ?, ?, ?, ?, ?)", customerId, appId, entry.getSignature(), jvmRunUuid, usedAt,
                                 confidence);
             log.debug("Stored {}", entry);
             result.add(entry);
@@ -87,64 +90,55 @@ public class StorageDAOImpl implements StorageDAO {
         }
     }
 
-    private int attemptToUpdateSignature(long customerId, long appId, UsageDataEntry entry, Date usedAt, Integer confidence) {
+    private int attemptToUpdateSignature(long customerId, long appId, UUID jvmRunUuid, UsageDataEntry entry, Date usedAt,
+                                         Integer confidence) {
         if (usedAt == null) {
-            // A signature. Don't overwrite a usage.
-            return jdbcTemplate.update("UPDATE signatures SET used_at = ? , confidence = ? " +
+            // An unused signature is not allowed to overwrite a used signature
+            return jdbcTemplate.update("UPDATE signatures SET confidence = ? " +
                                                "WHERE customer_id = ? AND application_id = ? AND signature = ? AND used_at IS NULL ",
-                                       usedAt, confidence, customerId, appId, entry.getSignature());
+                                       confidence, customerId, appId, entry.getSignature());
         }
 
         // A usage. Overwrite whatever was there.
-        return jdbcTemplate.update("UPDATE signatures SET used_at = ? , confidence = ? " +
+        return jdbcTemplate.update("UPDATE signatures SET used_at = ?, jvm_run_uuid = ?, confidence = ? " +
                                            "WHERE customer_id = ? AND application_id = ? AND signature = ? ",
-                                   usedAt, confidence, customerId, appId, entry.getSignature());
+                                   usedAt, jvmRunUuid, confidence, customerId, appId, entry.getSignature());
 
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Collection<UsageDataEntry> getSignatures(String customerName) throws CodekvastException {
-        Object[] args = customerName == null ? new Object[0] : new Object[]{getOrCreateCustomer(customerName, true)};
+        // TODO: don't allow null customerName
+        Object[] args = customerName == null ? new Object[0] : new Object[]{getOrCreateCustomer(customerName)};
         String where = customerName == null ? "" : " WHERE customer_id = ?";
 
         return jdbcTemplate.query("SELECT signature, used_at, confidence FROM signatures " + where,
-                                  args,
-                                  new RowMapper<UsageDataEntry>() {
-                                      @Override
-                                      public UsageDataEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
-                                          return new UsageDataEntry(rs.getString(1), getTimeMillis(rs, 2), getConfidence(rs, 3));
-                                      }
-
-                                      private UsageConfidence getConfidence(ResultSet rs, int columnIndex) throws SQLException {
-                                          Integer ordinal = rs.getInt(columnIndex);
-                                          return ordinal == null ? null : UsageConfidence.fromOrdinal(ordinal);
-                                      }
-
-                                      private Long getTimeMillis(ResultSet rs, int columnIndex) throws SQLException {
-                                          Date date = rs.getDate(columnIndex);
-                                          return date == null ? null : date.getTime();
-                                      }
-                                  });
+                                  args, new UsageDataEntryRowMapper());
     }
 
     private void storeJvmRunData(long customerId, long appId, JvmRunData data) {
-        String uuid = data.getUuid().toString();
         Date dumpedAt = new Date(data.getDumpedAtMillis());
 
-        int updated = jdbcTemplate.update("UPDATE jvm_runs SET dumped_at = ? WHERE uuid = ?", dumpedAt, uuid);
+        int updated = jdbcTemplate.update("UPDATE jvm_runs SET dumped_at = ? WHERE uuid = ?", dumpedAt, data.getUuid());
         if (updated > 0) {
-            log.debug("Updated dumpedAt={} for JVM run {}", dumpedAt, uuid);
+            log.debug("Updated dumpedAt={} for JVM run {}", dumpedAt, data.getUuid());
             return;
         }
 
         int inserted = jdbcTemplate.update("INSERT INTO jvm_runs(customer_id, application_id, host_name, uuid, started_at, dumped_at)" +
                                                    " VALUES (?, ?, ?, ?, ?, ?)",
-                                           customerId, appId, data.getHostName(), uuid, new Date(data.getStartedAtMillis()), dumpedAt);
+                                           customerId, appId, data.getHostName(), data.getUuid(), new Date(data.getStartedAtMillis()),
+                                           dumpedAt);
         if (inserted > 0) {
             log.debug("Stored new JVM run {}", data);
         } else {
             log.warn("Could not insert {}", data);
         }
+    }
+
+    private Long getOrCreateApp(long customerId, Header header) throws UndefinedApplicationException {
+        return getOrCreateApp(customerId, header, true);
     }
 
     private Long getOrCreateApp(long customerId, Header header, boolean allowRecursion) throws UndefinedApplicationException {
@@ -172,6 +166,10 @@ public class StorageDAOImpl implements StorageDAO {
         throw new IllegalStateException("Could not insert application");
     }
 
+    private long getOrCreateCustomer(final String customerName) throws UndefinedCustomerException {
+        return getOrCreateCustomer(customerName, true);
+    }
+
     private long getOrCreateCustomer(final String customerName, boolean allowRecursion) throws UndefinedCustomerException {
         try {
             return jdbcTemplate.queryForObject("SELECT id FROM customers WHERE name = ?", Long.class, customerName);
@@ -189,5 +187,18 @@ public class StorageDAOImpl implements StorageDAO {
             return getOrCreateCustomer(customerName, false);
         }
         throw new IllegalStateException("Could not insert customer");
+    }
+
+    private static class UsageDataEntryRowMapper implements RowMapper<UsageDataEntry> {
+        @Override
+        public UsageDataEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return new UsageDataEntry(rs.getString(1), getTimeMillis(rs, 2),
+                                      UsageConfidence.fromOrdinal(rs.getInt(3)));
+        }
+
+        private Long getTimeMillis(ResultSet rs, int columnIndex) throws SQLException {
+            Date date = rs.getDate(columnIndex);
+            return date == null ? null : date.getTime();
+        }
     }
 }

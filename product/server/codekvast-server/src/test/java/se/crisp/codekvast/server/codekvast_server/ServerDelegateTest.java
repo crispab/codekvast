@@ -121,6 +121,7 @@ public class ServerDelegateTest {
 
         // then
         assertThat(storageService.getSignatures(CUSTOMER_NAME), hasSize(2));
+        assertThat(storageService.getSignatures(CUSTOMER_NAME + "X"), hasSize(0));
     }
 
     private void assertThatPingThrowsHttpClientErrorException(String pingMessage, String expectedRootCauseMessage) {
