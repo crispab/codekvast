@@ -7,7 +7,7 @@ import javax.validation.Valid;
 import java.util.Collection;
 
 /**
- * REST data about all used signatures.
+ * REST data about used signatures.
  *
  * @author Olle Hallin
  */

@@ -11,9 +11,10 @@ import se.crisp.codekvast.server.agent.model.v1.UsageDataEntry;
 import se.crisp.codekvast.server.codekvast_server.event.internal.UsageDataUpdatedEvent;
 import se.crisp.codekvast.server.codekvast_server.service.StorageService;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static se.crisp.codekvast.server.codekvast_server.utils.DateTimeUtils.formatDate;
 
@@ -26,7 +27,7 @@ import static se.crisp.codekvast.server.codekvast_server.utils.DateTimeUtils.for
 @Slf4j
 public class StorageServiceImpl implements StorageService, ApplicationContextAware {
 
-    private final Map<String, UsageDataEntry> usageData = new HashMap<>();
+    private final Map<String, UsageDataEntry> usageData = new ConcurrentHashMap<>();
 
     private ApplicationContext applicationContext;
 
@@ -38,18 +39,22 @@ public class StorageServiceImpl implements StorageService, ApplicationContextAwa
     }
 
     @Override
-    public void storeSignatureData(SignatureData data) {
+    public void storeSignatureData(SignatureData signatureData) {
         if (log.isTraceEnabled()) {
-            log.trace("Storing {}", data.toLongString());
+            log.trace("Storing {}", signatureData.toLongString());
         } else {
-            log.debug("Storing {}", data);
+            log.debug("Storing {}", signatureData);
         }
 
-        synchronized (usageData) {
-            for (String sig : data.getSignatures()) {
-                storeUsageDataEntry(new UsageDataEntry(sig, 0L, UsageDataEntry.CONFIDENCE_EXACT_MATCH)); // never used
-            }
+        storeUsageData(toInitialUsageData(signatureData));
+    }
+
+    private UsageData toInitialUsageData(SignatureData signatureData) {
+        Collection<UsageDataEntry> usageDataEntries = new ArrayList<>();
+        for (String sig : signatureData.getSignatures()) {
+            usageDataEntries.add(new UsageDataEntry(sig, 0L, UsageDataEntry.CONFIDENCE_EXACT_MATCH)); // never used
         }
+        return UsageData.builder().usage(usageDataEntries).build();
     }
 
     @Override
@@ -60,36 +65,33 @@ public class StorageServiceImpl implements StorageService, ApplicationContextAwa
             log.debug("Storing {}", data);
         }
 
-        synchronized (usageData) {
-            for (UsageDataEntry entry : data.getUsage()) {
-                storeUsageDataEntry(entry);
-            }
+        Collection<UsageDataEntry> updatedEntries = new ArrayList<>();
+        for (UsageDataEntry entry : data.getUsage()) {
+            storeUsageDataEntry(updatedEntries, entry);
         }
+        applicationContext.publishEvent(new UsageDataUpdatedEvent(getClass(), updatedEntries));
     }
 
     @Override
     public Collection<UsageDataEntry> getSignatures() {
-        synchronized (usageData) {
-            return usageData.values();
-        }
+        return new ArrayList<>(usageData.values());
     }
 
-    private void storeUsageDataEntry(UsageDataEntry entry) {
+    private void storeUsageDataEntry(Collection<UsageDataEntry> updatedEntries, UsageDataEntry entry) {
         String signature = entry.getSignature();
         UsageDataEntry oldEntry = usageData.get(signature);
         if (oldEntry == null) {
             log.debug("Storing signature {}", signature);
-            doStoreUsageDataEntry(entry);
+            doStoreUsageDataEntry(updatedEntries, entry);
         } else if (oldEntry.getUsedAtMillis() < entry.getUsedAtMillis()) {
             log.debug("Signature {} was used at {}", signature, formatDate(entry.getUsedAtMillis()));
-            doStoreUsageDataEntry(entry);
+            doStoreUsageDataEntry(updatedEntries, entry);
         }
     }
 
-    private void doStoreUsageDataEntry(UsageDataEntry entry) {
+    private void doStoreUsageDataEntry(Collection<UsageDataEntry> updatedEntries, UsageDataEntry entry) {
         usageData.put(entry.getSignature(), entry);
-        applicationContext.publishEvent(new UsageDataUpdatedEvent(getClass(), entry));
-
+        updatedEntries.add(entry);
         // TODO: store in database
     }
 

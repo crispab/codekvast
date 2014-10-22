@@ -4,16 +4,18 @@ import lombok.Getter;
 import lombok.ToString;
 import se.crisp.codekvast.server.agent.model.v1.UsageDataEntry;
 
+import java.util.Collection;
+
 /**
  * @author Olle Hallin
  */
 @Getter
 @ToString(callSuper = true)
 public class UsageDataUpdatedEvent extends CodekvastEvent {
-    private final UsageDataEntry usageDataEntry;
+    private final Collection<UsageDataEntry> usageDataEntries;
 
-    public UsageDataUpdatedEvent(Object source, UsageDataEntry usageDataEntry) {
+    public UsageDataUpdatedEvent(Object source, Collection<UsageDataEntry> usageDataEntries) {
         super(source);
-        this.usageDataEntry = usageDataEntry;
+        this.usageDataEntries = usageDataEntries;
     }
 }

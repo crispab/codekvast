@@ -23,7 +23,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * A HTTP REST Controller that handles requests from the CodeKvast Agent.
  * <p/>
- * It validates the POST data and delegates to AgentService.
+ * It validates the POST data and delegates to StorageService.
  *
  * @author Olle Hallin
  */
@@ -31,12 +31,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Slf4j
 public class AgentController {
 
-    private final
     @NonNull
-    StorageService storageService;
-    private final
+    private final StorageService storageService;
+
     @NonNull
-    Validator validator;
+    private final Validator validator;
 
     @Inject
     public AgentController(StorageService storageService, Validator validator) {
@@ -50,31 +49,31 @@ public class AgentController {
     }
 
     @ExceptionHandler
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ResponseStatus(value = HttpStatus.PRECONDITION_FAILED)
     private void onMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.warn("Bad request: " + e);
     }
 
-    @RequestMapping(value = AgentRestEndpoints.UPLOAD_JVM_RUN_V1, method = RequestMethod.POST)
-    public void receiveSensorV1(@RequestBody @Valid JvmRunData data) {
+    @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_JVM_RUN, method = RequestMethod.POST)
+    public void receiveSensorV1(@Valid @RequestBody JvmRunData data) {
         log.debug("Received {}", data);
         storageService.storeSensorData(data);
     }
 
-    @RequestMapping(value = AgentRestEndpoints.UPLOAD_SIGNATURES_V1, method = RequestMethod.POST)
-    public void receiveSignaturesV1(@RequestBody @Valid SignatureData data) {
+    @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_SIGNATURES, method = RequestMethod.POST)
+    public void receiveSignaturesV1(@Valid @RequestBody SignatureData data) {
         log.debug("Received {}", data);
         storageService.storeSignatureData(data);
     }
 
-    @RequestMapping(value = AgentRestEndpoints.UPLOAD_USAGE_V1, method = RequestMethod.POST)
-    public void receiveUsageV1(@RequestBody @Valid UsageData data) {
+    @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_USAGE, method = RequestMethod.POST)
+    public void receiveUsageV1(@Valid @RequestBody UsageData data) {
         log.debug("Received {}", data);
         storageService.storeUsageData(data);
     }
 
     @RequestMapping(value = AgentRestEndpoints.PING, method = RequestMethod.POST)
-    public Pong ping(@RequestBody @Valid Ping data) {
+    public Pong ping(@Valid @RequestBody Ping data) {
         log.debug("Received {}", data);
         return Pong.builder().message("You said " + data.getMessage()).build();
     }

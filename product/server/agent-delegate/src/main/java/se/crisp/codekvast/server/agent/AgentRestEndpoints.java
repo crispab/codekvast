@@ -16,15 +16,15 @@ public interface AgentRestEndpoints {
     /**
      * POST a {@link se.crisp.codekvast.server.agent.model.v1.JvmRunData} object to this endpoint.
      */
-    final String UPLOAD_JVM_RUN_V1 = "/agent/jvm-run/v1";
+    final String UPLOAD_V1_JVM_RUN = "/agent/v1/jvm-run";
 
     /**
      * POST a {@link se.crisp.codekvast.server.agent.model.v1.SignatureData} object to this endpoint.
      */
-    final String UPLOAD_SIGNATURES_V1 = "/agent/signatures/v1";
+    final String UPLOAD_V1_SIGNATURES = "/agent/v1/signatures";
 
     /**
      * POST a {@link se.crisp.codekvast.server.agent.model.v1.UsageData} object to this endpoint.
      */
-    final String UPLOAD_USAGE_V1 = "/agent/usage/v1";
+    final String UPLOAD_V1_USAGE = "/agent/v1/usage";
 }

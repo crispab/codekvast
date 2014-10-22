@@ -42,4 +42,11 @@ public interface ServerDelegate {
      */
     void uploadUsageData(Collection<UsageDataEntry> usage) throws ServerDelegateException;
 
+    /**
+     * Pings the server.
+     *
+     * @param message An arbitrary message
+     * @return A decorated version of the message
+     */
+    String ping(String message) throws ServerDelegateException;
 }

@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
-import se.crisp.codekvast.server.codekvast_server.controller.WebController;
+import se.crisp.codekvast.server.codekvast_server.controller.StompController;
 import se.crisp.codekvast.server.codekvast_server.event.internal.UsageDataUpdatedEvent;
 import se.crisp.codekvast.server.codekvast_server.service.StorageService;
 
@@ -29,7 +29,7 @@ public class ClientNotifierImpl implements ApplicationListener<UsageDataUpdatedE
     @Override
     public void onApplicationEvent(UsageDataUpdatedEvent event) {
         log.debug("Handling {}", event);
-
-        messagingTemplate.convertAndSend(WebController.TOPIC_SIGNATURES, storageService.getSignatures());
+        // TODO: only send the new or updated signatures
+        messagingTemplate.convertAndSend(StompController.TOPIC_SIGNATURES, storageService.getSignatures());
     }
 }
