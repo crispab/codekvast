@@ -14,7 +14,6 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @ToString
-@EqualsAndHashCode(of = "signature")
 public class UsageDataEntry {
     @NonNull
     @Size(min = 1, max = Constraints.MAX_SIGNATURE_LENGTH)
