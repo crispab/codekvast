@@ -41,7 +41,7 @@ public class StorageServiceImpl implements StorageService {
     public void storeJvmRunData(JvmRunData data) throws CodekvastException {
         log.debug("Storing {}", data);
 
-        storageDAO.storeApplicationData(data.getHeader());
+        storageDAO.storeJvmRunData(data);
     }
 
     @Override
@@ -51,8 +51,6 @@ public class StorageServiceImpl implements StorageService {
         } else {
             log.debug("Storing {}", signatureData);
         }
-        storageDAO.storeApplicationData(signatureData.getHeader());
-
         storeUsageData(toInitialUsageData(signatureData));
     }
 

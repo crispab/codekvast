@@ -60,6 +60,21 @@ CREATE TABLE applications (
 DROP INDEX IF EXISTS ix_applications;
 CREATE UNIQUE INDEX ix_applications ON applications (customer_id, name);
 
+//--- JVM runs -------------------------------------------------------------------------------------------------
+DROP TABLE IF EXISTS jvm_runs;
+CREATE TABLE jvm_runs (
+  id             INTEGER      NOT NULL IDENTITY,
+  customer_id    INTEGER      NOT NULL REFERENCES customers (id),
+  application_id INTEGER      NOT NULL REFERENCES applications (id),
+  host_name      VARCHAR(255) NOT NULL,
+  uuid           VARCHAR(40)  NOT NULL,
+  started_at     TIMESTAMP    NOT NULL,
+  dumped_at      TIMESTAMP    NOT NULL
+);
+
+DROP INDEX IF EXISTS ix_jvm_runs;
+CREATE UNIQUE INDEX ix_jvm_runs ON jvm_runs (customer_id, application_id, uuid);
+
 //--- System data ----------------------------------------------------------------------------------------------
 INSERT INTO roles (name) VALUES ('SUPERUSER');
 INSERT INTO roles (name) VALUES ('AGENT');
