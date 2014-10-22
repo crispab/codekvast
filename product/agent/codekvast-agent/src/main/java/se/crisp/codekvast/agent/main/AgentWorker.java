@@ -9,7 +9,7 @@ import se.crisp.codekvast.agent.util.JvmRun;
 import se.crisp.codekvast.agent.util.Usage;
 import se.crisp.codekvast.server.agent.ServerDelegate;
 import se.crisp.codekvast.server.agent.ServerDelegateException;
-import se.crisp.codekvast.server.agent.model.v1.UsageDataEntry;
+import se.crisp.codekvast.server.agent.model.v1.UsageConfidence;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -121,27 +121,27 @@ public class AgentWorker {
             String rawSignature = usage.getSignature();
             String normalizedSignature = codeBase.normalizeSignature(rawSignature);
 
-            int confidence = -1;
+            UsageConfidence confidence = null;
             if (normalizedSignature == null) {
                 ignored += 1;
             } else if (codeBase.hasSignature(normalizedSignature)) {
                 recognized += 1;
-                confidence = UsageDataEntry.CONFIDENCE_EXACT_MATCH;
+                confidence = UsageConfidence.EXACT_MATCH;
             } else {
                 String baseSignature = codeBase.getBaseSignature(normalizedSignature);
                 if (baseSignature != null) {
                     log.debug("{} replaced by {}", normalizedSignature, baseSignature);
 
                     overridden += 1;
-                    confidence = UsageDataEntry.CONFIDENCE_FOUND_IN_PARENT_CLASS;
+                    confidence = UsageConfidence.FOUND_IN_PARENT_CLASS;
                     normalizedSignature = baseSignature;
                 } else if (normalizedSignature.equals(rawSignature)) {
                     unrecognized += 1;
-                    confidence = UsageDataEntry.CONFIDENCE_NOT_FOUND_IN_CODE_BASE;
+                    confidence = UsageConfidence.NOT_FOUND_IN_CODE_BASE;
                     log.warn("Unrecognized signature: {}", normalizedSignature);
                 } else {
                     unrecognized += 1;
-                    confidence = UsageDataEntry.CONFIDENCE_NOT_FOUND_IN_CODE_BASE;
+                    confidence = UsageConfidence.NOT_FOUND_IN_CODE_BASE;
                     log.warn("Unrecognized signature: {} (was {})", normalizedSignature, rawSignature);
                 }
             }

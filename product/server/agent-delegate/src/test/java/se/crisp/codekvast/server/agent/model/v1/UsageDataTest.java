@@ -17,8 +17,8 @@ public class UsageDataTest {
         // given
 
         UsageData data1 = UsageData.builder().header(HeaderTest.HEADER).usage(asList(
-                new UsageDataEntry("sig1", 10000L, UsageDataEntry.CONFIDENCE_EXACT_MATCH),
-                new UsageDataEntry("sig2", 20000L, UsageDataEntry.CONFIDENCE_FOUND_IN_PARENT_CLASS)))
+                new UsageDataEntry("sig1", 10000L, UsageConfidence.EXACT_MATCH),
+                new UsageDataEntry("sig2", 20000L, UsageConfidence.FOUND_IN_PARENT_CLASS)))
                                    .build();
 
         // when

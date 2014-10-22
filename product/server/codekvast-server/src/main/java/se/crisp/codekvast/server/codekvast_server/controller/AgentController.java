@@ -51,7 +51,7 @@ public class AgentController {
     @ExceptionHandler
     @ResponseStatus(value = HttpStatus.PRECONDITION_FAILED)
     private void onMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        log.warn("Bad request: " + e);
+        log.warn("Validation failure: " + e);
     }
 
     @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_JVM_RUN, method = RequestMethod.POST)

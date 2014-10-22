@@ -78,7 +78,7 @@ public class ServerDelegateImpl implements ServerDelegate {
                                         .uuid(uuid)
                                         .build();
 
-            restTemplate.postForLocation(new URI(endPoint), data);
+            restTemplate.postForEntity(new URI(endPoint), data, Void.class);
 
             log.info("Uploaded {} to {} in {} ms", data, endPoint, System.currentTimeMillis() - startedAt);
         } catch (URISyntaxException e) {
@@ -90,45 +90,51 @@ public class ServerDelegateImpl implements ServerDelegate {
 
     @Override
     public void uploadSignatureData(Collection<String> signatures) throws ServerDelegateException {
-        if (!signatures.isEmpty()) {
-            String endPoint = config.getServerUri() + AgentRestEndpoints.UPLOAD_V1_SIGNATURES;
-            log.debug("Uploading {} signatures to {}", signatures.size(), endPoint);
+        if (signatures.isEmpty()) {
+            log.debug("Not uploading empty signatures");
+            return;
+        }
 
-            try {
-                long startedAt = System.currentTimeMillis();
+        String endPoint = config.getServerUri() + AgentRestEndpoints.UPLOAD_V1_SIGNATURES;
+        log.debug("Uploading {} signatures to {}", signatures.size(), endPoint);
 
-                SignatureData data = SignatureData.builder().header(header).signatures(signatures).build();
+        try {
+            long startedAt = System.currentTimeMillis();
 
-                restTemplate.postForLocation(new URI(endPoint), data);
+            SignatureData data = SignatureData.builder().header(header).signatures(signatures).build();
 
-                log.info("Uploaded {} signatures to {} in {} ms", signatures.size(), endPoint, System.currentTimeMillis() - startedAt);
-            } catch (URISyntaxException e) {
-                throw new ServerDelegateException("Illegal REST endpoint: " + endPoint, e);
-            } catch (RestClientException e) {
-                throw new ServerDelegateException("Failed to post signature data", e);
-            }
+            restTemplate.postForEntity(new URI(endPoint), data, Void.class);
+
+            log.info("Uploaded {} signatures to {} in {} ms", signatures.size(), endPoint, System.currentTimeMillis() - startedAt);
+        } catch (URISyntaxException e) {
+            throw new ServerDelegateException("Illegal REST endpoint: " + endPoint, e);
+        } catch (RestClientException e) {
+            throw new ServerDelegateException("Failed to post signature data", e);
         }
     }
 
     @Override
     public void uploadUsageData(Collection<UsageDataEntry> usage) throws ServerDelegateException {
-        if (!usage.isEmpty()) {
-            String endPoint = config.getServerUri() + AgentRestEndpoints.UPLOAD_V1_USAGE;
-            log.debug("Uploading {} signatures to {}", usage.size(), endPoint);
+        if (usage.isEmpty()) {
+            log.debug("Not uploading empty usage");
+            return;
+        }
 
-            try {
-                long startedAt = System.currentTimeMillis();
+        String endPoint = config.getServerUri() + AgentRestEndpoints.UPLOAD_V1_USAGE;
+        log.debug("Uploading {} signatures to {}", usage.size(), endPoint);
 
-                UsageData data = UsageData.builder().header(header).usage(usage).build();
+        try {
+            long startedAt = System.currentTimeMillis();
 
-                restTemplate.postForLocation(new URI(endPoint), data);
+            UsageData data = UsageData.builder().header(header).usage(usage).build();
 
-                log.info("Uploaded {} signatures to {} in {} ms", usage.size(), endPoint, System.currentTimeMillis() - startedAt);
-            } catch (URISyntaxException e) {
-                throw new ServerDelegateException("Illegal REST endpoint: " + endPoint, e);
-            } catch (RestClientException e) {
-                throw new ServerDelegateException("Failed to post usage data", e);
-            }
+            restTemplate.postForEntity(new URI(endPoint), data, Void.class);
+
+            log.info("Uploaded {} signatures to {} in {} ms", usage.size(), endPoint, System.currentTimeMillis() - startedAt);
+        } catch (URISyntaxException e) {
+            throw new ServerDelegateException("Illegal REST endpoint: " + endPoint, e);
+        } catch (RestClientException e) {
+            throw new ServerDelegateException("Failed to post usage data", e);
         }
     }
 
@@ -137,9 +143,13 @@ public class ServerDelegateImpl implements ServerDelegate {
         String endPoint = config.getServerUri() + AgentRestEndpoints.PING;
         log.debug("Sending ping '{}' to {}", message, endPoint);
         try {
+
             ResponseEntity<Pong> response =
                     restTemplate.postForEntity(new URI(endPoint), Ping.builder().message(message).build(), Pong.class);
-            return response.getBody().getMessage();
+
+            String pongMessage = response.getBody().getMessage();
+            log.debug("Server responded with '{}'", pongMessage);
+            return pongMessage;
         } catch (URISyntaxException e) {
             throw new ServerDelegateException("Illegal REST endpoint: " + endPoint, e);
         } catch (RestClientException e) {

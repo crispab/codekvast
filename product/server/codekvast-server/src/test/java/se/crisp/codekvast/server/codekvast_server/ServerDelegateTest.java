@@ -1,5 +1,6 @@
 package se.crisp.codekvast.server.codekvast_server;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,12 +12,16 @@ import se.crisp.codekvast.server.agent.ServerDelegate;
 import se.crisp.codekvast.server.agent.ServerDelegateConfig;
 import se.crisp.codekvast.server.agent.ServerDelegateException;
 import se.crisp.codekvast.server.agent.impl.ServerDelegateImpl;
+import se.crisp.codekvast.server.agent.model.v1.UsageConfidence;
+import se.crisp.codekvast.server.agent.model.v1.UsageDataEntry;
 import se.crisp.codekvast.server.codekvast_server.service.StorageService;
 
 import javax.inject.Inject;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -43,17 +48,21 @@ public class ServerDelegateTest {
                                                                     .customerName("customerName")
                                                                     .appName("appName")
                                                                     .appVersion("appVersion")
-                                                                    .environment("environment")
                                                                     .codeBaseName("codeBaseName")
+                                                                    .environment("environment")
                                                                     .serverUri(new URI(String.format("http://localhost:%d", port)))
                                                                     .apiUsername(apiUsername)
                                                                     .apiPassword(apiPassword)
                                                                     .build());
     }
 
+    @Before
+    public void beforeTest() throws URISyntaxException {
+        createServerDelegate("agent", "0000");
+    }
+
     @Test
     public void testCredentialsOkForUserNameAgent() throws ServerDelegateException, URISyntaxException {
-        createServerDelegate("agent", "0000");
         assertThat(serverDelegate.ping("Hello!"), is("You said Hello!"));
     }
 
@@ -65,7 +74,6 @@ public class ServerDelegateTest {
 
     @Test
     public void testCredentialsOkButInvalidPayload() throws URISyntaxException {
-        createServerDelegate("agent", "0000");
         assertThatPingThrowsHttpClientErrorException("Hello, Brave New World!", "412 Precondition Failed");
     }
 
@@ -82,9 +90,21 @@ public class ServerDelegateTest {
     }
 
     @Test
-    public void testUploadSignatures() throws ServerDelegateException, URISyntaxException {
-        createServerDelegate("agent", "0000");
-        serverDelegate.uploadSignatureData(Arrays.asList("com.acme.Foo.foo()", "com.acme.Foo.bar()"));
+    public void testUploadJvmRunData() throws ServerDelegateException, URISyntaxException {
+        serverDelegate.uploadJvmRunData("hostName", System.currentTimeMillis(), System.currentTimeMillis(), UUID.randomUUID());
+    }
+
+    @Test
+    public void testUploadSignatureData() throws ServerDelegateException, URISyntaxException {
+        serverDelegate.uploadSignatureData(Arrays.asList("public String com.acme.Foo.foo()", "public void com.acme.Foo.bar()"));
+    }
+
+    @Test
+    public void testUploadUsageData() throws ServerDelegateException, URISyntaxException {
+        long now = System.currentTimeMillis();
+        Collection<UsageDataEntry> usage = Arrays.asList(new UsageDataEntry("foo", now, UsageConfidence.EXACT_MATCH),
+                                                         new UsageDataEntry("bar", now, UsageConfidence.EXACT_MATCH));
+        serverDelegate.uploadUsageData(usage);
     }
 
     private void assertThatPingThrowsHttpClientErrorException(String pingMessage, String expectedRootCauseMessage) {

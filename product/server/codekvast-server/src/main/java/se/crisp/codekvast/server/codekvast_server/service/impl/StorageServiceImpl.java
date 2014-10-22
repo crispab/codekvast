@@ -4,10 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Repository;
-import se.crisp.codekvast.server.agent.model.v1.JvmRunData;
-import se.crisp.codekvast.server.agent.model.v1.SignatureData;
-import se.crisp.codekvast.server.agent.model.v1.UsageData;
-import se.crisp.codekvast.server.agent.model.v1.UsageDataEntry;
+import se.crisp.codekvast.server.agent.model.v1.*;
 import se.crisp.codekvast.server.codekvast_server.event.internal.UsageDataUpdatedEvent;
 import se.crisp.codekvast.server.codekvast_server.service.StorageService;
 
@@ -52,9 +49,9 @@ public class StorageServiceImpl implements StorageService, ApplicationContextAwa
     private UsageData toInitialUsageData(SignatureData signatureData) {
         Collection<UsageDataEntry> usageDataEntries = new ArrayList<>();
         for (String sig : signatureData.getSignatures()) {
-            usageDataEntries.add(new UsageDataEntry(sig, 0L, UsageDataEntry.CONFIDENCE_EXACT_MATCH)); // never used
+            usageDataEntries.add(new UsageDataEntry(sig, 0L, UsageConfidence.EXACT_MATCH)); // never used
         }
-        return UsageData.builder().usage(usageDataEntries).build();
+        return UsageData.builder().header(signatureData.getHeader()).usage(usageDataEntries).build();
     }
 
     @Override
