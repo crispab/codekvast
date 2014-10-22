@@ -65,7 +65,7 @@ public class ServerDelegateImpl implements ServerDelegate {
     public void uploadJvmRunData(String hostName, long startedAtMillis, long dumpedAtMillis, UUID uuid) throws ServerDelegateException {
         String endPoint = config.getServerUri() + AgentRestEndpoints.UPLOAD_V1_JVM_RUN;
 
-        log.debug("Uploading sensor run data to {}", endPoint);
+        log.debug("Uploading JVM run data to {}", endPoint);
 
         try {
             long startedAt = System.currentTimeMillis();
@@ -83,7 +83,7 @@ public class ServerDelegateImpl implements ServerDelegate {
         } catch (URISyntaxException e) {
             throw new ServerDelegateException("Illegal REST endpoint: " + endPoint, e);
         } catch (RestClientException e) {
-            throw new ServerDelegateException("Failed to post sensor data", e);
+            throw new ServerDelegateException("Failed to post JVM run data", e);
         }
     }
 

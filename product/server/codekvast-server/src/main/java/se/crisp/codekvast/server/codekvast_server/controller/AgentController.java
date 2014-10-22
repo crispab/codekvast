@@ -13,6 +13,7 @@ import se.crisp.codekvast.server.agent.model.test.Pong;
 import se.crisp.codekvast.server.agent.model.v1.JvmRunData;
 import se.crisp.codekvast.server.agent.model.v1.SignatureData;
 import se.crisp.codekvast.server.agent.model.v1.UsageData;
+import se.crisp.codekvast.server.codekvast_server.exceptions.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.service.StorageService;
 
 import javax.inject.Inject;
@@ -54,20 +55,26 @@ public class AgentController {
         log.warn("Validation failure: " + e);
     }
 
+    @ExceptionHandler
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    private void onApplicationException(CodekvastException e) {
+        log.warn("Application exception: " + e);
+    }
+
     @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_JVM_RUN, method = RequestMethod.POST)
-    public void receiveSensorV1(@Valid @RequestBody JvmRunData data) {
+    public void receiveJvmRunDataV1(@Valid @RequestBody JvmRunData data) throws CodekvastException {
         log.debug("Received {}", data);
-        storageService.storeSensorData(data);
+        storageService.storeJvmRunData(data);
     }
 
     @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_SIGNATURES, method = RequestMethod.POST)
-    public void receiveSignaturesV1(@Valid @RequestBody SignatureData data) {
+    public void receiveSignatureDataV1(@Valid @RequestBody SignatureData data) throws CodekvastException {
         log.debug("Received {}", data);
         storageService.storeSignatureData(data);
     }
 
     @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_USAGE, method = RequestMethod.POST)
-    public void receiveUsageV1(@Valid @RequestBody UsageData data) {
+    public void receiveUsageDataV1(@Valid @RequestBody UsageData data) throws CodekvastException {
         log.debug("Received {}", data);
         storageService.storeUsageData(data);
     }

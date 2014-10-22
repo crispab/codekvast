@@ -2,12 +2,14 @@ package se.crisp.codekvast.server.codekvast_server.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Repository;
 import se.crisp.codekvast.server.agent.model.v1.*;
+import se.crisp.codekvast.server.codekvast_server.dao.StorageDAO;
 import se.crisp.codekvast.server.codekvast_server.event.internal.UsageDataUpdatedEvent;
+import se.crisp.codekvast.server.codekvast_server.exceptions.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.service.StorageService;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -22,26 +24,34 @@ import static se.crisp.codekvast.server.codekvast_server.utils.DateTimeUtils.for
  */
 @Repository
 @Slf4j
-public class StorageServiceImpl implements StorageService, ApplicationContextAware {
+public class StorageServiceImpl implements StorageService {
 
     private final Map<String, UsageDataEntry> usageData = new ConcurrentHashMap<>();
 
-    private ApplicationContext applicationContext;
+    private final ApplicationContext applicationContext;
+    private final StorageDAO storageDAO;
 
-    @Override
-    public void storeSensorData(JvmRunData data) {
-        log.debug("Storing {}", data);
-
-        // TODO: store in database
+    @Inject
+    public StorageServiceImpl(ApplicationContext applicationContext, StorageDAO storageDAO) {
+        this.applicationContext = applicationContext;
+        this.storageDAO = storageDAO;
     }
 
     @Override
-    public void storeSignatureData(SignatureData signatureData) {
+    public void storeJvmRunData(JvmRunData data) throws CodekvastException {
+        log.debug("Storing {}", data);
+
+        storageDAO.storeApplicationData(data.getHeader());
+    }
+
+    @Override
+    public void storeSignatureData(SignatureData signatureData) throws CodekvastException {
         if (log.isTraceEnabled()) {
             log.trace("Storing {}", signatureData.toLongString());
         } else {
             log.debug("Storing {}", signatureData);
         }
+        storageDAO.storeApplicationData(signatureData.getHeader());
 
         storeUsageData(toInitialUsageData(signatureData));
     }
@@ -91,10 +101,4 @@ public class StorageServiceImpl implements StorageService, ApplicationContextAwa
         updatedEntries.add(entry);
         // TODO: store in database
     }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
-    }
-
 }

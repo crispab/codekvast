@@ -33,7 +33,10 @@ import static org.junit.Assert.fail;
 @WebAppConfiguration
 @IntegrationTest({"server.port=0",
                   "management.port=0",
-                  "spring.datasource.url=jdbc:h2:mem:integrationTest"})
+                  "spring.datasource.url=jdbc:h2:mem:integrationTest",
+                  "codekvast.auto-register-customer=true",
+                  "codekvast.auto-register-application=true",
+                 })
 public class ServerDelegateTest {
 
     private final String signature1 = "public String com.acme.Foo.foo()";

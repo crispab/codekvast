@@ -14,8 +14,7 @@ CREATE TABLE users (
   enabled            BOOLEAN DEFAULT TRUE                NOT NULL,
   email              VARCHAR(255),
   name               VARCHAR(255),
-  created_at         TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  updated_at         TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 DROP TABLE IF EXISTS user_roles;
@@ -33,9 +32,7 @@ DROP TABLE IF EXISTS customers;
 CREATE TABLE customers (
   id         INTEGER                             NOT NULL IDENTITY,
   name       VARCHAR(100)                        NOT NULL UNIQUE,
-  enabled    BOOLEAN DEFAULT TRUE                NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 DROP TABLE IF EXISTS customer_members;
@@ -48,6 +45,20 @@ CREATE TABLE customer_members (
 
 DROP INDEX IF EXISTS ix_customer_members;
 CREATE UNIQUE INDEX ix_customer_members ON customer_members (customer_id, user_id);
+
+//--- Applications ---------------------------------------------------------------------------------------------
+DROP TABLE IF EXISTS applications;
+CREATE TABLE applications (
+  id          INTEGER                             NOT NULL IDENTITY,
+  customer_id INTEGER                             NOT NULL REFERENCES customers (id),
+  name        VARCHAR(100)                        NOT NULL,
+  version     VARCHAR(100)                        NOT NULL,
+  environment VARCHAR(100)                        NOT NULL,
+  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+DROP INDEX IF EXISTS ix_applications;
+CREATE UNIQUE INDEX ix_applications ON applications (customer_id, name);
 
 //--- System data ----------------------------------------------------------------------------------------------
 INSERT INTO roles (name) VALUES ('SUPERUSER');
