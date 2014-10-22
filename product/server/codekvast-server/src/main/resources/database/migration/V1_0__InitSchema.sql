@@ -13,8 +13,8 @@ CREATE TABLE users (
   plaintext_password VARCHAR(255),
   enabled            BOOLEAN DEFAULT TRUE                NOT NULL,
   email              VARCHAR(255),
-  full_name VARCHAR(255),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+  full_name          VARCHAR(255),
+  created_at         TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 DROP TABLE IF EXISTS user_roles;
@@ -63,28 +63,28 @@ CREATE UNIQUE INDEX ix_applications ON applications (customer_id, name);
 //--- JVM runs -------------------------------------------------------------------------------------------------
 DROP TABLE IF EXISTS jvm_runs;
 CREATE TABLE jvm_runs (
-  id             INTEGER      NOT NULL IDENTITY,
-  customer_id    INTEGER      NOT NULL REFERENCES customers (id),
-  application_id INTEGER      NOT NULL REFERENCES applications (id),
-  host_name      VARCHAR(255) NOT NULL,
-  uuid UUID NOT NULL,
-  started_at     TIMESTAMP    NOT NULL,
-  dumped_at      TIMESTAMP    NOT NULL
+  id              INTEGER      NOT NULL IDENTITY,
+  customer_id     INTEGER      NOT NULL REFERENCES customers (id),
+  application_id  INTEGER      NOT NULL REFERENCES applications (id),
+  host_name       VARCHAR(255) NOT NULL,
+  jvm_fingerprint VARCHAR(50)  NOT NULL,
+  started_at      TIMESTAMP    NOT NULL,
+  dumped_at       TIMESTAMP    NOT NULL
 );
 
 DROP INDEX IF EXISTS ix_jvm_runs;
-CREATE UNIQUE INDEX ix_jvm_runs ON jvm_runs (customer_id, application_id, uuid);
+CREATE UNIQUE INDEX ix_jvm_runs ON jvm_runs (customer_id, application_id, jvm_fingerprint);
 
 //--- Signatures -----------------------------------------------------------------------------------------------
 DROP TABLE IF EXISTS signatures;
 CREATE TABLE signatures (
-  id             INTEGER      NOT NULL IDENTITY,
-  customer_id    INTEGER      NOT NULL REFERENCES customers (id),
-  application_id INTEGER      NOT NULL REFERENCES applications (id),
-  signature      VARCHAR(255) NOT NULL,
-  jvm_run_uuid UUID,
-  used_at        TIMESTAMP,
-  confidence     TINYINT
+  id              INTEGER      NOT NULL IDENTITY,
+  customer_id     INTEGER      NOT NULL REFERENCES customers (id),
+  application_id  INTEGER      NOT NULL REFERENCES applications (id),
+  signature       VARCHAR(255) NOT NULL,
+  jvm_fingerprint VARCHAR(50),
+  used_at         TIMESTAMP,
+  confidence      TINYINT
 );
 
 DROP INDEX IF EXISTS ix_signatures;

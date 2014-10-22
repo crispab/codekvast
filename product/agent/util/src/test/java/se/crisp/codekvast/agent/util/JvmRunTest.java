@@ -16,7 +16,7 @@ public class JvmRunTest {
         file.deleteOnExit();
         JvmRun sr1 = JvmRun.builder()
                                  .hostName("hostName")
-                                 .uuid(UUID.randomUUID())
+                                 .jvmFingerprint(UUID.randomUUID().toString())
                                  .startedAtMillis(System.currentTimeMillis())
                                  .build();
         sr1.saveTo(file);

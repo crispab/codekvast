@@ -5,7 +5,6 @@ import lombok.experimental.Builder;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
-import java.util.UUID;
 
 /**
  * REST data about one instrumented JVM.
@@ -29,7 +28,8 @@ public class JvmRunData {
     private String hostName;
 
     @NonNull
-    private UUID uuid;
+    @Size(min = Constraints.MIN_FINGERPRINT_LENGTH, max = Constraints.MAX_FINGERPRINT_LENGTH)
+    private String jvmFingerprint;
 
     private long startedAtMillis;
     private long dumpedAtMillis;

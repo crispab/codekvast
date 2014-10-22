@@ -55,7 +55,7 @@ public class UsageRegistry {
         UsageRegistry.instance = new UsageRegistry(config,
                                                    JvmRun.builder()
                                                          .hostName(getHostName())
-                                                         .uuid(UUID.randomUUID())
+                                                         .jvmFingerprint(UUID.randomUUID().toString())
                                                          .startedAtMillis(System.currentTimeMillis())
                                                          .build());
     }

@@ -19,7 +19,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkState;
 
@@ -61,17 +60,17 @@ public class StorageDAOImpl implements StorageDAO {
         long customerId = getOrCreateCustomer(usageData.getHeader().getCustomerName());
         long appId = getOrCreateApp(customerId, usageData.getHeader());
         for (UsageDataEntry entry : usageData.getUsage()) {
-            storeOrUpdateUsageDataEntry(result, customerId, appId, usageData.getJvmRunUuid(), entry);
+            storeOrUpdateUsageDataEntry(result, customerId, appId, usageData.getJvmFingerprint(), entry);
         }
         return result;
     }
 
-    private void storeOrUpdateUsageDataEntry(Collection<UsageDataEntry> result, long customerId, long appId, UUID jvmRunUuid,
+    private void storeOrUpdateUsageDataEntry(Collection<UsageDataEntry> result, long customerId, long appId, String jvmFingerprint,
                                              UsageDataEntry entry) {
         Date usedAt = entry.getUsedAtMillis() == null ? null : new Date(entry.getUsedAtMillis());
         Integer confidence = entry.getConfidence() == null ? null : entry.getConfidence().ordinal();
 
-        int updated = attemptToUpdateSignature(customerId, appId, jvmRunUuid, entry, usedAt, confidence);
+        int updated = attemptToUpdateSignature(customerId, appId, jvmFingerprint, entry, usedAt, confidence);
 
         if (updated > 0) {
             log.debug("Updated {}", entry);
@@ -80,8 +79,8 @@ public class StorageDAOImpl implements StorageDAO {
         }
 
         try {
-            jdbcTemplate.update("INSERT INTO signatures(customer_id, application_id, signature, jvm_run_uuid, used_at, confidence) " +
-                                        "VALUES(?, ?, ?, ?, ?, ?)", customerId, appId, entry.getSignature(), jvmRunUuid, usedAt,
+            jdbcTemplate.update("INSERT INTO signatures(customer_id, application_id, signature, jvm_fingerprint, used_at, confidence) " +
+                                        "VALUES(?, ?, ?, ?, ?, ?)", customerId, appId, entry.getSignature(), jvmFingerprint, usedAt,
                                 confidence);
             log.debug("Stored {}", entry);
             result.add(entry);
@@ -90,7 +89,7 @@ public class StorageDAOImpl implements StorageDAO {
         }
     }
 
-    private int attemptToUpdateSignature(long customerId, long appId, UUID jvmRunUuid, UsageDataEntry entry, Date usedAt,
+    private int attemptToUpdateSignature(long customerId, long appId, String jvmFingerprint, UsageDataEntry entry, Date usedAt,
                                          Integer confidence) {
         if (usedAt == null) {
             // An unused signature is not allowed to overwrite a used signature
@@ -100,9 +99,9 @@ public class StorageDAOImpl implements StorageDAO {
         }
 
         // A usage. Overwrite whatever was there.
-        return jdbcTemplate.update("UPDATE signatures SET used_at = ?, jvm_run_uuid = ?, confidence = ? " +
+        return jdbcTemplate.update("UPDATE signatures SET used_at = ?, jvm_fingerprint = ?, confidence = ? " +
                                            "WHERE customer_id = ? AND application_id = ? AND signature = ? ",
-                                   usedAt, jvmRunUuid, confidence, customerId, appId, entry.getSignature());
+                                   usedAt, jvmFingerprint, confidence, customerId, appId, entry.getSignature());
 
     }
 
@@ -120,16 +119,18 @@ public class StorageDAOImpl implements StorageDAO {
     private void storeJvmRunData(long customerId, long appId, JvmRunData data) {
         Date dumpedAt = new Date(data.getDumpedAtMillis());
 
-        int updated = jdbcTemplate.update("UPDATE jvm_runs SET dumped_at = ? WHERE uuid = ?", dumpedAt, data.getUuid());
+        int updated =
+                jdbcTemplate.update("UPDATE jvm_runs SET dumped_at = ? WHERE jvm_fingerprint = ?", dumpedAt, data.getJvmFingerprint());
         if (updated > 0) {
-            log.debug("Updated dumpedAt={} for JVM run {}", dumpedAt, data.getUuid());
+            log.debug("Updated dumpedAt={} for JVM run {}", dumpedAt, data.getJvmFingerprint());
             return;
         }
 
-        int inserted = jdbcTemplate.update("INSERT INTO jvm_runs(customer_id, application_id, host_name, uuid, started_at, dumped_at)" +
-                                                   " VALUES (?, ?, ?, ?, ?, ?)",
-                                           customerId, appId, data.getHostName(), data.getUuid(), new Date(data.getStartedAtMillis()),
-                                           dumpedAt);
+        int inserted =
+                jdbcTemplate.update("INSERT INTO jvm_runs(customer_id, application_id, host_name, jvm_fingerprint, started_at, dumped_at)" +
+                                            " VALUES (?, ?, ?, ?, ?, ?)",
+                                    customerId, appId, data.getHostName(), data.getJvmFingerprint(), new Date(data.getStartedAtMillis()),
+                                    dumpedAt);
         if (inserted > 0) {
             log.debug("Stored new JVM run {}", data);
         } else {

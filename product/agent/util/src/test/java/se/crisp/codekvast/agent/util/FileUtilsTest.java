@@ -2,7 +2,10 @@ package se.crisp.codekvast.agent.util;
 
 import org.junit.Test;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Properties;
@@ -50,7 +53,7 @@ public class FileUtilsTest {
 
     private String getLineNo(File someFile, int lineNo) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(someFile));
-        for(int n = 0; n < lineNo; n++) {
+        for (int n = 0; n < lineNo; n++) {
             reader.readLine();
         }
         return reader.readLine();

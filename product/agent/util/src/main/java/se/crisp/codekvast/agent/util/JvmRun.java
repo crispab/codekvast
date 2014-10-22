@@ -9,7 +9,6 @@ import lombok.experimental.Builder;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.UUID;
 
 /**
  * Data about one run of an app that is instrumented with codekvast-sensor.
@@ -22,7 +21,7 @@ import java.util.UUID;
 @Builder
 public class JvmRun {
     private final String hostName;
-    private final UUID uuid;
+    private final String jvmFingerprint;
     private final long startedAtMillis;
     private long dumpedAtMillis;
 
@@ -36,7 +35,7 @@ public class JvmRun {
 
         return JvmRun.builder()
                         .hostName(props.getProperty("hostName"))
-                        .uuid(UUID.fromString(props.getProperty("uuid")))
+                        .jvmFingerprint(props.getProperty("jvmFingerprint"))
                         .startedAtMillis(Long.parseLong(props.getProperty("startedAtMillis")))
                         .dumpedAtMillis(Long.parseLong(props.getProperty("dumpedAtMillis")))
                         .build();

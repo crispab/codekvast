@@ -25,7 +25,6 @@ import javax.inject.Inject;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
-import java.util.UUID;
 
 /**
  * The implementation of the ServerDelegate.
@@ -63,7 +62,8 @@ public class ServerDelegateImpl implements ServerDelegate {
     }
 
     @Override
-    public void uploadJvmRunData(String hostName, long startedAtMillis, long dumpedAtMillis, UUID uuid) throws ServerDelegateException {
+    public void uploadJvmRunData(String hostName, long startedAtMillis, long dumpedAtMillis, String jvmFingerprint)
+            throws ServerDelegateException {
         String endPoint = config.getServerUri() + AgentRestEndpoints.UPLOAD_V1_JVM_RUN;
 
         log.debug("Uploading JVM run data to {}", endPoint);
@@ -75,7 +75,7 @@ public class ServerDelegateImpl implements ServerDelegate {
                                         .hostName(hostName)
                                         .startedAtMillis(startedAtMillis)
                                         .dumpedAtMillis(dumpedAtMillis)
-                                        .uuid(uuid)
+                                        .jvmFingerprint(jvmFingerprint)
                                         .build();
 
             restTemplate.postForEntity(new URI(endPoint), data, Void.class);
@@ -114,7 +114,7 @@ public class ServerDelegateImpl implements ServerDelegate {
     }
 
     @Override
-    public void uploadUsageData(@NonNull UUID jvmRunUuid, Collection<UsageDataEntry> usage) throws ServerDelegateException {
+    public void uploadUsageData(@NonNull String jvmFingerprint, Collection<UsageDataEntry> usage) throws ServerDelegateException {
         if (usage.isEmpty()) {
             log.debug("Not uploading empty usage");
             return;
@@ -126,7 +126,7 @@ public class ServerDelegateImpl implements ServerDelegate {
         try {
             long startedAt = System.currentTimeMillis();
 
-            UsageData data = UsageData.builder().header(header).jvmRunUuid(jvmRunUuid).usage(usage).build();
+            UsageData data = UsageData.builder().header(header).jvmFingerprint(jvmFingerprint).usage(usage).build();
 
             restTemplate.postForEntity(new URI(endPoint), data, Void.class);
 

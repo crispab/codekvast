@@ -30,7 +30,7 @@ public class JvmRunDataTest {
                                            .hostName("hostName")
                                            .startedAtMillis(1000L)
                                            .dumpedAtMillis(2000L)
-                                           .uuid(UUID.randomUUID())
+                                           .jvmFingerprint(UUID.randomUUID().toString())
                                            .build();
         // when
         String json = objectMapper.writeValueAsString(data1);

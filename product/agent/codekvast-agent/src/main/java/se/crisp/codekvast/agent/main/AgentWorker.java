@@ -61,7 +61,7 @@ public class AgentWorker {
                 serverDelegate.uploadJvmRunData(newJvmRun.getHostName(),
                                                 newJvmRun.getStartedAtMillis(),
                                                 newJvmRun.getDumpedAtMillis(),
-                                                newJvmRun.getUuid());
+                                                newJvmRun.getJvmFingerprint());
                 jvmRun = newJvmRun;
             }
         } catch (IOException e) {
@@ -104,7 +104,7 @@ public class AgentWorker {
 
     private void uploadUsedSignatures(SignatureUsage signatureUsage) {
         try {
-            serverDelegate.uploadUsageData(jvmRun.getUuid(), signatureUsage.getNotUploadedSignatures());
+            serverDelegate.uploadUsageData(jvmRun.getJvmFingerprint(), signatureUsage.getNotUploadedSignatures());
             signatureUsage.clearNotUploadedSignatures();
         } catch (ServerDelegateException e) {
             logException("Cannot upload usage data", e);
