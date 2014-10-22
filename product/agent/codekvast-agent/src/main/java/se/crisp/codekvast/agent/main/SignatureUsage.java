@@ -1,7 +1,6 @@
 package se.crisp.codekvast.agent.main;
 
 import lombok.Getter;
-import lombok.NonNull;
 import se.crisp.codekvast.server.agent.model.v1.UsageConfidence;
 import se.crisp.codekvast.server.agent.model.v1.UsageDataEntry;
 
@@ -19,8 +18,10 @@ class SignatureUsage {
     @Getter
     private final Set<UsageDataEntry> notUploadedSignatures = new HashSet<>();
 
-    void put(@NonNull String signature, long usedAtMillis, @NonNull UsageConfidence confidence) {
-        notUploadedSignatures.add(new UsageDataEntry(signature, usedAtMillis, confidence));
+    void put(String signature, long usedAtMillis, UsageConfidence confidence) {
+        if (signature != null) {
+            notUploadedSignatures.add(new UsageDataEntry(signature, usedAtMillis, confidence));
+        }
     }
 
     void clearNotUploadedSignatures() {

@@ -12,10 +12,12 @@ import java.util.Collection;
 @Getter
 @ToString(callSuper = true)
 public class UsageDataUpdatedEvent extends CodekvastEvent {
+    private final String customerName;
     private final Collection<UsageDataEntry> usageDataEntries;
 
-    public UsageDataUpdatedEvent(Object source, Collection<UsageDataEntry> usageDataEntries) {
+    public UsageDataUpdatedEvent(Object source, String customerName, Collection<UsageDataEntry> usageDataEntries) {
         super(source);
+        this.customerName = customerName;
         this.usageDataEntries = usageDataEntries;
     }
 }

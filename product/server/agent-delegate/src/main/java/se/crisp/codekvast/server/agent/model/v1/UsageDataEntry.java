@@ -19,8 +19,7 @@ public class UsageDataEntry {
     @Size(min = 1, max = Constraints.MAX_SIGNATURE_LENGTH)
     private String signature;
 
-    private long usedAtMillis;
+    private Long usedAtMillis;
 
-    @NonNull
     private UsageConfidence confidence;
 }

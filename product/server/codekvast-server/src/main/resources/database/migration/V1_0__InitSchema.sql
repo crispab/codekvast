@@ -75,6 +75,20 @@ CREATE TABLE jvm_runs (
 DROP INDEX IF EXISTS ix_jvm_runs;
 CREATE UNIQUE INDEX ix_jvm_runs ON jvm_runs (customer_id, application_id, uuid);
 
+//--- Signatures -----------------------------------------------------------------------------------------------
+DROP TABLE IF EXISTS signatures;
+CREATE TABLE signatures (
+  id             INTEGER      NOT NULL IDENTITY,
+  customer_id    INTEGER      NOT NULL REFERENCES customers (id),
+  application_id INTEGER      NOT NULL REFERENCES applications (id),
+  signature      VARCHAR(255) NOT NULL,
+  used_at        TIMESTAMP,
+  confidence     TINYINT
+);
+
+DROP INDEX IF EXISTS ix_signatures;
+CREATE UNIQUE INDEX ix_signatures ON signatures (customer_id, application_id, signature);
+
 //--- System data ----------------------------------------------------------------------------------------------
 INSERT INTO roles (name) VALUES ('SUPERUSER');
 INSERT INTO roles (name) VALUES ('AGENT');

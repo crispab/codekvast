@@ -6,6 +6,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import se.crisp.codekvast.server.agent.model.v1.UsageDataEntry;
+import se.crisp.codekvast.server.codekvast_server.exceptions.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.service.StorageService;
 
 import javax.inject.Inject;
@@ -31,9 +32,9 @@ public class StompController {
 
     @MessageMapping("/hello/**")
     @SendTo(TOPIC_SIGNATURES)
-    public Collection<UsageDataEntry> hello(Message message) {
+    public Collection<UsageDataEntry> hello(Message message) throws CodekvastException {
         log.debug("Received {}", message);
-        Collection<UsageDataEntry> signatures = storageService.getSignatures();
+        Collection<UsageDataEntry> signatures = storageService.getSignatures(null);
         log.debug("Returning {} signatures", signatures.size());
         return signatures;
     }

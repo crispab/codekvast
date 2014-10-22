@@ -6,6 +6,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import se.crisp.codekvast.server.codekvast_server.controller.StompController;
 import se.crisp.codekvast.server.codekvast_server.event.internal.UsageDataUpdatedEvent;
+import se.crisp.codekvast.server.codekvast_server.exceptions.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.service.StorageService;
 
 import javax.inject.Inject;
@@ -31,6 +32,10 @@ public class ClientNotifierImpl implements ApplicationListener<UsageDataUpdatedE
         log.debug("Handling {}", event);
         // TODO: only send the new or updated signatures. This requires a change in codekvast.js as well, as it now expects a complete
         // collection of signatures.
-        messagingTemplate.convertAndSend(StompController.TOPIC_SIGNATURES, storageService.getSignatures());
+        try {
+            messagingTemplate.convertAndSend(StompController.TOPIC_SIGNATURES, storageService.getSignatures(event.getCustomerName()));
+        } catch (CodekvastException e) {
+            log.warn("Cannot get signatures", e);
+        }
     }
 }

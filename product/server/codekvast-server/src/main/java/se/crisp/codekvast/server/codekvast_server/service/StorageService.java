@@ -36,5 +36,11 @@ public interface StorageService {
      */
     void storeUsageData(UsageData data) throws CodekvastException;
 
-    Collection<UsageDataEntry> getSignatures();
+    /**
+     * Retrieve all signatures for a certain customer.
+     *
+     * @param customerName
+     * @return A list of usage data entries. Does never return null.
+     */
+    Collection<UsageDataEntry> getSignatures(String customerName) throws CodekvastException;
 }

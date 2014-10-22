@@ -37,14 +37,14 @@ public class SignatureUsageTest {
     public void testPutSignatureTwiceWithDifferentTimestamps() {
         signatureUsage.put("sig", now, UsageConfidence.EXACT_MATCH);
         signatureUsage.put("sig", now + 1, UsageConfidence.EXACT_MATCH);
-        assertThat(signatureUsage.getNotUploadedSignatures(), hasSize(1));
+        assertThat(signatureUsage.getNotUploadedSignatures(), hasSize(2));
     }
 
     @Test
     public void testPutSignatureTwiceWithDifferentConfidence() {
         signatureUsage.put("sig", now, UsageConfidence.EXACT_MATCH);
         signatureUsage.put("sig", now, UsageConfidence.FOUND_IN_PARENT_CLASS);
-        assertThat(signatureUsage.getNotUploadedSignatures(), hasSize(1));
+        assertThat(signatureUsage.getNotUploadedSignatures(), hasSize(2));
     }
 
     @Test

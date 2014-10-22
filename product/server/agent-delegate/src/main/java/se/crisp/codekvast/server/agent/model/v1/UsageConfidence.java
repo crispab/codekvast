@@ -20,5 +20,21 @@ public enum UsageConfidence {
      * The used signature was <em>not</em> found at all in the scanned code base. This indicates a problem with the code base scanner.
      * Access to the source code is required in order to resolve the problem.
      */
-    NOT_FOUND_IN_CODE_BASE
+    NOT_FOUND_IN_CODE_BASE;
+
+    /**
+     * Converts a UsageConfidence.ordinal() back to the enum constant.
+     *
+     * @param ordinal An integer returned by UsageConfidence.ordinal()
+     * @return The proper enum constant
+     * @throws java.lang.IllegalArgumentException If invalid ordinal value.
+     */
+    public static UsageConfidence fromOrdinal(int ordinal) {
+        for (UsageConfidence confidence : UsageConfidence.values()) {
+            if (confidence.ordinal() == ordinal) {
+                return confidence;
+            }
+        }
+        throw new IllegalArgumentException("Unknown " + UsageConfidence.class.getSimpleName() + " ordinal: " + ordinal);
+    }
 }

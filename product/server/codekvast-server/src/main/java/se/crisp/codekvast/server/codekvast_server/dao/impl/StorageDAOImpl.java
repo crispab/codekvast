@@ -4,16 +4,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import se.crisp.codekvast.server.agent.model.v1.Header;
-import se.crisp.codekvast.server.agent.model.v1.JvmRunData;
+import se.crisp.codekvast.server.agent.model.v1.*;
 import se.crisp.codekvast.server.codekvast_server.dao.StorageDAO;
 import se.crisp.codekvast.server.codekvast_server.exceptions.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.exceptions.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.exceptions.UndefinedCustomerException;
 
 import javax.inject.Inject;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 
 import static com.google.common.base.Preconditions.checkState;
@@ -46,6 +50,81 @@ public class StorageDAOImpl implements StorageDAO {
         long customerId = getOrCreateCustomer(data.getHeader().getCustomerName(), true);
         long appId = getOrCreateApp(customerId, data.getHeader(), true);
         storeJvmRunData(customerId, appId, data);
+    }
+
+    @Override
+    public Collection<UsageDataEntry> storeUsageData(UsageData usageData) throws CodekvastException {
+        final Collection<UsageDataEntry> result = new ArrayList<>();
+
+        long customerId = getOrCreateCustomer(usageData.getHeader().getCustomerName(), true);
+        long appId = getOrCreateApp(customerId, usageData.getHeader(), true);
+        for (UsageDataEntry entry : usageData.getUsage()) {
+            storeOrUpdateUsageDataEntry(result, customerId, appId, entry);
+        }
+        return result;
+    }
+
+    private void storeOrUpdateUsageDataEntry(Collection<UsageDataEntry> result, long customerId, long appId, UsageDataEntry entry) {
+        Date usedAt = entry.getUsedAtMillis() == null ? null : new Date(entry.getUsedAtMillis());
+        Integer confidence = entry.getConfidence() == null ? null : entry.getConfidence().ordinal();
+
+        int updated = attemptToUpdateSignature(customerId, appId, entry, usedAt, confidence);
+
+        if (updated > 0) {
+            log.debug("Updated {}", entry);
+            result.add(entry);
+            return;
+        }
+
+        try {
+            jdbcTemplate.update("INSERT INTO signatures(customer_id, application_id, signature, used_at, confidence) " +
+                                        "VALUES(?, ?, ?, ?, ?)", customerId, appId, entry.getSignature(), usedAt,
+                                confidence);
+            log.debug("Stored {}", entry);
+            result.add(entry);
+        } catch (Exception ignore) {
+            log.debug("Ignore attempt to insert duplicate signature");
+        }
+    }
+
+    private int attemptToUpdateSignature(long customerId, long appId, UsageDataEntry entry, Date usedAt, Integer confidence) {
+        if (usedAt == null) {
+            // A signature. Don't overwrite a usage.
+            return jdbcTemplate.update("UPDATE signatures SET used_at = ? , confidence = ? " +
+                                               "WHERE customer_id = ? AND application_id = ? AND signature = ? AND used_at IS NULL ",
+                                       usedAt, confidence, customerId, appId, entry.getSignature());
+        }
+
+        // A usage. Overwrite whatever was there.
+        return jdbcTemplate.update("UPDATE signatures SET used_at = ? , confidence = ? " +
+                                           "WHERE customer_id = ? AND application_id = ? AND signature = ? ",
+                                   usedAt, confidence, customerId, appId, entry.getSignature());
+
+    }
+
+    @Override
+    public Collection<UsageDataEntry> getSignatures(String customerName) throws CodekvastException {
+        Object[] args = customerName == null ? new Object[0] : new Object[]{getOrCreateCustomer(customerName, true)};
+        String where = customerName == null ? "" : " WHERE customer_id = ?";
+
+        return jdbcTemplate.query("SELECT signature, used_at, confidence FROM signatures " + where,
+                                  args,
+                                  new RowMapper<UsageDataEntry>() {
+                                      @Override
+                                      public UsageDataEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
+                                          return new UsageDataEntry(rs.getString(1), getTimeMillis(rs, 2), getConfidence(rs, 3));
+                                      }
+
+                                      private UsageConfidence getConfidence(ResultSet rs, int columnIndex) throws SQLException {
+                                          Integer ordinal = rs.getInt(columnIndex);
+                                          return ordinal == null ? null : UsageConfidence.fromOrdinal(ordinal);
+                                      }
+
+                                      private Long getTimeMillis(ResultSet rs, int columnIndex) throws SQLException {
+                                          Date date = rs.getDate(columnIndex);
+                                          return date == null ? null : date.getTime();
+                                      }
+                                  });
     }
 
     private void storeJvmRunData(long customerId, long appId, JvmRunData data) {

@@ -14,6 +14,7 @@ import se.crisp.codekvast.server.agent.ServerDelegateException;
 import se.crisp.codekvast.server.agent.impl.ServerDelegateImpl;
 import se.crisp.codekvast.server.agent.model.v1.UsageConfidence;
 import se.crisp.codekvast.server.agent.model.v1.UsageDataEntry;
+import se.crisp.codekvast.server.codekvast_server.exceptions.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.service.StorageService;
 
 import javax.inject.Inject;
@@ -39,6 +40,7 @@ import static org.junit.Assert.fail;
                  })
 public class ServerDelegateTest {
 
+    private static final String CUSTOMER_NAME = "customerName";
     private final String signature1 = "public String com.acme.Foo.foo()";
     private final String signature2 = "public void com.acme.Foo.bar()";
     private final UUID uuid = UUID.randomUUID();
@@ -53,7 +55,7 @@ public class ServerDelegateTest {
 
     private void createServerDelegate(String apiUsername, String apiPassword) throws URISyntaxException {
         serverDelegate = new ServerDelegateImpl(ServerDelegateConfig.builder()
-                                                                    .customerName("customerName")
+                                                                    .customerName(CUSTOMER_NAME)
                                                                     .appName("appName")
                                                                     .appVersion("appVersion")
                                                                     .environment("environment")
@@ -100,16 +102,16 @@ public class ServerDelegateTest {
     }
 
     @Test
-    public void testUploadSignatureData() throws ServerDelegateException, URISyntaxException {
+    public void testUploadSignatureData() throws ServerDelegateException, URISyntaxException, CodekvastException {
         // when
         serverDelegate.uploadSignatureData(Arrays.asList(signature1, signature2));
 
         // then
-        assertThat(storageService.getSignatures(), hasSize(2));
+        assertThat(storageService.getSignatures(null), hasSize(2));
     }
 
     @Test
-    public void testUploadUsageData() throws ServerDelegateException, URISyntaxException {
+    public void testUploadUsageData() throws ServerDelegateException, URISyntaxException, CodekvastException {
         // Given
         long now = System.currentTimeMillis();
         Collection<UsageDataEntry> usage = Arrays.asList(new UsageDataEntry(signature1, now, UsageConfidence.EXACT_MATCH),
@@ -118,7 +120,7 @@ public class ServerDelegateTest {
         serverDelegate.uploadUsageData(uuid, usage);
 
         // then
-        assertThat(storageService.getSignatures(), hasSize(2));
+        assertThat(storageService.getSignatures(CUSTOMER_NAME), hasSize(2));
     }
 
     private void assertThatPingThrowsHttpClientErrorException(String pingMessage, String expectedRootCauseMessage) {
