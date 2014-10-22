@@ -51,7 +51,6 @@ public class ServerDelegateImpl implements ServerDelegate {
                             .appName(config.getAppName())
                             .appVersion(config.getAppVersion())
                             .environment(config.getEnvironment())
-                            .codeBaseName(config.getCodeBaseName())
                             .build();
         this.restTemplate = new RestTemplate(createBasicAuthHttpClient(config.getApiUsername(), config.getApiPassword()));
     }

@@ -9,7 +9,7 @@ public class HeaderTest {
                                               .appName("appName")
                                               .appVersion("appVersion")
                                               .environment("environment")
-                                              .codeBaseName("codeBaseName").build();
+                                              .build();
 
     @Test(expected = NullPointerException.class)
     public void missingValuesShouldBeRejected() {

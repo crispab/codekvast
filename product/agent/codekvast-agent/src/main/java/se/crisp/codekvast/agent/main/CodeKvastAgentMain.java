@@ -76,7 +76,6 @@ public class CodeKvastAgentMain {
                                    .customerName(agentConfig.getCustomerName())
                                    .appName(agentConfig.getAppName())
                                    .appVersion(agentConfig.getAppVersion())
-                                   .codeBaseName(agentConfig.getCodeBaseName())
                                    .environment(agentConfig.getEnvironment())
                                    .serverUri(agentConfig.getServerUri())
                                    .apiUsername(agentConfig.getApiUsername())

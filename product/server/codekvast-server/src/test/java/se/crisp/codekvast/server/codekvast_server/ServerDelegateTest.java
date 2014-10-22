@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
 
@@ -34,6 +35,9 @@ import static org.junit.Assert.fail;
                   "management.port=0",
                   "spring.datasource.url=jdbc:h2:mem:integrationTest"})
 public class ServerDelegateTest {
+
+    private final String signature1 = "public String com.acme.Foo.foo()";
+    private final String signature2 = "public void com.acme.Foo.bar()";
 
     @Value("${local.server.port}")
     private int port;
@@ -48,7 +52,6 @@ public class ServerDelegateTest {
                                                                     .customerName("customerName")
                                                                     .appName("appName")
                                                                     .appVersion("appVersion")
-                                                                    .codeBaseName("codeBaseName")
                                                                     .environment("environment")
                                                                     .serverUri(new URI(String.format("http://localhost:%d", port)))
                                                                     .apiUsername(apiUsername)
@@ -63,12 +66,6 @@ public class ServerDelegateTest {
 
     @Test
     public void testCredentialsOkForUserNameAgent() throws ServerDelegateException, URISyntaxException {
-        assertThat(serverDelegate.ping("Hello!"), is("You said Hello!"));
-    }
-
-    @Test
-    public void testCredentialsOkForUserNameSystem() throws URISyntaxException, ServerDelegateException {
-        createServerDelegate("system", "0000");
         assertThat(serverDelegate.ping("Hello!"), is("You said Hello!"));
     }
 
@@ -91,20 +88,33 @@ public class ServerDelegateTest {
 
     @Test
     public void testUploadJvmRunData() throws ServerDelegateException, URISyntaxException {
+        // when
         serverDelegate.uploadJvmRunData("hostName", System.currentTimeMillis(), System.currentTimeMillis(), UUID.randomUUID());
+
+        // then
+        // TODO: assert the result
     }
 
     @Test
     public void testUploadSignatureData() throws ServerDelegateException, URISyntaxException {
-        serverDelegate.uploadSignatureData(Arrays.asList("public String com.acme.Foo.foo()", "public void com.acme.Foo.bar()"));
+        // when
+        serverDelegate.uploadSignatureData(Arrays.asList(signature1, signature2));
+
+        // then
+        assertThat(storageService.getSignatures(), hasSize(2));
     }
 
     @Test
     public void testUploadUsageData() throws ServerDelegateException, URISyntaxException {
+        // Given
         long now = System.currentTimeMillis();
-        Collection<UsageDataEntry> usage = Arrays.asList(new UsageDataEntry("foo", now, UsageConfidence.EXACT_MATCH),
-                                                         new UsageDataEntry("bar", now, UsageConfidence.EXACT_MATCH));
+        Collection<UsageDataEntry> usage = Arrays.asList(new UsageDataEntry(signature1, now, UsageConfidence.EXACT_MATCH),
+                                                         new UsageDataEntry(signature2, now, UsageConfidence.EXACT_MATCH));
+        // when
         serverDelegate.uploadUsageData(usage);
+
+        // then
+        assertThat(storageService.getSignatures(), hasSize(2));
     }
 
     private void assertThatPingThrowsHttpClientErrorException(String pingMessage, String expectedRootCauseMessage) {

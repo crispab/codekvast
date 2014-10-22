@@ -22,7 +22,6 @@ customerName = Crisp
 appName = $archivesBaseName
 appVersion = $version
 environment = development
-codeBaseName = sample
 codeBaseUri = file:/maven/${archivesBaseName}.war
 dataPath = $codekvastDataPath
 packagePrefix = sample

@@ -25,9 +25,6 @@ public class ServerDelegateConfig {
     private final String appVersion;
 
     @NonNull
-    private final String codeBaseName;
-
-    @NonNull
     private final String environment;
 
     @NonNull

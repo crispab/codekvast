@@ -29,7 +29,6 @@ customerName = Crisp
 appName = $archivesBaseName
 appVersion = $version
 environment = development
-codeBaseName = sample
 codeBaseUri = file:${file("build/install/${project.name}/lib/")}
 packagePrefix = sample
 dataPath = ${file("$buildDir/codekvast")}

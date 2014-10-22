@@ -37,7 +37,6 @@ public class CodeBaseTest {
                           .apiUsername("apiUsername")
                           .apiPassword("apiPassword")
                           .codeBaseUri(new File(codeBaseUri).toURI())
-                          .codeBaseName("codeBaseName")
                           .build();
     }
 

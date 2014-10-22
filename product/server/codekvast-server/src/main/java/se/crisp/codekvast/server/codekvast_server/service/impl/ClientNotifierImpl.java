@@ -29,7 +29,8 @@ public class ClientNotifierImpl implements ApplicationListener<UsageDataUpdatedE
     @Override
     public void onApplicationEvent(UsageDataUpdatedEvent event) {
         log.debug("Handling {}", event);
-        // TODO: only send the new or updated signatures
+        // TODO: only send the new or updated signatures. This requires a change in codekvast.js as well, as it now expects a complete
+        // collection of signatures.
         messagingTemplate.convertAndSend(StompController.TOPIC_SIGNATURES, storageService.getSignatures());
     }
 }

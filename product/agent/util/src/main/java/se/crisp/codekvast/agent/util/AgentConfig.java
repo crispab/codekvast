@@ -39,8 +39,6 @@ public class AgentConfig {
     @NonNull
     private final String environment;
     @NonNull
-    private final String codeBaseName;
-    @NonNull
     private final URI codeBaseUri;
     @NonNull
     private final String packagePrefix;
@@ -106,7 +104,6 @@ public class AgentConfig {
                               .appName(appName)
                               .appVersion(getOptionalStringValue(props, "appVersion", UNSPECIFIED_VERSION))
                               .environment(getMandatoryStringValue(props, "environment"))
-                              .codeBaseName(getOptionalStringValue(props, "codeBaseName", customerName))
                               .codeBaseUri(getMandatoryUriValue(props, "codeBaseUri", false))
                               .packagePrefix(getMandatoryStringValue(props, "packagePrefix"))
                               .aspectjOptions(getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
@@ -137,7 +134,6 @@ public class AgentConfig {
                           .appVersion("application version")
                           .environment("environment")
                           .packagePrefix("com.acme")
-                          .codeBaseName("Optional: my-code-base-name")
                           .codeBaseUri(new URI("file:/path/to/my/code/base"))
                           .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
                           .dataPath(new File("/var/lib", getDataChildPath(customerName, appName)))

@@ -4,15 +4,6 @@ CREATE TABLE roles (
   name VARCHAR(20) NOT NULL UNIQUE,
 );
 
-//--- Organisations --------------------------------------------------------------------------------------------
-DROP TABLE IF EXISTS organisations;
-CREATE TABLE organisations (
-  id         INTEGER                             NOT NULL IDENTITY,
-  name       VARCHAR(100)                        NOT NULL UNIQUE,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
-);
-
 //--- Users ----------------------------------------------------------------------------------------------------
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
@@ -27,17 +18,6 @@ CREATE TABLE users (
   updated_at         TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-DROP TABLE IF EXISTS organisation_members;
-CREATE TABLE organisation_members (
-  organisation_id INTEGER                             NOT NULL REFERENCES organisations (id),
-  user_id         INTEGER                             NOT NULL REFERENCES users (id),
-  primary_contact BOOLEAN DEFAULT FALSE               NOT NULL,
-  created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
-);
-
-DROP INDEX IF EXISTS ix_organisation_members;
-CREATE UNIQUE INDEX ix_organisation_members ON organisation_members (organisation_id, user_id);
-
 DROP TABLE IF EXISTS user_roles;
 CREATE TABLE user_roles (
   user_id    INTEGER                             NOT NULL REFERENCES users (id),
@@ -48,22 +28,37 @@ CREATE TABLE user_roles (
 DROP INDEX IF EXISTS ix_user_roles;
 CREATE UNIQUE INDEX ix_user_roles ON user_roles (user_id, role);
 
+//--- Customers --------------------------------------------------------------------------------------------
+DROP TABLE IF EXISTS customers;
+CREATE TABLE customers (
+  id         INTEGER                             NOT NULL IDENTITY,
+  name       VARCHAR(100)                        NOT NULL UNIQUE,
+  enabled    BOOLEAN DEFAULT TRUE                NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+DROP TABLE IF EXISTS customer_members;
+CREATE TABLE customer_members (
+  customer_id     INTEGER                             NOT NULL REFERENCES customers (id),
+  user_id         INTEGER                             NOT NULL REFERENCES users (id),
+  primary_contact BOOLEAN DEFAULT FALSE               NOT NULL,
+  created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+DROP INDEX IF EXISTS ix_customer_members;
+CREATE UNIQUE INDEX ix_customer_members ON customer_members (customer_id, user_id);
+
 //--- System data ----------------------------------------------------------------------------------------------
 INSERT INTO roles (name) VALUES ('SUPERUSER');
 INSERT INTO roles (name) VALUES ('AGENT');
 INSERT INTO roles (name) VALUES ('USER');
 INSERT INTO roles (name) VALUES ('MONITOR');
-INSERT INTO organisations (id, name) VALUES (0, 'CodeKvast');
-INSERT INTO organisations (id, name) VALUES (1, 'Demo');
 // The plaintext passwords will be hashed when the application starts
-INSERT INTO users (id, username, plaintext_password) VALUES (0, 'system', '0000');
-INSERT INTO users (id, username, plaintext_password) VALUES (1, 'agent', '0000');
-INSERT INTO users (id, username, plaintext_password) VALUES (2, 'user', '0000');
-INSERT INTO users (id, username, plaintext_password) VALUES (3, 'monitor', '0000');
-INSERT INTO organisation_members (organisation_id, user_id, primary_contact) VALUES (0, 0, TRUE);
-INSERT INTO organisation_members (organisation_id, user_id, primary_contact) VALUES (0, 1, FALSE);
-INSERT INTO organisation_members (organisation_id, user_id, primary_contact) VALUES (0, 2, FALSE);
-INSERT INTO organisation_members (organisation_id, user_id, primary_contact) VALUES (0, 3, FALSE);
+INSERT INTO users (id, username, plaintext_password, enabled) VALUES (0, 'system', '0000', FALSE);
+INSERT INTO users (id, username, plaintext_password, enabled) VALUES (1, 'agent', '0000', TRUE);
+INSERT INTO users (id, username, plaintext_password, enabled) VALUES (2, 'user', '0000', TRUE);
+INSERT INTO users (id, username, plaintext_password, enabled) VALUES (3, 'monitor', '0000', TRUE);
 INSERT INTO user_roles (user_id, role) VALUES (0, 'SUPERUSER');
 INSERT INTO user_roles (user_id, role) VALUES (0, 'AGENT');
 INSERT INTO user_roles (user_id, role) VALUES (0, 'USER');
