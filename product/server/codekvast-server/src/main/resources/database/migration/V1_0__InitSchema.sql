@@ -13,7 +13,7 @@ CREATE TABLE users (
   plaintext_password VARCHAR(255),
   enabled            BOOLEAN DEFAULT TRUE                NOT NULL,
   email              VARCHAR(255),
-  name               VARCHAR(255),
+  full_name VARCHAR(255),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
