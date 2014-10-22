@@ -1,7 +1,7 @@
 apply from: "$rootDir/gradle/java.gradle"
 
 
-description = "Code that is shared between codekvast-agent and the sensor"
+description = "Code that is shared between codekvast-agent and the collector"
 archivesBaseName = "codekvast-agent-util"
 version = project.parent.parent.version
 sourceCompatibility = 1.6
@@ -11,8 +11,8 @@ dependencies {
 
     // Absolutely NO other compile or runtime dependencies are allowed here!
 
-    // All transitive compile and runtime dependencies will end up in the sensored app's system
-    // class path. (Lombok will be excluded when assembling the codekvast-sensor jar).
+    // All transitive compile and runtime dependencies will end up in the collected app's system
+    // class path. (Lombok will be excluded when assembling the codekvast-collector jar).
 
     testCompile junit
     testCompile mockito

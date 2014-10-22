@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.sensor;
+package se.crisp.codekvast.agent.collector;
 
 import org.aspectj.lang.Signature;
 import se.crisp.codekvast.agent.util.AgentConfig;
@@ -97,7 +97,7 @@ public class UsageRegistry {
         File outputPath = config.getUsageFile().getParentFile();
         outputPath.mkdirs();
         if (!outputPath.exists()) {
-            CodeKvastSensor.out.println("Cannot dump usage data, " + outputPath + " cannot be created");
+            CodeKvastCollector.out.println("Cannot dump usage data, " + outputPath + " cannot be created");
         } else {
             long oldRecordingIntervalStartedAtMillis = recordingIntervalStartedAtMillis;
             int oldIndex = currentUsageIndex;
@@ -132,7 +132,7 @@ public class UsageRegistry {
             jvmRun.saveTo(tmpFile);
             FileUtils.renameFile(tmpFile, jvmRunFile);
         } catch (IOException e) {
-            CodeKvastSensor.out.println(CodeKvastSensor.NAME + " cannot save " + jvmRunFile + ": " + e);
+            CodeKvastCollector.out.println(CodeKvastCollector.NAME + " cannot save " + jvmRunFile + ": " + e);
         } finally {
             FileUtils.safeDelete(tmpFile);
         }

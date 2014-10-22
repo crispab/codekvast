@@ -1,8 +1,8 @@
-package se.crisp.codekvast.agent.sensor;
+package se.crisp.codekvast.agent.collector;
 
 import org.aspectj.bridge.Constants;
-import se.crisp.codekvast.agent.sensor.aspects.AbstractMethodExecutionAspect;
-import se.crisp.codekvast.agent.sensor.aspects.JasperExecutionAspect;
+import se.crisp.codekvast.agent.collector.aspects.AbstractMethodExecutionAspect;
+import se.crisp.codekvast.agent.collector.aspects.JasperExecutionAspect;
 import se.crisp.codekvast.agent.util.AgentConfig;
 import se.crisp.codekvast.agent.util.FileUtils;
 
@@ -17,18 +17,18 @@ import java.util.TimerTask;
  * <p/>
  * Usage: Add the following option to the Java command line:
  * <pre><code>
- *    -javaagent:/path/to/codekvast-sensor-n.n-shadow.jar=path/to/codekvast-agent.properties
+ *    -javaagent:/path/to/codekvast-collector-n.n-shadow.jar=path/to/codekvast-agent.properties
  * </code></pre>
  *
  * @author Olle Hallin
  */
-public class CodeKvastSensor {
+public class CodeKvastCollector {
 
     public static final String NAME = "CodeKvast";
 
     public static PrintStream out;
 
-    private CodeKvastSensor() {
+    private CodeKvastCollector() {
         // Not possible to instantiate a javaagent
     }
 
@@ -39,20 +39,20 @@ public class CodeKvastSensor {
         AgentConfig config = AgentConfig.parseConfigFile(args);
 
         //noinspection UseOfSystemOutOrSystemErr
-        CodeKvastSensor.out = config.isVerbose() ? System.err : new PrintStream(new NullOutputStream());
+        CodeKvastCollector.out = config.isVerbose() ? System.err : new PrintStream(new NullOutputStream());
 
         UsageRegistry.initialize(config);
 
-        CodeKvastSensor.out.printf("%s is loading aspectjweaver%n", NAME);
+        CodeKvastCollector.out.printf("%s is loading aspectjweaver%n", NAME);
         loadAspectjWeaver(args, inst, config);
 
-        int firstResultInSeconds = createTimerTask(config.getSensorResolutionIntervalSeconds());
+        int firstResultInSeconds = createTimerTask(config.getCollectorResolutionIntervalSeconds());
 
-        CodeKvastSensor.out.printf("%s is ready to detect used code within(%s..*).%n" +
-                                           "First write to %s will be in %d seconds, thereafter every %d seconds.%n" +
-                                           "-------------------------------------------------------------------------------%n",
-                                   NAME, config.getPackagePrefix(), config.getUsageFile(), firstResultInSeconds,
-                                   config.getSensorResolutionIntervalSeconds()
+        CodeKvastCollector.out.printf("%s is ready to detect used code within(%s..*).%n" +
+                                              "First write to %s will be in %d seconds, thereafter every %d seconds.%n" +
+                                              "-------------------------------------------------------------------------------%n",
+                                      NAME, config.getPackagePrefix(), config.getUsageFile(), firstResultInSeconds,
+                                      config.getCollectorResolutionIntervalSeconds()
         );
     }
 
@@ -98,7 +98,7 @@ public class CodeKvastSensor {
                 "<aspectj>\n"
                         + "  <aspects>\n"
                         + "    <aspect name='%1$s'/>\n"
-                        + "    <concrete-aspect name='se.crisp.codekvast.agent.sensor.aspects.PublicMethodExecutionAspect'\n"
+                        + "    <concrete-aspect name='se.crisp.codekvast.agent.collector.aspects.PublicMethodExecutionAspect'\n"
                         + "                     extends='%2$s'>\n"
                         + "      <pointcut name='scope' expression='within(%3$s..*)'/>\n"
                         + "    </concrete-aspect>\n"

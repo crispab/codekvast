@@ -7,7 +7,7 @@ distributions {
         baseName = 'codekvast-agent'
         contents {
             from tasks.getByPath(":product:agent:codekvast-agent:installApp")
-            from tasks.getByPath(":product:agent:sensor:shadowJar"), { into "endorsed" }
+            from tasks.getByPath(":product:agent:collector:shadowJar"), { into "endorsed" }
         }
     }
 

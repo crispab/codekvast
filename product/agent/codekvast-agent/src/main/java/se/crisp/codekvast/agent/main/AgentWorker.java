@@ -42,8 +42,8 @@ public class AgentWorker {
     }
 
     @Scheduled(initialDelay = 10L, fixedDelayString = "${codekvast.serverUploadIntervalMillis}")
-    public void analyseSensorData() {
-        log.debug("Analyzing sensor data");
+    public void analyseCollectorData() {
+        log.debug("Analyzing collector data");
 
         uploadJvmRunIfNeeded(config.getJvmRunFile());
 

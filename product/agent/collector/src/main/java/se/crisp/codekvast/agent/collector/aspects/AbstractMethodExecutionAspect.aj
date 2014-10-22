@@ -1,6 +1,6 @@
-package se.crisp.codekvast.agent.sensor.aspects;
+package se.crisp.codekvast.agent.collector.aspects;
 
-import se.crisp.codekvast.agent.sensor.UsageRegistry;
+import se.crisp.codekvast.agent.collector.UsageRegistry;
 
 /**
  * This is an AspectJ aspect that captures execution of public methods in the scope of interest.
@@ -8,14 +8,14 @@ import se.crisp.codekvast.agent.sensor.UsageRegistry;
  * It is weaved into the target app by the AspectJ load-time weaver.
  *
  * @author Olle Hallin
- * @see se.crisp.codekvast.agent.sensor.CodeKvastSensor
+ * @see se.crisp.codekvast.agent.collector.CodeKvastCollector
  */
 public abstract aspect AbstractMethodExecutionAspect extends AbstractCodeKvastAspect {
 
     /**
      * This abstract pointcut specifies the scope for what method executions to detect.
      * <p/>
-     * It is made concrete by an XML file that is created on-the-fly by {@link se.crisp.codekvast.agent.sensor.CodeKvastSensor} before
+     * It is made concrete by an XML file that is created on-the-fly by {@link se.crisp.codekvast.agent.collector.CodeKvastCollector} before
      * loading
      * the AspectJ load-time weaving agent.
      */

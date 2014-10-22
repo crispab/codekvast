@@ -4,9 +4,9 @@ Visar att man kan använda AspectJ och lite reflectionmagi för att detektera d�
 
 Spiken består av följande moduler:
 
-* product/agent/sensor (en javaagent som innehåller aspectjweaver.jar)
-* product/agent/duck-agent (en fristående java app som skickar insamlade användningsdata till datalagret)
-* product/server/duck-server
+* product/agent/collector (en javaagent som innehåller aspectjweaver.jar)
+* product/agent/codekvast-agent (en fristående java app som skickar insamlade användningsdata till datalagret)
+* product/server/codekvast-server
 * sample/standalone-app (en stand-alone Java-app med lite useless code)
 * sample/tapestry5-war
 * sample/vanilla-jsp (en WAR med ett par vanliga JSP-sidor)
@@ -17,15 +17,15 @@ Spiken består av följande moduler:
 
 ## Hur man testar
 
-I ett fönster startar man duck-server som tar emot data from duck-agent:
+I ett fönster startar man codekvast-server som tar emot data from codekvast-agent:
 
-    ./gradlew :product:server:duck-server:run
+    ./gradlew :product:server:codekvast-server:run
     
-I nästa fönster startar man duck-agent som laddar upp sensordata till duck-server:
+I nästa fönster startar man codekvast-agent som laddar upp insamlade data till codekvast-server:
 
-    ./gradlew :product:agent:duck-agent:run
+    ./gradlew :product:agent:codekvast-agent:run
 
-I det tredje fönstret kör man sample-app som startar med -javaagent:duck-sensor och som därmed genererar sensordata:
+I det tredje fönstret kör man sample-app som startar med -javaagent:codekvast-collector och som därmed genererar kördata:
 
     ./gradlew :sample:standalone-app:run
 

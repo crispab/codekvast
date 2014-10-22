@@ -33,7 +33,7 @@ public class CodeKvastAgentMain {
     private static AgentConfig agentConfig;
 
     public static void main(String[] args) throws IOException, URISyntaxException {
-        // Use the same AgentConfig as is used by the sensor...
+        // Use the same AgentConfig as is used by the collector...
         URI location = getAgentConfigLocation(args);
         CodeKvastAgentMain.agentConfig = AgentConfig.parseConfigFile(location);
 

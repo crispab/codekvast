@@ -34,7 +34,7 @@ public interface ServerDelegate {
     /**
      * Upload method usage to the server.
      * <p/>
-     * This should be done as soon as a new usage file is produced by the sensor.
+     * This should be done as soon as a new usage file is produced by the collector.
      *
      * @param jvmFingerprint The fingerprint of the JVM that produced this usage data.
      * @param usage          A collection of usage data entries

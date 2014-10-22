@@ -35,7 +35,7 @@ dataPath = ${file("$buildDir/codekvast")}
 serverUri = http://localhost:8080
 apiUsername = agent
 apiPassword = 0000
-sensorResolutionIntervalSeconds = 10
+collectorResolutionIntervalSeconds = 10
 serverUploadIntervalSeconds = 5
 aspectjOptions = -verbose -showWeaveInfo
 verbose = true
@@ -46,7 +46,7 @@ verbose = true
 processResources.dependsOn generateCodeKvastConfig
 
 run {
-    dependsOn = [":product:agent:sensor:assemble", "generateCodeKvastConfig"]
-    def codekvastSensor = tasks.getByPath(":product:agent:sensor:shadowJar").outputs.files.asPath
-    jvmArgs = ["-javaagent:$codekvastSensor=$generateCodeKvastConfig.configFile"]
+    dependsOn = [":product:agent:collector:assemble", "generateCodeKvastConfig"]
+    def codekvastCollector = tasks.getByPath(":product:agent:collector:shadowJar").outputs.files.asPath
+    jvmArgs = ["-javaagent:$codekvastCollector=$generateCodeKvastConfig.configFile"]
 }

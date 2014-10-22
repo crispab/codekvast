@@ -1,4 +1,4 @@
-# CodeKvast Sensor Run
+# CodeKvast Collector Run
 #
 appName = clientgui
 dumpedAtMillis = 1402397660398

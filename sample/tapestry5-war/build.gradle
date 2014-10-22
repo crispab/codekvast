@@ -46,7 +46,7 @@ packagePrefix = se.crisp.sample
 serverUri = http://localhost:8080
 apiUsername = agent
 apiPassword = 0000
-sensorResolutionIntervalSeconds = 10
+collectorResolutionIntervalSeconds = 10
 serverUploadIntervalSeconds = 5
 aspectjOptions = -verbose
 verbose = true
@@ -62,16 +62,16 @@ task dockerRunWarInTomcat7(type: Exec) {
 
     description = "Deploys $project.name to $tomcatVersion inside a Docker container, access it at http://localhost:$port/$project.name"
     group = "Web application"
-    dependsOn "assemble", ":product:agent:sensor:assemble"
+    dependsOn "assemble", ":product:agent:collector:assemble"
 
-    def codekvastSensor = new File(tasks.getByPath(":product:agent:sensor:shadowJar").outputs.files.asPath)
+    def codekvastCollector = new File(tasks.getByPath(":product:agent:collector:shadowJar").outputs.files.asPath)
 
     executable = "docker"
     args = ["run", "--rm",
             "-v", "$codekvastDataPath:$codekvastDataPath",
             "-v", "$buildDir/libs:/maven",
-            "-v", "$codekvastSensor.parentFile:/codekvast",
-            "-e", "JAVA_OPTS=-javaagent:/codekvast/$codekvastSensor.name=/maven/codekvast.properties",
+            "-v", "$codekvastCollector.parentFile:/codekvast",
+            "-e", "JAVA_OPTS=-javaagent:/codekvast/$codekvastCollector.name=/maven/codekvast.properties",
             "-e", "LANG=C.UTF-8",
             "-p", "$port:8080",
             "jolokia/$tomcatVersion",

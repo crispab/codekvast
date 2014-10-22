@@ -1,5 +1,5 @@
 /**
- * Utility classes used by both codekvast-agent and the sensor.
+ * Utility classes used by both codekvast-agent and the collector.
  *
  * @author Olle Hallin
  */

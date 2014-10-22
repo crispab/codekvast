@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.sensor.aspects;
+package se.crisp.codekvast.agent.collector.aspects;
 
 /**
  * Abstract base aspect providing some reusable pointcuts.

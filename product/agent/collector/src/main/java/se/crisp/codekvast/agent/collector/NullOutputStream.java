@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.sensor;
+package se.crisp.codekvast.agent.collector;
 
 import java.io.IOException;
 

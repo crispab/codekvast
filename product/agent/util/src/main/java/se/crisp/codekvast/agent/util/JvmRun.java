@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * Data about one run of an app that is instrumented with codekvast-sensor.
+ * Data about one run of an app that is instrumented with codekvast-collector.
  *
  * @author Olle Hallin
  */
@@ -34,10 +34,10 @@ public class JvmRun {
         Properties props = FileUtils.readPropertiesFrom(file);
 
         return JvmRun.builder()
-                        .hostName(props.getProperty("hostName"))
-                        .jvmFingerprint(props.getProperty("jvmFingerprint"))
-                        .startedAtMillis(Long.parseLong(props.getProperty("startedAtMillis")))
-                        .dumpedAtMillis(Long.parseLong(props.getProperty("dumpedAtMillis")))
-                        .build();
+                     .hostName(props.getProperty("hostName"))
+                     .jvmFingerprint(props.getProperty("jvmFingerprint"))
+                     .startedAtMillis(Long.parseLong(props.getProperty("startedAtMillis")))
+                     .dumpedAtMillis(Long.parseLong(props.getProperty("dumpedAtMillis")))
+                     .build();
     }
 }

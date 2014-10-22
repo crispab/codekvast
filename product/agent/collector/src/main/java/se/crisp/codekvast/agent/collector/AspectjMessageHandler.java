@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.sensor;
+package se.crisp.codekvast.agent.collector;
 
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
@@ -21,7 +21,7 @@ public class AspectjMessageHandler implements IMessageHandler {
     }
 
     private Writer openLogWriter() {
-        File logFile = UsageRegistry.instance.getConfig().getSensorLogFile();
+        File logFile = UsageRegistry.instance.getConfig().getCollectorLogFile();
         try {
             return new BufferedWriter(new OutputStreamWriter(new FileOutputStream(logFile)));
         } catch (IOException e) {

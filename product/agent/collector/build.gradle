@@ -10,7 +10,7 @@ apply plugin: 'aspectj'
 apply plugin: 'shadow'
 
 description = "The javaagent part of CodeKvast agent"
-archivesBaseName = "codekvast-agent-sensor"
+archivesBaseName = "codekvast-agent-collector"
 version = project.parent.parent.version
 sourceCompatibility = 1.6
 
@@ -24,8 +24,8 @@ dependencies {
     // class path, which is unacceptable.
 }
 
-jar { manifest { attributes("Premain-Class": "se.crisp.codekvast.agent.sensor.CodeKvastSensor") } }
-shadow { outputFile = file("$buildDir/distributions/codekvast-sensor-${version}.jar") }
+jar { manifest { attributes("Premain-Class": "se.crisp.codekvast.agent.collector.CodeKvastCollector") } }
+shadow { outputFile = file("$buildDir/distributions/codekvast-collector-${version}.jar") }
 
-// Make a shadow jar consisting of codekvast-agent-sensor and it's dependencies (i.e. aspectjweaver-n.n.jar)
+// Make a shadow jar consisting of codekvast-agent-collector and it's dependencies (i.e. aspectjweaver-n.n.jar)
 assemble.dependsOn shadowJar

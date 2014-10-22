@@ -9,7 +9,7 @@ import java.net.URISyntaxException;
 import java.util.Properties;
 
 /**
- * Encapsulates the configuration that is shared between codekvast-agent and codekvast-sensor.
+ * Encapsulates the configuration that is shared between codekvast-agent and codekvast-collector.
  * <p/>
  * It also contains methods for reading and writing agent configuration files.
  *
@@ -20,7 +20,7 @@ import java.util.Properties;
 @Builder
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class AgentConfig {
-    public static final int DEFAULT_SENSOR_RESOLUTION_INTERVAL_SECONDS = 600;
+    public static final int DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS = 600;
     public static final int DEFAULT_UPLOAD_INTERVAL_SECONDS = 3600;
     public static final String DEFAULT_ASPECTJ_OPTIONS = "";
     public static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
@@ -52,7 +52,7 @@ public class AgentConfig {
     private final String apiUsername;
     @NonNull
     private final String apiPassword;
-    private final int sensorResolutionIntervalSeconds;
+    private final int collectorResolutionIntervalSeconds;
     private final int serverUploadIntervalSeconds;
     private final boolean clobberAopXml;
     private final boolean verbose;
@@ -81,8 +81,8 @@ public class AgentConfig {
         return new File(dataPath, "codekvast-agent.log");
     }
 
-    public File getSensorLogFile() {
-        return new File(dataPath, "codekvast-sensor.log");
+    public File getCollectorLogFile() {
+        return new File(dataPath, "codekvast-collector.log");
     }
 
     public void saveTo(File file) {
@@ -107,8 +107,8 @@ public class AgentConfig {
                               .codeBaseUri(getMandatoryUriValue(props, "codeBaseUri", false))
                               .packagePrefix(getMandatoryStringValue(props, "packagePrefix"))
                               .aspectjOptions(getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
-                              .sensorResolutionIntervalSeconds(getOptionalIntValue(props, "sensorResolutionIntervalSeconds",
-                                                                                   DEFAULT_SENSOR_RESOLUTION_INTERVAL_SECONDS))
+                              .collectorResolutionIntervalSeconds(getOptionalIntValue(props, "collectorResolutionIntervalSeconds",
+                                                                                      DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS))
                               .dataPath(new File(getOptionalStringValue(props, "dataPath", getDefaultDataPath(customerName, appName))))
                               .serverUploadIntervalSeconds(getOptionalIntValue(props, "serverUploadIntervalSeconds",
                                                                                DEFAULT_UPLOAD_INTERVAL_SECONDS))
@@ -137,7 +137,7 @@ public class AgentConfig {
                           .codeBaseUri(new URI("file:/path/to/my/code/base"))
                           .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
                           .dataPath(new File("/var/lib", getDataChildPath(customerName, appName)))
-                          .sensorResolutionIntervalSeconds(DEFAULT_SENSOR_RESOLUTION_INTERVAL_SECONDS)
+                          .collectorResolutionIntervalSeconds(DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS)
                           .serverUploadIntervalSeconds(DEFAULT_UPLOAD_INTERVAL_SECONDS)
                           .serverUri(new URI("http://localhost:8080"))
                           .apiUsername(DEFAULT_API_USERNAME)

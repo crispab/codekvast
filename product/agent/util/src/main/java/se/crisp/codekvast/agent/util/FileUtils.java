@@ -7,7 +7,7 @@ import java.net.URI;
 import java.util.*;
 
 /**
- * Low-level file utilities used by the codekvast agent and sensor.
+ * Low-level file utilities used by the codekvast agent and collector.
  *
  * @author Olle Hallin
  */
@@ -96,7 +96,8 @@ public class FileUtils {
             for (Field field : object.getClass().getDeclaredFields()) {
                 if (!Modifier.isStatic(field.getModifiers())) {
                     field.setAccessible(true);
-                    lines.add(String.format("%s = %s", field.getName(), field.get(object).toString().replace("\\", "\\\\").replace(":", "\\:")));
+                    lines.add(String.format("%s = %s", field.getName(),
+                                            field.get(object).toString().replace("\\", "\\\\").replace(":", "\\:")));
                 }
             }
 

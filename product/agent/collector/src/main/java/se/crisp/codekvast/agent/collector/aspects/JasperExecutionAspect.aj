@@ -1,7 +1,7 @@
-package se.crisp.codekvast.agent.sensor.aspects;
+package se.crisp.codekvast.agent.collector.aspects;
 
 import org.aspectj.lang.JoinPoint;
-import se.crisp.codekvast.agent.sensor.UsageRegistry;
+import se.crisp.codekvast.agent.collector.UsageRegistry;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  * It is weaved into the target app by the AspectJ load-time weaver.
  *
  * @author Olle Hallin
- * @see se.crisp.codekvast.agent.sensor.CodeKvastSensor
+ * @see se.crisp.codekvast.agent.collector.CodeKvastCollector
  */
 public aspect JasperExecutionAspect extends AbstractCodeKvastAspect {
 
