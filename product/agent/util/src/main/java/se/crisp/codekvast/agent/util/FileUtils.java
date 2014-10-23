@@ -23,11 +23,13 @@ public final class FileUtils {
     public static List<Usage> consumeAllUsageDataFiles(File file) {
         List<Usage> result = new ArrayList<Usage>();
         File[] files = file.getParentFile().listFiles();
-        Arrays.sort(files);
-        for (File f : files) {
-            if (f.getName().startsWith(file.getName())) {
-                result.addAll(readUsageDataFrom(f));
-                f.delete();
+        if (files != null) {
+            Arrays.sort(files);
+            for (File f : files) {
+                if (f.getName().startsWith(file.getName())) {
+                    result.addAll(readUsageDataFrom(f));
+                    f.delete();
+                }
             }
         }
         return result;
@@ -54,36 +56,38 @@ public final class FileUtils {
     }
 
     public static void writeUsageDataTo(File file, int dumpCount, long recordingStartedAtMillis, Set<String> signatures) {
-        long startedAt = System.currentTimeMillis();
+        if (!signatures.isEmpty()) {
+            long startedAt = System.currentTimeMillis();
 
-        File tmpFile = null;
-        PrintStream out = null;
+            File tmpFile = null;
+            PrintStream out = null;
 
-        try {
-            tmpFile = File.createTempFile("codekvast", ".tmp", file.getParentFile());
-            out = new PrintStream(tmpFile, UTF_8);
+            try {
+                tmpFile = File.createTempFile("codekvast", ".tmp", file.getParentFile());
+                out = new PrintStream(tmpFile, UTF_8);
 
-            Date dumpedAt = new Date();
-            Date recordedAt = new Date(recordingStartedAtMillis);
-            out.printf(Locale.ENGLISH, "# Codekvast usage results #%d at %s, methods used since %s%n", dumpCount, dumpedAt, recordedAt);
-            out.println("# lastUsedMillis:signature");
+                Date dumpedAt = new Date();
+                Date recordedAt = new Date(recordingStartedAtMillis);
+                out.printf(Locale.ENGLISH, "# Codekvast usage results #%d at %s, methods used since %s%n", dumpCount, dumpedAt, recordedAt);
+                out.println("# lastUsedMillis:signature");
 
-            int count = 0;
-            for (String sig : signatures) {
-                out.println(new Usage(sig, recordingStartedAtMillis));
-                count += 1;
+                int count = 0;
+                for (String sig : signatures) {
+                    out.println(new Usage(sig, recordingStartedAtMillis));
+                    count += 1;
+                }
+
+                long elapsed = System.currentTimeMillis() - startedAt;
+                out.printf(Locale.ENGLISH, "# Dump #%d at %s took %d ms, number of methods: %d%n", dumpCount, dumpedAt, elapsed, count);
+                out.flush();
+            } catch (IOException e) {
+                System.err.println("Codekvast cannot dump usage data to " + file + ": " + e);
+            } finally {
+                safeClose(out);
             }
 
-            long elapsed = System.currentTimeMillis() - startedAt;
-            out.printf(Locale.ENGLISH, "# Dump #%d at %s took %d ms, number of methods: %d%n", dumpCount, dumpedAt, elapsed, count);
-            out.flush();
-        } catch (IOException e) {
-            System.err.println("Codekvast cannot dump usage data to " + file + ": " + e);
-        } finally {
-            safeClose(out);
+            safeRename(tmpFile, makeUnique(file));
         }
-
-        safeRename(tmpFile, makeUnique(file));
     }
 
     private static File makeUnique(File file) {
