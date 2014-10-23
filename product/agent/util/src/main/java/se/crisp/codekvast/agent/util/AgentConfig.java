@@ -57,6 +57,14 @@ public class AgentConfig {
     private final boolean clobberAopXml;
     private final boolean verbose;
 
+    public String getNormalizedPackagePrefix() {
+        int dot = packagePrefix.length() - 1;
+        while (dot >= 0 && packagePrefix.charAt(dot) == '.') {
+            dot -= 1;
+        }
+        return packagePrefix.substring(0, dot + 1);
+    }
+
     public int getServerUploadIntervalMillis() {
         return serverUploadIntervalSeconds * 1000;
     }

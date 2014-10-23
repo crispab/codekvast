@@ -25,6 +25,7 @@ import java.util.TimerTask;
 public class CodeKvastCollector {
 
     public static final String NAME = "Codekvast";
+    private static final String ASPECTJ_WEAVER_CONFIGURATION = "org.aspectj.weaver.loadtime.configuration";
 
     public static PrintStream out;
 
@@ -43,7 +44,6 @@ public class CodeKvastCollector {
 
         UsageRegistry.initialize(config);
 
-        CodeKvastCollector.out.printf("%s is loading aspectjweaver%n", NAME);
         loadAspectjWeaver(args, inst, config);
 
         int firstResultInSeconds = createTimerTask(config.getCollectorResolutionSeconds());
@@ -70,10 +70,13 @@ public class CodeKvastCollector {
     }
 
     private static void loadAspectjWeaver(String args, Instrumentation inst, AgentConfig config) {
-        System.setProperty("org.aspectj.weaver.loadtime.configuration", join(createAopXml(config),
+        System.setProperty(ASPECTJ_WEAVER_CONFIGURATION, join(createAopXml(config),
                                                                              Constants.AOP_USER_XML,
                                                                              Constants.AOP_AJC_XML,
                                                                              Constants.AOP_OSGI_XML));
+
+        CodeKvastCollector.out.printf("%s=%s%n", ASPECTJ_WEAVER_CONFIGURATION, System.getProperty(ASPECTJ_WEAVER_CONFIGURATION));
+        CodeKvastCollector.out.printf("%s is loading aspectjweaver%n", NAME);
         org.aspectj.weaver.loadtime.Agent.premain(args, inst);
     }
 
@@ -94,30 +97,23 @@ public class CodeKvastCollector {
      * @return A file URI to a temporary aop-ajc.xml file. The file is deleted on JVM exit.
      */
     private static String createAopXml(AgentConfig config) {
-        String prefix = config.getPackagePrefix();
-        if (!prefix.endsWith(".")) {
-            prefix += ".";
-        }
-        if (!prefix.endsWith(".")) {
-            prefix += ".";
-        }
         String xml = String.format(
                 "<aspectj>\n"
                         + "  <aspects>\n"
                         + "    <aspect name='%1$s'/>\n"
                         + "    <concrete-aspect name='se.crisp.codekvast.agent.collector.aspects.PublicMethodExecutionAspect'\n"
                         + "                     extends='%2$s'>\n"
-                        + "      <pointcut name='scope' expression='within(%3$s*)'/>\n"
+                        + "      <pointcut name='scope' expression='within(%3$s..*)'/>\n"
                         + "    </concrete-aspect>\n"
                         + "  </aspects>\n"
                         + "  <weaver options='%4$s'>\n"
-                        + "    <include within='%3$s*' />\n"
+                        + "    <include within='%3$s..*' />\n"
                         + "    <include within='%5$s..*' />\n"
                         + "  </weaver>\n"
                         + "</aspectj>\n",
                 JasperExecutionAspect.class.getName(),
                 AbstractMethodExecutionAspect.class.getName(),
-                prefix,
+                config.getNormalizedPackagePrefix(),
                 config.getAspectjOptions() + " -XmessageHandlerClass:" + AspectjMessageHandler.class.getName(),
                 JasperExecutionAspect.JASPER_BASE_PACKAGE
         );

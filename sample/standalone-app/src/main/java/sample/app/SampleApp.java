@@ -1,11 +1,13 @@
 package sample.app;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import untracked.UntrackedClass;
 
 /**
  * @author Olle Hallin
  */
+@Slf4j
 public class SampleApp {
 
     private int sum = 0;
@@ -43,11 +45,11 @@ public class SampleApp {
 
         long untrackedElapsedMillis = invokeUntracked(count);
         long trackedElapsedMillis = invokeTracked(count);
-        double overheadMicros = (trackedElapsedMillis - untrackedElapsedMillis) * 1000d / (double) count;
+        int overheadNanos = (int) ((trackedElapsedMillis - untrackedElapsedMillis) * 1000000d / (double) count);
 
         System.out.printf("Invoked a trivial untracked method %,d times in %5d ms%n", count, untrackedElapsedMillis);
         System.out.printf("Invoked a trivial   tracked method %,d times in %5d ms%n", count, trackedElapsedMillis);
-        System.out.printf("Codekvast collector adds roughly %.2f us to a method call%n", overheadMicros);
+        System.out.printf("Codekvast collector adds roughly %d ns to a method call%n", overheadNanos);
     }
 
     private long invokeUntracked(int count) {
@@ -57,6 +59,7 @@ public class SampleApp {
         for (int i = 0; i < count; i++) {
             sum += untracked.foo();
         }
+        log.debug("Make sure the entire loop is not bypassed by the JIT compiler... {}", sum);
         return System.currentTimeMillis() - startedAt;
     }
 
@@ -68,6 +71,7 @@ public class SampleApp {
         for (int i = 0; i < count; i++) {
             sum += tracked.foo();
         }
+        log.debug("Make sure the entire loop is not bypassed by the JIT compiler... {}", sum);
         return System.currentTimeMillis() - startedAt;
     }
 
