@@ -9,7 +9,7 @@ buildscript {
 apply plugin: 'aspectj'
 apply plugin: 'shadow'
 
-description = "The javaagent part of CodeKvast agent"
+description = "The javaagent part of Codekvast agent"
 archivesBaseName = "codekvast-agent-collector"
 version = project.parent.parent.version
 sourceCompatibility = 1.6

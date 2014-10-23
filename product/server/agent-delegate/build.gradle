@@ -2,7 +2,7 @@ buildscript { dependencies { classpath "org.springframework.boot:spring-boot-gra
 apply from: "$rootDir/gradle/java.gradle"
 apply plugin: 'spring-boot'
 
-description = "The agent-side business delegate of the CodeKvast server"
+description = "The agent-side business delegate of the Codekvast server"
 archivesBaseName = "codekvast-server-agent-delegate"
 version = project.parent.parent.version
 sourceCompatibility = 1.7

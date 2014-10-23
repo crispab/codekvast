@@ -5,7 +5,7 @@ import se.crisp.codekvast.server.agent.model.v1.UsageDataEntry;
 import java.util.Collection;
 
 /**
- * This is the business delegate interface used by a CodeKvast agent for communicating with the server.
+ * This is the business delegate interface used by a Codekvast agent for communicating with the server.
  *
  * @author Olle Hallin
  */

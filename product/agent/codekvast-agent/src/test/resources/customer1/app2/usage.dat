@@ -1,4 +1,4 @@
-# CodeKvast usage results #112 at Tue Jun 10 12:54:20 CEST 2014
+# Codekvast usage results #112 at Tue Jun 10 12:54:20 CEST 2014
 # lastUsedMillis:signature
  1402396550407:public void se.transmode.common.settings.Settings.setValueDimension(java.lang.String, java.awt.Dimension)
  1402396550407:public static se.lumentis.mms.client.serviceutils.ClientServiceMgr se.lumentis.mms.client.serviceutils.ClientServiceMgr.create(se.lumentis.mms.client.main.NotificationHandler)

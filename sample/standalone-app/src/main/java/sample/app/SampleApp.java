@@ -47,7 +47,7 @@ public class SampleApp {
 
         System.out.printf("Invoked a trivial untracked method %,d times in %5d ms%n", count, untrackedElapsedMillis);
         System.out.printf("Invoked a trivial   tracked method %,d times in %5d ms%n", count, trackedElapsedMillis);
-        System.out.printf("CodeKvast collector adds roughly %.2f us to a method call%n", overheadMicros);
+        System.out.printf("Codekvast collector adds roughly %.2f us to a method call%n", overheadMicros);
     }
 
     private long invokeUntracked(int count) {

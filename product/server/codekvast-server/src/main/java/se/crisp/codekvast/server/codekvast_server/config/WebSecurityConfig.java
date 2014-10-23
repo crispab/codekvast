@@ -54,7 +54,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginPage("/login").permitAll()
                 .and()
             .httpBasic()
-                .realmName("CodeKvast")
+                .realmName("Codekvast")
                 .and()
             .logout()
                 .permitAll();

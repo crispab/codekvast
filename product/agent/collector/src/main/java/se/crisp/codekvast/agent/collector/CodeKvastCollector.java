@@ -13,7 +13,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * This is the Java agent that hooks up CodeKvast to the app. It also loads aspectjweaver.
+ * This is the Java agent that hooks up Codekvast to the app. It also loads aspectjweaver.
  * <p/>
  * Usage: Add the following option to the Java command line:
  * <pre><code>
@@ -24,7 +24,7 @@ import java.util.TimerTask;
  */
 public class CodeKvastCollector {
 
-    public static final String NAME = "CodeKvast";
+    public static final String NAME = "Codekvast";
 
     public static PrintStream out;
 
@@ -46,13 +46,13 @@ public class CodeKvastCollector {
         CodeKvastCollector.out.printf("%s is loading aspectjweaver%n", NAME);
         loadAspectjWeaver(args, inst, config);
 
-        int firstResultInSeconds = createTimerTask(config.getCollectorResolutionIntervalSeconds());
+        int firstResultInSeconds = createTimerTask(config.getCollectorResolutionSeconds());
 
         CodeKvastCollector.out.printf("%s is ready to detect used code within(%s..*).%n" +
                                               "First write to %s will be in %d seconds, thereafter every %d seconds.%n" +
                                               "-------------------------------------------------------------------------------%n",
                                       NAME, config.getPackagePrefix(), config.getUsageFile(), firstResultInSeconds,
-                                      config.getCollectorResolutionIntervalSeconds()
+                                      config.getCollectorResolutionSeconds()
         );
     }
 
@@ -94,23 +94,30 @@ public class CodeKvastCollector {
      * @return A file URI to a temporary aop-ajc.xml file. The file is deleted on JVM exit.
      */
     private static String createAopXml(AgentConfig config) {
+        String prefix = config.getPackagePrefix();
+        if (!prefix.endsWith(".")) {
+            prefix += ".";
+        }
+        if (!prefix.endsWith(".")) {
+            prefix += ".";
+        }
         String xml = String.format(
                 "<aspectj>\n"
                         + "  <aspects>\n"
                         + "    <aspect name='%1$s'/>\n"
                         + "    <concrete-aspect name='se.crisp.codekvast.agent.collector.aspects.PublicMethodExecutionAspect'\n"
                         + "                     extends='%2$s'>\n"
-                        + "      <pointcut name='scope' expression='within(%3$s..*)'/>\n"
+                        + "      <pointcut name='scope' expression='within(%3$s*)'/>\n"
                         + "    </concrete-aspect>\n"
                         + "  </aspects>\n"
                         + "  <weaver options='%4$s'>\n"
-                        + "    <include within='%3$s..*' />\n"
+                        + "    <include within='%3$s*' />\n"
                         + "    <include within='%5$s..*' />\n"
                         + "  </weaver>\n"
                         + "</aspectj>\n",
                 JasperExecutionAspect.class.getName(),
                 AbstractMethodExecutionAspect.class.getName(),
-                config.getPackagePrefix(),
+                prefix,
                 config.getAspectjOptions() + " -XmessageHandlerClass:" + AspectjMessageHandler.class.getName(),
                 JasperExecutionAspect.JASPER_BASE_PACKAGE
         );

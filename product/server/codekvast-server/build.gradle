@@ -8,7 +8,7 @@ apply from: "$rootDir/gradle/java.gradle"
 apply plugin: 'spring-boot'
 apply plugin: 'application'
 
-description = "The main CodeKvast server"
+description = "The main Codekvast server"
 archivesBaseName = "codekvast-server"
 version = project.parent.parent.version
 ext.gitCommit = getLatestGitCommit()

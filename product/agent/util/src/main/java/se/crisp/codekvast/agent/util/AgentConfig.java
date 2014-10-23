@@ -52,7 +52,7 @@ public class AgentConfig {
     private final String apiUsername;
     @NonNull
     private final String apiPassword;
-    private final int collectorResolutionIntervalSeconds;
+    private final int collectorResolutionSeconds;
     private final int serverUploadIntervalSeconds;
     private final boolean clobberAopXml;
     private final boolean verbose;
@@ -62,31 +62,35 @@ public class AgentConfig {
     }
 
     public File getUsageFile() {
-        return new File(dataPath, "usage.dat");
+        return new File(myDataPath(), "usage.dat");
+    }
+
+    private File myDataPath() {
+        return new File(dataPath, getNormalizedChildPath(customerName, appName));
     }
 
     public File getJvmRunFile() {
-        return new File(dataPath, "jvm-run.dat");
+        return new File(myDataPath(), "jvm-run.dat");
     }
 
     public File getSignatureFile() {
-        return new File(dataPath, "signatures.dat");
+        return new File(myDataPath(), "signatures.dat");
     }
 
     public File getAspectFile() {
-        return new File(dataPath, "aop.xml");
+        return new File(myDataPath(), "aop.xml");
     }
 
     public File getAgentLogFile() {
-        return new File(dataPath, "codekvast-agent.log");
+        return new File(myDataPath(), "codekvast-agent.log");
     }
 
     public File getCollectorLogFile() {
-        return new File(dataPath, "codekvast-collector.log");
+        return new File(myDataPath(), "codekvast-collector.log");
     }
 
     public void saveTo(File file) {
-        FileUtils.writePropertiesTo(file, this, "CodeKvast AgentConfig");
+        FileUtils.writePropertiesTo(file, this, "Codekvast AgentConfig");
     }
 
     public static AgentConfig parseConfigFile(String file) {
@@ -96,20 +100,18 @@ public class AgentConfig {
     public static AgentConfig parseConfigFile(URI uri) {
         try {
             Properties props = FileUtils.readPropertiesFrom(uri);
-            String customerName = getMandatoryStringValue(props, "customerName");
-            String appName = getMandatoryStringValue(props, "appName");
 
             return AgentConfig.builder()
-                              .customerName(customerName)
-                              .appName(appName)
+                              .customerName(getMandatoryStringValue(props, "customerName"))
+                              .appName(getMandatoryStringValue(props, "appName"))
                               .appVersion(getOptionalStringValue(props, "appVersion", UNSPECIFIED_VERSION))
                               .environment(getMandatoryStringValue(props, "environment"))
                               .codeBaseUri(getMandatoryUriValue(props, "codeBaseUri", false))
                               .packagePrefix(getMandatoryStringValue(props, "packagePrefix"))
                               .aspectjOptions(getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
-                              .collectorResolutionIntervalSeconds(getOptionalIntValue(props, "collectorResolutionIntervalSeconds",
+                              .collectorResolutionSeconds(getOptionalIntValue(props, "collectorResolutionSeconds",
                                                                                       DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS))
-                              .dataPath(new File(getOptionalStringValue(props, "dataPath", getDefaultDataPath(customerName, appName))))
+                              .dataPath(new File(getOptionalStringValue(props, "dataPath", getDefaultDataPath())))
                               .serverUploadIntervalSeconds(getOptionalIntValue(props, "serverUploadIntervalSeconds",
                                                                                DEFAULT_UPLOAD_INTERVAL_SECONDS))
                               .serverUri(getMandatoryUriValue(props, "serverUri", true))
@@ -136,8 +138,8 @@ public class AgentConfig {
                           .packagePrefix("com.acme")
                           .codeBaseUri(new URI("file:/path/to/my/code/base"))
                           .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
-                          .dataPath(new File("/var/lib", getDataChildPath(customerName, appName)))
-                          .collectorResolutionIntervalSeconds(DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS)
+                          .dataPath(new File("/var/lib"))
+                          .collectorResolutionSeconds(DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS)
                           .serverUploadIntervalSeconds(DEFAULT_UPLOAD_INTERVAL_SECONDS)
                           .serverUri(new URI("http://localhost:8080"))
                           .apiUsername(DEFAULT_API_USERNAME)
@@ -151,20 +153,23 @@ public class AgentConfig {
         return props.getProperty(key, defaultValue);
     }
 
-    private static String getDefaultDataPath(String customerName, String appName) {
+    private static String getDefaultDataPath() {
         File basePath = new File("/var/lib");
         if (!basePath.canWrite()) {
             basePath = new File(System.getProperty("java.io.tmpdir"));
         }
-        return new File(basePath, getDataChildPath(customerName, appName)).getAbsolutePath();
+        if (!basePath.canWrite()) {
+            basePath = new File(".");
+        }
+        return basePath.getAbsolutePath();
     }
 
-    private static String getDataChildPath(String customerName, String appName) {
+    private static String getNormalizedChildPath(String customerName, String appName) {
         return "codekvast/" + normalizePathName(customerName) + "/" + normalizePathName(appName);
     }
 
     private static String normalizePathName(String path) {
-        return path.replaceAll("[^a-zA-Z0-9_\\-]", "").toLowerCase();
+        return path.replaceAll("[^a-zA-Z0-9_-]", "").toLowerCase();
     }
 
     private static URI getMandatoryUriValue(Properties props, String key, boolean removeTrailingSlash) {

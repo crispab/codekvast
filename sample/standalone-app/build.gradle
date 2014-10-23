@@ -24,7 +24,7 @@ task generateCodeKvastConfig {
 
     doLast {
         configFile.parentFile.mkdirs()
-        configFile.text = """# Run CodeKvast against Crisp Sample App
+        configFile.text = """# Run Codekvast against Crisp Sample App
 customerName = Crisp
 appName = $archivesBaseName
 appVersion = $version
@@ -35,7 +35,7 @@ dataPath = ${file("$buildDir/codekvast")}
 serverUri = http://localhost:8080
 apiUsername = agent
 apiPassword = 0000
-collectorResolutionIntervalSeconds = 10
+collectorResolutionSeconds = 10
 serverUploadIntervalSeconds = 5
 aspectjOptions = -verbose -showWeaveInfo
 verbose = true

@@ -52,7 +52,7 @@ public class FileUtils {
 
             Date dumpedAt = new Date();
             Date recordedAt = new Date(recordingStartedAtMillis);
-            out.printf(Locale.ENGLISH, "# CodeKvast usage results #%d at %s, methods used since %s%n", dumpCount, dumpedAt, recordedAt);
+            out.printf(Locale.ENGLISH, "# Codekvast usage results #%d at %s, methods used since %s%n", dumpCount, dumpedAt, recordedAt);
             out.println("# lastUsedMillis:signature");
 
             int count = 0;
@@ -65,7 +65,7 @@ public class FileUtils {
             out.printf(Locale.ENGLISH, "# Dump #%d at %s took %d ms, number of methods: %d%n", dumpCount, dumpedAt, elapsed, count);
             out.flush();
         } catch (IOException e) {
-            System.err.println("CodeKvast cannot dump usage data to " + file + ": " + e);
+            System.err.println("Codekvast cannot dump usage data to " + file + ": " + e);
         } finally {
             safeClose(out);
         }
@@ -81,7 +81,7 @@ public class FileUtils {
 
     public static void renameFile(File from, File to) {
         if (!from.renameTo(to)) {
-            System.err.printf(Locale.ENGLISH, "%s cannot rename %s to %s%n", "CodeKvast", from.getAbsolutePath(),
+            System.err.printf(Locale.ENGLISH, "%s cannot rename %s to %s%n", "Codekvast", from.getAbsolutePath(),
                               to.getAbsolutePath());
             from.delete();
         }
@@ -176,7 +176,7 @@ public class FileUtils {
             writer.write(text);
             writer.flush();
         } catch (IOException e) {
-            throw new RuntimeException("CodeKvast cannot create " + file, e);
+            throw new RuntimeException("Codekvast cannot create " + file, e);
         } finally {
             safeClose(writer);
         }

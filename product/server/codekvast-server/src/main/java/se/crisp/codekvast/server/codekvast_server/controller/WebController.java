@@ -6,7 +6,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
- * A Spring MVC Controller that handles traditional HTTP requests from the CodeKvast web UI.
+ * A Spring MVC Controller that handles traditional HTTP requests from the Codekvast web UI.
  * <p/>
  *
  * @author Olle Hallin

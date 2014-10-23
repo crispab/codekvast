@@ -22,7 +22,7 @@ import javax.validation.Valid;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * A HTTP REST Controller that handles requests from the CodeKvast Agent.
+ * A HTTP REST Controller that handles requests from the Codekvast Agent.
  * <p/>
  * It validates the POST data and delegates to StorageService.
  *

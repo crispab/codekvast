@@ -27,7 +27,7 @@ public class JvmRun {
 
     public void saveTo(File file) {
         dumpedAtMillis = System.currentTimeMillis();
-        FileUtils.writePropertiesTo(file, this, "CodeKvast-instrumented JVM run");
+        FileUtils.writePropertiesTo(file, this, "Codekvast-instrumented JVM run");
     }
 
     public static JvmRun readFrom(File file) throws IOException {

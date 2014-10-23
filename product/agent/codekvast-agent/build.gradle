@@ -3,7 +3,7 @@ apply from: "$rootDir/gradle/java.gradle"
 apply plugin: 'spring-boot'
 apply plugin: 'application'
 
-description = "The CodeKvast agent"
+description = "The Codekvast agent"
 archivesBaseName = "codekvast-agent"
 version = project.parent.parent.version
 sourceCompatibility = 1.7

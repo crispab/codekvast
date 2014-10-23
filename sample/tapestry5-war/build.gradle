@@ -22,8 +22,6 @@ jettyRun {
     contextPath = ""
 }
 
-ext.codekvastDataPath = "/tmp/codekvast/agent/Crisp/" + archivesBaseName
-
 task generateCodeKvastConfig {
     group = "Build"
     description = "Generates a codekvast.properties for test"
@@ -35,18 +33,18 @@ task generateCodeKvastConfig {
 
     doLast {
         configFile.parentFile.mkdirs()
-        configFile.text = """# Run CodeKvast against Crisp Sample App
+        configFile.text = """# Run Codekvast against Crisp Sample App
 customerName = Crisp
 appName = $archivesBaseName
 appVersion = $version
 environment = development
 codeBaseUri = file:/maven/${archivesBaseName}.war
-dataPath = $codekvastDataPath
+dataPath = /tmp
 packagePrefix = se.crisp.sample
 serverUri = http://localhost:8080
 apiUsername = agent
 apiPassword = 0000
-collectorResolutionIntervalSeconds = 10
+collectorResolutionSeconds = 10
 serverUploadIntervalSeconds = 5
 aspectjOptions = -verbose
 verbose = true
@@ -68,7 +66,7 @@ task dockerRunWarInTomcat7(type: Exec) {
 
     executable = "docker"
     args = ["run", "--rm",
-            "-v", "$codekvastDataPath:$codekvastDataPath",
+            "-v", "/tmp/codekvast:/tmp/codekvast",
             "-v", "$buildDir/libs:/maven",
             "-v", "$codekvastCollector.parentFile:/codekvast",
             "-e", "JAVA_OPTS=-javaagent:/codekvast/$codekvastCollector.name=/maven/codekvast.properties",
@@ -78,7 +76,7 @@ task dockerRunWarInTomcat7(type: Exec) {
     ]
 
     doFirst {
-        new File(codekvastDataPath).mkdirs()
+        new File("/tmp/codekvast").mkdirs()
         logger.lifecycle description
         logger.info "{} {}", executable, args.join(" ")
     }
