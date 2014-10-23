@@ -12,19 +12,32 @@ import java.util.*;
  * @author Olle Hallin
  */
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
-public class FileUtils {
+public final class FileUtils {
 
-    private static final String CHARSET_NAME = "UTF-8";
+    private static final String UTF_8 = "UTF-8";
 
     private FileUtils() {
         // Utility class
+    }
+
+    public static List<Usage> consumeAllUsageDataFiles(File file) {
+        List<Usage> result = new ArrayList<Usage>();
+        File[] files = file.getParentFile().listFiles();
+        Arrays.sort(files);
+        for (File f : files) {
+            if (f.getName().startsWith(file.getName())) {
+                result.addAll(readUsageDataFrom(f));
+                f.delete();
+            }
+        }
+        return result;
     }
 
     public static List<Usage> readUsageDataFrom(File file) {
         List<Usage> result = new ArrayList<Usage>();
         BufferedReader in = null;
         try {
-            in = new BufferedReader(new InputStreamReader(new FileInputStream(file), CHARSET_NAME));
+            in = new BufferedReader(new InputStreamReader(new FileInputStream(file), UTF_8));
             String line;
             while ((line = in.readLine()) != null) {
                 Usage usage = Usage.parse(line);
@@ -40,7 +53,7 @@ public class FileUtils {
         return result;
     }
 
-    public static void writeUsageDataTo(File file, int dumpCount, Long recordingStartedAtMillis, Set<String> signatures) {
+    public static void writeUsageDataTo(File file, int dumpCount, long recordingStartedAtMillis, Set<String> signatures) {
         long startedAt = System.currentTimeMillis();
 
         File tmpFile = null;
@@ -48,7 +61,7 @@ public class FileUtils {
 
         try {
             tmpFile = File.createTempFile("codekvast", ".tmp", file.getParentFile());
-            out = new PrintStream(tmpFile, CHARSET_NAME);
+            out = new PrintStream(tmpFile, UTF_8);
 
             Date dumpedAt = new Date();
             Date recordedAt = new Date(recordingStartedAtMillis);
@@ -70,7 +83,17 @@ public class FileUtils {
             safeClose(out);
         }
 
-        safeRename(tmpFile, file);
+        safeRename(tmpFile, makeUnique(file));
+    }
+
+    private static File makeUnique(File file) {
+        int count = 0;
+        File result = new File(file.getAbsolutePath());
+        while (result.exists()) {
+            count += 1;
+            result = new File(file.getAbsolutePath() + "." + count);
+        }
+        return result;
     }
 
     private static void safeRename(File from, File to) {
@@ -101,7 +124,7 @@ public class FileUtils {
                 }
             }
 
-            out = new OutputStreamWriter(new FileOutputStream(file), CHARSET_NAME);
+            out = new OutputStreamWriter(new FileOutputStream(file), UTF_8);
             out.write(String.format("# %s%n", comment));
             out.write(String.format("#%n"));
             for (String line : lines) {
@@ -137,7 +160,7 @@ public class FileUtils {
         Properties result = new Properties();
         Reader reader = null;
         try {
-            reader = new InputStreamReader(inputStream, CHARSET_NAME);
+            reader = new InputStreamReader(inputStream, UTF_8);
             result.load(reader);
         } finally {
             safeClose(reader);
@@ -172,7 +195,7 @@ public class FileUtils {
         Writer writer = null;
         try {
             file.getParentFile().mkdirs();
-            writer = new OutputStreamWriter(new FileOutputStream(file), CHARSET_NAME);
+            writer = new OutputStreamWriter(new FileOutputStream(file), UTF_8);
             writer.write(text);
             writer.flush();
         } catch (IOException e) {

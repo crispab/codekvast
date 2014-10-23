@@ -20,15 +20,16 @@ import java.util.Properties;
 @Builder
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class AgentConfig {
+    public static final boolean DEFAULT_INVOKE_ASPECTJ_WEAVER = true;
+    public static final boolean DEFAULT_CLOBBER_AOP_XML = true;
+    public static final boolean DEFAULT_VERBOSE = false;
     public static final int DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS = 600;
     public static final int DEFAULT_UPLOAD_INTERVAL_SECONDS = 3600;
+    public static final String DEFAULT_API_PASSWORD = "0000";
+    public static final String DEFAULT_API_USERNAME = "agent";
     public static final String DEFAULT_ASPECTJ_OPTIONS = "";
     public static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
-    public static final boolean DEFAULT_VERBOSE = false;
-    public static final boolean DEFAULT_CLOBBER_AOP_XML = true;
     public static final String UNSPECIFIED_VERSION = "unspecified";
-    public static final String DEFAULT_API_USERNAME = "agent";
-    public static final String DEFAULT_API_PASSWORD = "0000";
 
     @NonNull
     private final String customerName;
@@ -56,6 +57,7 @@ public class AgentConfig {
     private final int serverUploadIntervalSeconds;
     private final boolean clobberAopXml;
     private final boolean verbose;
+    private final boolean invokeAspectjWeaver;
 
     public String getNormalizedPackagePrefix() {
         int dot = packagePrefix.length() - 1;
@@ -118,7 +120,7 @@ public class AgentConfig {
                               .packagePrefix(getMandatoryStringValue(props, "packagePrefix"))
                               .aspectjOptions(getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
                               .collectorResolutionSeconds(getOptionalIntValue(props, "collectorResolutionSeconds",
-                                                                                      DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS))
+                                                                              DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS))
                               .dataPath(new File(getOptionalStringValue(props, "dataPath", getDefaultDataPath())))
                               .serverUploadIntervalSeconds(getOptionalIntValue(props, "serverUploadIntervalSeconds",
                                                                                DEFAULT_UPLOAD_INTERVAL_SECONDS))
@@ -128,6 +130,9 @@ public class AgentConfig {
                               .verbose(Boolean.parseBoolean(getOptionalStringValue(props, "verbose", Boolean.toString(DEFAULT_VERBOSE))))
                               .clobberAopXml(Boolean.parseBoolean(getOptionalStringValue(props, "clobberAopXml",
                                                                                          Boolean.toString(DEFAULT_CLOBBER_AOP_XML))))
+                              .invokeAspectjWeaver(Boolean.parseBoolean(getOptionalStringValue(props, "invokeAspectjWeaver",
+                                                                                               Boolean.toString
+                                                                                                       (DEFAULT_INVOKE_ASPECTJ_WEAVER))))
                               .build();
         } catch (Exception e) {
             throw new IllegalArgumentException(String.format("Cannot parse %s: %s", uri, e.getMessage()), e);
@@ -154,6 +159,7 @@ public class AgentConfig {
                           .apiPassword(DEFAULT_API_PASSWORD)
                           .verbose(DEFAULT_VERBOSE)
                           .clobberAopXml(DEFAULT_CLOBBER_AOP_XML)
+                          .invokeAspectjWeaver(DEFAULT_INVOKE_ASPECTJ_WEAVER)
                           .build();
     }
 

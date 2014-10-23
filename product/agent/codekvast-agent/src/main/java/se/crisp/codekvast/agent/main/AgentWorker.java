@@ -32,7 +32,6 @@ public class AgentWorker {
 
     private JvmRun jvmRun;
     private CodeBase codeBase;
-    private long usageFileModifiedAtMillis;
 
     @Inject
     public AgentWorker(AgentConfig config, CodeBaseScanner codeBaseScanner, ServerDelegate serverDelegate) {
@@ -94,11 +93,10 @@ public class AgentWorker {
     }
 
     private void processUsageDataIfNeeded(File usageFile) {
-        long modifiedAt = usageFile.lastModified();
-        if (modifiedAt != usageFileModifiedAtMillis) {
-            applyRecordedUsage(codeBase, signatureUsage, FileUtils.readUsageDataFrom(usageFile));
+        List<Usage> usage = FileUtils.consumeAllUsageDataFiles(usageFile);
+        if (!usage.isEmpty()) {
+            applyRecordedUsage(codeBase, signatureUsage, usage);
             uploadUsedSignatures(signatureUsage);
-            usageFileModifiedAtMillis = modifiedAt;
         }
     }
 
