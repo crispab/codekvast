@@ -78,9 +78,7 @@ startScripts {
     doLast {
         outputs.files.each { script ->
             logger.info "Adjusting CLASSPATH in {} to start with \$APP_HOME/conf/ ...", script.name
-            def text = script.text
-            text = text.replace('CLASSPATH=$APP_HOME/lib', 'CLASSPATH=$APP_HOME/conf/:$APP_HOME/lib')
-            script.text = text
+            script.text = script.text.replace('CLASSPATH=$APP_HOME/lib', 'CLASSPATH=$APP_HOME/conf/:$APP_HOME/lib')
         }
     }
 }

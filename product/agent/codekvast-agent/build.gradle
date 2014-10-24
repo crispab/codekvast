@@ -33,8 +33,8 @@ test.dependsOn ":sample:standalone-app:jar"
 // We collector the sample standalone-app by default...
 run {
     dependsOn = [":sample:standalone-app:installApp", ":sample:standalone-app:generateCodekvastConfig"]
-    // args tasks.getByPath(":sample:standalone-app:generateCodekvastConfig").configFile
-    args "/home/qolha/work/git/tnm/mainserver_main/codekvast.properties"
+    args tasks.getByPath(":sample:standalone-app:generateCodekvastConfig").configFile
+    // args "/home/qolha/work/git/tnm/mainserver_main/codekvast.properties"
 }
 
 jar.dependsOn tasks.getByPath(":product:agent:util:test")
@@ -53,9 +53,7 @@ startScripts {
     doLast {
         outputs.files.each { script ->
             logger.info "Adjusting CLASSPATH in {} to start with \$APP_HOME/conf/ ...", script.name
-            def text = script.text
-            text = text.replace('CLASSPATH=$APP_HOME/lib', 'CLASSPATH=$APP_HOME/conf/:$APP_HOME/lib')
-            script.text = text
+            script.text = script.text.replace('CLASSPATH=$APP_HOME/lib', 'CLASSPATH=$APP_HOME/conf/:$APP_HOME/lib')
         }
     }
 }
