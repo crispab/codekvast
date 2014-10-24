@@ -2,9 +2,10 @@ package se.crisp.codekvast.agent.main;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.runners.MockitoJUnitRunner;
+import se.crisp.codekvast.agent.util.AgentConfig;
 import se.crisp.codekvast.agent.util.FileUtils;
+import se.crisp.codekvast.server.agent.ServerDelegate;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -12,12 +13,13 @@ import java.net.URISyntaxException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CodeKvastAgentMainTest {
+public class CodekvastAgentMainTest {
 
-    @InjectMocks
-    private AgentWorker agentWorker;
+    private AgentWorker agentWorker =
+            new AgentWorker(AgentConfig.createSampleConfiguration(), mock(CodeBaseScanner.class), mock(ServerDelegate.class));
 
     @Test
     public void testApplyRecordedUsage() throws Exception {

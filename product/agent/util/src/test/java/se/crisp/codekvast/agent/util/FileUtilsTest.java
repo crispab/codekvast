@@ -25,6 +25,25 @@ public class FileUtilsTest {
     public final TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Test
+    public void testResetConsumedUsageFiles() throws IOException {
+        File usageFile = new File(temporaryFolder.getRoot(), "usage.dat");
+
+        File consumedUsageFile = new File(temporaryFolder.getRoot(), "usage.dat.consumed");
+        writeTo(consumedUsageFile, "Hello, world!");
+
+        File consumedUsageFile1 = new File(temporaryFolder.getRoot(), "usage.dat.1.consumed");
+        writeTo(consumedUsageFile1, "Hello, world!");
+
+        FileUtils.resetAllConsumedUsageDataFiles(usageFile);
+
+        File[] files = temporaryFolder.getRoot().listFiles();
+        assertThat(files.length, is(2));
+        Arrays.sort(files);
+        assertThat(files[0].getName(), is("usage.dat"));
+        assertThat(files[1].getName(), is("usage.dat.1"));
+    }
+
+    @Test
     public void testProduceAndConsumeUsageFiles() throws IOException {
         File usageFile = new File(temporaryFolder.getRoot(), "usage.dat");
         File consumedUsageFile = new File(temporaryFolder.getRoot(), "usage.dat.1.consumed");

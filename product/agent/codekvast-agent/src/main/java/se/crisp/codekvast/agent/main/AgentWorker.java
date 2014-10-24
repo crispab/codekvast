@@ -38,6 +38,10 @@ public class AgentWorker {
         this.config = config;
         this.codeBaseScanner = codeBaseScanner;
         this.serverDelegate = serverDelegate;
+
+        // The agent might have crashed between consuming usage data files and uploading them to the server.
+        // Make sure that usage data is not lost...
+        FileUtils.resetAllConsumedUsageDataFiles(config.getUsageFile());
     }
 
     @Scheduled(initialDelay = 10L, fixedDelayString = "${codekvast.serverUploadIntervalMillis}")

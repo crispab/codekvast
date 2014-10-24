@@ -1,6 +1,5 @@
 package se.crisp.codekvast.agent.main;
 
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.runtime.reflect.Factory;
 import org.reflections.Reflections;
@@ -23,7 +22,6 @@ import static java.util.Arrays.asList;
  * @author Olle Hallin
  */
 @Slf4j
-@Value
 @Component
 class CodeBaseScanner {
 

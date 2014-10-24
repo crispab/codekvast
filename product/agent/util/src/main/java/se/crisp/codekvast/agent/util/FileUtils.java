@@ -16,7 +16,7 @@ public final class FileUtils {
 
     private static final String UTF_8 = "UTF-8";
 
-    private static final String CONSUMED_SUFFIX = ".consumed";
+    public static final String CONSUMED_SUFFIX = ".consumed";
 
     private FileUtils() {
         // Utility class
@@ -28,6 +28,19 @@ public final class FileUtils {
             for (File f : files) {
                 if (f.getName().matches(file.getName() + "(\\.[0-9]+)?" + CONSUMED_SUFFIX + "$")) {
                     f.delete();
+                }
+            }
+        }
+    }
+
+    public static void resetAllConsumedUsageDataFiles(File file) {
+        File[] files = file.getParentFile().listFiles();
+        if (files != null) {
+            for (File f : files) {
+                if (f.getName().matches(file.getName() + "(\\.[0-9]+)?" + CONSUMED_SUFFIX + "$")) {
+                    String name = f.getAbsolutePath();
+                    String unconsumedName = name.substring(0, name.length() - CONSUMED_SUFFIX.length());
+                    f.renameTo(new File(unconsumedName));
                 }
             }
         }
