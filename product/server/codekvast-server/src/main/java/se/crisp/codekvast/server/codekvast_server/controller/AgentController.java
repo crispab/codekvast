@@ -63,19 +63,27 @@ public class AgentController {
 
     @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_JVM_RUN, method = RequestMethod.POST)
     public void receiveJvmRunDataV1(@Valid @RequestBody JvmRunData data) throws CodekvastException {
-        log.debug("Received {}", data);
+        log.info("Received {}", data);
         storageService.storeJvmRunData(data);
     }
 
     @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_SIGNATURES, method = RequestMethod.POST)
     public void receiveSignatureDataV1(@Valid @RequestBody SignatureData data) throws CodekvastException {
-        log.debug("Received {}", data);
+        if (log.isTraceEnabled()) {
+            log.trace("Received {}", data);
+        } else {
+            log.debug("Received {} signatures from {}", data.getSignatures().size(), data.getHeader());
+        }
         storageService.storeSignatureData(data);
     }
 
     @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_USAGE, method = RequestMethod.POST)
     public void receiveUsageDataV1(@Valid @RequestBody UsageData data) throws CodekvastException {
-        log.debug("Received {}", data);
+        if (log.isTraceEnabled()) {
+            log.trace("Received {}", data);
+        } else {
+            log.debug("Received {} usages from {}", data.getUsage().size(), data.getHeader());
+        }
         storageService.storeUsageData(data);
     }
 

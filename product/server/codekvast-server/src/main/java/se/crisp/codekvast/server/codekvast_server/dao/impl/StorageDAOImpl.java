@@ -73,7 +73,7 @@ public class StorageDAOImpl implements StorageDAO {
         int updated = attemptToUpdateSignature(customerId, appId, jvmFingerprint, entry, usedAt, confidence);
 
         if (updated > 0) {
-            log.debug("Updated {}", entry);
+            log.trace("Updated {}", entry);
             result.add(entry);
             return;
         }
@@ -82,10 +82,10 @@ public class StorageDAOImpl implements StorageDAO {
             jdbcTemplate.update("INSERT INTO signatures(customer_id, application_id, signature, jvm_fingerprint, used_at, confidence) " +
                                         "VALUES(?, ?, ?, ?, ?, ?)", customerId, appId, entry.getSignature(), jvmFingerprint, usedAt,
                                 confidence);
-            log.debug("Stored {}", entry);
+            log.trace("Stored {}", entry);
             result.add(entry);
         } catch (Exception ignore) {
-            log.debug("Ignore attempt to insert duplicate signature");
+            log.debug("Ignored attempt to insert duplicate signature");
         }
     }
 

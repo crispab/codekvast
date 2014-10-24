@@ -32,8 +32,8 @@ test.dependsOn ":sample:standalone-app:jar"
 // We collector the sample standalone-app by default...
 run {
     dependsOn = [":sample:standalone-app:installApp", ":sample:standalone-app:generateCodekvastConfig"]
-    args tasks.getByPath(":sample:standalone-app:generateCodekvastConfig").configFile
-    // args "/usr/local/src/ws/tnm/tnm_mainserver_main/codekvast.properties"
+    // args tasks.getByPath(":sample:standalone-app:generateCodekvastConfig").configFile
+    args "/home/qolha/work/git/tnm/mainserver_main/codekvast.properties"
 }
 
 jar.dependsOn tasks.getByPath(":product:agent:util:test")

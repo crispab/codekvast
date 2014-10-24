@@ -1,7 +1,6 @@
 package se.crisp.codekvast.server.codekvast_server.event.internal;
 
 import lombok.Getter;
-import lombok.ToString;
 import se.crisp.codekvast.server.agent.model.v1.UsageDataEntry;
 
 import java.util.Collection;
@@ -10,7 +9,6 @@ import java.util.Collection;
  * @author Olle Hallin
  */
 @Getter
-@ToString(callSuper = true)
 public class UsageDataUpdatedEvent extends CodekvastEvent {
     private final String customerName;
     private final Collection<UsageDataEntry> usageDataEntries;
@@ -19,5 +17,14 @@ public class UsageDataUpdatedEvent extends CodekvastEvent {
         super(source);
         this.customerName = customerName;
         this.usageDataEntries = usageDataEntries;
+    }
+
+    @Override
+    public String toString() {
+        return "UsageDataUpdatedEvent(customerName='" + customerName + '\'' + ", usageDataEntries.size=" + usageDataEntries.size() + ")";
+    }
+
+    public String toLongString() {
+        return "UsageDataUpdatedEvent(customerName='" + customerName + '\'' + ", usageDataEntries=" + usageDataEntries + ")";
     }
 }

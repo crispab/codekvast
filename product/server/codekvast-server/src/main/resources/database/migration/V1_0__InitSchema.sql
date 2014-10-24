@@ -78,10 +78,10 @@ CREATE UNIQUE INDEX ix_jvm_runs ON jvm_runs (customer_id, application_id, jvm_fi
 //--- Signatures -----------------------------------------------------------------------------------------------
 DROP TABLE IF EXISTS signatures;
 CREATE TABLE signatures (
-  id              INTEGER      NOT NULL IDENTITY,
-  customer_id     INTEGER      NOT NULL REFERENCES customers (id),
-  application_id  INTEGER      NOT NULL REFERENCES applications (id),
-  signature       VARCHAR(255) NOT NULL,
+  id              INTEGER       NOT NULL IDENTITY,
+  customer_id     INTEGER       NOT NULL REFERENCES customers (id),
+  application_id  INTEGER       NOT NULL REFERENCES applications (id),
+  signature       VARCHAR(1024) NOT NULL,
   jvm_fingerprint VARCHAR(50),
   used_at         TIMESTAMP,
   confidence      TINYINT

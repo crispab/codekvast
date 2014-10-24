@@ -15,6 +15,7 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.util.List;
 
 /**
@@ -75,7 +76,7 @@ public class AgentWorker {
     }
 
     private void logException(String msg, Exception e) {
-        if (log.isDebugEnabled()) {
+        if (log.isDebugEnabled() && !(getRootCause(e) instanceof ConnectException)) {
             // log with full stack trace
             log.error(msg, e);
         } else {

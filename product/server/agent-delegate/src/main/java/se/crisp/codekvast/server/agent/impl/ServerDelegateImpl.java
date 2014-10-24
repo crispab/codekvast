@@ -80,12 +80,16 @@ public class ServerDelegateImpl implements ServerDelegate {
 
             restTemplate.postForEntity(new URI(endPoint), data, Void.class);
 
-            log.info("Uploaded {} to {} in {} ms", data, endPoint, System.currentTimeMillis() - startedAt);
+            log.info("Uploaded {} to {} in {}s", data, endPoint, elapsedSeconds(startedAt));
         } catch (URISyntaxException e) {
             throw new ServerDelegateException("Illegal REST endpoint: " + endPoint, e);
         } catch (RestClientException e) {
             throw new ServerDelegateException("Failed to post JVM run data", e);
         }
+    }
+
+    private int elapsedSeconds(long startedAtMillis) {
+        return Math.round((System.currentTimeMillis() - startedAtMillis) / 1000f);
     }
 
     @Override
@@ -99,13 +103,13 @@ public class ServerDelegateImpl implements ServerDelegate {
         log.debug("Uploading {} signatures to {}", signatures.size(), endPoint);
 
         try {
-            long startedAt = System.currentTimeMillis();
+            long startedAtMillis = System.currentTimeMillis();
 
             SignatureData data = SignatureData.builder().header(header).signatures(signatures).build();
 
             restTemplate.postForEntity(new URI(endPoint), data, Void.class);
 
-            log.info("Uploaded {} signatures to {} in {} ms", signatures.size(), endPoint, System.currentTimeMillis() - startedAt);
+            log.info("Uploaded {} signatures to {} in {}s", signatures.size(), endPoint, elapsedSeconds(startedAtMillis));
         } catch (URISyntaxException e) {
             throw new ServerDelegateException("Illegal REST endpoint: " + endPoint, e);
         } catch (RestClientException e) {
@@ -124,13 +128,13 @@ public class ServerDelegateImpl implements ServerDelegate {
         log.debug("Uploading {} signatures to {}", usage.size(), endPoint);
 
         try {
-            long startedAt = System.currentTimeMillis();
+            long startedAtMillis = System.currentTimeMillis();
 
             UsageData data = UsageData.builder().header(header).jvmFingerprint(jvmFingerprint).usage(usage).build();
 
             restTemplate.postForEntity(new URI(endPoint), data, Void.class);
 
-            log.info("Uploaded {} signatures to {} in {} ms", usage.size(), endPoint, System.currentTimeMillis() - startedAt);
+            log.info("Uploaded {} signatures to {} in {}s", usage.size(), endPoint, elapsedSeconds(startedAtMillis));
         } catch (URISyntaxException e) {
             throw new ServerDelegateException("Illegal REST endpoint: " + endPoint, e);
         } catch (RestClientException e) {

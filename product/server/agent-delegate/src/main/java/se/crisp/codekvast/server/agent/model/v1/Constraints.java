@@ -13,5 +13,5 @@ public interface Constraints {
     int MIN_FINGERPRINT_LENGTH = 30;
     int MAX_FINGERPRINT_LENGTH = 50;
     int MAX_HOST_NAME_LENGTH = 255;
-    int MAX_SIGNATURE_LENGTH = 255;
+    int MAX_SIGNATURE_LENGTH = 1024;
 }
