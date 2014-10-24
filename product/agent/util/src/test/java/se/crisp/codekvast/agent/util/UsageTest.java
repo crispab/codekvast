@@ -1,46 +1,22 @@
 package se.crisp.codekvast.agent.util;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class UsageTest {
-    private final Usage usage = new Usage("signature", 1000L);
 
-    @Test
-    public void testToString() {
-        assertThat(usage.toString(), is("          1000:signature"));
-    }
-
-    @Test
-    public void testParseToString() throws Exception {
-        assertThat(Usage.parse(usage.toString()), is(usage));
-    }
-
-    @Test
-    public void testParseToStringTrimmed() throws Exception {
-        assertThat(Usage.parse(usage.toString().trim()), is(usage));
-    }
-
-    @Test
-    public void testParseNonMatchingLine() throws Exception {
-        assertThat(Usage.parse("foobar"), nullValue());
-    }
-
-    @Test
-    public void testParseBlankLine() throws Exception {
-        assertThat(Usage.parse("  "), nullValue());
-    }
-
-    @Test
-    public void testParseNullLine() throws Exception {
-        assertThat(Usage.parse(null), nullValue());
-    }
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Test
     public void testReadNullFile() throws Exception {
@@ -49,13 +25,20 @@ public class UsageTest {
     }
 
     @Test
-    public void testReadFileUsage1() throws Exception {
-        File file = new File(getClass().getResource("/usage1.dat").toURI());
+    public void testWriteReadUsageFile() throws Exception {
+        // given
+        File usageFile = new File(temporaryFolder.getRoot(), "usage.dat");
+        Set<String> signatures = new TreeSet<String>(Arrays.asList("sig2", "sig0", "sig1"));
 
-        List<Usage> result = FileUtils.readUsageDataFrom(file);
+        // when
+        FileUtils.writeUsageDataTo(usageFile, 1, 1000L, signatures);
+        List<Usage> result = FileUtils.readUsageDataFrom(usageFile);
 
-        assertThat(result.size(), is(2));
-        assertThat(result.get(0).getUsedAtMillis(), is(1000L));
-        assertThat(result.get(1).getUsedAtMillis(), is(0L));
+        // then
+        assertThat(result.size(), is(3));
+        for (int i = 0; i < signatures.size(); i++) {
+            assertThat(result.get(i).getUsedAtMillis(), is(1000L));
+            assertThat(result.get(i).getSignature(), is("sig" + i));
+        }
     }
 }

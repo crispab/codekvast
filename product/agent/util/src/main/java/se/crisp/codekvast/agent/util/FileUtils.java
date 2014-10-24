@@ -67,10 +67,15 @@ public final class FileUtils {
         try {
             in = new BufferedReader(new InputStreamReader(new FileInputStream(file), UTF_8));
             String line;
+            long recordingStartedAtMillis = -1;
             while ((line = in.readLine()) != null) {
-                Usage usage = Usage.parse(line);
-                if (usage != null) {
-                    result.add(usage);
+                if (line.startsWith("#") || line.trim().isEmpty()) {
+                    continue;
+                }
+                if (recordingStartedAtMillis == -1) {
+                    recordingStartedAtMillis = Long.parseLong(line);
+                } else {
+                    result.add(new Usage(line, recordingStartedAtMillis));
                 }
             }
         } catch (Exception ignore) {
@@ -95,11 +100,10 @@ public final class FileUtils {
                 Date dumpedAt = new Date();
                 Date recordedAt = new Date(recordingStartedAtMillis);
                 out.printf(Locale.ENGLISH, "# Codekvast usage results #%d at %s, methods used since %s%n", dumpCount, dumpedAt, recordedAt);
-                out.println("# lastUsedMillis:signature");
-
+                out.println(recordingStartedAtMillis);
                 int count = 0;
                 for (String sig : signatures) {
-                    out.println(new Usage(sig, recordingStartedAtMillis));
+                    out.println(sig);
                     count += 1;
                 }
 

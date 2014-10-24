@@ -12,7 +12,7 @@ description = "The main Codekvast server"
 archivesBaseName = "codekvast-server"
 version = project.parent.parent.version
 ext.gitCommit = getLatestGitCommit()
-sourceCompatibility = 1.7
+sourceCompatibility = 1.8
 mainClassName = "se.crisp.codekvast.server.codekvast_server.CodekvastServerMain"
 
 dependencies {

@@ -9,13 +9,13 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * This is the target of the method execution recording aspects.
- * <p/>
+ * <p>
  * It holds data about method usage, and methods for outputting the usage data to disk.
  *
  * @author Olle Hallin
@@ -29,12 +29,8 @@ public class UsageRegistry {
     private final JvmRun jvmRun;
     private final File jvmRunFile;
 
-    // We really want to store signature usage in a ConcurrentSet, but that is not available in JDK 1.5 so we use a ConcurrentMap as a
-    // set instead, with dummy objects as values. We are only interested in the key set.
-    private final Object dummyObject = new Object();
-
-    // Toggle between two usage maps to avoid synchronisation
-    private final ConcurrentMap[] usages = new ConcurrentMap[2];
+    // Toggle between two usage sets to avoid synchronisation
+    private final Set[] usages = new Set[2];
     private volatile int currentUsageIndex = 0;
     private long recordingIntervalStartedAtMillis = System.currentTimeMillis();
 
@@ -44,7 +40,7 @@ public class UsageRegistry {
         this.jvmRunFile = config.getJvmRunFile();
 
         for (int i = 0; i < usages.length; i++) {
-            this.usages[i] = new ConcurrentHashMap<String, Object>();
+            this.usages[i] = new ConcurrentSkipListSet<String>();
         }
     }
 
@@ -70,27 +66,27 @@ public class UsageRegistry {
 
     /**
      * Record that this method signature was invoked at current recording interval.
-     * <p/>
+     * <p>
      * Thread-safe.
      */
     public void registerMethodExecution(Signature signature) {
         //noinspection unchecked
-        usages[currentUsageIndex].put(signature.toLongString(), dummyObject);
+        usages[currentUsageIndex].add(signature.toLongString());
     }
 
     /**
      * Record that this JPS page was invoked at current recording interval.
-     * <p/>
+     * <p>
      * Thread-safe.
      */
     public void registerJspPageExecution(String pageName) {
         //noinspection unchecked
-        usages[currentUsageIndex].put(pageName, dummyObject);
+        usages[currentUsageIndex].add(pageName);
     }
 
     /**
      * Dumps method usage to a file on disk.
-     * <p/>
+     * <p>
      * Thread-safe.
      */
     public void dumpDataToDisk(int dumpCount) {
@@ -107,7 +103,7 @@ public class UsageRegistry {
             dumpJvmRun();
 
             //noinspection unchecked
-            FileUtils.writeUsageDataTo(config.getUsageFile(), dumpCount, oldRecordingIntervalStartedAtMillis, usages[oldIndex].keySet());
+            FileUtils.writeUsageDataTo(config.getUsageFile(), dumpCount, oldRecordingIntervalStartedAtMillis, usages[oldIndex]);
 
             usages[oldIndex].clear();
         }
