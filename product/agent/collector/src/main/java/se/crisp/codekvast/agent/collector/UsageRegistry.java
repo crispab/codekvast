@@ -97,7 +97,7 @@ public class UsageRegistry {
         File outputPath = config.getUsageFile().getParentFile();
         outputPath.mkdirs();
         if (!outputPath.exists()) {
-            CodeKvastCollector.out.println("Cannot dump usage data, " + outputPath + " cannot be created");
+            CodekvastCollector.out.println("Cannot dump usage data, " + outputPath + " cannot be created");
         } else {
             long oldRecordingIntervalStartedAtMillis = recordingIntervalStartedAtMillis;
             int oldIndex = currentUsageIndex;
@@ -132,7 +132,7 @@ public class UsageRegistry {
             jvmRun.saveTo(tmpFile);
             FileUtils.renameFile(tmpFile, jvmRunFile);
         } catch (IOException e) {
-            CodeKvastCollector.out.println(CodeKvastCollector.NAME + " cannot save " + jvmRunFile + ": " + e);
+            CodekvastCollector.out.println(CodekvastCollector.NAME + " cannot save " + jvmRunFile + ": " + e);
         } finally {
             FileUtils.safeDelete(tmpFile);
         }

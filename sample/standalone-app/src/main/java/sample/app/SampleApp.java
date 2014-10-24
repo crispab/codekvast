@@ -19,16 +19,19 @@ public class SampleApp {
     @SneakyThrows(InterruptedException.class)
     public void run() {
         System.out.printf("Hello, World! from %s%n%n", getClass().getName());
-        tryToLoadClass("se.crisp.codekvast.agent.collector.CodeKvastCollector", true);
+        tryToLoadClass("se.crisp.codekvast.agent.collector.CodekvastCollector", true);
         tryToLoadClass("org.aspectj.weaver.loadtime.Agent", true);
         tryToLoadClass("org.reflections.Reflections", false);
 
         measureMethodCallTrackingOverhead();
 
-        System.out.printf("%s sleeps 20 seconds...%n", SampleApp.class.getSimpleName());
-        Thread.sleep(20000L);
-        System.out.printf("%s wakes up%n", SampleApp.class.getSimpleName());
+        Thread.sleep(4000L);
+        new Bar1().declaredOnBar();
 
+        Thread.sleep(4000L);
+        new Bar1().declaredOnBar();
+
+        Thread.sleep(4000L);
         new Bar1().declaredOnBar();
         new Bar2().declaredOnBar();
         new Bar2().declaredOnBar2();

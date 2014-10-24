@@ -96,14 +96,15 @@ public class AgentWorker {
         List<Usage> usage = FileUtils.consumeAllUsageDataFiles(usageFile);
         if (!usage.isEmpty()) {
             applyRecordedUsage(codeBase, signatureUsage, usage);
-            uploadUsedSignatures(signatureUsage);
+            uploadUsedSignatures(signatureUsage, usageFile);
         }
     }
 
-    private void uploadUsedSignatures(SignatureUsage signatureUsage) {
+    private void uploadUsedSignatures(SignatureUsage signatureUsage, File usageFile) {
         try {
             serverDelegate.uploadUsageData(jvmRun.getJvmFingerprint(), signatureUsage.getNotUploadedSignatures());
             signatureUsage.clearNotUploadedSignatures();
+            FileUtils.deleteAllConsumedUsageDataFiles(usageFile);
         } catch (ServerDelegateException e) {
             logException("Cannot upload usage data", e);
         }

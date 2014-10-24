@@ -27,7 +27,9 @@ public class FileUtilsTest {
     @Test
     public void testProduceAndConsumeUsageFiles() throws IOException {
         File usageFile = new File(temporaryFolder.getRoot(), "usage.dat");
-        File otherFile = new File(temporaryFolder.getRoot(), "other.dat");
+        File consumedUsageFile = new File(temporaryFolder.getRoot(), "usage.dat.1.consumed");
+        writeTo(consumedUsageFile, "Hello, world!");
+        File otherFile = new File(temporaryFolder.getRoot(), "zzz_other.file");
         writeTo(otherFile, "Hello, world!");
 
         long t1 = System.currentTimeMillis() - 60000;
@@ -36,16 +38,30 @@ public class FileUtilsTest {
         FileUtils.writeUsageDataTo(usageFile, 2, t2, setOf("sig2.1", "sig2.2"));
 
         File[] files = temporaryFolder.getRoot().listFiles();
-        assertThat(files.length, is(3));
+        assertThat(files.length, is(4));
 
         Arrays.sort(files);
-        assertThat(files[0].getName(), is("other.dat"));
-        assertThat(files[1].getName(), is("usage.dat"));
-        assertThat(files[2].getName(), is("usage.dat.1"));
+        assertThat(files[0].getName(), is("usage.dat"));
+        assertThat(files[1].getName(), is("usage.dat.1.consumed"));
+        assertThat(files[2].getName(), is("usage.dat.2"));
+        assertThat(files[3].getName(), is("zzz_other.file"));
 
         List<Usage> usages = FileUtils.consumeAllUsageDataFiles(usageFile);
         assertThat(usages.size(), is(5));
-        assertThat(temporaryFolder.getRoot().list().length, is(1));
+
+        files = temporaryFolder.getRoot().listFiles();
+        assertThat(files.length, is(4));
+
+        Arrays.sort(files);
+        assertThat(files[0].getName(), is("usage.dat.1.consumed"));
+        assertThat(files[1].getName(), is("usage.dat.2.consumed"));
+        assertThat(files[2].getName(), is("usage.dat.consumed"));
+        assertThat(files[3].getName(), is("zzz_other.file"));
+
+        FileUtils.deleteAllConsumedUsageDataFiles(usageFile);
+        files = temporaryFolder.getRoot().listFiles();
+        assertThat(files.length, is(1));
+        assertThat(files[0].getName(), is("zzz_other.file"));
     }
 
     private void writeTo(File file, String message) throws IOException {

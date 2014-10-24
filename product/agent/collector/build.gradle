@@ -24,7 +24,7 @@ dependencies {
     // class path, which is unacceptable.
 }
 
-jar { manifest { attributes("Premain-Class": "se.crisp.codekvast.agent.collector.CodeKvastCollector") } }
+jar { manifest { attributes("Premain-Class": "se.crisp.codekvast.agent.collector.CodekvastCollector") } }
 shadow { outputFile = file("$buildDir/distributions/codekvast-collector-${version}.jar") }
 
 // Make a shadow jar consisting of codekvast-agent-collector and it's dependencies (i.e. aspectjweaver-n.n.jar)

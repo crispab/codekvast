@@ -16,8 +16,21 @@ public final class FileUtils {
 
     private static final String UTF_8 = "UTF-8";
 
+    private static final String CONSUMED_SUFFIX = ".consumed";
+
     private FileUtils() {
         // Utility class
+    }
+
+    public static void deleteAllConsumedUsageDataFiles(File file) {
+        File[] files = file.getParentFile().listFiles();
+        if (files != null) {
+            for (File f : files) {
+                if (f.getName().matches(file.getName() + "(\\.[0-9]+)?" + CONSUMED_SUFFIX + "$")) {
+                    f.delete();
+                }
+            }
+        }
     }
 
     public static List<Usage> consumeAllUsageDataFiles(File file) {
@@ -26,9 +39,9 @@ public final class FileUtils {
         if (files != null) {
             Arrays.sort(files);
             for (File f : files) {
-                if (f.getName().startsWith(file.getName())) {
+                if (f.getName().matches(file.getName() + "(\\.[0-9]+)?$")) {
                     result.addAll(readUsageDataFrom(f));
-                    f.delete();
+                    f.renameTo(new File(f.getAbsolutePath() + CONSUMED_SUFFIX));
                 }
             }
         }
@@ -93,9 +106,11 @@ public final class FileUtils {
     private static File makeUnique(File file) {
         int count = 0;
         File result = new File(file.getAbsolutePath());
-        while (result.exists()) {
+        File consumed = new File(file.getAbsolutePath() + CONSUMED_SUFFIX);
+        while (result.exists() || consumed.exists()) {
             count += 1;
             result = new File(file.getAbsolutePath() + "." + count);
+            consumed = new File(file.getAbsolutePath() + "." + count + CONSUMED_SUFFIX);
         }
         return result;
     }

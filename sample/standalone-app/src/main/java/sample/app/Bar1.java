@@ -6,6 +6,7 @@ package sample.app;
 public class Bar1 {
 
     public int declaredOnBar() {
+        System.out.println("Invoked " + getClass().getName() + ".declaredOnBar()");
         if (true) {
             privateMethodUsed();
         } else {

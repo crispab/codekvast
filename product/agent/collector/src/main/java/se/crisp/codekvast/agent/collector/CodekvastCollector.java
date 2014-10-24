@@ -22,14 +22,14 @@ import java.util.TimerTask;
  *
  * @author Olle Hallin
  */
-public class CodeKvastCollector {
+public class CodekvastCollector {
 
     public static final String NAME = "Codekvast";
     private static final String ASPECTJ_WEAVER_CONFIGURATION = "org.aspectj.weaver.loadtime.configuration";
 
     public static PrintStream out;
 
-    private CodeKvastCollector() {
+    private CodekvastCollector() {
         // Not possible to instantiate a javaagent
     }
 
@@ -40,7 +40,7 @@ public class CodeKvastCollector {
         AgentConfig config = AgentConfig.parseConfigFile(args);
 
         //noinspection UseOfSystemOutOrSystemErr
-        CodeKvastCollector.out = config.isVerbose() ? System.err : new PrintStream(new NullOutputStream());
+        CodekvastCollector.out = config.isVerbose() ? System.err : new PrintStream(new NullOutputStream());
 
         UsageRegistry.initialize(config);
 
@@ -48,7 +48,7 @@ public class CodeKvastCollector {
 
         int firstResultInSeconds = createTimerTask(config.getCollectorResolutionSeconds());
 
-        CodeKvastCollector.out.printf("%s is ready to detect used code within(%s..*).%n" +
+        CodekvastCollector.out.printf("%s is ready to detect used code within(%s..*).%n" +
                                               "First write to %s will be in %d seconds, thereafter every %d seconds.%n" +
                                               "-------------------------------------------------------------------------------%n",
                                       NAME, config.getPackagePrefix(), config.getUsageFile(), firstResultInSeconds,
@@ -70,22 +70,26 @@ public class CodeKvastCollector {
     }
 
     private static void loadAspectjWeaver(String args, Instrumentation inst, AgentConfig config) {
-        System.setProperty(ASPECTJ_WEAVER_CONFIGURATION, join(createAopXml(config),
+        System.setProperty(ASPECTJ_WEAVER_CONFIGURATION, join(";", createAopXml(config),
                                                                              Constants.AOP_USER_XML,
                                                                              Constants.AOP_AJC_XML,
                                                                              Constants.AOP_OSGI_XML));
 
-        CodeKvastCollector.out.printf("%s=%s%n", ASPECTJ_WEAVER_CONFIGURATION, System.getProperty(ASPECTJ_WEAVER_CONFIGURATION));
-        CodeKvastCollector.out.printf("%s is loading aspectjweaver%n", NAME);
-        org.aspectj.weaver.loadtime.Agent.premain(args, inst);
+        CodekvastCollector.out.printf("%s=%s%n", ASPECTJ_WEAVER_CONFIGURATION, System.getProperty(ASPECTJ_WEAVER_CONFIGURATION));
+        if (config.isInvokeAspectjWeaver()) {
+            CodekvastCollector.out.printf("%s is invoking aspectjweaver%n", NAME);
+            org.aspectj.weaver.loadtime.Agent.premain(args, inst);
+        } else {
+            CodekvastCollector.out.printf("%s is NOT invoking aspectjweaver%n", NAME);
+        }
     }
 
-    private static String join(String... args) {
+    private static String join(String delimiter, String... args) {
         StringBuilder sb = new StringBuilder();
-        String delimiter = "";
+        String delim = "";
         for (String arg : args) {
-            sb.append(delimiter).append(arg);
-            delimiter = ";";
+            sb.append(delim).append(arg);
+            delim = delimiter;
         }
         return sb.toString();
     }

@@ -31,12 +31,12 @@ appVersion = $version
 environment = development
 codeBaseUri = file:${file("build/install/${project.name}/lib/")}
 packagePrefix = sample.
-dataPath = ${file("$buildDir/codekvast")}
+dataPath = $rootDir/sample/build
 serverUri = http://localhost:8080
 apiUsername = agent
 apiPassword = 0000
-collectorResolutionSeconds = 3
-serverUploadIntervalSeconds = 5
+collectorResolutionSeconds = 2
+serverUploadIntervalSeconds = 10
 aspectjOptions = -verbose -showWeaveInfo
 verbose = true
 """
