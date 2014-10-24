@@ -17,10 +17,10 @@ import java.util.Properties;
 @Configuration
 @EnableAutoConfiguration
 @ComponentScan
-public class CodeKvastServerMain {
+public class CodekvastServerMain {
 
     public static void main(String[] args) throws IOException {
-        SpringApplication application = new SpringApplication(CodeKvastServerMain.class);
+        SpringApplication application = new SpringApplication(CodekvastServerMain.class);
         application.setDefaultProperties(loadProperties("default.properties"));
         application.run(args);
     }
@@ -33,7 +33,7 @@ public class CodeKvastServerMain {
     }
 
     private static InputStream getInputStream(String resource) throws IOException {
-        InputStream result = CodeKvastServerMain.class.getClassLoader().getResourceAsStream(resource);
+        InputStream result = CodekvastServerMain.class.getClassLoader().getResourceAsStream(resource);
         if (result == null) {
             result = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
         }

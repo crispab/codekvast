@@ -13,7 +13,7 @@ archivesBaseName = "codekvast-server"
 version = project.parent.parent.version
 ext.gitCommit = getLatestGitCommit()
 sourceCompatibility = 1.7
-mainClassName = "se.crisp.codekvast.server.codekvast_server.CodeKvastServerMain"
+mainClassName = "se.crisp.codekvast.server.codekvast_server.CodekvastServerMain"
 
 dependencies {
     compile "com.google.guava:guava:18.0"

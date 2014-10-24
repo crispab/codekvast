@@ -10,7 +10,7 @@ import se.crisp.codekvast.agent.collector.UsageRegistry;
  * @author Olle Hallin
  * @see se.crisp.codekvast.agent.collector.CodekvastCollector
  */
-public abstract aspect AbstractMethodExecutionAspect extends AbstractCodeKvastAspect {
+public abstract aspect AbstractMethodExecutionAspect extends AbstractCodekvastAspect {
 
     /**
      * This abstract pointcut specifies the scope for what method executions to detect.
@@ -26,7 +26,7 @@ public abstract aspect AbstractMethodExecutionAspect extends AbstractCodeKvastAs
     /**
      * Register that this method has been invoked.
      */
-    before(): scope() && publicMethodExecution() && !withinCodeKvast() {
+    before(): scope() && publicMethodExecution() && !withinCodekvast() {
         UsageRegistry.instance.registerMethodExecution(thisJoinPoint.getSignature());
     }
 

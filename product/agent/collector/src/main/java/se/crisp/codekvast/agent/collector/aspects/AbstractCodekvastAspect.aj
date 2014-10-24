@@ -5,8 +5,8 @@ package se.crisp.codekvast.agent.collector.aspects;
  *
  * @author Olle Hallin
  */
-abstract aspect AbstractCodeKvastAspect {
+abstract aspect AbstractCodekvastAspect {
 
-    pointcut withinCodeKvast(): within(se.crisp.codekvast.agent..*);
+    pointcut withinCodekvast(): within(se.crisp.codekvast.agent..*);
 
 }

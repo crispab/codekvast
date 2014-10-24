@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  * @author Olle Hallin
  * @see se.crisp.codekvast.agent.collector.CodekvastCollector
  */
-public aspect JasperExecutionAspect extends AbstractCodeKvastAspect {
+public aspect JasperExecutionAspect extends AbstractCodekvastAspect {
 
     public static final String JASPER_BASE_PACKAGE = "org.apache.jsp";
 
@@ -25,7 +25,7 @@ public aspect JasperExecutionAspect extends AbstractCodeKvastAspect {
     /**
      * Register that this JSP page has been invoked.
      */
-    before(): jasperPageExecution() && !withinCodeKvast() {
+    before(): jasperPageExecution() && !withinCodekvast() {
         UsageRegistry.instance.registerJspPageExecution(getJspPageName(thisJoinPoint));
     }
 

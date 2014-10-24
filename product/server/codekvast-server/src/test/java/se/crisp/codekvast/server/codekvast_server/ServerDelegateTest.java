@@ -30,7 +30,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = CodeKvastServerMain.class)
+@SpringApplicationConfiguration(classes = CodekvastServerMain.class)
 @WebAppConfiguration
 @IntegrationTest({"server.port=0",
                   "management.port=0",
