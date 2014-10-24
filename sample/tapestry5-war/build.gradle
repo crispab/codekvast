@@ -22,7 +22,7 @@ jettyRun {
     contextPath = ""
 }
 
-task generateCodeKvastConfig {
+task generateCodekvastConfig {
     group = "Build"
     description = "Generates a codekvast.properties for test"
 
@@ -52,7 +52,7 @@ verbose = true
     }
 }
 
-assemble.dependsOn generateCodeKvastConfig
+assemble.dependsOn generateCodekvastConfig
 
 task dockerRunWarInTomcat7(type: Exec) {
     def tomcatVersion = "tomcat-7.0"

@@ -26,7 +26,7 @@ import static java.util.Arrays.asList;
 class CodeBaseScanner {
 
     /**
-     * Uses AspectJ for creating the same signature as AbstractCodeKvastAspect.
+     * Uses AspectJ for creating the same signature as AbstractCodekvastAspect.
      *
      * @return The same signature object as an AspectJ execution pointcut will provide in JoinPoint.getSignature(). Returns null unless the
      * method is public.

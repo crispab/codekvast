@@ -7,7 +7,7 @@ description = "The Codekvast agent"
 archivesBaseName = "codekvast-agent"
 version = project.parent.parent.version
 sourceCompatibility = 1.7
-mainClassName = "se.crisp.codekvast.agent.main.CodeKvastAgentMain"
+mainClassName = "se.crisp.codekvast.agent.main.CodekvastAgentMain"
 
 dependencies {
     compile "ch.qos.logback:logback-classic"
@@ -31,8 +31,8 @@ test.dependsOn ":sample:standalone-app:jar"
 
 // We collector the sample standalone-app by default...
 run {
-    dependsOn = [":sample:standalone-app:installApp", ":sample:standalone-app:generateCodeKvastConfig"]
-    args tasks.getByPath(":sample:standalone-app:generateCodeKvastConfig").configFile
+    dependsOn = [":sample:standalone-app:installApp", ":sample:standalone-app:generateCodekvastConfig"]
+    args tasks.getByPath(":sample:standalone-app:generateCodekvastConfig").configFile
     // args "/usr/local/src/ws/tnm/tnm_mainserver_main/codekvast.properties"
 }
 

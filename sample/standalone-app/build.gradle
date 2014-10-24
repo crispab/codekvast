@@ -13,7 +13,7 @@ dependencies {
     compile 'com.google.inject:guice:3.0'
 }
 
-task generateCodeKvastConfig {
+task generateCodekvastConfig {
     group "Build"
     description "Generates a codekvast.properties for test"
 
@@ -43,10 +43,10 @@ verbose = true
     }
 }
 
-processResources.dependsOn generateCodeKvastConfig
+processResources.dependsOn generateCodekvastConfig
 
 run {
-    dependsOn = [":product:agent:collector:assemble", "generateCodeKvastConfig"]
+    dependsOn = [":product:agent:collector:assemble", "generateCodekvastConfig"]
     def codekvastCollector = tasks.getByPath(":product:agent:collector:shadowJar").outputs.files.asPath
-    jvmArgs = ["-javaagent:$codekvastCollector=$generateCodeKvastConfig.configFile"]
+    jvmArgs = ["-javaagent:$codekvastCollector=$generateCodekvastConfig.configFile"]
 }
