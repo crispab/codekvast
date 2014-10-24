@@ -6,6 +6,7 @@ description = "The agent-side business delegate of the Codekvast server"
 archivesBaseName = "codekvast-server-agent-delegate"
 version = project.parent.parent.version
 sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 dependencies {
     compile "com.fasterxml.jackson.core:jackson-annotations"
