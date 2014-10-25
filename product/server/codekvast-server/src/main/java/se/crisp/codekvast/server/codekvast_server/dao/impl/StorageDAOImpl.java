@@ -127,10 +127,13 @@ public class StorageDAOImpl implements StorageDAO {
         }
 
         int inserted =
-                jdbcTemplate.update("INSERT INTO jvm_runs(customer_id, application_id, host_name, jvm_fingerprint, started_at, dumped_at)" +
-                                            " VALUES (?, ?, ?, ?, ?, ?)",
-                                    customerId, appId, data.getHostName(), data.getJvmFingerprint(), new Date(data.getStartedAtMillis()),
-                                    dumpedAt);
+                jdbcTemplate
+                        .update("INSERT INTO jvm_runs(customer_id, application_id, host_name, jvm_fingerprint, codekvast_version, " +
+                                        "codekvast_vcs_id, started_at, dumped_at)" +
+                                        " VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                                customerId, appId, data.getHostName(), data.getJvmFingerprint(),
+                                data.getCodekvastVersion(), data.getCodekvastVcsId(), new Date(data.getStartedAtMillis()),
+                                dumpedAt);
         if (inserted > 0) {
             log.debug("Stored new JVM run {}", data);
         } else {

@@ -8,7 +8,7 @@ import javax.validation.constraints.Size;
 
 /**
  * REST data about one instrumented JVM.
- * <p/>
+ * <p>
  * Should be uploaded regularly during the lifetime of a JVM.
  *
  * @author Olle Hallin
@@ -33,4 +33,14 @@ public class JvmRunData {
 
     private long startedAtMillis;
     private long dumpedAtMillis;
+
+    @NonNull
+    @Size(min = 1, max = Constraints.MAX_CODEKVAST_VERSION_LENGTH)
+    private String codekvastVersion;
+
+
+    @NonNull
+    @Size(min = 1, max = Constraints.MAX_CODEKVAST_VCS_ID_LENGTH)
+    private String codekvastVcsId;
+
 }

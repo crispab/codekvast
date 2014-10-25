@@ -13,17 +13,20 @@ public interface ServerDelegate {
     /**
      * Uploads data about a JVM run to the server.
      *
-     * @param hostName        The host name of the JVM
-     * @param startedAtMillis The instant the JVM was started
-     * @param dumpedAtMillis  The instant the latest usage dump was made
-     * @param jvmFingerprint  The unique id of the JVM run
+     * @param hostName         The host name of the JVM
+     * @param startedAtMillis  The instant the JVM was started
+     * @param dumpedAtMillis   The instant the latest usage dump was made
+     * @param jvmFingerprint   The unique id of the JVM run
+     * @param codekvastVersion Which version of codekvast produced this data?
+     * @param codekvastVcsId   The Git hash of the code that produced this data.
      * @throws ServerDelegateException
      */
-    void uploadJvmRunData(String hostName, long startedAtMillis, long dumpedAtMillis, String jvmFingerprint) throws ServerDelegateException;
+    void uploadJvmRunData(String hostName, long startedAtMillis, long dumpedAtMillis, String jvmFingerprint,
+                          String codekvastVersion, String codekvastVcsId) throws ServerDelegateException;
 
     /**
      * Upload a collection of signatures to the server.
-     * <p/>
+     * <p>
      * This should typically be done when the agent starts and then each time it detects a change in the code base.
      *
      * @param signatures The complete set of signatures found in the application
@@ -33,7 +36,7 @@ public interface ServerDelegate {
 
     /**
      * Upload method usage to the server.
-     * <p/>
+     * <p>
      * This should be done as soon as a new usage file is produced by the collector.
      *
      * @param jvmFingerprint The fingerprint of the JVM that produced this usage data.

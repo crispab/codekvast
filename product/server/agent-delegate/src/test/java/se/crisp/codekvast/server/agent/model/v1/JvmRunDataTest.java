@@ -31,6 +31,8 @@ public class JvmRunDataTest {
                                            .startedAtMillis(1000L)
                                            .dumpedAtMillis(2000L)
                                            .jvmFingerprint(UUID.randomUUID().toString())
+                                           .codekvastVersion("codekvastVersion")
+                                           .codekvastVcsId("codekvastVcsId")
                                            .build();
         // when
         String json = objectMapper.writeValueAsString(data1);

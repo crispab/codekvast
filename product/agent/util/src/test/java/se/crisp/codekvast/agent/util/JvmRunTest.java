@@ -15,10 +15,12 @@ public class JvmRunTest {
         File file = File.createTempFile("jvm-run", ".properties");
         file.deleteOnExit();
         JvmRun sr1 = JvmRun.builder()
-                                 .hostName("hostName")
-                                 .jvmFingerprint(UUID.randomUUID().toString())
-                                 .startedAtMillis(System.currentTimeMillis())
-                                 .build();
+                           .hostName("hostName")
+                           .jvmFingerprint(UUID.randomUUID().toString())
+                           .startedAtMillis(System.currentTimeMillis())
+                           .codekvastVersion("codekvastVersion")
+                           .codekvastVcsId("codekvastVcsId")
+                           .build();
         sr1.saveTo(file);
         JvmRun sr2 = JvmRun.readFrom(file);
         assertEquals(sr1, sr2);

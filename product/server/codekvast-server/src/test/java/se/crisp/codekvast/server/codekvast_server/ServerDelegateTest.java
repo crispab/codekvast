@@ -95,7 +95,8 @@ public class ServerDelegateTest {
     @Test
     public void testUploadJvmRunData() throws ServerDelegateException, URISyntaxException {
         // when
-        serverDelegate.uploadJvmRunData("hostName", System.currentTimeMillis(), System.currentTimeMillis(), jvmFingerprint);
+        serverDelegate.uploadJvmRunData("hostName", System.currentTimeMillis(), System.currentTimeMillis(), jvmFingerprint,
+                                        "codekvastVersion", "codekvastVcsId");
 
         // then
         // TODO: assert the result

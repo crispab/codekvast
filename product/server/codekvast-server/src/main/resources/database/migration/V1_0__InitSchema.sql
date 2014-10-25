@@ -63,13 +63,15 @@ CREATE UNIQUE INDEX ix_applications ON applications (customer_id, name);
 //--- JVM runs -------------------------------------------------------------------------------------------------
 DROP TABLE IF EXISTS jvm_runs;
 CREATE TABLE jvm_runs (
-  id              INTEGER      NOT NULL IDENTITY,
-  customer_id     INTEGER      NOT NULL REFERENCES customers (id),
-  application_id  INTEGER      NOT NULL REFERENCES applications (id),
-  host_name       VARCHAR(255) NOT NULL,
-  jvm_fingerprint VARCHAR(50)  NOT NULL,
-  started_at      TIMESTAMP    NOT NULL,
-  dumped_at       TIMESTAMP    NOT NULL
+  id                INTEGER      NOT NULL IDENTITY,
+  customer_id       INTEGER      NOT NULL REFERENCES customers (id),
+  application_id    INTEGER      NOT NULL REFERENCES applications (id),
+  host_name         VARCHAR(255) NOT NULL,
+  jvm_fingerprint   VARCHAR(50)  NOT NULL,
+  codekvast_version VARCHAR(20)  NOT NULL,
+  codekvast_vcs_id  VARCHAR(50)  NOT NULL,
+  started_at        TIMESTAMP    NOT NULL,
+  dumped_at         TIMESTAMP    NOT NULL
 );
 
 DROP INDEX IF EXISTS ix_jvm_runs;

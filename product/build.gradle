@@ -1,8 +1,28 @@
+buildscript {
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
+        classpath "org.ajoberstar:grgit:0.3.1"
+    }
+}
 plugins {
     id 'distribution'
+    id "nebula.deb" version "1.12.7"
 }
 
-version = "0.4"
+
+import org.ajoberstar.grgit.Grgit
+
+import java.text.SimpleDateFormat
+
+version = "0.5"
+
+ext.gitCommit = Grgit.open("$rootDir").log(maxCommits: 1)[0]
+ext.gitVersionTokens = [
+        'git.id'          : "$gitCommit.id".toString(),
+        'git.committer'   : "$gitCommit.committer.name <$gitCommit.committer.email>".toString(),
+        'git.shortMessage': "$gitCommit.shortMessage".toString(),
+        'git.time'        : "${new SimpleDateFormat('yyyy-MM-dd HH:mm:ss').format(new Date(gitCommit.time * 1000L))}".toString(),
+]
 
 distributions {
     agent {

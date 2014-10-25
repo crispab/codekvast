@@ -23,6 +23,9 @@ public class JvmRun {
     private final String hostName;
     private final String jvmFingerprint;
     private final long startedAtMillis;
+    private final String codekvastVersion;
+    private final String codekvastVcsId;
+
     private long dumpedAtMillis;
 
     public void saveTo(File file) {
@@ -38,6 +41,8 @@ public class JvmRun {
                      .jvmFingerprint(props.getProperty("jvmFingerprint"))
                      .startedAtMillis(Long.parseLong(props.getProperty("startedAtMillis")))
                      .dumpedAtMillis(Long.parseLong(props.getProperty("dumpedAtMillis")))
+                     .codekvastVersion(props.getProperty("codekvastVersion"))
+                     .codekvastVcsId(props.getProperty("codekvastVcsId"))
                      .build();
     }
 }

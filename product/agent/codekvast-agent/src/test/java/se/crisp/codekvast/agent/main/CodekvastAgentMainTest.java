@@ -19,7 +19,8 @@ import static org.mockito.Mockito.mock;
 public class CodekvastAgentMainTest {
 
     private AgentWorker agentWorker =
-            new AgentWorker(AgentConfig.createSampleConfiguration(), mock(CodeBaseScanner.class), mock(ServerDelegate.class));
+            new AgentWorker(AgentConfig.createSampleConfiguration(), mock(CodeBaseScanner.class), mock(ServerDelegate.class),
+                            "gradleVersion", "gitId");
 
     @Test
     public void testApplyRecordedUsage() throws Exception {

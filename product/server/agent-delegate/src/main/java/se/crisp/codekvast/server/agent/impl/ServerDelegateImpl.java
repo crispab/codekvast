@@ -62,7 +62,8 @@ public class ServerDelegateImpl implements ServerDelegate {
     }
 
     @Override
-    public void uploadJvmRunData(String hostName, long startedAtMillis, long dumpedAtMillis, String jvmFingerprint)
+    public void uploadJvmRunData(String hostName, long startedAtMillis, long dumpedAtMillis, String jvmFingerprint,
+                                 String codekvastVersion, String codekvastVcsId)
             throws ServerDelegateException {
         String endPoint = config.getServerUri() + AgentRestEndpoints.UPLOAD_V1_JVM_RUN;
 
@@ -76,6 +77,8 @@ public class ServerDelegateImpl implements ServerDelegate {
                                         .startedAtMillis(startedAtMillis)
                                         .dumpedAtMillis(dumpedAtMillis)
                                         .jvmFingerprint(jvmFingerprint)
+                                        .codekvastVersion(codekvastVersion)
+                                        .codekvastVcsId(codekvastVcsId)
                                         .build();
 
             restTemplate.postForEntity(new URI(endPoint), data, Void.class);

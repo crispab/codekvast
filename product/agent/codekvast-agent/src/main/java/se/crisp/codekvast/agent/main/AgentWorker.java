@@ -1,6 +1,7 @@
 package se.crisp.codekvast.agent.main;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import se.crisp.codekvast.agent.util.AgentConfig;
@@ -30,15 +31,21 @@ public class AgentWorker {
     private final CodeBaseScanner codeBaseScanner;
     private final ServerDelegate serverDelegate;
     private final SignatureUsage signatureUsage = new SignatureUsage();
+    private final String codekvastVersion;
+    private final String codekvastVcsId;
 
     private JvmRun jvmRun;
     private CodeBase codeBase;
 
     @Inject
-    public AgentWorker(AgentConfig config, CodeBaseScanner codeBaseScanner, ServerDelegate serverDelegate) {
+    public AgentWorker(AgentConfig config, CodeBaseScanner codeBaseScanner, ServerDelegate serverDelegate,
+                       @Value("@{info.build.gradle.version}") String codekvastVersion,
+                       @Value("@{info.build.git.id}") String codekvastVcsId) {
         this.config = config;
         this.codeBaseScanner = codeBaseScanner;
         this.serverDelegate = serverDelegate;
+        this.codekvastVersion = codekvastVersion;
+        this.codekvastVcsId = codekvastVcsId;
 
         // The agent might have crashed between consuming usage data files and uploading them to the server.
         // Make sure that usage data is not lost...
@@ -65,7 +72,9 @@ public class AgentWorker {
                 serverDelegate.uploadJvmRunData(newJvmRun.getHostName(),
                                                 newJvmRun.getStartedAtMillis(),
                                                 newJvmRun.getDumpedAtMillis(),
-                                                newJvmRun.getJvmFingerprint());
+                                                newJvmRun.getJvmFingerprint(),
+                                                codekvastVersion,
+                                                codekvastVcsId);
                 jvmRun = newJvmRun;
             }
         } catch (IOException e) {
