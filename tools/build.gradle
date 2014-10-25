@@ -1,4 +1,6 @@
-apply plugin: 'java-base'
+plugins {
+    id 'java-base'
+}
 
 description = "Downloads certain tools for easier IDE setup"
 configurations { tools }
