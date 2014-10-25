@@ -9,8 +9,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 public class FileUtilsTest {
@@ -37,6 +36,7 @@ public class FileUtilsTest {
         FileUtils.resetAllConsumedUsageDataFiles(usageFile);
 
         File[] files = temporaryFolder.getRoot().listFiles();
+        assertThat(files, notNullValue());
         assertThat(files.length, is(2));
         Arrays.sort(files);
         assertThat(files[0].getName(), is("usage.dat"));
@@ -92,22 +92,20 @@ public class FileUtilsTest {
 
     private Set<String> setOf(String... signatures) {
         Set<String> result = new HashSet<String>();
-        for (String s : signatures) {
-            result.add(s);
-        }
+        Collections.addAll(result, signatures);
         return result;
     }
 
     @Test
     public void testReadPropertiesFromClasspath() throws URISyntaxException, IOException {
-        URI codekvast1 = new URI("classpath:/codekvast1.properties");
+        URI codekvast1 = new URI("classpath:/codekvast1.conf");
         Properties properties = FileUtils.readPropertiesFrom(codekvast1);
         assertThat(properties.getProperty("appName"), is("appName"));
     }
 
     @Test
     public void testThatColonCharactersAreProtectedWithBackslash() throws IOException, URISyntaxException {
-        File someFile = File.createTempFile("codekvast-test", ".properties");
+        File someFile = File.createTempFile("codekvast-test", ".conf");
         SomeTestClass someObject = new SomeTestClass();
 
         FileUtils.writePropertiesTo(someFile, someObject, COMMENT);
@@ -118,7 +116,7 @@ public class FileUtilsTest {
 
     @Test
     public void testThatBackSlashCharactersAreProtectedWithBackslash() throws IOException, URISyntaxException {
-        File someFile = File.createTempFile("codekvast-test", ".properties");
+        File someFile = File.createTempFile("codekvast-test", ".conf");
         SomeTestClass someObject = new SomeTestClass();
 
         FileUtils.writePropertiesTo(someFile, someObject, COMMENT);

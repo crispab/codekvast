@@ -6,9 +6,9 @@ archivesBaseName = "sample-jsp"
 
 task generateCodekvastConfig {
     group = "Build"
-    description = "Generates a codekvast.properties for test"
+    description = "Generates a codekvast.conf for test"
 
-    ext.configFile = file("build/libs/codekvast.properties")
+    ext.configFile = file("build/libs/codekvast.conf")
 
     inputs.file file("$projectDir/build.gradle")
     outputs.file configFile
@@ -21,7 +21,7 @@ appName = $archivesBaseName
 appVersion = $version
 environment = development
 codeBaseUri = file:/maven/${archivesBaseName}.war
-dataPath = $rootDir/sample/build
+dataPath = $rootDir/sample/build/codekvast
 packagePrefix = sample
 serverUri = http://localhost:8080
 apiUsername = agent
@@ -51,7 +51,7 @@ task dockerRunWarInTomcat7(type: Exec) {
             "-v", "/tmp/codekvast:/tmp/codekvast",
             "-v", "$buildDir/libs:/maven",
             "-v", "$codekvastCollector.parentFile:/codekvast",
-            "-e", "JAVA_OPTS=-javaagent:/codekvast/$codekvastCollector.name=/maven/codekvast.properties",
+            "-e", "JAVA_OPTS=-javaagent:/codekvast/$codekvastCollector.name=/maven/codekvast.conf",
             "-e", "LANG=C.UTF-8",
             "-p", "$port:8080",
             "jolokia/$tomcatVersion",

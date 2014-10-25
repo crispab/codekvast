@@ -34,7 +34,7 @@ test.dependsOn ":sample:standalone-app:jar"
 run {
     dependsOn = [":sample:standalone-app:installApp", ":sample:standalone-app:generateCodekvastConfig"]
     args tasks.getByPath(":sample:standalone-app:generateCodekvastConfig").configFile
-    // args "/home/qolha/work/git/tnm/mainserver_main/codekvast.properties"
+    // args "/home/qolha/work/git/tnm/mainserver_main/codekvast.conf"
 }
 
 jar.dependsOn tasks.getByPath(":product:agent:util:test")

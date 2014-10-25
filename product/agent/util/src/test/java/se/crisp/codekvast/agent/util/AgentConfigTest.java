@@ -16,7 +16,7 @@ public class AgentConfigTest {
     @Test
     public void testSaveSampleConfigToFile() throws IOException {
         AgentConfig config1 = AgentConfig.createSampleConfiguration();
-        File file = new File(System.getProperty("sampleConfigFile.path", "build/codekvast.properties.sample"));
+        File file = new File(System.getProperty("sampleConfigFile.path", "build/codekvast.conf.sample"));
         config1.saveTo(file);
 
         AgentConfig config2 = AgentConfig.parseConfigFile(file.toURI());

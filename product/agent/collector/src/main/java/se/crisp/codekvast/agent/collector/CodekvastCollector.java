@@ -17,7 +17,7 @@ import java.util.TimerTask;
  * <p/>
  * Usage: Add the following option to the Java command line:
  * <pre><code>
- *    -javaagent:/path/to/codekvast-collector-n.n-shadow.jar=path/to/codekvast-agent.properties
+ *    -javaagent:/path/to/codekvast-collector-n.n-shadow.jar=path/to/codekvast.conf
  * </code></pre>
  *
  * @author Olle Hallin

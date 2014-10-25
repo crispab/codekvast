@@ -15,9 +15,9 @@ dependencies {
 
 task generateCodekvastConfig {
     group "Build"
-    description "Generates a codekvast.properties for test"
+    description "Generates a codekvast.conf for test"
 
-    ext.configFile = file("build/libs/codekvast.properties")
+    ext.configFile = file("build/libs/codekvast.conf")
 
     inputs.file file("$projectDir/build.gradle")
     outputs.file configFile
@@ -31,7 +31,7 @@ appVersion = $version
 environment = development
 codeBaseUri = file:${file("build/install/${project.name}/lib/")}
 packagePrefix = sample.
-dataPath = $rootDir/sample/build
+dataPath = $rootDir/sample/build/codekvast
 serverUri = http://localhost:8080
 apiUsername = agent
 apiPassword = 0000

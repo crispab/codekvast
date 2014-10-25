@@ -10,7 +10,7 @@ import java.util.Properties;
 
 /**
  * Encapsulates the configuration that is shared between codekvast-agent and codekvast-collector.
- * <p/>
+ * <p>
  * It also contains methods for reading and writing agent configuration files.
  *
  * @author Olle Hallin
@@ -20,8 +20,8 @@ import java.util.Properties;
 @Builder
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class AgentConfig {
-    public static final boolean DEFAULT_INVOKE_ASPECTJ_WEAVER = true;
     public static final boolean DEFAULT_CLOBBER_AOP_XML = true;
+    public static final boolean DEFAULT_INVOKE_ASPECTJ_WEAVER = true;
     public static final boolean DEFAULT_VERBOSE = false;
     public static final int DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS = 600;
     public static final int DEFAULT_UPLOAD_INTERVAL_SECONDS = 3600;
@@ -29,6 +29,7 @@ public class AgentConfig {
     public static final String DEFAULT_API_USERNAME = "agent";
     public static final String DEFAULT_ASPECTJ_OPTIONS = "";
     public static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
+    public static final String SAMPLE_DATA_PATH = "/var/lib/codekvast";
     public static final String UNSPECIFIED_VERSION = "unspecified";
 
     @NonNull
@@ -121,7 +122,7 @@ public class AgentConfig {
                               .aspectjOptions(getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
                               .collectorResolutionSeconds(getOptionalIntValue(props, "collectorResolutionSeconds",
                                                                               DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS))
-                              .dataPath(new File(getOptionalStringValue(props, "dataPath", getDefaultDataPath())))
+                              .dataPath(new File(getMandatoryStringValue(props, "dataPath")))
                               .serverUploadIntervalSeconds(getOptionalIntValue(props, "serverUploadIntervalSeconds",
                                                                                DEFAULT_UPLOAD_INTERVAL_SECONDS))
                               .serverUri(getMandatoryUriValue(props, "serverUri", true))
@@ -151,7 +152,7 @@ public class AgentConfig {
                           .packagePrefix("com.acme")
                           .codeBaseUri(new URI("file:/path/to/my/code/base"))
                           .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
-                          .dataPath(new File("/var/lib"))
+                          .dataPath(new File(SAMPLE_DATA_PATH))
                           .collectorResolutionSeconds(DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS)
                           .serverUploadIntervalSeconds(DEFAULT_UPLOAD_INTERVAL_SECONDS)
                           .serverUri(new URI("http://localhost:8080"))
@@ -167,19 +168,8 @@ public class AgentConfig {
         return props.getProperty(key, defaultValue);
     }
 
-    private static String getDefaultDataPath() {
-        File basePath = new File("/var/lib");
-        if (!basePath.canWrite()) {
-            basePath = new File(System.getProperty("java.io.tmpdir"));
-        }
-        if (!basePath.canWrite()) {
-            basePath = new File(".");
-        }
-        return basePath.getAbsolutePath();
-    }
-
     private static String getNormalizedChildPath(String customerName, String appName) {
-        return "codekvast/" + normalizePathName(customerName) + "/" + normalizePathName(appName);
+        return normalizePathName(customerName) + File.pathSeparator + normalizePathName(appName);
     }
 
     private static String normalizePathName(String path) {

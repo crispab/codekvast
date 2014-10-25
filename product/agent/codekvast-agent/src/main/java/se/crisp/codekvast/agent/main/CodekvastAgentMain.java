@@ -49,7 +49,7 @@ public class CodekvastAgentMain {
 
     private static URI getAgentConfigLocation(String[] args) throws URISyntaxException {
         // TODO: Look for file:/etc/codekvast.conf if not in args
-        return args == null || args.length < 1 ? new URI("classpath:/codekvast.properties") : new File(args[0]).toURI();
+        return args == null || args.length < 1 ? new URI("classpath:/codekvast.conf") : new File(args[0]).toURI();
     }
 
     private static Properties getDefaultProperties() {
