@@ -4,9 +4,12 @@ buildscript {
         classpath "org.ajoberstar:grgit:0.3.1"
     }
 }
-apply from: "$rootDir/gradle/java.gradle"
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.ofg.uptodate' version "1.1.0"
+}
 apply plugin: 'spring-boot'
-apply plugin: 'application'
 
 description = "The main Codekvast server"
 archivesBaseName = "codekvast-server"

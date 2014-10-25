@@ -1,5 +1,8 @@
 buildscript { dependencies { classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion" } }
-apply from: "$rootDir/gradle/java.gradle"
+plugins {
+    id 'java'
+    id 'com.ofg.uptodate' version "1.1.0"
+}
 apply plugin: 'spring-boot'
 
 description = "The agent-side business delegate of the Codekvast server"
