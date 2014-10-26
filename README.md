@@ -33,14 +33,20 @@ Om allt fungerar skall det komma ut en sammanställning av useless code på slut
 
 ## Förutsättningar
 
-Spiken kräver att minst Java 6 är installerat i PATH.
-Utvecklat och testat med Oracle Java 7.
+Spiken kräver att Java 8 är installerat i PATH.
+Utvecklat och testat med Oracle Java 8.
 
 ## Utvecklingsmiljö
 
-* Java 7
+* Java 8
 * Lombok-plugin i IDE
 * AspectJ-plugin i IDE
+
+## Att installera Java 8 i Ubuntu:
+
+    sudo add-apt-repository ppa:webupd8team/java
+    sudo apt-get update
+    sudo apt-get install oracle-java8-installer
 
 # Lärdomar från spiken
 
