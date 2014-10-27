@@ -1,7 +1,7 @@
 package se.crisp.codekvast.agent.collector;
 
 import org.aspectj.lang.Signature;
-import se.crisp.codekvast.agent.util.AgentConfig;
+import se.crisp.codekvast.agent.util.CollectorConfig;
 import se.crisp.codekvast.agent.util.FileUtils;
 import se.crisp.codekvast.agent.util.JvmRun;
 
@@ -25,7 +25,7 @@ public class UsageRegistry {
 
     public static UsageRegistry instance;
 
-    private final AgentConfig config;
+    private final CollectorConfig config;
     private final JvmRun jvmRun;
     private final File jvmRunFile;
 
@@ -34,7 +34,7 @@ public class UsageRegistry {
     private volatile int currentUsageIndex = 0;
     private long recordingIntervalStartedAtMillis = System.currentTimeMillis();
 
-    public UsageRegistry(AgentConfig config, JvmRun jvmRun) {
+    public UsageRegistry(CollectorConfig config, JvmRun jvmRun) {
         this.config = config;
         this.jvmRun = jvmRun;
         this.jvmRunFile = config.getJvmRunFile();
@@ -47,7 +47,7 @@ public class UsageRegistry {
     /**
      * Must be called before handing over to the AspectJ load-time weaver.
      */
-    public static void initialize(AgentConfig config) {
+    public static void initialize(CollectorConfig config) {
         UsageRegistry.instance = new UsageRegistry(config,
                                                    JvmRun.builder()
                                                          .hostName(getHostName())
@@ -114,7 +114,7 @@ public class UsageRegistry {
         currentUsageIndex = currentUsageIndex == 0 ? 1 : 0;
     }
 
-    public AgentConfig getConfig() {
+    public CollectorConfig getConfig() {
         return config;
     }
 

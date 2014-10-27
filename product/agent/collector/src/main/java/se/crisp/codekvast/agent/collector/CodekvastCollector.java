@@ -3,7 +3,7 @@ package se.crisp.codekvast.agent.collector;
 import org.aspectj.bridge.Constants;
 import se.crisp.codekvast.agent.collector.aspects.AbstractMethodExecutionAspect;
 import se.crisp.codekvast.agent.collector.aspects.JasperExecutionAspect;
-import se.crisp.codekvast.agent.util.AgentConfig;
+import se.crisp.codekvast.agent.util.CollectorConfig;
 import se.crisp.codekvast.agent.util.FileUtils;
 
 import java.io.File;
@@ -37,7 +37,7 @@ public class CodekvastCollector {
      * This method is invoked by the JVM as part of bootstrapping the -javaagent
      */
     public static void premain(String args, Instrumentation inst) {
-        AgentConfig config = AgentConfig.parseConfigFile(args);
+        CollectorConfig config = CollectorConfig.parseConfigFile(args);
 
         //noinspection UseOfSystemOutOrSystemErr
         CodekvastCollector.out = config.isVerbose() ? System.err : new PrintStream(new NullOutputStream());
@@ -69,7 +69,7 @@ public class CodekvastCollector {
         return initialDelaySeconds;
     }
 
-    private static void loadAspectjWeaver(String args, Instrumentation inst, AgentConfig config) {
+    private static void loadAspectjWeaver(String args, Instrumentation inst, CollectorConfig config) {
         System.setProperty(ASPECTJ_WEAVER_CONFIGURATION, join(";", createAopXml(config),
                                                                              Constants.AOP_USER_XML,
                                                                              Constants.AOP_AJC_XML,
@@ -100,7 +100,7 @@ public class CodekvastCollector {
      *
      * @return A file URI to a temporary aop-ajc.xml file. The file is deleted on JVM exit.
      */
-    private static String createAopXml(AgentConfig config) {
+    private static String createAopXml(CollectorConfig config) {
         String xml = String.format(
                 "<aspectj>\n"
                         + "  <aspects>\n"
