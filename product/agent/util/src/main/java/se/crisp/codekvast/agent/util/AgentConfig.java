@@ -169,7 +169,7 @@ public class AgentConfig {
     }
 
     private static String getNormalizedChildPath(String customerName, String appName) {
-        return normalizePathName(customerName) + File.pathSeparator + normalizePathName(appName);
+        return normalizePathName(customerName) + File.separator + normalizePathName(appName);
     }
 
     private static String normalizePathName(String path) {

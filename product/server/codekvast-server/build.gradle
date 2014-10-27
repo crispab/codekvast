@@ -8,29 +8,28 @@ apply plugin: 'spring-boot'
 description = "The main Codekvast server"
 archivesBaseName = "codekvast-server"
 version = project.parent.parent.version
-sourceCompatibility = 1.8
+sourceCompatibility = 1.7
 mainClassName = "se.crisp.codekvast.server.codekvast_server.CodekvastServerMain"
 
 dependencies {
+    compile lombok
+    compile project(":product:server:agent-delegate")
     compile "com.google.guava:guava:18.0"
     compile "ch.qos.logback:logback-classic"
 
-    compile "com.h2database:h2"
-    compile "org.flywaydb:flyway-core"
     compile "org.springframework.boot:spring-boot-starter-jdbc"
-
-    compile "org.springframework.boot:spring-boot-starter-websocket"
-    compile "org.springframework.boot:spring-boot-starter-actuator"
     compile "org.springframework.boot:spring-boot-starter-web"
+    compile "org.springframework.boot:spring-boot-starter-websocket"
     compile "org.springframework.boot:spring-boot-starter-thymeleaf"
     compile "org.springframework.boot:spring-boot-starter-security"
+    compile "org.springframework.boot:spring-boot-starter-actuator"
     compile "org.springframework:spring-messaging"
+    compile "com.h2database:h2"
+    compile "org.flywaydb:flyway-core"
     compile "org.webjars:angularjs:1.3.0"
     compile "org.webjars:sockjs-client:0.3.4"
     compile "org.webjars:stomp-websocket:2.3.1"
     compile "org.webjars:bootstrap:3.2.0"
-    compile lombok
-    compile project(":product:server:agent-delegate")
 
     runtime "org.hibernate:hibernate-validator"
 
