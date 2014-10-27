@@ -21,9 +21,11 @@ dependencies {
 }
 
 test {
-    // Make it possible to retrieve the sample spring file produced by a test
-    ext.sampleConfigFile = file("$buildDir/codekvast.conf.sample")
+    // Make it possible to retrieve the sample config files produced by a test
+    ext.sampleAgentConfigFile = file("$buildDir/codekvast-agent.conf.sample")
+    ext.sampleCollectorConfigFile = file("$buildDir/codekvast-collector.conf.sample")
 
     // Also make the file name available to the test that produces it...
-    systemProperty 'sampleConfigFile.path', sampleConfigFile.absolutePath
+    systemProperty 'sampleAgentConfigFile.path', sampleAgentConfigFile.absolutePath
+    systemProperty 'sampleCollectorConfigFile.path', sampleCollectorConfigFile.absolutePath
 }

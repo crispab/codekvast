@@ -10,7 +10,7 @@ import java.util.Properties;
 
 /**
  * Encapsulates the configuration that is shared between codekvast-agent and codekvast-collector.
- * <p>
+ * <p/>
  * It also contains methods for reading and writing agent configuration files.
  *
  * @author Olle Hallin
@@ -29,19 +29,11 @@ public class AgentConfig {
     private final SharedConfig sharedConfig;
 
     @NonNull
-    private final String customerName;
-    @NonNull
-    private final String appName;
-    @NonNull
     private final String appVersion;
     @NonNull
     private final String environment;
     @NonNull
     private final URI codeBaseUri;
-    @NonNull
-    private final String packagePrefix;
-    @NonNull
-    private final File dataPath;
     @NonNull
     private final URI serverUri;
     @NonNull
@@ -50,68 +42,57 @@ public class AgentConfig {
     private final String apiPassword;
     private final int serverUploadIntervalSeconds;
 
-    public String getNormalizedPackagePrefix() {
-        int dot = packagePrefix.length() - 1;
-        while (dot >= 0 && packagePrefix.charAt(dot) == '.') {
-            dot -= 1;
-        }
-        return packagePrefix.substring(0, dot + 1);
-    }
-
     public int getServerUploadIntervalMillis() {
         return serverUploadIntervalSeconds * 1000;
     }
 
-    public File getUsageFile() {
-        return super.getUsageFile();
-    }
-
-    private File myDataPath() {
-        return new File(dataPath, ConfigUtils.getNormalizedChildPath(customerName, appName));
-    }
-
-    public File getJvmRunFile() {
-        return super.getJvmRunFile();
-    }
-
     public File getSignatureFile() {
-        return new File(myDataPath(), "signatures.dat");
-    }
-
-    public File getAspectFile() {
-        return new File(myDataPath(), "aop.xml");
+        return new File(sharedConfig.myDataPath(), "signatures.dat");
     }
 
     public File getAgentLogFile() {
-        return new File(myDataPath(), "codekvast-agent.log");
+        return new File(sharedConfig.myDataPath(), "codekvast-agent.log");
     }
 
-    public File getCollectorLogFile() {
-        return new File(myDataPath(), "codekvast-collector.log");
+    public String getPackagePrefix() {
+        return sharedConfig.getPackagePrefix();
+    }
+
+    public File getUsageFile() {
+        return sharedConfig.getUsageFile();
+    }
+
+    public File getJvmRunFile() {
+        return sharedConfig.getJvmRunFile();
+    }
+
+    public String getCustomerName() {
+        return sharedConfig.getCustomerName();
+    }
+
+    public String getAppName() {
+        return sharedConfig.getAppName();
     }
 
     public void saveTo(File file) {
         FileUtils.writePropertiesTo(file, this, "Codekvast AgentConfig");
     }
 
-    public static AgentConfig parseConfigFile(String file) {
-        return parseConfigFile(new File(file).toURI());
+    public static AgentConfig parseAgentConfigFile(String file) {
+        return parseAgentConfigFile(new File(file).toURI());
     }
 
-    public static AgentConfig parseConfigFile(URI uri) {
+    public static AgentConfig parseAgentConfigFile(URI uri) {
         try {
             Properties props = FileUtils.readPropertiesFrom(uri);
 
             return AgentConfig.builder()
-                              .customerName(ConfigUtils.getMandatoryStringValue(props, "customerName"))
-                              .appName(ConfigUtils.getMandatoryStringValue(props, "appName"))
+                              .sharedConfig(SharedConfig.buildSharedConfig(props))
                               .appVersion(ConfigUtils.getOptionalStringValue(props, "appVersion", UNSPECIFIED_VERSION))
                               .environment(ConfigUtils.getMandatoryStringValue(props, "environment"))
                               .codeBaseUri(ConfigUtils.getMandatoryUriValue(props, "codeBaseUri", false))
-                              .packagePrefix(ConfigUtils.getMandatoryStringValue(props, "packagePrefix"))
-                              .dataPath(new File(ConfigUtils.getMandatoryStringValue(props, "dataPath")))
                               .serverUploadIntervalSeconds(ConfigUtils.getOptionalIntValue(props, "serverUploadIntervalSeconds",
-                                                                               DEFAULT_UPLOAD_INTERVAL_SECONDS))
+                                                                                           DEFAULT_UPLOAD_INTERVAL_SECONDS))
                               .serverUri(ConfigUtils.getMandatoryUriValue(props, "serverUri", true))
                               .apiUsername(ConfigUtils.getOptionalStringValue(props, "apiUsername", DEFAULT_API_USERNAME))
                               .apiPassword(ConfigUtils.getOptionalStringValue(props, "apiPassword", DEFAULT_API_PASSWORD))
@@ -122,15 +103,12 @@ public class AgentConfig {
     }
 
     @SneakyThrows(URISyntaxException.class)
-    public static AgentConfig createSampleConfiguration() {
+    public static AgentConfig createSampleAgentConfig() {
         return AgentConfig.builder()
-                          .customerName("Customer Name")
-                          .appName("app-name")
+                          .sharedConfig(SharedConfig.buildSampleSharedConfig())
                           .appVersion("application version")
                           .environment("environment")
-                          .packagePrefix("com.acme")
                           .codeBaseUri(new URI("file:/path/to/my/code/base"))
-                          .dataPath(new File(ConfigUtils.SAMPLE_DATA_PATH))
                           .serverUploadIntervalSeconds(DEFAULT_UPLOAD_INTERVAL_SECONDS)
                           .serverUri(new URI("http://localhost:8080"))
                           .apiUsername(DEFAULT_API_USERNAME)

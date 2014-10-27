@@ -2,6 +2,7 @@ package se.crisp.codekvast.agent.main;
 
 import org.junit.Test;
 import se.crisp.codekvast.agent.util.AgentConfig;
+import se.crisp.codekvast.agent.util.SharedConfig;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -26,13 +27,9 @@ public class CodeBaseTest {
 
     static AgentConfig buildAgentConfig(String codeBaseUri) {
         return AgentConfig.builder()
-                          .customerName("customerName")
-                          .appName("appName")
+                          .sharedConfig(SharedConfig.buildSampleSharedConfig())
                           .appVersion("appVersion")
                           .environment("environment")
-                          .packagePrefix("sample")
-                          .aspectjOptions("aspectjOptions")
-                          .dataPath(new File("dataPath"))
                           .serverUri(new File("foobar").toURI())
                           .apiUsername("apiUsername")
                           .apiPassword("apiPassword")

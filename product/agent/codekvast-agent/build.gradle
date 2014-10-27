@@ -60,7 +60,7 @@ applicationDistribution.from("src/main/resources") {
     rename { "${it}.sample" }
 }
 
-applicationDistribution.from(tasks.getByPath(":product:agent:util:test").sampleConfigFile) {
+applicationDistribution.from(tasks.getByPath(":product:agent:util:test").sampleCollectorConfigFile) {
     into "conf"
 }
 

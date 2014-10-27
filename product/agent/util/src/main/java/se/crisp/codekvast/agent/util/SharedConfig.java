@@ -5,6 +5,7 @@ import lombok.Value;
 import lombok.experimental.Builder;
 
 import java.io.File;
+import java.util.Properties;
 
 /**
  * Base class for agent side configuration objects.
@@ -24,6 +25,23 @@ public class SharedConfig {
     private final File dataPath;
     @NonNull
     private final String packagePrefix;
+
+    protected static SharedConfig buildSharedConfig(Properties props) {
+        return builder()
+                .dataPath(new File(ConfigUtils.getMandatoryStringValue(props, "dataPath")))
+                .customerName(ConfigUtils.getMandatoryStringValue(props, "customerName"))
+                .appName(ConfigUtils.getMandatoryStringValue(props, "appName"))
+                .packagePrefix(ConfigUtils.getMandatoryStringValue(props, "packagePrefix"))
+                .build();
+    }
+
+    public static SharedConfig buildSampleSharedConfig() {
+        return builder()
+                .dataPath(new File(ConfigUtils.SAMPLE_DATA_PATH))
+                .customerName("Customer Name")
+                .appName("app-name")
+                .packagePrefix("sample.").build();
+    }
 
     public File getUsageFile() {
         return new File(myDataPath(), "usage.dat");

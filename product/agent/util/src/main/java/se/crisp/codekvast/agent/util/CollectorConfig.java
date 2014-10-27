@@ -1,11 +1,13 @@
 package se.crisp.codekvast.agent.util;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.experimental.Builder;
 
 import java.io.File;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Properties;
 
 /**
@@ -29,7 +31,6 @@ public class CollectorConfig {
 
     @NonNull
     private final SharedConfig sharedConfig;
-
     @NonNull
     private final String aspectjOptions;
     private final int collectorResolutionSeconds;
@@ -45,25 +46,37 @@ public class CollectorConfig {
         return new File(sharedConfig.myDataPath(), "codekvast-collector.log");
     }
 
+    public File getJvmRunFile() {
+        return sharedConfig.getJvmRunFile();
+    }
+
+    public File getUsageFile() {
+        return sharedConfig.getUsageFile();
+    }
+
+
+    public String getPackagePrefix() {
+        return sharedConfig.getPackagePrefix();
+    }
+
+    public String getNormalizedPackagePrefix() {
+        return sharedConfig.getNormalizedPackagePrefix();
+    }
+
     public void saveTo(File file) {
         FileUtils.writePropertiesTo(file, this, "Codekvast CollectorConfig");
     }
 
     public static CollectorConfig parseConfigFile(String file) {
-        return parseConfigFile(new File(file).toURI());
+        return parseCollectorConfigFile(new File(file).toURI());
     }
 
-    public static CollectorConfig parseConfigFile(URI uri) {
+    public static CollectorConfig parseCollectorConfigFile(URI uri) {
         try {
             Properties props = FileUtils.readPropertiesFrom(uri);
 
             return CollectorConfig.builder()
-                                  .sharedConfig(SharedConfig.builder()
-                                                            .dataPath(new File(ConfigUtils.getMandatoryStringValue(props, "dataPath")))
-                                                            .customerName(ConfigUtils.getMandatoryStringValue(props, "customerName"))
-                                                            .appName(ConfigUtils.getMandatoryStringValue(props, "appName"))
-                                                            .packagePrefix(ConfigUtils.getMandatoryStringValue(props, "packagePrefix"))
-                                                            .build())
+                                  .sharedConfig(SharedConfig.buildSharedConfig(props))
                                   .aspectjOptions(ConfigUtils.getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
                                   .collectorResolutionSeconds(ConfigUtils.getOptionalIntValue(props, "collectorResolutionSeconds",
                                                                                               DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS))
@@ -73,22 +86,17 @@ public class CollectorConfig {
                                                                                                          Boolean.toString(
                                                                                                                  DEFAULT_CLOBBER_AOP_XML))))
                                   .invokeAspectjWeaver(Boolean.parseBoolean(ConfigUtils.getOptionalStringValue(props, "invokeAspectjWeaver",
-                                                                                                               Boolean.toString
-                                                                                                                       (DEFAULT_INVOKE_ASPECTJ_WEAVER))))
+                                                                                                               Boolean.toString(
+                                                                                                                       DEFAULT_INVOKE_ASPECTJ_WEAVER))))
                                   .build();
         } catch (Exception e) {
             throw new IllegalArgumentException(String.format("Cannot parse %s: %s", uri, e.getMessage()), e);
         }
     }
 
-    @SneakyThrows(URISyntaxException.class)
-    public static CollectorConfig createSampleConfiguration() {
+    public static CollectorConfig createSampleCollectorConfig() {
         return CollectorConfig.builder()
-                              .sharedConfig(SharedConfig.builder()
-                                                        .dataPath(new File(ConfigUtils.SAMPLE_DATA_PATH))
-                                                        .customerName("Customer Name")
-                                                        .appName("app-name")
-                                                        .packagePrefix("com.acme").build())
+                              .sharedConfig(SharedConfig.buildSampleSharedConfig())
                               .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
                               .collectorResolutionSeconds(DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS)
                               .verbose(DEFAULT_VERBOSE)
@@ -96,5 +104,4 @@ public class CollectorConfig {
                               .invokeAspectjWeaver(DEFAULT_INVOKE_ASPECTJ_WEAVER)
                               .build();
     }
-
 }

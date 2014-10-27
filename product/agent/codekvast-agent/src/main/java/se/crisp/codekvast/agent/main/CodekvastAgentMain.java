@@ -35,7 +35,7 @@ public class CodekvastAgentMain {
     public static void main(String[] args) throws IOException, URISyntaxException {
         // Use the same AgentConfig as is used by the collector...
         URI location = getAgentConfigLocation(args);
-        CodekvastAgentMain.agentConfig = AgentConfig.parseConfigFile(location);
+        CodekvastAgentMain.agentConfig = AgentConfig.parseAgentConfigFile(location);
 
         if (!location.getScheme().equals("classpath")) {
             // Tell LogPathDefiner to use exactly this log path...

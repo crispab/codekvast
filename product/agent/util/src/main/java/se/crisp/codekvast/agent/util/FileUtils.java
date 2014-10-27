@@ -152,13 +152,7 @@ public final class FileUtils {
             // Write the properties alphabetically
             Set<String> lines = new TreeSet<String>();
 
-            for (Field field : object.getClass().getDeclaredFields()) {
-                if (!Modifier.isStatic(field.getModifiers())) {
-                    field.setAccessible(true);
-                    lines.add(String.format("%s = %s", field.getName(),
-                                            field.get(object).toString().replace("\\", "\\\\").replace(":", "\\:")));
-                }
-            }
+            extractFieldValuesFrom(object, lines);
 
             out = new OutputStreamWriter(new FileOutputStream(file), UTF_8);
             out.write(String.format("# %s%n", comment));
@@ -173,6 +167,22 @@ public final class FileUtils {
             System.err.println("Cannot write " + file + ": " + e);
         } finally {
             safeClose(out);
+        }
+    }
+
+    protected static void extractFieldValuesFrom(Object object, Set<String> lines) throws IllegalAccessException {
+        Field[] fields = object.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            if (!Modifier.isStatic(field.getModifiers())) {
+                field.setAccessible(true);
+                Object value = field.get(object);
+                if (value instanceof SharedConfig) {
+                    extractFieldValuesFrom(value, lines);
+                } else {
+                    lines.add(String.format("%s = %s", field.getName(),
+                                            value.toString().replace("\\", "\\\\").replace(":", "\\:")));
+                }
+            }
         }
     }
 
