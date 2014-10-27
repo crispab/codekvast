@@ -1,9 +1,6 @@
 package se.crisp.codekvast.agent.util;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.Builder;
 
 import java.io.File;
@@ -20,11 +17,11 @@ import java.util.Properties;
 @Setter(AccessLevel.NONE)
 @Builder
 public class JvmRun {
+    @NonNull
+    private final SharedConfig sharedConfig;
     private final String hostName;
     private final String jvmFingerprint;
     private final long startedAtMillis;
-    private final String codekvastVersion;
-    private final String codekvastVcsId;
 
     private long dumpedAtMillis;
 
@@ -37,12 +34,11 @@ public class JvmRun {
         Properties props = FileUtils.readPropertiesFrom(file);
 
         return JvmRun.builder()
+                     .sharedConfig(SharedConfig.buildSharedConfig(props))
                      .hostName(props.getProperty("hostName"))
                      .jvmFingerprint(props.getProperty("jvmFingerprint"))
                      .startedAtMillis(Long.parseLong(props.getProperty("startedAtMillis")))
                      .dumpedAtMillis(Long.parseLong(props.getProperty("dumpedAtMillis")))
-                     .codekvastVersion(props.getProperty("codekvastVersion"))
-                     .codekvastVcsId(props.getProperty("codekvastVcsId"))
                      .build();
     }
 }

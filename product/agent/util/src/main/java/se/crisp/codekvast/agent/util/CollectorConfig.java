@@ -8,6 +8,7 @@ import lombok.experimental.Builder;
 
 import java.io.File;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Properties;
 
 /**
@@ -28,6 +29,7 @@ public class CollectorConfig {
     public static final int DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS = 600;
     public static final boolean DEFAULT_VERBOSE = false;
     public static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
+    public static final String OVERRIDE_SEPARATOR = ";";
 
     @NonNull
     private final SharedConfig sharedConfig;
@@ -67,27 +69,37 @@ public class CollectorConfig {
         FileUtils.writePropertiesTo(file, this, "Codekvast CollectorConfig");
     }
 
-    public static CollectorConfig parseConfigFile(String file) {
-        return parseCollectorConfigFile(new File(file).toURI());
+    public static CollectorConfig parseCollectorConfig(String args) throws URISyntaxException {
+        String parts[] = args.split(";");
+        URI uri = new URI(parts[0]);
+        String[] overrides = new String[parts.length - 1];
+        System.arraycopy(parts, 1, overrides, 0, overrides.length);
+        return parseCollectorConfig(uri, overrides);
     }
 
-    public static CollectorConfig parseCollectorConfigFile(URI uri) {
+    public static CollectorConfig parseCollectorConfig(URI uri, String... overrides) {
         try {
             Properties props = FileUtils.readPropertiesFrom(uri);
+
+            for (String override : overrides) {
+                String parts[] = override.split("=");
+                props.setProperty(parts[0], parts[1]);
+            }
 
             return CollectorConfig.builder()
                                   .sharedConfig(SharedConfig.buildSharedConfig(props))
                                   .aspectjOptions(ConfigUtils.getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
                                   .collectorResolutionSeconds(ConfigUtils.getOptionalIntValue(props, "collectorResolutionSeconds",
                                                                                               DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS))
-                                  .verbose(Boolean.parseBoolean(
+                                  .verbose(Boolean.valueOf(
                                           ConfigUtils.getOptionalStringValue(props, "verbose", Boolean.toString(DEFAULT_VERBOSE))))
-                                  .clobberAopXml(Boolean.parseBoolean(ConfigUtils.getOptionalStringValue(props, "clobberAopXml",
-                                                                                                         Boolean.toString(
-                                                                                                                 DEFAULT_CLOBBER_AOP_XML))))
-                                  .invokeAspectjWeaver(Boolean.parseBoolean(ConfigUtils.getOptionalStringValue(props, "invokeAspectjWeaver",
-                                                                                                               Boolean.toString(
-                                                                                                                       DEFAULT_INVOKE_ASPECTJ_WEAVER))))
+                                  .clobberAopXml(Boolean.valueOf(ConfigUtils.getOptionalStringValue(props, "clobberAopXml",
+                                                                                                    Boolean.toString(
+                                                                                                            DEFAULT_CLOBBER_AOP_XML))))
+                                  .invokeAspectjWeaver(Boolean.valueOf(ConfigUtils.getOptionalStringValue(props,
+                                                                                                          "invokeAspectjWeaver",
+                                                                                                          Boolean.toString(
+                                                                                                                  DEFAULT_INVOKE_ASPECTJ_WEAVER))))
                                   .build();
         } catch (Exception e) {
             throw new IllegalArgumentException(String.format("Cannot parse %s: %s", uri, e.getMessage()), e);

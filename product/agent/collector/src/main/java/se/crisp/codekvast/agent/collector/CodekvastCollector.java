@@ -9,6 +9,7 @@ import se.crisp.codekvast.agent.util.FileUtils;
 import java.io.File;
 import java.io.PrintStream;
 import java.lang.instrument.Instrumentation;
+import java.net.URISyntaxException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -36,8 +37,8 @@ public class CodekvastCollector {
     /**
      * This method is invoked by the JVM as part of bootstrapping the -javaagent
      */
-    public static void premain(String args, Instrumentation inst) {
-        CollectorConfig config = CollectorConfig.parseConfigFile(args);
+    public static void premain(String args, Instrumentation inst) throws URISyntaxException {
+        CollectorConfig config = CollectorConfig.parseCollectorConfig(args);
 
         //noinspection UseOfSystemOutOrSystemErr
         CodekvastCollector.out = config.isVerbose() ? System.err : new PrintStream(new NullOutputStream());
@@ -71,9 +72,9 @@ public class CodekvastCollector {
 
     private static void loadAspectjWeaver(String args, Instrumentation inst, CollectorConfig config) {
         System.setProperty(ASPECTJ_WEAVER_CONFIGURATION, join(";", createAopXml(config),
-                                                                             Constants.AOP_USER_XML,
-                                                                             Constants.AOP_AJC_XML,
-                                                                             Constants.AOP_OSGI_XML));
+                                                              Constants.AOP_USER_XML,
+                                                              Constants.AOP_AJC_XML,
+                                                              Constants.AOP_OSGI_XML));
 
         CodekvastCollector.out.printf("%s=%s%n", ASPECTJ_WEAVER_CONFIGURATION, System.getProperty(ASPECTJ_WEAVER_CONFIGURATION));
         if (config.isInvokeAspectjWeaver()) {

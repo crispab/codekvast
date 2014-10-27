@@ -7,6 +7,7 @@ import untracked.UntrackedClass;
 /**
  * @author Olle Hallin
  */
+@SuppressWarnings("UseOfSystemOutOrSystemErr")
 @Slf4j
 public class SampleApp {
 
@@ -42,16 +43,19 @@ public class SampleApp {
 
         int count = 10000000;
 
-        // varm-up
+        // warm-up
         invokeTracked(count);
         invokeUntracked(count);
+        invokeUntrackedLogged(count);
 
         long untrackedElapsedMillis = invokeUntracked(count);
+        long untrackedLoggedElapsedMillis = invokeUntrackedLogged(count);
         long trackedElapsedMillis = invokeTracked(count);
         int overheadNanos = (int) ((trackedElapsedMillis - untrackedElapsedMillis) * 1000000d / (double) count);
 
-        System.out.printf("Invoked a trivial untracked method %,d times in %5d ms%n", count, untrackedElapsedMillis);
-        System.out.printf("Invoked a trivial   tracked method %,d times in %5d ms%n", count, trackedElapsedMillis);
+        System.out.printf("Invoked a trivial untracked        method %,d times in %5d ms%n", count, untrackedElapsedMillis);
+        System.out.printf("Invoked a trivial untracked logged method %,d times in %5d ms%n", count, untrackedLoggedElapsedMillis);
+        System.out.printf("Invoked a trivial   tracked        method %,d times in %5d ms%n", count, trackedElapsedMillis);
         System.out.printf("Codekvast collector adds roughly %d ns to a method call%n", overheadNanos);
     }
 
@@ -61,6 +65,17 @@ public class SampleApp {
         UntrackedClass untracked = new UntrackedClass();
         for (int i = 0; i < count; i++) {
             sum += untracked.foo();
+        }
+        log.debug("Make sure the entire loop is not bypassed by the JIT compiler... {}", sum);
+        return System.currentTimeMillis() - startedAt;
+    }
+
+    private long invokeUntrackedLogged(int count) {
+        long startedAt = System.currentTimeMillis();
+        sum = 0;
+        UntrackedClass untracked = new UntrackedClass();
+        for (int i = 0; i < count; i++) {
+            sum += untracked.fooLogged();
         }
         log.debug("Make sure the entire loop is not bypassed by the JIT compiler... {}", sum);
         return System.currentTimeMillis() - startedAt;
@@ -97,6 +112,7 @@ public class SampleApp {
         }
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public String meaningOfLife() {
         return "42";
     }

@@ -4,6 +4,7 @@ import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 
 /**
@@ -178,9 +179,11 @@ public final class FileUtils {
                 Object value = field.get(object);
                 if (value instanceof SharedConfig) {
                     extractFieldValuesFrom(value, lines);
-                } else {
+                } else if (value != null) {
                     lines.add(String.format("%s = %s", field.getName(),
                                             value.toString().replace("\\", "\\\\").replace(":", "\\:")));
+                } else {
+                    lines.add(String.format("# %s = ", field.getName()));
                 }
             }
         }
@@ -214,8 +217,12 @@ public final class FileUtils {
         return result;
     }
 
-    public static Properties readPropertiesFrom(URI uri) throws IOException {
-        if (uri.getScheme().equals("classpath")) {
+    public static Properties readPropertiesFrom(URI uri) throws IOException, URISyntaxException {
+        String scheme = uri.getScheme();
+        if (scheme == null) {
+            return readPropertiesFrom(new File(new URI("file:" + uri.getPath())));
+        }
+        if (scheme.equals("classpath")) {
             return readPropertiesFrom(FileUtils.class.getResourceAsStream(uri.getPath()));
         }
         return readPropertiesFrom(new File(uri));

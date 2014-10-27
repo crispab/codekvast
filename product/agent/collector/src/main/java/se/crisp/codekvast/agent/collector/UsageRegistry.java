@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * This is the target of the method execution recording aspects.
- * <p>
+ * <p/>
  * It holds data about method usage, and methods for outputting the usage data to disk.
  *
  * @author Olle Hallin
@@ -50,6 +50,7 @@ public class UsageRegistry {
     public static void initialize(CollectorConfig config) {
         UsageRegistry.instance = new UsageRegistry(config,
                                                    JvmRun.builder()
+                                                         .sharedConfig(config.getSharedConfig())
                                                          .hostName(getHostName())
                                                          .jvmFingerprint(UUID.randomUUID().toString())
                                                          .startedAtMillis(System.currentTimeMillis())
@@ -66,7 +67,7 @@ public class UsageRegistry {
 
     /**
      * Record that this method signature was invoked at current recording interval.
-     * <p>
+     * <p/>
      * Thread-safe.
      */
     public void registerMethodExecution(Signature signature) {
@@ -76,7 +77,7 @@ public class UsageRegistry {
 
     /**
      * Record that this JPS page was invoked at current recording interval.
-     * <p>
+     * <p/>
      * Thread-safe.
      */
     public void registerJspPageExecution(String pageName) {
@@ -86,7 +87,7 @@ public class UsageRegistry {
 
     /**
      * Dumps method usage to a file on disk.
-     * <p>
+     * <p/>
      * Thread-safe.
      */
     public void dumpDataToDisk(int dumpCount) {

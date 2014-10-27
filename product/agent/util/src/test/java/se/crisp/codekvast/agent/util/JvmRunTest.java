@@ -15,11 +15,10 @@ public class JvmRunTest {
         File file = File.createTempFile("jvm-run", ".properties");
         file.deleteOnExit();
         JvmRun sr1 = JvmRun.builder()
+                           .sharedConfig(SharedConfig.buildSampleSharedConfig())
                            .hostName("hostName")
                            .jvmFingerprint(UUID.randomUUID().toString())
                            .startedAtMillis(System.currentTimeMillis())
-                           .codekvastVersion("codekvastVersion")
-                           .codekvastVcsId("codekvastVcsId")
                            .build();
         sr1.saveTo(file);
         JvmRun sr2 = JvmRun.readFrom(file);
