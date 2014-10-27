@@ -26,14 +26,17 @@ public class JvmRunDataTest {
     public void jvmRunDataShouldBeJsonSerializable() throws IOException {
         // given
         JvmRunData data1 = JvmRunData.builder()
-                                           .header(HeaderTest.HEADER)
-                                           .hostName("hostName")
-                                           .startedAtMillis(1000L)
-                                           .dumpedAtMillis(2000L)
-                                           .jvmFingerprint(UUID.randomUUID().toString())
-                                           .codekvastVersion("codekvastVersion")
-                                           .codekvastVcsId("codekvastVcsId")
-                                           .build();
+                                     .header(HeaderTest.HEADER)
+                                     .appName("appName")
+                                     .appVersion("appVersion")
+                                     .hostName("hostName")
+                                     .startedAtMillis(1000L)
+                                     .dumpedAtMillis(2000L)
+                                     .jvmFingerprint(UUID.randomUUID().toString())
+                                     .codekvastVersion("codekvastVersion")
+                                     .codekvastVcsId("codekvastVcsId")
+                                     .build();
+
         // when
         String json = objectMapper.writeValueAsString(data1);
         JvmRunData data2 = objectMapper.readValue(json, JvmRunData.class);

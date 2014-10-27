@@ -24,14 +24,17 @@ public class CodekvastAgentMainTest {
 
     @Test
     public void testApplyRecordedUsage() throws Exception {
+        // given
         CodeBase codeBase = new CodeBase(CodeBaseTest.buildAgentConfig("build/classes/main"));
         codeBase.readScannerResult(getResource("/customer1/app1/signatures.dat"));
         assertTrue(codeBase.hasSignature(
                 "public void se.transmode.tnm.module.l1mgr.connectivity.persistence.TrailEAO.removeTrails(java.util.Collection)"));
+        agentWorker.setCodeBase(codeBase);
 
-        int unrecognized = agentWorker.applyRecordedUsage(codeBase, new SignatureUsage(),
-                                                          FileUtils.readUsageDataFrom(getResource("/customer1/app1/usage.dat")));
+        // when
+        int unrecognized = agentWorker.storeNormalizedUsages(FileUtils.readUsageDataFrom(getResource("/customer1/app1/usage.dat")));
 
+        // then
         assertThat(unrecognized, is(1));
     }
 

@@ -24,6 +24,14 @@ public class JvmRunData {
     private Header header;
 
     @NonNull
+    @Size(min = 1, max = Constraints.MAX_APP_NAME_LENGTH)
+    private String appName;
+
+    @NonNull
+    @Size(min = 1, max = Constraints.MAX_APP_VERSION_LENGTH)
+    private String appVersion;
+
+    @NonNull
     @Size(min = 1, max = Constraints.MAX_HOST_NAME_LENGTH)
     private String hostName;
 

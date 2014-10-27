@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -16,7 +17,9 @@ public class SignatureDataTest {
     @Test
     public void signatureDataShouldBeJsonSerializable() throws IOException {
         // given
-        SignatureData data1 = SignatureData.builder().header(HeaderTest.HEADER).signatures(Arrays.asList("sig1", "sig2")).build();
+        SignatureData data1 =
+                SignatureData.builder().header(HeaderTest.HEADER).jvmFingerprint(UUID.randomUUID().toString()).signatures(Arrays.asList
+                        ("sig1", "sig2")).build();
 
         // when
         String json = objectMapper.writeValueAsString(data1);

@@ -58,7 +58,8 @@ public class StorageServiceImpl implements StorageService {
         for (String sig : signatureData.getSignatures()) {
             usageDataEntries.add(new UsageDataEntry(sig, null, null));
         }
-        return UsageData.builder().header(signatureData.getHeader()).usage(usageDataEntries).build();
+        return UsageData.builder().header(signatureData.getHeader()).jvmFingerprint(signatureData.getJvmFingerprint()).usage(
+                usageDataEntries).build();
     }
 
     @Override

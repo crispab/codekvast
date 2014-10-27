@@ -39,19 +39,13 @@ public class ServerDelegateImpl implements ServerDelegate {
 
     private final ServerDelegateConfig config;
     private final Header header;
-
     @Getter
     private final RestTemplate restTemplate;
 
     @Inject
     public ServerDelegateImpl(ServerDelegateConfig config) {
         this.config = config;
-        this.header = Header.builder()
-                            .customerName(config.getCustomerName())
-                            .appName(config.getAppName())
-                            .appVersion(config.getAppVersion())
-                            .environment(config.getEnvironment())
-                            .build();
+        this.header = Header.builder().customerName(config.getCustomerName()).environment(config.getEnvironment()).build();
         this.restTemplate = new RestTemplate(createBasicAuthHttpClient(config.getApiUsername(), config.getApiPassword()));
     }
 
@@ -62,8 +56,8 @@ public class ServerDelegateImpl implements ServerDelegate {
     }
 
     @Override
-    public void uploadJvmRunData(String hostName, long startedAtMillis, long dumpedAtMillis, String jvmFingerprint,
-                                 String codekvastVersion, String codekvastVcsId)
+    public void uploadJvmRunData(String appName, String appVersion, String hostName, long startedAtMillis, long dumpedAtMillis,
+                                 String jvmFingerprint, String codekvastVersion, String codekvastVcsId)
             throws ServerDelegateException {
         String endPoint = config.getServerUri() + AgentRestEndpoints.UPLOAD_V1_JVM_RUN;
 
@@ -73,6 +67,8 @@ public class ServerDelegateImpl implements ServerDelegate {
             long startedAt = System.currentTimeMillis();
 
             JvmRunData data = JvmRunData.builder().header(header)
+                                        .appName(appName)
+                                        .appVersion(appVersion)
                                         .hostName(hostName)
                                         .startedAtMillis(startedAtMillis)
                                         .dumpedAtMillis(dumpedAtMillis)
@@ -96,7 +92,7 @@ public class ServerDelegateImpl implements ServerDelegate {
     }
 
     @Override
-    public void uploadSignatureData(Collection<String> signatures) throws ServerDelegateException {
+    public void uploadSignatureData(String jvmFingerprint, Collection<String> signatures) throws ServerDelegateException {
         if (signatures.isEmpty()) {
             log.debug("Not uploading empty signatures");
             return;
@@ -108,7 +104,7 @@ public class ServerDelegateImpl implements ServerDelegate {
         try {
             long startedAtMillis = System.currentTimeMillis();
 
-            SignatureData data = SignatureData.builder().header(header).signatures(signatures).build();
+            SignatureData data = SignatureData.builder().header(header).jvmFingerprint(jvmFingerprint).signatures(signatures).build();
 
             restTemplate.postForEntity(new URI(endPoint), data, Void.class);
 

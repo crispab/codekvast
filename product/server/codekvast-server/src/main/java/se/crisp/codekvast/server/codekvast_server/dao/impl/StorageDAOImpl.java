@@ -48,7 +48,7 @@ public class StorageDAOImpl implements StorageDAO {
     @Transactional
     public void storeJvmRunData(JvmRunData data) throws CodekvastException {
         long customerId = getOrCreateCustomer(data.getHeader().getCustomerName());
-        long appId = getOrCreateApp(customerId, data.getHeader());
+        long appId = getOrCreateApp(customerId, data.getHeader(), data.getAppName(), data.getAppVersion());
         storeJvmRunData(customerId, appId, data);
     }
 
@@ -58,7 +58,7 @@ public class StorageDAOImpl implements StorageDAO {
         final Collection<UsageDataEntry> result = new ArrayList<>();
 
         long customerId = getOrCreateCustomer(usageData.getHeader().getCustomerName());
-        long appId = getOrCreateApp(customerId, usageData.getHeader());
+        long appId = getAppId(customerId, usageData.getJvmFingerprint());
         for (UsageDataEntry entry : usageData.getUsage()) {
             storeOrUpdateUsageDataEntry(result, customerId, appId, usageData.getJvmFingerprint(), entry);
         }
@@ -141,33 +141,41 @@ public class StorageDAOImpl implements StorageDAO {
         }
     }
 
-    private Long getOrCreateApp(long customerId, Header header) throws UndefinedApplicationException {
-        return getOrCreateApp(customerId, header, true);
+    private Long getOrCreateApp(long customerId, Header header, String appName,
+                                String appVersion) throws UndefinedApplicationException {
+        return getOrCreateApp(customerId, header, appName, appVersion, true);
     }
 
-    private Long getOrCreateApp(long customerId, Header header, boolean allowRecursion) throws UndefinedApplicationException {
+    private Long getOrCreateApp(long customerId, Header header, String appName, String appVersion,
+                                boolean allowRecursion) throws UndefinedApplicationException {
         try {
             return jdbcTemplate.queryForObject("SELECT id FROM applications " +
-                                                       "WHERE customer_id = ? AND name = ? AND version = ? AND environment = ? ",
+                                                       "WHERE customer_id = ? AND environment = ? AND name = ? AND version = ? ",
                                                Long.class,
-                                               customerId, header.getAppName(), header.getAppVersion(), header.getEnvironment());
+                                               customerId, header.getEnvironment(), appName, appVersion);
         } catch (EmptyResultDataAccessException ignored) {
         }
         if (!autoCreateApplication) {
-            throw new UndefinedApplicationException("No such application: " + header.getAppName());
+            throw new UndefinedApplicationException("No such application: " + appName);
         }
 
-        checkState(allowRecursion, "Endless recursion not allowed");
+        checkState(allowRecursion, "Endless recursion detected");
 
-        int updated = jdbcTemplate.update("INSERT INTO applications(customer_id, name, version, environment) VALUES(?, ?, ?, ?)",
-                                          customerId, header.getAppName(), header.getAppVersion(), header.getEnvironment());
+        int updated = jdbcTemplate.update("INSERT INTO applications(customer_id, environment, name, version) VALUES(?, ?, ?, ?)",
+                                          customerId, header.getEnvironment(), appName, appVersion);
         if (updated > 0) {
-            log.info("Created application {}:{}:{}:{}", header.getCustomerName(), header.getAppName(),
-                     header.getAppVersion(), header.getEnvironment());
-            return getOrCreateApp(customerId, header, false);
+            log.info("Created application {}:{}:{}:{}", header.getCustomerName(), header.getEnvironment(),
+                     appName, appVersion);
+            return getOrCreateApp(customerId, header, appName, appVersion, false);
         }
 
         throw new IllegalStateException("Could not insert application");
+    }
+
+    private long getAppId(long customerId, String jvmFingerprint) {
+        return jdbcTemplate.queryForObject("SELECT application_id FROM jvm_runs " +
+                                                   "WHERE customer_id = ? AND jvm_fingerprint = ?", Long.class,
+                                           customerId, jvmFingerprint);
     }
 
     private long getOrCreateCustomer(final String customerName) throws UndefinedCustomerException {

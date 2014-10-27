@@ -56,8 +56,6 @@ public class ServerDelegateTest {
     private void createServerDelegate(String apiUsername, String apiPassword) throws URISyntaxException {
         serverDelegate = new ServerDelegateImpl(ServerDelegateConfig.builder()
                                                                     .customerName(CUSTOMER_NAME)
-                                                                    .appName("appName")
-                                                                    .appVersion("appVersion")
                                                                     .environment("environment")
                                                                     .serverUri(new URI(String.format("http://localhost:%d", port)))
                                                                     .apiUsername(apiUsername)
@@ -93,19 +91,11 @@ public class ServerDelegateTest {
     }
 
     @Test
-    public void testUploadJvmRunData() throws ServerDelegateException, URISyntaxException {
-        // when
-        serverDelegate.uploadJvmRunData("hostName", System.currentTimeMillis(), System.currentTimeMillis(), jvmFingerprint,
-                                        "codekvastVersion", "codekvastVcsId");
-
-        // then
-        // TODO: assert the result
-    }
-
-    @Test
     public void testUploadSignatureData() throws ServerDelegateException, URISyntaxException, CodekvastException {
         // when
-        serverDelegate.uploadSignatureData(Arrays.asList(signature1, signature2));
+        serverDelegate.uploadJvmRunData("appName", "appVersion", "hostName", System.currentTimeMillis(), System.currentTimeMillis(),
+                                        jvmFingerprint, "codekvastVersion", "codekvastVcsId");
+        serverDelegate.uploadSignatureData(jvmFingerprint, Arrays.asList(signature1, signature2));
 
         // then
         assertThat(storageService.getSignatures(null), hasSize(2));
@@ -118,6 +108,8 @@ public class ServerDelegateTest {
         Collection<UsageDataEntry> usage = Arrays.asList(new UsageDataEntry(signature1, now, UsageConfidence.EXACT_MATCH),
                                                          new UsageDataEntry(signature2, now, UsageConfidence.EXACT_MATCH));
         // when
+        serverDelegate.uploadJvmRunData("appName", "appVersion", "hostName", System.currentTimeMillis(), System.currentTimeMillis(),
+                                        jvmFingerprint, "codekvastVersion", "codekvastVcsId");
         serverDelegate.uploadUsageData(jvmFingerprint, usage);
 
         // then

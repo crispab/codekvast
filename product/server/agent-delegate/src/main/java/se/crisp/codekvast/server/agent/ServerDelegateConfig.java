@@ -19,12 +19,6 @@ public class ServerDelegateConfig {
     private final String customerName;
 
     @NonNull
-    private final String appName;
-
-    @NonNull
-    private final String appVersion;
-
-    @NonNull
     private final String environment;
 
     @NonNull

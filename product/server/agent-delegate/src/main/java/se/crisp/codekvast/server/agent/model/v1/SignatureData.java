@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.experimental.Builder;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Size;
 import java.util.Collection;
 
 /**
@@ -24,15 +25,20 @@ public class SignatureData {
     private Header header;
 
     @NonNull
+    @Size(min = Constraints.MIN_FINGERPRINT_LENGTH, max = Constraints.MAX_FINGERPRINT_LENGTH)
+    private String jvmFingerprint;
+
+    @NonNull
     private Collection<String> signatures;
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(header=" + header + ", signatures.size=" + signatures.size() + ')';
+        return getClass().getSimpleName() + "(header=" + header + ", jvmFingerprint=" + jvmFingerprint + ", signatures.size=" + signatures
+                .size() + ')';
     }
 
     public String toLongString() {
-        return getClass().getSimpleName() + "(header=" + header + ", signatures.size=" + signatures
+        return getClass().getSimpleName() + "(header=" + header + ", jvmFingerprint=" + jvmFingerprint + ", signatures.size=" + signatures
                 .size() + ", signatures=" + signatures + ')';
     }
 }

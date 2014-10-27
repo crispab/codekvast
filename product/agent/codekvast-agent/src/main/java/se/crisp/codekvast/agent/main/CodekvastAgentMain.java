@@ -74,8 +74,6 @@ public class CodekvastAgentMain {
     public ServerDelegateConfig serverDelegateConfig(AgentConfig agentConfig) {
         return ServerDelegateConfig.builder()
                                    .customerName(agentConfig.getCustomerName())
-                                   .appName(agentConfig.getAppName())
-                                   .appVersion(agentConfig.getAppVersion())
                                    .environment(agentConfig.getEnvironment())
                                    .serverUri(agentConfig.getServerUri())
                                    .apiUsername(agentConfig.getApiUsername())

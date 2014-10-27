@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Remote debug codekvast-agent (Gradle)" type="Remote" factoryName="Remote">
+  <configuration default="false" name="Remote debug codekvast-agent" type="Remote" factoryName="Remote">
     <module name="product" />
     <option name="USE_SOCKET_TRANSPORT" value="true" />
     <option name="SERVER_MODE" value="false" />
