@@ -3,6 +3,7 @@ package se.crisp.codekvast.agent.util;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import se.crisp.codekvast.agent.model.Usage;
 
 import java.io.*;
 import java.net.URI;

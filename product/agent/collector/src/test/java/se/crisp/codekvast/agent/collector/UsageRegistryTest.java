@@ -4,9 +4,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import se.crisp.codekvast.agent.util.CollectorConfig;
-import se.crisp.codekvast.agent.util.JvmRun;
-import se.crisp.codekvast.agent.util.SharedConfig;
+import se.crisp.codekvast.agent.config.CollectorConfig;
+import se.crisp.codekvast.agent.config.SharedConfig;
+import se.crisp.codekvast.agent.model.Jvm;
 
 import java.io.File;
 import java.io.IOException;
@@ -71,11 +71,11 @@ public class UsageRegistryTest {
         assertThat(files[0].getName(), is(CollectorConfig.JVM_RUN_BASENAME));
         assertThat(files[1].getName(), is(CollectorConfig.USAGE_BASENAME));
 
-        JvmRun jvmRun = JvmRun.readFrom(files[0]);
-        assertThat(jvmRun.getSharedConfig().getCustomerName(), is(CUSTOMER_NAME));
-        assertThat(jvmRun.getAppName(), is(APP_NAME));
-        assertThat(jvmRun.getAppVersion(), is(APP_VERSION));
-        assertThat(jvmRun.getCodeBaseUri(), is(codeBaseUri));
+        Jvm jvm = Jvm.readFrom(files[0]);
+        assertThat(jvm.getCollectorConfig().getSharedConfig().getCustomerName(), is(CUSTOMER_NAME));
+        assertThat(jvm.getCollectorConfig().getAppName(), is(APP_NAME));
+        assertThat(jvm.getCollectorConfig().getAppVersion(), is(APP_VERSION));
+        assertThat(jvm.getCollectorConfig().getCodeBaseUri(), is(codeBaseUri));
     }
 
 }

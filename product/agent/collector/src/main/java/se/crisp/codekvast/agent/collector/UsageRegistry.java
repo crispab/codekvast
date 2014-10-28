@@ -1,9 +1,9 @@
 package se.crisp.codekvast.agent.collector;
 
 import org.aspectj.lang.Signature;
-import se.crisp.codekvast.agent.util.CollectorConfig;
+import se.crisp.codekvast.agent.config.CollectorConfig;
+import se.crisp.codekvast.agent.model.Jvm;
 import se.crisp.codekvast.agent.util.FileUtils;
-import se.crisp.codekvast.agent.util.JvmRun;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +26,7 @@ public class UsageRegistry {
     public static UsageRegistry instance;
 
     private final CollectorConfig config;
-    private final JvmRun jvmRun;
+    private final Jvm jvm;
     private final File jvmRunFile;
 
     // Toggle between two usage sets to avoid synchronisation
@@ -34,9 +34,9 @@ public class UsageRegistry {
     private volatile int currentUsageIndex = 0;
     private long recordingIntervalStartedAtMillis = System.currentTimeMillis();
 
-    public UsageRegistry(CollectorConfig config, JvmRun jvmRun) {
+    public UsageRegistry(CollectorConfig config, Jvm jvm) {
         this.config = config;
-        this.jvmRun = jvmRun;
+        this.jvm = jvm;
         this.jvmRunFile = config.getJvmRunFile();
 
         for (int i = 0; i < usages.length; i++) {
@@ -49,11 +49,8 @@ public class UsageRegistry {
      */
     public static void initialize(CollectorConfig config) {
         UsageRegistry.instance = new UsageRegistry(config,
-                                                   JvmRun.builder()
-                                                         .sharedConfig(config.getSharedConfig())
-                                                         .appName(config.getAppName())
-                                                         .appVersion(config.getAppVersion())
-                                                         .codeBaseUri(config.getCodeBaseUri())
+                                                   Jvm.builder()
+                                                      .collectorConfig(config)
                                                          .hostName(getHostName())
                                                          .jvmFingerprint(UUID.randomUUID().toString())
                                                          .startedAtMillis(System.currentTimeMillis())
@@ -130,7 +127,7 @@ public class UsageRegistry {
         File tmpFile = null;
         try {
             tmpFile = File.createTempFile("codekvast", ".tmp", jvmRunFile.getParentFile());
-            jvmRun.saveTo(tmpFile);
+            jvm.saveTo(tmpFile);
             FileUtils.renameFile(tmpFile, jvmRunFile);
         } catch (IOException e) {
             CodekvastCollector.out.println(CodekvastCollector.NAME + " cannot save " + jvmRunFile + ": " + e);

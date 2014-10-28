@@ -1,7 +1,9 @@
-package se.crisp.codekvast.agent.util;
+package se.crisp.codekvast.agent.config;
 
 import lombok.*;
 import lombok.experimental.Builder;
+import se.crisp.codekvast.agent.util.ConfigUtils;
+import se.crisp.codekvast.agent.util.FileUtils;
 
 import java.io.File;
 import java.net.URI;
@@ -19,7 +21,7 @@ import java.util.Properties;
 @Value
 @Builder
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class AgentConfig {
+public class AgentConfig implements CodekvastConfig {
     public static final int DEFAULT_UPLOAD_INTERVAL_SECONDS = 3600;
     public static final String DEFAULT_API_PASSWORD = "0000";
     public static final String DEFAULT_API_USERNAME = "agent";

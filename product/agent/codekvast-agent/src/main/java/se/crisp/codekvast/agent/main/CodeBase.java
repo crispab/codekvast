@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import se.crisp.codekvast.agent.util.AgentConfig;
+import se.crisp.codekvast.agent.config.AgentConfig;
 
 import java.io.*;
 import java.net.MalformedURLException;

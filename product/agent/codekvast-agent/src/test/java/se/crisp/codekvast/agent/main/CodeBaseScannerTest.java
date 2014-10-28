@@ -1,7 +1,7 @@
 package se.crisp.codekvast.agent.main;
 
 import org.junit.Test;
-import se.crisp.codekvast.agent.util.AgentConfig;
+import se.crisp.codekvast.agent.config.AgentConfig;
 
 import java.io.File;
 import java.net.URISyntaxException;

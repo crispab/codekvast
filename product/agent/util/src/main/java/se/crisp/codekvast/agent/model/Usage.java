@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.util;
+package se.crisp.codekvast.agent.model;
 
 import lombok.Value;
 

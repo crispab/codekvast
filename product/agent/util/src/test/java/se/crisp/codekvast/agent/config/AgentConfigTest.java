@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.util;
+package se.crisp.codekvast.agent.config;
 
 import org.junit.Test;
 

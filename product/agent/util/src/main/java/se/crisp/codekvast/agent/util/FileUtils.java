@@ -1,5 +1,8 @@
 package se.crisp.codekvast.agent.util;
 
+import se.crisp.codekvast.agent.config.CodekvastConfig;
+import se.crisp.codekvast.agent.model.Usage;
+
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -177,7 +180,7 @@ public final class FileUtils {
             if (!Modifier.isStatic(field.getModifiers())) {
                 field.setAccessible(true);
                 Object value = field.get(object);
-                if (value instanceof SharedConfig) {
+                if (value instanceof CodekvastConfig) {
                     extractFieldValuesFrom(value, lines);
                 } else if (value != null) {
                     lines.add(String.format("%s = %s", field.getName(),

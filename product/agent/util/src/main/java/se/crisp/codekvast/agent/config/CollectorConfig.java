@@ -1,7 +1,9 @@
-package se.crisp.codekvast.agent.util;
+package se.crisp.codekvast.agent.config;
 
 import lombok.*;
 import lombok.experimental.Builder;
+import se.crisp.codekvast.agent.util.ConfigUtils;
+import se.crisp.codekvast.agent.util.FileUtils;
 
 import java.io.File;
 import java.net.URI;
@@ -19,7 +21,7 @@ import java.util.Properties;
 @Value
 @Builder
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class CollectorConfig {
+public class CollectorConfig implements CodekvastConfig {
     public static final String USAGE_BASENAME = "usage.dat";
     public static final String JVM_RUN_BASENAME = "jvm-run.dat";
 
@@ -85,27 +87,31 @@ public class CollectorConfig {
                 props.setProperty(parts[0], parts[1]);
             }
 
-            return CollectorConfig.builder()
-                                  .sharedConfig(SharedConfig.buildSharedConfig(props))
-                                  .aspectjOptions(ConfigUtils.getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
-                                  .appName(ConfigUtils.getMandatoryStringValue(props, "appName"))
-                                  .appVersion(ConfigUtils.getOptionalStringValue(props, "appVersion", UNSPECIFIED_VERSION))
-                                  .codeBaseUri(ConfigUtils.getMandatoryUriValue(props, "codeBaseUri", false))
-                                  .collectorResolutionSeconds(ConfigUtils.getOptionalIntValue(props, "collectorResolutionSeconds",
-                                                                                              DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS))
-                                  .verbose(Boolean.valueOf(
-                                          ConfigUtils.getOptionalStringValue(props, "verbose", Boolean.toString(DEFAULT_VERBOSE))))
-                                  .clobberAopXml(Boolean.valueOf(ConfigUtils.getOptionalStringValue(props, "clobberAopXml",
-                                                                                                    Boolean.toString(
-                                                                                                            DEFAULT_CLOBBER_AOP_XML))))
-                                  .invokeAspectjWeaver(Boolean.valueOf(ConfigUtils.getOptionalStringValue(props,
-                                                                                                          "invokeAspectjWeaver",
-                                                                                                          Boolean.toString(
-                                                                                                                  DEFAULT_INVOKE_ASPECTJ_WEAVER))))
-                                  .build();
+            return buildCollectorConfig(props);
         } catch (Exception e) {
             throw new IllegalArgumentException(String.format("Cannot parse %s: %s", uri, e.getMessage()), e);
         }
+    }
+
+    public static CollectorConfig buildCollectorConfig(Properties props) {
+        return CollectorConfig.builder()
+                              .sharedConfig(SharedConfig.buildSharedConfig(props))
+                              .aspectjOptions(ConfigUtils.getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
+                              .appName(ConfigUtils.getMandatoryStringValue(props, "appName"))
+                              .appVersion(ConfigUtils.getOptionalStringValue(props, "appVersion", UNSPECIFIED_VERSION))
+                              .codeBaseUri(ConfigUtils.getMandatoryUriValue(props, "codeBaseUri", false))
+                              .collectorResolutionSeconds(ConfigUtils.getOptionalIntValue(props, "collectorResolutionSeconds",
+                                                                                          DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS))
+                              .verbose(Boolean.valueOf(
+                                      ConfigUtils.getOptionalStringValue(props, "verbose", Boolean.toString(DEFAULT_VERBOSE))))
+                              .clobberAopXml(Boolean.valueOf(ConfigUtils.getOptionalStringValue(props, "clobberAopXml",
+                                                                                                Boolean.toString(
+                                                                                                        DEFAULT_CLOBBER_AOP_XML))))
+                              .invokeAspectjWeaver(Boolean.valueOf(ConfigUtils.getOptionalStringValue(props,
+                                                                                                      "invokeAspectjWeaver",
+                                                                                                      Boolean.toString(
+                                                                                                              DEFAULT_INVOKE_ASPECTJ_WEAVER))))
+                              .build();
     }
 
     @SneakyThrows(URISyntaxException.class)

@@ -1,8 +1,9 @@
-package se.crisp.codekvast.agent.util;
+package se.crisp.codekvast.agent.model;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import se.crisp.codekvast.agent.util.FileUtils;
 
 import java.io.File;
 import java.util.Arrays;

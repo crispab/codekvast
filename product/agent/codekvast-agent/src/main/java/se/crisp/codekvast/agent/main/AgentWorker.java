@@ -6,7 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import se.crisp.codekvast.agent.util.*;
+import se.crisp.codekvast.agent.config.AgentConfig;
+import se.crisp.codekvast.agent.config.CollectorConfig;
+import se.crisp.codekvast.agent.model.Jvm;
+import se.crisp.codekvast.agent.model.Usage;
+import se.crisp.codekvast.agent.util.FileUtils;
 import se.crisp.codekvast.server.agent.ServerDelegate;
 import se.crisp.codekvast.server.agent.ServerDelegateException;
 import se.crisp.codekvast.server.agent.model.v1.UsageConfidence;
@@ -30,7 +34,7 @@ public class AgentWorker {
     @Data
     @Builder
     private static class JvmState {
-        private final JvmRun jvmRun;
+        private final Jvm jvm;
         private final File usageFile;
         private final long processedAt;
         private CodeBase codeBase;
@@ -61,10 +65,10 @@ public class AgentWorker {
         log.debug("Analyzing collector data");
 
         for (JvmState jvmState : findJvmStates()) {
-            JvmRun jvmRun = jvmState.getJvmRun();
+            Jvm jvm = jvmState.getJvm();
 
 
-            String fingerprint = jvmRun.getJvmFingerprint();
+            String fingerprint = jvm.getJvmFingerprint();
             JvmState oldState = jvmStates.get(fingerprint);
 
             if (oldState == null) {
@@ -73,9 +77,10 @@ public class AgentWorker {
                 FileUtils.resetAllConsumedUsageDataFiles(jvmState.getUsageFile());
             }
 
-            if (oldState == null || oldState.getProcessedAt() < jvmRun.getDumpedAtMillis()) {
-                uploadJvmRun(jvmRun);
-                analyzeAndUploadCodeBaseIfNeeded(jvmState, new CodeBase(config, jvmRun.getCodeBaseUri(), jvmRun.getAppName()));
+            if (oldState == null || oldState.getProcessedAt() < jvm.getDumpedAtMillis()) {
+                uploadJvmRun(jvm);
+                analyzeAndUploadCodeBaseIfNeeded(jvmState, new CodeBase(config, jvm.getCollectorConfig().getCodeBaseUri(), jvm
+                        .getCollectorConfig().getAppName()));
                 processUsageDataIfNeeded(jvmState);
             }
             jvmStates.put(fingerprint, jvmState);
@@ -107,25 +112,25 @@ public class AgentWorker {
         try {
             result.add(JvmState.builder()
                                .usageFile(new File(file.getParentFile(), CollectorConfig.USAGE_BASENAME))
-                               .jvmRun(JvmRun.readFrom(file)).build());
+                               .jvm(Jvm.readFrom(file)).build());
         } catch (IOException e) {
             log.error("Cannot load " + file, e);
         }
     }
 
-    private void uploadJvmRun(JvmRun jvmRun) {
+    private void uploadJvmRun(Jvm jvm) {
         try {
             serverDelegate.uploadJvmRunData(
-                    jvmRun.getAppName(),
-                    jvmRun.getAppVersion(),
-                    jvmRun.getHostName(),
-                    jvmRun.getStartedAtMillis(),
-                    jvmRun.getDumpedAtMillis(),
-                    jvmRun.getJvmFingerprint(),
+                    jvm.getCollectorConfig().getAppName(),
+                    jvm.getCollectorConfig().getAppVersion(),
+                    jvm.getHostName(),
+                    jvm.getStartedAtMillis(),
+                    jvm.getDumpedAtMillis(),
+                    jvm.getJvmFingerprint(),
                     codekvastGradleVersion,
                     codekvastVcsId);
         } catch (ServerDelegateException e) {
-            logException("Cannot upload JvmRun data", e);
+            logException("Cannot upload JVM data", e);
         }
     }
 
@@ -143,7 +148,7 @@ public class AgentWorker {
         if (!newCodeBase.equals(jvmState.getCodeBase())) {
             newCodeBase.scanSignatures(codeBaseScanner);
             try {
-                serverDelegate.uploadSignatureData(jvmState.getJvmRun().getJvmFingerprint(), newCodeBase.getSignatures());
+                serverDelegate.uploadSignatureData(jvmState.getJvm().getJvmFingerprint(), newCodeBase.getSignatures());
                 jvmState.setCodeBase(newCodeBase);
             } catch (ServerDelegateException e) {
                 logException("Cannot upload signature data", e);
@@ -162,7 +167,7 @@ public class AgentWorker {
     private void uploadUsedSignatures(JvmState jvmState) {
         try {
             serverDelegate
-                    .uploadUsageData(jvmState.getJvmRun().getJvmFingerprint(), jvmState.getSignatureUsage().getNotUploadedSignatures());
+                    .uploadUsageData(jvmState.getJvm().getJvmFingerprint(), jvmState.getSignatureUsage().getNotUploadedSignatures());
             jvmState.getSignatureUsage().clearNotUploadedSignatures();
             FileUtils.deleteAllConsumedUsageDataFiles(jvmState.getUsageFile());
         } catch (ServerDelegateException e) {

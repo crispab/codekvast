@@ -3,7 +3,7 @@ package se.crisp.codekvast.agent.collector;
 import org.aspectj.bridge.Constants;
 import se.crisp.codekvast.agent.collector.aspects.AbstractMethodExecutionAspect;
 import se.crisp.codekvast.agent.collector.aspects.JasperExecutionAspect;
-import se.crisp.codekvast.agent.util.CollectorConfig;
+import se.crisp.codekvast.agent.config.CollectorConfig;
 import se.crisp.codekvast.agent.util.FileUtils;
 
 import java.io.File;

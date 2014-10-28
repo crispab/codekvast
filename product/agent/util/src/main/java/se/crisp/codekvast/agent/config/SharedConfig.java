@@ -1,8 +1,9 @@
-package se.crisp.codekvast.agent.util;
+package se.crisp.codekvast.agent.config;
 
 import lombok.NonNull;
 import lombok.Value;
 import lombok.experimental.Builder;
+import se.crisp.codekvast.agent.util.ConfigUtils;
 
 import java.io.File;
 import java.util.Properties;
@@ -14,7 +15,7 @@ import java.util.Properties;
  */
 @Value
 @Builder
-public class SharedConfig {
+public class SharedConfig implements CodekvastConfig {
     @NonNull
     private final String customerName;
 

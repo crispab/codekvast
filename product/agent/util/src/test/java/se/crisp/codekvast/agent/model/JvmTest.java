@@ -1,32 +1,29 @@
-package se.crisp.codekvast.agent.util;
+package se.crisp.codekvast.agent.model;
 
 import org.junit.Test;
+import se.crisp.codekvast.agent.config.CollectorConfig;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
-public class JvmRunTest {
+public class JvmTest {
 
     @Test
     public void testSaveAndRestore() throws IOException, URISyntaxException {
         File file = File.createTempFile("jvm-run", ".properties");
         file.deleteOnExit();
-        JvmRun sr1 = JvmRun.builder()
-                           .sharedConfig(SharedConfig.buildSampleSharedConfig())
+        Jvm sr1 = Jvm.builder()
+                     .collectorConfig(CollectorConfig.createSampleCollectorConfig())
                            .hostName("hostName")
-                           .appName("appName")
-                           .appVersion("appVersion")
-                           .codeBaseUri(new URI("file:/foobar"))
                            .jvmFingerprint(UUID.randomUUID().toString())
                            .startedAtMillis(System.currentTimeMillis())
                            .build();
         sr1.saveTo(file);
-        JvmRun sr2 = JvmRun.readFrom(file);
+        Jvm sr2 = Jvm.readFrom(file);
         assertEquals(sr1, sr2);
     }
 

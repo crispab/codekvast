@@ -8,9 +8,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import se.crisp.codekvast.agent.config.AgentConfig;
 import se.crisp.codekvast.agent.main.logback.LogPathDefiner;
 import se.crisp.codekvast.agent.main.spring.AgentConfigPropertySource;
-import se.crisp.codekvast.agent.util.AgentConfig;
 import se.crisp.codekvast.server.agent.ServerDelegateConfig;
 
 import java.io.File;
