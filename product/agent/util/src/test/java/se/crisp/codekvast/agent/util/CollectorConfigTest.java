@@ -14,7 +14,7 @@ public class CollectorConfigTest {
     @Test
     public void testSaveSampleConfigToFile() throws IOException {
         CollectorConfig config1 = CollectorConfig.createSampleCollectorConfig();
-        File file = new File(System.getProperty("sampleCollectorConfigFile.path", "build/codekvast.conf.sample"));
+        File file = new File(System.getProperty("sampleCollectorConfigFile.path", "build/codekvast-collector.conf.sample"));
         config1.saveTo(file);
 
         CollectorConfig config2 = CollectorConfig.parseCollectorConfig(file.toURI());

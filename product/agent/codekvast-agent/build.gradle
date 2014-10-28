@@ -49,7 +49,7 @@ test.dependsOn ":sample:standalone-app:jar"
 run {
     dependsOn = [":sample:standalone-app:installApp", ":sample:standalone-app:generateCodekvastConfig"]
     args tasks.getByPath(":sample:standalone-app:generateCodekvastConfig").configFile
-    // args "/home/qolha/work/git/tnm/mainserver_main/codekvast.conf"
+    // args "/home/qolha/work/git/tnm/codekvast.conf"
 }
 
 jar.dependsOn tasks.getByPath(":product:agent:util:test")
@@ -61,6 +61,10 @@ applicationDistribution.from("src/main/resources") {
 }
 
 applicationDistribution.from(tasks.getByPath(":product:agent:util:test").sampleCollectorConfigFile) {
+    into "conf"
+}
+
+applicationDistribution.from(tasks.getByPath(":product:agent:util:test").sampleAgentConfigFile) {
     into "conf"
 }
 

@@ -91,11 +91,14 @@ public class AgentWorker {
     private void findJvmRuns(Collection<JvmState> result, File dataPath) {
         log.debug("Looking for jvm-run.dat in {}", dataPath);
 
-        for (File file : dataPath.listFiles()) {
-            if (file.isFile() && file.getName().equals(CollectorConfig.JVM_RUN_BASENAME)) {
-                addJvmRun(result, file);
-            } else if (file.isDirectory()) {
-                findJvmRuns(result, file);
+        File[] files = dataPath.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile() && file.getName().equals(CollectorConfig.JVM_RUN_BASENAME)) {
+                    addJvmRun(result, file);
+                } else if (file.isDirectory()) {
+                    findJvmRuns(result, file);
+                }
             }
         }
     }
@@ -150,7 +153,7 @@ public class AgentWorker {
 
     private void processUsageDataIfNeeded(JvmState jvmState) {
         List<Usage> usages = FileUtils.consumeAllUsageDataFiles(jvmState.getUsageFile());
-            if (!usages.isEmpty()) {
+        if (jvmState.getCodeBase() != null && !usages.isEmpty()) {
                 storeNormalizedUsages(jvmState, usages);
                 uploadUsedSignatures(jvmState);
             }
