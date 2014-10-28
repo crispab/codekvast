@@ -1,9 +1,6 @@
 package se.crisp.codekvast.agent.util;
 
-import lombok.AccessLevel;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
+import lombok.*;
 import lombok.experimental.Builder;
 
 import java.io.File;
@@ -29,7 +26,9 @@ public class CollectorConfig {
     public static final int DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS = 600;
     public static final boolean DEFAULT_VERBOSE = false;
     public static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
+    public static final String SAMPLE_CODEBASE_URI = "file:path/to/codebase/";
     public static final String OVERRIDE_SEPARATOR = ";";
+    public static final String UNSPECIFIED_VERSION = "unspecified";
 
     @NonNull
     private final SharedConfig sharedConfig;
@@ -39,6 +38,12 @@ public class CollectorConfig {
     private final boolean clobberAopXml;
     private final boolean verbose;
     private final boolean invokeAspectjWeaver;
+    @NonNull
+    private final String appName;
+    @NonNull
+    private final String appVersion;
+    @NonNull
+    private final URI codeBaseUri;
 
     public File getAspectFile() {
         return new File(sharedConfig.myDataPath(), "aop.xml");
@@ -46,23 +51,6 @@ public class CollectorConfig {
 
     public File getCollectorLogFile() {
         return new File(sharedConfig.myDataPath(), "codekvast-collector.log");
-    }
-
-    public File getJvmRunFile() {
-        return sharedConfig.getJvmRunFile();
-    }
-
-    public File getUsageFile() {
-        return sharedConfig.getUsageFile();
-    }
-
-
-    public String getPackagePrefix() {
-        return sharedConfig.getPackagePrefix();
-    }
-
-    public String getNormalizedPackagePrefix() {
-        return sharedConfig.getNormalizedPackagePrefix();
     }
 
     public void saveTo(File file) {
@@ -89,6 +77,9 @@ public class CollectorConfig {
             return CollectorConfig.builder()
                                   .sharedConfig(SharedConfig.buildSharedConfig(props))
                                   .aspectjOptions(ConfigUtils.getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
+                                  .appName(ConfigUtils.getMandatoryStringValue(props, "appName"))
+                                  .appVersion(ConfigUtils.getOptionalStringValue(props, "appVersion", UNSPECIFIED_VERSION))
+                                  .codeBaseUri(ConfigUtils.getMandatoryUriValue(props, "codeBaseUri", false))
                                   .collectorResolutionSeconds(ConfigUtils.getOptionalIntValue(props, "collectorResolutionSeconds",
                                                                                               DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS))
                                   .verbose(Boolean.valueOf(
@@ -106,10 +97,14 @@ public class CollectorConfig {
         }
     }
 
+    @SneakyThrows(URISyntaxException.class)
     public static CollectorConfig createSampleCollectorConfig() {
         return CollectorConfig.builder()
                               .sharedConfig(SharedConfig.buildSampleSharedConfig())
                               .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
+                              .appName("Sample Application Name")
+                              .appVersion(UNSPECIFIED_VERSION)
+                              .codeBaseUri(new URI(SAMPLE_CODEBASE_URI))
                               .collectorResolutionSeconds(DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS)
                               .verbose(DEFAULT_VERBOSE)
                               .clobberAopXml(DEFAULT_CLOBBER_AOP_XML)

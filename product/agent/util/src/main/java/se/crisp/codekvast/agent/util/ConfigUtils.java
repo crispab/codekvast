@@ -31,7 +31,10 @@ public final class ConfigUtils {
     }
 
     public static String getNormalizedChildPath(String customerName, String appName) {
-        return normalizePathName(customerName) + File.separator + normalizePathName(appName);
+        if (appName != null) {
+            return normalizePathName(customerName) + File.separator + normalizePathName(appName);
+        }
+        return normalizePathName(customerName);
     }
 
     public static String normalizePathName(String path) {

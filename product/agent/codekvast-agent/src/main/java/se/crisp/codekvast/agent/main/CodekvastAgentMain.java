@@ -73,7 +73,7 @@ public class CodekvastAgentMain {
     @Bean
     public ServerDelegateConfig serverDelegateConfig(AgentConfig agentConfig) {
         return ServerDelegateConfig.builder()
-                                   .customerName(agentConfig.getCustomerName())
+                                   .customerName(agentConfig.getSharedConfig().getCustomerName())
                                    .environment(agentConfig.getEnvironment())
                                    .serverUri(agentConfig.getServerUri())
                                    .apiUsername(agentConfig.getApiUsername())

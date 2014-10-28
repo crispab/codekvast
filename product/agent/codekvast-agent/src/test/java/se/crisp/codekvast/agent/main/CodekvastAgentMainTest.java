@@ -25,7 +25,7 @@ public class CodekvastAgentMainTest {
     @Test
     public void testApplyRecordedUsage() throws Exception {
         // given
-        CodeBase codeBase = new CodeBase(CodeBaseTest.buildAgentConfig("build/classes/main"));
+        CodeBase codeBase = new CodeBase(AgentConfig.createSampleAgentConfig(), new File("build/classes/main").toURI());
         codeBase.readScannerResult(getResource("/customer1/app1/signatures.dat"));
         assertTrue(codeBase.hasSignature(
                 "public void se.transmode.tnm.module.l1mgr.connectivity.persistence.TrailEAO.removeTrails(java.util.Collection)"));

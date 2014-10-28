@@ -37,7 +37,7 @@ public class UsageRegistry {
     public UsageRegistry(CollectorConfig config, JvmRun jvmRun) {
         this.config = config;
         this.jvmRun = jvmRun;
-        this.jvmRunFile = config.getJvmRunFile();
+        this.jvmRunFile = config.getSharedConfig().getJvmRunFile();
 
         for (int i = 0; i < usages.length; i++) {
             this.usages[i] = new ConcurrentSkipListSet<String>();
@@ -91,7 +91,7 @@ public class UsageRegistry {
      * Thread-safe.
      */
     public void dumpDataToDisk(int dumpCount) {
-        File outputPath = config.getUsageFile().getParentFile();
+        File outputPath = config.getSharedConfig().getUsageFile().getParentFile();
         outputPath.mkdirs();
         if (!outputPath.exists()) {
             CodekvastCollector.out.println("Cannot dump usage data, " + outputPath + " cannot be created");
@@ -104,7 +104,8 @@ public class UsageRegistry {
             dumpJvmRun();
 
             //noinspection unchecked
-            FileUtils.writeUsageDataTo(config.getUsageFile(), dumpCount, oldRecordingIntervalStartedAtMillis, usages[oldIndex]);
+            FileUtils.writeUsageDataTo(config.getSharedConfig().getUsageFile(), dumpCount, oldRecordingIntervalStartedAtMillis,
+                                       usages[oldIndex]);
 
             usages[oldIndex].clear();
         }

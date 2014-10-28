@@ -19,10 +19,8 @@ public class SharedConfig {
     private final String customerName;
 
     @NonNull
-    private final String appName;
-
-    @NonNull
     private final File dataPath;
+
     @NonNull
     private final String packagePrefix;
 
@@ -30,7 +28,6 @@ public class SharedConfig {
         return builder()
                 .dataPath(new File(ConfigUtils.getMandatoryStringValue(props, "dataPath")))
                 .customerName(ConfigUtils.getMandatoryStringValue(props, "customerName"))
-                .appName(ConfigUtils.getMandatoryStringValue(props, "appName"))
                 .packagePrefix(ConfigUtils.getMandatoryStringValue(props, "packagePrefix"))
                 .build();
     }
@@ -39,7 +36,6 @@ public class SharedConfig {
         return builder()
                 .dataPath(new File(ConfigUtils.SAMPLE_DATA_PATH))
                 .customerName("Customer Name")
-                .appName("app-name")
                 .packagePrefix("sample.").build();
     }
 
@@ -48,6 +44,10 @@ public class SharedConfig {
     }
 
     protected File myDataPath() {
+        return new File(dataPath, ConfigUtils.getNormalizedChildPath(customerName, null));
+    }
+
+    protected File myDataPath(String appName) {
         return new File(dataPath, ConfigUtils.getNormalizedChildPath(customerName, appName));
     }
 

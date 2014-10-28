@@ -53,7 +53,7 @@ public class AgentWorker {
 
         // The agent might have crashed between consuming usage data files and uploading them to the server.
         // Make sure that usage data is not lost...
-        FileUtils.resetAllConsumedUsageDataFiles(config.getUsageFile());
+        FileUtils.resetAllConsumedUsageDataFiles(config.getSharedConfig().getUsageFile());
     }
 
     @Scheduled(initialDelay = 10L, fixedDelayString = "${codekvast.serverUploadIntervalMillis}")
@@ -62,19 +62,19 @@ public class AgentWorker {
 
         uploadJvmRunIfNeeded();
 
-        analyzeAndUploadCodeBaseIfNeeded(new CodeBase(config));
+        analyzeAndUploadCodeBaseIfNeeded(new CodeBase(config, jvmRun.getCodeBaseUri()));
 
         processUsageDataIfNeeded();
     }
 
     private void uploadJvmRunIfNeeded() {
-        File jvmRunFile = config.getJvmRunFile();
+        File jvmRunFile = config.getSharedConfig().getJvmRunFile();
         try {
             JvmRun newJvmRun = JvmRun.readFrom(jvmRunFile);
             if (!newJvmRun.equals(jvmRun)) {
                 serverDelegate.uploadJvmRunData(
-                        config.getAppName(),
-                        config.getAppVersion(),
+                        newJvmRun.getAppName(),
+                        newJvmRun.getAppVersion(),
                         newJvmRun.getHostName(),
                         newJvmRun.getStartedAtMillis(),
                         newJvmRun.getDumpedAtMillis(),
@@ -114,7 +114,7 @@ public class AgentWorker {
 
     private void processUsageDataIfNeeded() {
         if (jvmRun != null && codeBase != null) {
-            List<Usage> usages = FileUtils.consumeAllUsageDataFiles(config.getUsageFile());
+            List<Usage> usages = FileUtils.consumeAllUsageDataFiles(config.getSharedConfig().getUsageFile());
             if (!usages.isEmpty()) {
                 storeNormalizedUsages(usages);
                 uploadUsedSignatures();
@@ -126,7 +126,7 @@ public class AgentWorker {
         try {
             serverDelegate.uploadUsageData(jvmRun.getJvmFingerprint(), signatureUsage.getNotUploadedSignatures());
             signatureUsage.clearNotUploadedSignatures();
-            FileUtils.deleteAllConsumedUsageDataFiles(config.getUsageFile());
+            FileUtils.deleteAllConsumedUsageDataFiles(config.getSharedConfig().getUsageFile());
         } catch (ServerDelegateException e) {
             logException("Cannot upload usage data", e);
         }

@@ -49,7 +49,6 @@ public class SharedConfigTest {
     private SharedConfig getSharedConfig(String packagePrefix) throws URISyntaxException {
         return SharedConfig.builder()
                            .customerName("customerName")
-                           .appName("appName")
                            .dataPath(new File("."))
                            .packagePrefix(packagePrefix).build();
     }

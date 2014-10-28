@@ -10,6 +10,7 @@ import se.crisp.codekvast.agent.util.AgentConfig;
 
 import java.io.*;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -42,9 +43,9 @@ class CodeBase {
     private List<URL> urls;
     private boolean needsExploding = false;
 
-    CodeBase(AgentConfig config) {
+    CodeBase(AgentConfig config, URI codeBaseUri) {
         this.config = config;
-        this.codeBaseFile = new File(config.getCodeBaseUri());
+        this.codeBaseFile = new File(codeBaseUri);
         this.fingerprint = initUrls();
     }
 
@@ -109,12 +110,14 @@ class CodeBase {
         codeBaseScanner.getPublicMethodSignatures(this);
 
         if (signatures.isEmpty()) {
-            log.warn("Code base at {} does not contain any classes with package prefix '{}'", codeBaseFile, config.getPackagePrefix());
+            log.warn("Code base at {} does not contain any classes with package prefix '{}.'", codeBaseFile,
+                     config.getSharedConfig().getNormalizedPackagePrefix());
         } else {
             writeSignaturesTo(config.getSignatureFile());
 
-            log.debug("Code base {} with package prefix '{}' scanned in {} ms, found {} public methods.",
-                      codeBaseFile, config.getPackagePrefix(), System.currentTimeMillis() - startedAt, signatures.size());
+            log.debug("Code base {} with package prefix '{}.' scanned in {} ms, found {} public methods.",
+                      codeBaseFile, config.getSharedConfig().getNormalizedPackagePrefix(), System.currentTimeMillis() - startedAt,
+                      signatures.size());
         }
     }
 

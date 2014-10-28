@@ -38,7 +38,7 @@ class CodeBaseScanner {
     }
 
     void getPublicMethodSignatures(CodeBase codeBase) {
-        String packagePrefix = codeBase.getConfig().getPackagePrefix();
+        String packagePrefix = codeBase.getConfig().getSharedConfig().getPackagePrefix();
         URLClassLoader appClassLoader = new URLClassLoader(codeBase.getUrls(), System.class.getClassLoader());
         Reflections reflections = new Reflections(packagePrefix, appClassLoader, new SubTypesScanner(false));
 

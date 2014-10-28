@@ -52,7 +52,8 @@ public class CodekvastCollector {
         CodekvastCollector.out.printf("%s is ready to detect used code within(%s..*).%n" +
                                               "First write to %s will be in %d seconds, thereafter every %d seconds.%n" +
                                               "-------------------------------------------------------------------------------%n",
-                                      NAME, config.getPackagePrefix(), config.getUsageFile(), firstResultInSeconds,
+                                      NAME, config.getSharedConfig().getNormalizedPackagePrefix(), config.getSharedConfig().getUsageFile(),
+                                      firstResultInSeconds,
                                       config.getCollectorResolutionSeconds()
         );
     }
@@ -118,7 +119,7 @@ public class CodekvastCollector {
                         + "</aspectj>\n",
                 JasperExecutionAspect.class.getName(),
                 AbstractMethodExecutionAspect.class.getName(),
-                config.getNormalizedPackagePrefix(),
+                config.getSharedConfig().getNormalizedPackagePrefix(),
                 config.getAspectjOptions() + " -XmessageHandlerClass:" + AspectjMessageHandler.class.getName(),
                 JasperExecutionAspect.JASPER_BASE_PACKAGE
         );

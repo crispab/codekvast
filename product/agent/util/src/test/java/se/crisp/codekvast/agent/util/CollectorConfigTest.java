@@ -36,10 +36,11 @@ public class CollectorConfigTest {
 
     @Test
     public void testParseConfigFilePathWithOverride() throws IOException, URISyntaxException {
-        String args = "classpath:/incomplete-collector-config.conf;customerName=foobar;appName=kaka;;";
+        String args = "classpath:/incomplete-collector-config.conf;customerName=foobar;appName=kaka;appVersion=version;";
         CollectorConfig config = CollectorConfig.parseCollectorConfig(args);
         assertThat(config.getSharedConfig().getCustomerName(), is("foobar"));
-        assertThat(config.getSharedConfig().getAppName(), is("kaka"));
+        assertThat(config.getAppName(), is("kaka"));
+        assertThat(config.getAppVersion(), is("version"));
     }
 
 }

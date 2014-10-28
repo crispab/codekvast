@@ -23,17 +23,11 @@ public class AgentConfig {
     public static final int DEFAULT_UPLOAD_INTERVAL_SECONDS = 3600;
     public static final String DEFAULT_API_PASSWORD = "0000";
     public static final String DEFAULT_API_USERNAME = "agent";
-    public static final String UNSPECIFIED_VERSION = "unspecified";
 
     @NonNull
     private final SharedConfig sharedConfig;
-
-    @NonNull
-    private final String appVersion;
     @NonNull
     private final String environment;
-    @NonNull
-    private final URI codeBaseUri;
     @NonNull
     private final URI serverUri;
     @NonNull
@@ -54,26 +48,6 @@ public class AgentConfig {
         return new File(sharedConfig.myDataPath(), "codekvast-agent.log");
     }
 
-    public String getPackagePrefix() {
-        return sharedConfig.getPackagePrefix();
-    }
-
-    public File getUsageFile() {
-        return sharedConfig.getUsageFile();
-    }
-
-    public File getJvmRunFile() {
-        return sharedConfig.getJvmRunFile();
-    }
-
-    public String getCustomerName() {
-        return sharedConfig.getCustomerName();
-    }
-
-    public String getAppName() {
-        return sharedConfig.getAppName();
-    }
-
     public void saveTo(File file) {
         FileUtils.writePropertiesTo(file, this, "Codekvast AgentConfig");
     }
@@ -88,9 +62,7 @@ public class AgentConfig {
 
             return AgentConfig.builder()
                               .sharedConfig(SharedConfig.buildSharedConfig(props))
-                              .appVersion(ConfigUtils.getOptionalStringValue(props, "appVersion", UNSPECIFIED_VERSION))
                               .environment(ConfigUtils.getMandatoryStringValue(props, "environment"))
-                              .codeBaseUri(ConfigUtils.getMandatoryUriValue(props, "codeBaseUri", false))
                               .serverUploadIntervalSeconds(ConfigUtils.getOptionalIntValue(props, "serverUploadIntervalSeconds",
                                                                                            DEFAULT_UPLOAD_INTERVAL_SECONDS))
                               .serverUri(ConfigUtils.getMandatoryUriValue(props, "serverUri", true))
@@ -106,9 +78,7 @@ public class AgentConfig {
     public static AgentConfig createSampleAgentConfig() {
         return AgentConfig.builder()
                           .sharedConfig(SharedConfig.buildSampleSharedConfig())
-                          .appVersion("application version")
                           .environment("environment")
-                          .codeBaseUri(new URI("file:/path/to/my/code/base"))
                           .serverUploadIntervalSeconds(DEFAULT_UPLOAD_INTERVAL_SECONDS)
                           .serverUri(new URI("http://localhost:8080"))
                           .apiUsername(DEFAULT_API_USERNAME)
