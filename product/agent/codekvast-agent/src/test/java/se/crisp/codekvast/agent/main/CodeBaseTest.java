@@ -12,6 +12,7 @@ import static org.junit.Assert.assertThat;
 
 public class CodeBaseTest {
 
+    public static final String APP_NAME = "appName";
     public static final String SAMPLE_APP_LIB = "src/test/resources/sample-app/lib";
     public static final String SAMPLE_APP_JAR = SAMPLE_APP_LIB + "/sample-app.jar";
 
@@ -26,7 +27,7 @@ public class CodeBaseTest {
 
     @Test
     public void guiceGeneratedSignaturesShouldBeIgnored() throws URISyntaxException {
-        codeBase = new CodeBase(AgentConfig.createSampleAgentConfig(), new File(SAMPLE_APP_JAR).toURI());
+        codeBase = new CodeBase(AgentConfig.createSampleAgentConfig(), new File(SAMPLE_APP_JAR).toURI(), APP_NAME);
         for (String s : guiceGeneratedMethods) {
             String sig = codeBase.normalizeSignature(s);
             assertThat("Guice-generated method should be ignored", sig, nullValue());
@@ -35,7 +36,7 @@ public class CodeBaseTest {
 
     @Test
     public void testNormalizeGuiceEnhancedMethod() {
-        codeBase = new CodeBase(AgentConfig.createSampleAgentConfig(), new File(SAMPLE_APP_JAR).toURI());
+        codeBase = new CodeBase(AgentConfig.createSampleAgentConfig(), new File(SAMPLE_APP_JAR).toURI(), APP_NAME);
         String sig = codeBase.normalizeSignature(
                 "public final void se.transmode.tnm.module.l1mgr.connectivity.persistence.TrailEAO..EnhancerByGuice..a219ec4a" +
                         ".removeTrails(java.util.Collection)"
@@ -46,32 +47,32 @@ public class CodeBaseTest {
 
     @Test(expected = NullPointerException.class)
     public void testGetUrlsForNullConfig() throws Exception {
-        codeBase = new CodeBase(null, null);
+        codeBase = new CodeBase(null, null, APP_NAME);
     }
 
     @Test
     public void testGetUrlsForMissingFile() throws Exception {
-        codeBase = new CodeBase(AgentConfig.createSampleAgentConfig(), new File("foobar").toURI());
+        codeBase = new CodeBase(AgentConfig.createSampleAgentConfig(), new File("foobar").toURI(), APP_NAME);
         assertThat(codeBase.getUrls().length, is(0));
     }
 
     @Test
     public void testGetUrlsForDirectoryWithoutJars() throws MalformedURLException, URISyntaxException {
-        codeBase = new CodeBase(AgentConfig.createSampleAgentConfig(), new File("build/classes/main").toURI());
+        codeBase = new CodeBase(AgentConfig.createSampleAgentConfig(), new File("build/classes/main").toURI(), APP_NAME);
         assertThat(codeBase.getUrls(), notNullValue());
         assertThat(codeBase.getUrls().length, is(1));
     }
 
     @Test
     public void testGetUrlsForDirectoryContainingJars() throws MalformedURLException, URISyntaxException {
-        codeBase = new CodeBase(AgentConfig.createSampleAgentConfig(), new File(SAMPLE_APP_LIB).toURI());
+        codeBase = new CodeBase(AgentConfig.createSampleAgentConfig(), new File(SAMPLE_APP_LIB).toURI(), APP_NAME);
         assertThat(codeBase.getUrls(), notNullValue());
         assertThat(codeBase.getUrls().length, is(3));
     }
 
     @Test
     public void testGetUrlsForSingleJar() throws MalformedURLException, URISyntaxException {
-        codeBase = new CodeBase(AgentConfig.createSampleAgentConfig(), new File(SAMPLE_APP_JAR).toURI());
+        codeBase = new CodeBase(AgentConfig.createSampleAgentConfig(), new File(SAMPLE_APP_JAR).toURI(), APP_NAME);
         assertThat(codeBase.getUrls(), notNullValue());
         assertThat(codeBase.getUrls().length, is(1));
     }

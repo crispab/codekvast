@@ -105,7 +105,8 @@ public class FileUtilsTest {
 
     @Test
     public void testThatColonCharactersAreProtectedWithBackslash() throws IOException, URISyntaxException {
-        File someFile = File.createTempFile("codekvast-test", ".conf");
+        File someFile = temporaryFolder.newFile();
+
         SomeTestClass someObject = new SomeTestClass();
 
         FileUtils.writePropertiesTo(someFile, someObject, COMMENT);
@@ -116,7 +117,8 @@ public class FileUtilsTest {
 
     @Test
     public void testThatBackSlashCharactersAreProtectedWithBackslash() throws IOException, URISyntaxException {
-        File someFile = File.createTempFile("codekvast-test", ".conf");
+        File someFile = temporaryFolder.newFile();
+
         SomeTestClass someObject = new SomeTestClass();
 
         FileUtils.writePropertiesTo(someFile, someObject, COMMENT);

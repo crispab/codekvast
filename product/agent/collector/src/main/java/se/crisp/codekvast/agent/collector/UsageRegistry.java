@@ -37,7 +37,7 @@ public class UsageRegistry {
     public UsageRegistry(CollectorConfig config, JvmRun jvmRun) {
         this.config = config;
         this.jvmRun = jvmRun;
-        this.jvmRunFile = config.getSharedConfig().getJvmRunFile();
+        this.jvmRunFile = config.getJvmRunFile();
 
         for (int i = 0; i < usages.length; i++) {
             this.usages[i] = new ConcurrentSkipListSet<String>();
@@ -51,6 +51,9 @@ public class UsageRegistry {
         UsageRegistry.instance = new UsageRegistry(config,
                                                    JvmRun.builder()
                                                          .sharedConfig(config.getSharedConfig())
+                                                         .appName(config.getAppName())
+                                                         .appVersion(config.getAppVersion())
+                                                         .codeBaseUri(config.getCodeBaseUri())
                                                          .hostName(getHostName())
                                                          .jvmFingerprint(UUID.randomUUID().toString())
                                                          .startedAtMillis(System.currentTimeMillis())
@@ -91,7 +94,7 @@ public class UsageRegistry {
      * Thread-safe.
      */
     public void dumpDataToDisk(int dumpCount) {
-        File outputPath = config.getSharedConfig().getUsageFile().getParentFile();
+        File outputPath = config.getUsageFile().getParentFile();
         outputPath.mkdirs();
         if (!outputPath.exists()) {
             CodekvastCollector.out.println("Cannot dump usage data, " + outputPath + " cannot be created");
@@ -104,7 +107,7 @@ public class UsageRegistry {
             dumpJvmRun();
 
             //noinspection unchecked
-            FileUtils.writeUsageDataTo(config.getSharedConfig().getUsageFile(), dumpCount, oldRecordingIntervalStartedAtMillis,
+            FileUtils.writeUsageDataTo(config.getUsageFile(), dumpCount, oldRecordingIntervalStartedAtMillis,
                                        usages[oldIndex]);
 
             usages[oldIndex].clear();

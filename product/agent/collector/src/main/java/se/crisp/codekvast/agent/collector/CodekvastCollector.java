@@ -52,9 +52,8 @@ public class CodekvastCollector {
         CodekvastCollector.out.printf("%s is ready to detect used code within(%s..*).%n" +
                                               "First write to %s will be in %d seconds, thereafter every %d seconds.%n" +
                                               "-------------------------------------------------------------------------------%n",
-                                      NAME, config.getSharedConfig().getNormalizedPackagePrefix(), config.getSharedConfig().getUsageFile(),
-                                      firstResultInSeconds,
-                                      config.getCollectorResolutionSeconds()
+                                      NAME, config.getSharedConfig().getNormalizedPackagePrefix(), config.getUsageFile(),
+                                      firstResultInSeconds, config.getCollectorResolutionSeconds()
         );
     }
 

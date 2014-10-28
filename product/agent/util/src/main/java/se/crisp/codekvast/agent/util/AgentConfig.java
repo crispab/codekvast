@@ -40,12 +40,12 @@ public class AgentConfig {
         return serverUploadIntervalSeconds * 1000;
     }
 
-    public File getSignatureFile() {
-        return new File(sharedConfig.myDataPath(), "signatures.dat");
+    public File getSignatureFile(String appName) {
+        return new File(sharedConfig.myDataPath(appName), "signatures.dat");
     }
 
     public File getAgentLogFile() {
-        return new File(sharedConfig.myDataPath(), "codekvast-agent.log");
+        return new File(sharedConfig.myDataPath(null), "codekvast-agent.log");
     }
 
     public void saveTo(File file) {

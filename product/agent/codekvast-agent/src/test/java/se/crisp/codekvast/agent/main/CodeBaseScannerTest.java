@@ -12,6 +12,7 @@ import static org.junit.Assert.assertThat;
 
 public class CodeBaseScannerTest {
 
+    public static final String APP_NAME = "appName";
     public static final String SAMPLE_APP_LIB = "src/test/resources/sample-app/lib";
     public static final String SAMPLE_APP_CLASSES = "src/test/resources/sample-app/classes/";
     public static final String SAMPLE_APP_JAR = SAMPLE_APP_LIB + "/sample-app.jar";
@@ -20,7 +21,7 @@ public class CodeBaseScannerTest {
 
     @Test
     public void testScanCodeBaseForSingleJar() throws URISyntaxException {
-        CodeBase codeBase = new CodeBase(AgentConfig.createSampleAgentConfig(), new File(SAMPLE_APP_JAR).toURI());
+        CodeBase codeBase = new CodeBase(AgentConfig.createSampleAgentConfig(), new File(SAMPLE_APP_JAR).toURI(), APP_NAME);
         scanner.getPublicMethodSignatures(codeBase);
         assertThat(codeBase.signatures, notNullValue());
         assertThat(codeBase.signatures.size(), is(8));
@@ -28,7 +29,7 @@ public class CodeBaseScannerTest {
 
     @Test
     public void testScanCodeBaseForDirectoryContainingMultipleJars() throws URISyntaxException {
-        CodeBase codeBase = new CodeBase(AgentConfig.createSampleAgentConfig(), new File(SAMPLE_APP_LIB).toURI());
+        CodeBase codeBase = new CodeBase(AgentConfig.createSampleAgentConfig(), new File(SAMPLE_APP_LIB).toURI(), APP_NAME);
         scanner.getPublicMethodSignatures(codeBase);
         assertThat(codeBase.signatures, notNullValue());
         assertThat(codeBase.signatures.size(), is(8));
@@ -36,7 +37,7 @@ public class CodeBaseScannerTest {
 
     @Test
     public void testScanCodeBaseForDirectoryWithClassFiles() {
-        CodeBase codeBase = new CodeBase(AgentConfig.createSampleAgentConfig(), new File(SAMPLE_APP_CLASSES).toURI());
+        CodeBase codeBase = new CodeBase(AgentConfig.createSampleAgentConfig(), new File(SAMPLE_APP_CLASSES).toURI(), APP_NAME);
         scanner.getPublicMethodSignatures(codeBase);
         assertThat(codeBase.signatures, notNullValue());
         assertThat(codeBase.signatures.size(), is(8));
@@ -44,7 +45,7 @@ public class CodeBaseScannerTest {
 
     @Test
     public void testFindBaseMethodForClass2() {
-        CodeBase codeBase = new CodeBase(AgentConfig.createSampleAgentConfig(), new File(SAMPLE_APP_JAR).toURI());
+        CodeBase codeBase = new CodeBase(AgentConfig.createSampleAgentConfig(), new File(SAMPLE_APP_JAR).toURI(), APP_NAME);
 
         scanner.findPublicMethods(codeBase, "se.", Class2.class);
 
@@ -56,7 +57,7 @@ public class CodeBaseScannerTest {
 
     @Test
     public void testFindBaseMethodForClass3() {
-        CodeBase codeBase = new CodeBase(AgentConfig.createSampleAgentConfig(), new File(SAMPLE_APP_JAR).toURI());
+        CodeBase codeBase = new CodeBase(AgentConfig.createSampleAgentConfig(), new File(SAMPLE_APP_JAR).toURI(), APP_NAME);
 
         scanner.findPublicMethods(codeBase, "se.", Class3.class);
 

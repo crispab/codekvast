@@ -22,6 +22,9 @@ dependencies {
     // Absolutely NO other compile or runtime dependencies are allowed here!
     // All (transitive) compile and runtime dependencies will end up in the instrumented app's system
     // class path, which is unacceptable.
+
+    testCompile junit
+    testCompile mockito
 }
 
 jar { manifest { attributes("Premain-Class": "se.crisp.codekvast.agent.collector.CodekvastCollector") } }

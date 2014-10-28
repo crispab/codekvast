@@ -20,6 +20,9 @@ import java.util.Properties;
 @Builder
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class CollectorConfig {
+    public static final String USAGE_BASENAME = "usage.dat";
+    public static final String JVM_RUN_BASENAME = "jvm-run.dat";
+
     public static final boolean DEFAULT_CLOBBER_AOP_XML = true;
     public static final boolean DEFAULT_INVOKE_ASPECTJ_WEAVER = true;
     public static final String DEFAULT_ASPECTJ_OPTIONS = "";
@@ -46,11 +49,19 @@ public class CollectorConfig {
     private final URI codeBaseUri;
 
     public File getAspectFile() {
-        return new File(sharedConfig.myDataPath(), "aop.xml");
+        return new File(sharedConfig.myDataPath(appName), "aop.xml");
+    }
+
+    public File getJvmRunFile() {
+        return new File(sharedConfig.myDataPath(appName), JVM_RUN_BASENAME);
     }
 
     public File getCollectorLogFile() {
-        return new File(sharedConfig.myDataPath(), "codekvast-collector.log");
+        return new File(sharedConfig.myDataPath(appName), "codekvast-collector.log");
+    }
+
+    public File getUsageFile() {
+        return new File(sharedConfig.myDataPath(appName), USAGE_BASENAME);
     }
 
     public void saveTo(File file) {
@@ -111,4 +122,5 @@ public class CollectorConfig {
                               .invokeAspectjWeaver(DEFAULT_INVOKE_ASPECTJ_WEAVER)
                               .build();
     }
+
 }

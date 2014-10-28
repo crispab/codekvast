@@ -35,9 +35,12 @@ public class AspectjMessageHandler implements IMessageHandler {
         if (writer != null) {
             try {
                 if (!message.getKind().equals(IMessage.DEBUG)) {
-                    writer.write(message.toString());
-                    writer.write('\n');
-                    writer.flush();
+                    String str = message.toString().trim();
+                    if (!str.isEmpty()) {
+                        writer.write(str);
+                        writer.write('\n');
+                        writer.flush();
+                    }
                 }
                 return true;
             } catch (IOException e) {

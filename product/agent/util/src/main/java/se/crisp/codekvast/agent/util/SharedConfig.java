@@ -39,20 +39,8 @@ public class SharedConfig {
                 .packagePrefix("sample.").build();
     }
 
-    public File getUsageFile() {
-        return new File(myDataPath(), "usage.dat");
-    }
-
-    protected File myDataPath() {
-        return new File(dataPath, ConfigUtils.getNormalizedChildPath(customerName, null));
-    }
-
     protected File myDataPath(String appName) {
         return new File(dataPath, ConfigUtils.getNormalizedChildPath(customerName, appName));
-    }
-
-    public File getJvmRunFile() {
-        return new File(myDataPath(), "jvm-run.dat");
     }
 
     public String getNormalizedPackagePrefix() {

@@ -6,7 +6,6 @@ buildscript {
 }
 plugins {
     id 'distribution'
-    id "nebula.deb" version "1.12.7"
 }
 
 

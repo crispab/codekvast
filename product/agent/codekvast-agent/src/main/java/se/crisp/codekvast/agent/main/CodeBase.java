@@ -35,6 +35,8 @@ class CodeBase {
     private final File codeBaseFile;
     @Getter
     private final AgentConfig config;
+    private final String appName;
+
     @Getter
     final Set<String> signatures = new HashSet<>();
     final Map<String, String> overriddenSignatures = new HashMap<>();
@@ -43,8 +45,9 @@ class CodeBase {
     private List<URL> urls;
     private boolean needsExploding = false;
 
-    CodeBase(AgentConfig config, URI codeBaseUri) {
+    CodeBase(AgentConfig config, URI codeBaseUri, String appName) {
         this.config = config;
+        this.appName = appName;
         this.codeBaseFile = new File(codeBaseUri);
         this.fingerprint = initUrls();
     }
@@ -113,7 +116,7 @@ class CodeBase {
             log.warn("Code base at {} does not contain any classes with package prefix '{}.'", codeBaseFile,
                      config.getSharedConfig().getNormalizedPackagePrefix());
         } else {
-            writeSignaturesTo(config.getSignatureFile());
+            writeSignaturesTo(config.getSignatureFile(appName));
 
             log.debug("Code base {} with package prefix '{}.' scanned in {} ms, found {} public methods.",
                       codeBaseFile, config.getSharedConfig().getNormalizedPackagePrefix(), System.currentTimeMillis() - startedAt,
