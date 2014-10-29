@@ -1,5 +1,6 @@
 package se.crisp.codekvast.agent.main;
 
+import com.google.common.base.Preconditions;
 import lombok.Data;
 import lombok.experimental.Builder;
 import lombok.extern.slf4j.Slf4j;
@@ -50,14 +51,17 @@ public class AgentWorker {
     private final Map<String, JvmState> jvmStates = new HashMap<>();
 
     @Inject
-    public AgentWorker(@Value("@{info.build.gradle.version}") String codekvastGradleVersion,
-                       @Value("@{info.build.git.id}") String codekvastVcsId, ServerDelegate serverDelegate, AgentConfig config,
+    public AgentWorker(@Value("${info.build.gradle.version}") String codekvastGradleVersion,
+                       @Value("${info.build.git.id}") String codekvastVcsId, ServerDelegate serverDelegate, AgentConfig config,
                        CodeBaseScanner codeBaseScanner) {
+        Preconditions.checkArgument(!codekvastGradleVersion.contains("{info.build"));
+        Preconditions.checkArgument(!codekvastVcsId.contains("{info.build"));
         this.config = config;
         this.codeBaseScanner = codeBaseScanner;
         this.serverDelegate = serverDelegate;
         this.codekvastGradleVersion = codekvastGradleVersion;
         this.codekvastVcsId = codekvastVcsId;
+        log.debug("Starting agent worker {} ({})", codekvastGradleVersion, codekvastVcsId);
     }
 
     @Scheduled(initialDelay = 10L, fixedDelayString = "${codekvast.serverUploadIntervalMillis}")
@@ -130,7 +134,7 @@ public class AgentWorker {
                     codekvastGradleVersion,
                     codekvastVcsId);
         } catch (ServerDelegateException e) {
-            logException("Cannot upload JVM data", e);
+            logException("Cannot upload " + jvm, e);
         }
     }
 

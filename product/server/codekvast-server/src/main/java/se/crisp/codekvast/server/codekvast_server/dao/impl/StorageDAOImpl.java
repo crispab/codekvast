@@ -57,52 +57,12 @@ public class StorageDAOImpl implements StorageDAO {
     public Collection<UsageDataEntry> storeUsageData(UsageData usageData) throws CodekvastException {
         final Collection<UsageDataEntry> result = new ArrayList<>();
 
-        long customerId = getOrCreateCustomer(usageData.getHeader().getCustomerName());
-        long appId = getAppId(customerId, usageData.getJvmFingerprint());
+        AppId appId = getAppId(usageData.getJvmFingerprint());
+
         for (UsageDataEntry entry : usageData.getUsage()) {
-            storeOrUpdateUsageDataEntry(result, customerId, appId, usageData.getJvmFingerprint(), entry);
+            storeOrUpdateUsageDataEntry(result, appId, usageData.getJvmFingerprint(), entry);
         }
         return result;
-    }
-
-    private void storeOrUpdateUsageDataEntry(Collection<UsageDataEntry> result, long customerId, long appId, String jvmFingerprint,
-                                             UsageDataEntry entry) {
-        Date usedAt = entry.getUsedAtMillis() == null ? null : new Date(entry.getUsedAtMillis());
-        Integer confidence = entry.getConfidence() == null ? null : entry.getConfidence().ordinal();
-
-        int updated = attemptToUpdateSignature(customerId, appId, jvmFingerprint, entry, usedAt, confidence);
-
-        if (updated > 0) {
-            log.trace("Updated {}", entry);
-            result.add(entry);
-            return;
-        }
-
-        try {
-            jdbcTemplate.update("INSERT INTO signatures(customer_id, application_id, signature, jvm_fingerprint, used_at, confidence) " +
-                                        "VALUES(?, ?, ?, ?, ?, ?)", customerId, appId, entry.getSignature(), jvmFingerprint, usedAt,
-                                confidence);
-            log.trace("Stored {}", entry);
-            result.add(entry);
-        } catch (Exception ignore) {
-            log.debug("Ignored attempt to insert duplicate signature");
-        }
-    }
-
-    private int attemptToUpdateSignature(long customerId, long appId, String jvmFingerprint, UsageDataEntry entry, Date usedAt,
-                                         Integer confidence) {
-        if (usedAt == null) {
-            // An unused signature is not allowed to overwrite a used signature
-            return jdbcTemplate.update("UPDATE signatures SET confidence = ? " +
-                                               "WHERE customer_id = ? AND application_id = ? AND signature = ? AND used_at IS NULL ",
-                                       confidence, customerId, appId, entry.getSignature());
-        }
-
-        // A usage. Overwrite whatever was there.
-        return jdbcTemplate.update("UPDATE signatures SET used_at = ?, jvm_fingerprint = ?, confidence = ? " +
-                                           "WHERE customer_id = ? AND application_id = ? AND signature = ? ",
-                                   usedAt, jvmFingerprint, confidence, customerId, appId, entry.getSignature());
-
     }
 
     @Override
@@ -116,13 +76,62 @@ public class StorageDAOImpl implements StorageDAO {
                                   args, new UsageDataEntryRowMapper());
     }
 
+    private AppId getAppId(String jvmFingerprint) {
+        log.debug("Looking up CustomerAppId for JVM {}...", jvmFingerprint);
+
+        String sql = "SELECT customer_id, application_id FROM jvm_runs WHERE jvm_fingerprint = ?";
+        AppId result = jdbcTemplate.queryForObject(sql, new AppIdRowMapper(), jvmFingerprint);
+        log.debug("Result = {}", result);
+        return result;
+    }
+
+    private void storeOrUpdateUsageDataEntry(Collection<UsageDataEntry> result, AppId appId, String jvmFingerprint,
+                                             UsageDataEntry entry) {
+        Date usedAt = entry.getUsedAtMillis() == null ? null : new Date(entry.getUsedAtMillis());
+        Integer confidence = entry.getConfidence() == null ? null : entry.getConfidence().ordinal();
+
+        int updated = attemptToUpdateSignature(appId, jvmFingerprint, entry, usedAt, confidence);
+
+        if (updated > 0) {
+            log.trace("Updated {}", entry);
+            result.add(entry);
+            return;
+        }
+
+        try {
+            jdbcTemplate.update("INSERT INTO signatures(customer_id, application_id, signature, jvm_fingerprint, used_at, confidence) " +
+                                        "VALUES(?, ?, ?, ?, ?, ?)",
+                                appId.getCustomerId(), appId.getAppId(), entry.getSignature(), jvmFingerprint, usedAt, confidence);
+            log.trace("Stored {}", entry);
+            result.add(entry);
+        } catch (Exception ignore) {
+            log.debug("Ignored attempt to insert duplicate signature");
+        }
+    }
+
+    private int attemptToUpdateSignature(AppId appId, String jvmFingerprint, UsageDataEntry entry, Date usedAt,
+                                         Integer confidence) {
+        if (usedAt == null) {
+            // An unused signature is not allowed to overwrite a used signature
+            return jdbcTemplate.update("UPDATE signatures SET confidence = ? " +
+                                               "WHERE customer_id = ? AND application_id = ? AND signature = ? AND used_at IS NULL ",
+                                       confidence, appId.getCustomerId(), appId.getAppId(), entry.getSignature());
+        }
+
+        // A usage. Overwrite whatever was there.
+        return jdbcTemplate.update("UPDATE signatures SET used_at = ?, jvm_fingerprint = ?, confidence = ? " +
+                                           "WHERE customer_id = ? AND application_id = ? AND signature = ? ",
+                                   usedAt, jvmFingerprint, confidence, appId.getCustomerId(), appId.getAppId(), entry.getSignature());
+
+    }
+
     private void storeJvmRunData(long customerId, long appId, JvmRunData data) {
         Date dumpedAt = new Date(data.getDumpedAtMillis());
 
         int updated =
                 jdbcTemplate.update("UPDATE jvm_runs SET dumped_at = ? WHERE jvm_fingerprint = ?", dumpedAt, data.getJvmFingerprint());
         if (updated > 0) {
-            log.debug("Updated dumpedAt={} for JVM run {}", dumpedAt, data.getJvmFingerprint());
+            log.debug("Updated dumped_at={} for JVM run {}", dumpedAt, data.getJvmFingerprint());
             return;
         }
 
@@ -143,11 +152,11 @@ public class StorageDAOImpl implements StorageDAO {
 
     private Long getOrCreateApp(long customerId, Header header, String appName,
                                 String appVersion) throws UndefinedApplicationException {
-        return getOrCreateApp(customerId, header, appName, appVersion, true);
+        return doGetOrCreateApp(customerId, header, appName, appVersion, true);
     }
 
-    private Long getOrCreateApp(long customerId, Header header, String appName, String appVersion,
-                                boolean allowRecursion) throws UndefinedApplicationException {
+    private Long doGetOrCreateApp(long customerId, Header header, String appName, String appVersion,
+                                  boolean allowRecursion) throws UndefinedApplicationException {
         try {
             return jdbcTemplate.queryForObject("SELECT id FROM applications " +
                                                        "WHERE customer_id = ? AND environment = ? AND name = ? AND version = ? ",
@@ -166,23 +175,17 @@ public class StorageDAOImpl implements StorageDAO {
         if (updated > 0) {
             log.info("Created application {}:{}:{}:{}", header.getCustomerName(), header.getEnvironment(),
                      appName, appVersion);
-            return getOrCreateApp(customerId, header, appName, appVersion, false);
+            return doGetOrCreateApp(customerId, header, appName, appVersion, false);
         }
 
         throw new IllegalStateException("Could not insert application");
     }
 
-    private long getAppId(long customerId, String jvmFingerprint) {
-        return jdbcTemplate.queryForObject("SELECT application_id FROM jvm_runs " +
-                                                   "WHERE customer_id = ? AND jvm_fingerprint = ?", Long.class,
-                                           customerId, jvmFingerprint);
-    }
-
     private long getOrCreateCustomer(final String customerName) throws UndefinedCustomerException {
-        return getOrCreateCustomer(customerName, true);
+        return doGetOrCreateCustomer(customerName, true);
     }
 
-    private long getOrCreateCustomer(final String customerName, boolean allowRecursion) throws UndefinedCustomerException {
+    private long doGetOrCreateCustomer(final String customerName, boolean allowRecursion) throws UndefinedCustomerException {
         try {
             return jdbcTemplate.queryForObject("SELECT id FROM customers WHERE name = ?", Long.class, customerName);
         } catch (EmptyResultDataAccessException ignored) {
@@ -196,7 +199,7 @@ public class StorageDAOImpl implements StorageDAO {
         int updated = jdbcTemplate.update("INSERT INTO customers(name) VALUES(?)", customerName);
         if (updated > 0) {
             log.info("Created customer '{}'", customerName);
-            return getOrCreateCustomer(customerName, false);
+            return doGetOrCreateCustomer(customerName, false);
         }
         throw new IllegalStateException("Could not insert customer");
     }
@@ -211,6 +214,20 @@ public class StorageDAOImpl implements StorageDAO {
         private Long getTimeMillis(ResultSet rs, int columnIndex) throws SQLException {
             Date date = rs.getDate(columnIndex);
             return date == null ? null : date.getTime();
+        }
+    }
+
+    @lombok.Value
+    private static class AppId {
+        private final long customerId;
+        private final long appId;
+    }
+
+    private static class AppIdRowMapper implements RowMapper<AppId> {
+        @Override
+        public AppId mapRow(ResultSet rs, int rowNum)
+                throws SQLException {
+            return new AppId(rs.getLong(1), rs.getLong(2));
         }
     }
 }
