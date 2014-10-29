@@ -83,7 +83,7 @@ CREATE TABLE signatures (
   id              INTEGER       NOT NULL IDENTITY,
   customer_id     INTEGER       NOT NULL REFERENCES customers (id),
   application_id  INTEGER       NOT NULL REFERENCES applications (id),
-  signature       VARCHAR(1024) NOT NULL,
+  signature VARCHAR(2000) NOT NULL,
   jvm_fingerprint VARCHAR(50),
   used_at         TIMESTAMP,
   confidence      TINYINT

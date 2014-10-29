@@ -129,7 +129,9 @@ public class StorageDAOImpl implements StorageDAO {
         Date dumpedAt = new Date(data.getDumpedAtMillis());
 
         int updated =
-                jdbcTemplate.update("UPDATE jvm_runs SET dumped_at = ? WHERE jvm_fingerprint = ?", dumpedAt, data.getJvmFingerprint());
+                jdbcTemplate
+                        .update("UPDATE jvm_runs SET dumped_at = ? WHERE customer_id = ? AND application_id = ? AND jvm_fingerprint = ?",
+                                dumpedAt, customerId, appId, data.getJvmFingerprint());
         if (updated > 0) {
             log.debug("Updated dumped_at={} for JVM run {}", dumpedAt, data.getJvmFingerprint());
             return;
@@ -205,15 +207,16 @@ public class StorageDAOImpl implements StorageDAO {
     }
 
     private static class UsageDataEntryRowMapper implements RowMapper<UsageDataEntry> {
+        public static final Long EPOCH = 0L;
+
         @Override
         public UsageDataEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new UsageDataEntry(rs.getString(1), getTimeMillis(rs, 2),
-                                      UsageConfidence.fromOrdinal(rs.getInt(3)));
+            return new UsageDataEntry(rs.getString(1), getTimeMillis(rs, 2), UsageConfidence.fromOrdinal(rs.getInt(3)));
         }
 
         private Long getTimeMillis(ResultSet rs, int columnIndex) throws SQLException {
-            Date date = rs.getDate(columnIndex);
-            return date == null ? null : date.getTime();
+            Date date = rs.getTimestamp(columnIndex);
+            return date == null ? EPOCH : Long.valueOf(date.getTime());
         }
     }
 
