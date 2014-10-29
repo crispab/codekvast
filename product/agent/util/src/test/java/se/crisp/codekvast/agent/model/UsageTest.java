@@ -32,7 +32,7 @@ public class UsageTest {
         Set<String> signatures = new TreeSet<String>(Arrays.asList("sig2", "sig0", "sig1"));
 
         // when
-        FileUtils.writeUsageDataTo(usageFile, 1, 1000L, signatures);
+        FileUtils.writeUsageDataTo(usageFile, 1, 1000L, signatures, true);
         List<Usage> result = FileUtils.readUsageDataFrom(usageFile);
 
         // then

@@ -20,7 +20,7 @@ public final class FileUtils {
 
     private static final String UTF_8 = "UTF-8";
 
-    public static final String CONSUMED_SUFFIX = ".consumed";
+    static final String CONSUMED_SUFFIX = ".consumed";
 
     private FileUtils() {
         // Utility class
@@ -90,7 +90,8 @@ public final class FileUtils {
         return result;
     }
 
-    public static void writeUsageDataTo(File file, int dumpCount, long recordingStartedAtMillis, Set<String> signatures) {
+    public static void writeUsageDataTo(File file, int dumpCount, long recordingStartedAtMillis, Set<String> signatures,
+                                        boolean stripModifiersAndReturnType) {
         if (!signatures.isEmpty()) {
             long startedAt = System.currentTimeMillis();
 
@@ -107,7 +108,7 @@ public final class FileUtils {
                 out.println(recordingStartedAtMillis);
                 int count = 0;
                 for (String sig : signatures) {
-                    out.println(sig);
+                    out.println(stripModifiersAndReturnType ? SignatureUtils.stripModifiersAndReturnType(sig) : sig);
                     count += 1;
                 }
 
@@ -130,8 +131,8 @@ public final class FileUtils {
         File consumed = new File(file.getAbsolutePath() + CONSUMED_SUFFIX);
         while (result.exists() || consumed.exists()) {
             count += 1;
-            result = new File(file.getAbsolutePath() + "." + count);
-            consumed = new File(file.getAbsolutePath() + "." + count + CONSUMED_SUFFIX);
+            result = new File(String.format("%s.%04d", file.getAbsolutePath(), count));
+            consumed = new File(String.format("%s.%04d%s", file.getAbsolutePath(), count, CONSUMED_SUFFIX));
         }
         return result;
     }

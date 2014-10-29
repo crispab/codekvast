@@ -12,6 +12,7 @@ import java.util.*;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import static se.crisp.codekvast.agent.util.FileUtils.CONSUMED_SUFFIX;
 
 public class FileUtilsTest {
 
@@ -28,10 +29,10 @@ public class FileUtilsTest {
     public void testResetConsumedUsageFiles() throws IOException {
         File usageFile = new File(temporaryFolder.getRoot(), "usage.dat");
 
-        File consumedUsageFile = new File(temporaryFolder.getRoot(), "usage.dat.consumed");
+        File consumedUsageFile = new File(temporaryFolder.getRoot(), "usage.dat" + CONSUMED_SUFFIX);
         writeTo(consumedUsageFile, "Hello, world!");
 
-        File consumedUsageFile1 = new File(temporaryFolder.getRoot(), "usage.dat.1.consumed");
+        File consumedUsageFile1 = new File(temporaryFolder.getRoot(), "usage.dat.0001" + CONSUMED_SUFFIX);
         writeTo(consumedUsageFile1, "Hello, world!");
 
         FileUtils.resetAllConsumedUsageDataFiles(usageFile);
@@ -41,29 +42,29 @@ public class FileUtilsTest {
         assertThat(files.length, is(2));
         Arrays.sort(files);
         assertThat(files[0].getName(), is("usage.dat"));
-        assertThat(files[1].getName(), is("usage.dat.1"));
+        assertThat(files[1].getName(), is("usage.dat.0001"));
     }
 
     @Test
     public void testProduceAndConsumeUsageFiles() throws IOException {
         File usageFile = new File(temporaryFolder.getRoot(), "usage.dat");
-        File consumedUsageFile = new File(temporaryFolder.getRoot(), "usage.dat.1.consumed");
+        File consumedUsageFile = new File(temporaryFolder.getRoot(), "usage.dat.0001" + CONSUMED_SUFFIX);
         writeTo(consumedUsageFile, "Hello, world!");
         File otherFile = new File(temporaryFolder.getRoot(), "zzz_other.file");
         writeTo(otherFile, "Hello, world!");
 
         long t1 = System.currentTimeMillis() - 60000;
         long t2 = System.currentTimeMillis() - 30000;
-        FileUtils.writeUsageDataTo(usageFile, 1, t1, setOf("sig1.1", "sig1.2", "sig1.3"));
-        FileUtils.writeUsageDataTo(usageFile, 2, t2, setOf("sig2.1", "sig2.2"));
+        FileUtils.writeUsageDataTo(usageFile, 1, t1, setOf("sig1.1", "sig1.2", "sig1.3"), true);
+        FileUtils.writeUsageDataTo(usageFile, 2, t2, setOf("sig2.1", "sig2.2"), true);
 
         File[] files = temporaryFolder.getRoot().listFiles();
         assertThat(files.length, is(4));
 
         Arrays.sort(files);
         assertThat(files[0].getName(), is("usage.dat"));
-        assertThat(files[1].getName(), is("usage.dat.1.consumed"));
-        assertThat(files[2].getName(), is("usage.dat.2"));
+        assertThat(files[1].getName(), is("usage.dat.0001" + CONSUMED_SUFFIX));
+        assertThat(files[2].getName(), is("usage.dat.0002"));
         assertThat(files[3].getName(), is("zzz_other.file"));
 
         List<Usage> usages = FileUtils.consumeAllUsageDataFiles(usageFile);
@@ -73,9 +74,9 @@ public class FileUtilsTest {
         assertThat(files.length, is(4));
 
         Arrays.sort(files);
-        assertThat(files[0].getName(), is("usage.dat.1.consumed"));
-        assertThat(files[1].getName(), is("usage.dat.2.consumed"));
-        assertThat(files[2].getName(), is("usage.dat.consumed"));
+        assertThat(files[0].getName(), is("usage.dat.0001" + CONSUMED_SUFFIX));
+        assertThat(files[1].getName(), is("usage.dat.0002" + CONSUMED_SUFFIX));
+        assertThat(files[2].getName(), is("usage.dat" + CONSUMED_SUFFIX));
         assertThat(files[3].getName(), is("zzz_other.file"));
 
         FileUtils.deleteAllConsumedUsageDataFiles(usageFile);

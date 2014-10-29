@@ -24,6 +24,8 @@ import java.util.concurrent.ConcurrentSkipListSet;
 @SuppressWarnings("Singleton")
 public class UsageRegistry {
 
+    public static final boolean SHOULD_STRIP_MODIFIERS_AND_RETURN_TYPE_NOW = false;
+
     public static UsageRegistry instance;
 
     private final CollectorConfig config;
@@ -73,7 +75,7 @@ public class UsageRegistry {
      */
     public void registerMethodExecution(Signature signature) {
         //noinspection unchecked
-        usages[currentUsageIndex].add(SignatureUtils.signatureToString(signature));
+        usages[currentUsageIndex].add(SignatureUtils.signatureToString(signature, SHOULD_STRIP_MODIFIERS_AND_RETURN_TYPE_NOW));
     }
 
     /**
@@ -106,7 +108,7 @@ public class UsageRegistry {
 
             //noinspection unchecked
             FileUtils.writeUsageDataTo(config.getUsageFile(), dumpCount, oldRecordingIntervalStartedAtMillis,
-                                       usages[oldIndex]);
+                                       usages[oldIndex], !SHOULD_STRIP_MODIFIERS_AND_RETURN_TYPE_NOW);
 
             usages[oldIndex].clear();
         }
