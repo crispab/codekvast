@@ -9,9 +9,9 @@ var codekvastApp = angular.module('codekvastApp', [])
 
         $scope.updateSignatures = function (data) {
             console.log("Received signature data=%o", data)
-            $scope.$apply(function () {
-                $scope.signatures = JSON.parse(data.body);
-            })
+            // TODO: data.body is incremental. Replace existing entries in $scope.signatures.
+            $scope.signatures = JSON.parse(data.body)
+            $scope.$apply()
         };
 
         $scope.reconnect = function () {

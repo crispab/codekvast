@@ -105,7 +105,7 @@ public class StorageDAOImpl implements StorageDAO {
             log.trace("Stored {}", entry);
             result.add(entry);
         } catch (Exception ignore) {
-            log.debug("Ignored attempt to insert duplicate signature");
+            log.trace("Ignored attempt to insert duplicate signature");
         }
     }
 
