@@ -16,7 +16,8 @@ sourceCompatibility = 1.6
 
 dependencies {
     // cannot use lombok here, since this is an AspectJ project
-    compile project(":product:agent:util")
+    compile project(":product:agent:util"), { transitive = false }
+    compile "org.aspectj:aspectjweaver:$aspectjVersion"
 
     // Absolutely NO other compile or runtime dependencies are allowed here!
     // All (transitive) compile and runtime dependencies will end up in the instrumented app's system
