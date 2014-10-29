@@ -4,6 +4,7 @@ import org.aspectj.lang.Signature;
 import se.crisp.codekvast.agent.config.CollectorConfig;
 import se.crisp.codekvast.agent.model.Jvm;
 import se.crisp.codekvast.agent.util.FileUtils;
+import se.crisp.codekvast.agent.util.SignatureUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -72,7 +73,7 @@ public class UsageRegistry {
      */
     public void registerMethodExecution(Signature signature) {
         //noinspection unchecked
-        usages[currentUsageIndex].add(signature.toLongString());
+        usages[currentUsageIndex].add(SignatureUtils.signatureToString(signature));
     }
 
     /**

@@ -1,11 +1,11 @@
 package se.crisp.codekvast.agent.main;
 
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.runtime.reflect.Factory;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.springframework.stereotype.Component;
 import org.xml.sax.helpers.DefaultHandler;
+import se.crisp.codekvast.agent.util.SignatureUtils;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -24,18 +24,6 @@ import static java.util.Arrays.asList;
 @Slf4j
 @Component
 class CodeBaseScanner {
-
-    /**
-     * Uses AspectJ for creating the same signature as AbstractCodekvastAspect.
-     *
-     * @return The same signature object as an AspectJ execution pointcut will provide in JoinPoint.getSignature(). Returns null unless the
-     * method is public.
-     */
-    private String makeSignature(Class clazz, Method method) {
-        return clazz == null || !Modifier.isPublic(method.getModifiers()) ? null : new Factory(null, clazz)
-                .makeMethodSig(method.getModifiers(), method.getName(), clazz, method.getParameterTypes(),
-                               null, method.getExceptionTypes(), method.getReturnType()).toLongString();
-    }
 
     void getPublicMethodSignatures(CodeBase codeBase) {
         String packagePrefix = codeBase.getConfig().getSharedConfig().getPackagePrefix();
@@ -62,9 +50,10 @@ class CodeBaseScanner {
                     // declared method will look unused.
 
 
-                    String thisSignature = makeSignature(clazz, method);
+                    String thisSignature = SignatureUtils.makeSignatureString(clazz, method);
                     String declaringSignature =
-                            makeSignature(findDeclaringClass(method.getDeclaringClass(), method, packagePrefix), method);
+                            SignatureUtils.makeSignatureString(findDeclaringClass(method.getDeclaringClass(), method, packagePrefix),
+                                                               method);
 
                     codeBase.addSignature(thisSignature, declaringSignature);
                 }

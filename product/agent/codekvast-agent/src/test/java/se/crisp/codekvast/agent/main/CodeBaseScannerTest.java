@@ -51,8 +51,8 @@ public class CodeBaseScannerTest {
 
         assertThat(codeBase.signatures.size(), is(2));
         assertThat(codeBase.overriddenSignatures.size(), is(1));
-        assertThat(codeBase.overriddenSignatures.get("public void se.crisp.codekvast.agent.main.CodeBaseScannerTest.Class2.m1()"),
-                   is("public void se.crisp.codekvast.agent.main.CodeBaseScannerTest.Class1.m1()"));
+        assertThat(codeBase.overriddenSignatures.get("se.crisp.codekvast.agent.main.CodeBaseScannerTest.Class2.m1()"),
+                   is("se.crisp.codekvast.agent.main.CodeBaseScannerTest.Class1.m1()"));
     }
 
     @Test
@@ -63,10 +63,10 @@ public class CodeBaseScannerTest {
 
         assertThat(codeBase.signatures.size(), is(3));
         assertThat(codeBase.overriddenSignatures.size(), is(2));
-        assertThat(codeBase.overriddenSignatures.get("public void se.crisp.codekvast.agent.main.CodeBaseScannerTest.Class3.m1()"),
-                   is("public void se.crisp.codekvast.agent.main.CodeBaseScannerTest.Class1.m1()"));
-        assertThat(codeBase.overriddenSignatures.get("public void se.crisp.codekvast.agent.main.CodeBaseScannerTest.Class3.m2()"),
-                   is("public void se.crisp.codekvast.agent.main.CodeBaseScannerTest.Class2.m2()"));
+        assertThat(codeBase.overriddenSignatures.get("se.crisp.codekvast.agent.main.CodeBaseScannerTest.Class3.m1()"),
+                   is("se.crisp.codekvast.agent.main.CodeBaseScannerTest.Class1.m1()"));
+        assertThat(codeBase.overriddenSignatures.get("se.crisp.codekvast.agent.main.CodeBaseScannerTest.Class3.m2()"),
+                   is("se.crisp.codekvast.agent.main.CodeBaseScannerTest.Class2.m2()"));
     }
 
     @SuppressWarnings("UnusedDeclaration")

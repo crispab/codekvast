@@ -107,7 +107,7 @@ public final class FileUtils {
                 out.println(recordingStartedAtMillis);
                 int count = 0;
                 for (String sig : signatures) {
-                    out.println(SignatureUtils.minimizeSignature(sig));
+                    out.println(sig);
                     count += 1;
                 }
 

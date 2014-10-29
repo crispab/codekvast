@@ -17,7 +17,6 @@ mainClassName = "se.crisp.codekvast.agent.main.CodekvastAgentMain"
 
 dependencies {
     compile "ch.qos.logback:logback-classic"
-    compile "org.aspectj:aspectjweaver:$aspectjVersion"
     compile "org.reflections:reflections:0.9.9"
     compile "org.springframework.boot:spring-boot-starter"
     compile lombok

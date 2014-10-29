@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * Data about one run of an app that is instrumented with codekvast-collector.
+ * Data about one JVM that is instrumented with codekvast-collector.
  *
  * @author Olle Hallin
  */
@@ -20,13 +20,13 @@ import java.util.Properties;
 @Builder
 public class Jvm {
     @NonNull
+    private final String jvmFingerprint;
+    @NonNull
     private final CollectorConfig collectorConfig;
     @NonNull
     private final String hostName;
-    @NonNull
-    private final String jvmFingerprint;
-
     private final long startedAtMillis;
+
     private long dumpedAtMillis;
 
     public void saveTo(File file) {

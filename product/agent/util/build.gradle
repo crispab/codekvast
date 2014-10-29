@@ -10,6 +10,7 @@ sourceCompatibility = 1.6
 
 dependencies {
     compile lombok
+    compile "org.aspectj:aspectjweaver:$aspectjVersion"
 
     // Absolutely NO other compile or runtime dependencies are allowed here!
 
