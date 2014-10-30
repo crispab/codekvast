@@ -14,14 +14,16 @@ CREATE TABLE users (
   enabled            BOOLEAN DEFAULT TRUE                NOT NULL,
   email              VARCHAR(255),
   full_name          VARCHAR(255),
-  created_at         TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  modified_at TIMESTAMP AS NOW()
 );
 
 DROP TABLE IF EXISTS user_roles;
 CREATE TABLE user_roles (
-  user_id    INTEGER                             NOT NULL REFERENCES users (id),
-  role       VARCHAR(20)                         NOT NULL REFERENCES roles (name),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+  user_id     INTEGER                             NOT NULL REFERENCES users (id),
+  role        VARCHAR(20)                         NOT NULL REFERENCES roles (name),
+  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  modified_at TIMESTAMP AS NOW()
 );
 
 DROP INDEX IF EXISTS ix_user_roles;
@@ -30,9 +32,10 @@ CREATE UNIQUE INDEX ix_user_roles ON user_roles (user_id, role);
 //--- Customers --------------------------------------------------------------------------------------------
 DROP TABLE IF EXISTS customers;
 CREATE TABLE customers (
-  id         INTEGER                             NOT NULL IDENTITY,
-  name       VARCHAR(100)                        NOT NULL UNIQUE,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+  id          INTEGER                             NOT NULL IDENTITY,
+  name        VARCHAR(100)                        NOT NULL UNIQUE,
+  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  modified_at TIMESTAMP AS NOW()
 );
 
 DROP TABLE IF EXISTS customer_members;
@@ -40,7 +43,8 @@ CREATE TABLE customer_members (
   customer_id     INTEGER                             NOT NULL REFERENCES customers (id),
   user_id         INTEGER                             NOT NULL REFERENCES users (id),
   primary_contact BOOLEAN DEFAULT FALSE               NOT NULL,
-  created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  modified_at TIMESTAMP AS NOW()
 );
 
 DROP INDEX IF EXISTS ix_customer_members;
@@ -54,7 +58,8 @@ CREATE TABLE applications (
   name        VARCHAR(100)                        NOT NULL,
   version     VARCHAR(100)                        NOT NULL,
   environment VARCHAR(100)                        NOT NULL,
-  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  modified_at TIMESTAMP AS NOW()
 );
 
 DROP INDEX IF EXISTS ix_applications;
