@@ -22,9 +22,12 @@ import se.crisp.codekvast.server.agent.model.test.Pong;
 import se.crisp.codekvast.server.agent.model.v1.*;
 
 import javax.inject.Inject;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * The implementation of the ServerDelegate.
@@ -39,12 +42,15 @@ public class ServerDelegateImpl implements ServerDelegate {
 
     private final ServerDelegateConfig config;
     private final Header header;
+    private final Validator validator;
+
     @Getter
     private final RestTemplate restTemplate;
 
     @Inject
-    public ServerDelegateImpl(ServerDelegateConfig config) {
+    public ServerDelegateImpl(ServerDelegateConfig config, Validator validator) {
         this.config = config;
+        this.validator = validator;
         this.header = Header.builder().customerName(config.getCustomerName()).environment(config.getEnvironment()).build();
         this.restTemplate = new RestTemplate(createBasicAuthHttpClient(config.getApiUsername(), config.getApiPassword()));
     }
@@ -77,7 +83,7 @@ public class ServerDelegateImpl implements ServerDelegate {
                                         .codekvastVcsId(codekvastVcsId)
                                         .build();
 
-            restTemplate.postForEntity(new URI(endPoint), data, Void.class);
+            restTemplate.postForEntity(new URI(endPoint), validate(data), Void.class);
 
             log.info("Uploaded {} to {} in {}s", data, endPoint, elapsedSeconds(startedAt));
         } catch (URISyntaxException e) {
@@ -85,6 +91,25 @@ public class ServerDelegateImpl implements ServerDelegate {
         } catch (RestClientException e) {
             throw new ServerDelegateException("Failed to post JVM run data", e);
         }
+    }
+
+    private <T> T validate(T data) throws ServerDelegateException {
+        Set<ConstraintViolation<T>> violations = validator.validate(data);
+
+        if (!violations.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Invalid ").append(data.getClass().getSimpleName());
+            String delimiter = ": ";
+            for (ConstraintViolation<T> violation : violations) {
+                sb.append(delimiter).append(violation.getPropertyPath()).append(" ").append(violation.getInvalidValue()).append(" ").append
+                        (violation.getMessage());
+                delimiter = ", ";
+            }
+
+            throw new ServerDelegateException(sb.toString());
+        }
+
+        return data;
     }
 
     private int elapsedSeconds(long startedAtMillis) {
@@ -106,7 +131,7 @@ public class ServerDelegateImpl implements ServerDelegate {
 
             SignatureData data = SignatureData.builder().header(header).jvmFingerprint(jvmFingerprint).signatures(signatures).build();
 
-            restTemplate.postForEntity(new URI(endPoint), data, Void.class);
+            restTemplate.postForEntity(new URI(endPoint), validate(data), Void.class);
 
             log.info("Uploaded {} signatures to {} in {}s", signatures.size(), endPoint, elapsedSeconds(startedAtMillis));
         } catch (URISyntaxException e) {
@@ -131,7 +156,7 @@ public class ServerDelegateImpl implements ServerDelegate {
 
             UsageData data = UsageData.builder().header(header).jvmFingerprint(jvmFingerprint).usage(usage).build();
 
-            restTemplate.postForEntity(new URI(endPoint), data, Void.class);
+            restTemplate.postForEntity(new URI(endPoint), validate(data), Void.class);
 
             log.info("Uploaded {} signatures to {} in {}s", usage.size(), endPoint, elapsedSeconds(startedAtMillis));
         } catch (URISyntaxException e) {
@@ -147,8 +172,9 @@ public class ServerDelegateImpl implements ServerDelegate {
         log.debug("Sending ping '{}' to {}", message, endPoint);
         try {
 
-            ResponseEntity<Pong> response =
-                    restTemplate.postForEntity(new URI(endPoint), Ping.builder().message(message).build(), Pong.class);
+            Ping data = Ping.builder().message(message).build();
+
+            ResponseEntity<Pong> response = restTemplate.postForEntity(new URI(endPoint), data, Pong.class);
 
             String pongMessage = response.getBody().getMessage();
             log.debug("Server responded with '{}'", pongMessage);

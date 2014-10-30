@@ -32,23 +32,12 @@ import java.util.*;
 @Slf4j
 public class AgentWorker {
 
-    @Data
-    @Builder
-    private static class JvmState {
-        private final Jvm jvm;
-        private final File usageFile;
-        private final long processedAt;
-        private CodeBase codeBase;
-        private final SignatureUsage signatureUsage = new SignatureUsage();
-    }
-
     private final AgentConfig config;
     private final CodeBaseScanner codeBaseScanner;
     private final ServerDelegate serverDelegate;
     private final String codekvastGradleVersion;
     private final String codekvastVcsId;
-
-    private final Map<String, JvmState> jvmStates = new HashMap<>();
+    private final Map<String, Long> jvmProcessedAt = new HashMap<>();
 
     @Inject
     public AgentWorker(@Value("${info.build.gradle.version}") String codekvastGradleVersion,
@@ -67,27 +56,31 @@ public class AgentWorker {
     @Scheduled(initialDelay = 10L, fixedDelayString = "${codekvast.serverUploadIntervalMillis}")
     public void analyseCollectorData() {
         log.debug("Analyzing collector data");
+        long now = System.currentTimeMillis();
 
         for (JvmState jvmState : findJvmStates()) {
             Jvm jvm = jvmState.getJvm();
 
-
             String fingerprint = jvm.getJvmFingerprint();
-            JvmState oldState = jvmStates.get(fingerprint);
+            Long oldProcessedAt = jvmProcessedAt.get(fingerprint);
 
-            if (oldState == null) {
+            if (oldProcessedAt == null) {
                 // The agent might have crashed between consuming usage data files and uploading them to the server.
                 // Make sure that usage data is not lost...
                 FileUtils.resetAllConsumedUsageDataFiles(jvmState.getUsageFile());
-            }
 
-            if (oldState == null || oldState.getProcessedAt() < jvm.getDumpedAtMillis()) {
                 uploadJvmRun(jvm);
+
                 analyzeAndUploadCodeBaseIfNeeded(jvmState, new CodeBase(config, jvm.getCollectorConfig().getCodeBaseUri(), jvm
                         .getCollectorConfig().getAppName()));
+
+                processUsageDataIfNeeded(jvmState);
+            } else if (oldProcessedAt < jvm.getDumpedAtMillis()) {
+                uploadJvmRun(jvm);
+
                 processUsageDataIfNeeded(jvmState);
             }
-            jvmStates.put(fingerprint, jvmState);
+            jvmProcessedAt.put(fingerprint, now);
         }
     }
 
@@ -134,7 +127,7 @@ public class AgentWorker {
                     codekvastGradleVersion,
                     codekvastVcsId);
         } catch (ServerDelegateException e) {
-            logException("Cannot upload " + jvm, e);
+            logException("Cannot upload JVM data", e);
         }
     }
 
@@ -163,9 +156,9 @@ public class AgentWorker {
     private void processUsageDataIfNeeded(JvmState jvmState) {
         List<Usage> usages = FileUtils.consumeAllUsageDataFiles(jvmState.getUsageFile());
         if (jvmState.getCodeBase() != null && !usages.isEmpty()) {
-                storeNormalizedUsages(jvmState, usages);
-                uploadUsedSignatures(jvmState);
-            }
+            storeNormalizedUsages(jvmState, usages);
+            uploadUsedSignatures(jvmState);
+        }
     }
 
     private void uploadUsedSignatures(JvmState jvmState) {
@@ -235,5 +228,14 @@ public class AgentWorker {
 
     private Throwable getRootCause(Throwable t) {
         return t.getCause() == null ? t : getRootCause(t.getCause());
+    }
+
+    @Data
+    @Builder
+    private static class JvmState {
+        private final Jvm jvm;
+        private final File usageFile;
+        private final SignatureUsage signatureUsage = new SignatureUsage();
+        private CodeBase codeBase;
     }
 }

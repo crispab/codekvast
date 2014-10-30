@@ -8,6 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import se.crisp.codekvast.agent.config.AgentConfig;
 import se.crisp.codekvast.agent.main.logback.LogPathDefiner;
 import se.crisp.codekvast.agent.main.spring.AgentConfigPropertySource;
@@ -79,6 +80,11 @@ public class CodekvastAgentMain {
                                    .apiUsername(agentConfig.getApiUsername())
                                    .apiPassword(agentConfig.getApiPassword())
                                    .build();
+    }
+
+    @Bean
+    public LocalValidatorFactoryBean validator() {
+        return new LocalValidatorFactoryBean();
     }
 
 }

@@ -23,11 +23,12 @@ dependencies {
     compile lombok
 
     runtime "org.hibernate:hibernate-validator"
+    runtime "org.glassfish:javax.el:3.0.0"
 
     testCompile "junit:junit"
     testCompile "org.mockito:mockito-core"
 }
 
 // Disable the bootRepackage task, since this isn't really a spring-boot app.
-// We just want the dependency management from spring-boot-starter
+// We just want the dependency management from spring-boot-starter.
 bootRepackage { actions = [] }

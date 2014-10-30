@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.experimental.Builder;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 /**
@@ -44,10 +45,12 @@ public class JvmRunData {
 
     @NonNull
     @Size(min = 1, max = Constraints.MAX_CODEKVAST_VERSION_LENGTH)
+    @Pattern(regexp = "[a-zA-Z0-9.-_]+")
     private String codekvastVersion;
 
 
     @NonNull
     @Size(min = 1, max = Constraints.MAX_CODEKVAST_VCS_ID_LENGTH)
+    @Pattern(regexp = "[a-zA-Z0-9]+")
     private String codekvastVcsId;
 }

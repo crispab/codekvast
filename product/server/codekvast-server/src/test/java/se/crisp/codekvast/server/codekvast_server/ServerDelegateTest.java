@@ -18,6 +18,7 @@ import se.crisp.codekvast.server.codekvast_server.exceptions.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.service.StorageService;
 
 import javax.inject.Inject;
+import javax.validation.Validator;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -51,6 +52,9 @@ public class ServerDelegateTest {
     @Inject
     private StorageService storageService;
 
+    @Inject
+    private Validator validator;
+
     private ServerDelegate serverDelegate;
 
     private void createServerDelegate(String apiUsername, String apiPassword) throws URISyntaxException {
@@ -60,7 +64,7 @@ public class ServerDelegateTest {
                                                                     .serverUri(new URI(String.format("http://localhost:%d", port)))
                                                                     .apiUsername(apiUsername)
                                                                     .apiPassword(apiPassword)
-                                                                    .build());
+                                                                    .build(), validator);
     }
 
     @Before
