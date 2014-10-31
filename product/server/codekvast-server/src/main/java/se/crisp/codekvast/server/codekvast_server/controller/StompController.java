@@ -10,6 +10,7 @@ import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.service.StorageService;
 
 import javax.inject.Inject;
+import java.security.Principal;
 import java.util.Collection;
 
 /**
@@ -32,9 +33,12 @@ public class StompController {
 
     @MessageMapping("/hello/**")
     @SendTo(TOPIC_SIGNATURES)
-    public Collection<UsageDataEntry> hello(Message message) throws CodekvastException {
-        log.debug("Received {}", message);
+    public Collection<UsageDataEntry> hello(Message message, Principal principal) throws CodekvastException {
+        String username = principal.getName();
+        log.debug("Received {} from '{}'", message, username);
+
         Collection<UsageDataEntry> signatures = storageService.getSignatures(null);
+
         log.debug("Returning {} signatures", signatures.size());
         return signatures;
     }

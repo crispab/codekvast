@@ -24,9 +24,6 @@ var codekvastApp = angular.module('codekvastApp', [])
             $scope.socket.stomp = Stomp.over($scope.socket.client);
 
             $scope.socket.stomp.connect({
-                login: 'user',
-                passcode: '0000',
-                'client-id': 'my-client-id'
             }, function () {
                 $scope.socket.stomp.subscribe("/topic/signatures", $scope.updateSignatures);
                 $scope.socket.stomp.send("/app/hello", {}, "Hello!")
