@@ -15,12 +15,12 @@ import java.util.Properties;
  * @author Olle Hallin
  */
 @Configuration
-@EnableAutoConfiguration
 @ComponentScan
-public class CodekvastServerMain {
+@EnableAutoConfiguration
+public class CodekvastServerApplication {
 
     public static void main(String[] args) throws IOException {
-        SpringApplication application = new SpringApplication(CodekvastServerMain.class);
+        SpringApplication application = new SpringApplication(CodekvastServerApplication.class);
         application.setDefaultProperties(loadProperties("default.properties"));
         application.run(args);
     }
@@ -33,7 +33,7 @@ public class CodekvastServerMain {
     }
 
     private static InputStream getInputStream(String resource) throws IOException {
-        InputStream result = CodekvastServerMain.class.getClassLoader().getResourceAsStream(resource);
+        InputStream result = CodekvastServerApplication.class.getClassLoader().getResourceAsStream(resource);
         if (result == null) {
             result = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
         }

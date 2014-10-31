@@ -10,7 +10,7 @@ import java.util.Collection;
 /**
  * @author Olle Hallin
  */
-public interface StorageDAO {
+public interface UsageDAO {
     void storeJvmRunData(JvmRunData jvmRunData) throws CodekvastException;
 
     /**

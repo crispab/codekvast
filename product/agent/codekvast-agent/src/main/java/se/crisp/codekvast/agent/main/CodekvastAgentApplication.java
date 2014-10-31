@@ -29,21 +29,21 @@ import java.util.Properties;
 @EnableAutoConfiguration
 @EnableScheduling
 @ComponentScan("se.crisp.codekvast")
-public class CodekvastAgentMain {
+public class CodekvastAgentApplication {
 
     private static AgentConfig agentConfig;
 
     public static void main(String[] args) throws IOException, URISyntaxException {
         // Use the same AgentConfig as is used by the collector...
         URI location = getAgentConfigLocation(args);
-        CodekvastAgentMain.agentConfig = AgentConfig.parseAgentConfigFile(location);
+        CodekvastAgentApplication.agentConfig = AgentConfig.parseAgentConfigFile(location);
 
         if (!location.getScheme().equals("classpath")) {
             // Tell LogPathDefiner to use exactly this log path...
             System.setProperty(LogPathDefiner.LOG_PATH_PROPERTY, agentConfig.getAgentLogFile().getParent());
         }
 
-        SpringApplication application = new SpringApplication(CodekvastAgentMain.class);
+        SpringApplication application = new SpringApplication(CodekvastAgentApplication.class);
         application.setDefaultProperties(getDefaultProperties());
         application.run(args);
     }

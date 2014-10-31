@@ -1,12 +1,12 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="CodekvastAgentMain" type="Application" factoryName="Application" singleton="true" nameIsGenerated="true">
+  <configuration default="false" name="CodekvastAgentApplication" type="Application" factoryName="Application" singleton="true" nameIsGenerated="true">
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
       <pattern>
         <option name="PATTERN" value="se.crisp.codekvast.agent.main.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
-    <option name="MAIN_CLASS_NAME" value="se.crisp.codekvast.agent.main.CodekvastAgentMain" />
+    <option name="MAIN_CLASS_NAME" value="se.crisp.codekvast.agent.main.CodekvastAgentApplication" />
     <option name="VM_PARAMETERS" value="" />
     <option name="PROGRAM_PARAMETERS" value="src/test/resources/codekvast.conf" />
     <option name="WORKING_DIRECTORY" value="file://$MODULE_DIR$" />

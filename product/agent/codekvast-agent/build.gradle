@@ -13,7 +13,7 @@ archivesBaseName = "codekvast-agent"
 version = project.parent.parent.version
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
-mainClassName = "se.crisp.codekvast.agent.main.CodekvastAgentMain"
+mainClassName = "se.crisp.codekvast.agent.main.CodekvastAgentApplication"
 
 dependencies {
     compile "ch.qos.logback:logback-classic"

@@ -15,7 +15,6 @@ public class CacheConfig {
 
     @Bean
     public CacheManager cacheManager() {
-        // TODO: make caching work...
         return new ConcurrentMapCacheManager();
     }
 }

@@ -53,7 +53,8 @@ public class DatabaseConfig {
         try (
                 ResultSet resultSet = connection.createStatement()
                                                 .executeQuery(
-                                                        "SELECT username, plaintext_password FROM users WHERE plaintext_password IS NOT NULL");
+                                                        "SELECT username, plaintext_password FROM users WHERE plaintext_password IS NOT " +
+                                                                "NULL");
                 PreparedStatement update = connection
                         .prepareStatement("UPDATE users SET encoded_password = ?, plaintext_password = NULL WHERE username = ?")) {
 

@@ -1,17 +1,17 @@
 package se.crisp.codekvast.server.codekvast_server.dao.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import se.crisp.codekvast.server.agent.model.v1.*;
-import se.crisp.codekvast.server.codekvast_server.dao.StorageDAO;
+import se.crisp.codekvast.server.agent.model.v1.JvmRunData;
+import se.crisp.codekvast.server.agent.model.v1.UsageConfidence;
+import se.crisp.codekvast.server.agent.model.v1.UsageData;
+import se.crisp.codekvast.server.agent.model.v1.UsageDataEntry;
+import se.crisp.codekvast.server.codekvast_server.dao.UsageDAO;
+import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
-import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
-import se.crisp.codekvast.server.codekvast_server.exception.UndefinedCustomerException;
 
 import javax.inject.Inject;
 import java.sql.ResultSet;
@@ -20,35 +20,29 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
-import static com.google.common.base.Preconditions.checkState;
-
 /**
- * DAO for customer data.
+ * DAO for signature data.
  *
  * @author Olle Hallin
  */
 @Repository
 @Slf4j
-public class StorageDAOImpl implements StorageDAO {
+public class UsageDAOImpl implements UsageDAO {
 
     private final JdbcTemplate jdbcTemplate;
-    private final Boolean autoCreateCustomer;
-    private final Boolean autoCreateApplication;
+    private final UserDAO userDAO;
 
     @Inject
-    public StorageDAOImpl(JdbcTemplate jdbcTemplate,
-                          @Value("${codekvast.auto-register-customer}") Boolean autoCreateCustomer,
-                          @Value("${codekvast.auto-register-application}") Boolean autoCreateApplication) {
+    public UsageDAOImpl(JdbcTemplate jdbcTemplate, UserDAO userDAO) {
         this.jdbcTemplate = jdbcTemplate;
-        this.autoCreateCustomer = autoCreateCustomer;
-        this.autoCreateApplication = autoCreateApplication;
+        this.userDAO = userDAO;
     }
 
     @Override
     @Transactional
     public void storeJvmRunData(JvmRunData data) throws CodekvastException {
-        long customerId = getOrCreateCustomer(data.getHeader().getCustomerName());
-        long appId = getOrCreateApp(customerId, data.getHeader(), data.getAppName(), data.getAppVersion());
+        long customerId = userDAO.getCustomerId(data.getHeader().getCustomerName());
+        long appId = userDAO.getAppId(customerId, data.getHeader().getEnvironment(), data.getAppName(), data.getAppVersion());
         storeJvmRunData(customerId, appId, data);
     }
 
@@ -57,11 +51,12 @@ public class StorageDAOImpl implements StorageDAO {
     public Collection<UsageDataEntry> storeUsageData(UsageData usageData) throws CodekvastException {
         final Collection<UsageDataEntry> result = new ArrayList<>();
 
-        AppId appId = getAppId(usageData.getJvmFingerprint());
+        UserDAO.AppId appId = userDAO.getAppId(usageData.getJvmFingerprint());
 
         for (UsageDataEntry entry : usageData.getUsage()) {
             storeOrUpdateUsageDataEntry(result, appId, usageData.getJvmFingerprint(), entry);
         }
+
         return result;
     }
 
@@ -69,23 +64,14 @@ public class StorageDAOImpl implements StorageDAO {
     @Transactional(readOnly = true)
     public Collection<UsageDataEntry> getSignatures(String customerName) throws CodekvastException {
         // TODO: don't allow null customerName
-        Object[] args = customerName == null ? new Object[0] : new Object[]{getOrCreateCustomer(customerName)};
+        Object[] args = customerName == null ? new Object[0] : new Object[]{userDAO.getCustomerId(customerName)};
         String where = customerName == null ? "" : " WHERE customer_id = ?";
 
         return jdbcTemplate.query("SELECT signature, used_at, confidence FROM signatures " + where,
                                   args, new UsageDataEntryRowMapper());
     }
 
-    private AppId getAppId(String jvmFingerprint) {
-        log.debug("Looking up CustomerAppId for JVM {}...", jvmFingerprint);
-
-        String sql = "SELECT customer_id, application_id FROM jvm_runs WHERE jvm_fingerprint = ?";
-        AppId result = jdbcTemplate.queryForObject(sql, new AppIdRowMapper(), jvmFingerprint);
-        log.debug("Result = {}", result);
-        return result;
-    }
-
-    private void storeOrUpdateUsageDataEntry(Collection<UsageDataEntry> result, AppId appId, String jvmFingerprint,
+    private void storeOrUpdateUsageDataEntry(Collection<UsageDataEntry> result, UserDAOImpl.AppId appId, String jvmFingerprint,
                                              UsageDataEntry entry) {
         Date usedAt = entry.getUsedAtMillis() == null ? null : new Date(entry.getUsedAtMillis());
         Integer confidence = entry.getConfidence() == null ? null : entry.getConfidence().ordinal();
@@ -109,7 +95,7 @@ public class StorageDAOImpl implements StorageDAO {
         }
     }
 
-    private int attemptToUpdateSignature(AppId appId, String jvmFingerprint, UsageDataEntry entry, Date usedAt,
+    private int attemptToUpdateSignature(UserDAOImpl.AppId appId, String jvmFingerprint, UsageDataEntry entry, Date usedAt,
                                          Integer confidence) {
         if (usedAt == null) {
             // An unused signature is not allowed to overwrite a used signature
@@ -152,60 +138,6 @@ public class StorageDAOImpl implements StorageDAO {
         }
     }
 
-    private Long getOrCreateApp(long customerId, Header header, String appName,
-                                String appVersion) throws UndefinedApplicationException {
-        return doGetOrCreateApp(customerId, header, appName, appVersion, true);
-    }
-
-    private Long doGetOrCreateApp(long customerId, Header header, String appName, String appVersion,
-                                  boolean allowRecursion) throws UndefinedApplicationException {
-        try {
-            return jdbcTemplate.queryForObject("SELECT id FROM applications " +
-                                                       "WHERE customer_id = ? AND environment = ? AND name = ? AND version = ? ",
-                                               Long.class,
-                                               customerId, header.getEnvironment(), appName, appVersion);
-        } catch (EmptyResultDataAccessException ignored) {
-        }
-        if (!autoCreateApplication) {
-            throw new UndefinedApplicationException("No such application: " + appName);
-        }
-
-        checkState(allowRecursion, "Endless recursion detected");
-
-        int updated = jdbcTemplate.update("INSERT INTO applications(customer_id, environment, name, version) VALUES(?, ?, ?, ?)",
-                                          customerId, header.getEnvironment(), appName, appVersion);
-        if (updated > 0) {
-            log.info("Created application {}:{}:{}:{}", header.getCustomerName(), header.getEnvironment(),
-                     appName, appVersion);
-            return doGetOrCreateApp(customerId, header, appName, appVersion, false);
-        }
-
-        throw new IllegalStateException("Could not insert application");
-    }
-
-    private long getOrCreateCustomer(final String customerName) throws UndefinedCustomerException {
-        return doGetOrCreateCustomer(customerName, true);
-    }
-
-    private long doGetOrCreateCustomer(final String customerName, boolean allowRecursion) throws UndefinedCustomerException {
-        try {
-            return jdbcTemplate.queryForObject("SELECT id FROM customers WHERE name = ?", Long.class, customerName);
-        } catch (EmptyResultDataAccessException ignored) {
-        }
-        if (!autoCreateCustomer) {
-            throw new UndefinedCustomerException("No such customer: " + customerName);
-        }
-
-        checkState(allowRecursion, "Endless recursion not allowed");
-
-        int updated = jdbcTemplate.update("INSERT INTO customers(name) VALUES(?)", customerName);
-        if (updated > 0) {
-            log.info("Created customer '{}'", customerName);
-            return doGetOrCreateCustomer(customerName, false);
-        }
-        throw new IllegalStateException("Could not insert customer");
-    }
-
     private static class UsageDataEntryRowMapper implements RowMapper<UsageDataEntry> {
         public static final Long EPOCH = 0L;
 
@@ -220,17 +152,4 @@ public class StorageDAOImpl implements StorageDAO {
         }
     }
 
-    @lombok.Value
-    private static class AppId {
-        private final long customerId;
-        private final long appId;
-    }
-
-    private static class AppIdRowMapper implements RowMapper<AppId> {
-        @Override
-        public AppId mapRow(ResultSet rs, int rowNum)
-                throws SQLException {
-            return new AppId(rs.getLong(1), rs.getLong(2));
-        }
-    }
 }
