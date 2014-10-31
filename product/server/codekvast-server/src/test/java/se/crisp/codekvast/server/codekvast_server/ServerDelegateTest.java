@@ -14,7 +14,7 @@ import se.crisp.codekvast.server.agent.ServerDelegateException;
 import se.crisp.codekvast.server.agent.impl.ServerDelegateImpl;
 import se.crisp.codekvast.server.agent.model.v1.UsageConfidence;
 import se.crisp.codekvast.server.agent.model.v1.UsageDataEntry;
-import se.crisp.codekvast.server.codekvast_server.exceptions.CodekvastException;
+import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.service.StorageService;
 
 import javax.inject.Inject;

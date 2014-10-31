@@ -4,7 +4,7 @@ import se.crisp.codekvast.server.agent.model.v1.JvmRunData;
 import se.crisp.codekvast.server.agent.model.v1.SignatureData;
 import se.crisp.codekvast.server.agent.model.v1.UsageData;
 import se.crisp.codekvast.server.agent.model.v1.UsageDataEntry;
-import se.crisp.codekvast.server.codekvast_server.exceptions.CodekvastException;
+import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 
 import java.util.Collection;
 

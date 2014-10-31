@@ -9,9 +9,9 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.server.agent.model.v1.*;
 import se.crisp.codekvast.server.codekvast_server.dao.StorageDAO;
-import se.crisp.codekvast.server.codekvast_server.exceptions.CodekvastException;
-import se.crisp.codekvast.server.codekvast_server.exceptions.UndefinedApplicationException;
-import se.crisp.codekvast.server.codekvast_server.exceptions.UndefinedCustomerException;
+import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
+import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
+import se.crisp.codekvast.server.codekvast_server.exception.UndefinedCustomerException;
 
 import javax.inject.Inject;
 import java.sql.ResultSet;

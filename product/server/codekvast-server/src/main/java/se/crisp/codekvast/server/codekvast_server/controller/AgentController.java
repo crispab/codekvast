@@ -13,7 +13,7 @@ import se.crisp.codekvast.server.agent.model.test.Pong;
 import se.crisp.codekvast.server.agent.model.v1.JvmRunData;
 import se.crisp.codekvast.server.agent.model.v1.SignatureData;
 import se.crisp.codekvast.server.agent.model.v1.UsageData;
-import se.crisp.codekvast.server.codekvast_server.exceptions.CodekvastException;
+import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.service.StorageService;
 
 import javax.inject.Inject;

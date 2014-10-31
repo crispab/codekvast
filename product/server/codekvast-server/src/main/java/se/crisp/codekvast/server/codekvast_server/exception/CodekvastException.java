@@ -1,4 +1,4 @@
-package se.crisp.codekvast.server.codekvast_server.exceptions;
+package se.crisp.codekvast.server.codekvast_server.exception;
 
 /**
  * @author Olle Hallin

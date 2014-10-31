@@ -9,7 +9,7 @@ import se.crisp.codekvast.server.agent.model.v1.UsageData;
 import se.crisp.codekvast.server.agent.model.v1.UsageDataEntry;
 import se.crisp.codekvast.server.codekvast_server.dao.StorageDAO;
 import se.crisp.codekvast.server.codekvast_server.event.internal.UsageDataUpdatedEvent;
-import se.crisp.codekvast.server.codekvast_server.exceptions.CodekvastException;
+import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.service.StorageService;
 
 import javax.inject.Inject;
