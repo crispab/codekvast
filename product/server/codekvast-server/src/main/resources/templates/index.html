@@ -11,19 +11,19 @@
 </head>
 <body>
 <div th:if="${#httpServletRequest.remoteUser != null}">
-    <div class="col-md-3 col-md-offset-9">
+    <div class="pull-right">
         <form class="form-inline" role="form" th:action="@{/logout}" method="post">
-            <div class="col-sm-2">
+            <div class="form-group">
                 <p class="form-control-static" th:text="${#httpServletRequest.remoteUser}">sample_user</p>
-            </div>
 
-            <input class="btn btn-default" type="submit" value="Log out"/>
+                <input class="btn btn-default" type="submit" value="Log out"/>
+            </div>
         </form>
     </div>
 </div>
 <div class="container" ng-app="codekvastApp">
-<div class="ng-cloak">
-        <h1>Welcome to {{'Code' + 'kvast!' }}</h1>
+    <div class="ng-cloak">
+    <h1>Welcome to {{'Code' + 'kvast!' }}</h1>
 
         <table ng-controller="SignaturesCtrl">
             <tr>
