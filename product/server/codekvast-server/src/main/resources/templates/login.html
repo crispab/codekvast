@@ -1,30 +1,48 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
     <title>Codekvast - login</title>
-    <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/3.2.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/webjars/bootstrap/3.3.0/css/bootstrap.min.css"/>
 </head>
 <body>
-<div>
-    <form name="f" th:action="@{/login}" method="post">
+<div class="container">
+    <form class="form-horizontal" role="form" name="f" th:action="@{/login}" method="post">
         <fieldset>
             <legend>Please Login</legend>
-            <div th:if="${param.error}" class="alert alert-error">
-                Invalid username and password.
+            <div th:if="${param.error}" class="col-sm-offset-1 col-sm-11 alert alert-danger">
+            Invalid username and password.
             </div>
-            <div th:if="${param.logout}" class="alert alert-success">
-                You have been logged out.
+            <div th:if="${param.logout}" class="col-sm-offset-1 col-sm-11 alert alert-info">
+            You have been logged out.
             </div>
-            <label for="username">Username</label>
-            <input type="text" id="username" name="username"/>
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password"/>
+            <div class="form-group">
+                <label class="col-sm-1 control-label" for="username">Username</label>
 
-            <div class="form-actions">
-                <button type="submit" class="btn">Log in</button>
+                <div class="col-sm-11">
+                    <input class="form-control" type="text" id="username" name="username" placeholder="Enter username"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label" for="password">Password</label>
+
+                <div class="col-sm-11">
+                    <input class="form-control" type="password" id="password" name="password" placeholder="Enter password"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-1 col-sm-11">
+                    <button type="submit" class="btn btn-primary">Sign in</button>
+                </div>
             </div>
         </fieldset>
     </form>
 </div>
+<script src="/webjars/jquery/2.1.1/jquery.min.js"></script>
+<script src="/webjars/bootstrap/3.3.0/js/bootstrap.min.js"></script>
 </body>
 </html>
