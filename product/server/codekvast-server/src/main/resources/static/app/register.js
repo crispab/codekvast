@@ -1,27 +1,24 @@
+//noinspection JSUnusedGlobalSymbols
 var codekvastRegistration = angular.module('codekvastRegistration', [])
     .controller('RegistrationCtrl', ['$scope', function ($scope) {
-        $scope.registration = {
-            username: null,
-            password: null
+        $scope.registration = { };
+
+        $scope.form = null;
+
+        $scope.doSubmit = function () {
+            if ($scope.form && $scope.form.$valid) {
+                alert("Submitting " + JSON.stringify($scope.registration))
+            }
         }
-
-        $scope.password2 = null,
-
-            $scope.isFormInvalid = true
-
-        $scope.validateForm = function () {
-            $scope.isFormInvalid = $scope.registration.username === null
-        }
-
     }])
-    .directive('pwCheck', [function () {
+    .directive('mustMatch', [function () {
         return {
             require: 'ngModel',
             link: function (scope, elem, attrs, ctrl) {
-                var firstPassword = '#' + attrs.pwCheck;
-                elem.add(firstPassword).on('keyup', function () {
+                var firstElement = '#' + attrs.mustMatch;
+                elem.add(firstElement).on('keyup', function () {
                     scope.$apply(function () {
-                        ctrl.$setValidity('pwmatch', elem.val() === $(firstPassword).val());
+                        ctrl.$setValidity('mustmatch', elem.val() === $(firstElement).val());
                     });
                 });
             }

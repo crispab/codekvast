@@ -1,0 +1,17 @@
+input {
+    -webkit-transition: all linear 0.3s;
+    transition: all linear 0.3s;
+    background: transparent;
+}
+
+input.ng-invalid {
+    background: lightyellow;
+}
+
+input.ng-valid {
+    background: #CFC;
+}
+
+.glyphicon {
+    margin-left: 0.5em;
+}

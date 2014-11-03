@@ -3,6 +3,7 @@
 <head>
     <th:block th:include="fragments :: #head-boilerplate"/>
     <title th:text="#{registration.page-title}">Codekvast - registration</title>
+    <link rel="stylesheet" href="/app/register.css"/>
 </head>
 
 <body ng-app="codekvastRegistration">
@@ -10,24 +11,80 @@
 
     <h1 th:text="#{registration.page-title}">Codekvast - registration</h1>
 
-    <form class="form-horizontal" role="form" name="registrationForm" action="@{/register}" method="POST">
+    <form class="form-horizontal" name="form" ng-model="form" ng-submit="doSubmit()">
 
         <fieldset>
             <legend>User details</legend>
             <div class="form-group">
-                <label class="col-md-1 control-label" for="username">Username</label>
-                <input class="col-md-4" id="username" type="text" ng-model="registration.username" ng-required="true" ng-minlength="1"
+                <label class="col-md-2 control-label" for="fullName">Full name</label>
+                <input class="col-md-6" id="fullName" name="fullName" type="text" ng-model="registration.fullName" ng-required="true"
+                       placeholder="Enter your full name"
                        th:attr="ng-maxlength=${maxUsernameLength}"/>
+                <span ng-hide="form.fullName.$valid" class="glyphicon glyphicon-asterisk"></span>
+                <span ng-show="form.fullName.$valid" class="glyphicon glyphicon-ok"></span>
             </div>
             <div class="form-group">
-                <label class="col-md-1 control-label" for="pw1">Password</label>
-                <input class="col-md-4" id="pw1" name="pw1" type="password" ng-model="registration.password" ng-required="true"/>
+                <label class="col-md-2 control-label" for="emailAddress1">Email address</label>
+                <input class="col-md-6" id="emailAddress1" name="emailAddress1" type="email" ng-model="registration.emailAddress"
+                       ng-required="true"
+                       placeholder="Enter your email address"
+                       th:attr="ng-maxlength=${maxEmailAddressLength}"/>
+                <span ng-hide="form.emailAddress1.$valid" class="glyphicon glyphicon-asterisk"></span>
+                <span ng-show="form.emailAddress1.$valid" class="glyphicon glyphicon-ok"></span>
             </div>
             <div class="form-group">
-                <label class="col-md-1 control-label" for="pw2">Verify Password</label>
-                <input class="col-md-4" id="pw2" name="pw2" type="password" ng-model="pw2" ng-required="true" pw-check="pw1"/>
+                <label class="col-md-2 control-label" for="emailAddress2">Verify email address</label>
+                <input class="col-md-6" id="emailAddress2" name="emailAddress2" type="email" ng-model="emailAddress2"
+                       ng-required="true"
+                       placeholder="Enter your email address"
+                       th:attr="ng-maxlength=${maxEmailAddressLength}"
+                       must-match="emailAddress1"/>
+                <span ng-hide="form.emailAddress2.$valid" class="glyphicon glyphicon-asterisk"></span>
+                <span ng-show="form.emailAddress2.$valid" class="glyphicon glyphicon-ok"></span>
             </div>
-            <span class="col-md-offset-1 col-md-4 help-block" ng-show="registrationForm.pw2.$error.pwmatch">Passwords don't match.</span>
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="username">Username</label>
+                <input class="col-md-6" id="username" name="username" type="text" ng-model="registration.username" ng-required="true"
+                       placeholder="Select a username"
+                       th:attr="ng-maxlength=${maxUsernameLength}"/>
+                <span ng-hide="form.username.$valid" class="glyphicon glyphicon-asterisk"></span>
+                <span ng-show="form.username.$valid" class="glyphicon glyphicon-ok"></span>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="pw1">Password</label>
+                <input class="col-md-6" id="pw1" name="pw1" type="password" ng-model="registration.password" ng-required="true"
+                       placeholder="Select a password"/>
+                <span ng-hide="form.pw1.$valid" class="glyphicon glyphicon-asterisk"></span>
+                <span ng-show="form.pw1.$valid" class="glyphicon glyphicon-ok"></span>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="pw2">Verify Password</label>
+                <input class="col-md-6" id="pw2" name="pw2" type="password" ng-model="pw2" ng-required="true" must-match="pw1"
+                       placeholder="Reenter password"/>
+                <span ng-hide="form.pw2.$valid" class="glyphicon glyphicon-asterisk"></span>
+                <span ng-show="form.pw2.$valid" class="glyphicon glyphicon-ok"></span>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>Customer details</legend>
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="customerName">Company name</label>
+                <input class="col-md-6" id="customerName" name="customerName" type="text" ng-model="registration.customerName"
+                       ng-required="true"
+                       placeholder="Enter your company or organisation name"
+                       th:attr="ng-maxlength=${maxCustomerNameLength}"/>
+                <span ng-hide="form.customerName.$valid" class="glyphicon glyphicon-asterisk"></span>
+                <span ng-show="form.customerName.$valid" class="glyphicon glyphicon-ok"></span>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="appName">Application name</label>
+                <input class="col-md-6" id="appName" name="appName" type="text" ng-model="registration.appName"
+                       ng-required="true"
+                       placeholder="Enter your application name"
+                       th:attr="ng-maxlength=${maxAppNameLength}"/>
+                <span ng-hide="form.appName.$valid" class="glyphicon glyphicon-asterisk"></span>
+                <span ng-show="form.appName.$valid" class="glyphicon glyphicon-ok"></span>
+            </div>
         </fieldset>
         <button type="submit" class="btn btn-primary">Register</button>
     </form>

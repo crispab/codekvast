@@ -7,34 +7,34 @@
 </head>
 <body>
 <div class="container">
-    <form class="form" role="form" name="f" th:action="@{/login}" method="post">
+    <form class="form-horizontal" name="f" th:action="@{/login}" method="post">
         <fieldset>
             <legend th:text="#{login.page-title}">Codekvast - login</legend>
 
-            <div th:if="${param.error}" class="col-sm-offset-1 col-sm-11 alert alert-danger">
-                Invalid username and password.
+            <div th:if="${param.error}" class="col-md-offset-1 col-md-11 alert alert-danger">
+            Invalid username and password.
             </div>
-            <div th:if="${param.logout}" class="col-sm-offset-1 col-sm-11 alert alert-info">
-                You have been logged out.
+            <div th:if="${param.logout}" class="col-md-offset-1 col-md-11 alert alert-info">
+            You have been logged out.
             </div>
             <div class="form-group">
-                <label class="col-sm-1 control-label" for="username">Username</label>
+                <label class="col-md-1 control-label" for="username">Username</label>
 
-                <div class="col-sm-11">
-                    <input class="form-control" type="text" id="username" name="username" placeholder="Enter username"/>
+                <div class="col-md-11">
+                <input class="form-control" type="text" id="username" name="username" placeholder="Enter username"/>
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-sm-1 control-label" for="password">Password</label>
+                <label class="col-md-1 control-label" for="password">Password</label>
 
-                <div class="col-sm-11">
-                    <input class="form-control" type="password" id="password" name="password" placeholder="Enter password"/>
+                <div class="col-md-11">
+                <input class="form-control" type="password" id="password" name="password" placeholder="Enter password"/>
                 </div>
             </div>
 
             <div class="form-group">
-                <div class="col-sm-offset-1 col-sm-11">
-                    <button type="submit" class="btn btn-primary">Sign in</button>
+                <div class="col-md-offset-1 col-md-11">
+                <button type="submit" class="btn btn-primary">Sign in</button>
                     &nbsp;or&nbsp;<a href="register.html" th:href="@{/register}">Create new account...</a>
                 </div>
             </div>

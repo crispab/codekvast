@@ -47,6 +47,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
                 .antMatchers("/webjars/**").permitAll()
                 .antMatchers("/static/**").permitAll()
+                .antMatchers("/app/register*").permitAll()
                 .antMatchers("/register/**").permitAll()
                 .antMatchers("/agent/**").hasRole("AGENT")
                 .antMatchers("/**").hasRole("USER")

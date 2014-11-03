@@ -19,9 +19,11 @@ public class RegistrationController {
 
     @RequestMapping(value = {"/register"}, method = RequestMethod.GET)
     public String register(ModelMap modelMap) {
-        modelMap.put("maxUsernameLength", Constraints.MAX_USER_NAME_LENGTH);
+        modelMap.put("maxAppNameLength", Constraints.MAX_APP_NAME_LENGTH);
         modelMap.put("maxCustomerNameLength", Constraints.MAX_CUSTOMER_NAME_LENGTH);
-        modelMap.put("maxApplicationNameLength", Constraints.MAX_APP_NAME_LENGTH);
+        modelMap.put("maxEmailAddressLength", Constraints.MAX_EMAIL_ADDRESS_LENGTH);
+        modelMap.put("maxFullNameLength", Constraints.MAX_FULL_NAME_LENGTH);
+        modelMap.put("maxUsernameLength", Constraints.MAX_USER_NAME_LENGTH);
         return "register";
     }
 }
