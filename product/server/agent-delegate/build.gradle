@@ -31,4 +31,4 @@ dependencies {
 
 // Disable the bootRepackage task, since this isn't really a spring-boot app.
 // We just want the dependency management from spring-boot-starter.
-bootRepackage { actions = [] }
+bootRepackage.enabled = false
