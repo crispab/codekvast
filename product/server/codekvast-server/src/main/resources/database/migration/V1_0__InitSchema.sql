@@ -102,15 +102,28 @@ INSERT INTO roles (name) VALUES ('SUPERUSER');
 INSERT INTO roles (name) VALUES ('AGENT');
 INSERT INTO roles (name) VALUES ('USER');
 INSERT INTO roles (name) VALUES ('MONITOR');
-// The plaintext passwords will be hashed when the application starts
+
+// --- System account ---------------------------------------------------------------------------
+INSERT INTO customers (id, name) VALUES (0, 'System');
+
 INSERT INTO users (id, username, plaintext_password, enabled) VALUES (0, 'system', '0000', FALSE);
-INSERT INTO users (id, username, plaintext_password, enabled) VALUES (1, 'agent', '0000', TRUE);
-INSERT INTO users (id, username, plaintext_password, enabled) VALUES (2, 'user', '0000', TRUE);
-INSERT INTO users (id, username, plaintext_password, enabled) VALUES (3, 'monitor', '0000', TRUE);
+INSERT INTO customer_members (customer_id, user_id) VALUES (0, 0);
 INSERT INTO user_roles (user_id, role) VALUES (0, 'SUPERUSER');
 INSERT INTO user_roles (user_id, role) VALUES (0, 'AGENT');
 INSERT INTO user_roles (user_id, role) VALUES (0, 'USER');
 INSERT INTO user_roles (user_id, role) VALUES (0, 'MONITOR');
-INSERT INTO user_roles (user_id, role) VALUES (1, 'AGENT');
-INSERT INTO user_roles (user_id, role) VALUES (2, 'USER');
-INSERT INTO user_roles (user_id, role) VALUES (3, 'MONITOR');
+
+INSERT INTO users (id, username, plaintext_password, enabled) VALUES (1, 'monitor', '0000', TRUE);
+INSERT INTO customer_members (customer_id, user_id) VALUES (0, 1);
+INSERT INTO user_roles (user_id, role) VALUES (1, 'MONITOR');
+
+// --- Demo account ---------------------------------------------------------------------------
+INSERT INTO customers (id, name) VALUES (1, 'Demo');
+
+INSERT INTO users (id, username, plaintext_password, enabled) VALUES (2, 'agent', '0000', TRUE);
+INSERT INTO customer_members (customer_id, user_id) VALUES (1, 2);
+INSERT INTO user_roles (user_id, role) VALUES (2, 'AGENT');
+
+INSERT INTO users (id, username, plaintext_password, enabled) VALUES (3, 'user', '0000', TRUE);
+INSERT INTO customer_members (customer_id, user_id) VALUES (1, 3);
+INSERT INTO user_roles (user_id, role) VALUES (3, 'USER');

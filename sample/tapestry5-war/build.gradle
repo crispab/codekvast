@@ -36,7 +36,7 @@ task generateCodekvastConfig {
     doLast {
         configFile.parentFile.mkdirs()
         configFile.text = """# Run Codekvast against Crisp Sample App
-customerName = Crisp
+customerName = Demo
 appName = $archivesBaseName
 appVersion = $version
 environment = development

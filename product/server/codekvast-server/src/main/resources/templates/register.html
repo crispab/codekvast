@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="fragments :: #head-boilerplate"/>
+    <title th:text="#{registration.page-title}">Codekvast - registration</title>
+</head>
+
+<body ng-app="codekvastRegistration">
+<div class="container" ng-controller="RegistrationCtrl">
+
+    <h1 th:text="#{registration.page-title}">Codekvast - registration</h1>
+
+    <form class="form-horizontal" role="form" name="registrationForm" action="@{/register}" method="POST">
+
+        <fieldset>
+            <legend>User details</legend>
+            <div class="form-group">
+                <label class="col-md-1 control-label" for="username">Username</label>
+                <input class="col-md-4" id="username" type="text" ng-model="registration.username" ng-required="true" ng-minlength="1"
+                       th:attr="ng-maxlength=${maxUsernameLength}"/>
+            </div>
+            <div class="form-group">
+                <label class="col-md-1 control-label" for="pw1">Password</label>
+                <input class="col-md-4" id="pw1" name="pw1" type="password" ng-model="registration.password" ng-required="true"/>
+            </div>
+            <div class="form-group">
+                <label class="col-md-1 control-label" for="pw2">Verify Password</label>
+                <input class="col-md-4" id="pw2" name="pw2" type="password" ng-model="pw2" ng-required="true" pw-check="pw1"/>
+            </div>
+            <span class="col-md-offset-1 col-md-4 help-block" ng-show="registrationForm.pw2.$error.pwmatch">Passwords don't match.</span>
+        </fieldset>
+        <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+</div>
+
+<th:block th:include="fragments :: #scripts-twitter-bootstrap"/>
+<th:block th:include="fragments :: #scripts-angularjs"/>
+<script th:src="@{/app/register.js}"></script>
+</body>
+</html>

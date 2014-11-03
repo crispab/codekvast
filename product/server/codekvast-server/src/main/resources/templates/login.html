@@ -3,18 +3,19 @@
 <head>
     <div th:replace="fragments :: #head-boilerplate"/>
 
-    <title>Codekvast - login</title>
+    <title th:text="#{login.page-title}">Codekvast - login</title>
 </head>
 <body>
 <div class="container">
-    <form class="form-horizontal" role="form" name="f" th:action="@{/login}" method="post">
+    <form class="form" role="form" name="f" th:action="@{/login}" method="post">
         <fieldset>
-            <legend>Please Login</legend>
+            <legend th:text="#{login.page-title}">Codekvast - login</legend>
+
             <div th:if="${param.error}" class="col-sm-offset-1 col-sm-11 alert alert-danger">
-            Invalid username and password.
+                Invalid username and password.
             </div>
             <div th:if="${param.logout}" class="col-sm-offset-1 col-sm-11 alert alert-info">
-            You have been logged out.
+                You have been logged out.
             </div>
             <div class="form-group">
                 <label class="col-sm-1 control-label" for="username">Username</label>
@@ -34,6 +35,7 @@
             <div class="form-group">
                 <div class="col-sm-offset-1 col-sm-11">
                     <button type="submit" class="btn btn-primary">Sign in</button>
+                    &nbsp;or&nbsp;<a href="register.html" th:href="@{/register}">Create new account...</a>
                 </div>
             </div>
         </fieldset>
