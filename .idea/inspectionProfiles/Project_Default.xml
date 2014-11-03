@@ -26,6 +26,7 @@
     <inspection_tool class="AssignmentToStaticFieldFromInstanceMethod" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="AssignmentUsedAsCondition" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="CastToConcreteClass" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="CheckEmptyScriptTag" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="ClassComplexity" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="m_limit" value="80" />
     </inspection_tool>
@@ -81,10 +82,14 @@
     <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="3">
+          <list size="7">
             <item index="0" class="java.lang.String" itemvalue="th:if" />
             <item index="1" class="java.lang.String" itemvalue="th:text" />
             <item index="2" class="java.lang.String" itemvalue="th:action" />
+            <item index="3" class="java.lang.String" itemvalue="th:attr" />
+            <item index="4" class="java.lang.String" itemvalue="th:src" />
+            <item index="5" class="java.lang.String" itemvalue="th:href" />
+            <item index="6" class="java.lang.String" itemvalue="ng-model" />
           </list>
         </value>
       </option>
@@ -162,6 +167,7 @@
       </option>
       <option name="ignoreClassesWithOnlyMain" value="false" />
     </inspection_tool>
+    <inspection_tool class="XmlInvalidId" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="XmlUnboundNsPrefix" enabled="false" level="WARNING" enabled_by_default="false" />
   </profile>
 </component>

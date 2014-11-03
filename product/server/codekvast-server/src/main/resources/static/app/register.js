@@ -5,9 +5,22 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
 
         $scope.form = null;
 
+        $scope.errorMessages = undefined;
+
         $scope.doSubmit = function () {
             if ($scope.form && $scope.form.$valid) {
+                $scope.errorMessages = undefined;
                 alert("Submitting " + JSON.stringify($scope.registration))
+            } else {
+                $scope.errorMessages = [];
+
+                if (!form.emailAddress2.$valid) {
+                    $scope.errorMessages.push("Email addresses do not match!")
+                }
+                if (!form.pw2.$valid) {
+                    $scope.errorMessages.push("Passwords do not match!")
+                }
+                $scope.errorMessages.push("Correct the errors and try again!")
             }
         }
     }])

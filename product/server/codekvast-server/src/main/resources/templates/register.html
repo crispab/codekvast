@@ -3,7 +3,7 @@
 <head>
     <th:block th:include="fragments :: #head-boilerplate"/>
     <title th:text="#{registration.page-title}">Codekvast - registration</title>
-    <link rel="stylesheet" href="/app/register.css"/>
+    <link rel="stylesheet" th:href="@{/app/register.css}"/>
 </head>
 
 <body ng-app="codekvastRegistration">
@@ -11,7 +11,14 @@
 
     <h1 th:text="#{registration.page-title}">Codekvast - registration</h1>
 
-    <form class="form-horizontal" name="form" ng-model="form" ng-submit="doSubmit()">
+    <form class="form-horizontal" name="form" ng-submit="doSubmit()">
+
+        <fieldset ng-show="errorMessages">
+            <legend>Form errors</legend>
+            <div class="col-md-offset-2 col-md-6 text-danger">
+                <span ng-repeat="msg in errorMessages">{{msg}}<br/></span>
+            </div>
+        </fieldset>
 
         <fieldset>
             <legend>User details</legend>
@@ -36,7 +43,7 @@
                 <label class="col-md-2 control-label" for="emailAddress2">Verify email address</label>
                 <input class="col-md-6" id="emailAddress2" name="emailAddress2" type="email" ng-model="emailAddress2"
                        ng-required="true"
-                       placeholder="Enter your email address"
+                       placeholder="Reenter your email address"
                        th:attr="ng-maxlength=${maxEmailAddressLength}"
                        must-match="emailAddress1"/>
                 <span ng-hide="form.emailAddress2.$valid" class="glyphicon glyphicon-asterisk"></span>
@@ -45,7 +52,7 @@
             <div class="form-group">
                 <label class="col-md-2 control-label" for="username">Username</label>
                 <input class="col-md-6" id="username" name="username" type="text" ng-model="registration.username" ng-required="true"
-                       placeholder="Select a username"
+                       placeholder="Enter your preferred username"
                        th:attr="ng-maxlength=${maxUsernameLength}"/>
                 <span ng-hide="form.username.$valid" class="glyphicon glyphicon-asterisk"></span>
                 <span ng-show="form.username.$valid" class="glyphicon glyphicon-ok"></span>
@@ -53,7 +60,7 @@
             <div class="form-group">
                 <label class="col-md-2 control-label" for="pw1">Password</label>
                 <input class="col-md-6" id="pw1" name="pw1" type="password" ng-model="registration.password" ng-required="true"
-                       placeholder="Select a password"/>
+                       placeholder="Enter your preferred password"/>
                 <span ng-hide="form.pw1.$valid" class="glyphicon glyphicon-asterisk"></span>
                 <span ng-show="form.pw1.$valid" class="glyphicon glyphicon-ok"></span>
                 <ul class="pw-strength" check-strength="registration.password"/>
@@ -61,7 +68,7 @@
             <div class="form-group">
                 <label class="col-md-2 control-label" for="pw2">Verify Password</label>
                 <input class="col-md-6" id="pw2" name="pw2" type="password" ng-model="pw2" ng-required="true" must-match="pw1"
-                       placeholder="Reenter password"/>
+                       placeholder="Reenter your password"/>
                 <span ng-hide="form.pw2.$valid" class="glyphicon glyphicon-asterisk"></span>
                 <span ng-show="form.pw2.$valid" class="glyphicon glyphicon-ok"></span>
             </div>
