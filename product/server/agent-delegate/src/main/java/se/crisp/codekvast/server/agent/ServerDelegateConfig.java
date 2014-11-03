@@ -25,8 +25,8 @@ public class ServerDelegateConfig {
     private final URI serverUri;
 
     @NonNull
-    private final String apiUsername;
+    private final String apiAccessID;
 
     @NonNull
-    private final String apiPassword;
+    private final String apiAccessSecret;
 }

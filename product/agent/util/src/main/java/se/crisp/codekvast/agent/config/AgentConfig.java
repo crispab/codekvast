@@ -23,8 +23,8 @@ import java.util.Properties;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class AgentConfig implements CodekvastConfig {
     public static final int DEFAULT_UPLOAD_INTERVAL_SECONDS = 3600;
-    public static final String DEFAULT_API_PASSWORD = "0000";
-    public static final String DEFAULT_API_USERNAME = "agent";
+    public static final String DEFAULT_API_ACCESS_ID = "agent";
+    public static final String DEFAULT_API_ACCESS_SECRET = "0000";
 
     @NonNull
     private final SharedConfig sharedConfig;
@@ -33,9 +33,9 @@ public class AgentConfig implements CodekvastConfig {
     @NonNull
     private final URI serverUri;
     @NonNull
-    private final String apiUsername;
+    private final String apiAccessID;
     @NonNull
-    private final String apiPassword;
+    private final String apiAccessSecret;
     private final int serverUploadIntervalSeconds;
 
     public int getServerUploadIntervalMillis() {
@@ -68,8 +68,8 @@ public class AgentConfig implements CodekvastConfig {
                               .serverUploadIntervalSeconds(ConfigUtils.getOptionalIntValue(props, "serverUploadIntervalSeconds",
                                                                                            DEFAULT_UPLOAD_INTERVAL_SECONDS))
                               .serverUri(ConfigUtils.getMandatoryUriValue(props, "serverUri", true))
-                              .apiUsername(ConfigUtils.getOptionalStringValue(props, "apiUsername", DEFAULT_API_USERNAME))
-                              .apiPassword(ConfigUtils.getOptionalStringValue(props, "apiPassword", DEFAULT_API_PASSWORD))
+                              .apiAccessID(ConfigUtils.getOptionalStringValue(props, "apiAccessID", DEFAULT_API_ACCESS_ID))
+                              .apiAccessSecret(ConfigUtils.getOptionalStringValue(props, "apiAccessSecret", DEFAULT_API_ACCESS_SECRET))
                               .build();
         } catch (Exception e) {
             throw new IllegalArgumentException(String.format("Cannot parse %s: %s", uri, e.getMessage()), e);
@@ -83,8 +83,8 @@ public class AgentConfig implements CodekvastConfig {
                           .environment("environment")
                           .serverUploadIntervalSeconds(DEFAULT_UPLOAD_INTERVAL_SECONDS)
                           .serverUri(new URI("http://localhost:8080"))
-                          .apiUsername(DEFAULT_API_USERNAME)
-                          .apiPassword(DEFAULT_API_PASSWORD)
+                          .apiAccessID(DEFAULT_API_ACCESS_ID)
+                          .apiAccessSecret(DEFAULT_API_ACCESS_SECRET)
                           .build();
     }
 

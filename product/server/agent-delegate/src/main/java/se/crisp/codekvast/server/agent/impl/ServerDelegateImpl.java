@@ -52,7 +52,7 @@ public class ServerDelegateImpl implements ServerDelegate {
         this.config = config;
         this.validator = validator;
         this.header = Header.builder().customerName(config.getCustomerName()).environment(config.getEnvironment()).build();
-        this.restTemplate = new RestTemplate(createBasicAuthHttpClient(config.getApiUsername(), config.getApiPassword()));
+        this.restTemplate = new RestTemplate(createBasicAuthHttpClient(config.getApiAccessID(), config.getApiAccessSecret()));
     }
 
     HttpComponentsClientHttpRequestFactory createBasicAuthHttpClient(final String username, final String password) {

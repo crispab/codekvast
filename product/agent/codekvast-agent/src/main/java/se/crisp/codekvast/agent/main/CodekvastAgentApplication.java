@@ -77,8 +77,8 @@ public class CodekvastAgentApplication {
                                    .customerName(agentConfig.getSharedConfig().getCustomerName())
                                    .environment(agentConfig.getEnvironment())
                                    .serverUri(agentConfig.getServerUri())
-                                   .apiUsername(agentConfig.getApiUsername())
-                                   .apiPassword(agentConfig.getApiPassword())
+                                   .apiAccessID(agentConfig.getApiAccessID())
+                                   .apiAccessSecret(agentConfig.getApiAccessSecret())
                                    .build();
     }
 

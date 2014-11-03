@@ -57,13 +57,13 @@ public class ServerDelegateTest {
 
     private ServerDelegate serverDelegate;
 
-    private void createServerDelegate(String apiUsername, String apiPassword) throws URISyntaxException {
+    private void createServerDelegate(String apiAccessID, String apiAccessSecret) throws URISyntaxException {
         serverDelegate = new ServerDelegateImpl(ServerDelegateConfig.builder()
                                                                     .customerName(CUSTOMER_NAME)
                                                                     .environment("environment")
                                                                     .serverUri(new URI(String.format("http://localhost:%d", port)))
-                                                                    .apiUsername(apiUsername)
-                                                                    .apiPassword(apiPassword)
+                                                                    .apiAccessID(apiAccessID)
+                                                                    .apiAccessSecret(apiAccessSecret)
                                                                     .build(), validator);
     }
 
