@@ -56,6 +56,7 @@
                        placeholder="Select a password"/>
                 <span ng-hide="form.pw1.$valid" class="glyphicon glyphicon-asterisk"></span>
                 <span ng-show="form.pw1.$valid" class="glyphicon glyphicon-ok"></span>
+                <ul class="pw-strength" check-strength="registration.password"/>
             </div>
             <div class="form-group">
                 <label class="col-md-2 control-label" for="pw2">Verify Password</label>
