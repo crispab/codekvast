@@ -1,14 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="utf-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-
-    <link rel="stylesheet" href="/webjars/bootstrap/3.3.0/css/bootstrap.min.css"/>
-
+    <th:block th:include="fragments :: #head-boilerplate"/>
 </head>
+
 <body>
 <div th:if="${#httpServletRequest.remoteUser != null}">
     <div class="pull-right">
@@ -23,7 +18,7 @@
 </div>
 <div class="container" ng-app="codekvastApp">
     <div class="ng-cloak">
-    <h1>Welcome to {{'Code' + 'kvast!' }}</h1>
+        <h1>Welcome to {{'Code' + 'kvast!' }}</h1>
 
         <table ng-controller="SignaturesCtrl">
             <tr>
@@ -38,11 +33,8 @@
     </div>
 </div>
 
-<script src="/webjars/jquery/2.1.1/jquery.min.js"></script>
-<script src="/webjars/bootstrap/3.3.0/js/bootstrap.min.js"></script>
-<script src="/webjars/angularjs/1.3.1/angular.min.js"></script>
-<script src="/webjars/sockjs-client/0.3.4/sockjs.js"></script>
-<script src="/webjars/stomp-websocket/2.3.1/stomp.js"></script>
+<th:block th:include="fragments :: #scripts-twitter-bootstrap"/>
+<th:block th:include="fragments :: #scripts-angularjs"/>
 <script src="/js/codekvast.js"></script>
 </body>
 </html>

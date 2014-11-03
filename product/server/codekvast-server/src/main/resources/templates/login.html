@@ -1,12 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="utf-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <div th:replace="fragments :: #head-boilerplate"/>
 
     <title>Codekvast - login</title>
-    <link rel="stylesheet" href="/webjars/bootstrap/3.3.0/css/bootstrap.min.css"/>
 </head>
 <body>
 <div class="container">
@@ -42,7 +39,6 @@
         </fieldset>
     </form>
 </div>
-<script src="/webjars/jquery/2.1.1/jquery.min.js"></script>
-<script src="/webjars/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<div th:replace="fragments :: #scripts-twitter-bootstrap"/>
 </body>
 </html>
