@@ -25,7 +25,7 @@ ul.pw-strength {
     vertical-align: 2px;
 }
 
-ul.pw-strength .point:last {
+ul.pw-strength .point:last-child {
     margin: 0 !important;
 }
 
