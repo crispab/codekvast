@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <div th:replace="fragments :: #head-boilerplate"/>
-
+    <th:block th:include="fragments :: #head-boilerplate"/>
     <title th:text="#{login.page-title}">Codekvast - login</title>
 </head>
 <body>
@@ -41,6 +40,6 @@
         </fieldset>
     </form>
 </div>
-<div th:replace="fragments :: #scripts-twitter-bootstrap"/>
+<th:block th:include="fragments :: #scripts-twitter-bootstrap"/>
 </body>
 </html>
