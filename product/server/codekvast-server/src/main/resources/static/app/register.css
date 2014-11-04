@@ -4,11 +4,11 @@ input {
     background: transparent;
 }
 
-input.ng-invalid {
+input.ng-invalid.ng-dirty {
     background: lightyellow;
 }
 
-input.ng-valid {
+input.ng-valid.ng-dirty {
     background: #CFC;
 }
 

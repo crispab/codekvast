@@ -1,11 +1,20 @@
 //noinspection JSUnusedGlobalSymbols
 var codekvastRegistration = angular.module('codekvastRegistration', [])
+
     .controller('RegistrationCtrl', ['$scope', function ($scope) {
         $scope.registration = { };
 
         $scope.form = null;
 
         $scope.errorMessages = undefined;
+
+        $scope.isFieldValid = function (ctrl) {
+            return ctrl.$pending === undefined && ctrl.$valid
+        };
+
+        $scope.isFieldInvalid = function (ctrl) {
+            return ctrl.$pending === undefined && ctrl.$invalid && !ctrl.$error.unique
+        };
 
         $scope.doSubmit = function () {
             if ($scope.form && $scope.form.$valid) {
@@ -39,7 +48,43 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
         }
     }])
 
-    .directive('checkStrength', [function () {
+    .directive('unique', ['$q', '$timeout', '$http', function ($q, $timeout, $http) {
+        return {
+            require: 'ngModel',
+            link: function (scope, elm, attrs, ctrl) {
+
+                ctrl.$asyncValidators.unique = function (modelValue, viewValue) {
+
+                    if (ctrl.$isEmpty(modelValue)) {
+                        // consider empty model valid
+                        return $q.when();
+                    }
+
+                    var def = $q.defer();
+
+                    $http.get("/register/isUnique",
+                        {params: {
+                            what: attrs.unique,
+                            value: viewValue}})
+                        .success(function (data) {
+                            if (data) {
+                                def.resolve()
+                            } else {
+                                def.reject()
+                            }
+                        }).error(function () {
+                            // Assume the value is unique for now. If not, the registration will fail later son the
+                            // server side.
+                            def.resolve();
+                        })
+
+                    return def.promise;
+                };
+            }
+        };
+    }])
+
+    .directive('passwordStrength', [function () {
         return {
             replace: false,
             restrict: 'EACM',
@@ -93,7 +138,7 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
                     }
                 };
 
-                scope.$watch(attrs.checkStrength, function (newValue) {
+                scope.$watch(attrs.passwordStrength, function (newValue) {
                     if (newValue === undefined) {
                         elem.css({ "display": "none"  });
                     } else {
