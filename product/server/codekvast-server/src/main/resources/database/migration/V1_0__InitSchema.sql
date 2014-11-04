@@ -9,6 +9,7 @@ DROP TABLE IF EXISTS users;
 CREATE TABLE users (
   id                 INTEGER                             NOT NULL IDENTITY,
   username           VARCHAR(100)                        NOT NULL UNIQUE,
+  usernameLc  VARCHAR AS LOWER(username),
   encoded_password   VARCHAR(80),
   plaintext_password VARCHAR(255),
   enabled            BOOLEAN DEFAULT TRUE                NOT NULL,
@@ -34,6 +35,7 @@ DROP TABLE IF EXISTS customers;
 CREATE TABLE customers (
   id          INTEGER                             NOT NULL IDENTITY,
   name        VARCHAR(100)                        NOT NULL UNIQUE,
+  nameLc VARCHAR AS LOWER(name),
   created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   modified_at TIMESTAMP AS NOW()
 );

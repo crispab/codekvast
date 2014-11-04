@@ -2,7 +2,7 @@ package se.crisp.codekvast.server.codekvast_server.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import se.crisp.codekvast.server.agent.model.v1.JvmRunData;
 import se.crisp.codekvast.server.agent.model.v1.SignatureData;
 import se.crisp.codekvast.server.agent.model.v1.UsageData;
@@ -21,7 +21,7 @@ import java.util.Collection;
  *
  * @author Olle Hallin
  */
-@Repository
+@Service
 @Slf4j
 public class StorageServiceImpl implements StorageService {
 

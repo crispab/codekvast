@@ -1,5 +1,6 @@
 package se.crisp.codekvast.server.codekvast_server.dao.impl;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
@@ -7,6 +8,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedCustomerException;
@@ -66,6 +68,7 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
+    @Transactional
     @Cacheable("user")
     public long getCustomerId(final String customerName) throws UndefinedCustomerException {
         log.debug("Looking up customer id for '{}'", customerName);
@@ -73,6 +76,7 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
+    @Transactional
     @Cacheable("user")
     public long getAppId(long customerId, String environment, String appName, String appVersion) throws UndefinedApplicationException {
         log.debug("Looking up app id for {}:{}:{}", customerId, appName, appVersion);
@@ -80,6 +84,7 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
+    @Transactional(readOnly = true)
     @Cacheable("user")
     public AppId getAppId(String jvmFingerprint) {
         log.debug("Looking up AppId for JVM {}...", jvmFingerprint);
@@ -88,6 +93,20 @@ public class UserDAOImpl implements UserDAO {
         AppId result = jdbcTemplate.queryForObject(sql, new AppIdRowMapper(), jvmFingerprint);
         log.debug("Result = {}", result);
         return result;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable("user")
+    public int countUsersByUsername(@NonNull String username) {
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM users WHERE usernameLc = ?", Integer.class, username.toLowerCase());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable("user")
+    public int countCustomersByName(String customerName) {
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM customers WHERE nameLc = ?", Integer.class, customerName.toLowerCase());
     }
 
     private long doGetOrCreateCustomer(final String customerName, boolean allowRecursion) throws UndefinedCustomerException {

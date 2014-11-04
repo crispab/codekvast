@@ -8,10 +8,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import se.crisp.codekvast.server.agent.model.v1.Constraints;
+import se.crisp.codekvast.server.codekvast_server.service.UserService;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import javax.inject.Inject;
 
 /**
  * A Spring MVC Controller that handles registration.
@@ -22,6 +21,13 @@ import java.util.Set;
 @Controller
 @Slf4j
 public class RegistrationController {
+
+    private final UserService userService;
+
+    @Inject
+    public RegistrationController(UserService userService) {
+        this.userService = userService;
+    }
 
     @RequestMapping(value = "/register", method = RequestMethod.GET)
     public String register(ModelMap modelMap) {
@@ -35,12 +41,20 @@ public class RegistrationController {
 
     @RequestMapping(value = "/register/isUnique", method = RequestMethod.GET)
     @ResponseBody
-    public Boolean isUnique(@RequestParam("what") String what, @RequestParam("value") String value) {
-        Set<String> usernames = new HashSet<>(Arrays.asList("Jim", "Jill", "John"));
-
-        boolean result = !usernames.contains(value);
-
-        log.debug("{} {} is {}", what, value, result ? "unique" : "not unique");
+    public Boolean isUnique(@RequestParam("kind") String kind, @RequestParam("value") String value) {
+        boolean result = userService.isUnique(toKind(kind), value);
+        log.debug("{} {} is {}", kind, value, result ? "unique" : "not unique");
         return result;
+    }
+
+    private UserService.UniqueKind toKind(String kind) {
+        switch (kind.toLowerCase()) {
+        case "username":
+            return UserService.UniqueKind.USERNAME;
+        case "customername":
+            return UserService.UniqueKind.CUSTOMER_NAME;
+        default:
+            throw new IllegalArgumentException("Unknown kind: " + kind);
+        }
     }
 }

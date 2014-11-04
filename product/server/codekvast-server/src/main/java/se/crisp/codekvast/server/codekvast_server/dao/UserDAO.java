@@ -1,6 +1,5 @@
 package se.crisp.codekvast.server.codekvast_server.dao;
 
-import org.springframework.cache.annotation.Cacheable;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedCustomerException;
 
@@ -12,8 +11,11 @@ public interface UserDAO {
 
     long getAppId(long customerId, String environment, String appName, String appVersion) throws UndefinedApplicationException;
 
-    @Cacheable("application")
     AppId getAppId(String jvmFingerprint);
+
+    int countUsersByUsername(String username);
+
+    int countCustomersByName(String customerName);
 
     @lombok.Value
     static class AppId {

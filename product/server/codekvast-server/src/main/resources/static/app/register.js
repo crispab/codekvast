@@ -64,7 +64,7 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
 
                     $http.get("/register/isUnique",
                         {params: {
-                            what: attrs.unique,
+                            kind: attrs.unique,
                             value: viewValue}})
                         .success(function (data) {
                             if (data) {
