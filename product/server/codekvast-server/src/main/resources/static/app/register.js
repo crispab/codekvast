@@ -23,10 +23,10 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
             } else {
                 $scope.errorMessages = [];
 
-                if (!form.emailAddress2.$valid) {
+                if ($scope.emailAddress2 === undefined) {
                     $scope.errorMessages.push("Email addresses do not match!")
                 }
-                if (!form.pw2.$valid) {
+                if ($scope.pw2 === undefined) {
                     $scope.errorMessages.push("Passwords do not match!")
                 }
                 $scope.errorMessages.push("Correct the errors and try again!")
@@ -34,19 +34,31 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
         }
     }])
 
-    .directive('mustMatch', [function () {
+    .directive('ckMustMatch', [function () {
         return {
             require: 'ngModel',
             link: function (scope, elem, attrs, ctrl) {
-                var firstElement = '#' + attrs.mustMatch;
+                var firstElement = '#' + attrs.ckMustMatch;
                 elem.add(firstElement).on('keyup', function () {
                     scope.$apply(function () {
-                        ctrl.$setValidity('mustmatch', elem.val() === $(firstElement).val());
+                        ctrl.$setValidity('ckmustmatch', elem.val() === $(firstElement).val());
                     });
                 });
             }
         }
     }])
+
+    .directive('ckLowercase', function () {
+        return {
+            require: 'ngModel',
+            link: function (scope, element, attrs, ctrl) {
+                ctrl.$parsers.push(function (input) {
+                    return input ? input.toLowerCase() : "";
+                });
+                $(element).css("text-transform", "lowercase");
+            }
+        };
+    })
 
     .directive('unique', ['$q', '$timeout', '$http', function ($q, $timeout, $http) {
         return {
@@ -65,7 +77,9 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
                     $http.get("/register/isUnique",
                         {params: {
                             kind: attrs.unique,
-                            value: viewValue}})
+                            value: viewValue.toLowerCase()
+                        }
+                        })
                         .success(function (data) {
                             if (data) {
                                 def.resolve()
@@ -84,7 +98,7 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
         };
     }])
 
-    .directive('passwordStrength', [function () {
+    .directive('ckPasswordStrength', [function () {
         return {
             replace: false,
             restrict: 'EACM',
@@ -138,7 +152,7 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
                     }
                 };
 
-                scope.$watch(attrs.passwordStrength, function (newValue) {
+                scope.$watch(attrs.ckPasswordStrength, function (newValue) {
                     if (newValue === undefined) {
                         elem.css({ "display": "none"  });
                     } else {

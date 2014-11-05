@@ -11,7 +11,7 @@
 
     <h1 th:text="#{registration.page-title}">Codekvast - registration</h1>
 
-    <form class="form-horizontal" novalidate="novalidate" name="form" ng-submit="doSubmit()">
+    <form class="form-horizontal" name="form" ng-submit="doSubmit()">
 
         <fieldset ng-show="errorMessages">
             <legend>Form errors</legend>
@@ -24,37 +24,46 @@
             <legend>User details</legend>
             <div class="form-group">
                 <label class="col-md-2 control-label" for="fullName">Full name</label>
-                <input class="col-md-6" id="fullName" name="fullName" type="text" ng-model="registration.fullName" ng-required="true"
-                       placeholder="Enter your full name"
+                <input class="col-md-6" id="fullName" name="fullName"
+                       placeholder="Enter your full name" type="text" ng-model="registration.fullName" ng-required="true"
                        th:attr="ng-maxlength=${maxUsernameLength}"/>
                 <span ng-hide="form.fullName.$valid" class="glyphicon glyphicon-asterisk"></span>
                 <span ng-show="form.fullName.$valid" class="glyphicon glyphicon-ok"></span>
             </div>
             <div class="form-group">
                 <label class="col-md-2 control-label" for="emailAddress1">Email address</label>
-                <input class="col-md-6" id="emailAddress1" name="emailAddress1" type="email" ng-model="registration.emailAddress"
-                       ng-required="true"
+                <input class="col-md-6"
+                       id="emailAddress1"
+                       name="emailAddress1"
                        placeholder="Enter your email address"
+                       type="email"
+                       ng-model="registration.emailAddress"
+                       ng-required="true"
+                       ck-lowercase="true"
                        th:attr="ng-maxlength=${maxEmailAddressLength}"/>
                 <span ng-hide="form.emailAddress1.$valid" class="glyphicon glyphicon-asterisk"></span>
                 <span ng-show="form.emailAddress1.$valid" class="glyphicon glyphicon-ok"></span>
             </div>
             <div class="form-group">
                 <label class="col-md-2 control-label" for="emailAddress2">Verify email address</label>
-                <input class="col-md-6" id="emailAddress2" name="emailAddress2" type="email" ng-model="emailAddress2"
-                       ng-required="true"
+                <input class="col-md-6"
+                       id="emailAddress2"
+                       name="emailAddress2"
                        placeholder="Reenter your email address"
-                       th:attr="ng-maxlength=${maxEmailAddressLength}"
-                       must-match="emailAddress1"/>
+                       type="email"
+                       ng-model="emailAddress2"
+                       ck-must-match="emailAddress1"
+                       ng-required="true"
+                       ck-lowercase="true"
+                       th:attr="ng-maxlength=${maxEmailAddressLength}"/>
                 <span ng-hide="form.emailAddress2.$valid" class="glyphicon glyphicon-asterisk"></span>
                 <span ng-show="form.emailAddress2.$valid" class="glyphicon glyphicon-ok"></span>
             </div>
             <div class="form-group">
                 <label class="col-md-2 control-label" for="username">Username</label>
                 <input class="col-md-6" id="username" name="username" type="text" ng-model="registration.username" ng-required="true"
-                       th:attr="ng-maxlength=${maxUsernameLength}"
-                       placeholder="Enter your preferred username"
-                       unique="username" ng-model-options="{debounce: 500}"/>
+                       th:attr="ng-maxlength=${maxUsernameLength}" ck-lowercase="true"
+                       placeholder="Enter your preferred username" unique="username" ng-model-options="{debounce: 500}"/>
                 <span ng-show="isFieldInvalid(form.username)" class="glyphicon glyphicon-asterisk"></span>
                 <span ng-show="isFieldValid(form.username)" class="glyphicon glyphicon-ok"></span>
                 <span ng-show="form.username.$pending.unique" class="glyphicon glyphicon-flash"></span>
@@ -71,7 +80,7 @@
             </div>
             <div class="form-group">
                 <label class="col-md-2 control-label" for="pw2">Verify Password</label>
-                <input class="col-md-6" id="pw2" name="pw2" type="password" ng-model="pw2" ng-required="true" must-match="pw1"
+                <input class="col-md-6" id="pw2" name="pw2" type="password" ng-model="pw2" ng-required="true" ck-must-match="pw1"
                        placeholder="Reenter your password"/>
                 <span ng-hide="form.pw2.$valid" class="glyphicon glyphicon-asterisk"></span>
                 <span ng-show="form.pw2.$valid" class="glyphicon glyphicon-ok"></span>
@@ -84,13 +93,11 @@
                 <input class="col-md-6" id="customerName" name="customerName" type="text" ng-model="registration.customerName"
                        ng-required="true"
                        th:attr="ng-maxlength=${maxCustomerNameLength}"
-                       placeholder="Enter your company or organisation name"
-                       unique="customerName" ng-model-options="{debounce: 500}"/>
-                <span ng-show="isFieldInvalid(form.customerName)" class="glyphicon glyphicon-asterisk"></span>
-                <span ng-show="isFieldValid(form.customerName)" class="glyphicon glyphicon-ok"></span>
+                       placeholder="Enter your company or organisation name" unique="customerName" ng-model-options="{debounce: 500}"/>
+                <span ng-show="isFieldInvalid(form.customerName)" class="glyphicon glyphicon-asterisk"></span> <span ng-show="isFieldValid(form.customerName)"
+                                                                                                                     class="glyphicon glyphicon-ok"></span>
                 <span ng-show="form.customerName.$pending.unique" class="glyphicon glyphicon-flash"></span>
-                <span ng-show="form.customerName.$error.unique"
-                      class="glyphicon glyphicon-ban-circle">&nbsp;This company name is already taken!</span>
+                <span ng-show="form.customerName.$error.unique" class="glyphicon glyphicon-ban-circle">&nbsp;This company name is already taken!</span>
             </div>
             <div class="form-group">
                 <label class="col-md-2 control-label" for="appName">Application name</label>
@@ -98,11 +105,12 @@
                        ng-required="true"
                        placeholder="Enter your application name"
                        th:attr="ng-maxlength=${maxAppNameLength}"/>
-                <span ng-hide="form.appName.$valid" class="glyphicon glyphicon-asterisk"></span>
-                <span ng-show="form.appName.$valid" class="glyphicon glyphicon-ok"></span>
+                <span ng-hide="form.appName.$valid" class="glyphicon glyphicon-asterisk"></span> <span ng-show="form.appName.$valid"
+                                                                                                       class="glyphicon glyphicon-ok"></span>
             </div>
         </fieldset>
-        <button type="submit" class="btn btn-primary">Register</button>
+        <button type="submit" class="btn btn-primary">Register
+        </button>
     </form>
 </div>
 

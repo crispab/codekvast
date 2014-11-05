@@ -99,7 +99,7 @@ public class UserDAOImpl implements UserDAO {
     @Transactional(readOnly = true)
     @Cacheable("user")
     public int countUsersByUsername(@NonNull String username) {
-        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM users WHERE usernameLc = ?", Integer.class, username.toLowerCase());
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM users WHERE username = ?", Integer.class, username.toLowerCase());
     }
 
     @Override

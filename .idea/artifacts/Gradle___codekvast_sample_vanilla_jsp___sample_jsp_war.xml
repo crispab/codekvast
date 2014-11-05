@@ -1,11 +1,15 @@
 <component name="ArtifactManager">
   <artifact type="war" name="Gradle : codekvast.sample:vanilla-jsp : sample-jsp.war">
     <output-path>$PROJECT_DIR$/build/classes/artifacts/vanilla-jsp</output-path>
+    <properties id="gradle-properties">
+      <options external-project-path="$PROJECT_DIR$/sample/vanilla-jsp" />
+    </properties>
     <root id="archive" name="sample-jsp.war">
       <element id="javaee-facet-resources" facet="vanilla-jsp/web/Web Gradle : sample-jsp.war" />
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
           <element id="module-output" name="vanilla-jsp" />
+          <element id="dir-copy" path="$PROJECT_DIR$/sample/vanilla-jsp/build/resources/main" />
         </element>
       </element>
       <element id="directory" name="META-INF">

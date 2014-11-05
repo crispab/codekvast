@@ -9,7 +9,6 @@ DROP TABLE IF EXISTS users;
 CREATE TABLE users (
   id                 INTEGER                             NOT NULL IDENTITY,
   username           VARCHAR(100)                        NOT NULL UNIQUE,
-  usernameLc  VARCHAR AS LOWER(username),
   encoded_password   VARCHAR(80),
   plaintext_password VARCHAR(255),
   enabled            BOOLEAN DEFAULT TRUE                NOT NULL,
@@ -35,10 +34,13 @@ DROP TABLE IF EXISTS customers;
 CREATE TABLE customers (
   id          INTEGER                             NOT NULL IDENTITY,
   name        VARCHAR(100)                        NOT NULL UNIQUE,
-  nameLc VARCHAR AS LOWER(name),
+  nameLc VARCHAR(100) AS LOWER(name),
   created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   modified_at TIMESTAMP AS NOW()
 );
+
+DROP INDEX IF EXISTS ix_customer_name_lc;
+CREATE UNIQUE INDEX ix_customer_name_lc ON customers (nameLc);
 
 DROP TABLE IF EXISTS customer_members;
 CREATE TABLE customer_members (

@@ -1,27 +1,31 @@
 <component name="ArtifactManager">
   <artifact type="war" name="Gradle : codekvast.sample:tapestry5-war : sample-t5.war">
     <output-path>$PROJECT_DIR$/build/classes/artifacts/tapestry5-war</output-path>
+    <properties id="gradle-properties">
+      <options external-project-path="$PROJECT_DIR$/sample/tapestry5-war" />
+    </properties>
     <root id="archive" name="sample-t5.war">
       <element id="javaee-facet-resources" facet="tapestry5-war/web/Web Gradle : sample-t5.war" />
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
           <element id="module-output" name="tapestry5-war" />
+          <element id="dir-copy" path="$PROJECT_DIR$/sample/tapestry5-war/build/resources/main" />
         </element>
         <element id="directory" name="lib">
-          <element id="library" level="project" name="Gradle: tapestry-core-5.3.6" />
-          <element id="library" level="project" name="Gradle: tapestry-json-5.3.6" />
-          <element id="library" level="project" name="Gradle: antlr-2.7.7" />
-          <element id="library" level="project" name="Gradle: stringtemplate-3.2.1" />
-          <element id="library" level="project" name="Gradle: antlr-runtime-3.3" />
-          <element id="library" level="project" name="Gradle: tapestry5-annotations-5.3.6" />
-          <element id="library" level="project" name="Gradle: slf4j-api-1.6.1" />
-          <element id="library" level="project" name="Gradle: tapestry-func-5.3.6" />
-          <element id="library" level="project" name="Gradle: javax.inject-1" />
-          <element id="library" level="project" name="Gradle: plastic-5.3.6" />
-          <element id="library" level="project" name="Gradle: javassist-3.12.1.GA" />
-          <element id="library" level="project" name="Gradle: tapestry-ioc-5.3.6" />
-          <element id="library" level="project" name="Gradle: commons-codec-1.5" />
-          <element id="library" level="project" name="Gradle: logback-core-1.1.2" />
+          <element id="library" level="project" name="Gradle: org.apache.tapestry:tapestry-core:5.3.6" />
+          <element id="library" level="project" name="Gradle: org.apache.tapestry:tapestry-json:5.3.6" />
+          <element id="library" level="project" name="Gradle: org.antlr:antlr-runtime:3.3" />
+          <element id="library" level="project" name="Gradle: org.apache.tapestry:tapestry-ioc:5.3.6" />
+          <element id="library" level="project" name="Gradle: commons-codec:commons-codec:1.5" />
+          <element id="library" level="project" name="Gradle: org.antlr:stringtemplate:3.2.1" />
+          <element id="library" level="project" name="Gradle: org.apache.tapestry:tapestry5-annotations:5.3.6" />
+          <element id="library" level="project" name="Gradle: org.slf4j:slf4j-api:1.6.1" />
+          <element id="library" level="project" name="Gradle: org.apache.tapestry:tapestry-func:5.3.6" />
+          <element id="library" level="project" name="Gradle: javax.inject:javax.inject:1" />
+          <element id="library" level="project" name="Gradle: org.apache.tapestry:plastic:5.3.6" />
+          <element id="library" level="project" name="Gradle: javassist:javassist:3.12.1.GA" />
+          <element id="library" level="project" name="Gradle: antlr:antlr:2.7.7" />
+          <element id="library" level="project" name="Gradle: ch.qos.logback:logback-core:1.1.2" />
         </element>
       </element>
       <element id="directory" name="META-INF">
