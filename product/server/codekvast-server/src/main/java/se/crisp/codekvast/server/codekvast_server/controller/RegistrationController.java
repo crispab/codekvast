@@ -41,10 +41,8 @@ public class RegistrationController {
 
     @RequestMapping(value = "/register/isUnique", method = RequestMethod.GET)
     @ResponseBody
-    public Boolean isUnique(@RequestParam("kind") String kind, @RequestParam("value") String value) {
-        boolean result = userService.isUnique(toKind(kind), value);
-        log.debug("{} {} is {}", kind, value, result ? "unique" : "not unique");
-        return result;
+    public Boolean isUnique(@RequestParam("kind") String kind, @RequestParam("name") String name) {
+        return userService.isUnique(toKind(kind), name);
     }
 
     private UserService.UniqueKind toKind(String kind) {

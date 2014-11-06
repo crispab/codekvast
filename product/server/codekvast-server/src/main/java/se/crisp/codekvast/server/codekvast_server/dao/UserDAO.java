@@ -15,7 +15,7 @@ public interface UserDAO {
 
     int countUsersByUsername(String username);
 
-    int countCustomersByName(String customerName);
+    int countCustomersByNameLc(String customerName);
 
     @lombok.Value
     static class AppId {

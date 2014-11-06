@@ -27,8 +27,10 @@
                 <input class="col-md-6" id="fullName" name="fullName"
                        placeholder="Enter your full name" type="text" ng-model="registration.fullName" ng-required="true"
                        th:attr="ng-maxlength=${maxUsernameLength}"/>
-                <span ng-hide="form.fullName.$valid" class="glyphicon glyphicon-asterisk"></span>
-                <span ng-show="form.fullName.$valid" class="glyphicon glyphicon-ok"></span>
+                <ck-validation-icons field="form.fullName"/>
+                <span ng-show="form.fullName.$pristine" class="glyphicon glyphicon-asterisk"></span>
+                <span ng-show="isFieldValid(form.fullName)" class="glyphicon glyphicon-ok"></span>
+                <span ng-show="isFieldInvalid(form.fullName)" class="glyphicon glyphicon-ban-circle"></span>
             </div>
             <div class="form-group">
                 <label class="col-md-2 control-label" for="emailAddress1">Email address</label>
@@ -41,8 +43,9 @@
                        ng-required="true"
                        ck-lowercase="true"
                        th:attr="ng-maxlength=${maxEmailAddressLength}"/>
-                <span ng-hide="form.emailAddress1.$valid" class="glyphicon glyphicon-asterisk"></span>
-                <span ng-show="form.emailAddress1.$valid" class="glyphicon glyphicon-ok"></span>
+                <span ng-show="form.emailAddress1.$pristine" class="glyphicon glyphicon-asterisk"></span>
+                <span ng-show="isFieldValid(form.emailAddress1)" class="glyphicon glyphicon-ok"></span>
+                <span ng-show="isFieldInvalid(form.emailAddress1)" class="glyphicon glyphicon-ban-circle"></span>
             </div>
             <div class="form-group">
                 <label class="col-md-2 control-label" for="emailAddress2">Verify email address</label>
@@ -51,13 +54,13 @@
                        name="emailAddress2"
                        placeholder="Reenter your email address"
                        type="email"
-                       ng-model="emailAddress2"
-                       ck-must-match="emailAddress1"
+                       ng-model="emailAddress2" ck-must-match-lc="emailAddress1"
                        ng-required="true"
                        ck-lowercase="true"
                        th:attr="ng-maxlength=${maxEmailAddressLength}"/>
-                <span ng-hide="form.emailAddress2.$valid" class="glyphicon glyphicon-asterisk"></span>
-                <span ng-show="form.emailAddress2.$valid" class="glyphicon glyphicon-ok"></span>
+                <span ng-show="form.emailAddress2.$pristine" class="glyphicon glyphicon-asterisk"></span>
+                <span ng-show="isFieldValid(form.emailAddress2)" class="glyphicon glyphicon-ok"></span>
+                <span ng-show="isFieldInvalid(form.emailAddress2)" class="glyphicon glyphicon-ban-circle"></span>
             </div>
             <div class="form-group">
                 <label class="col-md-2 control-label" for="username">Username</label>
@@ -66,24 +69,27 @@
                        placeholder="Enter your preferred username"
                        ck-unique="username"
                        ng-model-options="{debounce: 500}"/>
-                <span ng-show="isFieldInvalid(form.username)" class="glyphicon glyphicon-asterisk"></span>
+                <span ng-show="form.username.$pristine" class="glyphicon glyphicon-asterisk"></span>
                 <span ng-show="isFieldValid(form.username)" class="glyphicon glyphicon-ok"></span>
-                <span ng-show="form.username.$pending.ckUnique" class="glyphicon glyphicon-flash"></span>
+                <span ng-show="isFieldInvalid(form.username)" class="glyphicon glyphicon-ban-circle"></span>
+                <span ng-show="isAjaxPending(form.username)" class="glyphicon glyphicon-flash"></span>
             </div>
             <div class="form-group">
                 <label class="col-md-2 control-label" for="pw1">Password</label>
                 <input class="col-md-6" id="pw1" name="pw1" type="password" ng-model="registration.password" ng-required="true"
                        placeholder="Enter your preferred password"/>
-                <span ng-hide="form.pw1.$valid" class="glyphicon glyphicon-asterisk"></span>
-                <span ng-show="form.pw1.$valid" class="glyphicon glyphicon-ok"></span>
+                <span ng-show="form.pw1.$pristine" class="glyphicon glyphicon-asterisk"></span>
+                <span ng-show="isFieldValid(form.pw1)" class="glyphicon glyphicon-ok"></span>
+                <span ng-show="isFieldInvalid(form.pw1)" class="glyphicon glyphicon-ban-circle"></span>
                 <ul class="pw-strength" ck-password-strength="registration.password"/>
             </div>
             <div class="form-group">
                 <label class="col-md-2 control-label" for="pw2">Verify Password</label>
                 <input class="col-md-6" id="pw2" name="pw2" type="password" ng-model="pw2" ng-required="true" ck-must-match="pw1"
                        placeholder="Reenter your password"/>
-                <span ng-hide="form.pw2.$valid" class="glyphicon glyphicon-asterisk"></span>
-                <span ng-show="form.pw2.$valid" class="glyphicon glyphicon-ok"></span>
+                <span ng-show="form.pw2.$pristine" class="glyphicon glyphicon-asterisk"></span>
+                <span ng-show="isFieldValid(form.pw2)" class="glyphicon glyphicon-ok"></span>
+                <span ng-show="isFieldInvalid(form.pw2)" class="glyphicon glyphicon-ban-circle"></span>
             </div>
         </fieldset>
         <fieldset>
@@ -96,9 +102,10 @@
                        placeholder="Enter your company or organisation name"
                        ck-unique="customerName"
                        ng-model-options="{debounce: 500}"/>
-                <span ng-show="isFieldInvalid(form.customerName)" class="glyphicon glyphicon-asterisk"></span>
+                <span ng-show="form.customerName.$pristine" class="glyphicon glyphicon-asterisk"></span>
                 <span ng-show="isFieldValid(form.customerName)" class="glyphicon glyphicon-ok"></span>
-                <span ng-show="form.customerName.$pending.ckUnique" class="glyphicon glyphicon-flash"></span>
+                <span ng-show="isFieldInvalid(form.customerName)" class="glyphicon glyphicon-ban-circle"></span>
+                <span ng-show="isAjaxPending(form.customerName)" class="glyphicon glyphicon-flash"></span>
             </div>
             <div class="form-group">
                 <label class="col-md-2 control-label" for="appName">Application name</label>
@@ -106,8 +113,9 @@
                        ng-required="true"
                        placeholder="Enter your application name"
                        th:attr="ng-maxlength=${maxAppNameLength}"/>
-                <span ng-hide="form.appName.$valid" class="glyphicon glyphicon-asterisk"></span> <span ng-show="form.appName.$valid"
-                                                                                                       class="glyphicon glyphicon-ok"></span>
+                <span ng-show="form.appName.$pristine" class="glyphicon glyphicon-asterisk"></span>
+                <span ng-show="isFieldValid(form.appName)" class="glyphicon glyphicon-ok"></span>
+                <span ng-show="isFieldInvalid(form.appName)" class="glyphicon glyphicon-ban-circle"></span>
             </div>
         </fieldset>
         <button type="submit" class="btn btn-primary">Register

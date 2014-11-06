@@ -6,5 +6,5 @@ package se.crisp.codekvast.server.codekvast_server.service;
 public interface UserService {
     enum UniqueKind {USERNAME, CUSTOMER_NAME}
 
-    boolean isUnique(UniqueKind kind, String value);
+    boolean isUnique(UniqueKind kind, String name);
 }

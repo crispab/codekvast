@@ -97,16 +97,14 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable("user")
     public int countUsersByUsername(@NonNull String username) {
-        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM users WHERE username = ?", Integer.class, username.toLowerCase());
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM users WHERE username = ?", Integer.class, username);
     }
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable("user")
-    public int countCustomersByName(String customerName) {
-        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM customers WHERE nameLc = ?", Integer.class, customerName.toLowerCase());
+    public int countCustomersByNameLc(@NonNull String customerName) {
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM customers WHERE nameLc = ?", Integer.class, customerName);
     }
 
     private long doGetOrCreateCustomer(final String customerName, boolean allowRecursion) throws UndefinedCustomerException {

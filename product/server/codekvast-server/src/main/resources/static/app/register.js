@@ -11,7 +11,11 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
         };
 
         $scope.isFieldInvalid = function (ctrl) {
-            return ctrl.$pending === undefined && ctrl.$invalid
+            return ctrl.$pending === undefined && ctrl.$dirty && ctrl.$invalid
+        };
+
+        $scope.isAjaxPending = function (ctrl) {
+            return ctrl.$pending;
         };
 
         $scope.doSubmit = function () {
@@ -21,8 +25,9 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
             } else {
                 $scope.errorMessages = [];
                 for (var v in $scope.form.$error) {
+                    //noinspection JSUnfilteredForInLoop
                     $scope.form.$error[v].forEach(function (field) {
-                        var descr = v + " " + field.$name
+                        var descr = v + " " + field.$name;
                         switch (descr) {
                             case "ckMustMatch emailAddress2":
                                 $scope.errorMessages.push("Email addresses must match");
@@ -48,6 +53,7 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
 
     .directive('ckMustMatch', [function () {
         return {
+            restrict: 'A',
             require: 'ngModel',
             link: function (scope, elem, attrs, ctrl) {
                 var firstElement = '#' + attrs.ckMustMatch;
@@ -60,12 +66,28 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
         }
     }])
 
+    .directive('ckMustMatchLc', [function () {
+        return {
+            restrict: 'A',
+            require: 'ngModel',
+            link: function (scope, elem, attrs, ctrl) {
+                var firstElement = '#' + attrs.ckMustMatchLc;
+                elem.add(firstElement).on('keyup', function () {
+                    scope.$apply(function () {
+                        ctrl.$setValidity('ckMustMatch', angular.lowercase(elem.val()) === angular.lowercase($(firstElement).val()));
+                    });
+                });
+            }
+        }
+    }])
+
     .directive('ckLowercase', function () {
         return {
+            restrict: 'A',
             require: 'ngModel',
             link: function (scope, element, attrs, ctrl) {
                 ctrl.$parsers.push(function (input) {
-                    return input ? input.toLowerCase() : "";
+                    return angular.lowercase(input);
                 });
                 $(element).css("text-transform", "lowercase");
             }
@@ -74,6 +96,7 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
 
     .directive('ckUnique', ['$q', '$timeout', '$http', function ($q, $timeout, $http) {
         return {
+            restrict: 'A',
             require: 'ngModel',
             link: function (scope, elm, attrs, ctrl) {
 
@@ -89,7 +112,7 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
                     $http.get("/register/isUnique",
                         {params: {
                             kind: attrs.ckUnique,
-                            value: viewValue.toLowerCase()
+                            name: viewValue
                         }
                         })
                         .success(function (data) {
@@ -102,7 +125,7 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
                             // Assume the value is unique for now. If not, the registration will fail later son the
                             // server side.
                             def.resolve();
-                        })
+                        });
 
                     return def.promise;
                 };
@@ -113,7 +136,7 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
     .directive('ckPasswordStrength', [function () {
         return {
             replace: false,
-            restrict: 'EACM',
+            restrict: 'A',
             link: function (scope, elem, attrs) {
 
                 var strength = {

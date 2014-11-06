@@ -33,7 +33,7 @@ CREATE UNIQUE INDEX ix_user_roles ON user_roles (user_id, role);
 DROP TABLE IF EXISTS customers;
 CREATE TABLE customers (
   id          INTEGER                             NOT NULL IDENTITY,
-  name        VARCHAR(100)                        NOT NULL UNIQUE,
+  name   VARCHAR(100) NOT NULL,
   nameLc VARCHAR(100) AS LOWER(name),
   created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   modified_at TIMESTAMP AS NOW()
@@ -104,6 +104,7 @@ CREATE UNIQUE INDEX ix_signatures ON signatures (customer_id, application_id, si
 //--- System data ----------------------------------------------------------------------------------------------
 INSERT INTO roles (name) VALUES ('SUPERUSER');
 INSERT INTO roles (name) VALUES ('AGENT');
+INSERT INTO roles (name) VALUES ('ADMIN');
 INSERT INTO roles (name) VALUES ('USER');
 INSERT INTO roles (name) VALUES ('MONITOR');
 
@@ -114,6 +115,7 @@ INSERT INTO users (id, username, plaintext_password, enabled) VALUES (0, 'system
 INSERT INTO customer_members (customer_id, user_id) VALUES (0, 0);
 INSERT INTO user_roles (user_id, role) VALUES (0, 'SUPERUSER');
 INSERT INTO user_roles (user_id, role) VALUES (0, 'AGENT');
+INSERT INTO user_roles (user_id, role) VALUES (0, 'ADMIN');
 INSERT INTO user_roles (user_id, role) VALUES (0, 'USER');
 INSERT INTO user_roles (user_id, role) VALUES (0, 'MONITOR');
 
@@ -128,6 +130,11 @@ INSERT INTO users (id, username, plaintext_password, enabled) VALUES (2, 'agent'
 INSERT INTO customer_members (customer_id, user_id) VALUES (1, 2);
 INSERT INTO user_roles (user_id, role) VALUES (2, 'AGENT');
 
-INSERT INTO users (id, username, plaintext_password, enabled) VALUES (3, 'user', '0000', TRUE);
+INSERT INTO users (id, username, plaintext_password, enabled) VALUES (3, 'admin', '0000', TRUE);
 INSERT INTO customer_members (customer_id, user_id) VALUES (1, 3);
+INSERT INTO user_roles (user_id, role) VALUES (3, 'ADMIN');
 INSERT INTO user_roles (user_id, role) VALUES (3, 'USER');
+
+INSERT INTO users (id, username, plaintext_password, enabled) VALUES (4, 'user', '0000', TRUE);
+INSERT INTO customer_members (customer_id, user_id) VALUES (1, 4);
+INSERT INTO user_roles (user_id, role) VALUES (4, 'USER');

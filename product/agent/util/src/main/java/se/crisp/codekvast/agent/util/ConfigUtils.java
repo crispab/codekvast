@@ -3,6 +3,7 @@ package se.crisp.codekvast.agent.util;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Locale;
 import java.util.Properties;
 
 /**
@@ -38,7 +39,7 @@ public final class ConfigUtils {
     }
 
     public static String normalizePathName(String path) {
-        return path.replaceAll("[^a-zA-Z0-9_-]", "").toLowerCase();
+        return path.replaceAll("[^a-zA-Z0-9_-]", "").toLowerCase(Locale.ENGLISH);
     }
 
     public static int getOptionalIntValue(Properties props, String key, int defaultValue) {

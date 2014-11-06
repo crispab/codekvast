@@ -6,6 +6,7 @@ import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
 
 import javax.inject.Inject;
+import java.util.Locale;
 
 /**
  * @author Olle Hallin
@@ -21,22 +22,28 @@ public class UserServiceImpl implements UserService {
         this.userDAO = userDAO;
     }
 
+    private String normalizeName(String name) {
+        return name == null ? null : name.trim().toLowerCase(Locale.ENGLISH);
+    }
+
     @Override
-    public boolean isUnique(UniqueKind kind, String value) {
+    public boolean isUnique(UniqueKind kind, String name) {
         int count;
+        String normalizedName = normalizeName(name);
+
         switch (kind) {
         case USERNAME:
-            count = userDAO.countUsersByUsername(value);
+            count = userDAO.countUsersByUsername(normalizedName);
             break;
         case CUSTOMER_NAME:
-            count = userDAO.countCustomersByName(value);
+            count = userDAO.countCustomersByNameLc(normalizedName);
             break;
         default:
             throw new IllegalArgumentException("Unknown kind: " + kind);
         }
-        boolean result = count == 0;
 
-        log.debug("Is {} '{}' unique: {}", kind, value, result);
+        boolean result = count == 0;
+        log.debug("Is {} '{}' unique? {}", kind, normalizedName, result ? "yes" : "no");
         return result;
     }
 }
