@@ -11,7 +11,7 @@
 
     <h1 th:text="#{registration.page-title}">Codekvast - registration</h1>
 
-    <form class="form-horizontal" name="form" ng-submit="doSubmit()">
+    <form class="form-horizontal" th:novalidate="false" name="form" ng-submit="doSubmit()">
 
         <fieldset ng-show="errorMessages">
             <legend>Form errors</legend>
@@ -63,12 +63,12 @@
                 <label class="col-md-2 control-label" for="username">Username</label>
                 <input class="col-md-6" id="username" name="username" type="text" ng-model="registration.username" ng-required="true"
                        th:attr="ng-maxlength=${maxUsernameLength}" ck-lowercase="true"
-                       placeholder="Enter your preferred username" unique="username" ng-model-options="{debounce: 500}"/>
+                       placeholder="Enter your preferred username"
+                       ck-unique="username"
+                       ng-model-options="{debounce: 500}"/>
                 <span ng-show="isFieldInvalid(form.username)" class="glyphicon glyphicon-asterisk"></span>
                 <span ng-show="isFieldValid(form.username)" class="glyphicon glyphicon-ok"></span>
-                <span ng-show="form.username.$pending.unique" class="glyphicon glyphicon-flash"></span>
-                <span ng-show="form.username.$error.unique"
-                      class="glyphicon glyphicon-ban-circle">&nbsp;This username is already taken!</span>
+                <span ng-show="form.username.$pending.ckUnique" class="glyphicon glyphicon-flash"></span>
             </div>
             <div class="form-group">
                 <label class="col-md-2 control-label" for="pw1">Password</label>
@@ -76,7 +76,7 @@
                        placeholder="Enter your preferred password"/>
                 <span ng-hide="form.pw1.$valid" class="glyphicon glyphicon-asterisk"></span>
                 <span ng-show="form.pw1.$valid" class="glyphicon glyphicon-ok"></span>
-                <ul class="pw-strength" password-strength="registration.password"/>
+                <ul class="pw-strength" ck-password-strength="registration.password"/>
             </div>
             <div class="form-group">
                 <label class="col-md-2 control-label" for="pw2">Verify Password</label>
@@ -93,11 +93,12 @@
                 <input class="col-md-6" id="customerName" name="customerName" type="text" ng-model="registration.customerName"
                        ng-required="true"
                        th:attr="ng-maxlength=${maxCustomerNameLength}"
-                       placeholder="Enter your company or organisation name" unique="customerName" ng-model-options="{debounce: 500}"/>
-                <span ng-show="isFieldInvalid(form.customerName)" class="glyphicon glyphicon-asterisk"></span> <span ng-show="isFieldValid(form.customerName)"
-                                                                                                                     class="glyphicon glyphicon-ok"></span>
-                <span ng-show="form.customerName.$pending.unique" class="glyphicon glyphicon-flash"></span>
-                <span ng-show="form.customerName.$error.unique" class="glyphicon glyphicon-ban-circle">&nbsp;This company name is already taken!</span>
+                       placeholder="Enter your company or organisation name"
+                       ck-unique="customerName"
+                       ng-model-options="{debounce: 500}"/>
+                <span ng-show="isFieldInvalid(form.customerName)" class="glyphicon glyphicon-asterisk"></span>
+                <span ng-show="isFieldValid(form.customerName)" class="glyphicon glyphicon-ok"></span>
+                <span ng-show="form.customerName.$pending.ckUnique" class="glyphicon glyphicon-flash"></span>
             </div>
             <div class="form-group">
                 <label class="col-md-2 control-label" for="appName">Application name</label>

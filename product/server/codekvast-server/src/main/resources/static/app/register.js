@@ -4,8 +4,6 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
     .controller('RegistrationCtrl', ['$scope', function ($scope) {
         $scope.registration = { };
 
-        $scope.form = null;
-
         $scope.errorMessages = undefined;
 
         $scope.isFieldValid = function (ctrl) {
@@ -13,21 +11,35 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
         };
 
         $scope.isFieldInvalid = function (ctrl) {
-            return ctrl.$pending === undefined && ctrl.$invalid && !ctrl.$error.unique
+            return ctrl.$pending === undefined && ctrl.$invalid
         };
 
         $scope.doSubmit = function () {
-            if ($scope.form && $scope.form.$valid) {
+            if ($scope.form.$valid) {
                 $scope.errorMessages = undefined;
                 alert("Submitting " + JSON.stringify($scope.registration))
             } else {
                 $scope.errorMessages = [];
-
-                if ($scope.emailAddress2 === undefined) {
-                    $scope.errorMessages.push("Email addresses do not match!")
-                }
-                if ($scope.pw2 === undefined) {
-                    $scope.errorMessages.push("Passwords do not match!")
+                for (var v in $scope.form.$error) {
+                    $scope.form.$error[v].forEach(function (field) {
+                        var descr = v + " " + field.$name
+                        switch (descr) {
+                            case "ckMustMatch emailAddress2":
+                                $scope.errorMessages.push("Email addresses must match");
+                                break;
+                            case "ckMustMatch pw2":
+                                $scope.errorMessages.push("Passwords must match");
+                                break;
+                            case "ckUnique username":
+                                $scope.errorMessages.push("The username is already taken");
+                                break;
+                            case "ckUnique customerName":
+                                $scope.errorMessages.push("The company name is already taken");
+                                break;
+                            default:
+                                break;
+                        }
+                    });
                 }
                 $scope.errorMessages.push("Correct the errors and try again!")
             }
@@ -41,7 +53,7 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
                 var firstElement = '#' + attrs.ckMustMatch;
                 elem.add(firstElement).on('keyup', function () {
                     scope.$apply(function () {
-                        ctrl.$setValidity('ckmustmatch', elem.val() === $(firstElement).val());
+                        ctrl.$setValidity('ckMustMatch', elem.val() === $(firstElement).val());
                     });
                 });
             }
@@ -60,12 +72,12 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
         };
     })
 
-    .directive('unique', ['$q', '$timeout', '$http', function ($q, $timeout, $http) {
+    .directive('ckUnique', ['$q', '$timeout', '$http', function ($q, $timeout, $http) {
         return {
             require: 'ngModel',
             link: function (scope, elm, attrs, ctrl) {
 
-                ctrl.$asyncValidators.unique = function (modelValue, viewValue) {
+                ctrl.$asyncValidators.ckUnique = function (modelValue, viewValue) {
 
                     if (ctrl.$isEmpty(modelValue)) {
                         // consider empty model valid
@@ -76,7 +88,7 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
 
                     $http.get("/register/isUnique",
                         {params: {
-                            kind: attrs.unique,
+                            kind: attrs.ckUnique,
                             value: viewValue.toLowerCase()
                         }
                         })
