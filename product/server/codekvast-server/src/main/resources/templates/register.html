@@ -121,6 +121,9 @@
         <button type="submit" class="btn btn-primary">Register
         </button>
     </form>
+    <div ng-show="alertMessage" class="{{alertClass}}">
+        {{alertMessage}}
+    </div>
 </div>
 
 <th:block th:include="fragments :: #scripts-twitter-bootstrap"/>

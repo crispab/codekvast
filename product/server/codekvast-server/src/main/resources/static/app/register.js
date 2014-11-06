@@ -1,8 +1,11 @@
 //noinspection JSUnusedGlobalSymbols
 var codekvastRegistration = angular.module('codekvastRegistration', [])
 
-    .controller('RegistrationCtrl', ['$scope', function ($scope) {
+    .controller('RegistrationCtrl', ['$scope', '$http', function ($scope, $http) {
         $scope.registration = { };
+
+        $scope.alertMessage = undefined;
+        $scope.alertClass = undefined;
 
         $scope.errorMessages = undefined;
 
@@ -20,8 +23,22 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
 
         $scope.doSubmit = function () {
             if ($scope.form.$valid) {
-                $scope.errorMessages = undefined;
-                alert("Submitting " + JSON.stringify($scope.registration))
+
+                $scope.$apply(function () {
+                    $scope.errorMessages = undefined;
+                    $scope.alertMessage = "Registering...";
+                    $scope.alertClass = "alert alert-info";
+                });
+
+                $http.post("/register", $scope.registration)
+                    .success(function (data, status) {
+                        $scope.alertMessage = data;
+                        $scope.alertClass = "alert alert-success"
+                    }).error(function (data, status) {
+                        $scope.alertMessage = status + ": " + (data || "Request failed");
+                        $scope.alertClass = "alert alert-danger"
+                    });
+
             } else {
                 $scope.errorMessages = [];
                 for (var v in $scope.form.$error) {

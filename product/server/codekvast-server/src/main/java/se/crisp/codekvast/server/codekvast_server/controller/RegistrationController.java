@@ -1,16 +1,23 @@
 package se.crisp.codekvast.server.codekvast_server.controller;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.validation.Validator;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 import se.crisp.codekvast.server.agent.model.v1.Constraints;
+import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
+import se.crisp.codekvast.server.codekvast_server.model.RegistrationData;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
 
 import javax.inject.Inject;
+import javax.validation.Valid;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A Spring MVC Controller that handles registration.
@@ -24,19 +31,46 @@ public class RegistrationController {
 
     private final UserService userService;
 
+    @NonNull
+    private final Validator validator;
+
     @Inject
-    public RegistrationController(UserService userService) {
+    public RegistrationController(UserService userService, Validator validator) {
         this.userService = userService;
+        this.validator = validator;
+    }
+
+    @InitBinder
+    private void initBinder(WebDataBinder binder) {
+        binder.setValidator(checkNotNull(validator, "validator is null"));
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(value = HttpStatus.PRECONDITION_FAILED)
+    private void onMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        log.warn("Validation failure: " + e);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    private void onApplicationException(CodekvastException e) {
+        log.warn("Application exception: " + e);
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.GET)
-    public String register(ModelMap modelMap) {
+    public String registerGet(ModelMap modelMap) {
         modelMap.put("maxAppNameLength", Constraints.MAX_APP_NAME_LENGTH);
         modelMap.put("maxCustomerNameLength", Constraints.MAX_CUSTOMER_NAME_LENGTH);
         modelMap.put("maxEmailAddressLength", Constraints.MAX_EMAIL_ADDRESS_LENGTH);
         modelMap.put("maxFullNameLength", Constraints.MAX_FULL_NAME_LENGTH);
         modelMap.put("maxUsernameLength", Constraints.MAX_USER_NAME_LENGTH);
         return "register";
+    }
+
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    @ResponseBody
+    public String registerPost(@RequestBody @Valid RegistrationData data) {
+        return String.format("Welcome %s!", data);
     }
 
     @RequestMapping(value = "/register/isUnique", method = RequestMethod.GET)
