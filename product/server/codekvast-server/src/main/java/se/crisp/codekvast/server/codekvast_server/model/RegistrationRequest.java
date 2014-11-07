@@ -13,7 +13,7 @@ import javax.validation.constraints.Size;
 @Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class RegistrationData {
+public class RegistrationRequest {
     @NotNull
     @Size(min = 1, max = Constraints.MAX_FULL_NAME_LENGTH)
     private String fullName;

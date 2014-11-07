@@ -11,7 +11,8 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import se.crisp.codekvast.server.agent.model.v1.Constraints;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
-import se.crisp.codekvast.server.codekvast_server.model.RegistrationData;
+import se.crisp.codekvast.server.codekvast_server.model.RegistrationRequest;
+import se.crisp.codekvast.server.codekvast_server.model.RegistrationResponse;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
 
 import javax.inject.Inject;
@@ -69,8 +70,8 @@ public class RegistrationController {
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     @ResponseBody
-    public String registerPost(@RequestBody @Valid RegistrationData data) {
-        return String.format("Welcome %s!", data);
+    public RegistrationResponse registerPost(@RequestBody @Valid RegistrationRequest data) {
+        return RegistrationResponse.builder().greeting(String.format("Welcome %s!", data.getFullName())).build();
     }
 
     @RequestMapping(value = "/register/isUnique", method = RequestMethod.GET)

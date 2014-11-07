@@ -118,12 +118,11 @@
                 <span ng-show="isFieldInvalid(form.appName)" class="glyphicon glyphicon-ban-circle"></span>
             </div>
         </fieldset>
-        <button type="submit" class="btn btn-primary">Register
-        </button>
+        <button type="submit" ng-disabled="isSubmitDisabled" class="col-md-offset-2 col-md-1 btn btn-primary">Register</button>
+        <div ng-show="alertMessage" class="col-md-offset-1 col-md-4 {{alertClass}}">
+            {{alertMessage}}
+        </div>
     </form>
-    <div ng-show="alertMessage" class="{{alertClass}}">
-        {{alertMessage}}
-    </div>
 </div>
 
 <th:block th:include="fragments :: #scripts-twitter-bootstrap"/>

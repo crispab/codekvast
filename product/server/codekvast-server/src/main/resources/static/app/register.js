@@ -8,6 +8,7 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
         $scope.alertClass = undefined;
 
         $scope.errorMessages = undefined;
+        $scope.isSubmitDisabled = false;
 
         $scope.isFieldValid = function (ctrl) {
             return ctrl.$pending === undefined && ctrl.$valid
@@ -23,20 +24,20 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
 
         $scope.doSubmit = function () {
             if ($scope.form.$valid) {
+                $scope.isSubmitDisabled = true;
 
-                $scope.$apply(function () {
-                    $scope.errorMessages = undefined;
-                    $scope.alertMessage = "Registering...";
-                    $scope.alertClass = "alert alert-info";
-                });
+                $scope.errorMessages = undefined;
+                $scope.alertMessage = "Registering...";
+                $scope.alertClass = "alert alert-info";
 
                 $http.post("/register", $scope.registration)
-                    .success(function (data, status) {
-                        $scope.alertMessage = data;
+                    .success(function (data, status, headers, config) {
+                        $scope.alertMessage = data.greeting;
                         $scope.alertClass = "alert alert-success"
-                    }).error(function (data, status) {
+                    }).error(function (data, status, headers, config) {
                         $scope.alertMessage = status + ": " + (data || "Request failed");
                         $scope.alertClass = "alert alert-danger"
+                        $scope.isSubmitDisabled = false;
                     });
 
             } else {
