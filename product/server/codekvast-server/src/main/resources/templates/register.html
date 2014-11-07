@@ -107,16 +107,6 @@
                 <span ng-show="isFieldInvalid(form.customerName)" class="glyphicon glyphicon-ban-circle"></span>
                 <span ng-show="isAjaxPending(form.customerName)" class="glyphicon glyphicon-flash"></span>
             </div>
-            <div class="form-group">
-                <label class="col-md-2 control-label" for="appName">Application name</label>
-                <input class="col-md-6" id="appName" name="appName" type="text" ng-model="registration.appName"
-                       ng-required="true"
-                       placeholder="Enter your application name"
-                       th:attr="ng-maxlength=${maxAppNameLength}"/>
-                <span ng-show="form.appName.$pristine" class="glyphicon glyphicon-asterisk"></span>
-                <span ng-show="isFieldValid(form.appName)" class="glyphicon glyphicon-ok"></span>
-                <span ng-show="isFieldInvalid(form.appName)" class="glyphicon glyphicon-ban-circle"></span>
-            </div>
         </fieldset>
         <button type="submit" ng-disabled="isSubmitDisabled" class="col-md-offset-2 col-md-1 btn btn-primary">Register</button>
         <div ng-show="alertMessage" class="col-md-offset-1 col-md-4 {{alertClass}}">

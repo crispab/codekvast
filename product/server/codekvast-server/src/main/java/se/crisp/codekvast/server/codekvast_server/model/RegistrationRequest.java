@@ -33,8 +33,4 @@ public class RegistrationRequest {
     @NotNull
     @Size(min = 1, max = Constraints.MAX_CUSTOMER_NAME_LENGTH)
     private String customerName;
-
-    @NotNull
-    @Size(min = 1, max = Constraints.MAX_APP_NAME_LENGTH)
-    private String appName;
 }

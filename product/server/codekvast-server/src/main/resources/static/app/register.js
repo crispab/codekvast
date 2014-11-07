@@ -112,7 +112,7 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
         };
     })
 
-    .directive('ckUnique', ['$q', '$timeout', '$http', function ($q, $timeout, $http) {
+    .directive('ckUnique', ['$q', '$http', function ($q, $http) {
         return {
             restrict: 'A',
             require: 'ngModel',
@@ -127,14 +127,9 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
 
                     var def = $q.defer();
 
-                    $http.get("/register/isUnique",
-                        {params: {
-                            kind: attrs.ckUnique,
-                            name: viewValue
-                        }
-                        })
+                    $http.post("/register/isUnique", {kind: attrs.ckUnique, name: viewValue})
                         .success(function (data) {
-                            if (data) {
+                            if (data.unique) {
                                 def.resolve()
                             } else {
                                 def.reject()

@@ -11,6 +11,8 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import se.crisp.codekvast.server.agent.model.v1.Constraints;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
+import se.crisp.codekvast.server.codekvast_server.model.IsNameUniqueRequest;
+import se.crisp.codekvast.server.codekvast_server.model.IsNameUniqueResponse;
 import se.crisp.codekvast.server.codekvast_server.model.RegistrationRequest;
 import se.crisp.codekvast.server.codekvast_server.model.RegistrationResponse;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
@@ -70,14 +72,15 @@ public class RegistrationController {
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     @ResponseBody
-    public RegistrationResponse registerPost(@RequestBody @Valid RegistrationRequest data) {
+    public RegistrationResponse registerPost(@RequestBody @Valid RegistrationRequest data) throws CodekvastException {
+        userService.registerUserAndCustomer(data);
         return RegistrationResponse.builder().greeting(String.format("Welcome %s!", data.getFullName())).build();
     }
 
-    @RequestMapping(value = "/register/isUnique", method = RequestMethod.GET)
+    @RequestMapping(value = "/register/isUnique", method = RequestMethod.POST)
     @ResponseBody
-    public Boolean isUnique(@RequestParam("kind") String kind, @RequestParam("name") String name) {
-        return userService.isUnique(toKind(kind), name);
+    public IsNameUniqueResponse isUnique(@RequestBody @Valid IsNameUniqueRequest request) {
+        return IsNameUniqueResponse.builder().isUnique(userService.isUnique(toKind(request.getKind()), request.getName())).build();
     }
 
     private UserService.UniqueKind toKind(String kind) {

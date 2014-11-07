@@ -37,7 +37,6 @@ import static org.junit.Assert.fail;
                   "management.port=0",
                   "spring.datasource.url=jdbc:h2:mem:integrationTest",
                   "codekvast.auto-register-customer=true",
-                  "codekvast.auto-register-application=true",
                  })
 public class ServerDelegateTest {
 

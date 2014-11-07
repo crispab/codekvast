@@ -7,11 +7,14 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedCustomerException;
+import se.crisp.codekvast.server.codekvast_server.model.Role;
+import se.crisp.codekvast.server.codekvast_server.model.User;
 
 import javax.inject.Inject;
 import java.sql.ResultSet;
@@ -28,43 +31,16 @@ import static com.google.common.base.Preconditions.checkState;
 @Slf4j
 public class UserDAOImpl implements UserDAO {
     private final JdbcTemplate jdbcTemplate;
+    private final PasswordEncoder passwordEncoder;
     private final Boolean autoCreateCustomer;
-    private final Boolean autoCreateApplication;
 
     @Inject
     public UserDAOImpl(JdbcTemplate jdbcTemplate,
-                       @Value("${codekvast.auto-register-customer}") Boolean autoCreateCustomer,
-                       @Value("${codekvast.auto-register-application}") Boolean autoCreateApplication) {
+                       PasswordEncoder passwordEncoder,
+                       @Value("${codekvast.auto-register-customer}") Boolean autoCreateCustomer) {
         this.jdbcTemplate = jdbcTemplate;
+        this.passwordEncoder = passwordEncoder;
         this.autoCreateCustomer = autoCreateCustomer;
-        this.autoCreateApplication = autoCreateApplication;
-    }
-
-    private Long doGetOrCreateApp(long customerId, String environment, String appName, String appVersion, boolean allowRecursion)
-            throws UndefinedApplicationException {
-        try {
-            return jdbcTemplate.queryForObject("SELECT id FROM applications " +
-                                                       "WHERE customer_id = ? AND environment = ? AND name = ? AND version = ? ",
-                                               Long.class,
-                                               customerId, environment, appName, appVersion);
-        } catch (EmptyResultDataAccessException ignored) {
-        }
-
-        if (!autoCreateApplication) {
-            throw new UndefinedApplicationException("No such application: " + appName);
-        }
-
-        checkState(allowRecursion, "Endless recursion detected");
-
-        int updated = jdbcTemplate.update("INSERT INTO applications(customer_id, environment, name, version) VALUES(?, ?, ?, ?)",
-                                          customerId, environment, appName, appVersion);
-        if (updated > 0) {
-            log.info("Created application {}:{}:{}:{}", customerId, environment,
-                     appName, appVersion);
-            return doGetOrCreateApp(customerId, environment, appName, appVersion, false);
-        }
-
-        throw new IllegalStateException("Could not insert application");
     }
 
     @Override
@@ -88,9 +64,9 @@ public class UserDAOImpl implements UserDAO {
     @Cacheable("user")
     public AppId getAppId(String jvmFingerprint) {
         log.debug("Looking up AppId for JVM {}...", jvmFingerprint);
-
-        String sql = "SELECT customer_id, application_id FROM jvm_runs WHERE jvm_fingerprint = ?";
-        AppId result = jdbcTemplate.queryForObject(sql, new AppIdRowMapper(), jvmFingerprint);
+        AppId result = jdbcTemplate
+                .queryForObject("SELECT CUSTOMER_ID, APPLICATION_ID FROM JVM_RUNS WHERE JVM_FINGERPRINT = ?", new AppIdRowMapper(),
+                                jvmFingerprint);
         log.debug("Result = {}", result);
         return result;
     }
@@ -98,32 +74,85 @@ public class UserDAOImpl implements UserDAO {
     @Override
     @Transactional(readOnly = true)
     public int countUsersByUsername(@NonNull String username) {
-        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM users WHERE username = ?", Integer.class, username);
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM USERS WHERE USERNAME = ?", Integer.class, username);
     }
 
     @Override
     @Transactional(readOnly = true)
     public int countCustomersByNameLc(@NonNull String customerName) {
-        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM customers WHERE nameLc = ?", Integer.class, customerName);
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM CUSTOMERS WHERE NAMELC = ?", Integer.class, customerName);
     }
 
-    private long doGetOrCreateCustomer(final String customerName, boolean allowRecursion) throws UndefinedCustomerException {
+    @Override
+    @Transactional
+    public long createUser(User user, String plaintextPassword, Role... roles) {
+        jdbcTemplate.update("INSERT INTO USERS(FULL_NAME, EMAIL, USERNAME, ENCODED_PASSWORD) VALUES(?, ?, ?, ?)", user
+                                    .getFullName(),
+                            user.getEmailAddress(), user.getUsername(), passwordEncoder.encode(plaintextPassword));
+        long userId = jdbcTemplate.queryForObject("SELECT IDENTITY()", Long.class);
+        log.info("Created user {} with id {}", user, userId);
+
+        for (Role role : roles) {
+            jdbcTemplate.update("INSERT INTO USER_ROLES(USER_ID, ROLE) VALUES (?, ?)", userId, role.name());
+            log.info("Assigned role {} to {}", role, user.getUsername());
+        }
+
+        return userId;
+    }
+
+    @Override
+    public long createCustomerWithMember(String customerName, long userId) throws UndefinedCustomerException {
+        long customerId = doGetOrCreateCustomer(customerName, false);
+        jdbcTemplate.update("INSERT INTO CUSTOMER_MEMBERS(CUSTOMER_ID, USER_ID, PRIMARY_CONTACT) VALUES(?, ?, ?)", customerId, userId,
+                            true);
+        return customerId;
+    }
+
+    @Override
+    public long createApplication(long customerId, String appName) {
+        jdbcTemplate.update("INSERT INTO APPLICATIONS(CUSTOMER_ID, NAME) VALUES (?, ?)", customerId, appName);
+        Long appId = jdbcTemplate.queryForObject("SELECT IDENTITY()", Long.class);
+        log.info("Created application '{}' for customer {} with id {}", appName, customerId, appId);
+        return appId;
+    }
+
+    private long doGetOrCreateCustomer(final String customerName, boolean selectFirst) throws UndefinedCustomerException {
+        if (selectFirst) {
+            try {
+                return jdbcTemplate.queryForObject("SELECT id FROM customers WHERE name = ?", Long.class, customerName);
+            } catch (EmptyResultDataAccessException ignored) {
+            }
+            if (!autoCreateCustomer) {
+                throw new UndefinedCustomerException("No such customer: " + customerName);
+            }
+        }
+        jdbcTemplate.update("INSERT INTO customers(name) VALUES(?)", customerName);
+        long customerId = jdbcTemplate.queryForObject("SELECT IDENTITY()", Long.class);
+        log.info("Created customer '{}' with id {}", customerName, customerId);
+        return customerId;
+    }
+
+    private Long doGetOrCreateApp(long customerId, String environment, String appName, String appVersion, boolean allowRecursion)
+            throws UndefinedApplicationException {
         try {
-            return jdbcTemplate.queryForObject("SELECT id FROM customers WHERE name = ?", Long.class, customerName);
+            return jdbcTemplate.queryForObject("SELECT id FROM applications " +
+                                                       "WHERE customer_id = ? AND environment = ? AND name = ? AND version = ? ",
+                                               Long.class,
+                                               customerId, environment, appName, appVersion);
         } catch (EmptyResultDataAccessException ignored) {
         }
-        if (!autoCreateCustomer) {
-            throw new UndefinedCustomerException("No such customer: " + customerName);
-        }
 
-        checkState(allowRecursion, "Endless recursion not allowed");
+        checkState(allowRecursion, "Endless recursion detected");
 
-        int updated = jdbcTemplate.update("INSERT INTO customers(name) VALUES(?)", customerName);
+        int updated = jdbcTemplate.update("INSERT INTO applications(customer_id, environment, name, version) VALUES(?, ?, ?, ?)",
+                                          customerId, environment, appName, appVersion);
         if (updated > 0) {
-            log.info("Created customer '{}'", customerName);
-            return doGetOrCreateCustomer(customerName, false);
+            log.info("Created application {}:{}:{}:{}", customerId, environment,
+                     appName, appVersion);
+            return doGetOrCreateApp(customerId, environment, appName, appVersion, false);
         }
-        throw new IllegalStateException("Could not insert customer");
+
+        throw new IllegalStateException("Could not insert application");
     }
 
     private static class AppIdRowMapper implements RowMapper<AppId> {
