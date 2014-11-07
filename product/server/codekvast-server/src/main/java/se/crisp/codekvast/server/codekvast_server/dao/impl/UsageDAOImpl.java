@@ -39,7 +39,7 @@ public class UsageDAOImpl implements UsageDAO {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void storeJvmRunData(JvmRunData data) throws CodekvastException {
         long customerId = userDAO.getCustomerId(data.getHeader().getCustomerName());
         long appId = userDAO.getAppId(customerId, data.getHeader().getEnvironment(), data.getAppName(), data.getAppVersion());
@@ -47,7 +47,7 @@ public class UsageDAOImpl implements UsageDAO {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Collection<UsageDataEntry> storeUsageData(UsageData usageData) throws CodekvastException {
         final Collection<UsageDataEntry> result = new ArrayList<>();
 

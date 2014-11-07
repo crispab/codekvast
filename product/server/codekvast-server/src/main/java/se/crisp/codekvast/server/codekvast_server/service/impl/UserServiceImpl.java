@@ -2,10 +2,12 @@ package se.crisp.codekvast.server.codekvast_server.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
+import se.crisp.codekvast.server.codekvast_server.exception.DuplicateNameException;
 import se.crisp.codekvast.server.codekvast_server.model.RegistrationRequest;
 import se.crisp.codekvast.server.codekvast_server.model.Role;
 import se.crisp.codekvast.server.codekvast_server.model.User;
@@ -54,7 +56,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public long registerUserAndCustomer(RegistrationRequest data) throws CodekvastException {
         try {
             User user =
@@ -63,6 +65,8 @@ public class UserServiceImpl implements UserService {
             long customerId = userDAO.createCustomerWithMember(data.getCustomerName(), userId);
             userDAO.createApplication(customerId, "Application1");
             return userId;
+        } catch (DuplicateKeyException e) {
+            throw new DuplicateNameException("Cannot register " + data);
         } catch (DataAccessException e) {
             throw new CodekvastException("Cannot register " + data, e);
         }

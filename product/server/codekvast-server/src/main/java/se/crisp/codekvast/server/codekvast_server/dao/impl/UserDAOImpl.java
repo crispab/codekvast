@@ -44,7 +44,7 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Cacheable("user")
     public long getCustomerId(final String customerName) throws UndefinedCustomerException {
         log.debug("Looking up customer id for '{}'", customerName);
@@ -52,7 +52,7 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Cacheable("user")
     public long getAppId(long customerId, String environment, String appName, String appVersion) throws UndefinedApplicationException {
         log.debug("Looking up app id for {}:{}:{}", customerId, appName, appVersion);
@@ -84,7 +84,7 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public long createUser(User user, String plaintextPassword, Role... roles) {
         jdbcTemplate.update("INSERT INTO USERS(FULL_NAME, EMAIL, USERNAME, ENCODED_PASSWORD) VALUES(?, ?, ?, ?)", user
                                     .getFullName(),
