@@ -51,7 +51,7 @@ public class UsageDAOImpl implements UsageDAO {
     public Collection<UsageDataEntry> storeUsageData(UsageData usageData) throws CodekvastException {
         final Collection<UsageDataEntry> result = new ArrayList<>();
 
-        UserDAO.AppId appId = userDAO.getAppId(usageData.getJvmFingerprint());
+        UserDAO.AppId appId = userDAO.getAppIdByJvmFingerprint(usageData.getJvmFingerprint());
 
         for (UsageDataEntry entry : usageData.getUsage()) {
             storeOrUpdateUsageDataEntry(result, appId, usageData.getJvmFingerprint(), entry);
@@ -65,9 +65,9 @@ public class UsageDAOImpl implements UsageDAO {
     public Collection<UsageDataEntry> getSignatures(String customerName) throws CodekvastException {
         // TODO: don't allow null customerName
         Object[] args = customerName == null ? new Object[0] : new Object[]{userDAO.getCustomerId(customerName)};
-        String where = customerName == null ? "" : " WHERE customer_id = ?";
+        String where = customerName == null ? "" : " WHERE CUSTOMER_ID = ?";
 
-        return jdbcTemplate.query("SELECT signature, used_at, confidence FROM signatures " + where,
+        return jdbcTemplate.query("SELECT SIGNATURE, USED_AT, CONFIDENCE FROM SIGNATURES " + where,
                                   args, new UsageDataEntryRowMapper());
     }
 
@@ -85,7 +85,7 @@ public class UsageDAOImpl implements UsageDAO {
         }
 
         try {
-            jdbcTemplate.update("INSERT INTO signatures(customer_id, application_id, signature, jvm_fingerprint, used_at, confidence) " +
+            jdbcTemplate.update("INSERT INTO SIGNATURES(CUSTOMER_ID, APPLICATION_ID, SIGNATURE, JVM_FINGERPRINT, USED_AT, CONFIDENCE) " +
                                         "VALUES(?, ?, ?, ?, ?, ?)",
                                 appId.getCustomerId(), appId.getAppId(), entry.getSignature(), jvmFingerprint, usedAt, confidence);
             log.trace("Stored {}", entry);
@@ -99,14 +99,14 @@ public class UsageDAOImpl implements UsageDAO {
                                          Integer confidence) {
         if (usedAt == null) {
             // An unused signature is not allowed to overwrite a used signature
-            return jdbcTemplate.update("UPDATE signatures SET confidence = ? " +
-                                               "WHERE customer_id = ? AND application_id = ? AND signature = ? AND used_at IS NULL ",
+            return jdbcTemplate.update("UPDATE SIGNATURES SET CONFIDENCE = ? " +
+                                               "WHERE CUSTOMER_ID = ? AND APPLICATION_ID = ? AND SIGNATURE = ? AND USED_AT IS NULL ",
                                        confidence, appId.getCustomerId(), appId.getAppId(), entry.getSignature());
         }
 
         // A usage. Overwrite whatever was there.
-        return jdbcTemplate.update("UPDATE signatures SET used_at = ?, jvm_fingerprint = ?, confidence = ? " +
-                                           "WHERE customer_id = ? AND application_id = ? AND signature = ? ",
+        return jdbcTemplate.update("UPDATE SIGNATURES SET USED_AT = ?, JVM_FINGERPRINT = ?, CONFIDENCE = ? " +
+                                           "WHERE CUSTOMER_ID = ? AND APPLICATION_ID = ? AND SIGNATURE = ? ",
                                    usedAt, jvmFingerprint, confidence, appId.getCustomerId(), appId.getAppId(), entry.getSignature());
 
     }
@@ -116,7 +116,7 @@ public class UsageDAOImpl implements UsageDAO {
 
         int updated =
                 jdbcTemplate
-                        .update("UPDATE jvm_runs SET dumped_at = ? WHERE customer_id = ? AND application_id = ? AND jvm_fingerprint = ?",
+                        .update("UPDATE JVM_RUNS SET DUMPED_AT = ? WHERE CUSTOMER_ID = ? AND APPLICATION_ID = ? AND JVM_FINGERPRINT = ?",
                                 dumpedAt, customerId, appId, data.getJvmFingerprint());
         if (updated > 0) {
             log.debug("Updated dumped_at={} for JVM run {}", dumpedAt, data.getJvmFingerprint());
@@ -125,8 +125,8 @@ public class UsageDAOImpl implements UsageDAO {
 
         int inserted =
                 jdbcTemplate
-                        .update("INSERT INTO jvm_runs(customer_id, application_id, host_name, jvm_fingerprint, codekvast_version, " +
-                                        "codekvast_vcs_id, started_at, dumped_at)" +
+                        .update("INSERT INTO JVM_RUNS(CUSTOMER_ID, APPLICATION_ID, HOST_NAME, JVM_FINGERPRINT, CODEKVAST_VERSION, " +
+                                        "CODEKVAST_VCS_ID, STARTED_AT, DUMPED_AT)" +
                                         " VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                                 customerId, appId, data.getHostName(), data.getJvmFingerprint(),
                                 data.getCodekvastVersion(), data.getCodekvastVcsId(), new Date(data.getStartedAtMillis()),

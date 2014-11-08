@@ -15,7 +15,7 @@ public interface UserDAO {
 
     long getAppId(long customerId, String environment, String appName, String appVersion) throws UndefinedApplicationException;
 
-    AppId getAppId(String jvmFingerprint);
+    AppId getAppIdByJvmFingerprint(String jvmFingerprint);
 
     int countUsersByUsername(String username);
 
@@ -23,7 +23,7 @@ public interface UserDAO {
 
     long createUser(User user, String plaintextPassword, Role... roles) throws DataAccessException;
 
-    long createCustomerWithMember(String customerName, long userId) throws DataAccessException, UndefinedCustomerException;
+    long createCustomerWithPrimaryContact(String customerName, long userId) throws DataAccessException, UndefinedCustomerException;
 
     long createApplication(long customerId, String appName);
 

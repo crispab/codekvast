@@ -20,10 +20,10 @@ import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
- * DAO for user and application data.
+ * DAO for user, customer and application data.
  *
  * @author Olle Hallin
  */
@@ -48,7 +48,14 @@ public class UserDAOImpl implements UserDAO {
     @Cacheable("user")
     public long getCustomerId(final String customerName) throws UndefinedCustomerException {
         log.debug("Looking up customer id for '{}'", customerName);
-        return doGetOrCreateCustomer(customerName, true);
+        try {
+            return jdbcTemplate.queryForObject("SELECT ID FROM CUSTOMERS WHERE NAME = ?", Long.class, customerName);
+        } catch (EmptyResultDataAccessException ignored) {
+        }
+        if (!autoCreateCustomer) {
+            throw new UndefinedCustomerException("No such customer: " + customerName);
+        }
+        return doCreateCustomer(customerName);
     }
 
     @Override
@@ -56,13 +63,13 @@ public class UserDAOImpl implements UserDAO {
     @Cacheable("user")
     public long getAppId(long customerId, String environment, String appName, String appVersion) throws UndefinedApplicationException {
         log.debug("Looking up app id for {}:{}:{}", customerId, appName, appVersion);
-        return doGetOrCreateApp(customerId, environment, appName, appVersion, true);
+        return doGetOrCreateApp(customerId, environment, appName, appVersion);
     }
 
     @Override
     @Transactional(readOnly = true)
     @Cacheable("user")
-    public AppId getAppId(String jvmFingerprint) {
+    public AppId getAppIdByJvmFingerprint(String jvmFingerprint) {
         log.debug("Looking up AppId for JVM {}...", jvmFingerprint);
         AppId result = jdbcTemplate
                 .queryForObject("SELECT CUSTOMER_ID, APPLICATION_ID FROM JVM_RUNS WHERE JVM_FINGERPRINT = ?", new AppIdRowMapper(),
@@ -80,17 +87,16 @@ public class UserDAOImpl implements UserDAO {
     @Override
     @Transactional(readOnly = true)
     public int countCustomersByNameLc(@NonNull String customerName) {
-        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM CUSTOMERS WHERE NAMELC = ?", Integer.class, customerName);
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM CUSTOMERS WHERE NAME_LC = ?", Integer.class, customerName);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public long createUser(User user, String plaintextPassword, Role... roles) {
-        jdbcTemplate.update("INSERT INTO USERS(FULL_NAME, EMAIL, USERNAME, ENCODED_PASSWORD) VALUES(?, ?, ?, ?)", user
-                                    .getFullName(),
-                            user.getEmailAddress(), user.getUsername(), passwordEncoder.encode(plaintextPassword));
-        long userId = jdbcTemplate.queryForObject("SELECT IDENTITY()", Long.class);
-        log.info("Created user {} with id {}", user, userId);
+        long userId = doInsertRow("INSERT INTO USERS(FULL_NAME, EMAIL, USERNAME, ENCODED_PASSWORD) VALUES(?, ?, ?, ?)", user
+                                          .getFullName(),
+                                  user.getEmailAddress(), user.getUsername(), passwordEncoder.encode(plaintextPassword));
+        log.info("Created user {}:{}", userId, user);
 
         for (Role role : roles) {
             jdbcTemplate.update("INSERT INTO USER_ROLES(USER_ID, ROLE) VALUES (?, ?)", userId, role.name());
@@ -101,8 +107,8 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public long createCustomerWithMember(String customerName, long userId) throws UndefinedCustomerException {
-        long customerId = doGetOrCreateCustomer(customerName, false);
+    public long createCustomerWithPrimaryContact(String customerName, long userId) throws UndefinedCustomerException {
+        long customerId = doCreateCustomer(customerName);
         jdbcTemplate.update("INSERT INTO CUSTOMER_MEMBERS(CUSTOMER_ID, USER_ID, PRIMARY_CONTACT) VALUES(?, ?, ?)", customerId, userId,
                             true);
         return customerId;
@@ -110,49 +116,36 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public long createApplication(long customerId, String appName) {
-        jdbcTemplate.update("INSERT INTO APPLICATIONS(CUSTOMER_ID, NAME) VALUES (?, ?)", customerId, appName);
-        Long appId = jdbcTemplate.queryForObject("SELECT IDENTITY()", Long.class);
-        log.info("Created application '{}' for customer {} with id {}", appName, customerId, appId);
+        long appId = doInsertRow("INSERT INTO APPLICATIONS(CUSTOMER_ID, NAME) VALUES (?, ?)", customerId, appName);
+        log.info("Created application {}:{}:'{}'", customerId, appId, appName);
         return appId;
     }
 
-    private long doGetOrCreateCustomer(final String customerName, boolean selectFirst) throws UndefinedCustomerException {
-        if (selectFirst) {
-            try {
-                return jdbcTemplate.queryForObject("SELECT id FROM customers WHERE name = ?", Long.class, customerName);
-            } catch (EmptyResultDataAccessException ignored) {
-            }
-            if (!autoCreateCustomer) {
-                throw new UndefinedCustomerException("No such customer: " + customerName);
-            }
-        }
-        jdbcTemplate.update("INSERT INTO customers(name) VALUES(?)", customerName);
-        long customerId = jdbcTemplate.queryForObject("SELECT IDENTITY()", Long.class);
-        log.info("Created customer '{}' with id {}", customerName, customerId);
+    private long doCreateCustomer(String customerName) {
+        long customerId = doInsertRow("INSERT INTO customers(name) VALUES(?)", customerName);
+        log.info("Created customer {}:'{}'", customerId, customerName);
         return customerId;
     }
 
-    private Long doGetOrCreateApp(long customerId, String environment, String appName, String appVersion, boolean allowRecursion)
+    private Long doGetOrCreateApp(long customerId, String environment, String appName, String appVersion)
             throws UndefinedApplicationException {
         try {
-            return jdbcTemplate.queryForObject("SELECT id FROM applications " +
-                                                       "WHERE customer_id = ? AND environment = ? AND name = ? AND version = ? ",
-                                               Long.class,
-                                               customerId, environment, appName, appVersion);
+            return jdbcTemplate.queryForObject("SELECT ID FROM APPLICATIONS " +
+                                                       "WHERE CUSTOMER_ID = ? AND ENVIRONMENT = ? AND NAME = ? AND VERSION = ? ",
+                                               Long.class, customerId, environment, appName, appVersion);
         } catch (EmptyResultDataAccessException ignored) {
         }
 
-        checkState(allowRecursion, "Endless recursion detected");
+        long appId = doInsertRow("INSERT INTO applications(customer_id, environment, name, version) VALUES(?, ?, ?, ?)",
+                                 customerId, environment, appName, appVersion);
+        log.info("Created application {}:{}:'{}':'{}':'{}'", appId, customerId, environment, appName, appVersion);
+        return appId;
+    }
 
-        int updated = jdbcTemplate.update("INSERT INTO applications(customer_id, environment, name, version) VALUES(?, ?, ?, ?)",
-                                          customerId, environment, appName, appVersion);
-        if (updated > 0) {
-            log.info("Created application {}:{}:{}:{}", customerId, environment,
-                     appName, appVersion);
-            return doGetOrCreateApp(customerId, environment, appName, appVersion, false);
-        }
-
-        throw new IllegalStateException("Could not insert application");
+    private long doInsertRow(String sql, Object... args) {
+        checkArgument(sql.toUpperCase().startsWith("INSERT INTO "));
+        jdbcTemplate.update(sql, args);
+        return jdbcTemplate.queryForObject("SELECT IDENTITY()", Long.class);
     }
 
     private static class AppIdRowMapper implements RowMapper<AppId> {

@@ -33,14 +33,14 @@ CREATE UNIQUE INDEX ix_user_roles ON user_roles (user_id, role);
 DROP TABLE IF EXISTS customers;
 CREATE TABLE customers (
   id          INTEGER                             NOT NULL IDENTITY,
-  name   VARCHAR(100) NOT NULL,
-  nameLc VARCHAR(100) AS LOWER(name),
+  name    VARCHAR(100) NOT NULL,
+  name_lc VARCHAR(100) AS LOWER(name),
   created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   modified_at TIMESTAMP AS NOW()
 );
 
 DROP INDEX IF EXISTS ix_customer_name_lc;
-CREATE UNIQUE INDEX ix_customer_name_lc ON customers (nameLc);
+CREATE UNIQUE INDEX ix_customer_name_lc ON customers (name_lc);
 
 DROP TABLE IF EXISTS customer_members;
 CREATE TABLE customer_members (

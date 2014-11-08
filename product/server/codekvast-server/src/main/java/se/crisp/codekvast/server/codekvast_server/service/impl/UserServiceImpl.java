@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
             User user =
                     User.builder().fullName(data.getFullName()).username(data.getUsername()).emailAddress(data.getEmailAddress()).build();
             long userId = userDAO.createUser(user, data.getPassword(), Role.ADMIN, Role.USER);
-            long customerId = userDAO.createCustomerWithMember(data.getCustomerName(), userId);
+            long customerId = userDAO.createCustomerWithPrimaryContact(data.getCustomerName(), userId);
             userDAO.createApplication(customerId, "Application1");
             return userId;
         } catch (DuplicateKeyException e) {
