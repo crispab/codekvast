@@ -89,6 +89,8 @@ public class RegistrationController {
             return UserService.UniqueKind.USERNAME;
         case "customername":
             return UserService.UniqueKind.CUSTOMER_NAME;
+        case "emailaddress":
+            return UserService.UniqueKind.EMAIL_ADDRESS;
         default:
             throw new IllegalArgumentException("Unknown kind: " + kind);
         }

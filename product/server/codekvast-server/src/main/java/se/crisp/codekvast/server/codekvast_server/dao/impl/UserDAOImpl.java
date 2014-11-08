@@ -86,6 +86,12 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     @Transactional(readOnly = true)
+    public int countUsersByEmailAddress(@NonNull String emailAddress) {
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM USERS WHERE EMAIL_ADDRESS = ?", Integer.class, emailAddress);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public int countCustomersByNameLc(@NonNull String customerName) {
         return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM CUSTOMERS WHERE NAME_LC = ?", Integer.class, customerName);
     }
@@ -93,7 +99,7 @@ public class UserDAOImpl implements UserDAO {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public long createUser(User user, String plaintextPassword, Role... roles) {
-        long userId = doInsertRow("INSERT INTO USERS(FULL_NAME, EMAIL, USERNAME, ENCODED_PASSWORD) VALUES(?, ?, ?, ?)", user
+        long userId = doInsertRow("INSERT INTO USERS(FULL_NAME, EMAIL_ADDRESS, USERNAME, ENCODED_PASSWORD) VALUES(?, ?, ?, ?)", user
                                           .getFullName(),
                                   user.getEmailAddress(), user.getUsername(), passwordEncoder.encode(plaintextPassword));
         log.info("Created user {}:{}", userId, user);

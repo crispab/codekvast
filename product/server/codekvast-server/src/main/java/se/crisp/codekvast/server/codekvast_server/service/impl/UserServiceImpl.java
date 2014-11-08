@@ -43,6 +43,9 @@ public class UserServiceImpl implements UserService {
         case USERNAME:
             count = userDAO.countUsersByUsername(normalizedName);
             break;
+        case EMAIL_ADDRESS:
+            count = userDAO.countUsersByEmailAddress(normalizedName);
+            break;
         case CUSTOMER_NAME:
             count = userDAO.countCustomersByNameLc(normalizedName);
             break;

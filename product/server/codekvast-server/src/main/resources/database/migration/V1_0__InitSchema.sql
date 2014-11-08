@@ -12,10 +12,10 @@ CREATE TABLE users (
   encoded_password   VARCHAR(80),
   plaintext_password VARCHAR(255),
   enabled            BOOLEAN DEFAULT TRUE                NOT NULL,
-  email              VARCHAR(255),
+  email_address VARCHAR(255),
   full_name          VARCHAR(255),
-  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  modified_at TIMESTAMP AS NOW()
+  created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  modified_at   TIMESTAMP AS NOW()
 );
 
 DROP TABLE IF EXISTS user_roles;
@@ -135,6 +135,6 @@ INSERT INTO customer_members (customer_id, user_id) VALUES (1, 3);
 INSERT INTO user_roles (user_id, role) VALUES (3, 'ADMIN');
 INSERT INTO user_roles (user_id, role) VALUES (3, 'USER');
 
-INSERT INTO users (id, username, plaintext_password, enabled) VALUES (4, 'user', '0000', TRUE);
+INSERT INTO users (id, username, plaintext_password, enabled, email_address) VALUES (4, 'user', '0000', TRUE, 'user@demo.com');
 INSERT INTO customer_members (customer_id, user_id) VALUES (1, 4);
 INSERT INTO user_roles (user_id, role) VALUES (4, 'USER');

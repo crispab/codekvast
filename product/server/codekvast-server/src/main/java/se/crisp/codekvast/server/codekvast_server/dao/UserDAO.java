@@ -19,6 +19,8 @@ public interface UserDAO {
 
     int countUsersByUsername(String username);
 
+    int countUsersByEmailAddress(String emailAddress);
+
     int countCustomersByNameLc(String customerName);
 
     long createUser(User user, String plaintextPassword, Role... roles) throws DataAccessException;

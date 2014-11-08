@@ -65,23 +65,37 @@ public class RegistrationTest {
     }
 
     @Test
-    public void testIsUsernameUnique4() throws Exception {
+    public void testIsCustomerNameUnique1() throws Exception {
         assertThat(restTemplate.postForEntity(isUniqueUri,
                                               IsNameUniqueRequest.builder().kind("customername").name("demo").build(),
                                               IsNameUniqueResponse.class).getBody().isUnique(), is(false));
     }
 
     @Test
-    public void testIsUsernameUnique5() throws Exception {
+    public void testIsCustomerNameUnique2() throws Exception {
         assertThat(restTemplate.postForEntity(isUniqueUri,
                                               IsNameUniqueRequest.builder().kind("customername").name("dem").build(),
                                               IsNameUniqueResponse.class).getBody().isUnique(), is(true));
     }
 
     @Test
-    public void testIsUsernameUnique6() throws Exception {
+    public void testIsCustomerNameUnique3() throws Exception {
         assertThat(restTemplate.postForEntity(isUniqueUri,
-                                              IsNameUniqueRequest.builder().kind("customername").name("demoo").build(),
+                                              IsNameUniqueRequest.builder().kind("customerName").name("demoo").build(),
+                                              IsNameUniqueResponse.class).getBody().isUnique(), is(true));
+    }
+
+    @Test
+    public void testIsEmailAddressUnique1() throws Exception {
+        assertThat(restTemplate.postForEntity(isUniqueUri,
+                                              IsNameUniqueRequest.builder().kind("emailAddress").name("user@demo.com").build(),
+                                              IsNameUniqueResponse.class).getBody().isUnique(), is(false));
+    }
+
+    @Test
+    public void testIsEmailAddressUnique2() throws Exception {
+        assertThat(restTemplate.postForEntity(isUniqueUri,
+                                              IsNameUniqueRequest.builder().kind("emailAddress").name("user2@demo.com").build(),
                                               IsNameUniqueResponse.class).getBody().isUnique(), is(true));
     }
 
