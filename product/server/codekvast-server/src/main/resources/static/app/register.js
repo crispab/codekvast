@@ -1,7 +1,7 @@
 //noinspection JSUnusedGlobalSymbols
 var codekvastRegistration = angular.module('codekvastRegistration', [])
 
-    .controller('RegistrationCtrl', ['$scope', '$http', function ($scope, $http) {
+    .controller('RegistrationCtrl', ['$scope', '$http', '$window', function ($scope, $http, $window) {
         $scope.registration = { };
 
         $scope.alertMessage = undefined;
@@ -31,12 +31,19 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
                 $scope.alertClass = "alert alert-info";
 
                 $http.post("/register", $scope.registration)
-                    .success(function (data, status, headers, config) {
-                        $scope.alertMessage = data.greeting;
-                        $scope.alertClass = "alert alert-success"
-                    }).error(function (data, status, headers, config) {
-                        $scope.alertMessage = status + ": " + (data || "Request failed");
-                        $scope.alertClass = "alert alert-danger"
+                    .success(function () {
+                        $http({
+                            url: "/login",
+                            method: "POST",
+                            params: $scope.registration
+                        }).success(function () {
+                            $window.location.href = "/";
+                        }).error(function () {
+                            $window.location.href = "/";
+                        })
+                    }).error(function (data, status, headers, config, statusText) {
+                        $scope.alertMessage = statusText || "Registration failed";
+                        $scope.alertClass = "alert alert-danger";
                         $scope.isSubmitDisabled = false;
                     });
 

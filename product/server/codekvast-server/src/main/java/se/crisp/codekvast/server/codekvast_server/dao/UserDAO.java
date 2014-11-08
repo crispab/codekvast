@@ -25,8 +25,6 @@ public interface UserDAO {
 
     long createCustomerWithPrimaryContact(String customerName, long userId) throws DataAccessException, UndefinedCustomerException;
 
-    long createApplication(long customerId, String appName);
-
     @lombok.Value
     static class AppId {
         private final long customerId;

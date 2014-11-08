@@ -114,13 +114,6 @@ public class UserDAOImpl implements UserDAO {
         return customerId;
     }
 
-    @Override
-    public long createApplication(long customerId, String appName) {
-        long appId = doInsertRow("INSERT INTO APPLICATIONS(CUSTOMER_ID, NAME) VALUES (?, ?)", customerId, appName);
-        log.info("Created application {}:{}:'{}'", customerId, appId, appName);
-        return appId;
-    }
-
     private long doCreateCustomer(String customerName) {
         long customerId = doInsertRow("INSERT INTO customers(name) VALUES(?)", customerName);
         log.info("Created customer {}:'{}'", customerId, customerName);
@@ -138,7 +131,7 @@ public class UserDAOImpl implements UserDAO {
 
         long appId = doInsertRow("INSERT INTO applications(customer_id, environment, name, version) VALUES(?, ?, ?, ?)",
                                  customerId, environment, appName, appVersion);
-        log.info("Created application {}:{}:'{}':'{}':'{}'", appId, customerId, environment, appName, appVersion);
+        log.info("Created application {}:{}:'{}':'{}':'{}'", customerId, appId, environment, appName, appVersion);
         return appId;
     }
 
