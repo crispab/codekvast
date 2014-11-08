@@ -32,6 +32,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Slf4j
 public class RegistrationController {
 
+    public static final String IS_UNIQUE_PATH = "/register/isUnique";
+    public static final String REGISTER_PATH = "/register";
+
     private final UserService userService;
 
     @NonNull
@@ -60,7 +63,7 @@ public class RegistrationController {
         log.warn("Application exception: " + e);
     }
 
-    @RequestMapping(value = "/register", method = RequestMethod.GET)
+    @RequestMapping(value = REGISTER_PATH, method = RequestMethod.GET)
     public String registerGet(ModelMap modelMap) {
         modelMap.put("maxAppNameLength", Constraints.MAX_APP_NAME_LENGTH);
         modelMap.put("maxCustomerNameLength", Constraints.MAX_CUSTOMER_NAME_LENGTH);
@@ -70,14 +73,14 @@ public class RegistrationController {
         return "register";
     }
 
-    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    @RequestMapping(value = REGISTER_PATH, method = RequestMethod.POST)
     @ResponseBody
     public RegistrationResponse registerPost(@RequestBody @Valid RegistrationRequest data) throws CodekvastException {
         userService.registerUserAndCustomer(data);
         return RegistrationResponse.builder().greeting(String.format("Welcome %s!", data.getFullName())).build();
     }
 
-    @RequestMapping(value = "/register/isUnique", method = RequestMethod.POST)
+    @RequestMapping(value = IS_UNIQUE_PATH, method = RequestMethod.POST)
     @ResponseBody
     public IsNameUniqueResponse isUnique(@RequestBody @Valid IsNameUniqueRequest request) {
         return IsNameUniqueResponse.builder().isUnique(userService.isUnique(toKind(request.getKind()), request.getName())).build();

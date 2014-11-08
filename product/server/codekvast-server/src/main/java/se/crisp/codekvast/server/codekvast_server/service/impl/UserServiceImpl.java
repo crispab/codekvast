@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
         }
 
         boolean result = count == 0;
-        log.debug("Is {} '{}' unique? {}", kind, normalizedName, result ? "yes" : "no");
+        log.debug("Is {} '{}' unique? {}", kind.toString().toLowerCase().replace('_', ' '), normalizedName, result ? "yes" : "no");
         return result;
     }
 
