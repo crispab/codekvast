@@ -15,9 +15,11 @@ import se.crisp.codekvast.server.codekvast_server.model.RegistrationRequest;
 import se.crisp.codekvast.server.codekvast_server.model.RegistrationResponse;
 
 import java.net.URI;
+import java.util.Random;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static se.crisp.codekvast.server.agent.model.v1.Constraints.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = CodekvastServerApplication.class)
@@ -34,6 +36,7 @@ public class RegistrationControllerTest {
 
     private RestTemplate restTemplate = new RestTemplate();
     private URI registrationUri;
+    private Random random = new Random();
 
     @Before
     public void before() throws Exception {
@@ -42,28 +45,43 @@ public class RegistrationControllerTest {
 
     @Test
     public void testRegistration_success() {
+        String fullName = randomString(MAX_FULL_NAME_LENGTH);
         // @formatter:off
         RegistrationRequest request = RegistrationRequest.builder()
-                                                         .fullName("Full Name")
-                                                         .username("username")
-                                                         .emailAddress("foo@bar")
-                                                         .password("pw")
-                                                         .customerName("customerName")
+                                                         .fullName(fullName)
+                                                         .username(randomString(MAX_USER_NAME_LENGTH))
+                                                         .emailAddress(randomString(MAX_EMAIL_ADDRESS_LENGTH))
+                                                         .password(randomString(100))
+                                                         .customerName(randomString(MAX_CUSTOMER_NAME_LENGTH))
                                                          .build();
         // @formatter:on
         RegistrationResponse response = restTemplate.postForEntity(registrationUri, request, RegistrationResponse.class).getBody();
-        assertThat(response.getGreeting(), is("Welcome Full Name!"));
+        assertThat(response.getGreeting(), is("Welcome " + fullName + "!"));
+    }
+
+    @Test(expected = HttpClientErrorException.class)
+    public void testRegistration_too_long_full_name() {
+        // @formatter:off
+        RegistrationRequest request = RegistrationRequest.builder()
+                                                         .fullName(randomString(MAX_FULL_NAME_LENGTH + 1))
+                                                         .username(randomString(MAX_USER_NAME_LENGTH))
+                                                         .emailAddress(randomString(MAX_EMAIL_ADDRESS_LENGTH))
+                                                         .password(randomString(100))
+                                                         .customerName(randomString(MAX_CUSTOMER_NAME_LENGTH))
+                                                         .build();
+        // @formatter:on
+        restTemplate.postForEntity(registrationUri, request, RegistrationResponse.class).getBody();
     }
 
     @Test(expected = HttpClientErrorException.class)
     public void testRegistration_duplicate_username() {
         // @formatter:off
         RegistrationRequest request = RegistrationRequest.builder()
-                                                         .fullName("Full Name")
+                                                         .fullName(randomString(MAX_FULL_NAME_LENGTH))
                                                          .username("user")
-                                                         .emailAddress("foo@bar")
-                                                         .password("pw")
-                                                         .customerName("customerName2")
+                                                         .emailAddress(randomString(MAX_EMAIL_ADDRESS_LENGTH))
+                                                         .password(randomString(100))
+                                                         .customerName(randomString(MAX_CUSTOMER_NAME_LENGTH))
                                                          .build();
         // @formatter:on
         restTemplate.postForEntity(registrationUri, request, RegistrationResponse.class).getBody();
@@ -73,14 +91,26 @@ public class RegistrationControllerTest {
     public void testRegistration_duplicate_emailAddress() {
         // @formatter:off
         RegistrationRequest request = RegistrationRequest.builder()
-                                                         .fullName("Full Name")
-                                                         .username("user" + System.currentTimeMillis())
+                                                         .fullName(randomString(MAX_FULL_NAME_LENGTH))
+                                                         .username(randomString(MAX_USER_NAME_LENGTH))
                                                          .emailAddress("user@demo.com")
-                                                         .password("pw")
-                                                         .customerName("customerName2")
+                                                         .password(randomString(100))
+                                                         .customerName(randomString(MAX_CUSTOMER_NAME_LENGTH))
                                                          .build();
         // @formatter:on
         restTemplate.postForEntity(registrationUri, request, RegistrationResponse.class).getBody();
+    }
+
+    private String randomString(int length) {
+        char s[] = new char[length];
+        char min = 'a';
+        int bound = 'z' - min;
+        for (int i = 0; i < length; i++) {
+            s[i] = (char) (random.nextInt(bound) + min);
+        }
+        String result = new String(s);
+        assertThat(result.length(), is(length));
+        return result;
     }
 
 }
