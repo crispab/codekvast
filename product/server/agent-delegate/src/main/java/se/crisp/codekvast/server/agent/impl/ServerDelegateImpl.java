@@ -93,29 +93,6 @@ public class ServerDelegateImpl implements ServerDelegate {
         }
     }
 
-    private <T> T validate(T data) throws ServerDelegateException {
-        Set<ConstraintViolation<T>> violations = validator.validate(data);
-
-        if (!violations.isEmpty()) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("Invalid ").append(data.getClass().getSimpleName());
-            String delimiter = ": ";
-            for (ConstraintViolation<T> violation : violations) {
-                sb.append(delimiter).append(violation.getPropertyPath()).append(" ").append(violation.getInvalidValue()).append(" ").append
-                        (violation.getMessage());
-                delimiter = ", ";
-            }
-
-            throw new ServerDelegateException(sb.toString());
-        }
-
-        return data;
-    }
-
-    private int elapsedSeconds(long startedAtMillis) {
-        return Math.round((System.currentTimeMillis() - startedAtMillis) / 1000f);
-    }
-
     @Override
     public void uploadSignatureData(String jvmFingerprint, Collection<String> signatures) throws ServerDelegateException {
         if (signatures.isEmpty()) {
@@ -184,6 +161,29 @@ public class ServerDelegateImpl implements ServerDelegate {
         } catch (RestClientException e) {
             throw new ServerDelegateException("Failed to post usage data", e);
         }
+    }
+
+    private <T> T validate(T data) throws ServerDelegateException {
+        Set<ConstraintViolation<T>> violations = validator.validate(data);
+
+        if (!violations.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Invalid ").append(data.getClass().getSimpleName());
+            String delimiter = ": ";
+            for (ConstraintViolation<T> violation : violations) {
+                sb.append(delimiter).append(violation.getPropertyPath()).append(" ").append(violation.getInvalidValue()).append(" ").append
+                        (violation.getMessage());
+                delimiter = ", ";
+            }
+
+            throw new ServerDelegateException(sb.toString());
+        }
+
+        return data;
+    }
+
+    private int elapsedSeconds(long startedAtMillis) {
+        return Math.round((System.currentTimeMillis() - startedAtMillis) / 1000f);
     }
 
 }
