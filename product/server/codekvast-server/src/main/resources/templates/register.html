@@ -25,7 +25,10 @@
             <div class="form-group">
                 <label class="col-md-2 control-label" for="fullName">Full name</label>
                 <input class="col-md-6" id="fullName" name="fullName"
-                       placeholder="Enter your full name" type="text" ng-model="registration.fullName" ng-required="true"
+                       placeholder="Your Full Name"
+                       type="text"
+                       ng-model="registration.fullName"
+                       ng-required="true"
                        th:attr="ng-maxlength=${maxUsernameLength}"/>
                 <ck-validation-icons field="form.fullName"/>
                 <span ng-show="form.fullName.$pristine" class="glyphicon glyphicon-asterisk"></span>
@@ -36,8 +39,7 @@
                 <label class="col-md-2 control-label" for="emailAddress1">Email address</label>
                 <input class="col-md-6"
                        id="emailAddress1"
-                       name="emailAddress1"
-                       placeholder="Enter your email address"
+                       name="emailAddress1" placeholder="Your Email Address"
                        type="email"
                        ng-model="registration.emailAddress" ng-required="true" ck-unique="emailAddress"
                        ck-lowercase="true" ng-model-options="{debounce: 500}"
@@ -50,8 +52,7 @@
                 <label class="col-md-2 control-label" for="emailAddress2">Verify email address</label>
                 <input class="col-md-6"
                        id="emailAddress2"
-                       name="emailAddress2"
-                       placeholder="Reenter your email address"
+                       name="emailAddress2" placeholder="Your Email Address again"
                        type="email"
                        ng-model="emailAddress2" ck-must-match-lc="emailAddress1"
                        ng-required="true"
@@ -64,8 +65,7 @@
             <div class="form-group">
                 <label class="col-md-2 control-label" for="username">Username</label>
                 <input class="col-md-6" id="username" name="username" type="text" ng-model="registration.username" ng-required="true"
-                       th:attr="ng-maxlength=${maxUsernameLength}" ck-lowercase="true"
-                       placeholder="Enter your preferred username"
+                       th:attr="ng-maxlength=${maxUsernameLength}" ck-lowercase="true" placeholder="Choose a Username"
                        ck-unique="username"
                        ng-model-options="{debounce: 500}"/>
                 <span ng-show="form.username.$pristine" class="glyphicon glyphicon-asterisk"></span>
@@ -76,7 +76,7 @@
             <div class="form-group">
                 <label class="col-md-2 control-label" for="pw1">Password</label>
                 <input class="col-md-6" id="pw1" name="pw1" type="password" ng-model="registration.password" ng-required="true"
-                       placeholder="Enter your preferred password"/>
+                       placeholder="Choose a Password"/>
                 <span ng-show="form.pw1.$pristine" class="glyphicon glyphicon-asterisk"></span>
                 <span ng-show="isFieldValid(form.pw1)" class="glyphicon glyphicon-ok"></span>
                 <span ng-show="isFieldInvalid(form.pw1)" class="glyphicon glyphicon-ban-circle"></span>
@@ -85,7 +85,7 @@
             <div class="form-group">
                 <label class="col-md-2 control-label" for="pw2">Verify Password</label>
                 <input class="col-md-6" id="pw2" name="pw2" type="password" ng-model="pw2" ng-required="true" ck-must-match="pw1"
-                       placeholder="Reenter your password"/>
+                       placeholder="Reenter Your Chosen Password"/>
                 <span ng-show="form.pw2.$pristine" class="glyphicon glyphicon-asterisk"></span>
                 <span ng-show="isFieldValid(form.pw2)" class="glyphicon glyphicon-ok"></span>
                 <span ng-show="isFieldInvalid(form.pw2)" class="glyphicon glyphicon-ban-circle"></span>
@@ -97,8 +97,7 @@
                 <label class="col-md-2 control-label" for="customerName">Company name</label>
                 <input class="col-md-6" id="customerName" name="customerName" type="text" ng-model="registration.customerName"
                        ng-required="true"
-                       th:attr="ng-maxlength=${maxCustomerNameLength}"
-                       placeholder="Enter your company or organisation name"
+                       th:attr="ng-maxlength=${maxCustomerNameLength}" placeholder="Your Company or Organisation Name"
                        ck-unique="customerName"
                        ng-model-options="{debounce: 500}"/>
                 <span ng-show="form.customerName.$pristine" class="glyphicon glyphicon-asterisk"></span>
@@ -107,7 +106,7 @@
                 <span ng-show="isAjaxPending(form.customerName)" class="glyphicon glyphicon-flash"></span>
             </div>
         </fieldset>
-        <button type="submit" ng-disabled="isSubmitDisabled" class="col-md-offset-2 col-md-1 btn btn-primary">Register</button>
+        <button type="submit" ng-disabled="isSubmitDisabled" class="col-md-offset-2 col-md-1 btn btn-primary">Start Using Codekvast</button>
         <div ng-show="alertMessage" class="col-md-offset-1 col-md-4 {{alertClass}}">
             {{alertMessage}}
         </div>

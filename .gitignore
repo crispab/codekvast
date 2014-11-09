@@ -13,3 +13,4 @@
 build/
 tools/downloaded/
 target/
+.vagrant/
