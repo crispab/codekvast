@@ -1,5 +1,6 @@
 package se.crisp.codekvast.server.codekvast_server.service.impl;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
@@ -10,7 +11,6 @@ import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.exception.DuplicateNameException;
 import se.crisp.codekvast.server.codekvast_server.model.RegistrationRequest;
 import se.crisp.codekvast.server.codekvast_server.model.Role;
-import se.crisp.codekvast.server.codekvast_server.model.User;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
 
 import javax.inject.Inject;
@@ -26,16 +26,16 @@ public class UserServiceImpl implements UserService {
     private final UserDAO userDAO;
 
     @Inject
-    public UserServiceImpl(UserDAO userDAO) {
+    public UserServiceImpl(@NonNull UserDAO userDAO) {
         this.userDAO = userDAO;
     }
 
-    private String normalizeName(String name) {
-        return name == null ? null : name.trim().toLowerCase(Locale.ENGLISH);
+    private String normalizeName(@NonNull String name) {
+        return name.trim().toLowerCase(Locale.ENGLISH);
     }
 
     @Override
-    public boolean isUnique(UniqueKind kind, String name) {
+    public boolean isUnique(@NonNull UniqueKind kind, @NonNull String name) {
         int count;
         String normalizedName = normalizeName(name);
 
@@ -60,12 +60,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public long registerUserAndCustomer(RegistrationRequest data) throws CodekvastException {
+    public long registerUserAndCustomer(@NonNull RegistrationRequest data) throws CodekvastException {
         try {
-            User user =
-                    User.builder().fullName(data.getFullName()).username(data.getUsername()).emailAddress(data.getEmailAddress()).build();
-            long userId = userDAO.createUser(user, data.getPassword(), Role.ADMIN, Role.USER);
-            long customerId = userDAO.createCustomerWithPrimaryContact(data.getCustomerName(), userId);
+            long userId = userDAO.createUser(data.getFullName(), normalizeName(data.getUsername()), normalizeName(data.getEmailAddress()),
+                                             data.getPassword(), Role.ADMIN, Role.USER);
+            // TODO: create Role.AGENT
+            userDAO.createCustomerWithPrimaryContact(data.getCustomerName(), userId);
             return userId;
         } catch (DuplicateKeyException e) {
             throw new DuplicateNameException("Cannot register " + data);

@@ -63,6 +63,9 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
                             case "ckUnique username":
                                 $scope.errorMessages.push("The username is already taken");
                                 break;
+                            case "ckUnique emailAddress":
+                                $scope.errorMessages.push("There is another user with that email address");
+                                break;
                             case "ckUnique customerName":
                                 $scope.errorMessages.push("The company name is already taken");
                                 break;

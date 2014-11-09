@@ -14,7 +14,6 @@ import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedCustomerException;
 import se.crisp.codekvast.server.codekvast_server.model.Role;
-import se.crisp.codekvast.server.codekvast_server.model.User;
 
 import javax.inject.Inject;
 import java.sql.ResultSet;
@@ -98,15 +97,14 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public long createUser(User user, String plaintextPassword, Role... roles) {
-        long userId = doInsertRow("INSERT INTO USERS(FULL_NAME, EMAIL_ADDRESS, USERNAME, ENCODED_PASSWORD) VALUES(?, ?, ?, ?)", user
-                                          .getFullName(),
-                                  user.getEmailAddress(), user.getUsername(), passwordEncoder.encode(plaintextPassword));
-        log.info("Created user {}:{}", userId, user);
+    public long createUser(String fullName, String username, String emailAddress, String plaintextPassword, Role... roles) {
+        long userId = doInsertRow("INSERT INTO USERS(FULL_NAME, USERNAME, EMAIL_ADDRESS, ENCODED_PASSWORD) VALUES(?, ?, ?, ?)",
+                                  fullName, username, emailAddress, passwordEncoder.encode(plaintextPassword));
+        log.info("Created user {}:'{}':'{}':'{}'", userId, fullName, username, emailAddress);
 
         for (Role role : roles) {
             jdbcTemplate.update("INSERT INTO USER_ROLES(USER_ID, ROLE) VALUES (?, ?)", userId, role.name());
-            log.info("Assigned role {} to {}", role, user.getUsername());
+            log.info("Assigned role {} to {}:'{}'", role, userId, username);
         }
 
         return userId;

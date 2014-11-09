@@ -39,9 +39,8 @@
                        name="emailAddress1"
                        placeholder="Enter your email address"
                        type="email"
-                       ng-model="registration.emailAddress"
-                       ng-required="true" ck-unique="emailAddress"
-                       ck-lowercase="true"
+                       ng-model="registration.emailAddress" ng-required="true" ck-unique="emailAddress"
+                       ck-lowercase="true" ng-model-options="{debounce: 500}"
                        th:attr="ng-maxlength=${maxEmailAddressLength}"/>
                 <span ng-show="form.emailAddress1.$pristine" class="glyphicon glyphicon-asterisk"></span>
                 <span ng-show="isFieldValid(form.emailAddress1)" class="glyphicon glyphicon-ok"></span>

@@ -4,7 +4,6 @@ import org.springframework.dao.DataAccessException;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedCustomerException;
 import se.crisp.codekvast.server.codekvast_server.model.Role;
-import se.crisp.codekvast.server.codekvast_server.model.User;
 
 /**
  * @author Olle Hallin
@@ -23,7 +22,8 @@ public interface UserDAO {
 
     int countCustomersByNameLc(String customerName);
 
-    long createUser(User user, String plaintextPassword, Role... roles) throws DataAccessException;
+    long createUser(String fullName, String username, String emailAddress, String plaintextPassword, Role... roles)
+            throws DataAccessException;
 
     long createCustomerWithPrimaryContact(String customerName, long userId) throws DataAccessException, UndefinedCustomerException;
 
