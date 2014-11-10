@@ -1,3 +1,7 @@
+.ng-cloak {
+    display: none;
+}
+
 input {
     -webkit-transition: all linear 0.3s;
     transition: all linear 0.3s;

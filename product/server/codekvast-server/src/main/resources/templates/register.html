@@ -6,12 +6,12 @@
     <link rel="stylesheet" th:href="@{/app/register.css}"/>
 </head>
 
-<body ng-app="codekvastRegistration">
+<body ng-app="codekvastRegistration" class="ng-cloak">
 <div class="container" ng-controller="RegistrationCtrl">
 
     <h1 th:text="#{registration.page-title}">Codekvast - registration</h1>
 
-    <form class="form-horizontal" th:novalidate="false" name="form" ng-submit="doSubmit()">
+    <form class="form-horizontal" name="form" ng-submit="doSubmit()">
 
         <fieldset ng-show="errorMessages">
             <legend>Form errors</legend>
@@ -106,7 +106,7 @@
                 <span ng-show="isAjaxPending(form.customerName)" class="glyphicon glyphicon-flash"></span>
             </div>
         </fieldset>
-        <button type="submit" ng-disabled="isSubmitDisabled" class="col-md-offset-2 col-md-1 btn btn-primary">Start Using Codekvast</button>
+        <button type="submit" ng-disabled="isSubmitDisabled" class="col-md-offset-2 col-md-3 btn btn-primary">Start Using Codekvast</button>
         <div ng-show="alertMessage" class="col-md-offset-1 col-md-4 {{alertClass}}">
             {{alertMessage}}
         </div>
