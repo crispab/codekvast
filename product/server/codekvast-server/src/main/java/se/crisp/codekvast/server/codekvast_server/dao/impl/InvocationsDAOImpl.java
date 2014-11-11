@@ -5,11 +5,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import se.crisp.codekvast.server.agent.model.v1.JvmRunData;
-import se.crisp.codekvast.server.agent.model.v1.UsageConfidence;
-import se.crisp.codekvast.server.agent.model.v1.UsageData;
-import se.crisp.codekvast.server.agent.model.v1.UsageDataEntry;
-import se.crisp.codekvast.server.codekvast_server.dao.UsageDAO;
+import se.crisp.codekvast.server.agent.model.v1.InvocationData;
+import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
+import se.crisp.codekvast.server.agent.model.v1.JvmData;
+import se.crisp.codekvast.server.agent.model.v1.SignatureConfidence;
+import se.crisp.codekvast.server.codekvast_server.dao.InvocationsDAO;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 
@@ -27,20 +27,20 @@ import java.util.Date;
  */
 @Repository
 @Slf4j
-public class UsageDAOImpl implements UsageDAO {
+public class InvocationsDAOImpl implements InvocationsDAO {
 
     private final JdbcTemplate jdbcTemplate;
     private final UserDAO userDAO;
 
     @Inject
-    public UsageDAOImpl(JdbcTemplate jdbcTemplate, UserDAO userDAO) {
+    public InvocationsDAOImpl(JdbcTemplate jdbcTemplate, UserDAO userDAO) {
         this.jdbcTemplate = jdbcTemplate;
         this.userDAO = userDAO;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void storeJvmRunData(JvmRunData data) throws CodekvastException {
+    public void storeJvmData(JvmData data) throws CodekvastException {
         long customerId = userDAO.getCustomerId(data.getHeader().getCustomerName());
         long appId = userDAO.getAppId(customerId, data.getHeader().getEnvironment(), data.getAppName(), data.getAppVersion());
         storeJvmRunData(customerId, appId, data);
@@ -48,13 +48,13 @@ public class UsageDAOImpl implements UsageDAO {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Collection<UsageDataEntry> storeUsageData(UsageData usageData) throws CodekvastException {
-        final Collection<UsageDataEntry> result = new ArrayList<>();
+    public Collection<InvocationEntry> storeInvocationsData(InvocationData invocationData) throws CodekvastException {
+        final Collection<InvocationEntry> result = new ArrayList<>();
 
-        UserDAO.AppId appId = userDAO.getAppIdByJvmFingerprint(usageData.getJvmFingerprint());
+        UserDAO.AppId appId = userDAO.getAppIdByJvmFingerprint(invocationData.getJvmFingerprint());
 
-        for (UsageDataEntry entry : usageData.getUsage()) {
-            storeOrUpdateUsageDataEntry(result, appId, usageData.getJvmFingerprint(), entry);
+        for (InvocationEntry entry : invocationData.getInvocations()) {
+            storeOrUpdateInvocationEntry(result, appId, invocationData.getJvmFingerprint(), entry);
         }
 
         return result;
@@ -62,18 +62,18 @@ public class UsageDAOImpl implements UsageDAO {
 
     @Override
     @Transactional(readOnly = true)
-    public Collection<UsageDataEntry> getSignatures(String customerName) throws CodekvastException {
+    public Collection<InvocationEntry> getSignatures(String customerName) throws CodekvastException {
         // TODO: don't allow null customerName
         Object[] args = customerName == null ? new Object[0] : new Object[]{userDAO.getCustomerId(customerName)};
         String where = customerName == null ? "" : " WHERE CUSTOMER_ID = ?";
 
         return jdbcTemplate.query("SELECT SIGNATURE, USED_AT, CONFIDENCE FROM SIGNATURES " + where,
-                                  args, new UsageDataEntryRowMapper());
+                                  args, new InvocationsEntryRowMapper());
     }
 
-    private void storeOrUpdateUsageDataEntry(Collection<UsageDataEntry> result, UserDAOImpl.AppId appId, String jvmFingerprint,
-                                             UsageDataEntry entry) {
-        Date usedAt = entry.getUsedAtMillis() == null ? null : new Date(entry.getUsedAtMillis());
+    private void storeOrUpdateInvocationEntry(Collection<InvocationEntry> result, UserDAOImpl.AppId appId, String jvmFingerprint,
+                                              InvocationEntry entry) {
+        Date usedAt = entry.getInvokedAtMillis() == null ? null : new Date(entry.getInvokedAtMillis());
         Integer confidence = entry.getConfidence() == null ? null : entry.getConfidence().ordinal();
 
         int updated = attemptToUpdateSignature(appId, jvmFingerprint, entry, usedAt, confidence);
@@ -95,7 +95,7 @@ public class UsageDAOImpl implements UsageDAO {
         }
     }
 
-    private int attemptToUpdateSignature(UserDAOImpl.AppId appId, String jvmFingerprint, UsageDataEntry entry, Date usedAt,
+    private int attemptToUpdateSignature(UserDAOImpl.AppId appId, String jvmFingerprint, InvocationEntry entry, Date usedAt,
                                          Integer confidence) {
         if (usedAt == null) {
             // An unused signature is not allowed to overwrite a used signature
@@ -104,14 +104,14 @@ public class UsageDAOImpl implements UsageDAO {
                                        confidence, appId.getCustomerId(), appId.getAppId(), entry.getSignature());
         }
 
-        // A usage. Overwrite whatever was there.
+        // An invocation. Overwrite whatever was there.
         return jdbcTemplate.update("UPDATE SIGNATURES SET USED_AT = ?, JVM_FINGERPRINT = ?, CONFIDENCE = ? " +
                                            "WHERE CUSTOMER_ID = ? AND APPLICATION_ID = ? AND SIGNATURE = ? ",
                                    usedAt, jvmFingerprint, confidence, appId.getCustomerId(), appId.getAppId(), entry.getSignature());
 
     }
 
-    private void storeJvmRunData(long customerId, long appId, JvmRunData data) {
+    private void storeJvmRunData(long customerId, long appId, JvmData data) {
         Date dumpedAt = new Date(data.getDumpedAtMillis());
 
         int updated =
@@ -138,12 +138,12 @@ public class UsageDAOImpl implements UsageDAO {
         }
     }
 
-    private static class UsageDataEntryRowMapper implements RowMapper<UsageDataEntry> {
+    private static class InvocationsEntryRowMapper implements RowMapper<InvocationEntry> {
         public static final Long EPOCH = 0L;
 
         @Override
-        public UsageDataEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new UsageDataEntry(rs.getString(1), getTimeMillis(rs, 2), UsageConfidence.fromOrdinal(rs.getInt(3)));
+        public InvocationEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return new InvocationEntry(rs.getString(1), getTimeMillis(rs, 2), SignatureConfidence.fromOrdinal(rs.getInt(3)));
         }
 
         private Long getTimeMillis(ResultSet rs, int columnIndex) throws SQLException {

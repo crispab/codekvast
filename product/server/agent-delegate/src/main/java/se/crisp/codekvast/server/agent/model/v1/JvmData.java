@@ -19,7 +19,7 @@ import javax.validation.constraints.Size;
 @Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class JvmRunData {
+public class JvmData {
     @NonNull
     @Valid
     private Header header;

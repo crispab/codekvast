@@ -1,7 +1,7 @@
 package se.crisp.codekvast.agent.util;
 
 import se.crisp.codekvast.agent.config.CodekvastConfig;
-import se.crisp.codekvast.agent.model.Usage;
+import se.crisp.codekvast.agent.model.Invocation;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -26,7 +26,7 @@ public final class FileUtils {
         // Utility class
     }
 
-    public static void deleteAllConsumedUsageDataFiles(File file) {
+    public static void deleteAllConsumedInvocationDataFiles(File file) {
         File[] files = file.getParentFile().listFiles();
         if (files != null) {
             for (File f : files) {
@@ -37,7 +37,7 @@ public final class FileUtils {
         }
     }
 
-    public static void resetAllConsumedUsageDataFiles(File file) {
+    public static void resetAllConsumedInvocationDataFiles(File file) {
         File[] files = file.getParentFile().listFiles();
         if (files != null) {
             for (File f : files) {
@@ -50,14 +50,14 @@ public final class FileUtils {
         }
     }
 
-    public static List<Usage> consumeAllUsageDataFiles(File file) {
-        List<Usage> result = new ArrayList<Usage>();
+    public static List<Invocation> consumeAllInvocationDataFiles(File file) {
+        List<Invocation> result = new ArrayList<Invocation>();
         File[] files = file.getParentFile().listFiles();
         if (files != null) {
             Arrays.sort(files);
             for (File f : files) {
                 if (f.getName().matches(file.getName() + "(\\.[0-9]+)?$")) {
-                    result.addAll(readUsageDataFrom(f));
+                    result.addAll(readInvocationDataFrom(f));
                     f.renameTo(new File(f.getAbsolutePath() + CONSUMED_SUFFIX));
                 }
             }
@@ -65,8 +65,8 @@ public final class FileUtils {
         return result;
     }
 
-    public static List<Usage> readUsageDataFrom(File file) {
-        List<Usage> result = new ArrayList<Usage>();
+    public static List<Invocation> readInvocationDataFrom(File file) {
+        List<Invocation> result = new ArrayList<Invocation>();
         BufferedReader in = null;
         try {
             in = new BufferedReader(new InputStreamReader(new FileInputStream(file), UTF_8));
@@ -79,7 +79,7 @@ public final class FileUtils {
                 if (recordingStartedAtMillis == -1) {
                     recordingStartedAtMillis = Long.parseLong(line);
                 } else {
-                    result.add(new Usage(line, recordingStartedAtMillis));
+                    result.add(new Invocation(line, recordingStartedAtMillis));
                 }
             }
         } catch (Exception ignore) {
@@ -90,8 +90,8 @@ public final class FileUtils {
         return result;
     }
 
-    public static void writeUsageDataTo(File file, int dumpCount, long recordingStartedAtMillis, Set<String> signatures,
-                                        boolean stripModifiersAndReturnType) {
+    public static void writeInvocationDataTo(File file, int dumpCount, long recordingStartedAtMillis, Set<String> signatures,
+                                             boolean stripModifiersAndReturnType) {
         if (!signatures.isEmpty()) {
             long startedAt = System.currentTimeMillis();
 
@@ -104,7 +104,8 @@ public final class FileUtils {
 
                 Date dumpedAt = new Date();
                 Date recordedAt = new Date(recordingStartedAtMillis);
-                out.printf(Locale.ENGLISH, "# Codekvast usage results #%d at %s, methods used since %s%n", dumpCount, dumpedAt, recordedAt);
+                out.printf(Locale.ENGLISH, "# Codekvast recording data #%d at %s, methods invoked since %s%n", dumpCount, dumpedAt,
+                           recordedAt);
                 out.println(recordingStartedAtMillis);
                 int count = 0;
                 for (String sig : signatures) {
@@ -116,7 +117,7 @@ public final class FileUtils {
                 out.printf(Locale.ENGLISH, "# Dump #%d at %s took %d ms, number of methods: %d%n", dumpCount, dumpedAt, elapsed, count);
                 out.flush();
             } catch (IOException e) {
-                System.err.println("Codekvast cannot dump usage data to " + file + ": " + e);
+                System.err.println("Codekvast cannot dump invocation data to " + file + ": " + e);
             } finally {
                 safeClose(out);
             }

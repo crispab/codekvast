@@ -3,7 +3,7 @@ package se.crisp.codekvast.server.agent.model.v1;
 /**
  * @author Olle Hallin
  */
-public enum UsageConfidence {
+public enum SignatureConfidence {
     /**
      * The used signature was found as-is in the scanned code base.
      */
@@ -23,21 +23,21 @@ public enum UsageConfidence {
     NOT_FOUND_IN_CODE_BASE;
 
     /**
-     * Converts a UsageConfidence.ordinal() back to the enum constant.
+     * Converts a SignatureConfidence.ordinal() back to the enum constant.
      *
-     * @param ordinal An Integer returned by UsageConfidence.ordinal(). May be null.
+     * @param ordinal An Integer returned by SignatureConfidence.ordinal(). May be null.
      * @return The proper enum constant or null if {@code ordinal} is null.
      * @throws java.lang.IllegalArgumentException If invalid ordinal value other than null.
      */
-    public static UsageConfidence fromOrdinal(Integer ordinal) {
+    public static SignatureConfidence fromOrdinal(Integer ordinal) {
         if (ordinal == null) {
             return null;
         }
-        for (UsageConfidence confidence : UsageConfidence.values()) {
+        for (SignatureConfidence confidence : SignatureConfidence.values()) {
             if (confidence.ordinal() == ordinal) {
                 return confidence;
             }
         }
-        throw new IllegalArgumentException("Unknown " + UsageConfidence.class.getSimpleName() + " ordinal: " + ordinal);
+        throw new IllegalArgumentException("Unknown " + SignatureConfidence.class.getSimpleName() + " ordinal: " + ordinal);
     }
 }

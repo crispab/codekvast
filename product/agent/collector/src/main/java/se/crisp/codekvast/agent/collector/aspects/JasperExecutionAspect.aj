@@ -1,7 +1,7 @@
 package se.crisp.codekvast.agent.collector.aspects;
 
 import org.aspectj.lang.JoinPoint;
-import se.crisp.codekvast.agent.collector.UsageRegistry;
+import se.crisp.codekvast.agent.collector.InvocationRegistry;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,7 +26,7 @@ public aspect JasperExecutionAspect extends AbstractCodekvastAspect {
      * Register that this JSP page has been invoked.
      */
     before(): jasperPageExecution() && !withinCodekvast() {
-        UsageRegistry.instance.registerJspPageExecution(getJspPageName(thisJoinPoint));
+        InvocationRegistry.instance.registerJspPageExecution(getJspPageName(thisJoinPoint));
     }
 
     private String getJspPageName(JoinPoint jp) {

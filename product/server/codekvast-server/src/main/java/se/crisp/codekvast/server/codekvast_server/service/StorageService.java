@@ -1,9 +1,9 @@
 package se.crisp.codekvast.server.codekvast_server.service;
 
-import se.crisp.codekvast.server.agent.model.v1.JvmRunData;
+import se.crisp.codekvast.server.agent.model.v1.InvocationData;
+import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
+import se.crisp.codekvast.server.agent.model.v1.JvmData;
 import se.crisp.codekvast.server.agent.model.v1.SignatureData;
-import se.crisp.codekvast.server.agent.model.v1.UsageData;
-import se.crisp.codekvast.server.agent.model.v1.UsageDataEntry;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 
 import java.util.Collection;
@@ -20,7 +20,7 @@ public interface StorageService {
      *
      * @param data The received JVM run data
      */
-    void storeJvmRunData(JvmRunData data) throws CodekvastException;
+    void storeJvmRunData(JvmData data) throws CodekvastException;
 
     /**
      * Stores signature data received from an agent.
@@ -30,17 +30,17 @@ public interface StorageService {
     void storeSignatureData(SignatureData data) throws CodekvastException;
 
     /**
-     * Stores usage data received from an agent.
+     * Stores invocation data received from an agent.
      *
-     * @param data The received usage data
+     * @param data The received invocation data
      */
-    void storeUsageData(UsageData data) throws CodekvastException;
+    void storeInvocationsData(InvocationData data) throws CodekvastException;
 
     /**
      * Retrieve all signatures for a certain customer.
      *
      * @param customerName
-     * @return A list of usage data entries. Does never return null.
+     * @return A list of invocation entries. Does never return null.
      */
-    Collection<UsageDataEntry> getSignatures(String customerName) throws CodekvastException;
+    Collection<InvocationEntry> getSignatures(String customerName) throws CodekvastException;
 }

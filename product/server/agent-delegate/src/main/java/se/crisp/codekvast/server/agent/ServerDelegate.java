@@ -1,6 +1,6 @@
 package se.crisp.codekvast.server.agent;
 
-import se.crisp.codekvast.server.agent.model.v1.UsageDataEntry;
+import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
 
 import java.util.Collection;
 
@@ -17,7 +17,7 @@ public interface ServerDelegate {
      * @param appVersion       The version of the instrumented app.
      * @param hostName         The host name of the JVM
      * @param startedAtMillis  The instant the JVM was started
-     * @param dumpedAtMillis   The instant the latest usage dump was made
+     * @param dumpedAtMillis   The instant the latest invocations dump was made
      * @param jvmFingerprint   The unique id of the JVM run
      * @param codekvastVersion Which version of codekvast produced this data?
      * @param codekvastVcsId   The Git hash of the code that produced this data.
@@ -31,22 +31,22 @@ public interface ServerDelegate {
      * <p/>
      * This should typically be done when the agent detects that a JVM has started and then each time it detects a change in the code base.
      *
-     * @param jvmFingerprint   The unique id of the JVM run
-     * @param signatures The complete set of signatures found in the application
+     * @param jvmFingerprint The unique id of the JVM run
+     * @param signatures     The complete set of signatures found in the application
      * @throws ServerDelegateException Should the upload fail for some reason.
      */
     void uploadSignatureData(String jvmFingerprint, Collection<String> signatures) throws ServerDelegateException;
 
     /**
-     * Upload method usage to the server.
+     * Upload method invocations to the server.
      * <p/>
-     * This should be done as soon as a new usage file is produced by the collector.
+     * This should be done as soon as a new invocations file is produced by the collector.
      *
-     * @param jvmFingerprint The fingerprint of the JVM that produced this usage data.
-     * @param usage          A collection of usage data entries
+     * @param jvmFingerprint The fingerprint of the JVM that produced this invocations data.
+     * @param invocations    A collection of invocations entries.
      * @throws ServerDelegateException
      */
-    void uploadUsageData(String jvmFingerprint, Collection<UsageDataEntry> usage) throws ServerDelegateException;
+    void uploadInvocationsData(String jvmFingerprint, Collection<InvocationEntry> invocations) throws ServerDelegateException;
 
     /**
      * Pings the server.

@@ -9,12 +9,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import se.crisp.codekvast.agent.config.AgentConfig;
 import se.crisp.codekvast.agent.config.CollectorConfig;
+import se.crisp.codekvast.agent.model.Invocation;
 import se.crisp.codekvast.agent.model.Jvm;
-import se.crisp.codekvast.agent.model.Usage;
 import se.crisp.codekvast.agent.util.FileUtils;
 import se.crisp.codekvast.server.agent.ServerDelegate;
 import se.crisp.codekvast.server.agent.ServerDelegateException;
-import se.crisp.codekvast.server.agent.model.v1.UsageConfidence;
+import se.crisp.codekvast.server.agent.model.v1.SignatureConfidence;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -65,20 +65,20 @@ public class AgentWorker {
             Long oldProcessedAt = jvmProcessedAt.get(fingerprint);
 
             if (oldProcessedAt == null) {
-                // The agent might have crashed between consuming usage data files and uploading them to the server.
-                // Make sure that usage data is not lost...
-                FileUtils.resetAllConsumedUsageDataFiles(jvmState.getUsageFile());
+                // The agent might have crashed between consuming invocation data files and uploading them to the server.
+                // Make sure that invocation data is not lost...
+                FileUtils.resetAllConsumedInvocationDataFiles(jvmState.getInvocationsFile());
 
                 uploadJvmRun(jvm);
 
                 analyzeAndUploadCodeBaseIfNeeded(jvmState, new CodeBase(config, jvm.getCollectorConfig().getCodeBaseUri(), jvm
                         .getCollectorConfig().getAppName()));
 
-                processUsageDataIfNeeded(jvmState);
+                processInvocationsDataIfNeeded(jvmState);
             } else if (oldProcessedAt < jvm.getDumpedAtMillis()) {
                 uploadJvmRun(jvm);
 
-                processUsageDataIfNeeded(jvmState);
+                processInvocationsDataIfNeeded(jvmState);
             }
             jvmProcessedAt.put(fingerprint, now);
         }
@@ -96,7 +96,7 @@ public class AgentWorker {
         File[] files = dataPath.listFiles();
         if (files != null) {
             for (File file : files) {
-                if (file.isFile() && file.getName().equals(CollectorConfig.JVM_RUN_BASENAME)) {
+                if (file.isFile() && file.getName().equals(CollectorConfig.JVM_BASENAME)) {
                     addJvmRun(result, file);
                 } else if (file.isDirectory()) {
                     findJvmRuns(result, file);
@@ -108,7 +108,7 @@ public class AgentWorker {
     private void addJvmRun(Collection<JvmState> result, File file) {
         try {
             result.add(JvmState.builder()
-                               .usageFile(new File(file.getParentFile(), CollectorConfig.USAGE_BASENAME))
+                               .invocationsFile(new File(file.getParentFile(), CollectorConfig.INVOCATIONS_BASENAME))
                                .jvm(Jvm.readFrom(file)).build());
         } catch (IOException e) {
             log.error("Cannot load " + file, e);
@@ -153,10 +153,10 @@ public class AgentWorker {
         }
     }
 
-    private void processUsageDataIfNeeded(JvmState jvmState) {
-        List<Usage> usages = FileUtils.consumeAllUsageDataFiles(jvmState.getUsageFile());
-        if (jvmState.getCodeBase() != null && !usages.isEmpty()) {
-            storeNormalizedUsages(jvmState, usages);
+    private void processInvocationsDataIfNeeded(JvmState jvmState) {
+        List<Invocation> invocations = FileUtils.consumeAllInvocationDataFiles(jvmState.getInvocationsFile());
+        if (jvmState.getCodeBase() != null && !invocations.isEmpty()) {
+            storeNormalizedInvocations(jvmState, invocations);
             uploadUsedSignatures(jvmState);
         }
     }
@@ -164,15 +164,16 @@ public class AgentWorker {
     private void uploadUsedSignatures(JvmState jvmState) {
         try {
             serverDelegate
-                    .uploadUsageData(jvmState.getJvm().getJvmFingerprint(), jvmState.getSignatureUsage().getNotUploadedSignatures());
-            jvmState.getSignatureUsage().clearNotUploadedSignatures();
-            FileUtils.deleteAllConsumedUsageDataFiles(jvmState.getUsageFile());
+                    .uploadInvocationsData(jvmState.getJvm().getJvmFingerprint(),
+                                           jvmState.getInvocationsCollector().getNotUploadedInvocations());
+            jvmState.getInvocationsCollector().clearNotUploadedSignatures();
+            FileUtils.deleteAllConsumedInvocationDataFiles(jvmState.getInvocationsFile());
         } catch (ServerDelegateException e) {
-            logException("Cannot upload usage data", e);
+            logException("Cannot upload invocation data", e);
         }
     }
 
-    int storeNormalizedUsages(JvmState jvmState, List<Usage> usages) {
+    int storeNormalizedInvocations(JvmState jvmState, List<Invocation> invocations) {
         CodeBase codeBase = jvmState.getCodeBase();
 
         int recognized = 0;
@@ -180,43 +181,43 @@ public class AgentWorker {
         int ignored = 0;
         int overridden = 0;
 
-        for (Usage usage : usages) {
-            String rawSignature = usage.getSignature();
+        for (Invocation invocation : invocations) {
+            String rawSignature = invocation.getSignature();
             String normalizedSignature = codeBase.normalizeSignature(rawSignature);
 
-            UsageConfidence confidence = null;
+            SignatureConfidence confidence = null;
             if (normalizedSignature == null) {
                 ignored += 1;
             } else if (codeBase.hasSignature(normalizedSignature)) {
                 recognized += 1;
-                confidence = UsageConfidence.EXACT_MATCH;
+                confidence = SignatureConfidence.EXACT_MATCH;
             } else {
                 String baseSignature = codeBase.getBaseSignature(normalizedSignature);
                 if (baseSignature != null) {
                     log.debug("{} replaced by {}", normalizedSignature, baseSignature);
 
                     overridden += 1;
-                    confidence = UsageConfidence.FOUND_IN_PARENT_CLASS;
+                    confidence = SignatureConfidence.FOUND_IN_PARENT_CLASS;
                     normalizedSignature = baseSignature;
                 } else if (normalizedSignature.equals(rawSignature)) {
                     unrecognized += 1;
-                    confidence = UsageConfidence.NOT_FOUND_IN_CODE_BASE;
+                    confidence = SignatureConfidence.NOT_FOUND_IN_CODE_BASE;
                     log.warn("Unrecognized signature: {}", normalizedSignature);
                 } else {
                     unrecognized += 1;
-                    confidence = UsageConfidence.NOT_FOUND_IN_CODE_BASE;
+                    confidence = SignatureConfidence.NOT_FOUND_IN_CODE_BASE;
                     log.warn("Unrecognized signature: {} (was {})", normalizedSignature, rawSignature);
                 }
             }
 
-            jvmState.getSignatureUsage().put(normalizedSignature, usage.getUsedAtMillis(), confidence);
+            jvmState.getInvocationsCollector().put(normalizedSignature, invocation.getUsedAtMillis(), confidence);
         }
 
         if (unrecognized > 0) {
-            log.warn("{} recognized, {} overridden, {} unrecognized and {} ignored signature usages applied", recognized, overridden,
+            log.warn("{} recognized, {} overridden, {} unrecognized and {} ignored signature invocations applied", recognized, overridden,
                      unrecognized, ignored);
         } else {
-            log.info("{} signature usages applied ({} overridden, {} ignored)", recognized, overridden, ignored);
+            log.info("{} signature invocations applied ({} overridden, {} ignored)", recognized, overridden, ignored);
         }
         return unrecognized;
     }
@@ -234,8 +235,8 @@ public class AgentWorker {
     @Builder
     private static class JvmState {
         private final Jvm jvm;
-        private final File usageFile;
-        private final SignatureUsage signatureUsage = new SignatureUsage();
+        private final File invocationsFile;
+        private final InvocationsCollector invocationsCollector = new InvocationsCollector();
         private CodeBase codeBase;
     }
 }

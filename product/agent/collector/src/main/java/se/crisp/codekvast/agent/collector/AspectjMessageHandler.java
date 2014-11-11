@@ -21,7 +21,7 @@ public class AspectjMessageHandler implements IMessageHandler {
     }
 
     private Writer openLogWriter() {
-        File logFile = UsageRegistry.instance.getConfig().getCollectorLogFile();
+        File logFile = InvocationRegistry.instance.getConfig().getCollectorLogFile();
         try {
             return new BufferedWriter(new OutputStreamWriter(new FileOutputStream(logFile)));
         } catch (IOException e) {

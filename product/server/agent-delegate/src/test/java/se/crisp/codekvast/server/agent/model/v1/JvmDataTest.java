@@ -9,23 +9,23 @@ import java.util.UUID;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class JvmRunDataTest {
+public class JvmDataTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test(expected = NullPointerException.class)
     public void jvmRunDataShouldRejectNullHeader() {
-        JvmRunData.builder().header(null).build();
+        JvmData.builder().header(null).build();
     }
 
     @Test(expected = NullPointerException.class)
     public void jvmRunDataShouldRejectMissingValues() {
-        JvmRunData.builder().header(HeaderTest.HEADER).build();
+        JvmData.builder().header(HeaderTest.HEADER).build();
     }
 
     @Test
     public void jvmRunDataShouldBeJsonSerializable() throws IOException {
         // given
-        JvmRunData data1 = JvmRunData.builder()
+        JvmData data1 = JvmData.builder()
                                      .header(HeaderTest.HEADER)
                                      .appName("appName")
                                      .appVersion("appVersion")
@@ -39,7 +39,7 @@ public class JvmRunDataTest {
 
         // when
         String json = objectMapper.writeValueAsString(data1);
-        JvmRunData data2 = objectMapper.readValue(json, JvmRunData.class);
+        JvmData data2 = objectMapper.readValue(json, JvmData.class);
 
         // then
         assertThat(data1, is(data2));

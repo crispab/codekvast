@@ -16,10 +16,10 @@ import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class UsageRegistryTest {
+public class InvocationsRegistryTest {
 
     private static final String CUSTOMER_NAME = "Customer Name";
-    private static final String APP_NAME = "Usage Registry Test";
+    private static final String APP_NAME = "Invocations Registry Test";
     private static final String APP_VERSION = "1.2.3-rc-2";
 
     @Rule
@@ -48,14 +48,14 @@ public class UsageRegistryTest {
                                 .aspectjOptions("")
                                 .build();
         //@formatter:on
-        UsageRegistry.initialize(config);
+        InvocationRegistry.initialize(config);
     }
 
     @Test
     public void testRegisterJspPageExecutionAndDumpToDisk() throws IOException {
-        UsageRegistry.instance.registerJspPageExecution("page1");
+        InvocationRegistry.instance.registerJspPageExecution("page1");
 
-        UsageRegistry.instance.dumpDataToDisk(1);
+        InvocationRegistry.instance.dumpDataToDisk(1);
 
         File[] files = config.getSharedConfig().getDataPath().listFiles();
         assertThat(files.length, is(1));
@@ -63,15 +63,15 @@ public class UsageRegistryTest {
 
         files = files[0].listFiles();
         assertThat(files.length, is(1));
-        assertThat(files[0].getName(), is("usageregistrytest"));
+        assertThat(files[0].getName(), is("invocationsregistrytest"));
 
         files = files[0].listFiles();
         assertThat(files.length, is(2));
         Arrays.sort(files);
-        assertThat(files[0].getName(), is(CollectorConfig.JVM_RUN_BASENAME));
-        assertThat(files[1].getName(), is(CollectorConfig.USAGE_BASENAME));
+        assertThat(files[0].getName(), is(CollectorConfig.INVOCATIONS_BASENAME));
+        assertThat(files[1].getName(), is(CollectorConfig.JVM_BASENAME));
 
-        Jvm jvm = Jvm.readFrom(files[0]);
+        Jvm jvm = Jvm.readFrom(files[1]);
         assertThat(jvm.getCollectorConfig().getSharedConfig().getCustomerName(), is(CUSTOMER_NAME));
         assertThat(jvm.getCollectorConfig().getAppName(), is(APP_NAME));
         assertThat(jvm.getCollectorConfig().getAppVersion(), is(APP_VERSION));

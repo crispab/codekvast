@@ -16,7 +16,7 @@ import java.util.Collection;
 @Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class UsageData {
+public class InvocationData {
     @NonNull
     @Valid
     private Header header;
@@ -25,16 +25,16 @@ public class UsageData {
 
     @NonNull
     @Valid
-    private Collection<UsageDataEntry> usage;
+    private Collection<InvocationEntry> invocations;
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(header=" + header + ", jvmFingerprint=" + jvmFingerprint + ", usage.size=" + usage
+        return getClass().getSimpleName() + "(header=" + header + ", jvmFingerprint=" + jvmFingerprint + ", invocations.size=" + invocations
                 .size() + ')';
     }
 
     public String toLongString() {
-        return getClass().getSimpleName() + "(header=" + header + ", jvmFingerprint=" + jvmFingerprint + ", usage.size=" + usage
-                .size() + ", usage=" + usage + ')';
+        return getClass().getSimpleName() + "(header=" + header + ", jvmFingerprint=" + jvmFingerprint + ", invocations.size=" + invocations
+                .size() + ", invocations=" + invocations + ')';
     }
 }

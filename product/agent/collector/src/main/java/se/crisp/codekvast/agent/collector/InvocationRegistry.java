@@ -17,33 +17,33 @@ import java.util.concurrent.ConcurrentSkipListSet;
 /**
  * This is the target of the method execution recording aspects.
  * <p/>
- * It holds data about method usage, and methods for outputting the usage data to disk.
+ * It holds data about method invocations, and methods for outputting the invocation data to disk.
  *
  * @author Olle Hallin
  */
 @SuppressWarnings("Singleton")
-public class UsageRegistry {
+public class InvocationRegistry {
 
     public static final boolean SHOULD_STRIP_MODIFIERS_AND_RETURN_TYPE_NOW = false;
 
-    public static UsageRegistry instance;
+    public static InvocationRegistry instance;
 
     private final CollectorConfig config;
     private final Jvm jvm;
-    private final File jvmRunFile;
+    private final File jvmFile;
 
-    // Toggle between two usage sets to avoid synchronisation
-    private final Set[] usages = new Set[2];
-    private volatile int currentUsageIndex = 0;
+    // Toggle between two invocation sets to avoid synchronisation
+    private final Set[] invocations = new Set[2];
+    private volatile int currentInvocationIndex = 0;
     private long recordingIntervalStartedAtMillis = System.currentTimeMillis();
 
-    public UsageRegistry(CollectorConfig config, Jvm jvm) {
+    public InvocationRegistry(CollectorConfig config, Jvm jvm) {
         this.config = config;
         this.jvm = jvm;
-        this.jvmRunFile = config.getJvmRunFile();
+        this.jvmFile = config.getJvmFile();
 
-        for (int i = 0; i < usages.length; i++) {
-            this.usages[i] = new ConcurrentSkipListSet<String>();
+        for (int i = 0; i < invocations.length; i++) {
+            this.invocations[i] = new ConcurrentSkipListSet<String>();
         }
     }
 
@@ -51,7 +51,7 @@ public class UsageRegistry {
      * Must be called before handing over to the AspectJ load-time weaver.
      */
     public static void initialize(CollectorConfig config) {
-        UsageRegistry.instance = new UsageRegistry(config,
+        InvocationRegistry.instance = new InvocationRegistry(config,
                                                    Jvm.builder()
                                                       .collectorConfig(config)
                                                          .hostName(getHostName())
@@ -73,9 +73,9 @@ public class UsageRegistry {
      * <p/>
      * Thread-safe.
      */
-    public void registerMethodExecution(Signature signature) {
+    public void registerMethodInvocation(Signature signature) {
         //noinspection unchecked
-        usages[currentUsageIndex].add(SignatureUtils.signatureToString(signature, SHOULD_STRIP_MODIFIERS_AND_RETURN_TYPE_NOW));
+        invocations[currentInvocationIndex].add(SignatureUtils.signatureToString(signature, SHOULD_STRIP_MODIFIERS_AND_RETURN_TYPE_NOW));
     }
 
     /**
@@ -85,38 +85,38 @@ public class UsageRegistry {
      */
     public void registerJspPageExecution(String pageName) {
         //noinspection unchecked
-        usages[currentUsageIndex].add(pageName);
+        invocations[currentInvocationIndex].add(pageName);
     }
 
     /**
-     * Dumps method usage to a file on disk.
+     * Dumps method invocations to a file on disk.
      * <p/>
      * Thread-safe.
      */
     public void dumpDataToDisk(int dumpCount) {
-        File outputPath = config.getUsageFile().getParentFile();
+        File outputPath = config.getInvocationsFile().getParentFile();
         outputPath.mkdirs();
         if (!outputPath.exists()) {
-            CodekvastCollector.out.println("Cannot dump usage data, " + outputPath + " cannot be created");
+            CodekvastCollector.out.println("Cannot dump invocation data, " + outputPath + " cannot be created");
         } else {
             long oldRecordingIntervalStartedAtMillis = recordingIntervalStartedAtMillis;
-            int oldIndex = currentUsageIndex;
+            int oldIndex = currentInvocationIndex;
 
-            toggleUsageIndex();
+            toggleInvocationsIndex();
 
-            dumpJvmRun();
+            dumpJvmData();
 
             //noinspection unchecked
-            FileUtils.writeUsageDataTo(config.getUsageFile(), dumpCount, oldRecordingIntervalStartedAtMillis,
-                                       usages[oldIndex], !SHOULD_STRIP_MODIFIERS_AND_RETURN_TYPE_NOW);
+            FileUtils.writeInvocationDataTo(config.getInvocationsFile(), dumpCount, oldRecordingIntervalStartedAtMillis,
+                                            invocations[oldIndex], !SHOULD_STRIP_MODIFIERS_AND_RETURN_TYPE_NOW);
 
-            usages[oldIndex].clear();
+            invocations[oldIndex].clear();
         }
     }
 
-    private void toggleUsageIndex() {
+    private void toggleInvocationsIndex() {
         recordingIntervalStartedAtMillis = System.currentTimeMillis();
-        currentUsageIndex = currentUsageIndex == 0 ? 1 : 0;
+        currentInvocationIndex = currentInvocationIndex == 0 ? 1 : 0;
     }
 
     public CollectorConfig getConfig() {
@@ -126,14 +126,14 @@ public class UsageRegistry {
     /**
      * Dumps data about this JVM run to a disk file.
      */
-    private void dumpJvmRun() {
+    private void dumpJvmData() {
         File tmpFile = null;
         try {
-            tmpFile = File.createTempFile("codekvast", ".tmp", jvmRunFile.getParentFile());
+            tmpFile = File.createTempFile("codekvast", ".tmp", jvmFile.getParentFile());
             jvm.saveTo(tmpFile);
-            FileUtils.renameFile(tmpFile, jvmRunFile);
+            FileUtils.renameFile(tmpFile, jvmFile);
         } catch (IOException e) {
-            CodekvastCollector.out.println(CodekvastCollector.NAME + " cannot save " + jvmRunFile + ": " + e);
+            CodekvastCollector.out.println(CodekvastCollector.NAME + " cannot save " + jvmFile + ": " + e);
         } finally {
             FileUtils.safeDelete(tmpFile);
         }

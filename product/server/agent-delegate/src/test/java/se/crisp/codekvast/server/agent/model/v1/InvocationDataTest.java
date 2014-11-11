@@ -9,21 +9,21 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class UsageDataTest {
+public class InvocationDataTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
-    public void usageDataShouldBeJsonSerializable() throws IOException {
+    public void invocationDataShouldBeJsonSerializable() throws IOException {
         // given
 
-        UsageData data1 = UsageData.builder().header(HeaderTest.HEADER).usage(asList(
-                new UsageDataEntry("sig1", 10000L, UsageConfidence.EXACT_MATCH),
-                new UsageDataEntry("sig2", 20000L, UsageConfidence.FOUND_IN_PARENT_CLASS)))
+        InvocationData data1 = InvocationData.builder().header(HeaderTest.HEADER).invocations(asList(
+                new InvocationEntry("sig1", 10000L, SignatureConfidence.EXACT_MATCH),
+                new InvocationEntry("sig2", 20000L, SignatureConfidence.FOUND_IN_PARENT_CLASS)))
                                    .build();
 
         // when
         String json = objectMapper.writeValueAsString(data1);
-        UsageData data2 = objectMapper.readValue(json, UsageData.class);
+        InvocationData data2 = objectMapper.readValue(json, InvocationData.class);
 
         // then
         assertThat(data1, is(data2));

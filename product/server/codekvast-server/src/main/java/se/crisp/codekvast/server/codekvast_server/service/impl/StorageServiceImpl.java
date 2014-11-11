@@ -3,12 +3,12 @@ package se.crisp.codekvast.server.codekvast_server.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
-import se.crisp.codekvast.server.agent.model.v1.JvmRunData;
+import se.crisp.codekvast.server.agent.model.v1.InvocationData;
+import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
+import se.crisp.codekvast.server.agent.model.v1.JvmData;
 import se.crisp.codekvast.server.agent.model.v1.SignatureData;
-import se.crisp.codekvast.server.agent.model.v1.UsageData;
-import se.crisp.codekvast.server.agent.model.v1.UsageDataEntry;
-import se.crisp.codekvast.server.codekvast_server.dao.UsageDAO;
-import se.crisp.codekvast.server.codekvast_server.event.internal.UsageDataUpdatedEvent;
+import se.crisp.codekvast.server.codekvast_server.dao.InvocationsDAO;
+import se.crisp.codekvast.server.codekvast_server.event.internal.InvocationDataUpdatedEvent;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.service.StorageService;
 
@@ -26,19 +26,19 @@ import java.util.Collection;
 public class StorageServiceImpl implements StorageService {
 
     private final ApplicationContext applicationContext;
-    private final UsageDAO usageDAO;
+    private final InvocationsDAO invocationsDAO;
 
     @Inject
-    public StorageServiceImpl(ApplicationContext applicationContext, UsageDAO usageDAO) {
+    public StorageServiceImpl(ApplicationContext applicationContext, InvocationsDAO invocationsDAO) {
         this.applicationContext = applicationContext;
-        this.usageDAO = usageDAO;
+        this.invocationsDAO = invocationsDAO;
     }
 
     @Override
-    public void storeJvmRunData(JvmRunData data) throws CodekvastException {
+    public void storeJvmRunData(JvmData data) throws CodekvastException {
         log.debug("Storing {}", data);
 
-        usageDAO.storeJvmRunData(data);
+        invocationsDAO.storeJvmData(data);
     }
 
     @Override
@@ -49,33 +49,33 @@ public class StorageServiceImpl implements StorageService {
             log.debug("Storing {}", data);
         }
 
-        Collection<UsageDataEntry> updatedEntries = usageDAO.storeUsageData(toInitialUsageData(data));
-        applicationContext.publishEvent(new UsageDataUpdatedEvent(getClass(), data.getHeader().getCustomerName(), updatedEntries));
+        Collection<InvocationEntry> updatedEntries = invocationsDAO.storeInvocationsData(toInitialInvocationsData(data));
+        applicationContext.publishEvent(new InvocationDataUpdatedEvent(getClass(), data.getHeader().getCustomerName(), updatedEntries));
     }
 
-    private UsageData toInitialUsageData(SignatureData signatureData) {
-        Collection<UsageDataEntry> usageDataEntries = new ArrayList<>();
+    private InvocationData toInitialInvocationsData(SignatureData signatureData) {
+        Collection<InvocationEntry> invocationEntries = new ArrayList<>();
         for (String sig : signatureData.getSignatures()) {
-            usageDataEntries.add(new UsageDataEntry(sig, null, null));
+            invocationEntries.add(new InvocationEntry(sig, null, null));
         }
-        return UsageData.builder().header(signatureData.getHeader()).jvmFingerprint(signatureData.getJvmFingerprint()).usage(
-                usageDataEntries).build();
+        return InvocationData.builder().header(signatureData.getHeader()).jvmFingerprint(signatureData.getJvmFingerprint()).invocations(
+                invocationEntries).build();
     }
 
     @Override
-    public void storeUsageData(UsageData data) throws CodekvastException {
+    public void storeInvocationsData(InvocationData data) throws CodekvastException {
         if (log.isTraceEnabled()) {
             log.trace("Storing {}", data.toLongString());
         } else {
             log.debug("Storing {}", data);
         }
 
-        Collection<UsageDataEntry> updatedEntries = usageDAO.storeUsageData(data);
-        applicationContext.publishEvent(new UsageDataUpdatedEvent(getClass(), data.getHeader().getCustomerName(), updatedEntries));
+        Collection<InvocationEntry> updatedEntries = invocationsDAO.storeInvocationsData(data);
+        applicationContext.publishEvent(new InvocationDataUpdatedEvent(getClass(), data.getHeader().getCustomerName(), updatedEntries));
     }
 
     @Override
-    public Collection<UsageDataEntry> getSignatures(String customerName) throws CodekvastException {
-        return usageDAO.getSignatures(customerName);
+    public Collection<InvocationEntry> getSignatures(String customerName) throws CodekvastException {
+        return invocationsDAO.getSignatures(customerName);
     }
 }

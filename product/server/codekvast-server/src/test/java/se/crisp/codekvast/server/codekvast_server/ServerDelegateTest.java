@@ -12,8 +12,8 @@ import se.crisp.codekvast.server.agent.ServerDelegate;
 import se.crisp.codekvast.server.agent.ServerDelegateConfig;
 import se.crisp.codekvast.server.agent.ServerDelegateException;
 import se.crisp.codekvast.server.agent.impl.ServerDelegateImpl;
-import se.crisp.codekvast.server.agent.model.v1.UsageConfidence;
-import se.crisp.codekvast.server.agent.model.v1.UsageDataEntry;
+import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
+import se.crisp.codekvast.server.agent.model.v1.SignatureConfidence;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.service.StorageService;
 
@@ -105,15 +105,16 @@ public class ServerDelegateTest {
     }
 
     @Test
-    public void testUploadUsageData() throws ServerDelegateException, URISyntaxException, CodekvastException {
+    public void testUploadInvocationsData() throws ServerDelegateException, URISyntaxException, CodekvastException {
         // Given
         long now = System.currentTimeMillis();
-        Collection<UsageDataEntry> usage = Arrays.asList(new UsageDataEntry(signature1, now, UsageConfidence.EXACT_MATCH),
-                                                         new UsageDataEntry(signature2, now, UsageConfidence.EXACT_MATCH));
+        Collection<InvocationEntry> invocationEntries = Arrays.asList(new InvocationEntry(signature1, now, SignatureConfidence.EXACT_MATCH),
+                                                                      new InvocationEntry(signature2, now,
+                                                                                          SignatureConfidence.EXACT_MATCH));
         // when
         serverDelegate.uploadJvmRunData("appName", "appVersion", "hostName", System.currentTimeMillis(), System.currentTimeMillis(),
                                         jvmFingerprint, "codekvastVersion", "codekvastVcsId");
-        serverDelegate.uploadUsageData(jvmFingerprint, usage);
+        serverDelegate.uploadInvocationsData(jvmFingerprint, invocationEntries);
 
         // then
         assertThat(storageService.getSignatures(CUSTOMER_NAME), hasSize(2));

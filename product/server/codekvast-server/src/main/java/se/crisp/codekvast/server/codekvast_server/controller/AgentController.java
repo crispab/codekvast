@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import se.crisp.codekvast.server.agent.AgentRestEndpoints;
 import se.crisp.codekvast.server.agent.model.test.Ping;
 import se.crisp.codekvast.server.agent.model.test.Pong;
-import se.crisp.codekvast.server.agent.model.v1.JvmRunData;
+import se.crisp.codekvast.server.agent.model.v1.InvocationData;
+import se.crisp.codekvast.server.agent.model.v1.JvmData;
 import se.crisp.codekvast.server.agent.model.v1.SignatureData;
-import se.crisp.codekvast.server.agent.model.v1.UsageData;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.service.StorageService;
 
@@ -62,7 +62,7 @@ public class AgentController {
     }
 
     @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_JVM_RUN, method = RequestMethod.POST)
-    public void receiveJvmRunDataV1(@Valid @RequestBody JvmRunData data) throws CodekvastException {
+    public void receiveJvmRunDataV1(@Valid @RequestBody JvmData data) throws CodekvastException {
         log.info("Received {}", data);
         storageService.storeJvmRunData(data);
     }
@@ -77,14 +77,14 @@ public class AgentController {
         storageService.storeSignatureData(data);
     }
 
-    @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_USAGE, method = RequestMethod.POST)
-    public void receiveUsageDataV1(@Valid @RequestBody UsageData data) throws CodekvastException {
+    @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_INVOCATIONS, method = RequestMethod.POST)
+    public void receiveInvocationsDataV1(@Valid @RequestBody InvocationData data) throws CodekvastException {
         if (log.isTraceEnabled()) {
             log.trace("Received {}", data);
         } else {
-            log.debug("Received {} usages from {}", data.getUsage().size(), data.getHeader());
+            log.debug("Received {} invocations from {}", data.getInvocations().size(), data.getHeader());
         }
-        storageService.storeUsageData(data);
+        storageService.storeInvocationsData(data);
     }
 
     @RequestMapping(value = AgentRestEndpoints.PING, method = RequestMethod.POST)

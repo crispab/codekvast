@@ -16,7 +16,7 @@ import java.util.TimerTask;
 /**
  * This is the Java agent that hooks up Codekvast to the app. It also loads aspectjweaver.
  * <p/>
- * Usage: Add the following option to the Java command line:
+ * Invocation: Add the following option to the Java command line:
  * <pre><code>
  *    -javaagent:/path/to/codekvast-collector-n.n-shadow.jar=path/to/codekvast.conf
  * </code></pre>
@@ -43,7 +43,7 @@ public class CodekvastCollector {
         //noinspection UseOfSystemOutOrSystemErr
         CodekvastCollector.out = config.isVerbose() ? System.err : new PrintStream(new NullOutputStream());
 
-        UsageRegistry.initialize(config);
+        InvocationRegistry.initialize(config);
 
         loadAspectjWeaver(args, inst, config);
 
@@ -52,13 +52,13 @@ public class CodekvastCollector {
         CodekvastCollector.out.printf("%s is ready to detect used code within(%s..*).%n" +
                                               "First write to %s will be in %d seconds, thereafter every %d seconds.%n" +
                                               "-------------------------------------------------------------------------------%n",
-                                      NAME, config.getSharedConfig().getNormalizedPackagePrefix(), config.getUsageFile(),
+                                      NAME, config.getSharedConfig().getNormalizedPackagePrefix(), config.getInvocationsFile(),
                                       firstResultInSeconds, config.getCollectorResolutionSeconds()
         );
     }
 
     private static int createTimerTask(int dumpIntervalSeconds) {
-        UsageDumpingTimerTask timerTask = new UsageDumpingTimerTask();
+        InvocationDumpingTimerTask timerTask = new InvocationDumpingTimerTask();
 
         Timer timer = new Timer(NAME, true);
 
@@ -130,14 +130,14 @@ public class CodekvastCollector {
         return "file:" + file.getAbsolutePath();
     }
 
-    private static class UsageDumpingTimerTask extends TimerTask {
+    private static class InvocationDumpingTimerTask extends TimerTask {
 
         private int dumpCount;
 
         @Override
         public void run() {
             dumpCount += 1;
-            UsageRegistry.instance.dumpDataToDisk(dumpCount);
+            InvocationRegistry.instance.dumpDataToDisk(dumpCount);
         }
     }
 }

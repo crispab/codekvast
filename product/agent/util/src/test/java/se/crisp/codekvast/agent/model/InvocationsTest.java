@@ -14,26 +14,26 @@ import java.util.TreeSet;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class UsageTest {
+public class InvocationsTest {
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Test
     public void testReadNullFile() throws Exception {
-        List<Usage> result = FileUtils.readUsageDataFrom(null);
+        List<Invocation> result = FileUtils.readInvocationDataFrom(null);
         assertThat(result.isEmpty(), is(true));
     }
 
     @Test
-    public void testWriteReadUsageFile() throws Exception {
+    public void testWriteReadInvocationsFile() throws Exception {
         // given
-        File usageFile = new File(temporaryFolder.getRoot(), "usage.dat");
+        File invocationsFile = new File(temporaryFolder.getRoot(), "invocations.dat");
         Set<String> signatures = new TreeSet<String>(Arrays.asList("sig2", "sig0", "sig1"));
 
         // when
-        FileUtils.writeUsageDataTo(usageFile, 1, 1000L, signatures, true);
-        List<Usage> result = FileUtils.readUsageDataFrom(usageFile);
+        FileUtils.writeInvocationDataTo(invocationsFile, 1, 1000L, signatures, true);
+        List<Invocation> result = FileUtils.readInvocationDataFrom(invocationsFile);
 
         // then
         assertThat(result.size(), is(3));

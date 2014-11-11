@@ -5,7 +5,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import se.crisp.codekvast.server.codekvast_server.controller.StompController;
-import se.crisp.codekvast.server.codekvast_server.event.internal.UsageDataUpdatedEvent;
+import se.crisp.codekvast.server.codekvast_server.event.internal.InvocationDataUpdatedEvent;
 import se.crisp.codekvast.server.codekvast_server.service.StorageService;
 
 import javax.inject.Inject;
@@ -15,7 +15,7 @@ import javax.inject.Inject;
  */
 @Slf4j
 @Component
-public class ClientNotifierImpl implements ApplicationListener<UsageDataUpdatedEvent> {
+public class ClientNotifierImpl implements ApplicationListener<InvocationDataUpdatedEvent> {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final StorageService storageService;
@@ -27,7 +27,7 @@ public class ClientNotifierImpl implements ApplicationListener<UsageDataUpdatedE
     }
 
     @Override
-    public void onApplicationEvent(UsageDataUpdatedEvent event) {
+    public void onApplicationEvent(InvocationDataUpdatedEvent event) {
         if (log.isTraceEnabled()) {
             log.debug("Handling {}", event.toLongString());
         } else {
@@ -44,6 +44,6 @@ public class ClientNotifierImpl implements ApplicationListener<UsageDataUpdatedE
             log.warn("Cannot get signatures", e);
         }
         */
-        messagingTemplate.convertAndSend(StompController.TOPIC_SIGNATURES, event.getUsageDataEntries());
+        messagingTemplate.convertAndSend(StompController.TOPIC_SIGNATURES, event.getInvocationEntries());
     }
 }

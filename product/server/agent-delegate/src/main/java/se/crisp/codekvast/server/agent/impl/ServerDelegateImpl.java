@@ -72,7 +72,7 @@ public class ServerDelegateImpl implements ServerDelegate {
         try {
             long startedAt = System.currentTimeMillis();
 
-            JvmRunData data = JvmRunData.builder().header(header)
+            JvmData data = JvmData.builder().header(header)
                                         .appName(appName)
                                         .appVersion(appVersion)
                                         .hostName(hostName)
@@ -119,27 +119,28 @@ public class ServerDelegateImpl implements ServerDelegate {
     }
 
     @Override
-    public void uploadUsageData(@NonNull String jvmFingerprint, Collection<UsageDataEntry> usage) throws ServerDelegateException {
-        if (usage.isEmpty()) {
-            log.debug("Not uploading empty usage");
+    public void uploadInvocationsData(@NonNull String jvmFingerprint, Collection<InvocationEntry> invocations)
+            throws ServerDelegateException {
+        if (invocations.isEmpty()) {
+            log.debug("Not uploading empty invocations");
             return;
         }
 
-        String endPoint = config.getServerUri() + AgentRestEndpoints.UPLOAD_V1_USAGE;
-        log.debug("Uploading {} signatures to {}", usage.size(), endPoint);
+        String endPoint = config.getServerUri() + AgentRestEndpoints.UPLOAD_V1_INVOCATIONS;
+        log.debug("Uploading {} signatures to {}", invocations.size(), endPoint);
 
         try {
             long startedAtMillis = System.currentTimeMillis();
 
-            UsageData data = UsageData.builder().header(header).jvmFingerprint(jvmFingerprint).usage(usage).build();
+            InvocationData data = InvocationData.builder().header(header).jvmFingerprint(jvmFingerprint).invocations(invocations).build();
 
             restTemplate.postForEntity(new URI(endPoint), validate(data), Void.class);
 
-            log.info("Uploaded {} signatures to {} in {}s", usage.size(), endPoint, elapsedSeconds(startedAtMillis));
+            log.info("Uploaded {} signatures to {} in {}s", invocations.size(), endPoint, elapsedSeconds(startedAtMillis));
         } catch (URISyntaxException e) {
             throw new ServerDelegateException("Illegal REST endpoint: " + endPoint, e);
         } catch (RestClientException e) {
-            throw new ServerDelegateException("Failed to post usage data", e);
+            throw new ServerDelegateException("Failed to post invocations data", e);
         }
     }
 
@@ -159,7 +160,7 @@ public class ServerDelegateImpl implements ServerDelegate {
         } catch (URISyntaxException e) {
             throw new ServerDelegateException("Illegal REST endpoint: " + endPoint, e);
         } catch (RestClientException e) {
-            throw new ServerDelegateException("Failed to post usage data", e);
+            throw new ServerDelegateException("Failed to post invocations data", e);
         }
     }
 

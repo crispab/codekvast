@@ -14,12 +14,12 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @ToString
-public class UsageDataEntry {
+public class InvocationEntry {
     @NonNull
     @Size(min = 1, max = Constraints.MAX_SIGNATURE_LENGTH)
     private String signature;
 
-    private Long usedAtMillis;
+    private Long invokedAtMillis;
 
-    private UsageConfidence confidence;
+    private SignatureConfidence confidence;
 }
