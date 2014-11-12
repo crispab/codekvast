@@ -1,7 +1,10 @@
 package se.crisp.codekvast.server.codekvast_server.service;
 
+import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.RegistrationRequest;
+
+import java.util.Collection;
 
 /**
  * @author Olle Hallin
@@ -27,4 +30,13 @@ public interface UserService {
      * @throws CodekvastException If anything fails.
      */
     long registerUserAndCustomer(RegistrationRequest data) throws CodekvastException;
+
+    /**
+     * Retrieve all signatures for a certain customer.
+     *
+     * @param customerName
+     * @return A list of invocation entries. Does never return null.
+     */
+    Collection<InvocationEntry> getSignatures(String customerName) throws CodekvastException;
+
 }

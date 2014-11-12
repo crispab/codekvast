@@ -69,14 +69,14 @@ public class AgentWorker {
                 // Make sure that invocation data is not lost...
                 FileUtils.resetAllConsumedInvocationDataFiles(jvmState.getInvocationsFile());
 
-                uploadJvmRun(jvm);
+                uploadJvmData(jvm);
 
                 analyzeAndUploadCodeBaseIfNeeded(jvmState, new CodeBase(config, jvm.getCollectorConfig().getCodeBaseUri(), jvm
                         .getCollectorConfig().getAppName()));
 
                 processInvocationsDataIfNeeded(jvmState);
             } else if (oldProcessedAt < jvm.getDumpedAtMillis()) {
-                uploadJvmRun(jvm);
+                uploadJvmData(jvm);
 
                 processInvocationsDataIfNeeded(jvmState);
             }
@@ -86,26 +86,26 @@ public class AgentWorker {
 
     private Collection<JvmState> findJvmStates() {
         Collection<JvmState> result = new ArrayList<>();
-        findJvmRuns(result, config.getSharedConfig().getDataPath());
+        findJvmState(result, config.getSharedConfig().getDataPath());
         return result;
     }
 
-    private void findJvmRuns(Collection<JvmState> result, File dataPath) {
-        log.debug("Looking for jvm-run.dat in {}", dataPath);
+    private void findJvmState(Collection<JvmState> result, File dataPath) {
+        log.debug("Looking for jvm.dat in {}", dataPath);
 
         File[] files = dataPath.listFiles();
         if (files != null) {
             for (File file : files) {
                 if (file.isFile() && file.getName().equals(CollectorConfig.JVM_BASENAME)) {
-                    addJvmRun(result, file);
+                    addJvmState(result, file);
                 } else if (file.isDirectory()) {
-                    findJvmRuns(result, file);
+                    findJvmState(result, file);
                 }
             }
         }
     }
 
-    private void addJvmRun(Collection<JvmState> result, File file) {
+    private void addJvmState(Collection<JvmState> result, File file) {
         try {
             result.add(JvmState.builder()
                                .invocationsFile(new File(file.getParentFile(), CollectorConfig.INVOCATIONS_BASENAME))
@@ -115,9 +115,9 @@ public class AgentWorker {
         }
     }
 
-    private void uploadJvmRun(Jvm jvm) {
+    private void uploadJvmData(Jvm jvm) {
         try {
-            serverDelegate.uploadJvmRunData(
+            serverDelegate.uploadJvmData(
                     jvm.getCollectorConfig().getAppName(),
                     jvm.getCollectorConfig().getAppVersion(),
                     jvm.getHostName(),
@@ -210,7 +210,7 @@ public class AgentWorker {
                 }
             }
 
-            jvmState.getInvocationsCollector().put(normalizedSignature, invocation.getUsedAtMillis(), confidence);
+            jvmState.getInvocationsCollector().put(normalizedSignature, invocation.getInvokedAtMillis(), confidence);
         }
 
         if (unrecognized > 0) {

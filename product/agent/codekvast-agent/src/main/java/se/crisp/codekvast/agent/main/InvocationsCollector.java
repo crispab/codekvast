@@ -20,15 +20,15 @@ class InvocationsCollector {
     private final Set<InvocationEntry> notUploadedInvocations = new HashSet<>();
     private final Map<String, Long> ages = new HashMap<>();
 
-    void put(String signature, long usedAtMillis, SignatureConfidence confidence) {
+    void put(String signature, long invokedAtMillis, SignatureConfidence confidence) {
         if (signature != null) {
             Long age = ages.get(signature);
-            if (age == null || age < usedAtMillis) {
+            if (age == null || age < invokedAtMillis) {
                 if (age != null) {
                     removeSignature(signature);
                 }
-                notUploadedInvocations.add(new InvocationEntry(signature, usedAtMillis, confidence));
-                ages.put(signature, usedAtMillis);
+                notUploadedInvocations.add(new InvocationEntry(signature, invokedAtMillis, confidence));
+                ages.put(signature, invokedAtMillis);
             }
         }
     }

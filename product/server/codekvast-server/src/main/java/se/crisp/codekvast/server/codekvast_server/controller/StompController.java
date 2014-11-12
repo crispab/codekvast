@@ -7,7 +7,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
-import se.crisp.codekvast.server.codekvast_server.service.StorageService;
+import se.crisp.codekvast.server.codekvast_server.service.UserService;
 
 import javax.inject.Inject;
 import java.security.Principal;
@@ -24,11 +24,11 @@ import java.util.Collection;
 public class StompController {
     public static final String TOPIC_SIGNATURES = "/topic/signatures";
 
-    private final StorageService storageService;
+    private final UserService userService;
 
     @Inject
-    public StompController(StorageService storageService) {
-        this.storageService = storageService;
+    public StompController(UserService userService) {
+        this.userService = userService;
     }
 
     @MessageMapping("/hello/**")
@@ -37,7 +37,7 @@ public class StompController {
         String username = principal.getName();
         log.debug("Received {} from '{}'", message, username);
 
-        Collection<InvocationEntry> signatures = storageService.getSignatures(null);
+        Collection<InvocationEntry> signatures = userService.getSignatures(null);
 
         log.debug("Returning {} signatures", signatures.size());
         return signatures;

@@ -6,6 +6,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.exception.DuplicateNameException;
@@ -14,6 +15,7 @@ import se.crisp.codekvast.server.codekvast_server.model.Role;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
 
 import javax.inject.Inject;
+import java.util.Collection;
 import java.util.Locale;
 
 /**
@@ -73,4 +75,11 @@ public class UserServiceImpl implements UserService {
             throw new CodekvastException("Cannot register " + data, e);
         }
     }
+
+    @Override
+    public Collection<InvocationEntry> getSignatures(String customerName) throws CodekvastException {
+        Long customerId = customerName == null ? null : userDAO.getCustomerId(customerName);
+        return userDAO.getSignatures(customerId);
+    }
+
 }

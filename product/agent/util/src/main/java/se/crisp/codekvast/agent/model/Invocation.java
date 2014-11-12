@@ -10,5 +10,5 @@ import lombok.Value;
 @Value
 public class Invocation {
     private final String signature;
-    private final long usedAtMillis;
+    private final long invokedAtMillis;
 }

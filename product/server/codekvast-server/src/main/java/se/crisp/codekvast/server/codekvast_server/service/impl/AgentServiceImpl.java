@@ -7,38 +7,38 @@ import se.crisp.codekvast.server.agent.model.v1.InvocationData;
 import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.agent.model.v1.JvmData;
 import se.crisp.codekvast.server.agent.model.v1.SignatureData;
-import se.crisp.codekvast.server.codekvast_server.dao.InvocationsDAO;
+import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
 import se.crisp.codekvast.server.codekvast_server.event.internal.InvocationDataUpdatedEvent;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
-import se.crisp.codekvast.server.codekvast_server.service.StorageService;
+import se.crisp.codekvast.server.codekvast_server.service.AgentService;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * The implementation of the StorageService.
+ * The implementation of the AgentService.
  *
  * @author Olle Hallin
  */
 @Service
 @Slf4j
-public class StorageServiceImpl implements StorageService {
+public class AgentServiceImpl implements AgentService {
 
     private final ApplicationContext applicationContext;
-    private final InvocationsDAO invocationsDAO;
+    private final AgentDAO agentDAO;
 
     @Inject
-    public StorageServiceImpl(ApplicationContext applicationContext, InvocationsDAO invocationsDAO) {
+    public AgentServiceImpl(ApplicationContext applicationContext, AgentDAO agentDAO) {
         this.applicationContext = applicationContext;
-        this.invocationsDAO = invocationsDAO;
+        this.agentDAO = agentDAO;
     }
 
     @Override
-    public void storeJvmRunData(JvmData data) throws CodekvastException {
+    public void storeJvmData(JvmData data) throws CodekvastException {
         log.debug("Storing {}", data);
 
-        invocationsDAO.storeJvmData(data);
+        agentDAO.storeJvmData(data);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class StorageServiceImpl implements StorageService {
             log.debug("Storing {}", data);
         }
 
-        Collection<InvocationEntry> updatedEntries = invocationsDAO.storeInvocationsData(toInitialInvocationsData(data));
+        Collection<InvocationEntry> updatedEntries = agentDAO.storeInvocationData(toInitialInvocationsData(data));
         applicationContext.publishEvent(new InvocationDataUpdatedEvent(getClass(), data.getHeader().getCustomerName(), updatedEntries));
     }
 
@@ -63,19 +63,15 @@ public class StorageServiceImpl implements StorageService {
     }
 
     @Override
-    public void storeInvocationsData(InvocationData data) throws CodekvastException {
+    public void storeInvocationData(InvocationData data) throws CodekvastException {
         if (log.isTraceEnabled()) {
             log.trace("Storing {}", data.toLongString());
         } else {
             log.debug("Storing {}", data);
         }
 
-        Collection<InvocationEntry> updatedEntries = invocationsDAO.storeInvocationsData(data);
+        Collection<InvocationEntry> updatedEntries = agentDAO.storeInvocationData(data);
         applicationContext.publishEvent(new InvocationDataUpdatedEvent(getClass(), data.getHeader().getCustomerName(), updatedEntries));
     }
 
-    @Override
-    public Collection<InvocationEntry> getSignatures(String customerName) throws CodekvastException {
-        return invocationsDAO.getSignatures(customerName);
-    }
 }

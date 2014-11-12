@@ -38,7 +38,7 @@ public class InvocationsTest {
         // then
         assertThat(result.size(), is(3));
         for (int i = 0; i < signatures.size(); i++) {
-            assertThat(result.get(i).getUsedAtMillis(), is(1000L));
+            assertThat(result.get(i).getInvokedAtMillis(), is(1000L));
             assertThat(result.get(i).getSignature(), is("sig" + i));
         }
     }

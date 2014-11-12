@@ -1,26 +1,23 @@
 package se.crisp.codekvast.server.codekvast_server.service;
 
 import se.crisp.codekvast.server.agent.model.v1.InvocationData;
-import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.agent.model.v1.JvmData;
 import se.crisp.codekvast.server.agent.model.v1.SignatureData;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 
-import java.util.Collection;
-
 /**
- * The storage API.
+ * Responsible for the agent-facing business logic.
  *
  * @author Olle Hallin
  */
-public interface StorageService {
+public interface AgentService {
 
     /**
-     * Stores JVM run data received from an agent.
+     * Stores JVM data received from an agent.
      *
-     * @param data The received JVM run data
+     * @param data The received JVM data
      */
-    void storeJvmRunData(JvmData data) throws CodekvastException;
+    void storeJvmData(JvmData data) throws CodekvastException;
 
     /**
      * Stores signature data received from an agent.
@@ -34,13 +31,6 @@ public interface StorageService {
      *
      * @param data The received invocation data
      */
-    void storeInvocationsData(InvocationData data) throws CodekvastException;
+    void storeInvocationData(InvocationData data) throws CodekvastException;
 
-    /**
-     * Retrieve all signatures for a certain customer.
-     *
-     * @param customerName
-     * @return A list of invocation entries. Does never return null.
-     */
-    Collection<InvocationEntry> getSignatures(String customerName) throws CodekvastException;
 }

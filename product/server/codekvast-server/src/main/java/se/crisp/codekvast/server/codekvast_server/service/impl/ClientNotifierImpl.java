@@ -6,7 +6,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import se.crisp.codekvast.server.codekvast_server.controller.StompController;
 import se.crisp.codekvast.server.codekvast_server.event.internal.InvocationDataUpdatedEvent;
-import se.crisp.codekvast.server.codekvast_server.service.StorageService;
+import se.crisp.codekvast.server.codekvast_server.service.AgentService;
 
 import javax.inject.Inject;
 
@@ -18,12 +18,12 @@ import javax.inject.Inject;
 public class ClientNotifierImpl implements ApplicationListener<InvocationDataUpdatedEvent> {
 
     private final SimpMessagingTemplate messagingTemplate;
-    private final StorageService storageService;
+    private final AgentService agentService;
 
     @Inject
-    public ClientNotifierImpl(SimpMessagingTemplate messagingTemplate, StorageService storageService) {
+    public ClientNotifierImpl(SimpMessagingTemplate messagingTemplate, AgentService agentService) {
         this.messagingTemplate = messagingTemplate;
-        this.storageService = storageService;
+        this.agentService = agentService;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class ClientNotifierImpl implements ApplicationListener<InvocationDataUpd
 
         /*
         try {
-            messagingTemplate.convertAndSend(StompController.TOPIC_SIGNATURES, storageService.getSignatures(event.getCustomerName()));
+            messagingTemplate.convertAndSend(StompController.TOPIC_SIGNATURES, agentService.getSignatures(event.getCustomerName()));
         } catch (CodekvastException e) {
             log.warn("Cannot get signatures", e);
         }

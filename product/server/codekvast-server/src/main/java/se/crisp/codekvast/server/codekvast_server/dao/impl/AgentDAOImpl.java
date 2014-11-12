@@ -2,20 +2,16 @@ package se.crisp.codekvast.server.codekvast_server.dao.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.server.agent.model.v1.InvocationData;
 import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.agent.model.v1.JvmData;
-import se.crisp.codekvast.server.agent.model.v1.SignatureConfidence;
-import se.crisp.codekvast.server.codekvast_server.dao.InvocationsDAO;
+import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 
 import javax.inject.Inject;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -27,13 +23,13 @@ import java.util.Date;
  */
 @Repository
 @Slf4j
-public class InvocationsDAOImpl implements InvocationsDAO {
+public class AgentDAOImpl implements AgentDAO {
 
     private final JdbcTemplate jdbcTemplate;
     private final UserDAO userDAO;
 
     @Inject
-    public InvocationsDAOImpl(JdbcTemplate jdbcTemplate, UserDAO userDAO) {
+    public AgentDAOImpl(JdbcTemplate jdbcTemplate, UserDAO userDAO) {
         this.jdbcTemplate = jdbcTemplate;
         this.userDAO = userDAO;
     }
@@ -43,12 +39,12 @@ public class InvocationsDAOImpl implements InvocationsDAO {
     public void storeJvmData(JvmData data) throws CodekvastException {
         long customerId = userDAO.getCustomerId(data.getHeader().getCustomerName());
         long appId = userDAO.getAppId(customerId, data.getHeader().getEnvironment(), data.getAppName(), data.getAppVersion());
-        storeJvmRunData(customerId, appId, data);
+        storeJvmData(customerId, appId, data);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Collection<InvocationEntry> storeInvocationsData(InvocationData invocationData) throws CodekvastException {
+    public Collection<InvocationEntry> storeInvocationData(InvocationData invocationData) throws CodekvastException {
         final Collection<InvocationEntry> result = new ArrayList<>();
 
         UserDAO.AppId appId = userDAO.getAppIdByJvmFingerprint(invocationData.getJvmFingerprint());
@@ -60,23 +56,12 @@ public class InvocationsDAOImpl implements InvocationsDAO {
         return result;
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Collection<InvocationEntry> getSignatures(String customerName) throws CodekvastException {
-        // TODO: don't allow null customerName
-        Object[] args = customerName == null ? new Object[0] : new Object[]{userDAO.getCustomerId(customerName)};
-        String where = customerName == null ? "" : " WHERE CUSTOMER_ID = ?";
-
-        return jdbcTemplate.query("SELECT SIGNATURE, USED_AT, CONFIDENCE FROM SIGNATURES " + where,
-                                  args, new InvocationsEntryRowMapper());
-    }
-
     private void storeOrUpdateInvocationEntry(Collection<InvocationEntry> result, UserDAOImpl.AppId appId, String jvmFingerprint,
                                               InvocationEntry entry) {
-        Date usedAt = entry.getInvokedAtMillis() == null ? null : new Date(entry.getInvokedAtMillis());
+        Date invokedAt = entry.getInvokedAtMillis() == null ? null : new Date(entry.getInvokedAtMillis());
         Integer confidence = entry.getConfidence() == null ? null : entry.getConfidence().ordinal();
 
-        int updated = attemptToUpdateSignature(appId, jvmFingerprint, entry, usedAt, confidence);
+        int updated = attemptToUpdateSignature(appId, jvmFingerprint, entry, invokedAt, confidence);
 
         if (updated > 0) {
             log.trace("Updated {}", entry);
@@ -85,9 +70,9 @@ public class InvocationsDAOImpl implements InvocationsDAO {
         }
 
         try {
-            jdbcTemplate.update("INSERT INTO SIGNATURES(CUSTOMER_ID, APPLICATION_ID, SIGNATURE, JVM_FINGERPRINT, USED_AT, CONFIDENCE) " +
+            jdbcTemplate.update("INSERT INTO SIGNATURES(CUSTOMER_ID, APPLICATION_ID, SIGNATURE, JVM_FINGERPRINT, INVOKED_AT, CONFIDENCE) " +
                                         "VALUES(?, ?, ?, ?, ?, ?)",
-                                appId.getCustomerId(), appId.getAppId(), entry.getSignature(), jvmFingerprint, usedAt, confidence);
+                                appId.getCustomerId(), appId.getAppId(), entry.getSignature(), jvmFingerprint, invokedAt, confidence);
             log.trace("Stored {}", entry);
             result.add(entry);
         } catch (Exception ignore) {
@@ -95,23 +80,23 @@ public class InvocationsDAOImpl implements InvocationsDAO {
         }
     }
 
-    private int attemptToUpdateSignature(UserDAOImpl.AppId appId, String jvmFingerprint, InvocationEntry entry, Date usedAt,
+    private int attemptToUpdateSignature(UserDAOImpl.AppId appId, String jvmFingerprint, InvocationEntry entry, Date invokedAt,
                                          Integer confidence) {
-        if (usedAt == null) {
-            // An unused signature is not allowed to overwrite a used signature
+        if (invokedAt == null) {
+            // An uninvoked signature is not allowed to overwrite an invoked signature
             return jdbcTemplate.update("UPDATE SIGNATURES SET CONFIDENCE = ? " +
-                                               "WHERE CUSTOMER_ID = ? AND APPLICATION_ID = ? AND SIGNATURE = ? AND USED_AT IS NULL ",
+                                               "WHERE CUSTOMER_ID = ? AND APPLICATION_ID = ? AND SIGNATURE = ? AND INVOKED_AT IS NULL ",
                                        confidence, appId.getCustomerId(), appId.getAppId(), entry.getSignature());
         }
 
         // An invocation. Overwrite whatever was there.
-        return jdbcTemplate.update("UPDATE SIGNATURES SET USED_AT = ?, JVM_FINGERPRINT = ?, CONFIDENCE = ? " +
+        return jdbcTemplate.update("UPDATE SIGNATURES SET INVOKED_AT = ?, JVM_FINGERPRINT = ?, CONFIDENCE = ? " +
                                            "WHERE CUSTOMER_ID = ? AND APPLICATION_ID = ? AND SIGNATURE = ? ",
-                                   usedAt, jvmFingerprint, confidence, appId.getCustomerId(), appId.getAppId(), entry.getSignature());
+                                   invokedAt, jvmFingerprint, confidence, appId.getCustomerId(), appId.getAppId(), entry.getSignature());
 
     }
 
-    private void storeJvmRunData(long customerId, long appId, JvmData data) {
+    private void storeJvmData(long customerId, long appId, JvmData data) {
         Date dumpedAt = new Date(data.getDumpedAtMillis());
 
         int updated =
@@ -135,20 +120,6 @@ public class InvocationsDAOImpl implements InvocationsDAO {
             log.debug("Stored new JVM run {}", data);
         } else {
             log.warn("Could not insert {}", data);
-        }
-    }
-
-    private static class InvocationsEntryRowMapper implements RowMapper<InvocationEntry> {
-        public static final Long EPOCH = 0L;
-
-        @Override
-        public InvocationEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new InvocationEntry(rs.getString(1), getTimeMillis(rs, 2), SignatureConfidence.fromOrdinal(rs.getInt(3)));
-        }
-
-        private Long getTimeMillis(ResultSet rs, int columnIndex) throws SQLException {
-            Date date = rs.getTimestamp(columnIndex);
-            return date == null ? EPOCH : Long.valueOf(date.getTime());
         }
     }
 

@@ -14,7 +14,7 @@ import se.crisp.codekvast.server.agent.model.v1.InvocationData;
 import se.crisp.codekvast.server.agent.model.v1.JvmData;
 import se.crisp.codekvast.server.agent.model.v1.SignatureData;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
-import se.crisp.codekvast.server.codekvast_server.service.StorageService;
+import se.crisp.codekvast.server.codekvast_server.service.AgentService;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -24,7 +24,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * A HTTP REST Controller that handles requests from the Codekvast Agent.
  * <p/>
- * It validates the POST data and delegates to StorageService.
+ * It validates the POST data and delegates to AgentService.
  *
  * @author Olle Hallin
  */
@@ -33,14 +33,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class AgentController {
 
     @NonNull
-    private final StorageService storageService;
+    private final AgentService agentService;
 
     @NonNull
     private final Validator validator;
 
     @Inject
-    public AgentController(StorageService storageService, Validator validator) {
-        this.storageService = storageService;
+    public AgentController(AgentService agentService, Validator validator) {
+        this.agentService = agentService;
         this.validator = validator;
     }
 
@@ -62,9 +62,9 @@ public class AgentController {
     }
 
     @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_JVM_RUN, method = RequestMethod.POST)
-    public void receiveJvmRunDataV1(@Valid @RequestBody JvmData data) throws CodekvastException {
+    public void receiveJvmDataV1(@Valid @RequestBody JvmData data) throws CodekvastException {
         log.info("Received {}", data);
-        storageService.storeJvmRunData(data);
+        agentService.storeJvmData(data);
     }
 
     @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_SIGNATURES, method = RequestMethod.POST)
@@ -74,7 +74,7 @@ public class AgentController {
         } else {
             log.debug("Received {} signatures from {}", data.getSignatures().size(), data.getHeader());
         }
-        storageService.storeSignatureData(data);
+        agentService.storeSignatureData(data);
     }
 
     @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_INVOCATIONS, method = RequestMethod.POST)
@@ -84,7 +84,7 @@ public class AgentController {
         } else {
             log.debug("Received {} invocations from {}", data.getInvocations().size(), data.getHeader());
         }
-        storageService.storeInvocationsData(data);
+        agentService.storeInvocationData(data);
     }
 
     @RequestMapping(value = AgentRestEndpoints.PING, method = RequestMethod.POST)

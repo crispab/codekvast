@@ -10,7 +10,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
+import se.crisp.codekvast.server.agent.model.v1.SignatureConfidence;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
+import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedCustomerException;
 import se.crisp.codekvast.server.codekvast_server.model.Role;
@@ -18,6 +21,8 @@ import se.crisp.codekvast.server.codekvast_server.model.Role;
 import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Date;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -111,11 +116,23 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public long createCustomerWithPrimaryContact(String customerName, long userId) throws UndefinedCustomerException {
         long customerId = doCreateCustomer(customerName);
         jdbcTemplate.update("INSERT INTO CUSTOMER_MEMBERS(CUSTOMER_ID, USER_ID, PRIMARY_CONTACT) VALUES(?, ?, ?)", customerId, userId,
                             true);
         return customerId;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Collection<InvocationEntry> getSignatures(Long customerId) throws CodekvastException {
+        // TODO: don't allow null customerId
+        Object[] args = customerId == null ? new Object[0] : new Object[]{customerId};
+        String where = customerId == null ? "" : " WHERE CUSTOMER_ID = ?";
+
+        return jdbcTemplate.query("SELECT SIGNATURE, INVOKED_AT, CONFIDENCE FROM SIGNATURES " + where,
+                                  args, new InvocationsEntryRowMapper());
     }
 
     private long doCreateCustomer(String customerName) {
@@ -153,4 +170,17 @@ public class UserDAOImpl implements UserDAO {
         }
     }
 
+    private static class InvocationsEntryRowMapper implements RowMapper<InvocationEntry> {
+        public static final Long EPOCH = 0L;
+
+        @Override
+        public InvocationEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return new InvocationEntry(rs.getString(1), getTimeMillis(rs, 2), SignatureConfidence.fromOrdinal(rs.getInt(3)));
+        }
+
+        private Long getTimeMillis(ResultSet rs, int columnIndex) throws SQLException {
+            Date date = rs.getTimestamp(columnIndex);
+            return date == null ? EPOCH : Long.valueOf(date.getTime());
+        }
+    }
 }

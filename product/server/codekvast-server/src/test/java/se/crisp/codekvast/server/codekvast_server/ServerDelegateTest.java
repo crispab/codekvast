@@ -15,7 +15,7 @@ import se.crisp.codekvast.server.agent.impl.ServerDelegateImpl;
 import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.agent.model.v1.SignatureConfidence;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
-import se.crisp.codekvast.server.codekvast_server.service.StorageService;
+import se.crisp.codekvast.server.codekvast_server.service.UserService;
 
 import javax.inject.Inject;
 import javax.validation.Validator;
@@ -49,7 +49,7 @@ public class ServerDelegateTest {
     private int port;
 
     @Inject
-    private StorageService storageService;
+    private UserService userService;
 
     @Inject
     private Validator validator;
@@ -96,12 +96,12 @@ public class ServerDelegateTest {
     @Test
     public void testUploadSignatureData() throws ServerDelegateException, URISyntaxException, CodekvastException {
         // when
-        serverDelegate.uploadJvmRunData("appName", "appVersion", "hostName", System.currentTimeMillis(), System.currentTimeMillis(),
-                                        jvmFingerprint, "codekvastVersion", "codekvastVcsId");
+        serverDelegate.uploadJvmData("appName", "appVersion", "hostName", System.currentTimeMillis(), System.currentTimeMillis(),
+                                     jvmFingerprint, "codekvastVersion", "codekvastVcsId");
         serverDelegate.uploadSignatureData(jvmFingerprint, Arrays.asList(signature1, signature2));
 
         // then
-        assertThat(storageService.getSignatures(null), hasSize(2));
+        assertThat(userService.getSignatures(null), hasSize(2));
     }
 
     @Test
@@ -112,13 +112,13 @@ public class ServerDelegateTest {
                                                                       new InvocationEntry(signature2, now,
                                                                                           SignatureConfidence.EXACT_MATCH));
         // when
-        serverDelegate.uploadJvmRunData("appName", "appVersion", "hostName", System.currentTimeMillis(), System.currentTimeMillis(),
-                                        jvmFingerprint, "codekvastVersion", "codekvastVcsId");
+        serverDelegate.uploadJvmData("appName", "appVersion", "hostName", System.currentTimeMillis(), System.currentTimeMillis(),
+                                     jvmFingerprint, "codekvastVersion", "codekvastVcsId");
         serverDelegate.uploadInvocationsData(jvmFingerprint, invocationEntries);
 
         // then
-        assertThat(storageService.getSignatures(CUSTOMER_NAME), hasSize(2));
-        assertThat(storageService.getSignatures(CUSTOMER_NAME + "X"), hasSize(0));
+        assertThat(userService.getSignatures(CUSTOMER_NAME), hasSize(2));
+        assertThat(userService.getSignatures(CUSTOMER_NAME + "X"), hasSize(0));
     }
 
     private void assertThatPingThrowsHttpClientErrorException(String pingMessage, String expectedRootCauseMessage) {

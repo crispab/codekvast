@@ -8,9 +8,12 @@ import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import java.util.Collection;
 
 /**
+ * A data access object for things related to the agent API.
+ *
  * @author Olle Hallin
  */
-public interface InvocationsDAO {
+public interface AgentDAO {
+
     void storeJvmData(JvmData jvmData) throws CodekvastException;
 
     /**
@@ -20,7 +23,5 @@ public interface InvocationsDAO {
      * @return The actually stored or updated invocation entries.
      * @throws CodekvastException
      */
-    Collection<InvocationEntry> storeInvocationsData(InvocationData invocationData) throws CodekvastException;
-
-    Collection<InvocationEntry> getSignatures(String customerName) throws CodekvastException;
+    Collection<InvocationEntry> storeInvocationData(InvocationData invocationData) throws CodekvastException;
 }

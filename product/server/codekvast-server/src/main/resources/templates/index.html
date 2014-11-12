@@ -26,9 +26,9 @@
                 <th style="text-align: left">Signature</th>
                 <th>Used at</th>
             </tr>
-            <tr ng-repeat="sig in signatures | orderBy:'usedAtMillis' ">
+            <tr ng-repeat="sig in signatures | orderBy:'invokedAtMillis' ">
                 <td style="width: 50em">{{::sig.signature}}</td>
-                <td>{{::sig.usedAtMillis | suppressEmptyDate | date:"yyyy-MM-dd HH:mm:ss"}}</td>
+                <td>{{::sig.invokedAtMillis | suppressEmptyDate | date:"yyyy-MM-dd HH:mm:ss"}}</td>
             </tr>
         </table>
     </div>

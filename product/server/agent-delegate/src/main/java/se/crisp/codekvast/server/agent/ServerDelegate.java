@@ -23,8 +23,8 @@ public interface ServerDelegate {
      * @param codekvastVcsId   The Git hash of the code that produced this data.
      * @throws ServerDelegateException
      */
-    void uploadJvmRunData(String appName, String appVersion, String hostName, long startedAtMillis, long dumpedAtMillis,
-                          String jvmFingerprint, String codekvastVersion, String codekvastVcsId) throws ServerDelegateException;
+    void uploadJvmData(String appName, String appVersion, String hostName, long startedAtMillis, long dumpedAtMillis,
+                       String jvmFingerprint, String codekvastVersion, String codekvastVcsId) throws ServerDelegateException;
 
     /**
      * Upload a collection of signatures to the server.

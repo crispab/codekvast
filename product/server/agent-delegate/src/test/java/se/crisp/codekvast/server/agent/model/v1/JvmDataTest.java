@@ -13,29 +13,29 @@ public class JvmDataTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test(expected = NullPointerException.class)
-    public void jvmRunDataShouldRejectNullHeader() {
+    public void jvmDataShouldRejectNullHeader() {
         JvmData.builder().header(null).build();
     }
 
     @Test(expected = NullPointerException.class)
-    public void jvmRunDataShouldRejectMissingValues() {
+    public void jvmDataShouldRejectMissingValues() {
         JvmData.builder().header(HeaderTest.HEADER).build();
     }
 
     @Test
-    public void jvmRunDataShouldBeJsonSerializable() throws IOException {
+    public void jvmDataShouldBeJsonSerializable() throws IOException {
         // given
         JvmData data1 = JvmData.builder()
-                                     .header(HeaderTest.HEADER)
-                                     .appName("appName")
-                                     .appVersion("appVersion")
-                                     .hostName("hostName")
-                                     .startedAtMillis(1000L)
-                                     .dumpedAtMillis(2000L)
-                                     .jvmFingerprint(UUID.randomUUID().toString())
-                                     .codekvastVersion("codekvastVersion")
-                                     .codekvastVcsId("codekvastVcsId")
-                                     .build();
+                               .header(HeaderTest.HEADER)
+                               .appName("appName")
+                               .appVersion("appVersion")
+                               .hostName("hostName")
+                               .startedAtMillis(1000L)
+                               .dumpedAtMillis(2000L)
+                               .jvmFingerprint(UUID.randomUUID().toString())
+                               .codekvastVersion("codekvastVersion")
+                               .codekvastVcsId("codekvastVcsId")
+                               .build();
 
         // when
         String json = objectMapper.writeValueAsString(data1);

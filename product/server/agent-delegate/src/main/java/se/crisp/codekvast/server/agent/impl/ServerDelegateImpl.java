@@ -62,8 +62,8 @@ public class ServerDelegateImpl implements ServerDelegate {
     }
 
     @Override
-    public void uploadJvmRunData(String appName, String appVersion, String hostName, long startedAtMillis, long dumpedAtMillis,
-                                 String jvmFingerprint, String codekvastVersion, String codekvastVcsId)
+    public void uploadJvmData(String appName, String appVersion, String hostName, long startedAtMillis, long dumpedAtMillis,
+                              String jvmFingerprint, String codekvastVersion, String codekvastVcsId)
             throws ServerDelegateException {
         String endPoint = config.getServerUri() + AgentRestEndpoints.UPLOAD_V1_JVM_RUN;
 
