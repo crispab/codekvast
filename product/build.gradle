@@ -39,9 +39,16 @@ distributions {
             from tasks.getByPath(":product:server:codekvast-server:installApp")
         }
     }
+
+    web {
+        baseName = 'codekvast-web'
+        contents {
+            from tasks.getByPath(":product:web:installApp")
+        }
+    }
 }
 
-task build(dependsOn: [agentDistZip, serverDistZip]) {
-    description = "Builds distribution zips for agent and server"
+task build(dependsOn: [agentDistZip, serverDistZip, webDistZip]) {
+    description = "Builds distribution zips for agent, server and web"
     group "build"
 }
