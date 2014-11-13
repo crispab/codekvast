@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="fragments :: #head-boilerplate"/>
+    <title>Codekvast</title>
+</head>
+
+<body>
+<div class="container" ng-app="codekvastWeb">
+    <div class="ng-cloak jumbotron">
+        <h1>Welcome to {{'Code' + 'kvast!' }}</h1>
+
+        <p>The tool that helps you find <em>Truly Dead Code</em>!</p>
+    </div>
+</div>
+
+<th:block th:include="fragments :: #scripts-twitter-bootstrap"/>
+<th:block th:include="fragments :: #scripts-angularjs"/>
+<script th:src="@{/app/codekvast-web.js}"></script>
+</body>
+</html>

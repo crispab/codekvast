@@ -6,9 +6,11 @@ include ':product:agent:collector'
 include ':product:agent:codekvast-agent'
 include ':product:server:codekvast-server'
 include ':product:server:agent-delegate'
+include ':product:web'
 
 include ':tools'
 
 include ':sample:standalone-app'
 include ':sample:tapestry5-war'
 include ':sample:vanilla-jsp'
+

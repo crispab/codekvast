@@ -16,7 +16,7 @@
       <module fileurl="file://$PROJECT_DIR$/tools/tools.iml" filepath="$PROJECT_DIR$/tools/tools.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/agent/util/util.iml" filepath="$PROJECT_DIR$/product/agent/util/util.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/vanilla-jsp/vanilla-jsp.iml" filepath="$PROJECT_DIR$/sample/vanilla-jsp/vanilla-jsp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/product/web/web.iml" filepath="$PROJECT_DIR$/product/web/web.iml" />
     </modules>
   </component>
 </project>
-
