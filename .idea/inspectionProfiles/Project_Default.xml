@@ -146,6 +146,9 @@
       <option name="ignoreLazyOperators" value="true" />
       <option name="ignoreObscureOperators" value="false" />
     </inspection_tool>
+    <inspection_tool class="RequiredAttributes" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="myAdditionalRequiredHtmlAttributes" value="property,content" />
+    </inspection_tool>
     <inspection_tool class="RubyResolve" enabled="false" level="WARNING" enabled_by_default="false">
       <option name="warnImplicitResults" value="false" />
     </inspection_tool>
