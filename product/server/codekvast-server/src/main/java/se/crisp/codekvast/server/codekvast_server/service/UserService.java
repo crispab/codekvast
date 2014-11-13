@@ -10,7 +10,7 @@ import java.util.Collection;
  * @author Olle Hallin
  */
 public interface UserService {
-    enum UniqueKind {USERNAME, EMAIL_ADDRESS, CUSTOMER_NAME;}
+    enum UniqueKind {USERNAME, EMAIL_ADDRESS, CUSTOMER_NAME}
 
     /**
      * Tests whether a name is unique.
