@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" ng-app="codekvastWeb">
 <head>
     <th:block th:include="fragments :: #head-boilerplate"/>
     <title>Codekvast</title>
 </head>
 
-<body>
-<div class="container" ng-app="codekvastWeb">
-    <div class="ng-cloak jumbotron">
+<body class="ng-cloak">
+<div class="container">
+    <div class="jumbotron">
         <h1>Welcome to {{'Code' + 'kvast!' }}</h1>
 
-        <p>The tool that helps you find <em>Truly Dead Code</em>!</p>
+        <p>The tool that helps you find <strong><em>Truly Dead Code</em></strong>!</p>
     </div>
 </div>
 
