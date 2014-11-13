@@ -63,6 +63,7 @@ public class RegistrationController {
         log.warn("Application exception: " + e);
     }
 
+    @SuppressWarnings("SameReturnValue")
     @RequestMapping(value = REGISTER_PATH, method = RequestMethod.GET)
     public String registerGet(ModelMap modelMap) {
         modelMap.put("maxAppNameLength", Constraints.MAX_APP_NAME_LENGTH);

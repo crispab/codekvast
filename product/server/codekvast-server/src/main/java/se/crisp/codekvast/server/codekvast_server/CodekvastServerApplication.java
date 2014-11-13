@@ -21,13 +21,13 @@ public class CodekvastServerApplication {
 
     public static void main(String[] args) throws IOException {
         SpringApplication application = new SpringApplication(CodekvastServerApplication.class);
-        application.setDefaultProperties(loadProperties("default.properties"));
+        application.setDefaultProperties(loadDefaultProperties());
         application.run(args);
     }
 
-    private static Properties loadProperties(String resource) throws IOException {
+    private static Properties loadDefaultProperties() throws IOException {
         Properties result = new Properties();
-        result.load(getInputStream(resource));
+        result.load(getInputStream("default.properties"));
         result.setProperty("tmpDir", System.getProperty("java.io.tmpdir"));
         return result;
     }

@@ -17,7 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class InvocationsTest {
 
     @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    public final TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Test
     public void testReadNullFile() throws Exception {

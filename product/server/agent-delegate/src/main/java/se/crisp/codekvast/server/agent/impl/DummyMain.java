@@ -7,6 +7,9 @@ package se.crisp.codekvast.server.agent.impl;
  */
 public class DummyMain {
 
+    private DummyMain() {
+    }
+
     public static void main(String[] args) {
         // empty
     }

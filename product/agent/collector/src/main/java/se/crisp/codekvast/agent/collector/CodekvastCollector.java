@@ -71,7 +71,7 @@ public class CodekvastCollector {
     }
 
     private static void loadAspectjWeaver(String args, Instrumentation inst, CollectorConfig config) {
-        System.setProperty(ASPECTJ_WEAVER_CONFIGURATION, join(";", createAopXml(config),
+        System.setProperty(ASPECTJ_WEAVER_CONFIGURATION, join(createAopXml(config),
                                                               Constants.AOP_USER_XML,
                                                               Constants.AOP_AJC_XML,
                                                               Constants.AOP_OSGI_XML));
@@ -85,12 +85,12 @@ public class CodekvastCollector {
         }
     }
 
-    private static String join(String delimiter, String... args) {
+    private static String join(String... args) {
         StringBuilder sb = new StringBuilder();
         String delim = "";
         for (String arg : args) {
             sb.append(delim).append(arg);
-            delim = delimiter;
+            delim = ";";
         }
         return sb.toString();
     }

@@ -23,6 +23,7 @@ public class InvocationData {
 
     private String jvmFingerprint;
 
+    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     @NonNull
     @Valid
     private Collection<InvocationEntry> invocations;

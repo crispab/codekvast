@@ -3,6 +3,7 @@ package sample.app;
 /**
  * @author Olle Hallin
  */
+@SuppressWarnings("ALL")
 public class Bar1 {
 
     public int declaredOnBar() {

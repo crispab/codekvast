@@ -1,8 +1,6 @@
 **/*.bak
-**/*.log
 **/*.log.*.zip
 **/*.iml
-**/*.ids
 .gradle
 .idea/dictionaries/**
 .idea/gradle.xml

@@ -44,7 +44,7 @@ public class AgentDAOImpl implements AgentDAO {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Collection<InvocationEntry> storeInvocationData(InvocationData invocationData) throws CodekvastException {
+    public Collection<InvocationEntry> storeInvocationData(InvocationData invocationData) {
         final Collection<InvocationEntry> result = new ArrayList<>();
 
         UserDAO.AppId appId = userDAO.getAppIdByJvmFingerprint(invocationData.getJvmFingerprint());

@@ -69,7 +69,7 @@ public class CodeBaseScannerTest {
                    is("se.crisp.codekvast.agent.main.CodeBaseScannerTest.Class2.m2()"));
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "EmptyMethod"})
     private static class Class1 {
         public void m1() {
         }

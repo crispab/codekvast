@@ -18,7 +18,7 @@ public class CodeBaseTest {
 
     private CodeBase codeBase;
 
-    private String[] guiceGeneratedMethods = {
+    private final String[] guiceGeneratedMethods = {
             "public int se.transmode.tnm.module.l2mgr.impl.persistence.FlowDomainFragmentLongTransactionEAO..EnhancerByGuice..969b9638." +
                     ".FastClassByGuice..96f9109e.getIndex(com.google.inject.internal.cglib.core..Signature)",
             "public int se.transmode.tnm.module.l1mgr.connectivity.persistence.TrailEAO..EnhancerByGuice..a219ec4a..FastClassByGuice." +

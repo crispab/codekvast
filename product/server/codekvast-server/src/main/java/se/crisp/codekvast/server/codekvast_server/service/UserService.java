@@ -34,7 +34,7 @@ public interface UserService {
     /**
      * Retrieve all signatures for a certain customer.
      *
-     * @param customerName
+     * @param customerName The name of the customer
      * @return A list of invocation entries. Does never return null.
      */
     Collection<InvocationEntry> getSignatures(String customerName) throws CodekvastException;

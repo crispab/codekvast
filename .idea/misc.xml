@@ -28,8 +28,9 @@
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false" />
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
-    <list size="1">
-      <item index="0" class="java.lang.String" itemvalue="org.springframework.messaging.handler.annotation.MessageMapping" />
+    <list size="2">
+      <item index="0" class="java.lang.String" itemvalue="com.google.common.annotations.VisibleForTesting" />
+      <item index="1" class="java.lang.String" itemvalue="org.springframework.messaging.handler.annotation.MessageMapping" />
     </list>
   </component>
   <component name="FrameworkDetectionExcludesConfiguration">

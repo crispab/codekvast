@@ -176,7 +176,7 @@ public final class FileUtils {
         }
     }
 
-    protected static void extractFieldValuesFrom(Object object, Set<String> lines) throws IllegalAccessException {
+    static void extractFieldValuesFrom(Object object, Set<String> lines) throws IllegalAccessException {
         Field[] fields = object.getClass().getDeclaredFields();
         for (Field field : fields) {
             if (!Modifier.isStatic(field.getModifiers())) {

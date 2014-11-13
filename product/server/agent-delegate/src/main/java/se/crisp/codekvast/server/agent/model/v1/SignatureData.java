@@ -28,6 +28,7 @@ public class SignatureData {
     @Size(min = Constraints.MIN_FINGERPRINT_LENGTH, max = Constraints.MAX_FINGERPRINT_LENGTH)
     private String jvmFingerprint;
 
+    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     @NonNull
     private Collection<String> signatures;
 

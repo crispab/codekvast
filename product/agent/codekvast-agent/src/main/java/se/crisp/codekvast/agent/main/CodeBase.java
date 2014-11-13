@@ -1,6 +1,5 @@
 package se.crisp.codekvast.agent.main;
 
-import com.google.common.annotations.VisibleForTesting;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -8,7 +7,9 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import se.crisp.codekvast.agent.config.AgentConfig;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -41,7 +42,7 @@ class CodeBase {
     final Set<String> signatures = new HashSet<>();
     final Map<String, String> overriddenSignatures = new HashMap<>();
 
-    private CodeBaseFingerprint fingerprint;
+    private final CodeBaseFingerprint fingerprint;
     private List<URL> urls;
     private boolean needsExploding = false;
 
@@ -193,26 +194,5 @@ class CodeBase {
             }
         }
         return signature.replaceAll(" final ", " ").replaceAll("\\.\\.EnhancerByGuice\\.\\..*[0-9a-f]\\.([\\w]+\\()", ".$1").trim();
-    }
-
-    @VisibleForTesting
-    void readScannerResult(File file) throws IOException {
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
-            String line;
-            boolean signaturePhase = true;
-            while ((line = in.readLine()) != null) {
-                if (line.startsWith("#") || line.trim().isEmpty()) {
-                    // Ignore comments and empty lines
-                } else if (line.contains("-----------")) {
-                    signaturePhase = false;
-                } else if (signaturePhase) {
-                    signatures.add(normalizeSignature(line));
-                } else {
-                    String parts[] = line.split("->");
-                    overriddenSignatures.put(normalizeSignature(parts[0]), normalizeSignature(parts[1]));
-                }
-            }
-        }
-
     }
 }

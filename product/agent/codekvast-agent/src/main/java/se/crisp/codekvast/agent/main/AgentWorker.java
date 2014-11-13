@@ -173,7 +173,7 @@ public class AgentWorker {
         }
     }
 
-    int storeNormalizedInvocations(JvmState jvmState, List<Invocation> invocations) {
+    void storeNormalizedInvocations(JvmState jvmState, List<Invocation> invocations) {
         CodeBase codeBase = jvmState.getCodeBase();
 
         int recognized = 0;
@@ -219,7 +219,6 @@ public class AgentWorker {
         } else {
             log.info("{} signature invocations applied ({} overridden, {} ignored)", recognized, overridden, ignored);
         }
-        return unrecognized;
     }
 
     @PreDestroy

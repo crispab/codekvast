@@ -34,9 +34,9 @@ public class RegistrationControllerTest {
     @Value("${local.server.port}")
     private int port;
 
-    private RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate = new RestTemplate();
     private URI registrationUri;
-    private Random random = new Random();
+    private final Random random = new Random();
 
     @Before
     public void before() throws Exception {

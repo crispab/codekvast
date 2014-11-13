@@ -8,8 +8,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
- * Make an AgentConfig usable in a Spring Environment, so that AgentConfig properties are injectable as e.g., {@code
- * @Value("${codekvast.packagePrefix}")}
+ * Make an AgentConfig usable in a Spring Environment, so that AgentConfig properties are injectable as e.g.,
+ * <pre><code>@Value("${codekvast.packagePrefix}")</code></pre>
+ *
  *
  * @author Olle Hallin
  */

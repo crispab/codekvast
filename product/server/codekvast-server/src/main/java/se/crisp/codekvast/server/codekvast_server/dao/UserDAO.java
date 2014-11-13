@@ -2,7 +2,6 @@ package se.crisp.codekvast.server.codekvast_server.dao;
 
 import org.springframework.dao.DataAccessException;
 import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
-import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedCustomerException;
 import se.crisp.codekvast.server.codekvast_server.model.Role;
@@ -29,9 +28,9 @@ public interface UserDAO {
     long createUser(String fullName, String username, String emailAddress, String plaintextPassword, Role... roles)
             throws DataAccessException;
 
-    long createCustomerWithPrimaryContact(String customerName, long userId) throws DataAccessException, UndefinedCustomerException;
+    void createCustomerWithPrimaryContact(String customerName, long userId) throws DataAccessException;
 
-    Collection<InvocationEntry> getSignatures(Long customerId) throws CodekvastException;
+    Collection<InvocationEntry> getSignatures(Long customerId);
 
     @lombok.Value
     static class AppId {

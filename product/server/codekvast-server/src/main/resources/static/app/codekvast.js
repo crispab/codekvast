@@ -1,3 +1,4 @@
+//noinspection JSUnusedGlobalSymbols
 var codekvastApp = angular.module('codekvastApp', [])
     .controller('SignaturesCtrl', ['$scope', function ($scope) {
         $scope.signatures = [];
@@ -8,9 +9,9 @@ var codekvastApp = angular.module('codekvastApp', [])
         };
 
         $scope.updateSignatures = function (data) {
-            console.log("Received signature data=%o", data)
+            console.log("Received signature data=%o", data);
             // TODO: data.body is incremental. Replace existing entries in $scope.signatures.
-            $scope.signatures = JSON.parse(data.body)
+            $scope.signatures = JSON.parse(data.body);
             $scope.$apply()
         };
 

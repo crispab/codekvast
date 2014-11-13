@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.agent.model.v1.SignatureConfidence;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
-import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedCustomerException;
 import se.crisp.codekvast.server.codekvast_server.model.Role;
@@ -117,16 +116,15 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public long createCustomerWithPrimaryContact(String customerName, long userId) throws UndefinedCustomerException {
+    public void createCustomerWithPrimaryContact(String customerName, long userId) {
         long customerId = doCreateCustomer(customerName);
         jdbcTemplate.update("INSERT INTO CUSTOMER_MEMBERS(CUSTOMER_ID, USER_ID, PRIMARY_CONTACT) VALUES(?, ?, ?)", customerId, userId,
                             true);
-        return customerId;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Collection<InvocationEntry> getSignatures(Long customerId) throws CodekvastException {
+    public Collection<InvocationEntry> getSignatures(Long customerId) {
         // TODO: don't allow null customerId
         Object[] args = customerId == null ? new Object[0] : new Object[]{customerId};
         String where = customerId == null ? "" : " WHERE CUSTOMER_ID = ?";

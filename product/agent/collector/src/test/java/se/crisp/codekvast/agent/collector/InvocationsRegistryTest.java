@@ -23,16 +23,15 @@ public class InvocationsRegistryTest {
     private static final String APP_VERSION = "1.2.3-rc-2";
 
     @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    public final TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     private CollectorConfig config;
     private URI codeBaseUri;
-    private File dataPath;
 
     @Before
     public void beforeTest() throws IOException {
         codeBaseUri = temporaryFolder.newFolder("codebase").toURI();
-        dataPath = temporaryFolder.newFolder("collector");
+        File dataPath = temporaryFolder.newFolder("collector");
 
         //@formatter:off
         config = CollectorConfig.builder()

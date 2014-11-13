@@ -39,6 +39,7 @@ public class SignatureUtilsTest {
         assertThat(s2, is(s));
     }
 
+    @SuppressWarnings("EmptyMethod")
     public static class TestClass {
         public static Collection<List<String>> m1(String p1, Collection<Integer> p2) {
             return null;

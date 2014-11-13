@@ -15,9 +15,9 @@ import static org.junit.Assert.assertThat;
 public class CodeBaseFingerprintTest {
 
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public final TemporaryFolder folder = new TemporaryFolder();
 
-    private File files[] = new File[3];
+    private final File files[] = new File[3];
 
     @Before
     public void beforeTest() throws IOException {

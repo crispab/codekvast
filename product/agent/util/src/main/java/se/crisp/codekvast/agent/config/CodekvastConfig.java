@@ -5,5 +5,6 @@ package se.crisp.codekvast.agent.config;
  *
  * @author Olle Hallin
  */
+@SuppressWarnings("MarkerInterface")
 public interface CodekvastConfig {
 }

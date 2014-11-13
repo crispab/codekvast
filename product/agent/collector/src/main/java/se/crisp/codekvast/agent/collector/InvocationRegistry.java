@@ -108,7 +108,7 @@ public class InvocationRegistry {
 
             //noinspection unchecked
             FileUtils.writeInvocationDataTo(config.getInvocationsFile(), dumpCount, oldRecordingIntervalStartedAtMillis,
-                                            invocations[oldIndex], !SHOULD_STRIP_MODIFIERS_AND_RETURN_TYPE_NOW);
+                                            invocations[oldIndex], true);
 
             invocations[oldIndex].clear();
         }

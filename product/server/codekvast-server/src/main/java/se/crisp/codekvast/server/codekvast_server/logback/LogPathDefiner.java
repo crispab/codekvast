@@ -44,6 +44,7 @@ public class LogPathDefiner extends PropertyDefinerBase {
             if (makeResultWritable) {
                 resultDir.mkdirs();
             } else {
+                //noinspection UseOfSystemOutOrSystemErr
                 System.err.println(resultDir.getAbsoluteFile() + " is not writable, will log to working directory");
                 result = ".";
             }

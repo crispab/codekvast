@@ -1,10 +1,9 @@
 package sample.app;
 
-import sample.app.Bar2;
-
 /**
  * @author Olle Hallin (qolha), olle.hallin@crisp.se
  */
+@SuppressWarnings("ClassTooDeepInInheritanceTree")
 public class Bar3 extends Bar2 {
 
     @Override

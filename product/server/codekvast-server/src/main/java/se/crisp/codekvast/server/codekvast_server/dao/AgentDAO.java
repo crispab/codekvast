@@ -21,7 +21,6 @@ public interface AgentDAO {
      *
      * @param invocationData The invocation data to store.
      * @return The actually stored or updated invocation entries.
-     * @throws CodekvastException
      */
-    Collection<InvocationEntry> storeInvocationData(InvocationData invocationData) throws CodekvastException;
+    Collection<InvocationEntry> storeInvocationData(InvocationData invocationData);
 }
