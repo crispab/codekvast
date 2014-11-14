@@ -15,7 +15,7 @@ import org.ajoberstar.grgit.Grgit
 
 import java.text.SimpleDateFormat
 
-version = "0.5"
+version = "0.6"
 
 ext.gitCommit = Grgit.open("$rootDir").log(maxCommits: 1)[0]
 ext.gitVersionTokens = [
@@ -59,7 +59,7 @@ bintray {
     user = "$bintrayUser"
     key = "$bintrayKey"
 
-    filesSpec { //When uploading any arbitrary files ('filesSpec' is a standard Gradle CopySpec)
+    filesSpec {
         from tasks.getByPath(":product:agentDistZip")
         into "agent"
     }
