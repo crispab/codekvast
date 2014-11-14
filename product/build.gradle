@@ -55,13 +55,13 @@ task build(dependsOn: [agentDistZip, serverDistZip, webDistZip]) {
 }
 
 bintray {
-    // These are supposed to be in $HOME/gradle.properties
+    // These are supposed to be in $HOME/.gradle/gradle.properties
     user = "$bintrayUser"
     key = "$bintrayKey"
 
     filesSpec { //When uploading any arbitrary files ('filesSpec' is a standard Gradle CopySpec)
         from tasks.getByPath(":product:agentDistZip")
-        into "codekvast/agent/$version"
+        into "agent"
     }
 
     dryRun = false
