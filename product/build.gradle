@@ -6,6 +6,7 @@ buildscript {
 }
 plugins {
     id 'distribution'
+    id 'com.jfrog.bintray' version '0.6'
     id 'com.bmuschko.vagrant' version '2.0'
 }
 
@@ -51,4 +52,31 @@ distributions {
 task build(dependsOn: [agentDistZip, serverDistZip, webDistZip]) {
     description = "Builds distribution zips for agent, server and web"
     group "build"
+}
+
+bintray {
+    // These are supposed to be in $HOME/gradle.properties
+    user = "$bintrayUser"
+    key = "$bintrayKey"
+
+    filesSpec { //When uploading any arbitrary files ('filesSpec' is a standard Gradle CopySpec)
+        from tasks.getByPath(":product:agentDistZip")
+        into "codekvast/agent/$version"
+    }
+
+    dryRun = false
+    publish = true
+
+    pkg {
+        repo = 'codekvast'
+        userOrg = 'crisp'
+        name = 'agent'
+        desc = 'Codekvast is a Runtime Intelligence tool used for identifying Truly Dead Code, i.e., code that no-one has accessed in a ' +
+                'certain period of time'
+        websiteUrl = 'http://codekvast.crisp.se'
+        licenses = ['MIT']
+        labels = ['runtime-intelligence', 'dead-code', 'dead-code-detector', 'truly-dead-code', 'YANIA', 'java', 'java-6', 'jvm']
+
+        publicDownloadNumbers = false
+    }
 }
