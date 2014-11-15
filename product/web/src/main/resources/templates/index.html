@@ -6,12 +6,11 @@
 </head>
 
 <body class="ng-cloak">
-<div class="container">
-    <div class="jumbotron">
-        <h1>Welcome to {{'Code' + 'kvast!' }}</h1>
+<div class="container" ng-controller="MainController">
+    <a href="/">Home</a> <a href="/page1">Page1</a> <a href="/page2">Page2</a>
 
-        <p>The tool that helps you find <strong><em>Truly Dead Code</em></strong>!</p>
-    </div>
+    <div ng-view="true"></div>
+
 </div>
 
 <th:block th:include="fragments :: #scripts-twitter-bootstrap"/>
