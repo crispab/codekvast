@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * This is the target of the method execution recording aspects.
- * <p/>
+ *
  * It holds data about method invocations, and methods for outputting the invocation data to disk.
  *
  * @author Olle Hallin
@@ -49,6 +49,7 @@ public class InvocationRegistry {
 
     /**
      * Must be called before handing over to the AspectJ load-time weaver.
+     * @param config The collector configuration.
      */
     public static void initialize(CollectorConfig config) {
         InvocationRegistry.instance = new InvocationRegistry(config,
@@ -70,8 +71,10 @@ public class InvocationRegistry {
 
     /**
      * Record that this method signature was invoked at current recording interval.
-     * <p/>
+     *
      * Thread-safe.
+     *
+     * @param signature The captured method invocation signature.
      */
     public void registerMethodInvocation(Signature signature) {
         //noinspection unchecked
@@ -80,8 +83,10 @@ public class InvocationRegistry {
 
     /**
      * Record that this JPS page was invoked at current recording interval.
-     * <p/>
+     *
      * Thread-safe.
+     *
+     * @param pageName The name of the invoked JSP page.
      */
     public void registerJspPageExecution(String pageName) {
         //noinspection unchecked
@@ -90,8 +95,10 @@ public class InvocationRegistry {
 
     /**
      * Dumps method invocations to a file on disk.
-     * <p/>
+     *
      * Thread-safe.
+     *
+     * @param dumpCount the ordinal number of this dump. Is used in a comment in the dump file.
      */
     public void dumpDataToDisk(int dumpCount) {
         File outputPath = config.getInvocationsFile().getParentFile();

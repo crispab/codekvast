@@ -12,7 +12,7 @@ import java.util.Properties;
 
 /**
  * Encapsulates the configuration that is used by codekvast-collector.
- * <p/>
+ *
  * It also contains methods for reading and writing collector configuration files.
  *
  * @author Olle Hallin

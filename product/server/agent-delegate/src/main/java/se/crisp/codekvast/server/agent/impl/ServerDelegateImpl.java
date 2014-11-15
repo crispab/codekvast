@@ -31,7 +31,7 @@ import java.util.Set;
 
 /**
  * The implementation of the ServerDelegate.
- * <p/>
+ *
  * Uses a Spring RestTemplate for doing the REST calls.
  *
  * @author Olle Hallin

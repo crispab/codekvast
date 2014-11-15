@@ -31,6 +31,12 @@ distributions {
         contents {
             from tasks.getByPath(":product:agent:codekvast-agent:installApp")
             from tasks.getByPath(":product:agent:collector:shadowJar"), { into "endorsed" }
+            from tasks.getByPath(":product:agent:codekvast-agent:javadocJar"), { into "src" }
+            from tasks.getByPath(":product:agent:codekvast-agent:sourcesJar"), { into "src" }
+            from tasks.getByPath(":product:agent:collector:javadocJar"), { into "src" }
+            from tasks.getByPath(":product:agent:collector:sourcesJar"), { into "src" }
+            from tasks.getByPath(":product:agent:util:javadocJar"), { into "src" }
+            from tasks.getByPath(":product:agent:util:sourcesJar"), { into "src" }
         }
     }
 
@@ -55,7 +61,7 @@ task build(dependsOn: [agentDistZip, serverDistZip, webDistZip]) {
 }
 
 bintray {
-    // These are supposed to be in $HOME/.gradle/gradle.properties
+    // These are supposed to be defined in $HOME/.gradle/gradle.properties
     user = "$bintrayUser"
     key = "$bintrayKey"
 

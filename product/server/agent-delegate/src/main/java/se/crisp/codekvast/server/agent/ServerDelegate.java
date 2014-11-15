@@ -28,7 +28,7 @@ public interface ServerDelegate {
 
     /**
      * Upload a collection of signatures to the server.
-     * <p/>
+     *
      * This should typically be done when the agent detects that a JVM has started and then each time it detects a change in the code base.
      *
      * @param jvmFingerprint The unique id of the JVM run
@@ -39,7 +39,7 @@ public interface ServerDelegate {
 
     /**
      * Upload method invocations to the server.
-     * <p/>
+     *
      * This should be done as soon as a new invocations file is produced by the collector.
      *
      * @param jvmFingerprint The fingerprint of the JVM that produced this invocations data.

@@ -45,6 +45,8 @@ public class SignatureUtils {
     /**
      * Uses AspectJ for creating the same signature as AbstractCodekvastAspect.
      *
+     * @param clazz  The class containing the method
+     * @param method The method to make a signature of
      * @return The same signature object as an AspectJ execution pointcut will provide in JoinPoint.getSignature(). Returns null unless the
      * method is public.
      */
@@ -66,8 +68,11 @@ public class SignatureUtils {
     /**
      * Convenience method.
      *
+     * @param clazz  The class containing the method
+     * @param method The method to make a signature of
      * @see #makeSignature(Class, java.lang.reflect.Method)
      * @see #signatureToString(org.aspectj.lang.Signature, boolean)
+     * @return A String representation of the signature.
      */
     public static String makeSignatureString(Class<?> clazz, Method method) {
         return signatureToString(makeSignature(clazz, method), true);

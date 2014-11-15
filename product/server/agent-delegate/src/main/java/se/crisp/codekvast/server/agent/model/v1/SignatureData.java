@@ -9,7 +9,7 @@ import java.util.Collection;
 
 /**
  * REST signature data from one code base.
- * <p/>
+ *
  * Should be uploaded to the codekvast-server each time the code base is changed.
  *
  * @author Olle Hallin

@@ -24,7 +24,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A Spring MVC Controller that handles registration.
- * <p/>
  *
  * @author Olle Hallin
  */

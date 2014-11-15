@@ -15,7 +15,7 @@ import java.util.Collection;
 
 /**
  * A Spring MVC Controller that handles STOMP messages.
- * <p/>
+ *
  *
  * @author Olle Hallin
  */

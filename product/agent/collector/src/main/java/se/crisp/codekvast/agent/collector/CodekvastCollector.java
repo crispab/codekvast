@@ -15,7 +15,7 @@ import java.util.TimerTask;
 
 /**
  * This is the Java agent that hooks up Codekvast to the app. It also loads aspectjweaver.
- * <p/>
+ *
  * Invocation: Add the following option to the Java command line:
  * <pre><code>
  *    -javaagent:/path/to/codekvast-collector-n.n-shadow.jar=path/to/codekvast.conf
@@ -36,6 +36,10 @@ public class CodekvastCollector {
 
     /**
      * This method is invoked by the JVM as part of bootstrapping the -javaagent
+     * @param args The string after the equals sign in -javaagent:codekvast-collector.jar=args. Is used as URL to the collector
+     *             configuration file.
+     * @param inst The standard instrumentation hook.
+     *             @throws URISyntaxException if args is not a valid URL
      */
     public static void premain(String args, Instrumentation inst) throws URISyntaxException {
         CollectorConfig config = CollectorConfig.parseCollectorConfig(args);
