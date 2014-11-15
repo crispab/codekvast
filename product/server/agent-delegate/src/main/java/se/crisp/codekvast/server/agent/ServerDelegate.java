@@ -21,7 +21,7 @@ public interface ServerDelegate {
      * @param jvmFingerprint   The unique id of the JVM run
      * @param codekvastVersion Which version of codekvast produced this data?
      * @param codekvastVcsId   The Git hash of the code that produced this data.
-     * @throws ServerDelegateException
+     * @throws ServerDelegateException For all problems.
      */
     void uploadJvmData(String appName, String appVersion, String hostName, long startedAtMillis, long dumpedAtMillis,
                        String jvmFingerprint, String codekvastVersion, String codekvastVcsId) throws ServerDelegateException;
@@ -44,15 +44,16 @@ public interface ServerDelegate {
      *
      * @param jvmFingerprint The fingerprint of the JVM that produced this invocations data.
      * @param invocations    A collection of invocations entries.
-     * @throws ServerDelegateException
+     * @throws ServerDelegateException For all problems.
      */
     void uploadInvocationsData(String jvmFingerprint, Collection<InvocationEntry> invocations) throws ServerDelegateException;
 
     /**
      * Pings the server.
      *
-     * @param message An arbitrary message
-     * @return A decorated version of the message
+     * @param message An arbitrary message.
+     * @return A decorated version of the message.
+     * @throws ServerDelegateException For all problems.
      */
     String ping(String message) throws ServerDelegateException;
 }

@@ -61,6 +61,9 @@ public class CodekvastAgentApplication {
 
     /**
      * Make the AgentConfig object usable in SpringEL expressions with codekvast. as prefix...
+     *
+     * @param environment The configurable environment to modify.
+     * @return The AgentConfig object that was appended to the environment's property sources.
      */
     @Bean
     public AgentConfig agentConfig(ConfigurableEnvironment environment) {
@@ -70,6 +73,9 @@ public class CodekvastAgentApplication {
 
     /**
      * Converts an AgentConfig to a ServerDelegateConfig
+     *
+     * @param agentConfig The agent configuration object.
+     * @return A server delegate config object.
      */
     @Bean
     public ServerDelegateConfig serverDelegateConfig(AgentConfig agentConfig) {

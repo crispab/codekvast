@@ -8,6 +8,7 @@ buildscript {
 
 apply plugin: 'aspectj'
 apply plugin: 'shadow'
+apply from: "$rootDir/gradle/sources-javadoc.gradle"
 
 description = "The javaagent part of Codekvast agent"
 archivesBaseName = "codekvast-agent-collector"
@@ -32,19 +33,3 @@ shadow { outputFile = file("$buildDir/distributions/codekvast-collector-${versio
 
 // Make a shadow jar consisting of codekvast-agent-collector and it's dependencies (i.e. aspectjweaver-n.n.jar)
 assemble.dependsOn shadowJar
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
-}
-
