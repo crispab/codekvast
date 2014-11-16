@@ -6,3 +6,23 @@
     cursor: pointer;
 }
 
+#crisp-logo {
+    height: 20%;
+    width: 20%;
+}
+
+#banner {
+    background-image: url("../img/java-code.png");
+    background-repeat: repeat-x;
+    margin-left: -250px;
+    width: 150%;
+    height: 220px;
+}
+
+#banner h1, h2 {
+    color: white;
+}
+
+#banner h2 {
+    font-size: 130%;
+}

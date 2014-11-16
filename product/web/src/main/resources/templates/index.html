@@ -7,9 +7,38 @@
 
 <body class="ng-cloak">
 <div class="container" ng-controller="MainController">
-    <a href="#/">Home</a> <a href="#/page1">Page1</a> <a href="#/page2">Page2</a>
+    <div class="row">
+        <img class="col-md-1 col-md-pull-2" id="crisp-logo" th:src="@{img/crisp-logo-new-horisontal-color.png}"/>
+
+        <div class="col-md-8 text-center">
+            <h1>Codekvast</h1>
+        </div>
+    </div>
+
+    <div id="banner">
+        <div class="row">
+            <div class="col-md-push-2 col-md-8 text-center">
+                <h1>Java Runtime Intelligence</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-push-2 col-md-8 text-center">
+                <h2>How to Detect Truly Dead Code in Your Application</h2>
+            </div>
+
+        </div>
+        <div class="row">
+            <form name="registerForm">
+                <div class="form-group">
+                    <input class="col-md-3 input-lg" type="email" placeholder="E-mail"/>
+                    <button class="input-lg btn btn-primary">Send me more information</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <div ng-view="true"></div>
+
     <div th:if="!${thymeleafCache}">
         <hr/>
         <button ng-click="cleanTemplateCache()">Clean template cache</button>
