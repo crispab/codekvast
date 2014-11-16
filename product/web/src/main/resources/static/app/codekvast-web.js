@@ -1,6 +1,10 @@
-var codekvastWeb = angular.module('codekvastWeb', ['ngRoute'])
-    .controller('MainController', ['$scope', '$location', function ($scope, $location) {
+var codekvastWeb = angular.module('codekvastWeb', ['ngRoute', 'ui.bootstrap'])
+    .controller('MainController', ['$scope', '$location', '$templateCache', function ($scope, $location, $templateCache) {
         $scope.location = $location;
+
+        $scope.cleanTemplateCache = function () {
+            $templateCache.removeAll();
+        }
     }])
 
     .config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
@@ -18,7 +22,7 @@ var codekvastWeb = angular.module('codekvastWeb', ['ngRoute'])
             })
         ;
 
-        $locationProvider.html5Mode(true);
+        // $locationProvider.html5Mode(true);
     }])
 
     .run(['$rootScope', '$location', '$log', function ($rootScope, $location, $log) {

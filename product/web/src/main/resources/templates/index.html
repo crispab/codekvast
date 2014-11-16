@@ -7,15 +7,16 @@
 
 <body class="ng-cloak">
 <div class="container" ng-controller="MainController">
-    <a href="/">Home</a> <a href="/page1">Page1</a> <a href="/page2">Page2</a>
+    <a href="#/">Home</a> <a href="#/page1">Page1</a> <a href="#/page2">Page2</a>
 
     <div ng-view="true"></div>
-
+    <div th:if="!${thymeleafCache}">
+        <hr/>
+        <button ng-click="cleanTemplateCache()">Clean template cache</button>
+    </div>
 </div>
 
-<th:block th:include="fragments :: #scripts-twitter-bootstrap"/>
 <th:block th:include="fragments :: #scripts-angularjs"/>
 <script th:src="@{/app/codekvast-web.js}"></script>
-<script th:src="@{/google-analytics.js}"></script>
 </body>
 </html>
