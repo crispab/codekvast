@@ -6,40 +6,43 @@
 </head>
 
 <body class="ng-cloak">
-<div class="container" ng-controller="MainController">
-    <div class="row">
-        <img class="col-md-1 col-md-pull-2" id="crisp-logo" th:src="@{img/crisp-logo-new-horisontal-color.png}"/>
+<div class="container-fluid" ng-controller="MainController">
+    <div class="row top-row">
+        <img class="col-sm-1" id="logotype" th:src="@{img/crisp-logo-new-horisontal-color.png}"/>
 
-        <div class="col-md-8 text-center">
+        <div class="col-sm-7 text-center">
             <h1>Codekvast</h1>
         </div>
     </div>
 
-    <div id="banner">
-        <div class="row">
-            <div class="col-md-push-2 col-md-8 text-center">
-                <h1>Java Runtime Intelligence</h1>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-push-2 col-md-8 text-center">
-                <h2>How to Detect Truly Dead Code in Your Application</h2>
-            </div>
-
-        </div>
-        <div class="row">
-            <form name="registerForm">
-                <div class="form-group">
-                    <input class="col-md-3 input-lg" type="email" placeholder="E-mail"/>
-                    <button class="input-lg btn btn-primary">Send me more information</button>
+    <div id="banner" class="row full-width">
+        <div class="col-sm-10 col-sm-offset-1">
+            <div class="row">
+                <div class="col-sm-12 text-center">
+                    <h1>Java Runtime Intelligence</h1>
                 </div>
-            </form>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 text-center">
+                    <h2>How to Detect Truly Dead Code in Your Application</h2>
+                </div>
+            </div>
+            <div class="row">
+                <form class="col-sm-8 col-sm-offset-3 form-horizontal" name="registerForm">
+                    <div class="form-group col-sm-6">
+                        <label for="email" class="sr-only">Email address</label>
+                        <input id="email" name="email" class="form-control input-lg" type="email" placeholder="E-mail"/>
+                    </div>
+                    &nbsp;&nbsp;
+                    <button type="submit" class="btn btn-primary btn-lg">Send me more information</button>
+                </form>
+            </div>
         </div>
     </div>
 
     <div ng-view="true"></div>
 
-    <div th:if="!${thymeleafCache}">
+    <div th:if="${!thymeleafCache}">
         <hr/>
         <button ng-click="cleanTemplateCache()">Clean template cache</button>
     </div>

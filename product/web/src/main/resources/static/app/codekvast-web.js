@@ -9,12 +9,8 @@ var codekvastWeb = angular.module('codekvastWeb', ['ngRoute', 'ui.bootstrap'])
 
     .config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
         $routeProvider
-            .when('/page1', {
-                templateUrl: 'page1.html'
-            })
-
-            .when('/page2', {
-                templateUrl: 'page2.html'
+            .when('/truly-dead-code', {
+                templateUrl: 'truly-dead-code.html'
             })
 
             .otherwise({
