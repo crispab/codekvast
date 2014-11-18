@@ -21,7 +21,7 @@ public class WebController {
     @Value("${spring.thymeleaf.cache}")
     private Boolean thymeleafCache;
 
-    @RequestMapping({"/", "/index"})
+    @RequestMapping({"/", "/page/**"})
     public String index(ModelMap model) {
         model.put("thymeleafCache", thymeleafCache);
         return "index";

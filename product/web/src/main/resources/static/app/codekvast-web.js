@@ -9,16 +9,17 @@ var codekvastWeb = angular.module('codekvastWeb', ['ngRoute', 'ui.bootstrap'])
 
     .config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
         $routeProvider
-            .when('/truly-dead-code', {
-                templateUrl: 'truly-dead-code.html'
+            .when('/page/:page*', {
+                templateUrl: function (routeParams) {
+                    return routeParams.page + '.html'
+                }
             })
 
             .otherwise({
                 templateUrl: 'welcome.html'
-            })
-        ;
+            });
 
-        // $locationProvider.html5Mode(true);
+        $locationProvider.html5Mode(true);
     }])
 
     .run(['$rootScope', '$location', '$log', function ($rootScope, $location, $log) {

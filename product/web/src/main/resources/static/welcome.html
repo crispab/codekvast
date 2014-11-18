@@ -2,19 +2,24 @@
     <div class="col-sm-2">
         <img src="/img/green_exclamation_point.jpg" class="huge-icon"/>
     </div>
-    <div class="col-sm-10">
+    <div class="col-sm-8">
         <h3>What is Codekvast?</h3>
 
-        <p>Codekvast identifies <a id="truly-dead-1" href="#/truly-dead-code">Truly Dead Code</a> in your code base, code that you safely
-           can delete, since no-on e is using it.</p>
+        <p><strong>Codekvast identifies <a id="truly-dead-1" href="/page/truly-dead-code">Truly Dead Code</a> in your Java
+                   applications.</strong></p>
 
-        <p>How?</p>
-        <ul>
-            <li>It records when your public Java methods are invoked.</li>
-            <li>It examines your application to find all methods that <em>could</em> be invoked.</li>
-            <li>It uploads the collected data to a server.</li>
-            <li>It visualizes the collected data in a web interface.</li>
-        </ul>
+        <p>Truly dead code is code that <strong>no real user has used in X days</strong>, where X is defined by you. For some applications,
+           X could be a number of days. For other applications, X could be weeks, months or even years. Only you can tell what X would be
+           for your application. X is not a fixed value. Once Codekvast has been running for a while, you can experiment with different
+           values of X.</p>
+
+        <p>You use Codekvast <strong>in production</strong>, since it is only there you can learn what parts of your code your <strong>real
+                                                                                                                                       users</strong>
+           are using and, more interestingly, <strong>not using</strong>.</p>
+
+        <p>Codekvast works for <strong>Java</strong>, and is designed to be <strong>always on</strong>. Codekvast will
+            <strong><a id="extremely-low-1" href="/page/extremely-low-overhead">not disturb the normal operation of your
+                                                                                application</a></strong>.</p>
     </div>
 </div>
 
@@ -22,13 +27,15 @@
     <div class="col-sm-2">
         <img src="/img/blue-question-mark.jpg" class="huge-icon"/>
     </div>
-    <div class="col-sm-10">
+    <div class="col-sm-8">
         <h3>Why would I need Codekvast?</h3>
+
+        <p>Codekvast enables <a id="ccc-1" href="/page/continuous-code-cleansing">Continuous Code Cleansing</a>, which will</p>
         <ul>
-            <li>It Reduces Maintenance Costs. Less code means, well, less maintenance...</li>
-            <li>It Increases Agility. Less code that slows down development.</li>
-            <li>It Improves Quality. Less code means fewer bugs.</li>
-            <li>It Improves Security. Less code means fewer vulnerabilities.</li>
+            <li>Reduce Maintenance Costs. Less code means, well, less maintenance...</li>
+            <li>Increase Agility. You will have less code that slows down development.</li>
+            <li>Improve Quality. Less code means fewer bugs.</li>
+            <li>Improve Security. Less code means fewer vulnerabilities.</li>
         </ul>
     </div>
 </div>
@@ -37,27 +44,35 @@
     <div class="col-sm-2">
         <img src="/img/cogwheels-flat.png" class="huge-icon"/>
     </div>
-    <div class="col-sm-10">
+    <div class="col-sm-8">
         <h3>How does it work?</h3>
         <ul>
             <li>
-                <bold>Codekvast Collector</bold>
-                captures invocations of your business methods with [_extremely_ low overhead].
+                <strong>Codekvast Collector</strong> captures invocations of your business methods with <a id="extremely-low-2"
+                                                                                                           href="/page/extremely-low-overhead">extremely
+                                                                                                                                               low
+                                                                                                                                               overhead</a>,
+                                                     and periodically hands over the invocation data to the Codekvast Agent.
             </li>
             <li>
-                <bold>Codekvast Agent</bold>
-                combines the collected data with an inventory of your installed application code.
+                <strong>Codekvast Agent</strong> combines the invocation data with an automatically generated inventory of your installed
+                                                 application code.
             </li>
             <li>
-                <bold>Codekvast Agent</bold>
-                periodically uploads data for the method invocations as well as the complete set of existing methods to a cloud-hosted
-                <bold>Codekvast Server</bold>
-                (a data warehouse).
+                <strong>Codekvast Agent</strong> periodically uploads invocation data plus the code inventory to the cloud-hosted Codekvast
+                                                 Server.
             </li>
             <li>
-                <bold>Codekvast Server</bold>
-                has a real-time web interface for visualizing the captured data, so that you can learn what is your application's
-                <a id="truly-dead-2" href="#/truly-dead-code">Truly Dead Code</a>.
+                <strong>Codekvast Server</strong> has a real-time web interface for visualizing the captured data. This is where you play
+                                                  around and learn what is your application's <a id="truly-dead-2"
+                                                                                                 href="/page/truly-dead-code">Truly Dead
+                                                                                                                              Code</a> for
+                                                  different values of X.
+            </li>
+            <li>Once you have identified a chunk of <a id="truly-dead-3" href="/page/truly-dead-code">Truly Dead Code</a>, you go back to
+                your development environment and <strong>just delete it!</strong>.
+                <small>Don't forget to update the documentation!
+                </small>
             </li>
         </ul>
     </div>
