@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * This is an AspectJ aspect that captures execution of a JSP page compiled by Apache Jasper.
+ * This is an AspectJ aspect that captures execution of a JSP p compiled by Apache Jasper.
  * <p/>
  * It is weaved into the target app by the AspectJ load-time weaver.
  *
@@ -23,7 +23,7 @@ public aspect JasperExecutionAspect extends AbstractCodekvastAspect {
     pointcut jasperPageExecution(): execution(public void org.apache.jsp.._jspService(*, *));
 
     /**
-     * Register that this JSP page has been invoked.
+     * Register that this JSP p has been invoked.
      */
     before(): jasperPageExecution() && !withinCodekvast() {
         InvocationRegistry.instance.registerJspPageExecution(getJspPageName(thisJoinPoint));

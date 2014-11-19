@@ -6,6 +6,10 @@
     cursor: pointer;
 }
 
+a:hover {
+    cursor: hand;
+}
+
 #logotype {
     height: 20%;
     width: 20%;
@@ -18,7 +22,7 @@
 }
 
 .row.full-width {
-/ / Override the standard left and right margins
+    /* Override the standard left and right margins */
 }
 
 .top-row h1 {

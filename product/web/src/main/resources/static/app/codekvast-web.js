@@ -1,4 +1,4 @@
-var codekvastWeb = angular.module('codekvastWeb', ['ngRoute', 'ui.bootstrap'])
+var codekvastWeb = angular.module('codekvastWeb', ['ngRoute', 'ngAria', 'ui.bootstrap'])
     .controller('MainController', ['$scope', '$location', '$templateCache', function ($scope, $location, $templateCache) {
         $scope.location = $location;
 
@@ -11,12 +11,12 @@ var codekvastWeb = angular.module('codekvastWeb', ['ngRoute', 'ui.bootstrap'])
         $routeProvider
             .when('/page/:page*', {
                 templateUrl: function (routeParams) {
-                    return routeParams.page + '.html'
+                    return "p/" + routeParams.page + '.html'
                 }
             })
 
             .otherwise({
-                templateUrl: 'welcome.html'
+                templateUrl: 'p/welcome.html'
             });
 
         $locationProvider.html5Mode(true);

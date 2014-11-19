@@ -82,11 +82,11 @@ public class InvocationRegistry {
     }
 
     /**
-     * Record that this JPS page was invoked at current recording interval.
+     * Record that this JPS p was invoked at current recording interval.
      *
      * Thread-safe.
      *
-     * @param pageName The name of the invoked JSP page.
+     * @param pageName The name of the invoked JSP p.
      */
     public void registerJspPageExecution(String pageName) {
         //noinspection unchecked

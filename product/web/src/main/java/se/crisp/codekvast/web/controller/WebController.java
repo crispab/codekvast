@@ -24,6 +24,10 @@ public class WebController {
     @RequestMapping({"/", "/page/**"})
     public String index(ModelMap model) {
         model.put("thymeleafCache", thymeleafCache);
+
+        String dot = thymeleafCache ? ".min." : ".";
+        model.put("dotCss", dot + "css");
+        model.put("dotJs", dot + "js");
         return "index";
     }
 }
