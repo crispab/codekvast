@@ -29,12 +29,17 @@ a:hover {
     font-size: 400%;
 }
 
-#banner h1, h2 {
+#banner h1, #banner h2, #banner h3, #banner h4 {
     color: white;
 }
 
-#banner h1 {
-    margin-bottom: 2em;
+#banner h4 {
+    margin: 0 0;
+}
+
+#banner h3 {
+    margin-top: 0.6em;
+    margin-bottom: 0.7em;
 }
 
 .huge-icon {
