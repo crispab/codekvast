@@ -22,9 +22,11 @@ var codekvastWeb = angular.module('codekvastWeb', ['ngRoute', 'ngAria', 'ui.boot
         $locationProvider.html5Mode(true);
     }])
 
-    .run(['$rootScope', '$location', '$log', function ($rootScope, $location, $log) {
+    .run(['$rootScope', '$location', '$log', '$document', function ($rootScope, $location, $log, $document) {
         $rootScope.$on('$viewContentLoaded', function () {
-            $log.info("Viewing " + $location.path())
+            var title = angular.element('.window-title').text();
+            $log.info("Viewing '" + $location.path() + "' ('" + title + "')");
+            $document[0].title = title;
             ga('send', 'pageview', $location.path());
         });
     }]);

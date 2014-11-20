@@ -41,3 +41,7 @@ a:hover {
     height: 180px;
     width: 180px;
 }
+
+h1.window-title {
+    display: none;
+}
