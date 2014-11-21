@@ -1,19 +1,70 @@
 package se.crisp.codekvast.web.service.impl;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 
-import static org.hamcrest.Matchers.hasToString;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class DatabaseMaintenanceImplTest {
 
-    private Date t1 = new Date(100000000000L);
+    private static final String SUFFIX = ".h2.zip";
+    private final Date T1 = new Date(1416570848627L);
+
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
     @Test
     public void testGetDumpFile() throws Exception {
-        assertThat(DatabaseMaintenanceImpl.getDumpFile(new File("foo/bar"), t1), hasToString("foo/bar/19730303_104640.h2.dmp"));
+        assertThat(DatabaseMaintenanceImpl.getDumpFile(new File("foo/bar"), T1, ".h2.zip"),
+                   hasToString("foo/bar/20141121_125408" + SUFFIX));
+    }
+
+    @Test
+    public void testRemoveOldBackupsWhenEmptyFolder() throws Exception {
+        DatabaseMaintenanceImpl.removeOldBackups(folder.getRoot(), 10, SUFFIX);
+    }
+
+
+    @Test
+    public void testRemoveOldBackupsWhenLessThanMax() throws Exception {
+        simulateDumpFiles(3, SUFFIX);
+        simulateDumpFiles(10, SUFFIX + "X");
+
+        DatabaseMaintenanceImpl.removeOldBackups(folder.getRoot(), 5, SUFFIX);
+
+        File[] files = folder.getRoot().listFiles();
+        Arrays.sort(files);
+        assertThat(files.length, is(13));
+    }
+
+    @Test
+    public void testRemoveOldBackupsWhenMoreThanMax() throws Exception {
+        simulateDumpFiles(10, SUFFIX);
+        simulateDumpFiles(10, SUFFIX + "X");
+
+        DatabaseMaintenanceImpl.removeOldBackups(folder.getRoot(), 5, SUFFIX);
+
+        File[] files = folder.getRoot().listFiles();
+
+        assertThat(files.length, is(15));
+
+        Arrays.sort(files);
+        assertThat(files[0].getName(), endsWith("000" + SUFFIX + "X"));
+        assertThat(files[4].getName(), endsWith("004" + SUFFIX + "X"));
+        assertThat(files[5].getName(), endsWith("005" + SUFFIX));
+        assertThat(files[6].getName(), endsWith("005" + SUFFIX + "X"));
+    }
+
+    private void simulateDumpFiles(int numDumps, String suffix) throws IOException {
+        for (int i = 0; i < numDumps; i++) {
+            folder.newFile(String.format("yyyymmdd_%03d%s", i, suffix));
+        }
     }
 }

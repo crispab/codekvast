@@ -3,11 +3,15 @@ package se.crisp.codekvast.web.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.FilenameFilter;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
 
@@ -20,21 +24,75 @@ import java.util.Locale;
 @Slf4j
 public class DatabaseMaintenanceImpl {
 
+    public static final String BACKUP_SUFFIX = ".h2.zip";
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    @Value("${codekvast.web.database.backupPath}")
+    @Value("${codekvast.web.database-backup.path}")
     private File databaseBackupPath;
 
-    @Scheduled(cron = "${codekvast.web.database.cron}")
+    @Autowired
+    @Value("${codekvast.web.database-backup.max}")
+    private Integer databaseBackupMax;
+
+    @Autowired
+    @Value("${codekvast.web.csv-export.file}")
+    private File csvExportFile;
+
+    @Scheduled(cron = "${codekvast.web.database-backup.cron}")
     public void makeDatabaseBackup() {
-        File dumpFile = getDumpFile(databaseBackupPath, new Date());
-        log.info("Backing up database to {}", dumpFile);
+        String dumpFile = getDumpFile(databaseBackupPath, new Date(), BACKUP_SUFFIX).getAbsolutePath();
+        try {
+            long startedAt = System.currentTimeMillis();
+
+            jdbcTemplate.update("BACKUP TO ?", dumpFile);
+
+            long elapsed = System.currentTimeMillis() - startedAt;
+            log.info("Backed up database to {} in {} s", dumpFile, elapsed / 1000L);
+        } catch (DataAccessException e) {
+            log.error("Failed to backup database to " + dumpFile, e);
+        }
+
+        removeOldBackups(databaseBackupPath, databaseBackupMax, BACKUP_SUFFIX);
     }
 
-    static File getDumpFile(File backupPath, Date date) {
-        return new File(backupPath, String.format(Locale.ENGLISH, "%1$tF_%1$tT.h2.dmp", date).replaceAll("[-:]", ""));
+    @Scheduled(cron = "${codekvast.web.csv-export.cron}")
+    public void exportCsvFile() {
+        String destination = csvExportFile.getAbsolutePath();
+        jdbcTemplate.update("CALL CSVWRITE(?, 'SELECT * FROM PEOPLE', 'charset=UTF-8')", destination);
+        log.info("Exported people into {}", destination);
+    }
+
+    static void removeOldBackups(File backupPath, int maxBackups, final String suffix) {
+        File[] files = backupPath.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File file, String name) {
+                return name.endsWith(suffix);
+            }
+        });
+
+        Arrays.sort(files, new Comparator<File>() {
+            @Override
+            public int compare(File f1, File f2) {
+                return f1.getName().compareTo(f2.getName());
+            }
+        });
+
+        int filesToDelete = files.length - maxBackups;
+        if (filesToDelete > 0) {
+            for (int i = 0; i < filesToDelete; i++) {
+                boolean deleted = files[i].delete();
+                if (deleted) {
+                    log.debug("Deleted {}", files[i]);
+                }
+            }
+        }
+    }
+
+    static File getDumpFile(File backupPath, Date date, String suffix) {
+        return new File(backupPath, String.format(Locale.ENGLISH, "%1$tF_%1$tT%2$s", date, suffix).replaceAll("[-:]", ""));
     }
 
 }
