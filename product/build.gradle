@@ -8,6 +8,7 @@ plugins {
     id 'distribution'
     id 'com.jfrog.bintray' version '0.6'
     id 'com.bmuschko.vagrant' version '2.0'
+    id 'org.hidetake.ssh' version '0.4.5'
 }
 
 
@@ -84,5 +85,53 @@ bintray {
         labels = ['runtime-intelligence', 'dead-code', 'dead-code-detector', 'truly-dead-code', 'YANIA', 'java', 'java-6', 'jvm']
 
         publicDownloadNumbers = false
+    }
+}
+
+ssh.settings {
+    knownHosts = allowAnyHosts    // Disable host key verification
+    pty = true
+}
+
+remotes {
+    web {
+        role 'all'
+        host = 'codekvast.crisp.se'
+        user = 'ubuntu'
+        identity = new File(System.properties['user.home'] + '/.ssh', 'Codekvast.pem')
+    }
+}
+
+task prepareTargetServers << {
+    ssh.run {
+        session(remotes.role('all')) {
+            executeSudo "apt-get update"
+            executeSudo "apt-get upgrade -y"
+            executeSudo "apt-get install -y unzip"
+            executeSudo "apt-get install -y openjdk-7-jdk"
+        }
+    }
+}
+
+task deployWeb(dependsOn: webDistZip) << {
+    def zip = file("$buildDir/distributions/codekvast-web-${version}.zip")
+
+    println "Uploading $zip ..."
+
+    ssh.run {
+        session(remotes.web) {
+            // put zip, "."
+            // execute "unzip ${zip.name}"
+
+            put file('src/provision/web/conf/'), "codekvast-web-${version}"
+        }
+    }
+}
+
+task getPeople << {
+    ssh.run {
+        session(remotes.web) {
+            get 'people.csv', buildDir
+        }
     }
 }
