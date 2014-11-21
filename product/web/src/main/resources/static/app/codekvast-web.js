@@ -1,9 +1,34 @@
 var codekvastWeb = angular.module('codekvastWeb', ['ngRoute', 'ngAria', 'ui.bootstrap'])
-    .controller('MainController', ['$scope', '$location', '$templateCache', function ($scope, $location, $templateCache) {
-        $scope.location = $location;
+    .controller('MainController', ['$scope', '$location', '$templateCache', '$http', function ($scope, $location, $templateCache, $http) {
+        $scope.data = {emailAddress: null};
+        $scope.isSubmitDisabled = false;
+        $scope.errorMessage = undefined;
 
         $scope.cleanTemplateCache = function () {
             $templateCache.removeAll();
+        };
+
+        $scope.submitEmailAddress = function () {
+            if ($scope.data.emailAddress) {
+                $scope.isSubmitDisabled = true;
+
+                $http.post("/register", $scope.data)
+                    .success(function () {
+                        $location.path("/page/thank-you");
+                    }).error(function (data, status, headers, config, statusText) {
+                        $scope.errorMessage = statusText || "RegistrationRequest failed";
+                        $location.path("/page/oops");
+                        $scope.isSubmitDisabled = false;
+                    });
+            }
+        };
+
+        $scope.hasErrorMessage = function () {
+            if ($scope.errorMessage === undefined) {
+                $location.path('/');
+                return false;
+            }
+            return true;
         }
     }])
 

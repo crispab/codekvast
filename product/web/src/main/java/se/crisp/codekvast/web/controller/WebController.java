@@ -1,5 +1,6 @@
 package se.crisp.codekvast.web.controller;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @Slf4j
 public class WebController {
-
     @Autowired
+    @NonNull
     @Value("${spring.thymeleaf.cache}")
     private Boolean thymeleafCache;
 
