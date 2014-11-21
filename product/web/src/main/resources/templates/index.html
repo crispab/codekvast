@@ -41,8 +41,7 @@
                                class="form-control input-lg"
                                type="email"
                                required="required"
-                               placeholder="Your e-mail address"
-                               ng-model="data.emailAddress"/>
+                               placeholder="Your e-mail address" ng-model="data.emailAddress" ng-change="enableSubmitButton()"/>
                     </div>
                     &nbsp;&nbsp;
                     <button type="submit" class="btn btn-primary btn-lg" ng-click="submitEmailAddress()" ng-disabled="isSubmitDisabled">Send

@@ -16,11 +16,15 @@ var codekvastWeb = angular.module('codekvastWeb', ['ngRoute', 'ngAria', 'ui.boot
                     .success(function () {
                         $location.path("/page/thank-you");
                     }).error(function (data, status, headers, config, statusText) {
-                        $scope.errorMessage = statusText || "RegistrationRequest failed";
+                        $scope.errorMessage = status === 409 ? "Duplicate email address" : statusText || "Registration failed";
                         $location.path("/page/oops");
                         $scope.isSubmitDisabled = false;
                     });
             }
+        };
+
+        $scope.enableSubmitButton = function () {
+            $scope.isSubmitDisabled = false;
         };
 
         $scope.hasErrorMessage = function () {
