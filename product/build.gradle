@@ -113,18 +113,33 @@ task prepareTargetServers << {
     }
 }
 
-task deployWeb(dependsOn: webDistZip) << {
+task deployWeb {
+    group "Provisioning"
+    description "Deploys Codekvast-web"
+    dependsOn webDistZip
+
     def zip = file("$buildDir/distributions/codekvast-web-${version}.zip")
+    def confDir = file('src/provision/web/conf/')
+    def deployStatusFile = file("$buildDir/tmp/deploy-web.status")
 
-    println "Uploading $zip ..."
+    inputs.file zip
+    inputs.dir file('src/provision/web')
+    outputs.file deployStatusFile
 
-    ssh.run {
-        session(remotes.web) {
-            // put zip, "."
-            // execute "unzip ${zip.name}"
+    doLast {
 
-            put file('src/provision/web/conf/'), "codekvast-web-${version}"
+        println "Deploying $zip ..."
+
+        ssh.run {
+            session(remotes.web) {
+                put zip, "."
+                execute "unzip -o ${zip.name}"
+
+                put confDir, "codekvast-web-${version}"
+            }
         }
+        deployStatusFile.parentFile.mkdirs()
+        deployStatusFile.text = "$zip deployed at ${new Date()}\n"
     }
 }
 
