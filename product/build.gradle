@@ -167,6 +167,34 @@ sudo chmod +x codekvast-web
     }
 }
 
+task redeployWeb {
+    group "Provisioning"
+    description "Redeploys Codekvast-web with same configuration"
+    dependsOn webDistZip
+
+    def zip = file("$buildDir/distributions/codekvast-web-${version}.zip")
+    def deployStatusFile = file("$buildDir/tmp/deploy-web.status")
+
+    inputs.file zip
+    outputs.file deployStatusFile
+
+    doLast {
+
+        println "Redeploying $zip ..."
+
+        ssh.run {
+            session(remotes.web) {
+                put zip, "."
+                execute "unzip -o ${zip.name}"
+
+                execute '/etc/init.d/codekvast-web restart'
+            }
+        }
+        deployStatusFile.parentFile.mkdirs()
+        deployStatusFile.text = "$zip redeployed at ${new Date()}\n"
+    }
+}
+
 task getPeople << {
     ssh.run {
         session(remotes.web) {
