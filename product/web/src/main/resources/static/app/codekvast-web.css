@@ -11,26 +11,65 @@ a:hover {
 }
 
 #logotype {
-    height: 20%;
-    width: 20%;
+    height: 85px;
+    width: 240px;
 }
 
-#banner {
-    background-image: url("../img/java-code.png");
-    background-repeat: repeat-x;
-    height: 220px;
+.lt-640 #logotype {
+    height: 44px;
+    width: 158px;
+    margin-top: 2em;
+    margin-right: -2em;
 }
 
-.row.full-width {
-    /* Override the standard left and right margins */
+.lt-640 #logotype {
+    margin-top: 1.5em;
+    margin-right: -2em;
 }
 
 .top-row h1 {
     font-size: 400%;
 }
 
-#banner h1, #banner h2, #banner h3, #banner h4 {
+.lt-480 .top-row h1 {
+    font-size: 200%;
+    margin-top: 1em;
+}
+
+#banner {
+    background-image: url("../img/java-code.png");
+    background-repeat: repeat-x;
+    height: 15em;
+}
+
+.lt-640 #banner {
+    height: 19em;
+}
+
+.lt-569 #banner {
+    height: 23em;
+}
+
+.lt-480 #banner {
+    height: 27em;
+}
+
+.row.full-width {
+    /* Override the standard left and right margins */
+}
+
+.slogan {
     color: white;
+}
+
+.lt-640 .slogan-separator {
+    display: none;
+}
+
+.lt-640 .secondary-slogan {
+    background-color: #222;
+    border-radius: 10px;
+    padding: 5px;
 }
 
 #banner h4 {
@@ -42,11 +81,45 @@ a:hover {
     margin-bottom: 0.7em;
 }
 
-.huge-icon {
-    height: 180px;
-    width: 180px;
+img.huge-icon {
+    height: 120px;
+    width: 120px;
+    margin-top: 2em;
+    margin-left: 3em;
+}
+
+.lt-1000 img.huge-icon {
+    height: 80px;
+    width: 80px;
+}
+
+.lt-640 img.huge-icon {
+    height: 40px;
+    width: 40px;
+    margin-left: 1em;
+}
+
+.lt-480 img.huge-icon {
+    height: 30px;
+    width: 30px;
+    margin-left: .5em;
 }
 
 h1.window-title {
     display: none;
+}
+
+input#email {
+    width: 15em;
+}
+
+.lt-480 input#email {
+    width: 12em;
+}
+
+#registerForm {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
 }

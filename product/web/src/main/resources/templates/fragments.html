@@ -18,6 +18,12 @@
     <!-- Stylesheets -->
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/3.3.1/css/bootstrap__${dotCss}__}"/>
     <link rel="stylesheet" th:href="@{/app/codekvast-web.css}"/>
+    <script>
+            var head_conf = {
+                screens: [480, 569, 640, 800, 1000]
+            };
+    </script>
+    <script th:src="@{/webjars/headjs/1.0.3/head.core__${dotJs}__}"></script>
     <script th:src="@{/app/google-analytics.js}"></script>
 </div>
 

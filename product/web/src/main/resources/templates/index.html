@@ -8,49 +8,50 @@
 <body class="ng-cloak">
 <div class="container-fluid" ng-controller="MainController">
     <div class="row top-row">
-        <a href="/"><img class="col-sm-1" id="logotype" th:src="@{img/crisp-logo-new-horisontal-color.png}"/></a>
+        <a href="/"><img class="col-xs-1" id="logotype" th:src="@{img/crisp-logo-new-horisontal-color.png}"/></a>
 
-        <div class="col-sm-7 text-center">
+        <div class="col-xs-7 text-center">
             <h1>Codekvast</h1>
         </div>
     </div>
 
     <div id="banner" class="row full-width">
-        <div class="col-sm-10 col-sm-offset-1">
+        <div class="col-xs-10 col-xs-offset-1">
             <div class="row">
-                <div class="col-sm-12 text-center">
-                    <h1>Continuous Code Cleansing</h1>
+                <div class="col-xs-12 text-center">
+                    <h1 class="slogan primary-slogan">Continuous Code Cleansing</h1>
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-12 text-center">
-                    <h4>or</h4>
+                <div class="col-xs-12 text-center">
+                    <h4 class="slogan slogan-separator">or</h4>
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-12 text-center">
-                    <h3>How to Detect Truly Dead Code in Your Application</h3>
+                <div class="col-xs-12 text-center">
+                    <h3 class="slogan secondary-slogan">How to Detect Truly Dead Code in Your Application</h3>
                 </div>
             </div>
-            <div class="row">
-                <form class="col-sm-8 col-sm-offset-3 form-horizontal" name="registerForm">
-                    <div class="form-group col-sm-6">
+            <form class="form-inline" name="registerForm" id="registerForm">
+                <div class="form-group">
+                    <div class="input-group input-group-lg">
+                        <div class="input-group-addon">@</div>
                         <label for="email" class="sr-only">Email address</label>
                         <input id="email"
                                name="email"
-                               class="form-control input-lg"
+                               class="form-control"
                                type="email"
                                required="required"
-                               placeholder="Your e-mail address" ng-model="data.emailAddress" ng-change="enableSubmitButton()"/>
+                               placeholder="E-mail address"
+                               ng-model="data.emailAddress"
+                               ng-change="enableSubmitButton()"/>
                     </div>
                     &nbsp;&nbsp;
-                    <button type="submit" class="btn btn-primary btn-lg" ng-click="submitEmailAddress()" ng-disabled="isSubmitDisabled">Send
-                                                                                                                                        me
-                                                                                                                                        more
-                                                                                                                                        information
+                    <button type="submit" class="btn btn-primary btn-lg" ng-click="submitEmailAddress()" ng-disabled="isSubmitDisabled">
+                        Send more information
                     </button>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
 
