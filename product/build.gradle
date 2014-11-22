@@ -103,12 +103,23 @@ remotes {
 }
 
 task prepareTargetServers << {
+    def etcDir = file('src/provision/etc/')
+
     ssh.run {
         session(remotes.role('all')) {
-            executeSudo "apt-get update"
-            executeSudo "apt-get upgrade -y"
-            executeSudo "apt-get install -y unzip"
-            executeSudo "apt-get install -y openjdk-7-jdk"
+            put "$etcDir/redirectPort80", "."
+
+            execute """
+sudo apt-get -q update;
+sudo apt-get -q upgrade -y;
+sudo apt-get install -y unzip;
+sudo apt-get install -y openjdk-7-jdk;
+
+sudo mv -f redirectPort80 /etc/init.d;
+cd /etc/init.d;
+chmod +x redirectPort80
+sudo update-rc.d redirectPort80 defaults
+"""
         }
     }
 }
@@ -120,6 +131,7 @@ task deployWeb {
 
     def zip = file("$buildDir/distributions/codekvast-web-${version}.zip")
     def confDir = file('src/provision/web/conf/')
+    def etcDir = file('src/provision/web/etc/')
     def deployStatusFile = file("$buildDir/tmp/deploy-web.status")
 
     inputs.file zip
@@ -136,6 +148,18 @@ task deployWeb {
                 execute "unzip -o ${zip.name}"
 
                 put confDir, "codekvast-web-${version}"
+                put "$etcDir/codekvast-web.sh", "."
+
+                execute """
+pkill java
+rm -f codekvast-web
+ln -s codekvast-web-${version} codekvast-web
+sudo mv ./codekvast-web.sh /etc/init.d/codekvast-web
+cd /etc/init.d
+sudo update-rc.d codekvast-web defaults
+sudo chmod +x codekvast-web
+/etc/init.d/codekvast-web start
+"""
             }
         }
         deployStatusFile.parentFile.mkdirs()
