@@ -25,6 +25,7 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
     compile 'com.h2database:h2'
     compile 'org.flywaydb:flyway-core'
+    compile 'com.ecwid:ecwid-mailchimp:2.0.1.0'
 
     runtime 'org.webjars:headjs:1.0.3'
     runtime 'org.webjars:jquery:2.1.1'

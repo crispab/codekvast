@@ -3,15 +3,17 @@ package se.crisp.codekvast.web.service.impl;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.web.model.RegistrationRequest;
+import se.crisp.codekvast.web.service.MailChimpException;
+import se.crisp.codekvast.web.service.MailChimpService;
 import se.crisp.codekvast.web.service.RegistrationService;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Responsible for uploading new email addresses to MailChimp.
@@ -24,24 +26,18 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     private static final String STATE_NEW = "new";
     private static final String STATE_UPLOADED = "uploaded";
-    private static final String STATE_UNKNOWN = "unknown";
+    private static final String STATE_FAILED = "failed";
 
     @NonNull
     private final JdbcTemplate jdbcTemplate;
 
     @NonNull
-    private final String mailChimpApiKey;
-
-    @NonNull
-    private final String mailChimpListId;
+    private final MailChimpService mailChimpService;
 
     @Autowired
-    public RegistrationServiceImpl(JdbcTemplate jdbcTemplate,
-                                   @Value("${codekvast.mailchimp.api-key}") String mailChimpApiKey,
-                                   @Value("${codekvast.mailchimp.newsletter.list-id}") String mailChimpListId) {
+    public RegistrationServiceImpl(JdbcTemplate jdbcTemplate, MailChimpService mailChimpService) {
         this.jdbcTemplate = jdbcTemplate;
-        this.mailChimpApiKey = mailChimpApiKey;
-        this.mailChimpListId = mailChimpListId;
+        this.mailChimpService = mailChimpService;
     }
 
     @Override
@@ -50,7 +46,8 @@ public class RegistrationServiceImpl implements RegistrationService {
         jdbcTemplate.update("INSERT INTO PEOPLE(EMAIL_ADDRESS, STATE) VALUES(?, ?)", request.getEmailAddress(), STATE_NEW);
     }
 
-    @Scheduled(fixedDelay = 30_000L)
+    @Override
+    @Scheduled(cron = "${codekvast.mailchimp.cron}")
     @Transactional
     public void uploadNewPeopleToMailChimp() {
         List<String> newEmailAddresses =
@@ -58,25 +55,22 @@ public class RegistrationServiceImpl implements RegistrationService {
 
         if (!newEmailAddresses.isEmpty()) {
             log.debug("Uploading {} new mail addresses to MailChimp", newEmailAddresses.size());
-        }
 
-        String newState = STATE_UPLOADED;
-        try {
-            uploadEmailAddressesToMailChimp(newEmailAddresses);
-        } catch (UploadFailedException e) {
-            newState = STATE_UNKNOWN;
-        }
-
-        jdbcTemplate.update("UPDATE PEOPLE SET STATE = ? WHERE EMAIL_ADDRESS IN ?", newState, newEmailAddresses);
-    }
-
-    private void uploadEmailAddressesToMailChimp(List<String> newEmailAddresses) throws UploadFailedException {
-
-    }
-
-    static class UploadFailedException extends Exception {
-        public UploadFailedException(String message) {
-            super(message);
+            try {
+                MailChimpService.SubscribeToNewsletterResult result = mailChimpService.subscribeToNewsletter(newEmailAddresses);
+                setState(result.getSubscribed(), STATE_UPLOADED);
+                setState(result.getFailed(), STATE_FAILED);
+            } catch (MailChimpException e) {
+                log.error("Cannot subscribe to newsletter, will try again...", e);
+            }
         }
     }
+
+    private void setState(Set<String> emailAddresses, String newState) {
+        for (String address : emailAddresses) {
+            // H2 lacks the IN operator, so we must update one by one...
+            jdbcTemplate.update("UPDATE PEOPLE SET STATE = ? WHERE EMAIL_ADDRESS = ?", newState, address);
+        }
+    }
+
 }

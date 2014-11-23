@@ -1,8 +1,14 @@
 var codekvastWeb = angular.module('codekvastWeb', ['ngRoute', 'ngAria', 'ui.bootstrap'])
     .controller('MainController', ['$scope', '$location', '$templateCache', '$http', function ($scope, $location, $templateCache, $http) {
-        $scope.data = {emailAddress: null};
-        $scope.isSubmitDisabled = false;
-        $scope.errorMessage = undefined;
+
+        $scope.resetData = function () {
+            $scope.data = {emailAddress: null};
+            $scope.isSubmitDisabled = false;
+            $scope.showRegisterForm = true;
+            $scope.errorMessage = undefined;
+        };
+
+        $scope.resetData();
 
         $scope.cleanTemplateCache = function () {
             $templateCache.removeAll();
@@ -14,17 +20,22 @@ var codekvastWeb = angular.module('codekvastWeb', ['ngRoute', 'ngAria', 'ui.boot
 
                 $http.post("/register", $scope.data)
                     .success(function () {
+                        $scope.showRegisterForm = false;
                         $location.path("/page/thank-you");
                     }).error(function (data, status, headers, config, statusText) {
                         $scope.errorMessage = status === 409 ? "Duplicate email address" : statusText || "Registration failed";
                         $location.path("/page/oops");
-                        $scope.isSubmitDisabled = false;
                     });
             }
         };
 
         $scope.enableSubmitButton = function () {
             $scope.isSubmitDisabled = false;
+        };
+
+        $scope.closeThankYou = function () {
+            $scope.resetData();
+            $location.path("/");
         };
 
         $scope.hasErrorMessage = function () {

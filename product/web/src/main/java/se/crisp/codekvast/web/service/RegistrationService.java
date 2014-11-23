@@ -7,4 +7,6 @@ import se.crisp.codekvast.web.model.RegistrationRequest;
  */
 public interface RegistrationService {
     void registerUser(RegistrationRequest request);
+
+    void uploadNewPeopleToMailChimp();
 }
