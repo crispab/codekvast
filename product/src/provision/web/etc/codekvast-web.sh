@@ -36,6 +36,7 @@ fi
 
 doStart() {
     cd $(dirname $APP)/..
+    mkdir -p log
     nohup $APP > log/codekvast-web.out 2>&1 &
 }
 
