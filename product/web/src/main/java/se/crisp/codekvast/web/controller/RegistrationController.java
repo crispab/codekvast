@@ -5,13 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import se.crisp.codekvast.web.model.RegistrationRequest;
 import se.crisp.codekvast.web.model.RegistrationResponse;
+import se.crisp.codekvast.web.service.RegistrationService;
 
 import javax.validation.Valid;
 
@@ -31,12 +31,12 @@ public class RegistrationController {
     private final Validator validator;
 
     @NonNull
-    private final JdbcTemplate jdbcTemplate;
+    private final RegistrationService registrationService;
 
     @Autowired
-    public RegistrationController(Validator validator, JdbcTemplate jdbcTemplate) {
+    public RegistrationController(Validator validator, RegistrationService registrationService) {
         this.validator = validator;
-        this.jdbcTemplate = jdbcTemplate;
+        this.registrationService = registrationService;
     }
 
     @InitBinder
@@ -58,14 +58,10 @@ public class RegistrationController {
 
     @RequestMapping(value = REGISTER_PATH, method = RequestMethod.POST)
     @ResponseBody
-    public RegistrationResponse registerPost(@RequestBody @Valid RegistrationRequest data) {
-        log.info("Received {}", data);
-        saveRegistrationData(data);
-        return RegistrationResponse.builder().greeting(String.format("Welcome %s!", data.getEmailAddress())).build();
-    }
-
-    private void saveRegistrationData(RegistrationRequest data) {
-        jdbcTemplate.update("INSERT INTO PEOPLE(EMAIL_ADDRESS) VALUES(?)", data.getEmailAddress());
+    public RegistrationResponse registerPost(@RequestBody @Valid RegistrationRequest request) {
+        log.info("Received {}", request);
+        registrationService.registerUser(request);
+        return RegistrationResponse.builder().greeting(String.format("Welcome %s!", request.getEmailAddress())).build();
     }
 
 }
