@@ -29,6 +29,10 @@ var codekvastWeb = angular.module('codekvastWeb', ['ngRoute', 'ngAria', 'ui.boot
             }
         };
 
+        $scope.focusEmailAddress = function () {
+            angular.element('#email').focus();
+        };
+
         $scope.enableSubmitButton = function () {
             $scope.isSubmitDisabled = false;
         };
