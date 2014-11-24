@@ -19,6 +19,7 @@ APP=/home/ubuntu/codekvast-web/bin/web
 NAME=CodekvastPromoWebApplication
 DESC="Codekvast Web"
 SCRIPTNAME=/etc/init.d/codekvast-web.sh
+USER=ubuntu
 
 # Exit if the package is not installed
 test -x $APP || exit 0
@@ -37,7 +38,9 @@ fi
 doStart() {
     cd $(dirname $APP)/..
     mkdir -p log
-    nohup $APP > log/codekvast-web.out 2>&1 &
+    chown $USER:$USER log
+    su - $USER -c "nohup $APP" > log/codekvast-web.out 2>&1 &
+    chown -R $USER:$USER log
 }
 
 doStop() {
