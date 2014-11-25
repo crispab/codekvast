@@ -134,7 +134,7 @@ task deployWeb {
     def zip = file("$buildDir/distributions/codekvast-web-${version}.zip")
     def confDir = file('src/provision/web/conf/')
     def etcDir = file('src/provision/web/etc/')
-    def deployStatusFile = file("$buildDir/tmp/deploy-web.status")
+    def deployStatusFile = file("$buildDir/tmp/deploy-web-${version}.status")
 
     inputs.file zip
     inputs.dir file('src/provision/web')
@@ -175,15 +175,20 @@ task redeployWeb {
     dependsOn webDistZip
 
     def zip = file("$buildDir/distributions/codekvast-web-${version}.zip")
-    def deployStatusFile = file("$buildDir/tmp/deploy-web.status")
+    def deployStatusFile = file("$buildDir/tmp/deploy-web-${version}.status")
 
     inputs.file zip
     outputs.file deployStatusFile
 
+    doFirst {
+        if (!deployStatusFile.exists()) {
+            throw new IllegalStateException("Cannot redeploy $version before deploy")
+        }
+    }
+
     doLast {
 
         println "Redeploying $zip ..."
-
         ssh.run {
             session(remotes.web) {
                 put zip, "."

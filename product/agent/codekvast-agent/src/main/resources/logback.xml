@@ -1,4 +1,5 @@
 <configuration debug="false" scan="true" scanPeriod="30 seconds">
+    <jmxConfigurator/>
 
     <define name="LOG_PATH" class="se.crisp.codekvast.agent.main.logback.LogPathDefiner"/>
 
