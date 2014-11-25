@@ -12,3 +12,4 @@
 
 ga('create', 'UA-7074695-5', 'auto');
 ga('require', 'linkid', 'linkid.js');
+ga('require', 'displayfeatures');
