@@ -126,9 +126,9 @@ sudo update-rc.d redirectPort80 defaults
     }
 }
 
-task deployWeb {
+task installWeb {
     group "Provisioning"
-    description "Deploys Codekvast-web"
+    description "Installs Codekvast-web for the first time"
     dependsOn webDistZip
 
     def zip = file("$buildDir/distributions/codekvast-web-${version}.zip")
@@ -169,9 +169,9 @@ sudo chmod +x codekvast-web
     }
 }
 
-task redeployWeb {
+task deployWeb {
     group "Provisioning"
-    description "Redeploys Codekvast-web with same configuration"
+    description "Redeploys Codekvast-web with same version and configuration"
     dependsOn webDistZip
 
     def zip = file("$buildDir/distributions/codekvast-web-${version}.zip")
@@ -182,7 +182,7 @@ task redeployWeb {
 
     doFirst {
         if (!deployStatusFile.exists()) {
-            throw new IllegalStateException("Cannot redeploy $version before deploy")
+            throw new IllegalStateException("Cannot deployWeb $version before installWeb")
         }
     }
 

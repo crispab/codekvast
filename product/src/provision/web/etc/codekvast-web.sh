@@ -39,7 +39,7 @@ doStart() {
     cd $(dirname $APP)/..
     mkdir -p log
     chown $USER:$USER log
-    su - $USER -c "nohup $APP" > log/codekvast-web.out 2>&1 &
+    su $USER -c "exec $APP" > log/codekvast-web.out 2>&1 &
     chown -R $USER:$USER log
 }
 
