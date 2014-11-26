@@ -26,7 +26,6 @@ public class CollectorConfig implements CodekvastConfig {
     public static final String JVM_BASENAME = "jvm.dat";
 
     public static final boolean DEFAULT_CLOBBER_AOP_XML = true;
-    public static final boolean DEFAULT_INVOKE_ASPECTJ_WEAVER = true;
     public static final String DEFAULT_ASPECTJ_OPTIONS = "";
     public static final int DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS = 600;
     public static final boolean DEFAULT_VERBOSE = false;
@@ -42,7 +41,6 @@ public class CollectorConfig implements CodekvastConfig {
     private final int collectorResolutionSeconds;
     private final boolean clobberAopXml;
     private final boolean verbose;
-    private final boolean invokeAspectjWeaver;
     @NonNull
     private final String appName;
     @NonNull
@@ -107,10 +105,6 @@ public class CollectorConfig implements CodekvastConfig {
                               .clobberAopXml(Boolean.valueOf(ConfigUtils.getOptionalStringValue(props, "clobberAopXml",
                                                                                                 Boolean.toString(
                                                                                                         DEFAULT_CLOBBER_AOP_XML))))
-                              .invokeAspectjWeaver(Boolean.valueOf(ConfigUtils.getOptionalStringValue(props,
-                                                                                                      "invokeAspectjWeaver",
-                                                                                                      Boolean.toString(
-                                                                                                              DEFAULT_INVOKE_ASPECTJ_WEAVER))))
                               .build();
     }
 
@@ -125,7 +119,6 @@ public class CollectorConfig implements CodekvastConfig {
                               .collectorResolutionSeconds(DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS)
                               .verbose(DEFAULT_VERBOSE)
                               .clobberAopXml(DEFAULT_CLOBBER_AOP_XML)
-                              .invokeAspectjWeaver(DEFAULT_INVOKE_ASPECTJ_WEAVER)
                               .build();
     }
 

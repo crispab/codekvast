@@ -14,18 +14,24 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * This is the Java agent that hooks up Codekvast to the app. It also loads aspectjweaver.
+ * This is the Java agent that hooks up Codekvast to the app.
  *
- * Invocation: Add the following option to the Java command line:
+ * It does <strong>NOT</strong> load aspectjweaver.
+ *
+ * Invocation: Add the following options to the Java command line:
  * <pre><code>
- *    -javaagent:/path/to/codekvast-collector-n.n-shadow.jar=path/to/codekvast.conf
+ *    -javaagent:/path/to/codekvast-collector-n.n.jar=path/to/codekvast.conf -javaagent:/path/to/aspectjweaver-n.n.jar
  * </code></pre>
+ *
+ * <em>NOTE: the ordering of the collector and the aspectjweaver is important!</em>
  *
  * @author Olle Hallin
  */
 public class CodekvastCollector {
 
     public static final String NAME = "Codekvast";
+
+    // AspectJ uses this system property for defining the list of names of AOP config files to locate...
     private static final String ASPECTJ_WEAVER_CONFIGURATION = "org.aspectj.weaver.loadtime.configuration";
 
     public static PrintStream out;
@@ -49,7 +55,7 @@ public class CodekvastCollector {
 
         InvocationRegistry.initialize(config);
 
-        loadAspectjWeaver(args, inst, config);
+        defineAspectjWeaverConfig(config);
 
         int firstResultInSeconds = createTimerTask(config.getCollectorResolutionSeconds());
 
@@ -74,36 +80,20 @@ public class CodekvastCollector {
         return initialDelaySeconds;
     }
 
-    private static void loadAspectjWeaver(String args, Instrumentation inst, CollectorConfig config) {
-        System.setProperty(ASPECTJ_WEAVER_CONFIGURATION, join(createAopXml(config),
-                                                              Constants.AOP_USER_XML,
-                                                              Constants.AOP_AJC_XML,
-                                                              Constants.AOP_OSGI_XML));
+    private static void defineAspectjWeaverConfig(CollectorConfig config) {
+        System.setProperty(ASPECTJ_WEAVER_CONFIGURATION, createAopXml(config) + ";" +
+                Constants.AOP_USER_XML + ";" +
+                Constants.AOP_AJC_XML + ";" +
+                Constants.AOP_OSGI_XML);
 
         CodekvastCollector.out.printf("%s=%s%n", ASPECTJ_WEAVER_CONFIGURATION, System.getProperty(ASPECTJ_WEAVER_CONFIGURATION));
-        if (config.isInvokeAspectjWeaver()) {
-            CodekvastCollector.out.printf("%s is invoking aspectjweaver%n", NAME);
-            org.aspectj.weaver.loadtime.Agent.premain(args, inst);
-        } else {
-            CodekvastCollector.out.printf("%s is NOT invoking aspectjweaver%n", NAME);
-        }
-    }
-
-    private static String join(String... args) {
-        StringBuilder sb = new StringBuilder();
-        String delim = "";
-        for (String arg : args) {
-            sb.append(delim).append(arg);
-            delim = ";";
-        }
-        return sb.toString();
     }
 
     /**
      * Creates a concrete implementation of the AbstractMethodExecutionAspect, using the packagePrefix for specifying the abstract pointcut
      * 'scope'.
      *
-     * @return A file URI to a temporary aop-ajc.xml file. The file is deleted on JVM exit.
+     * @return A file URI to a temporary aop-ajc.xml file.
      */
     private static String createAopXml(CollectorConfig config) {
         String xml = String.format(

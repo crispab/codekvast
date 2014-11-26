@@ -48,8 +48,16 @@ verbose = true
 
 processResources.dependsOn generateCodekvastConfig
 
+configurations { aspectj }
+dependencies { aspectj 'org.aspectj:aspectjweaver:1.8.2' }
+
 run {
     dependsOn = [":product:agent:collector:assemble", "generateCodekvastConfig"]
     def codekvastCollector = tasks.getByPath(":product:agent:collector:shadowJar").outputs.files.asPath
-    jvmArgs = ["-javaagent:$codekvastCollector=$generateCodekvastConfig.configFile"]
+    def aspectjWeaver = configurations.aspectj.asPath
+
+    jvmArgs = [
+            "-javaagent:$codekvastCollector=$generateCodekvastConfig.configFile",
+            "-javaagent:$aspectjWeaver"
+    ]
 }

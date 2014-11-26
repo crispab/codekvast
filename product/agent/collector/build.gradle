@@ -1,13 +1,14 @@
 buildscript {
     repositories { maven { url 'https://maven.eveoh.nl/content/repositories/releases' } }
     dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:0.8'
         classpath 'nl.eveoh:gradle-aspectj:1.4'
     }
 }
+plugins {
+    id "com.github.johnrengelman.shadow" version "1.2.0"
+}
 
 apply plugin: 'aspectj'
-apply plugin: 'shadow'
 apply from: "$rootDir/gradle/sources-javadoc.gradle"
 
 description = "The javaagent part of Codekvast agent"
@@ -15,10 +16,16 @@ archivesBaseName = "codekvast-agent-collector"
 version = project.parent.parent.version
 sourceCompatibility = 1.6
 
+configurations {
+    aspectj
+}
+
 dependencies {
     // cannot use lombok here, since this is an AspectJ project
     compile project(":product:agent:util"), { transitive = false }
     compile "org.aspectj:aspectjweaver:$aspectjVersion"
+
+    aspectj "org.aspectj:aspectjweaver:$aspectjVersion"
 
     // Absolutely NO other compile or runtime dependencies are allowed here!
     // All (transitive) compile and runtime dependencies will end up in the instrumented app's system
@@ -28,8 +35,17 @@ dependencies {
     testCompile mockito
 }
 
-jar { manifest { attributes("Premain-Class": "se.crisp.codekvast.agent.collector.CodekvastCollector") } }
-shadow { outputFile = file("$buildDir/distributions/codekvast-collector-${version}.jar") }
+shadowJar {
+    baseName = "codekvast-collector"
+    classifier = ''
+    manifest { attributes("Premain-Class": "se.crisp.codekvast.agent.collector.CodekvastCollector") }
+    dependencies {
+        exclude(dependency('org.aspectj:aspectjweaver'))
+    }
+}
 
-// Make a shadow jar consisting of codekvast-agent-collector and it's dependencies (i.e. aspectjweaver-n.n.jar)
-assemble.dependsOn shadowJar
+task javaagents(type: Sync) {
+    from configurations.aspectj
+    from tasks.jar
+    into "$buildDir/javaagents"
+}

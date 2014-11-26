@@ -38,6 +38,9 @@ verbose = true
 
 assemble.dependsOn generateCodekvastConfig
 
+configurations { aspectj }
+dependencies { aspectj 'org.aspectj:aspectjweaver:1.8.2' }
+
 task dockerRunWarInTomcat7(type: Exec) {
     def tomcatVersion = "tomcat-7.0"
     def port = 8080
@@ -47,13 +50,14 @@ task dockerRunWarInTomcat7(type: Exec) {
     dependsOn "assemble", ":product:agent:collector:assemble"
 
     def codekvastCollector = new File(tasks.getByPath(":product:agent:collector:shadowJar").outputs.files.asPath)
+    def aspectjWeaver = configurations.aspectj.asPath
 
     executable = "docker"
     args = ["run", "--rm",
             "-v", "/tmp/codekvast:/tmp/codekvast",
             "-v", "$buildDir/libs:/maven",
             "-v", "$codekvastCollector.parentFile:/codekvast",
-            "-e", "JAVA_OPTS=-javaagent:/codekvast/$codekvastCollector.name=/maven/codekvast.conf",
+            "-e", "JAVA_OPTS=-javaagent:/codekvast/$codekvastCollector=/maven/codekvast.conf -javaagent:/codekvast/$aspectjWeaver",
             "-e", "LANG=C.UTF-8",
             "-p", "$port:8080",
             "jolokia/$tomcatVersion",
