@@ -1,7 +1,8 @@
 package se.crisp.codekvast.agent.main;
 
 import org.junit.Test;
-import se.crisp.codekvast.agent.config.AgentConfig;
+import se.crisp.codekvast.agent.config.CollectorConfig;
+import se.crisp.codekvast.agent.config.SharedConfig;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -12,7 +13,6 @@ import static org.junit.Assert.assertThat;
 
 public class CodeBaseScannerTest {
 
-    public static final String APP_NAME = "appName";
     public static final String SAMPLE_APP_LIB = "src/test/resources/sample-app/lib";
     public static final String SAMPLE_APP_CLASSES = "src/test/resources/sample-app/classes/";
     public static final String SAMPLE_APP_JAR = SAMPLE_APP_LIB + "/sample-app.jar";
@@ -21,31 +21,48 @@ public class CodeBaseScannerTest {
 
     @Test
     public void testScanCodeBaseForSingleJar() throws URISyntaxException {
-        CodeBase codeBase = new CodeBase(AgentConfig.createSampleAgentConfig(), new File(SAMPLE_APP_JAR).toURI(), APP_NAME);
+        CodeBase codeBase = getCodeBase(SAMPLE_APP_JAR);
         scanner.getPublicMethodSignatures(codeBase);
         assertThat(codeBase.signatures, notNullValue());
         assertThat(codeBase.signatures.size(), is(8));
+    }
+
+    private CodeBase getCodeBase(String codeBase) throws URISyntaxException {
+        //@formatter:off
+        //@formatter:on
+
+        return new CodeBase(CollectorConfig.builder()
+                                           .sharedConfig(SharedConfig.builder().dataPath(new File(".")).build())
+                                           .codeBaseUri(new File(codeBase).toURI())
+                                           .customerName("customerName")
+                                           .packagePrefix("sample.")
+                                           .appName("appName")
+                                           .appVersion("1.0")
+                                           .collectorResolutionSeconds(1)
+                                           .aspectjOptions("")
+                                           .methodExecutionPointcut(CollectorConfig.DEFAULT_METHOD_EXECUTION_POINTCUT)
+                                           .build());
     }
 
     @Test
     public void testScanCodeBaseForDirectoryContainingMultipleJars() throws URISyntaxException {
-        CodeBase codeBase = new CodeBase(AgentConfig.createSampleAgentConfig(), new File(SAMPLE_APP_LIB).toURI(), APP_NAME);
+        CodeBase codeBase = getCodeBase(SAMPLE_APP_LIB);
         scanner.getPublicMethodSignatures(codeBase);
         assertThat(codeBase.signatures, notNullValue());
         assertThat(codeBase.signatures.size(), is(8));
     }
 
     @Test
-    public void testScanCodeBaseForDirectoryWithClassFiles() {
-        CodeBase codeBase = new CodeBase(AgentConfig.createSampleAgentConfig(), new File(SAMPLE_APP_CLASSES).toURI(), APP_NAME);
+    public void testScanCodeBaseForDirectoryWithClassFiles() throws URISyntaxException {
+        CodeBase codeBase = getCodeBase(SAMPLE_APP_CLASSES);
         scanner.getPublicMethodSignatures(codeBase);
         assertThat(codeBase.signatures, notNullValue());
         assertThat(codeBase.signatures.size(), is(8));
     }
 
     @Test
-    public void testFindBaseMethodForClass2() {
-        CodeBase codeBase = new CodeBase(AgentConfig.createSampleAgentConfig(), new File(SAMPLE_APP_JAR).toURI(), APP_NAME);
+    public void testFindBaseMethodForClass2() throws URISyntaxException {
+        CodeBase codeBase = getCodeBase(SAMPLE_APP_JAR);
 
         scanner.findPublicMethods(codeBase, "se.", Class2.class);
 
@@ -56,8 +73,8 @@ public class CodeBaseScannerTest {
     }
 
     @Test
-    public void testFindBaseMethodForClass3() {
-        CodeBase codeBase = new CodeBase(AgentConfig.createSampleAgentConfig(), new File(SAMPLE_APP_JAR).toURI(), APP_NAME);
+    public void testFindBaseMethodForClass3() throws URISyntaxException {
+        CodeBase codeBase = getCodeBase(SAMPLE_APP_JAR);
 
         scanner.findPublicMethods(codeBase, "se.", Class3.class);
 

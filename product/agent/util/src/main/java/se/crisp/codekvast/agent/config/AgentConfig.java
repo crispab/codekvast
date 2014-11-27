@@ -29,25 +29,17 @@ public class AgentConfig implements CodekvastConfig {
     @NonNull
     private final SharedConfig sharedConfig;
     @NonNull
-    private final String environment;
-    @NonNull
-    private final URI serverUri;
-    @NonNull
     private final String apiAccessID;
     @NonNull
     private final String apiAccessSecret;
+    @NonNull
+    private final String environment;
+    @NonNull
+    private final URI serverUri;
     private final int serverUploadIntervalSeconds;
 
     public int getServerUploadIntervalMillis() {
         return serverUploadIntervalSeconds * 1000;
-    }
-
-    public File getSignatureFile(String appName) {
-        return new File(sharedConfig.myDataPath(appName), "signatures.dat");
-    }
-
-    public File getAgentLogFile() {
-        return new File(sharedConfig.myDataPath(null), "codekvast-agent.log");
     }
 
     public void saveTo(File file) {
@@ -64,12 +56,12 @@ public class AgentConfig implements CodekvastConfig {
 
             return AgentConfig.builder()
                               .sharedConfig(SharedConfig.buildSharedConfig(props))
+                              .apiAccessID(ConfigUtils.getOptionalStringValue(props, "apiAccessID", DEFAULT_API_ACCESS_ID))
+                              .apiAccessSecret(ConfigUtils.getOptionalStringValue(props, "apiAccessSecret", DEFAULT_API_ACCESS_SECRET))
                               .environment(ConfigUtils.getMandatoryStringValue(props, "environment"))
                               .serverUploadIntervalSeconds(ConfigUtils.getOptionalIntValue(props, "serverUploadIntervalSeconds",
                                                                                            DEFAULT_UPLOAD_INTERVAL_SECONDS))
                               .serverUri(ConfigUtils.getMandatoryUriValue(props, "serverUri", true))
-                              .apiAccessID(ConfigUtils.getOptionalStringValue(props, "apiAccessID", DEFAULT_API_ACCESS_ID))
-                              .apiAccessSecret(ConfigUtils.getOptionalStringValue(props, "apiAccessSecret", DEFAULT_API_ACCESS_SECRET))
                               .build();
         } catch (Exception e) {
             throw new IllegalArgumentException(String.format("Cannot parse %s: %s", uri, e.getMessage()), e);
@@ -80,11 +72,11 @@ public class AgentConfig implements CodekvastConfig {
     public static AgentConfig createSampleAgentConfig() {
         return AgentConfig.builder()
                           .sharedConfig(SharedConfig.buildSampleSharedConfig())
+                          .apiAccessID(DEFAULT_API_ACCESS_ID)
+                          .apiAccessSecret(DEFAULT_API_ACCESS_SECRET)
                           .environment("environment")
                           .serverUploadIntervalSeconds(DEFAULT_UPLOAD_INTERVAL_SECONDS)
                           .serverUri(new URI("http://localhost:8080"))
-                          .apiAccessID(DEFAULT_API_ACCESS_ID)
-                          .apiAccessSecret(DEFAULT_API_ACCESS_SECRET)
                           .build();
     }
 

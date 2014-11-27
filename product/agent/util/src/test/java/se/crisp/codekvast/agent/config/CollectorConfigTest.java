@@ -1,5 +1,6 @@
 package se.crisp.codekvast.agent.config;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.io.File;
@@ -38,9 +39,56 @@ public class CollectorConfigTest {
     public void testParseConfigFilePathWithOverride() throws IOException, URISyntaxException {
         String args = "classpath:/incomplete-collector-config.conf;customerName=foobar;appName=kaka;appVersion=version;";
         CollectorConfig config = CollectorConfig.parseCollectorConfig(args);
-        assertThat(config.getSharedConfig().getCustomerName(), is("foobar"));
+        assertThat(config.getCustomerName(), is("foobar"));
         assertThat(config.getAppName(), is("kaka"));
         assertThat(config.getAppVersion(), is("version"));
+    }
+
+    @Test
+    public void testGetNormalizedPackagePrefix1() throws URISyntaxException {
+        CollectorConfig config = getCollectorConfig("prefix.....");
+        assertThat(config.getNormalizedPackagePrefix(), CoreMatchers.is("prefix"));
+    }
+
+    @Test
+    public void testGetNormalizedPackagePrefix2() throws URISyntaxException {
+        CollectorConfig config = getCollectorConfig("prefix.");
+        assertThat(config.getNormalizedPackagePrefix(), CoreMatchers.is("prefix"));
+    }
+
+    @Test
+    public void testGetNormalizedPackagePrefix3() throws URISyntaxException {
+        CollectorConfig config = getCollectorConfig("prefix.foobar...");
+        assertThat(config.getNormalizedPackagePrefix(), CoreMatchers.is("prefix.foobar"));
+    }
+
+    @Test
+    public void testGetNormalizedPackagePrefix4() throws URISyntaxException {
+        CollectorConfig config = getCollectorConfig("prefix");
+        assertThat(config.getNormalizedPackagePrefix(), CoreMatchers.is("prefix"));
+    }
+
+    @Test
+    public void testGetNormalizedPackagePrefix5() throws URISyntaxException {
+        CollectorConfig config = getCollectorConfig("p");
+        assertThat(config.getNormalizedPackagePrefix(), CoreMatchers.is("p"));
+    }
+
+    @Test
+    public void testGetNormalizedPackagePrefix6() throws URISyntaxException {
+        CollectorConfig config = getCollectorConfig("");
+        assertThat(config.getNormalizedPackagePrefix(), CoreMatchers.is(""));
+    }
+
+    private CollectorConfig getCollectorConfig(String packagePrefix) throws URISyntaxException {
+        return CollectorConfig.builder()
+                              .sharedConfig(SharedConfig.buildSampleSharedConfig())
+                              .customerName("customerName")
+                              .appName("appName")
+                              .appVersion("appVersion")
+                              .codeBaseUri(new File(".").toURI())
+                              .methodExecutionPointcut("methodExecutionPointcut")
+                              .packagePrefix(packagePrefix).build();
     }
 
 }

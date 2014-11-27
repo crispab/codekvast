@@ -4,6 +4,7 @@ import org.springframework.dao.DataAccessException;
 import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedCustomerException;
+import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import se.crisp.codekvast.server.codekvast_server.model.Role;
 
 import java.util.Collection;
@@ -32,9 +33,4 @@ public interface UserDAO {
 
     Collection<InvocationEntry> getSignatures(Long customerId);
 
-    @lombok.Value
-    static class AppId {
-        private final long customerId;
-        private final long appId;
-    }
 }

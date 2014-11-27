@@ -5,7 +5,6 @@ import org.junit.Test;
 public class HeaderTest {
 
     public static final Header HEADER = Header.builder()
-                                              .customerName("customerName")
                                               .environment("environment")
                                               .build();
 

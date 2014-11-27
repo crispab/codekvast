@@ -27,6 +27,7 @@ public class JvmDataTest {
         // given
         JvmData data1 = JvmData.builder()
                                .header(HeaderTest.HEADER)
+                               .customerName("customerName")
                                .appName("appName")
                                .appVersion("appVersion")
                                .hostName("hostName")

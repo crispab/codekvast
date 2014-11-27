@@ -10,6 +10,7 @@ import se.crisp.codekvast.server.agent.model.v1.JvmData;
 import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
+import se.crisp.codekvast.server.codekvast_server.model.AppId;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public class AgentDAOImpl implements AgentDAO {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void storeJvmData(JvmData data) throws CodekvastException {
-        long customerId = userDAO.getCustomerId(data.getHeader().getCustomerName());
+        long customerId = userDAO.getCustomerId(data.getCustomerName());
         long appId = userDAO.getAppId(customerId, data.getHeader().getEnvironment(), data.getAppName(), data.getAppVersion());
         storeJvmData(customerId, appId, data);
     }
@@ -47,7 +48,7 @@ public class AgentDAOImpl implements AgentDAO {
     public Collection<InvocationEntry> storeInvocationData(InvocationData invocationData) {
         final Collection<InvocationEntry> result = new ArrayList<>();
 
-        UserDAO.AppId appId = userDAO.getAppIdByJvmFingerprint(invocationData.getJvmFingerprint());
+        AppId appId = userDAO.getAppIdByJvmFingerprint(invocationData.getJvmFingerprint());
 
         for (InvocationEntry entry : invocationData.getInvocations()) {
             storeOrUpdateInvocationEntry(result, appId, invocationData.getJvmFingerprint(), entry);
@@ -56,7 +57,7 @@ public class AgentDAOImpl implements AgentDAO {
         return result;
     }
 
-    private void storeOrUpdateInvocationEntry(Collection<InvocationEntry> result, UserDAOImpl.AppId appId, String jvmFingerprint,
+    private void storeOrUpdateInvocationEntry(Collection<InvocationEntry> result, AppId appId, String jvmFingerprint,
                                               InvocationEntry entry) {
         Date invokedAt = entry.getInvokedAtMillis() == null ? null : new Date(entry.getInvokedAtMillis());
         Integer confidence = entry.getConfidence() == null ? null : entry.getConfidence().ordinal();
@@ -80,7 +81,7 @@ public class AgentDAOImpl implements AgentDAO {
         }
     }
 
-    private int attemptToUpdateSignature(UserDAOImpl.AppId appId, String jvmFingerprint, InvocationEntry entry, Date invokedAt,
+    private int attemptToUpdateSignature(AppId appId, String jvmFingerprint, InvocationEntry entry, Date invokedAt,
                                          Integer confidence) {
         if (invokedAt == null) {
             // An uninvoked signature is not allowed to overwrite an invoked signature

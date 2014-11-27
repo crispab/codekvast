@@ -5,13 +5,12 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import se.crisp.codekvast.agent.config.AgentConfig;
+import se.crisp.codekvast.agent.config.CollectorConfig;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -35,8 +34,7 @@ class CodeBase {
 
     private final File codeBaseFile;
     @Getter
-    private final AgentConfig config;
-    private final String appName;
+    private final CollectorConfig config;
 
     @Getter
     final Set<String> signatures = new HashSet<>();
@@ -46,10 +44,9 @@ class CodeBase {
     private List<URL> urls;
     private boolean needsExploding = false;
 
-    CodeBase(AgentConfig config, URI codeBaseUri, String appName) {
+    CodeBase(CollectorConfig config) {
         this.config = config;
-        this.appName = appName;
-        this.codeBaseFile = new File(codeBaseUri);
+        this.codeBaseFile = new File(config.getCodeBaseUri());
         this.fingerprint = initUrls();
     }
 
@@ -115,12 +112,12 @@ class CodeBase {
 
         if (signatures.isEmpty()) {
             log.warn("Code base at {} does not contain any classes with package prefix '{}.'", codeBaseFile,
-                     config.getSharedConfig().getNormalizedPackagePrefix());
+                     config.getNormalizedPackagePrefix());
         } else {
-            writeSignaturesTo(config.getSignatureFile(appName));
+            writeSignaturesTo(config.getSignatureFile(config.getAppName()));
 
             log.debug("Code base {} with package prefix '{}.' scanned in {} ms, found {} public methods.",
-                      codeBaseFile, config.getSharedConfig().getNormalizedPackagePrefix(), System.currentTimeMillis() - startedAt,
+                      codeBaseFile, config.getNormalizedPackagePrefix(), System.currentTimeMillis() - startedAt,
                       signatures.size());
         }
     }

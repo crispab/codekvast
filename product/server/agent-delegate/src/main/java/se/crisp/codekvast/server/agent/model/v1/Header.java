@@ -17,10 +17,6 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Header {
     @NonNull
-    @Size(min = 1, max = Constraints.MAX_CUSTOMER_NAME_LENGTH)
-    private String customerName;
-
-    @NonNull
     @Size(min = 1, max = Constraints.MAX_ENVIRONMENT_NAME_LENGTH)
     private String environment;
 }

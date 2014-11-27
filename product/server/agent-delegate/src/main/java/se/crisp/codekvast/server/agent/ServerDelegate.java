@@ -13,7 +13,8 @@ public interface ServerDelegate {
     /**
      * Uploads data about a JVM run to the server.
      *
-     * @param appName          The name of the instrumented application which the JVM runs.
+     * @param customerName     The name of the customer that runs the instrumented application.
+     * @param appName          The name of the instrumented application.
      * @param appVersion       The version of the instrumented app.
      * @param hostName         The host name of the JVM
      * @param startedAtMillis  The instant the JVM was started
@@ -23,7 +24,7 @@ public interface ServerDelegate {
      * @param codekvastVcsId   The Git hash of the code that produced this data.
      * @throws ServerDelegateException For all problems.
      */
-    void uploadJvmData(String appName, String appVersion, String hostName, long startedAtMillis, long dumpedAtMillis,
+    void uploadJvmData(String customerName, String appName, String appVersion, String hostName, long startedAtMillis, long dumpedAtMillis,
                        String jvmFingerprint, String codekvastVersion, String codekvastVcsId) throws ServerDelegateException;
 
     /**

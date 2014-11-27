@@ -46,6 +46,6 @@ shadowJar {
 
 task javaagents(type: Sync) {
     from configurations.aspectj
-    from tasks.jar
+    from tasks.shadowJar
     into "$buildDir/javaagents"
 }

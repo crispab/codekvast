@@ -26,7 +26,7 @@ import static java.util.Arrays.asList;
 class CodeBaseScanner {
 
     void getPublicMethodSignatures(CodeBase codeBase) {
-        String packagePrefix = codeBase.getConfig().getSharedConfig().getPackagePrefix();
+        String packagePrefix = codeBase.getConfig().getPackagePrefix();
         URLClassLoader appClassLoader = new URLClassLoader(codeBase.getUrls(), System.class.getClassLoader());
         Reflections reflections = new Reflections(packagePrefix, appClassLoader, new SubTypesScanner(false));
 

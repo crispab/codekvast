@@ -8,8 +8,10 @@ import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.agent.model.v1.JvmData;
 import se.crisp.codekvast.server.agent.model.v1.SignatureData;
 import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
+import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.event.internal.InvocationDataUpdatedEvent;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
+import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import se.crisp.codekvast.server.codekvast_server.service.AgentService;
 
 import javax.inject.Inject;
@@ -27,11 +29,13 @@ public class AgentServiceImpl implements AgentService {
 
     private final ApplicationContext applicationContext;
     private final AgentDAO agentDAO;
+    private final UserDAO userDAO;
 
     @Inject
-    public AgentServiceImpl(ApplicationContext applicationContext, AgentDAO agentDAO) {
+    public AgentServiceImpl(ApplicationContext applicationContext, AgentDAO agentDAO, UserDAO userDAO) {
         this.applicationContext = applicationContext;
         this.agentDAO = agentDAO;
+        this.userDAO = userDAO;
     }
 
     @Override
@@ -50,7 +54,8 @@ public class AgentServiceImpl implements AgentService {
         }
 
         Collection<InvocationEntry> updatedEntries = agentDAO.storeInvocationData(toInitialInvocationsData(data));
-        applicationContext.publishEvent(new InvocationDataUpdatedEvent(getClass(), data.getHeader().getCustomerName(), updatedEntries));
+        AppId appId = userDAO.getAppIdByJvmFingerprint(data.getJvmFingerprint());
+        applicationContext.publishEvent(new InvocationDataUpdatedEvent(getClass(), appId, updatedEntries));
     }
 
     private InvocationData toInitialInvocationsData(SignatureData signatureData) {
@@ -71,7 +76,8 @@ public class AgentServiceImpl implements AgentService {
         }
 
         Collection<InvocationEntry> updatedEntries = agentDAO.storeInvocationData(data);
-        applicationContext.publishEvent(new InvocationDataUpdatedEvent(getClass(), data.getHeader().getCustomerName(), updatedEntries));
+        AppId appId = userDAO.getAppIdByJvmFingerprint(data.getJvmFingerprint());
+        applicationContext.publishEvent(new InvocationDataUpdatedEvent(getClass(), appId, updatedEntries));
     }
 
 }

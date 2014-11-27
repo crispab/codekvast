@@ -71,8 +71,7 @@ public class AgentWorker {
 
                 uploadJvmData(jvm);
 
-                analyzeAndUploadCodeBaseIfNeeded(jvmState, new CodeBase(config, jvm.getCollectorConfig().getCodeBaseUri(), jvm
-                        .getCollectorConfig().getAppName()));
+                analyzeAndUploadCodeBaseIfNeeded(jvmState, new CodeBase(jvm.getCollectorConfig()));
 
                 processInvocationsDataIfNeeded(jvmState);
             } else if (oldProcessedAt < jvm.getDumpedAtMillis()) {
@@ -118,6 +117,7 @@ public class AgentWorker {
     private void uploadJvmData(Jvm jvm) {
         try {
             serverDelegate.uploadJvmData(
+                    jvm.getCollectorConfig().getCustomerName(),
                     jvm.getCollectorConfig().getAppName(),
                     jvm.getCollectorConfig().getAppVersion(),
                     jvm.getHostName(),

@@ -62,7 +62,7 @@ public class CodekvastCollector {
         CodekvastCollector.out.printf("%s is ready to detect used code within(%s..*).%n" +
                                               "First write to %s will be in %d seconds, thereafter every %d seconds.%n" +
                                               "-------------------------------------------------------------------------------%n",
-                                      NAME, config.getSharedConfig().getNormalizedPackagePrefix(), config.getInvocationsFile(),
+                                      NAME, config.getNormalizedPackagePrefix(), config.getInvocationsFile(),
                                       firstResultInSeconds, config.getCollectorResolutionSeconds()
         );
     }
@@ -96,6 +96,11 @@ public class CodekvastCollector {
      * @return A file URI to a temporary aop-ajc.xml file.
      */
     private static String createAopXml(CollectorConfig config) {
+        String aspectjOptions = config.getAspectjOptions();
+        if (aspectjOptions == null) {
+            aspectjOptions = "";
+        }
+
         String xml = String.format(
                 "<aspectj>\n"
                         + "  <aspects>\n"
@@ -113,8 +118,8 @@ public class CodekvastCollector {
                         + "</aspectj>\n",
                 JasperExecutionAspect.class.getName(),
                 AbstractMethodExecutionAspect.class.getName(),
-                config.getSharedConfig().getNormalizedPackagePrefix(),
-                config.getAspectjOptions(),
+                config.getNormalizedPackagePrefix(),
+                aspectjOptions,
                 JasperExecutionAspect.JASPER_BASE_PACKAGE,
                 config.getMethodExecutionPointcut()
         );

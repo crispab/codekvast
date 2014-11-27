@@ -58,7 +58,6 @@ public class ServerDelegateTest {
 
     private void createServerDelegate(String apiAccessID, String apiAccessSecret) throws URISyntaxException {
         serverDelegate = new ServerDelegateImpl(ServerDelegateConfig.builder()
-                                                                    .customerName(CUSTOMER_NAME)
                                                                     .environment("environment")
                                                                     .serverUri(new URI(String.format("http://localhost:%d", port)))
                                                                     .apiAccessID(apiAccessID)
@@ -96,7 +95,8 @@ public class ServerDelegateTest {
     @Test
     public void testUploadSignatureData() throws ServerDelegateException, URISyntaxException, CodekvastException {
         // when
-        serverDelegate.uploadJvmData("appName", "appVersion", "hostName", System.currentTimeMillis(), System.currentTimeMillis(),
+        serverDelegate
+                .uploadJvmData("customerName", "appName", "appVersion", "hostName", System.currentTimeMillis(), System.currentTimeMillis(),
                                      jvmFingerprint, "codekvastVersion", "codekvastVcsId");
         serverDelegate.uploadSignatureData(jvmFingerprint, Arrays.asList(signature1, signature2));
 
@@ -112,7 +112,8 @@ public class ServerDelegateTest {
                                                                       new InvocationEntry(signature2, now,
                                                                                           SignatureConfidence.EXACT_MATCH));
         // when
-        serverDelegate.uploadJvmData("appName", "appVersion", "hostName", System.currentTimeMillis(), System.currentTimeMillis(),
+        serverDelegate
+                .uploadJvmData("customerName", "appName", "appVersion", "hostName", System.currentTimeMillis(), System.currentTimeMillis(),
                                      jvmFingerprint, "codekvastVersion", "codekvastVcsId");
         serverDelegate.uploadInvocationsData(jvmFingerprint, invocationEntries);
 

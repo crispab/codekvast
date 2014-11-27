@@ -51,7 +51,7 @@ public class ServerDelegateImpl implements ServerDelegate {
     public ServerDelegateImpl(ServerDelegateConfig config, Validator validator) {
         this.config = config;
         this.validator = validator;
-        this.header = Header.builder().customerName(config.getCustomerName()).environment(config.getEnvironment()).build();
+        this.header = Header.builder().environment(config.getEnvironment()).build();
         this.restTemplate = new RestTemplate(createBasicAuthHttpClient(config.getApiAccessID(), config.getApiAccessSecret()));
     }
 
@@ -62,26 +62,28 @@ public class ServerDelegateImpl implements ServerDelegate {
     }
 
     @Override
-    public void uploadJvmData(String appName, String appVersion, String hostName, long startedAtMillis, long dumpedAtMillis,
+    public void uploadJvmData(String customerName, String appName, String appVersion, String hostName, long startedAtMillis, long
+            dumpedAtMillis,
                               String jvmFingerprint, String codekvastVersion, String codekvastVcsId)
             throws ServerDelegateException {
         String endPoint = config.getServerUri() + AgentRestEndpoints.UPLOAD_V1_JVM_RUN;
 
-        log.debug("Uploading JVM run data to {}", endPoint);
+        log.debug("Uploading JVM data to {}", endPoint);
 
         try {
             long startedAt = System.currentTimeMillis();
 
             JvmData data = JvmData.builder().header(header)
-                                        .appName(appName)
-                                        .appVersion(appVersion)
-                                        .hostName(hostName)
-                                        .startedAtMillis(startedAtMillis)
-                                        .dumpedAtMillis(dumpedAtMillis)
-                                        .jvmFingerprint(jvmFingerprint)
-                                        .codekvastVersion(codekvastVersion)
-                                        .codekvastVcsId(codekvastVcsId)
-                                        .build();
+                                  .customerName(customerName)
+                                  .appName(appName)
+                                  .appVersion(appVersion)
+                                  .hostName(hostName)
+                                  .startedAtMillis(startedAtMillis)
+                                  .dumpedAtMillis(dumpedAtMillis)
+                                  .jvmFingerprint(jvmFingerprint)
+                                  .codekvastVersion(codekvastVersion)
+                                  .codekvastVcsId(codekvastVcsId)
+                                  .build();
 
             restTemplate.postForEntity(new URI(endPoint), validate(data), Void.class);
 

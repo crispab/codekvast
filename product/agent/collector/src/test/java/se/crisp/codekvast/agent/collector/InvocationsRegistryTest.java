@@ -37,10 +37,10 @@ public class InvocationsRegistryTest {
         config = CollectorConfig.builder()
                                 .sharedConfig(SharedConfig.builder()
                                                           .dataPath(dataPath)
-                                                          .customerName(CUSTOMER_NAME)
-                                                          .packagePrefix("se.crisp")
                                                           .build())
                                 .codeBaseUri(codeBaseUri)
+                                .customerName(CUSTOMER_NAME)
+                                .packagePrefix("se.crisp")
                                 .appName(APP_NAME)
                                 .appVersion(APP_VERSION)
                                 .collectorResolutionSeconds(1)
@@ -72,7 +72,7 @@ public class InvocationsRegistryTest {
         assertThat(files[1].getName(), is(CollectorConfig.JVM_BASENAME));
 
         Jvm jvm = Jvm.readFrom(files[1]);
-        assertThat(jvm.getCollectorConfig().getSharedConfig().getCustomerName(), is(CUSTOMER_NAME));
+        assertThat(jvm.getCollectorConfig().getCustomerName(), is(CUSTOMER_NAME));
         assertThat(jvm.getCollectorConfig().getAppName(), is(APP_NAME));
         assertThat(jvm.getCollectorConfig().getAppVersion(), is(APP_VERSION));
         assertThat(jvm.getCollectorConfig().getCodeBaseUri(), is(codeBaseUri));

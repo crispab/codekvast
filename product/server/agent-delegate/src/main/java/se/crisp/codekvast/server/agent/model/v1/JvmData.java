@@ -25,6 +25,10 @@ public class JvmData {
     private Header header;
 
     @NonNull
+    @Size(min = 1, max = Constraints.MAX_CUSTOMER_NAME_LENGTH)
+    private String customerName;
+
+    @NonNull
     @Size(min = 1, max = Constraints.MAX_APP_NAME_LENGTH)
     private String appName;
 

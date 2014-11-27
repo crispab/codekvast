@@ -10,7 +10,6 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import se.crisp.codekvast.agent.config.AgentConfig;
-import se.crisp.codekvast.agent.main.logback.LogPathDefiner;
 import se.crisp.codekvast.agent.main.spring.AgentConfigPropertySource;
 import se.crisp.codekvast.server.agent.ServerDelegateConfig;
 
@@ -34,15 +33,6 @@ public class CodekvastAgentApplication {
     private static AgentConfig agentConfig;
 
     public static void main(String[] args) throws IOException, URISyntaxException {
-        // Use the same AgentConfig as is used by the collector...
-        URI location = getAgentConfigLocation(args);
-        CodekvastAgentApplication.agentConfig = AgentConfig.parseAgentConfigFile(location);
-
-        if (!location.getScheme().equals("classpath")) {
-            // Tell LogPathDefiner to use exactly this log path...
-            System.setProperty(LogPathDefiner.LOG_PATH_PROPERTY, agentConfig.getAgentLogFile().getParent());
-        }
-
         SpringApplication application = new SpringApplication(CodekvastAgentApplication.class);
         application.setDefaultProperties(getDefaultProperties());
         application.run(args);
@@ -80,7 +70,6 @@ public class CodekvastAgentApplication {
     @Bean
     public ServerDelegateConfig serverDelegateConfig(AgentConfig agentConfig) {
         return ServerDelegateConfig.builder()
-                                   .customerName(agentConfig.getSharedConfig().getCustomerName())
                                    .environment(agentConfig.getEnvironment())
                                    .serverUri(agentConfig.getServerUri())
                                    .apiAccessID(agentConfig.getApiAccessID())

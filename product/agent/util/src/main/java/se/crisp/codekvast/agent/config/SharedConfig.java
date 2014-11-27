@@ -17,35 +17,18 @@ import java.util.Properties;
 @Builder
 public class SharedConfig implements CodekvastConfig {
     @NonNull
-    private final String customerName;
-
-    @NonNull
     private final File dataPath;
-
-    @NonNull
-    private final String packagePrefix;
 
     protected static SharedConfig buildSharedConfig(Properties props) {
         return builder()
                 .dataPath(new File(ConfigUtils.getOptionalStringValue(props, "dataPath", System.getProperty("java.io.tmpdir") +
                         "/codekvast")))
-                .customerName(ConfigUtils.getMandatoryStringValue(props, "customerName"))
-                .packagePrefix(ConfigUtils.getMandatoryStringValue(props, "packagePrefix"))
                 .build();
     }
 
     public static SharedConfig buildSampleSharedConfig() {
         return builder()
                 .dataPath(new File(ConfigUtils.SAMPLE_DATA_PATH))
-                .customerName("Customer Name")
-                .packagePrefix("sample.").build();
-    }
-
-    protected File myDataPath(String appName) {
-        return new File(dataPath, ConfigUtils.getNormalizedChildPath(customerName, appName));
-    }
-
-    public String getNormalizedPackagePrefix() {
-        return ConfigUtils.getNormalizedPackagePrefix(packagePrefix);
+                .build();
     }
 }

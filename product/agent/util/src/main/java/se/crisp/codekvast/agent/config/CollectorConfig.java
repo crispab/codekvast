@@ -38,6 +38,7 @@ public class CollectorConfig implements CodekvastConfig {
     @NonNull
     private final SharedConfig sharedConfig;
     @NonNull
+    private final String customerName;
     private final String aspectjOptions;
     @NonNull
     private final String methodExecutionPointcut;
@@ -50,21 +51,36 @@ public class CollectorConfig implements CodekvastConfig {
     private final String appVersion;
     @NonNull
     private final URI codeBaseUri;
+    @NonNull
+    private final String packagePrefix;
+
 
     public File getAspectFile() {
-        return new File(sharedConfig.myDataPath(appName), "aop.xml");
+        return new File(myDataPath(appName), "aop.xml");
     }
 
     public File getJvmFile() {
-        return new File(sharedConfig.myDataPath(appName), JVM_BASENAME);
+        return new File(myDataPath(appName), JVM_BASENAME);
     }
 
     public File getCollectorLogFile() {
-        return new File(sharedConfig.myDataPath(appName), "codekvast-collector.log");
+        return new File(myDataPath(appName), "codekvast-collector.log");
     }
 
     public File getInvocationsFile() {
-        return new File(sharedConfig.myDataPath(appName), INVOCATIONS_BASENAME);
+        return new File(myDataPath(appName), INVOCATIONS_BASENAME);
+    }
+
+    public File getSignatureFile(String appName) {
+        return new File(myDataPath(appName), "signatures.dat");
+    }
+
+    protected File myDataPath(String appName) {
+        return new File(sharedConfig.getDataPath(), ConfigUtils.getNormalizedChildPath(customerName, appName));
+    }
+
+    public String getNormalizedPackagePrefix() {
+        return ConfigUtils.getNormalizedPackagePrefix(packagePrefix);
     }
 
     public void saveTo(File file) {
@@ -98,9 +114,11 @@ public class CollectorConfig implements CodekvastConfig {
         return CollectorConfig.builder()
                               .sharedConfig(SharedConfig.buildSharedConfig(props))
                               .aspectjOptions(ConfigUtils.getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
+                              .customerName(ConfigUtils.getMandatoryStringValue(props, "customerName"))
                               .appName(ConfigUtils.getMandatoryStringValue(props, "appName"))
                               .appVersion(ConfigUtils.getOptionalStringValue(props, "appVersion", UNSPECIFIED_VERSION))
                               .codeBaseUri(ConfigUtils.getMandatoryUriValue(props, "codeBaseUri", false))
+                              .packagePrefix(ConfigUtils.getMandatoryStringValue(props, "packagePrefix"))
                               .collectorResolutionSeconds(ConfigUtils.getOptionalIntValue(props, "collectorResolutionSeconds",
                                                                                           DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS))
                               .verbose(ConfigUtils.getOptionalBooleanValue(props, "verbose", DEFAULT_VERBOSE))
@@ -118,10 +136,12 @@ public class CollectorConfig implements CodekvastConfig {
                               .appName("Sample Application Name")
                               .appVersion(UNSPECIFIED_VERSION)
                               .codeBaseUri(new URI(SAMPLE_CODEBASE_URI))
+                              .packagePrefix("sample.")
                               .collectorResolutionSeconds(DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS)
                               .verbose(DEFAULT_VERBOSE)
                               .clobberAopXml(DEFAULT_CLOBBER_AOP_XML)
                               .methodExecutionPointcut(DEFAULT_METHOD_EXECUTION_POINTCUT)
+                              .customerName("Customer Name")
                               .build();
     }
 

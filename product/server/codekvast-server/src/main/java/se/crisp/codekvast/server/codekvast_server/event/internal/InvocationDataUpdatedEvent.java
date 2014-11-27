@@ -2,6 +2,7 @@ package se.crisp.codekvast.server.codekvast_server.event.internal;
 
 import lombok.Getter;
 import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
+import se.crisp.codekvast.server.codekvast_server.model.AppId;
 
 import java.util.Collection;
 
@@ -10,22 +11,22 @@ import java.util.Collection;
  */
 @Getter
 public class InvocationDataUpdatedEvent extends CodekvastEvent {
-    private final String customerName;
+    private final AppId appId;
     private final Collection<InvocationEntry> invocationEntries;
 
-    public InvocationDataUpdatedEvent(Object source, String customerName, Collection<InvocationEntry> invocationEntries) {
+    public InvocationDataUpdatedEvent(Object source, AppId appId, Collection<InvocationEntry> invocationEntries) {
         super(source);
-        this.customerName = customerName;
+        this.appId = appId;
         this.invocationEntries = invocationEntries;
     }
 
     @Override
     public String toString() {
-        return "InvocationDataUpdatedEvent(customerName='" + customerName + '\'' + ", invocationEntries.size=" + invocationEntries
+        return "InvocationDataUpdatedEvent(appId='" + appId + '\'' + ", invocationEntries.size=" + invocationEntries
                 .size() + ")";
     }
 
     public String toLongString() {
-        return "InvocationDataUpdatedEvent(customerName='" + customerName + '\'' + ", invocationEntries=" + invocationEntries + ")";
+        return "InvocationDataUpdatedEvent(appId='" + appId + '\'' + ", invocationEntries=" + invocationEntries + ")";
     }
 }
