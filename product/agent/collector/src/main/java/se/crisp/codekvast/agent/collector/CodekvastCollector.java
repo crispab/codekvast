@@ -102,7 +102,8 @@ public class CodekvastCollector {
                         + "    <aspect name='%1$s'/>\n"
                         + "    <concrete-aspect name='se.crisp.codekvast.agent.collector.aspects.PublicMethodExecutionAspect'\n"
                         + "                     extends='%2$s'>\n"
-                        + "      <pointcut name='scope' expression='within(%3$s..*)'/>\n"
+                        + "      <pointcut name='withinScope' expression='within(%3$s..*)'/>\n"
+                        + "      <pointcut name='methodExecution' expression='execution(%6$s)'/>\n"
                         + "    </concrete-aspect>\n"
                         + "  </aspects>\n"
                         + "  <weaver options='%4$s'>\n"
@@ -114,7 +115,8 @@ public class CodekvastCollector {
                 AbstractMethodExecutionAspect.class.getName(),
                 config.getSharedConfig().getNormalizedPackagePrefix(),
                 config.getAspectjOptions(),
-                JasperExecutionAspect.JASPER_BASE_PACKAGE
+                JasperExecutionAspect.JASPER_BASE_PACKAGE,
+                config.getMethodExecutionPointcut()
         );
 
         File file = config.getAspectFile();

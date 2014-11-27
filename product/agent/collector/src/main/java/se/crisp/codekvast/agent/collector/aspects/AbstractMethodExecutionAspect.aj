@@ -16,17 +16,22 @@ public abstract aspect AbstractMethodExecutionAspect extends AbstractCodekvastAs
      * This abstract pointcut specifies the scope for what method executions to detect.
      * <p/>
      * It is made concrete by an XML file that is created on-the-fly by {@link se.crisp.codekvast.agent.collector.CodekvastCollector} before
-     * loading
-     * the AspectJ load-time weaving agent.
+     * loading the AspectJ load-time weaving agent.
      */
-    public abstract pointcut scope();
+    public abstract pointcut withinScope();
 
-    public pointcut methodExecution(): execution(public * *..*(..));
+    /**
+     * This abstract pointcut specifies what method executions to detect.
+     * <p/>
+     * It is made concrete by an XML file that is created on-the-fly by {@link se.crisp.codekvast.agent.collector.CodekvastCollector} before
+     * loading the AspectJ load-time weaving agent.
+     */
+    public abstract pointcut methodExecution();
 
     /**
      * Register that this method has been invoked.
      */
-    before(): scope() && methodExecution() && !withinCodekvast() {
+    before(): withinScope() && methodExecution() && !withinCodekvast() {
         InvocationRegistry.instance.registerMethodInvocation(thisJoinPoint.getSignature());
     }
 

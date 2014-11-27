@@ -45,6 +45,7 @@ public class InvocationsRegistryTest {
                                 .appVersion(APP_VERSION)
                                 .collectorResolutionSeconds(1)
                                 .aspectjOptions("")
+                                .methodExecutionPointcut(CollectorConfig.DEFAULT_METHOD_EXECUTION_POINTCUT)
                                 .build();
         //@formatter:on
         InvocationRegistry.initialize(config);
