@@ -48,7 +48,7 @@ public class FileUtilsTest {
     @Test
     public void testProduceAndConsumeInvocationsFiles() throws IOException {
         File invocationsFile = new File(temporaryFolder.getRoot(), "invocations.dat");
-        File consumedInvocationsFile = new File(temporaryFolder.getRoot(), "invocations.dat.0001" + CONSUMED_SUFFIX);
+        File consumedInvocationsFile = new File(temporaryFolder.getRoot(), "invocations.dat.00001" + CONSUMED_SUFFIX);
         writeTo(consumedInvocationsFile, "Hello, world!");
         File otherFile = new File(temporaryFolder.getRoot(), "zzz_other.file");
         writeTo(otherFile, "Hello, world!");
@@ -63,8 +63,8 @@ public class FileUtilsTest {
 
         Arrays.sort(files);
         assertThat(files[0].getName(), is("invocations.dat"));
-        assertThat(files[1].getName(), is("invocations.dat.0001" + CONSUMED_SUFFIX));
-        assertThat(files[2].getName(), is("invocations.dat.0002"));
+        assertThat(files[1].getName(), is("invocations.dat.00001" + CONSUMED_SUFFIX));
+        assertThat(files[2].getName(), is("invocations.dat.00002"));
         assertThat(files[3].getName(), is("zzz_other.file"));
 
         List<Invocation> invocations = FileUtils.consumeAllInvocationDataFiles(invocationsFile);
@@ -74,8 +74,8 @@ public class FileUtilsTest {
         assertThat(files.length, is(4));
 
         Arrays.sort(files);
-        assertThat(files[0].getName(), is("invocations.dat.0001" + CONSUMED_SUFFIX));
-        assertThat(files[1].getName(), is("invocations.dat.0002" + CONSUMED_SUFFIX));
+        assertThat(files[0].getName(), is("invocations.dat.00001" + CONSUMED_SUFFIX));
+        assertThat(files[1].getName(), is("invocations.dat.00002" + CONSUMED_SUFFIX));
         assertThat(files[2].getName(), is("invocations.dat" + CONSUMED_SUFFIX));
         assertThat(files[3].getName(), is("zzz_other.file"));
 

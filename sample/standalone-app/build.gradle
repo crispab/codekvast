@@ -39,7 +39,7 @@ apiAccessID = agent
 apiAccessSecret = 0000
 collectorResolutionSeconds = 2
 serverUploadIntervalSeconds = 10
-aspectjOptions = -verbose -showWeaveInfo
+# aspectjOptions = -verbose -showWeaveInfo
 clobberAopXml = true
 verbose = true
 """

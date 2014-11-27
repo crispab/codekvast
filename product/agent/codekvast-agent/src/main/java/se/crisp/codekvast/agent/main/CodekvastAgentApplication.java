@@ -1,6 +1,7 @@
 package se.crisp.codekvast.agent.main;
 
 
+import com.google.common.base.Preconditions;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -15,8 +16,9 @@ import se.crisp.codekvast.server.agent.ServerDelegateConfig;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Properties;
 
 /**
@@ -30,19 +32,13 @@ import java.util.Properties;
 @ComponentScan("se.crisp.codekvast")
 public class CodekvastAgentApplication {
 
-    private static AgentConfig agentConfig;
+    public static final String SYSPROP_CODEKVAST_AGENT_CONFIGURATION = "codekvast.agent-configuration";
 
     public static void main(String[] args) throws IOException, URISyntaxException {
         SpringApplication application = new SpringApplication(CodekvastAgentApplication.class);
         application.setDefaultProperties(getDefaultProperties());
         application.run(args);
     }
-
-    private static URI getAgentConfigLocation(String[] args) throws URISyntaxException {
-        // TODO: Look for file:/etc/codekvast.conf if not in args
-        return args == null || args.length < 1 ? new URI("classpath:/codekvast.conf") : new File(args[0]).toURI();
-    }
-
     private static Properties getDefaultProperties() {
         Properties result = new Properties();
         result.setProperty("tmpDir", System.getProperty("java.io.tmpdir"));
@@ -56,9 +52,34 @@ public class CodekvastAgentApplication {
      * @return The AgentConfig object that was appended to the environment's property sources.
      */
     @Bean
-    public AgentConfig agentConfig(ConfigurableEnvironment environment) {
+    public AgentConfig agentConfig(ConfigurableEnvironment environment) throws URISyntaxException {
+        URL resource = getFromFileSystem(System.getProperty(SYSPROP_CODEKVAST_AGENT_CONFIGURATION));
+        if (resource == null) {
+            resource = getClass().getResource("/codekvast-agent.conf");
+        }
+        Preconditions.checkNotNull(resource, "Cannot find classpath:/codekvast-agent.conf");
+        AgentConfig agentConfig = AgentConfig.parseAgentConfigFile(resource.toURI());
         environment.getPropertySources().addLast(new AgentConfigPropertySource(agentConfig));
         return agentConfig;
+    }
+
+    private URL getFromFileSystem(String location) {
+        if (location != null) {
+            try {
+                URL url = new URL(location);
+                return url;
+            } catch (MalformedURLException ignore) {
+            }
+            File file = new File(location);
+
+            if (file.isFile() && file.canRead()) {
+                try {
+                    return file.toURI().toURL();
+                } catch (MalformedURLException ignore) {
+                }
+            }
+        }
+        return null;
     }
 
     /**

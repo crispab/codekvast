@@ -22,7 +22,6 @@ public class SampleApp {
         System.out.printf("Hello, World! from %s%n%n", getClass().getName());
         tryToLoadClass("se.crisp.codekvast.agent.collector.CodekvastCollector", true);
         tryToLoadClass("org.aspectj.weaver.loadtime.Agent", true);
-        tryToLoadClass("org.reflections.Reflections", false);
 
         measureMethodCallTrackingOverhead();
 

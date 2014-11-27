@@ -132,8 +132,8 @@ public final class FileUtils {
         File consumed = new File(file.getAbsolutePath() + CONSUMED_SUFFIX);
         while (result.exists() || consumed.exists()) {
             count += 1;
-            result = new File(String.format("%s.%04d", file.getAbsolutePath(), count));
-            consumed = new File(String.format("%s.%04d%s", file.getAbsolutePath(), count, CONSUMED_SUFFIX));
+            result = new File(String.format("%s.%05d", file.getAbsolutePath(), count));
+            consumed = new File(String.format("%s.%05d%s", file.getAbsolutePath(), count, CONSUMED_SUFFIX));
         }
         return result;
     }
