@@ -27,10 +27,6 @@ public final class ConfigUtils {
     }
 
 
-    public static String getOptionalStringValue(Properties props, String key, String defaultValue) {
-        return props.getProperty(key, defaultValue);
-    }
-
     public static String getNormalizedChildPath(String customerName, String appName) {
         if (appName != null) {
             return normalizePathName(customerName) + File.separator + normalizePathName(appName);
@@ -40,6 +36,14 @@ public final class ConfigUtils {
 
     public static String normalizePathName(String path) {
         return path.replaceAll("[^a-zA-Z0-9_-]", "").toLowerCase(Locale.ENGLISH);
+    }
+
+    public static String getOptionalStringValue(Properties props, String key, String defaultValue) {
+        return props.getProperty(key, defaultValue);
+    }
+
+    public static boolean getOptionalBooleanValue(Properties props, String key, boolean defaultValue) {
+        return Boolean.valueOf(getOptionalStringValue(props, key, Boolean.toString(defaultValue)));
     }
 
     public static int getOptionalIntValue(Properties props, String key, int defaultValue) {

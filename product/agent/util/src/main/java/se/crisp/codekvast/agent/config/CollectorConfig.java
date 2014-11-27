@@ -103,11 +103,8 @@ public class CollectorConfig implements CodekvastConfig {
                               .codeBaseUri(ConfigUtils.getMandatoryUriValue(props, "codeBaseUri", false))
                               .collectorResolutionSeconds(ConfigUtils.getOptionalIntValue(props, "collectorResolutionSeconds",
                                                                                           DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS))
-                              .verbose(Boolean.valueOf(
-                                      ConfigUtils.getOptionalStringValue(props, "verbose", Boolean.toString(DEFAULT_VERBOSE))))
-                              .clobberAopXml(Boolean.valueOf(ConfigUtils.getOptionalStringValue(props, "clobberAopXml",
-                                                                                                Boolean.toString(
-                                                                                                        DEFAULT_CLOBBER_AOP_XML))))
+                              .verbose(ConfigUtils.getOptionalBooleanValue(props, "verbose", DEFAULT_VERBOSE))
+                              .clobberAopXml(ConfigUtils.getOptionalBooleanValue(props, "clobberAopXml", DEFAULT_CLOBBER_AOP_XML))
                               .methodExecutionPointcut(ConfigUtils.getOptionalStringValue(props, "methodExecutionPointcut",
                                                                                           DEFAULT_METHOD_EXECUTION_POINTCUT))
                               .build();
