@@ -113,7 +113,7 @@ public class CodekvastCollector {
                 JasperExecutionAspect.class.getName(),
                 AbstractMethodExecutionAspect.class.getName(),
                 config.getSharedConfig().getNormalizedPackagePrefix(),
-                config.getAspectjOptions() + " -XmessageHandlerClass:" + AspectjMessageHandler.class.getName(),
+                config.getAspectjOptions(),
                 JasperExecutionAspect.JASPER_BASE_PACKAGE
         );
 

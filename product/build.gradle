@@ -1,7 +1,6 @@
 buildscript {
     dependencies {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
-        classpath "org.ajoberstar:grgit:0.3.1"
     }
 }
 plugins {
@@ -9,6 +8,7 @@ plugins {
     id 'com.jfrog.bintray' version '0.6'
     id 'com.bmuschko.vagrant' version '2.0'
     id 'org.hidetake.ssh' version '0.4.5'
+    id "org.ajoberstar.grgit-release" version "0.10.0"
 }
 
 
@@ -16,7 +16,7 @@ import org.ajoberstar.grgit.Grgit
 
 import java.text.SimpleDateFormat
 
-version = "0.6.2"
+version = "0.7"
 
 ext.gitCommit = Grgit.open("$rootDir").log(maxCommits: 1)[0]
 ext.gitVersionTokens = [
