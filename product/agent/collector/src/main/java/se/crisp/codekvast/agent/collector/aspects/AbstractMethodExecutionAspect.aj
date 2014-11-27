@@ -3,7 +3,7 @@ package se.crisp.codekvast.agent.collector.aspects;
 import se.crisp.codekvast.agent.collector.InvocationRegistry;
 
 /**
- * This is an AspectJ aspect that captures execution of public methods in the scope of interest.
+ * This is an AspectJ aspect that captures execution of methods in the scope of interest.
  * <p/>
  * It is weaved into the target app by the AspectJ load-time weaver.
  *
@@ -21,12 +21,12 @@ public abstract aspect AbstractMethodExecutionAspect extends AbstractCodekvastAs
      */
     public abstract pointcut scope();
 
-    private pointcut publicMethodExecution(): execution(public * *..*(..));
+    public pointcut methodExecution(): execution(public * *..*(..));
 
     /**
      * Register that this method has been invoked.
      */
-    before(): scope() && publicMethodExecution() && !withinCodekvast() {
+    before(): scope() && methodExecution() && !withinCodekvast() {
         InvocationRegistry.instance.registerMethodInvocation(thisJoinPoint.getSignature());
     }
 

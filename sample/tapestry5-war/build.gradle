@@ -36,12 +36,11 @@ task generateCodekvastConfig {
     doLast {
         configFile.parentFile.mkdirs()
         configFile.text = """# Run Codekvast against Crisp Sample App
-customerName = Demo
+customerName = Sample
 appName = $archivesBaseName
 appVersion = $version
 environment = development
 codeBaseUri = file:/maven/${archivesBaseName}.war
-dataPath = $rootDir/sample/build/codekvast
 packagePrefix = se.crisp.sample
 serverUri = http://localhost:8080
 apiAccessID = agent

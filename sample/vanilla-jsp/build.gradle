@@ -18,12 +18,11 @@ task generateCodekvastConfig {
     doLast {
         configFile.parentFile.mkdirs()
         configFile.text = """# Run Codekvast against Crisp Sample Vanilla JSP app
-customerName = Demo
+customerName = Sample
 appName = $archivesBaseName
 appVersion = $version
 environment = development
 codeBaseUri = file:/maven/${archivesBaseName}.war
-dataPath = $rootDir/sample/build/codekvast
 packagePrefix = sample
 serverUri = http://localhost:8080
 apiAccessID = agent

@@ -27,7 +27,8 @@ public class SharedConfig implements CodekvastConfig {
 
     protected static SharedConfig buildSharedConfig(Properties props) {
         return builder()
-                .dataPath(new File(ConfigUtils.getMandatoryStringValue(props, "dataPath")))
+                .dataPath(new File(ConfigUtils.getOptionalStringValue(props, "dataPath", System.getProperty("java.io.tmpdir") +
+                        "/codekvast")))
                 .customerName(ConfigUtils.getMandatoryStringValue(props, "customerName"))
                 .packagePrefix(ConfigUtils.getMandatoryStringValue(props, "packagePrefix"))
                 .build();

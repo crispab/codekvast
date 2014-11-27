@@ -20,7 +20,7 @@ task generateCodekvastConfig {
     group "Build"
     description "Generates a codekvast.conf for test"
 
-    ext.configFile = file("build/libs/codekvast.conf")
+    ext.configFile = file("build/codekvast.conf")
 
     inputs.file file("$projectDir/build.gradle")
     outputs.file configFile
@@ -28,19 +28,19 @@ task generateCodekvastConfig {
     doLast {
         configFile.parentFile.mkdirs()
         configFile.text = """# Run Codekvast against Crisp Sample App
-customerName = Demo
+customerName = Sample
 appName = $archivesBaseName
 appVersion = $version
 environment = development
 codeBaseUri = file:${file("build/install/${project.name}/lib/")}
 packagePrefix = sample.
-dataPath = $rootDir/sample/build/codekvast
 serverUri = http://localhost:8080
 apiAccessID = agent
 apiAccessSecret = 0000
 collectorResolutionSeconds = 2
 serverUploadIntervalSeconds = 10
 aspectjOptions = -verbose -showWeaveInfo
+clobberAopXml = true
 verbose = true
 """
     }
@@ -52,7 +52,7 @@ configurations { aspectj }
 dependencies { aspectj 'org.aspectj:aspectjweaver:1.8.2' }
 
 run {
-    dependsOn = [":product:agent:collector:assemble", "generateCodekvastConfig"]
+    dependsOn = [":product:agent:collector:shadowJar", "generateCodekvastConfig"]
     def codekvastCollector = tasks.getByPath(":product:agent:collector:shadowJar").outputs.files.asPath
     def aspectjWeaver = configurations.aspectj.asPath
 
