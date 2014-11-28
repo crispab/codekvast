@@ -127,7 +127,7 @@ public class AgentWorker {
                     codekvastGradleVersion,
                     codekvastVcsId);
         } catch (ServerDelegateException e) {
-            logException("Cannot upload JVM data", e);
+            logException("Cannot upload JVM data to " + serverDelegate.getServerUri(), e);
         }
     }
 
@@ -148,7 +148,7 @@ public class AgentWorker {
                 serverDelegate.uploadSignatureData(jvmState.getJvm().getJvmFingerprint(), newCodeBase.getSignatures());
                 jvmState.setCodeBase(newCodeBase);
             } catch (ServerDelegateException e) {
-                logException("Cannot upload signature data", e);
+                logException("Cannot upload signature data to " + serverDelegate.getServerUri(), e);
             }
         }
     }

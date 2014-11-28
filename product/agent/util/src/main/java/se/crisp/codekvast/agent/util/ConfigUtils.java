@@ -15,7 +15,7 @@ import java.util.Properties;
  */
 public final class ConfigUtils {
 
-    public static final String SAMPLE_DATA_PATH = "/var/lib/codekvast";
+    public static final String SAMPLE_DATA_PATH = "/tmp/codekvast";
 
     private ConfigUtils() {
     }

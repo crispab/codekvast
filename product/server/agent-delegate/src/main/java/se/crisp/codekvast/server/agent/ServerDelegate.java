@@ -2,6 +2,7 @@ package se.crisp.codekvast.server.agent;
 
 import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
 
+import java.net.URI;
 import java.util.Collection;
 
 /**
@@ -57,4 +58,11 @@ public interface ServerDelegate {
      * @throws ServerDelegateException For all problems.
      */
     String ping(String message) throws ServerDelegateException;
+
+    /**
+     * To which server are we connected? Useful when logging problems.
+     *
+     * @return The URI we use for connecting to the server.
+     */
+    URI getServerUri();
 }

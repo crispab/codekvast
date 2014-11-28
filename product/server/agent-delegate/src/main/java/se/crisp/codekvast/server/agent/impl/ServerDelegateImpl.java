@@ -166,6 +166,11 @@ public class ServerDelegateImpl implements ServerDelegate {
         }
     }
 
+    @Override
+    public URI getServerUri() {
+        return config.getServerUri();
+    }
+
     private <T> T validate(T data) throws ServerDelegateException {
         Set<ConstraintViolation<T>> violations = validator.validate(data);
 

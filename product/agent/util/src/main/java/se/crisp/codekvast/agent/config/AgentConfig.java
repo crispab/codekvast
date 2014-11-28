@@ -76,7 +76,7 @@ public class AgentConfig implements CodekvastConfig {
                           .apiAccessSecret(DEFAULT_API_ACCESS_SECRET)
                           .environment("environment")
                           .serverUploadIntervalSeconds(DEFAULT_UPLOAD_INTERVAL_SECONDS)
-                          .serverUri(new URI("http://localhost:8080"))
+                          .serverUri(new URI("http://localhost:8090"))
                           .build();
     }
 
