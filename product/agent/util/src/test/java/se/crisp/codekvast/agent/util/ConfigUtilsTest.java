@@ -41,7 +41,13 @@ public class ConfigUtilsTest {
     }
 
     @Test
-    public void testGetNormalizedPrefixes() throws Exception {
+    public void testGetNormalizedPrefixes1() throws Exception {
         assertThat(ConfigUtils.getNormalizedPackagePrefixes("   com.acme... ; foo.bar..   "), hasItems("com.acme", "foo.bar"));
+    }
+
+    @Test
+    public void testGetNormalizedPrefixes2() throws Exception {
+        assertThat(ConfigUtils.getNormalizedPackagePrefixes(",   , x, : y  ; : com.acme... , foo.bar..  , "),
+                   hasItems("x", "y", "com.acme", "foo.bar"));
     }
 }
