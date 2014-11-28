@@ -28,14 +28,11 @@ public class CodeBaseScannerTest {
     }
 
     private CodeBase getCodeBase(String codeBase) throws URISyntaxException {
-        //@formatter:off
-        //@formatter:on
-
         return new CodeBase(CollectorConfig.builder()
                                            .sharedConfig(SharedConfig.builder().dataPath(new File(".")).build())
                                            .codeBaseUri(new File(codeBase).toURI())
                                            .customerName("customerName")
-                                           .packagePrefix("sample.")
+                                           .packagePrefixes("sample.")
                                            .appName("appName")
                                            .appVersion("1.0")
                                            .collectorResolutionSeconds(1)

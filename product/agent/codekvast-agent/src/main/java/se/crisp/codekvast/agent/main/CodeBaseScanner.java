@@ -10,6 +10,7 @@ import se.crisp.codekvast.agent.util.SignatureUtils;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URLClassLoader;
+import java.util.List;
 
 import static java.util.Arrays.asList;
 
@@ -26,13 +27,16 @@ import static java.util.Arrays.asList;
 class CodeBaseScanner {
 
     void getPublicMethodSignatures(CodeBase codeBase) {
-        String packagePrefix = codeBase.getConfig().getPackagePrefix();
         URLClassLoader appClassLoader = new URLClassLoader(codeBase.getUrls(), System.class.getClassLoader());
-        Reflections reflections = new Reflections(packagePrefix, appClassLoader, new SubTypesScanner(false));
 
-        for (Class<?> rootClass : asList(Object.class, Enum.class, Thread.class, DefaultHandler.class, Exception.class)) {
-            for (Class<?> clazz : reflections.getSubTypesOf(rootClass)) {
-                findPublicMethods(codeBase, packagePrefix, clazz);
+        List<String> packagePrefixes = codeBase.getConfig().getNormalizedPackagePrefixes();
+        for (String packagePrefix : packagePrefixes) {
+            Reflections reflections = new Reflections(packagePrefix, appClassLoader, new SubTypesScanner(false));
+
+            for (Class<?> rootClass : asList(Object.class, Enum.class, Thread.class, DefaultHandler.class, Exception.class)) {
+                for (Class<?> clazz : reflections.getSubTypesOf(rootClass)) {
+                    findPublicMethods(codeBase, packagePrefix, clazz);
+                }
             }
         }
     }

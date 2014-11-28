@@ -35,12 +35,10 @@ public class InvocationsRegistryTest {
 
         //@formatter:off
         config = CollectorConfig.builder()
-                                .sharedConfig(SharedConfig.builder()
-                                                          .dataPath(dataPath)
-                                                          .build())
+                                .sharedConfig(SharedConfig.builder().dataPath(dataPath).build())
                                 .codeBaseUri(codeBaseUri)
                                 .customerName(CUSTOMER_NAME)
-                                .packagePrefix("se.crisp")
+                                .packagePrefixes("se.crisp")
                                 .appName(APP_NAME)
                                 .appVersion(APP_VERSION)
                                 .collectorResolutionSeconds(1)

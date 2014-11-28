@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.PrintStream;
 import java.lang.instrument.Instrumentation;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -62,7 +63,7 @@ public class CodekvastCollector {
         CodekvastCollector.out.printf("%s is ready to detect used code within(%s..*).%n" +
                                               "First write to %s will be in %d seconds, thereafter every %d seconds.%n" +
                                               "-------------------------------------------------------------------------------%n",
-                                      NAME, config.getNormalizedPackagePrefix(), config.getInvocationsFile(),
+                                      NAME, config.getNormalizedPackagePrefixes(), config.getInvocationsFile(),
                                       firstResultInSeconds, config.getCollectorResolutionSeconds()
         );
     }
@@ -90,8 +91,8 @@ public class CodekvastCollector {
     }
 
     /**
-     * Creates a concrete implementation of the AbstractMethodExecutionAspect, using the packagePrefix for specifying the abstract pointcut
-     * 'scope'.
+     * Creates a concrete implementation of the AbstractMethodExecutionAspect, using the packagePrefixes for specifying the abstract
+     * pointcut 'scope'.
      *
      * @return A file URI to a temporary aop-ajc.xml file.
      */
@@ -101,27 +102,39 @@ public class CodekvastCollector {
             aspectjOptions = "";
         }
 
+        List<String> packagePrefixes = config.getNormalizedPackagePrefixes();
+        StringBuilder executionWithin = new StringBuilder();
+        StringBuilder includeWithin = new StringBuilder();
+        String executionDelimiter = "";
+
+        for (String prefix : packagePrefixes) {
+            executionWithin.append(executionDelimiter).append("within(").append(prefix).append("..*)");
+            includeWithin.append(String.format("    <include within='%s..*' />\n", prefix));
+            executionDelimiter = " || ";
+        }
+
         String xml = String.format(
                 "<aspectj>\n"
                         + "  <aspects>\n"
                         + "    <aspect name='%1$s'/>\n"
                         + "    <concrete-aspect name='se.crisp.codekvast.agent.collector.aspects.PublicMethodExecutionAspect'\n"
                         + "                     extends='%2$s'>\n"
-                        + "      <pointcut name='withinScope' expression='within(%3$s..*)'/>\n"
-                        + "      <pointcut name='methodExecution' expression='execution(%6$s)'/>\n"
+                        + "      <pointcut name='withinScope' expression='(%3$s)'/>\n"
+                        + "      <pointcut name='methodExecution' expression='execution(%4$s)'/>\n"
                         + "    </concrete-aspect>\n"
                         + "  </aspects>\n"
-                        + "  <weaver options='%4$s'>\n"
-                        + "    <include within='%3$s..*' />\n"
-                        + "    <include within='%5$s..*' />\n"
+                        + "  <weaver options='%5$s'>\n"
+                        + "%6$s"
+                        + "    <include within='%7$s..*'/>\n"
                         + "  </weaver>\n"
                         + "</aspectj>\n",
                 JasperExecutionAspect.class.getName(),
                 AbstractMethodExecutionAspect.class.getName(),
-                config.getNormalizedPackagePrefix(),
+                executionWithin.toString(),
+                config.getMethodExecutionPointcut(),
                 aspectjOptions,
-                JasperExecutionAspect.JASPER_BASE_PACKAGE,
-                config.getMethodExecutionPointcut()
+                includeWithin.toString(),
+                JasperExecutionAspect.JASPER_BASE_PACKAGE
         );
 
         File file = config.getAspectFile();

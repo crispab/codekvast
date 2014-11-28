@@ -111,13 +111,13 @@ class CodeBase {
         codeBaseScanner.getPublicMethodSignatures(this);
 
         if (signatures.isEmpty()) {
-            log.warn("Code base at {} does not contain any classes with package prefix '{}.'", codeBaseFile,
-                     config.getNormalizedPackagePrefix());
+            log.warn("Code base at {} does not contain any classes with package prefixes {}.'", codeBaseFile,
+                     config.getNormalizedPackagePrefixes());
         } else {
             writeSignaturesTo(config.getSignatureFile(config.getAppName()));
 
-            log.debug("Code base {} with package prefix '{}.' scanned in {} ms, found {} public methods.",
-                      codeBaseFile, config.getNormalizedPackagePrefix(), System.currentTimeMillis() - startedAt,
+            log.debug("Code base {} with package prefix {} scanned in {} ms, found {} public methods.",
+                      codeBaseFile, config.getNormalizedPackagePrefixes(), System.currentTimeMillis() - startedAt,
                       signatures.size());
         }
     }

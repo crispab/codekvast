@@ -3,6 +3,8 @@ package se.crisp.codekvast.agent.util;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
@@ -16,6 +18,17 @@ public final class ConfigUtils {
     public static final String SAMPLE_DATA_PATH = "/var/lib/codekvast";
 
     private ConfigUtils() {
+    }
+
+    public static List<String> getNormalizedPackagePrefixes(String packagePrefixes) {
+        List<String> result = new ArrayList<String>();
+        if (packagePrefixes != null) {
+            String[] prefixes = packagePrefixes.split("[:;,]");
+            for (String prefix : prefixes) {
+                result.add(getNormalizedPackagePrefix(prefix.trim()));
+            }
+        }
+        return result;
     }
 
     public static String getNormalizedPackagePrefix(String packagePrefix) {

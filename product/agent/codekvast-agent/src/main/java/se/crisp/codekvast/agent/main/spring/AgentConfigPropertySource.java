@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 
 /**
  * Make an AgentConfig usable in a Spring Environment, so that AgentConfig properties are injectable as e.g.,
- * <pre><code>@Value("${codekvast.packagePrefix}")</code></pre>
+ * <pre><code>@Value("${codekvast.packagePrefixes}")</code></pre>
  *
  *
  * @author Olle Hallin

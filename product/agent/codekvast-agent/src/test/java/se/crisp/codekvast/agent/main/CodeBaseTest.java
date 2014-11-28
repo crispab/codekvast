@@ -13,7 +13,6 @@ import static org.junit.Assert.assertThat;
 
 public class CodeBaseTest {
 
-    public static final String APP_NAME = "appName";
     public static final String SAMPLE_APP_LIB = "src/test/resources/sample-app/lib";
     public static final String SAMPLE_APP_JAR = SAMPLE_APP_LIB + "/sample-app.jar";
 
@@ -40,7 +39,7 @@ public class CodeBaseTest {
                                            .sharedConfig(SharedConfig.builder().dataPath(new File(".")).build())
                                            .codeBaseUri(new File(codeBase).toURI())
                                            .customerName("customerName")
-                                           .packagePrefix("se.crisp")
+                                           .packagePrefixes("se.crisp")
                                            .appName("appName")
                                            .appVersion("appVersion")
                                            .collectorResolutionSeconds(1)

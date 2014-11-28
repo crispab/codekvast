@@ -8,6 +8,7 @@ import se.crisp.codekvast.agent.util.FileUtils;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -52,7 +53,7 @@ public class CollectorConfig implements CodekvastConfig {
     @NonNull
     private final URI codeBaseUri;
     @NonNull
-    private final String packagePrefix;
+    private final String packagePrefixes;
 
 
     public File getAspectFile() {
@@ -79,8 +80,8 @@ public class CollectorConfig implements CodekvastConfig {
         return new File(sharedConfig.getDataPath(), ConfigUtils.getNormalizedChildPath(customerName, appName));
     }
 
-    public String getNormalizedPackagePrefix() {
-        return ConfigUtils.getNormalizedPackagePrefix(packagePrefix);
+    public List<String> getNormalizedPackagePrefixes() {
+        return ConfigUtils.getNormalizedPackagePrefixes(packagePrefixes);
     }
 
     public void saveTo(File file) {
@@ -118,7 +119,7 @@ public class CollectorConfig implements CodekvastConfig {
                               .appName(ConfigUtils.getMandatoryStringValue(props, "appName"))
                               .appVersion(ConfigUtils.getOptionalStringValue(props, "appVersion", UNSPECIFIED_VERSION))
                               .codeBaseUri(ConfigUtils.getMandatoryUriValue(props, "codeBaseUri", false))
-                              .packagePrefix(ConfigUtils.getMandatoryStringValue(props, "packagePrefix"))
+                              .packagePrefixes(ConfigUtils.getMandatoryStringValue(props, "packagePrefixes"))
                               .collectorResolutionSeconds(ConfigUtils.getOptionalIntValue(props, "collectorResolutionSeconds",
                                                                                           DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS))
                               .verbose(ConfigUtils.getOptionalBooleanValue(props, "verbose", DEFAULT_VERBOSE))
@@ -136,7 +137,7 @@ public class CollectorConfig implements CodekvastConfig {
                               .appName("Sample Application Name")
                               .appVersion(UNSPECIFIED_VERSION)
                               .codeBaseUri(new URI(SAMPLE_CODEBASE_URI))
-                              .packagePrefix("sample.")
+                              .packagePrefixes("com.acme. ; foo.bar.")
                               .collectorResolutionSeconds(DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS)
                               .verbose(DEFAULT_VERBOSE)
                               .clobberAopXml(DEFAULT_CLOBBER_AOP_XML)
