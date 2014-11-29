@@ -26,6 +26,7 @@ dependencies {
     compile 'com.h2database:h2'
     compile 'org.flywaydb:flyway-core'
     compile 'com.ecwid:ecwid-mailchimp:2.0.1.0'
+    compile 'net.sourceforge.pjl-comp-filter:pjl-comp-filter:1.7'
 
     runtime 'org.webjars:headjs:1.0.3'
     runtime 'org.webjars:jquery:2.1.1'

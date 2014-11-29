@@ -1,4 +1,4 @@
-package se.crisp.codekvast.web.service.mailchimp;
+package se.crisp.codekvast.web.service.impl;
 
 import com.ecwid.mailchimp.MailChimpClient;
 import com.ecwid.mailchimp.method.v2_0.lists.*;
