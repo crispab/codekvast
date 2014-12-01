@@ -69,20 +69,21 @@ bintray {
     filesSpec {
         from tasks.getByPath(":product:agentDistZip")
         into "agent"
+        rename { "foobar-agent-$version" }
     }
 
     dryRun = false
     publish = true
 
     pkg {
-        repo = 'codekvast'
+        repo = 'foobar'
         userOrg = 'crisp'
         name = 'agent'
-        desc = 'Codekvast is a Runtime Intelligence tool used for identifying Truly Dead Code, i.e., code that no-one has accessed in a ' +
-                'certain period of time'
-        websiteUrl = 'http://codekvast.crisp.se'
+        desc = "Description of foobar"
+        // desc = 'Codekvast is a Runtime Intelligence tool used for identifying Truly Dead Code, i.e., code that no-one has accessed in a certain period of time'
+        websiteUrl = 'http://foobar.acme.com'
         licenses = ['MIT']
-        labels = ['runtime-intelligence', 'dead-code', 'dead-code-detector', 'truly-dead-code', 'YANIA', 'java', 'java-6', 'jvm']
+        // labels = ['runtime-intelligence', 'dead-code', 'dead-code-detector', 'truly-dead-code', 'YANIA', 'java', 'java-6', 'jvm']
 
         publicDownloadNumbers = false
     }
