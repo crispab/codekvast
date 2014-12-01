@@ -1,0 +1,44 @@
+ext.tomcatVersion = "7.0.57"
+ext.tomcatDownloadUrl = "http://apache.mirrors.spacedump.net/tomcat/tomcat-7/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}.zip"
+ext.jenkinsDownloadUrl = "http://mirrors.jenkins-ci.org/war/1.592/jenkins.war"
+
+task installJenkinsInTomcat7 {
+    def downloadDir = file("build/tmp/download")
+    def tomcatDir = file("build/tomcat")
+    def webappsDir = new File(tomcatDir, "apache-tomcat-${tomcatVersion}/webapps")
+
+    inputs.property "tomcat", tomcatDownloadUrl
+    inputs.property "jenkins", jenkinsDownloadUrl
+    inputs.file file("build.gradle")
+    outputs.dir tomcatDir
+
+    doLast {
+        downloadDir.mkdirs()
+        webappsDir.mkdirs()
+
+        logger.lifecycle "Downloading $tomcatDownloadUrl ..."
+        ant.get(
+                src: tomcatDownloadUrl,
+                dest: downloadDir,
+                usetimestamp: true,
+                verbose: true
+        )
+
+        logger.lifecycle "Unpacking Tomcat into $tomcatDir ..."
+        copy {
+            from zipTree("$downloadDir/apache-tomcat-${tomcatVersion}.zip")
+            into tomcatDir
+        }
+        exec {
+            commandLine "chmod", "+x", "$tomcatDir/apache-tomcat-${tomcatVersion}/bin/catalina.sh"
+        }
+
+        logger.lifecycle "Downloading $jenkinsDownloadUrl into $webappsDir ..."
+        ant.get(
+                src: jenkinsDownloadUrl,
+                dest: webappsDir,
+                usetimestamp: true,
+                verbose: true
+        )
+    }
+}
