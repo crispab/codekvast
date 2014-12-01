@@ -34,7 +34,7 @@ public class CollectorConfig implements CodekvastConfig {
     public static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
     public static final String SAMPLE_CODEBASE_URI = "file:path/to/codebase/";
     public static final String OVERRIDE_SEPARATOR = ";";
-    public static final String UNSPECIFIED_VERSION = "literal unspecified";
+    public static final String UNSPECIFIED_VERSION = "unspecified";
 
     @NonNull
     private final SharedConfig sharedConfig;
@@ -49,7 +49,7 @@ public class CollectorConfig implements CodekvastConfig {
     @NonNull
     private final String appName;
     @NonNull
-    private final String appVersionStrategy;
+    private final String appVersion;
     @NonNull
     private final URI codeBaseUri;
     @NonNull
@@ -117,7 +117,7 @@ public class CollectorConfig implements CodekvastConfig {
                               .aspectjOptions(ConfigUtils.getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
                               .customerName(ConfigUtils.getMandatoryStringValue(props, "customerName"))
                               .appName(ConfigUtils.getMandatoryStringValue(props, "appName"))
-                              .appVersionStrategy(ConfigUtils.getOptionalStringValue(props, "appVersionStrategy", UNSPECIFIED_VERSION))
+                              .appVersion(ConfigUtils.getOptionalStringValue(props, "appVersion", UNSPECIFIED_VERSION))
                               .codeBaseUri(ConfigUtils.getMandatoryUriValue(props, "codeBaseUri", false))
                               .packagePrefixes(ConfigUtils.getMandatoryStringValue(props, "packagePrefixes"))
                               .collectorResolutionSeconds(ConfigUtils.getOptionalIntValue(props, "collectorResolutionSeconds",
@@ -135,7 +135,7 @@ public class CollectorConfig implements CodekvastConfig {
                               .sharedConfig(SharedConfig.buildSampleSharedConfig())
                               .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
                               .appName("Sample Application Name")
-                              .appVersionStrategy(UNSPECIFIED_VERSION)
+                              .appVersion(UNSPECIFIED_VERSION)
                               .codeBaseUri(new URI(SAMPLE_CODEBASE_URI))
                               .packagePrefixes("com.acme. ; foo.bar.")
                               .collectorResolutionSeconds(DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS)

@@ -116,7 +116,7 @@ public class CodekvastCollector {
         String xml = String.format(
                 "<aspectj>\n"
                         + "  <aspects>\n"
-                        + "    <aspect name='%1$s'/>\n"
+                        + "    <!-- Work-in-progress: aspect name='%1$s'/ -->\n"
                         + "    <concrete-aspect name='se.crisp.codekvast.agent.collector.aspects.PublicMethodExecutionAspect'\n"
                         + "                     extends='%2$s'>\n"
                         + "      <pointcut name='withinScope' expression='(%3$s)'/>\n"

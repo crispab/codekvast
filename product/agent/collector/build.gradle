@@ -17,7 +17,7 @@ version = project.parent.parent.version
 sourceCompatibility = 1.6
 
 configurations {
-    aspectj
+    aspectjweaver
 }
 
 dependencies {
@@ -25,7 +25,7 @@ dependencies {
     compile project(":product:agent:util"), { transitive = false }
     compile "org.aspectj:aspectjweaver:$aspectjVersion"
 
-    aspectj "org.aspectj:aspectjweaver:$aspectjVersion"
+    aspectjweaver "org.aspectj:aspectjweaver:$aspectjVersion"
 
     // Absolutely NO other compile or runtime dependencies are allowed here!
     // All (transitive) compile and runtime dependencies will end up in the instrumented app's system
@@ -45,7 +45,7 @@ shadowJar {
 }
 
 task javaagents(type: Sync) {
-    from configurations.aspectj
+    from configurations.aspectjweaver
     from tasks.shadowJar
     into "$buildDir/javaagents"
 }

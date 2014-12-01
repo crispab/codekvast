@@ -38,7 +38,7 @@ task generateCodekvastConfig {
         configFile.text = """# Run Codekvast against Crisp Sample App
 customerName = Sample
 appName = $archivesBaseName
-appVersionStrategy = $version
+appVersion = $version
 environment = development
 codeBaseUri = file:/maven/${archivesBaseName}.war
 packagePrefixes = se.crisp.sample, foo.bar

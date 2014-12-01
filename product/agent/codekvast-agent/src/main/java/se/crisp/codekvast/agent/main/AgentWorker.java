@@ -16,7 +16,6 @@ import se.crisp.codekvast.agent.util.FileUtils;
 import se.crisp.codekvast.server.agent.ServerDelegate;
 import se.crisp.codekvast.server.agent.ServerDelegateException;
 import se.crisp.codekvast.server.agent.model.v1.SignatureConfidence;
-import sun.misc.Service;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -40,11 +39,15 @@ public class AgentWorker {
     private final String codekvastGradleVersion;
     private final String codekvastVcsId;
     private final Map<String, Long> jvmProcessedAt = new HashMap<>();
+    private final Collection<AppVersionStrategy> appVersionStrategies;
 
     @Inject
     public AgentWorker(@Value("${info.build.gradle.version}") String codekvastGradleVersion,
-                       @Value("${info.build.git.id}") String codekvastVcsId, ServerDelegate serverDelegate, AgentConfig config,
-                       CodeBaseScanner codeBaseScanner) {
+                       @Value("${info.build.git.id}") String codekvastVcsId,
+                       ServerDelegate serverDelegate,
+                       AgentConfig config,
+                       CodeBaseScanner codeBaseScanner,
+                       Collection<AppVersionStrategy> appVersionStrategies) {
         Preconditions.checkArgument(!codekvastGradleVersion.contains("{info.build"));
         Preconditions.checkArgument(!codekvastVcsId.contains("{info.build"));
         this.config = config;
@@ -52,6 +55,7 @@ public class AgentWorker {
         this.serverDelegate = serverDelegate;
         this.codekvastGradleVersion = codekvastGradleVersion;
         this.codekvastVcsId = codekvastVcsId;
+        this.appVersionStrategies = appVersionStrategies;
         log.debug("Starting agent worker {} ({})", codekvastGradleVersion, codekvastVcsId);
     }
 
@@ -121,7 +125,7 @@ public class AgentWorker {
             serverDelegate.uploadJvmData(
                     jvm.getCollectorConfig().getCustomerName(),
                     jvm.getCollectorConfig().getAppName(),
-                    getAppVersion(jvm.getCollectorConfig().getAppVersionStrategy()),
+                    resolveAppVersion(appVersionStrategies, jvm.getCollectorConfig().getAppVersion()),
                     jvm.getHostName(),
                     jvm.getStartedAtMillis(),
                     jvm.getDumpedAtMillis(),
@@ -133,20 +137,19 @@ public class AgentWorker {
         }
     }
 
-    private String getAppVersion(String appVersionStrategy) {
-        String args[] = appVersionStrategy.split("\\s+");
-        String name = args[0];
-        List<AppVersionStrategy> strategies = Collections.list(
-                (Enumeration<AppVersionStrategy>) Service.providers(AppVersionStrategy.class));
-        for (AppVersionStrategy strategy : strategies) {
-            if (strategy.getName().equalsIgnoreCase(name)) {
-                String appVersion = strategy.getAppVersion(args);
-                log.debug("Resolved {} to {}", appVersionStrategy, appVersion);
-                return appVersion;
+    static String resolveAppVersion(Collection<? extends AppVersionStrategy> appVersionStrategies, String appVersion) {
+        String version = appVersion.trim();
+        String args[] = version.split("\\s+");
+
+        for (AppVersionStrategy strategy : appVersionStrategies) {
+            if (strategy.canHandle(args)) {
+                String resolvedVersion = strategy.resolveAppVersion(args);
+                log.debug("Resolved '{}' to '{}'", version, resolvedVersion);
+                return resolvedVersion;
             }
         }
-        log.warn("Cannot resolve appVersionStrategy '{}'", appVersionStrategy);
-        return "unknown";
+        log.warn("Cannot resolve appVersion '{}', using it verbatim", version);
+        return version;
     }
 
     private void logException(String msg, Exception e) {

@@ -20,9 +20,9 @@ task generateCodekvastConfig {
     group "Build"
     description "Generates a codekvast.conf for test"
 
-    ext.configFile = file("build/codekvast.conf")
+    ext.configFile = file("$buildDir/codekvast.conf")
 
-    inputs.file file("$projectDir/build.gradle")
+    inputs.file file("build.gradle")
     outputs.file configFile
 
     doLast {
@@ -30,7 +30,7 @@ task generateCodekvastConfig {
         configFile.text = """# Run Codekvast against Crisp Sample App
 customerName = Sample
 appName = $archivesBaseName
-appVersionStrategy = literal $version
+appVersion = $version
 environment = development
 codeBaseUri = file:${file("build/install/${project.name}/lib/")}
 packagePrefixes = sample. , foo.bar.

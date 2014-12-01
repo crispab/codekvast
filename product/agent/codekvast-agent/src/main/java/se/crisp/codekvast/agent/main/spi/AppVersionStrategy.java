@@ -6,10 +6,13 @@ package se.crisp.codekvast.agent.main.spi;
  * @author Olle Hallin (qolha), olle.hallin@crisp.se
  */
 public interface AppVersionStrategy {
+
     /**
-     * @return The name of the strategy.
+     * Can this strategy handle these args?
+     * @param args The white-space separated value from {@link se.crisp.codekvast.agent.config.CollectorConfig#getAppVersion()}
+     * @return true if-and-only-if the strategy recognizes the args.
      */
-    String getName();
+    boolean canHandle(String[] args);
 
     /**
      * Use args for resolving the app version
@@ -17,5 +20,5 @@ public interface AppVersionStrategy {
      * @param args The value of CollectorConfig.getAppVersionStrategy()
      * @return The resolved application version.
      */
-    String getAppVersion(String[] args);
+    String resolveAppVersion(String[] args);
 }
