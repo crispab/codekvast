@@ -1,0 +1,2 @@
+# Implementations of AppVersionStrategy
+se.crisp.codekvast.agent.main.spi.LiteralAppVersionStrategy

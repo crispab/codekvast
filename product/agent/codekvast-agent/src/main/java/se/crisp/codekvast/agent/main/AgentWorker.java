@@ -9,12 +9,14 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import se.crisp.codekvast.agent.config.AgentConfig;
 import se.crisp.codekvast.agent.config.CollectorConfig;
+import se.crisp.codekvast.agent.main.spi.AppVersionStrategy;
 import se.crisp.codekvast.agent.model.Invocation;
 import se.crisp.codekvast.agent.model.Jvm;
 import se.crisp.codekvast.agent.util.FileUtils;
 import se.crisp.codekvast.server.agent.ServerDelegate;
 import se.crisp.codekvast.server.agent.ServerDelegateException;
 import se.crisp.codekvast.server.agent.model.v1.SignatureConfidence;
+import sun.misc.Service;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -119,7 +121,7 @@ public class AgentWorker {
             serverDelegate.uploadJvmData(
                     jvm.getCollectorConfig().getCustomerName(),
                     jvm.getCollectorConfig().getAppName(),
-                    jvm.getCollectorConfig().getAppVersion(),
+                    getAppVersion(jvm.getCollectorConfig().getAppVersionStrategy()),
                     jvm.getHostName(),
                     jvm.getStartedAtMillis(),
                     jvm.getDumpedAtMillis(),
@@ -129,6 +131,22 @@ public class AgentWorker {
         } catch (ServerDelegateException e) {
             logException("Cannot upload JVM data to " + serverDelegate.getServerUri(), e);
         }
+    }
+
+    private String getAppVersion(String appVersionStrategy) {
+        String args[] = appVersionStrategy.split("\\s+");
+        String name = args[0];
+        List<AppVersionStrategy> strategies = Collections.list(
+                (Enumeration<AppVersionStrategy>) Service.providers(AppVersionStrategy.class));
+        for (AppVersionStrategy strategy : strategies) {
+            if (strategy.getName().equalsIgnoreCase(name)) {
+                String appVersion = strategy.getAppVersion(args);
+                log.debug("Resolved {} to {}", appVersionStrategy, appVersion);
+                return appVersion;
+            }
+        }
+        log.warn("Cannot resolve appVersionStrategy '{}'", appVersionStrategy);
+        return "unknown";
     }
 
     private void logException(String msg, Exception e) {
