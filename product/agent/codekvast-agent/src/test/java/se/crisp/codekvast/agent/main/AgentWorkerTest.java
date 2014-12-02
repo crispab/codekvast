@@ -2,8 +2,8 @@ package se.crisp.codekvast.agent.main;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
-import se.crisp.codekvast.agent.main.spi.AppVersionStrategy;
-import se.crisp.codekvast.agent.main.spi.LiteralAppVersionStrategy;
+import se.crisp.codekvast.agent.main.support.AppVersionStrategy;
+import se.crisp.codekvast.agent.main.support.LiteralAppVersionStrategy;
 
 import static com.google.common.collect.ImmutableList.of;
 import static org.hamcrest.Matchers.is;

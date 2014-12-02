@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import se.crisp.codekvast.agent.config.AgentConfig;
 import se.crisp.codekvast.agent.config.CollectorConfig;
-import se.crisp.codekvast.agent.main.spi.AppVersionStrategy;
+import se.crisp.codekvast.agent.main.support.AppVersionStrategy;
 import se.crisp.codekvast.agent.model.Invocation;
 import se.crisp.codekvast.agent.model.Jvm;
 import se.crisp.codekvast.agent.util.FileUtils;

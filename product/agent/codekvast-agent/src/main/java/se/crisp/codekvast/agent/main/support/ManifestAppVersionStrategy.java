@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.main.spi;
+package se.crisp.codekvast.agent.main.support;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -45,13 +45,15 @@ public class ManifestAppVersionStrategy implements AppVersionStrategy {
             JarFile jarFile = new JarFile(file);
             Attributes attributes = jarFile.getManifest().getMainAttributes();
             String resolvedVersion = attributes.getValue(manifestAttribute);
-            log.debug("Resolved version='{}'", resolvedVersion);
-            return resolvedVersion;
+            if (resolvedVersion != null) {
+                log.info("{}!/META-INF/MANIFEST.MF:{}={}", jarUri, manifestAttribute, resolvedVersion);
+                return resolvedVersion;
+            }
         } catch (Exception e) {
-            log.warn("Cannot open " + jarUri, e);
+            log.warn("Cannot open " + jarUri + ": " + e);
         }
-        log.warn("Could not resolve {} -> {}", jarUri, manifestAttribute);
-        return "<unknown>";
+        log.warn("Cannot resolve {}!/META-INF/MANIFEST.MF:{}", jarUri, manifestAttribute);
+        return UNKNOWN_VERSION;
     }
 
     private File getJarFile(String jarUri) throws IOException, URISyntaxException {
@@ -70,8 +72,8 @@ public class ManifestAppVersionStrategy implements AppVersionStrategy {
             }
         }
         File result = url == null ? null : new File(url.toURI());
-        if (result != null && !result.canRead()) {
-            throw new IOException("Cannot read " + result);
+        if (result == null || !result.canRead()) {
+            throw new IOException("Cannot read " + jarUri);
         }
         return result;
     }

@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.main.spi;
+package se.crisp.codekvast.agent.main.support;
 
 /**
  * Strategy for how to obtain the version of an application.
@@ -6,6 +6,8 @@ package se.crisp.codekvast.agent.main.spi;
  * @author Olle Hallin (qolha), olle.hallin@crisp.se
  */
 public interface AppVersionStrategy {
+
+    String UNKNOWN_VERSION = "<unknown>";
 
     /**
      * Can this strategy handle these args?
