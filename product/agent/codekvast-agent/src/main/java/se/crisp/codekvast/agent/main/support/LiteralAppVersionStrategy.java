@@ -4,9 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * A strategy for literal versions. Handles "literal v" and "constant v".
@@ -15,17 +12,15 @@ import java.util.Set;
  */
 @Slf4j
 @Component
-public class LiteralAppVersionStrategy implements AppVersionStrategy {
+public class LiteralAppVersionStrategy extends AbstractAppVersionStrategy {
 
-    private final Set<String> MY_NAMES = new HashSet<>(Arrays.asList("constant", "literal"));
+    public LiteralAppVersionStrategy() {
+        super("constant", "literal");
+    }
 
     @Override
     public boolean canHandle(String[] args) {
         return args != null && args.length == 2 && recognizes(args[0]);
-    }
-
-    private boolean recognizes(String name) {
-        return MY_NAMES.contains(name.toLowerCase().trim());
     }
 
     @Override

@@ -71,7 +71,7 @@ task generateCodekvastConfig {
 dataPath=/tmp/codekvast
 customerName = Sample
 appName = Jenkins
-appVersion = literal $jenkinsVersion
+appVersion = manifest jenkins-cli.*\\\\.jar Jenkins-CLI-Version
 environment = development
 codeBaseUri = file:$catalinaBase/webapps/jenkins
 packagePrefixes = hudson, jenkins

@@ -24,17 +24,17 @@ import java.util.jar.JarFile;
  */
 @Slf4j
 @Component
-public class ManifestAppVersionStrategy implements AppVersionStrategy {
+public class ManifestAppVersionStrategy extends AbstractAppVersionStrategy {
 
     private static final String DEFAULT_MANIFEST_ATTRIBUTE = "Implementation-Version";
+
+    public ManifestAppVersionStrategy() {
+        super("manifest", "search");
+    }
 
     @Override
     public boolean canHandle(String[] args) {
         return args != null && (args.length == 2 || args.length == 3) && recognizes(args[0]);
-    }
-
-    private boolean recognizes(String name) {
-        return name.equalsIgnoreCase("manifest");
     }
 
     @Override
@@ -81,7 +81,7 @@ public class ManifestAppVersionStrategy implements AppVersionStrategy {
         }
         if (url == null) {
             // Search for it in codeBaseUri. Treat it as a regular expression for the basename
-            url = search(new File(codeBaseUri.toURL().toURI()).listFiles(), jarUri);
+            url = search(new File(codeBaseUri.toURL().toURI()), jarUri);
         }
 
         File result = url == null ? null : new File(url.toURI());
@@ -91,15 +91,27 @@ public class ManifestAppVersionStrategy implements AppVersionStrategy {
         return result;
     }
 
-    private URL search(File[] files, String regex) throws MalformedURLException {
+    private URL search(File dir, String regex) throws MalformedURLException {
+        if (!dir.isDirectory()) {
+            log.warn("{} is not a directory", dir);
+            return null;
+        }
+
+        File[] files = dir.listFiles();
+
         if (files != null) {
             for (File file : files) {
                 if (file.isFile() && file.getName().matches(regex)) {
                     log.debug("Found {}", file);
                     return new URL(file.toURI().toString());
                 }
+            }
+            for (File file : files) {
                 if (file.isDirectory()) {
-                    return search(file.listFiles(), regex);
+                    URL url = search(file, regex);
+                    if (url != null) {
+                        return url;
+                    }
                 }
             }
         }
