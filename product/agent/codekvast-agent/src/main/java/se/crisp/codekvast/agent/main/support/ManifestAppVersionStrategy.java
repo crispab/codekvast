@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.jar.Attributes;
@@ -37,16 +38,23 @@ public class ManifestAppVersionStrategy implements AppVersionStrategy {
     }
 
     @Override
-    public String resolveAppVersion(String[] args) {
+    public String resolveAppVersion(URI codeBaseUri, String[] args) {
         String jarUri = args[1];
         String manifestAttribute = args.length > 2 ? args[2] : DEFAULT_MANIFEST_ATTRIBUTE;
         try {
-            File file = getJarFile(jarUri);
+            File file = getJarFile(codeBaseUri, jarUri);
             JarFile jarFile = new JarFile(file);
             Attributes attributes = jarFile.getManifest().getMainAttributes();
             String resolvedVersion = attributes.getValue(manifestAttribute);
             if (resolvedVersion != null) {
                 log.info("{}!/META-INF/MANIFEST.MF:{}={}", jarUri, manifestAttribute, resolvedVersion);
+                return resolvedVersion;
+            }
+            if (!manifestAttribute.equalsIgnoreCase(DEFAULT_MANIFEST_ATTRIBUTE)) {
+                resolvedVersion = attributes.getValue(DEFAULT_MANIFEST_ATTRIBUTE);
+            }
+            if (resolvedVersion != null) {
+                log.info("{}!/META-INF/MANIFEST.MF:{}={}", jarUri, DEFAULT_MANIFEST_ATTRIBUTE, resolvedVersion);
                 return resolvedVersion;
             }
         } catch (Exception e) {
@@ -56,7 +64,7 @@ public class ManifestAppVersionStrategy implements AppVersionStrategy {
         return UNKNOWN_VERSION;
     }
 
-    private File getJarFile(String jarUri) throws IOException, URISyntaxException {
+    private File getJarFile(URI codeBaseUri, String jarUri) throws IOException, URISyntaxException {
         URL url = null;
         // try to parse it as a URL...
         try {
@@ -71,10 +79,31 @@ public class ManifestAppVersionStrategy implements AppVersionStrategy {
                 url = file.toURI().toURL();
             }
         }
+        if (url == null) {
+            // Search for it in codeBaseUri. Treat it as a regular expression for the basename
+            url = search(new File(codeBaseUri.toURL().toURI()).listFiles(), jarUri);
+        }
+
         File result = url == null ? null : new File(url.toURI());
         if (result == null || !result.canRead()) {
             throw new IOException("Cannot read " + jarUri);
         }
         return result;
     }
+
+    private URL search(File[] files, String regex) throws MalformedURLException {
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile() && file.getName().matches(regex)) {
+                    log.debug("Found {}", file);
+                    return new URL(file.toURI().toString());
+                }
+                if (file.isDirectory()) {
+                    return search(file.listFiles(), regex);
+                }
+            }
+        }
+        return null;
+    }
+
 }

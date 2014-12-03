@@ -22,6 +22,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.URI;
 import java.util.*;
 
 /**
@@ -125,7 +126,8 @@ public class AgentWorker {
             serverDelegate.uploadJvmData(
                     jvm.getCollectorConfig().getCustomerName(),
                     jvm.getCollectorConfig().getAppName(),
-                    resolveAppVersion(appVersionStrategies, jvm.getCollectorConfig().getAppVersion()),
+                    resolveAppVersion(appVersionStrategies, jvm.getCollectorConfig().getCodeBaseUri(),
+                                      jvm.getCollectorConfig().getAppVersion()),
                     jvm.getHostName(),
                     jvm.getStartedAtMillis(),
                     jvm.getDumpedAtMillis(),
@@ -137,13 +139,13 @@ public class AgentWorker {
         }
     }
 
-    static String resolveAppVersion(Collection<? extends AppVersionStrategy> appVersionStrategies, String appVersion) {
+    static String resolveAppVersion(Collection<? extends AppVersionStrategy> appVersionStrategies, URI codeBaseUri, String appVersion) {
         String version = appVersion.trim();
         String args[] = version.split("\\s+");
 
         for (AppVersionStrategy strategy : appVersionStrategies) {
             if (strategy.canHandle(args)) {
-                String resolvedVersion = strategy.resolveAppVersion(args);
+                String resolvedVersion = strategy.resolveAppVersion(codeBaseUri, args);
                 log.debug("Resolved '{}' to '{}'", version, resolvedVersion);
                 return resolvedVersion;
             }

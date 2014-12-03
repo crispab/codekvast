@@ -3,6 +3,7 @@ package se.crisp.codekvast.agent.main.support;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -28,7 +29,7 @@ public class LiteralAppVersionStrategy implements AppVersionStrategy {
     }
 
     @Override
-    public String resolveAppVersion(String[] args) {
+    public String resolveAppVersion(URI codeBaseUri, String[] args) {
         return args[1].trim();
     }
 }

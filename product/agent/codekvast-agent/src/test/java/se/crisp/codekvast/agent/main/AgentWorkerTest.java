@@ -15,16 +15,16 @@ public class AgentWorkerTest {
 
     @Test
     public void testResolveConstantAppVersion() throws Exception {
-        assertThat(AgentWorker.resolveAppVersion(strategies, "constant foo"), is("foo"));
+        assertThat(AgentWorker.resolveAppVersion(strategies, null, "constant foo"), is("foo"));
     }
 
     @Test
     public void testResolveLiteralAppVersion() throws Exception {
-        assertThat(AgentWorker.resolveAppVersion(strategies, "   LITERAL    foo"), is("foo"));
+        assertThat(AgentWorker.resolveAppVersion(strategies, null, "   LITERAL    foo"), is("foo"));
     }
 
     @Test
     public void testResolveUnrecognizedAppVersion() throws Exception {
-        assertThat(AgentWorker.resolveAppVersion(strategies, "   FOOBAR    foo   "), is("FOOBAR    foo"));
+        assertThat(AgentWorker.resolveAppVersion(strategies, null, "   FOOBAR    foo   "), is("FOOBAR    foo"));
     }
 }
