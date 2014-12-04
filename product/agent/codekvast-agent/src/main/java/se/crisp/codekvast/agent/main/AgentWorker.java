@@ -40,7 +40,7 @@ public class AgentWorker {
     private final String codekvastGradleVersion;
     private final String codekvastVcsId;
     private final Map<String, Long> jvmProcessedAt = new HashMap<>();
-    private final Collection<AppVersionStrategy> appVersionStrategies;
+    private final Collection<AppVersionStrategy> appVersionStrategies = new ArrayList<>();
 
     @Inject
     public AgentWorker(@Value("${info.build.gradle.version}") String codekvastGradleVersion,
@@ -56,7 +56,7 @@ public class AgentWorker {
         this.serverDelegate = serverDelegate;
         this.codekvastGradleVersion = codekvastGradleVersion;
         this.codekvastVcsId = codekvastVcsId;
-        this.appVersionStrategies = appVersionStrategies;
+        this.appVersionStrategies.addAll(appVersionStrategies);
         log.debug("Starting agent worker {} ({})", codekvastGradleVersion, codekvastVcsId);
     }
 
@@ -68,6 +68,9 @@ public class AgentWorker {
         for (JvmState jvmState : findJvmStates()) {
             Jvm jvm = jvmState.getJvm();
 
+            String appVersion = resolveAppVersion(appVersionStrategies, jvm.getCollectorConfig().getCodeBaseUri(),
+                                                  jvm.getCollectorConfig().getAppVersion());
+
             String fingerprint = jvm.getJvmFingerprint();
             Long oldProcessedAt = jvmProcessedAt.get(fingerprint);
 
@@ -76,13 +79,13 @@ public class AgentWorker {
                 // Make sure that invocation data is not lost...
                 FileUtils.resetAllConsumedInvocationDataFiles(jvmState.getInvocationsFile());
 
-                uploadJvmData(jvm);
+                uploadJvmData(jvm, appVersion);
 
                 analyzeAndUploadCodeBaseIfNeeded(jvmState, new CodeBase(jvm.getCollectorConfig()));
 
                 processInvocationsDataIfNeeded(jvmState);
             } else if (oldProcessedAt < jvm.getDumpedAtMillis()) {
-                uploadJvmData(jvm);
+                uploadJvmData(jvm, appVersion);
 
                 processInvocationsDataIfNeeded(jvmState);
             }
@@ -121,13 +124,12 @@ public class AgentWorker {
         }
     }
 
-    private void uploadJvmData(Jvm jvm) {
+    private void uploadJvmData(Jvm jvm, String appVersion) {
         try {
             serverDelegate.uploadJvmData(
                     jvm.getCollectorConfig().getCustomerName(),
                     jvm.getCollectorConfig().getAppName(),
-                    resolveAppVersion(appVersionStrategies, jvm.getCollectorConfig().getCodeBaseUri(),
-                                      jvm.getCollectorConfig().getAppVersion()),
+                    appVersion,
                     jvm.getHostName(),
                     jvm.getStartedAtMillis(),
                     jvm.getDumpedAtMillis(),
@@ -145,8 +147,9 @@ public class AgentWorker {
 
         for (AppVersionStrategy strategy : appVersionStrategies) {
             if (strategy.canHandle(args)) {
+                long startedAt = System.currentTimeMillis();
                 String resolvedVersion = strategy.resolveAppVersion(codeBaseUri, args);
-                log.debug("Resolved '{}' to '{}'", version, resolvedVersion);
+                log.info("Resolved '{}' to '{}' in {} ms", version, resolvedVersion, System.currentTimeMillis() - startedAt);
                 return resolvedVersion;
             }
         }
