@@ -6,13 +6,14 @@ import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ConfigurationBuilder;
 import org.springframework.stereotype.Component;
-import org.xml.sax.helpers.DefaultHandler;
 import se.crisp.codekvast.agent.util.SignatureUtils;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URLClassLoader;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import static java.util.Arrays.asList;
 
@@ -28,51 +29,53 @@ import static java.util.Arrays.asList;
 @Component
 class CodeBaseScanner {
 
+    private static class PrefixPredicate implements Predicate<String> {
+        private final Pattern pattern;
+
+        private PrefixPredicate(Set<String> prefixes) {
+            this.pattern = buildPattern(prefixes);
+        }
+
+        private Pattern buildPattern(Set<String> prefixes) {
+            StringBuilder sb = new StringBuilder("^");
+            String delimiter = "(";
+            for (String prefix : prefixes) {
+                sb.append(delimiter).append(prefix);
+                delimiter = "|";
+            }
+            sb.append(").*\\.class$");
+            return Pattern.compile(sb.toString());
+        }
+
+        @Override
+        public boolean apply(String input) {
+            return pattern.matcher(input).matches();
+        }
+    }
+
     void getPublicMethodSignatures(CodeBase codeBase) {
         URLClassLoader appClassLoader = new URLClassLoader(codeBase.getUrls(), System.class.getClassLoader());
-        List<String> packagePrefixes = codeBase.getConfig().getNormalizedPackagePrefixes();
-
+        Set<String> prefixes = codeBase.getConfig().getNormalizedPackagePrefixes();
         ConfigurationBuilder builder = ConfigurationBuilder.build(appClassLoader, new SubTypesScanner(false));
-        // builder.forPackages(packagePrefixes.toArray(new String[packagePrefixes.size()]));
-        // builder.forPackages("hudson");
+        builder.filterInputsBy(new PrefixPredicate(prefixes));
 
-        Predicate<String> predicate = new Predicate<String>() {
-            @Override
-            public boolean apply(String input) {
-                return input.matches("hudson.*\\.class$");
-            }
-        };
-
-        builder.filterInputsBy(predicate);
         Reflections reflections1 = new Reflections(builder);
-
         List<Class<Object>> rootClasses1 = asList(Object.class);
         int count1 = 0;
         for (Class<?> rootClass : rootClasses1) {
             for (Class<?> clazz : reflections1.getSubTypesOf(rootClass)) {
                 count1 += 1;
-                // findPublicMethods(codeBase, packagePrefixes, clazz);
+                findPublicMethods(codeBase, prefixes, clazz);
             }
         }
-        log.info("Found {} classes with strategy 1", count1);
-
-        int count2 = 0;
-        List<Class<?>> rootClasses2 = asList(Object.class, Enum.class, Thread.class, DefaultHandler.class, Exception.class);
-//        for (String packagePrefix : packagePrefixes) {
-        Reflections reflections2 = new Reflections("hudson", appClassLoader, new SubTypesScanner(false));
-
-            for (Class<?> rootClass : rootClasses2) {
-                for (Class<?> clazz : reflections2.getSubTypesOf(rootClass)) {
-                    count2 += 1;
-                    // findPublicMethods(codeBase, packagePrefix, clazz);
-                }
-            }
-//        }
-        log.info("Found {} classes with strategy 2", count2);
+        log.info("Found {} classes", count1);
     }
 
-    void findPublicMethods(CodeBase codeBase, String packagePrefix, Class<?> clazz) {
+    void findPublicMethods(CodeBase codeBase, Set<String> packagePrefixes, Class<?> clazz) {
         log.debug("Analyzing {}", clazz);
+        if (clazz.getName().contains("ConcurrentHashMapConverter")) {
+            int i = 17;
+        }
         try {
             Method[] methods = clazz.getMethods();
 
@@ -83,10 +86,9 @@ class CodeBaseScanner {
                     // We need to map those back to the original declaring signature, or else the original,
                     // declared method will look unused.
 
-
                     String thisSignature = SignatureUtils.makeSignatureString(clazz, method);
                     String declaringSignature =
-                            SignatureUtils.makeSignatureString(findDeclaringClass(method.getDeclaringClass(), method, packagePrefix),
+                            SignatureUtils.makeSignatureString(findDeclaringClass(method.getDeclaringClass(), method, packagePrefixes),
                                                                method);
 
                     codeBase.addSignature(thisSignature, declaringSignature);
@@ -94,27 +96,37 @@ class CodeBaseScanner {
             }
 
             for (Class<?> innerClass : clazz.getDeclaredClasses()) {
-                findPublicMethods(codeBase, packagePrefix, innerClass);
+                findPublicMethods(codeBase, packagePrefixes, innerClass);
             }
         } catch (NoClassDefFoundError e) {
             log.warn("Cannot analyze {}: {}", clazz, e.toString());
         }
     }
 
-    private Class findDeclaringClass(Class<?> clazz, Method method, String packagePrefix) {
+    private Class findDeclaringClass(Class<?> clazz, Method method, Set<String> packagePrefixes) {
         if (clazz == null) {
             return null;
         }
         String pkg = clazz.getPackage().getName();
-        if (!pkg.startsWith(packagePrefix)) {
+
+        boolean found = false;
+        for (String prefix : packagePrefixes) {
+            if (pkg.startsWith(prefix)) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
             return null;
         }
+
         try {
             clazz.getDeclaredMethod(method.getName(), method.getParameterTypes());
             return clazz;
         } catch (NoSuchMethodException ignore) {
         }
-        return findDeclaringClass(clazz.getSuperclass(), method, packagePrefix);
+        return findDeclaringClass(clazz.getSuperclass(), method, packagePrefixes);
     }
 
 }

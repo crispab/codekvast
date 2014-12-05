@@ -3,10 +3,10 @@ package se.crisp.codekvast.agent.util;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Utility class for config stuff.
@@ -20,8 +20,8 @@ public final class ConfigUtils {
     private ConfigUtils() {
     }
 
-    public static List<String> getNormalizedPackagePrefixes(String packagePrefixes) {
-        List<String> result = new ArrayList<String>();
+    public static Set<String> getNormalizedPackagePrefixes(String packagePrefixes) {
+        Set<String> result = new TreeSet<String>();
         if (packagePrefixes != null) {
             String[] prefixes = packagePrefixes.split("[:;,]");
             for (String prefix : prefixes) {

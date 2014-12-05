@@ -112,8 +112,6 @@ CATALINA_OPTS=\"-javaagent:$codekvastCollector=$generateCodekvastConfig.configFi
     }
 }
 
-build.dependsOn generateTomcatRunHook
-
 task run(type: Exec) {
     description = "Run Jenkins with Codekvast Collector attached"
     group = "application"

@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.PrintStream;
 import java.lang.instrument.Instrumentation;
 import java.net.URISyntaxException;
-import java.util.List;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -102,7 +102,7 @@ public class CodekvastCollector {
             aspectjOptions = "";
         }
 
-        List<String> packagePrefixes = config.getNormalizedPackagePrefixes();
+        Set<String> packagePrefixes = config.getNormalizedPackagePrefixes();
         StringBuilder executionWithin = new StringBuilder();
         StringBuilder includeWithin = new StringBuilder();
         String executionDelimiter = "";

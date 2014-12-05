@@ -130,9 +130,7 @@ class CodeBase {
             if (!declaringNormalizedSignature.equals(thisNormalizedSignature) && thisNormalizedSignature != null) {
                 log.trace("  Adding {} -> {} to overridden signatures", thisNormalizedSignature, declaringNormalizedSignature);
                 overriddenSignatures.put(thisNormalizedSignature, declaringNormalizedSignature);
-            }
-
-            if (signatures.add(declaringNormalizedSignature)) {
+            } else if (declaringNormalizedSignature != null && signatures.add(declaringNormalizedSignature)) {
                 log.trace("  Found {}", declaringNormalizedSignature);
             }
         }

@@ -8,8 +8,8 @@ import se.crisp.codekvast.agent.util.FileUtils;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * Encapsulates the configuration that is used by codekvast-collector.
@@ -80,7 +80,7 @@ public class CollectorConfig implements CodekvastConfig {
         return new File(sharedConfig.getDataPath(), ConfigUtils.getNormalizedChildPath(customerName, appName));
     }
 
-    public List<String> getNormalizedPackagePrefixes() {
+    public Set<String> getNormalizedPackagePrefixes() {
         return ConfigUtils.getNormalizedPackagePrefixes(packagePrefixes);
     }
 
