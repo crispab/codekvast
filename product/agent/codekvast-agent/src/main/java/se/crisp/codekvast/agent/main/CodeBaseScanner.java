@@ -1,8 +1,10 @@
 package se.crisp.codekvast.agent.main;
 
+import com.google.common.base.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
+import org.reflections.util.ConfigurationBuilder;
 import org.springframework.stereotype.Component;
 import org.xml.sax.helpers.DefaultHandler;
 import se.crisp.codekvast.agent.util.SignatureUtils;
@@ -30,9 +32,18 @@ class CodeBaseScanner {
         URLClassLoader appClassLoader = new URLClassLoader(codeBase.getUrls(), System.class.getClassLoader());
         List<String> packagePrefixes = codeBase.getConfig().getNormalizedPackagePrefixes();
 
-/*
         ConfigurationBuilder builder = ConfigurationBuilder.build(appClassLoader, new SubTypesScanner(false));
-        builder.forPackages(packagePrefixes.toArray(new String[packagePrefixes.size()]));
+        // builder.forPackages(packagePrefixes.toArray(new String[packagePrefixes.size()]));
+        // builder.forPackages("hudson");
+
+        Predicate<String> predicate = new Predicate<String>() {
+            @Override
+            public boolean apply(String input) {
+                return input.matches("hudson.*\\.class$");
+            }
+        };
+
+        builder.filterInputsBy(predicate);
         Reflections reflections1 = new Reflections(builder);
 
         List<Class<Object>> rootClasses1 = asList(Object.class);
@@ -44,11 +55,11 @@ class CodeBaseScanner {
             }
         }
         log.info("Found {} classes with strategy 1", count1);
-*/
+
         int count2 = 0;
         List<Class<?>> rootClasses2 = asList(Object.class, Enum.class, Thread.class, DefaultHandler.class, Exception.class);
-        for (String packagePrefix : packagePrefixes) {
-            Reflections reflections2 = new Reflections(packagePrefix, appClassLoader, new SubTypesScanner(false));
+//        for (String packagePrefix : packagePrefixes) {
+        Reflections reflections2 = new Reflections("hudson", appClassLoader, new SubTypesScanner(false));
 
             for (Class<?> rootClass : rootClasses2) {
                 for (Class<?> clazz : reflections2.getSubTypesOf(rootClass)) {
@@ -56,7 +67,7 @@ class CodeBaseScanner {
                     // findPublicMethods(codeBase, packagePrefix, clazz);
                 }
             }
-        }
+//        }
         log.info("Found {} classes with strategy 2", count2);
     }
 
