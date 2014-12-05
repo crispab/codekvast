@@ -28,17 +28,36 @@ class CodeBaseScanner {
 
     void getPublicMethodSignatures(CodeBase codeBase) {
         URLClassLoader appClassLoader = new URLClassLoader(codeBase.getUrls(), System.class.getClassLoader());
-
         List<String> packagePrefixes = codeBase.getConfig().getNormalizedPackagePrefixes();
-        for (String packagePrefix : packagePrefixes) {
-            Reflections reflections = new Reflections(packagePrefix, appClassLoader, new SubTypesScanner(false));
 
-            for (Class<?> rootClass : asList(Object.class, Enum.class, Thread.class, DefaultHandler.class, Exception.class)) {
-                for (Class<?> clazz : reflections.getSubTypesOf(rootClass)) {
-                    findPublicMethods(codeBase, packagePrefix, clazz);
+/*
+        ConfigurationBuilder builder = ConfigurationBuilder.build(appClassLoader, new SubTypesScanner(false));
+        builder.forPackages(packagePrefixes.toArray(new String[packagePrefixes.size()]));
+        Reflections reflections1 = new Reflections(builder);
+
+        List<Class<Object>> rootClasses1 = asList(Object.class);
+        int count1 = 0;
+        for (Class<?> rootClass : rootClasses1) {
+            for (Class<?> clazz : reflections1.getSubTypesOf(rootClass)) {
+                count1 += 1;
+                // findPublicMethods(codeBase, packagePrefixes, clazz);
+            }
+        }
+        log.info("Found {} classes with strategy 1", count1);
+*/
+        int count2 = 0;
+        List<Class<?>> rootClasses2 = asList(Object.class, Enum.class, Thread.class, DefaultHandler.class, Exception.class);
+        for (String packagePrefix : packagePrefixes) {
+            Reflections reflections2 = new Reflections(packagePrefix, appClassLoader, new SubTypesScanner(false));
+
+            for (Class<?> rootClass : rootClasses2) {
+                for (Class<?> clazz : reflections2.getSubTypesOf(rootClass)) {
+                    count2 += 1;
+                    // findPublicMethods(codeBase, packagePrefix, clazz);
                 }
             }
         }
+        log.info("Found {} classes with strategy 2", count2);
     }
 
     void findPublicMethods(CodeBase codeBase, String packagePrefix, Class<?> clazz) {
