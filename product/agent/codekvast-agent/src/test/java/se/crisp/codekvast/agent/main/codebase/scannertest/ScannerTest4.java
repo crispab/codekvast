@@ -24,5 +24,17 @@ public class ScannerTest4 extends java.util.Date {
     public void m4(String s) {
         System.out.printf("m4(String)");
     }
+
+    public class Inner {
+        public void m5(String s) {
+            System.out.printf("m5(String)");
+        }
+    }
+
+    public static class StaticInner {
+        public void m6(String s) {
+            System.out.printf("m6(String)");
+        }
+    }
 }
 

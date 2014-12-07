@@ -42,6 +42,7 @@ public class AgentWorker {
     private final String codekvastGradleVersion;
     private final String codekvastVcsId;
     private final Map<String, Long> jvmProcessedAt = new HashMap<>();
+    private final Map<String, String> jvmAppVersion = new HashMap<>();
     private final Collection<AppVersionStrategy> appVersionStrategies = new ArrayList<>();
 
     @Inject
@@ -59,7 +60,7 @@ public class AgentWorker {
         this.codekvastGradleVersion = codekvastGradleVersion;
         this.codekvastVcsId = codekvastVcsId;
         this.appVersionStrategies.addAll(appVersionStrategies);
-        log.debug("Starting agent worker {} ({})", codekvastGradleVersion, codekvastVcsId);
+        log.info("Starting agent worker {} ({})", codekvastGradleVersion, codekvastVcsId);
     }
 
     @Scheduled(initialDelay = 10L, fixedDelayString = "${codekvast.serverUploadIntervalMillis}")
@@ -70,8 +71,7 @@ public class AgentWorker {
         for (JvmState jvmState : findJvmStates()) {
             Jvm jvm = jvmState.getJvm();
 
-            String appVersion = resolveAppVersion(appVersionStrategies, jvm.getCollectorConfig().getCodeBaseUri(),
-                                                  jvm.getCollectorConfig().getAppVersion());
+            String appVersion = getAppVersion(jvm);
 
             String fingerprint = jvm.getJvmFingerprint();
             Long oldProcessedAt = jvmProcessedAt.get(fingerprint);
@@ -93,6 +93,16 @@ public class AgentWorker {
             }
             jvmProcessedAt.put(fingerprint, now);
         }
+    }
+
+    private String getAppVersion(Jvm jvm) {
+        String appVersion = jvmAppVersion.get(jvm.getJvmFingerprint());
+        if (appVersion == null) {
+            appVersion = resolveAppVersion(appVersionStrategies, jvm.getCollectorConfig().getCodeBaseUri(),
+                                           jvm.getCollectorConfig().getAppVersion());
+            jvmAppVersion.put(jvm.getJvmFingerprint(), appVersion);
+        }
+        return appVersion;
     }
 
     private Collection<JvmState> findJvmStates() {
@@ -151,7 +161,7 @@ public class AgentWorker {
             if (strategy.canHandle(args)) {
                 long startedAt = System.currentTimeMillis();
                 String resolvedVersion = strategy.resolveAppVersion(codeBaseUri, args);
-                log.info("Resolved '{}' to '{}' in {} ms", version, resolvedVersion, System.currentTimeMillis() - startedAt);
+                log.debug("Resolved '{}' to '{}' in {} ms", version, resolvedVersion, System.currentTimeMillis() - startedAt);
                 return resolvedVersion;
             }
         }

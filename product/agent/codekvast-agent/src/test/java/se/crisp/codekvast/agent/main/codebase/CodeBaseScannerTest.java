@@ -1,16 +1,17 @@
 package se.crisp.codekvast.agent.main.codebase;
 
-import com.google.common.collect.ImmutableSet;
 import org.junit.Test;
 import se.crisp.codekvast.agent.config.CollectorConfig;
 import se.crisp.codekvast.agent.config.SharedConfig;
 import se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest1;
 import se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest2;
 import se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest3;
+import se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest4;
 
 import java.io.File;
 import java.net.URISyntaxException;
 
+import static com.google.common.collect.ImmutableSet.of;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -40,15 +41,15 @@ public class CodeBaseScannerTest {
         CodeBase codeBase = getCodeBase(TEST_CLASSES_DIR);
         scanner.getPublicMethodSignatures(codeBase);
         assertThat(codeBase.getSignatures(), notNullValue());
-        assertThat(codeBase.getNumClasses(), is(4));
-        assertThat(codeBase.getSignatures().size(), is(7));
+        assertThat(codeBase.getNumClasses(), is(6));
+        assertThat(codeBase.getSignatures().size(), is(9));
     }
 
     @Test
     public void testFindBaseMethodForScannerTest2() throws URISyntaxException {
         CodeBase codeBase = getCodeBase(TEST_CLASSES_DIR);
 
-        scanner.findPublicMethods(codeBase, ImmutableSet.of("se."), ScannerTest2.class);
+        scanner.findPublicMethods(codeBase, of("se."), ScannerTest2.class);
 
         assertThat(codeBase.getSignatures().size(), is(1));
         assertThat(codeBase.getOverriddenSignatures().size(), is(1));
@@ -60,7 +61,7 @@ public class CodeBaseScannerTest {
     public void testFindBaseMethodForScannerTest3() throws URISyntaxException {
         CodeBase codeBase = getCodeBase(TEST_CLASSES_DIR);
 
-        scanner.findPublicMethods(codeBase, ImmutableSet.of("se."), ScannerTest3.class);
+        scanner.findPublicMethods(codeBase, of("se."), ScannerTest3.class);
 
         assertThat(codeBase.getSignatures().size(), is(1));
         assertThat(codeBase.getOverriddenSignatures().size(), is(2));
@@ -68,6 +69,16 @@ public class CodeBaseScannerTest {
                    is("se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest1.m1()"));
         assertThat(codeBase.getOverriddenSignatures().get("se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest3.m2()"),
                    is("se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest2.m2()"));
+    }
+
+    @Test
+    public void testFindBaseMethodForScannerTest4() throws URISyntaxException {
+        CodeBase codeBase = getCodeBase(TEST_CLASSES_DIR);
+
+        scanner.findPublicMethods(codeBase, of("se."), ScannerTest4.class);
+
+        assertThat(codeBase.getSignatures().size(), is(6));
+        System.out.println("codeBase.getSignatures() = " + codeBase.getSignatures());
     }
 
 }

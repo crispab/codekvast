@@ -28,7 +28,7 @@ public class CodeBaseScanner {
         Set<String> prefixes = codeBase.getConfig().getNormalizedPackagePrefixes();
 
         long startedAt = System.currentTimeMillis();
-        Set<String> recognizedTypes = getAllTypes(prefixes, appClassLoader);
+        Set<String> recognizedTypes = getRecognizedTypes(prefixes, appClassLoader);
         for (String type : recognizedTypes) {
             try {
                 Class<?> clazz = Class.forName(type, false, appClassLoader);
@@ -44,7 +44,7 @@ public class CodeBaseScanner {
     }
 
 
-    private Set<String> getAllTypes(Set<String> packagePrefixes, URLClassLoader appClassLoader) {
+    private Set<String> getRecognizedTypes(Set<String> packagePrefixes, URLClassLoader appClassLoader) {
         RecordingClassFileFilter recordingClassNameFilter = new RecordingClassFileFilter(packagePrefixes);
         new Reflections(appClassLoader, new SubTypesScanner(), recordingClassNameFilter);
         return recordingClassNameFilter.getMatchedClassNames();
