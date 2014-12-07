@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.main;
+package se.crisp.codekvast.agent.main.codebase;
 
 import org.junit.Before;
 import org.junit.Rule;

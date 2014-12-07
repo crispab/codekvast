@@ -1,6 +1,5 @@
-package se.crisp.codekvast.agent.main;
+package se.crisp.codekvast.agent.main.codebase;
 
-import com.google.common.base.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
@@ -11,7 +10,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URLClassLoader;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * Analyzes a code base and detects public methods. Uses the org.reflections for retrieving method signature data.
@@ -23,56 +21,33 @@ import java.util.regex.Pattern;
  */
 @Slf4j
 @Component
-class CodeBaseScanner {
-
-    private static class IsClassFileFilter implements Predicate<String> {
-        @Override
-        public boolean apply(String input) {
-            return input.endsWith(".class");
-        }
-    }
-
-    private Pattern buildPattern(Set<String> prefixes) {
-        StringBuilder sb = new StringBuilder("^");
-        String delimiter = prefixes.isEmpty() ? "" : "(";
-        for (String prefix : prefixes) {
-            sb.append(delimiter).append(prefix);
-            delimiter = "|";
-        }
-        if (!prefixes.isEmpty()) {
-            sb.append(")");
-        }
-        sb.append("\\..*");
-        return Pattern.compile(sb.toString());
-    }
+public class CodeBaseScanner {
 
     void getPublicMethodSignatures(CodeBase codeBase) {
         URLClassLoader appClassLoader = new URLClassLoader(codeBase.getUrls(), System.class.getClassLoader());
-        Set<String> allTypes = getAllTypes(appClassLoader);
-
         Set<String> prefixes = codeBase.getConfig().getNormalizedPackagePrefixes();
-        Pattern pattern = buildPattern(prefixes);
-        long startedAt = System.currentTimeMillis();
-        int recognizedClasses = 0;
 
-        for (String type : allTypes) {
-            if (pattern.matcher(type).matches()) {
-                recognizedClasses += 1;
-                try {
-                    Class<?> clazz = Class.forName(type, false, appClassLoader);
-                    findPublicMethods(codeBase, prefixes, clazz);
-                } catch (ClassNotFoundException e) {
-                    log.warn("Cannot analyze " + type, e);
-                }
+        long startedAt = System.currentTimeMillis();
+        Set<String> recognizedTypes = getAllTypes(prefixes, appClassLoader);
+        for (String type : recognizedTypes) {
+            try {
+                Class<?> clazz = Class.forName(type, false, appClassLoader);
+                findPublicMethods(codeBase, prefixes, clazz);
+            } catch (ClassNotFoundException e) {
+                log.warn("Cannot analyze " + type, e);
             }
         }
-        log.info("Found {} methods in {} classes in packages {} in {} ms", codeBase.signatures.size(), recognizedClasses, prefixes, System
+        codeBase.setNumClasses(recognizedTypes.size());
+        log.info("Found {} methods in {} classes in packages {} in {} ms", codeBase.getSignatures().size(), recognizedTypes.size(),
+                 prefixes, System
                 .currentTimeMillis() - startedAt);
     }
 
-    private Set<String> getAllTypes(URLClassLoader appClassLoader) {
-        Reflections reflections = new Reflections(appClassLoader, new SubTypesScanner(false), new IsClassFileFilter());
-        return reflections.getAllTypes();
+
+    private Set<String> getAllTypes(Set<String> packagePrefixes, URLClassLoader appClassLoader) {
+        RecordingClassFileFilter recordingClassNameFilter = new RecordingClassFileFilter(packagePrefixes);
+        new Reflections(appClassLoader, new SubTypesScanner(), recordingClassNameFilter);
+        return recordingClassNameFilter.getMatchedClassNames();
     }
 
     void findPublicMethods(CodeBase codeBase, Set<String> packagePrefixes, Class<?> clazz) {

@@ -1,9 +1,6 @@
-package se.crisp.codekvast.agent.main;
+package se.crisp.codekvast.agent.main.codebase;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.SneakyThrows;
-import lombok.ToString;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import se.crisp.codekvast.agent.config.CollectorConfig;
 
@@ -23,7 +20,7 @@ import java.util.regex.Pattern;
 @ToString(of = "codeBaseFile", includeFieldNames = false)
 @EqualsAndHashCode(of = "fingerprint")
 @Slf4j
-class CodeBase {
+public class CodeBase {
 
     private static final Pattern[] ENHANCE_BY_GUICE_PATTERNS = {
             Pattern.compile(".*\\.\\.FastClassByGuice.*\\.getIndex\\(java\\.lang\\.Class\\[\\]\\)$"),
@@ -33,18 +30,25 @@ class CodeBase {
     };
 
     private final File codeBaseFile;
+
     @Getter
     private final CollectorConfig config;
 
     @Getter
-    final Set<String> signatures = new HashSet<>();
-    final Map<String, String> overriddenSignatures = new HashMap<>();
+    private final Set<String> signatures = new HashSet<>();
+
+    @Getter
+    @Setter
+    private int numClasses;
+
+    @Getter
+    private final Map<String, String> overriddenSignatures = new HashMap<>();
 
     private final CodeBaseFingerprint fingerprint;
     private List<URL> urls;
     private boolean needsExploding = false;
 
-    CodeBase(CollectorConfig config) {
+    public CodeBase(CollectorConfig config) {
         this.config = config;
         this.codeBaseFile = new File(config.getCodeBaseUri());
         this.fingerprint = initUrls();
@@ -104,7 +108,7 @@ class CodeBase {
         }
     }
 
-    void scanSignatures(CodeBaseScanner codeBaseScanner) {
+    public void scanSignatures(CodeBaseScanner codeBaseScanner) {
         long startedAt = System.currentTimeMillis();
         log.info("Scanning code base {}", this);
 
@@ -171,15 +175,15 @@ class CodeBase {
         }
     }
 
-    boolean hasSignature(String signature) {
+    public boolean hasSignature(String signature) {
         return signatures.contains(signature);
     }
 
-    String getBaseSignature(String signature) {
+    public String getBaseSignature(String signature) {
         return overriddenSignatures.get(signature);
     }
 
-    String normalizeSignature(String signature) {
+    public String normalizeSignature(String signature) {
         if (signature == null) {
             return null;
         }
@@ -190,4 +194,5 @@ class CodeBase {
         }
         return signature.replaceAll(" final ", " ").replaceAll("\\.\\.EnhancerByGuice\\.\\..*[0-9a-f]\\.([\\w]+\\()", ".$1").trim();
     }
+
 }
