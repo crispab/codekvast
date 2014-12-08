@@ -39,7 +39,7 @@ public class CodeBase {
     private final CollectorConfig config;
 
     @Getter
-    private final Set<String> signatures = new HashSet<>();
+    private final Set<String> signatures = new TreeSet<>();
 
     @Getter
     private final Map<String, String> overriddenSignatures = new HashMap<>();

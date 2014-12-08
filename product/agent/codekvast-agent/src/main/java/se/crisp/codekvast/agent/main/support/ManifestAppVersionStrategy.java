@@ -60,10 +60,10 @@ public class ManifestAppVersionStrategy extends AbstractAppVersionStrategy {
                     return resolvedVersion;
                 }
             } catch (Exception e) {
-                log.warn("Cannot open " + jarUri + ": " + e);
+                log.error("Cannot open " + jarUri + ": " + e);
             }
         }
-        log.warn("Cannot resolve {}!/META-INF/MANIFEST.MF:{}", jarUri, manifestAttribute);
+        log.error("Cannot resolve {}!/META-INF/MANIFEST.MF:{}", jarUri, manifestAttribute);
         return UNKNOWN_VERSION;
     }
 
