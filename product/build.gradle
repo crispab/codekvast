@@ -69,7 +69,7 @@ bintray {
     filesSpec {
         from tasks.getByPath(":product:agentDistZip")
         into "agent"
-        rename { "foobar-agent-$version" }
+        rename { "foobar-agent-${version}.zip" }
     }
 
     dryRun = false
