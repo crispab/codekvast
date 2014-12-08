@@ -1,6 +1,9 @@
 package se.crisp.codekvast.agent.config;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.experimental.Builder;
 import se.crisp.codekvast.agent.util.ConfigUtils;
 import se.crisp.codekvast.agent.util.FileUtils;
@@ -8,8 +11,8 @@ import se.crisp.codekvast.agent.util.FileUtils;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 /**
  * Encapsulates the configuration that is used by codekvast-collector.
@@ -32,7 +35,8 @@ public class CollectorConfig implements CodekvastConfig {
     public static final int DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS = 600;
     public static final boolean DEFAULT_VERBOSE = false;
     public static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
-    public static final String SAMPLE_CODEBASE_URI = "file:path/to/codebase/";
+    public static final String SAMPLE_CODEBASE_URI1 = "file:path/to/codebase1/";
+    public static final String SAMPLE_CODEBASE_URI2 = "file:path/to/codebase2/";
     public static final String OVERRIDE_SEPARATOR = ";";
     public static final String UNSPECIFIED_VERSION = "unspecified";
 
@@ -51,7 +55,7 @@ public class CollectorConfig implements CodekvastConfig {
     @NonNull
     private final String appVersion;
     @NonNull
-    private final URI codeBaseUri;
+    private final String codeBaseUris;
     @NonNull
     private final String packagePrefixes;
 
@@ -80,8 +84,12 @@ public class CollectorConfig implements CodekvastConfig {
         return new File(sharedConfig.getDataPath(), ConfigUtils.getNormalizedChildPath(customerName, appName));
     }
 
-    public Set<String> getNormalizedPackagePrefixes() {
+    public List<String> getNormalizedPackagePrefixes() {
         return ConfigUtils.getNormalizedPackagePrefixes(packagePrefixes);
+    }
+
+    public List<URI> getNormalizedCodeBaseUris() {
+        return ConfigUtils.getNormalizedUriValues(codeBaseUris, false);
     }
 
     public void saveTo(File file) {
@@ -118,7 +126,7 @@ public class CollectorConfig implements CodekvastConfig {
                               .customerName(ConfigUtils.getMandatoryStringValue(props, "customerName"))
                               .appName(ConfigUtils.getMandatoryStringValue(props, "appName"))
                               .appVersion(ConfigUtils.getOptionalStringValue(props, "appVersion", UNSPECIFIED_VERSION))
-                              .codeBaseUri(ConfigUtils.getMandatoryUriValue(props, "codeBaseUri", false))
+                              .codeBaseUris(ConfigUtils.getMandatoryStringValue(props, "codeBaseUris"))
                               .packagePrefixes(ConfigUtils.getMandatoryStringValue(props, "packagePrefixes"))
                               .collectorResolutionSeconds(ConfigUtils.getOptionalIntValue(props, "collectorResolutionSeconds",
                                                                                           DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS))
@@ -129,15 +137,14 @@ public class CollectorConfig implements CodekvastConfig {
                               .build();
     }
 
-    @SneakyThrows(URISyntaxException.class)
     public static CollectorConfig createSampleCollectorConfig() {
         return CollectorConfig.builder()
                               .sharedConfig(SharedConfig.buildSampleSharedConfig())
                               .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
                               .appName("Sample Application Name")
                               .appVersion(UNSPECIFIED_VERSION)
-                              .codeBaseUri(new URI(SAMPLE_CODEBASE_URI))
-                              .packagePrefixes("com.acme. ; foo.bar.")
+                              .codeBaseUris(SAMPLE_CODEBASE_URI1 + " , " + SAMPLE_CODEBASE_URI2)
+                              .packagePrefixes("com.acme. , foo.bar.")
                               .collectorResolutionSeconds(DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS)
                               .verbose(DEFAULT_VERBOSE)
                               .clobberAopXml(DEFAULT_CLOBBER_AOP_XML)

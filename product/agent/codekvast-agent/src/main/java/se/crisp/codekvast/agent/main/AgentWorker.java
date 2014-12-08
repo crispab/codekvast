@@ -42,7 +42,8 @@ public class AgentWorker {
     private final String codekvastGradleVersion;
     private final String codekvastVcsId;
     private final Map<String, Long> jvmProcessedAt = new HashMap<>();
-    private final Map<String, String> jvmAppVersion = new HashMap<>();
+    private final Map<String, String> appVersions = new HashMap<>();
+    private final Map<String, CodeBase> codeBases = new HashMap<>();
     private final Collection<AppVersionStrategy> appVersionStrategies = new ArrayList<>();
 
     @Inject
@@ -96,11 +97,11 @@ public class AgentWorker {
     }
 
     private String getAppVersion(Jvm jvm) {
-        String appVersion = jvmAppVersion.get(jvm.getJvmFingerprint());
+        String appVersion = appVersions.get(jvm.getJvmFingerprint());
         if (appVersion == null) {
-            appVersion = resolveAppVersion(appVersionStrategies, jvm.getCollectorConfig().getCodeBaseUri(),
+            appVersion = resolveAppVersion(appVersionStrategies, jvm.getCollectorConfig().getNormalizedCodeBaseUris(),
                                            jvm.getCollectorConfig().getAppVersion());
-            jvmAppVersion.put(jvm.getJvmFingerprint(), appVersion);
+            appVersions.put(jvm.getJvmFingerprint(), appVersion);
         }
         return appVersion;
     }
@@ -128,9 +129,11 @@ public class AgentWorker {
 
     private void addJvmState(Collection<JvmState> result, File file) {
         try {
-            result.add(JvmState.builder()
-                               .invocationsFile(new File(file.getParentFile(), CollectorConfig.INVOCATIONS_BASENAME))
-                               .jvm(Jvm.readFrom(file)).build());
+            JvmState jvmState = JvmState.builder()
+                                        .invocationsFile(new File(file.getParentFile(), CollectorConfig.INVOCATIONS_BASENAME))
+                                        .jvm(Jvm.readFrom(file)).build();
+            jvmState.setCodeBase(codeBases.get(jvmState.getJvm().getJvmFingerprint()));
+            result.add(jvmState);
         } catch (IOException e) {
             log.error("Cannot load " + file, e);
         }
@@ -153,14 +156,15 @@ public class AgentWorker {
         }
     }
 
-    static String resolveAppVersion(Collection<? extends AppVersionStrategy> appVersionStrategies, URI codeBaseUri, String appVersion) {
+    static String resolveAppVersion(Collection<? extends AppVersionStrategy> appVersionStrategies, Collection<URI> codeBaseUris, String
+            appVersion) {
         String version = appVersion.trim();
         String args[] = version.split("\\s+");
 
         for (AppVersionStrategy strategy : appVersionStrategies) {
             if (strategy.canHandle(args)) {
                 long startedAt = System.currentTimeMillis();
-                String resolvedVersion = strategy.resolveAppVersion(codeBaseUri, args);
+                String resolvedVersion = strategy.resolveAppVersion(codeBaseUris, args);
                 log.debug("Resolved '{}' to '{}' in {} ms", version, resolvedVersion, System.currentTimeMillis() - startedAt);
                 return resolvedVersion;
             }
@@ -181,10 +185,11 @@ public class AgentWorker {
 
     private void analyzeAndUploadCodeBaseIfNeeded(JvmState jvmState, CodeBase newCodeBase) {
         if (!newCodeBase.equals(jvmState.getCodeBase())) {
-            newCodeBase.scanSignatures(codeBaseScanner);
+            codeBaseScanner.scanSignatures(newCodeBase);
             try {
                 serverDelegate.uploadSignatureData(jvmState.getJvm().getJvmFingerprint(), newCodeBase.getSignatures());
                 jvmState.setCodeBase(newCodeBase);
+                codeBases.put(jvmState.getJvm().getJvmFingerprint(), newCodeBase);
             } catch (ServerDelegateException e) {
                 logException("Cannot upload signature data to " + serverDelegate.getServerUri(), e);
             }

@@ -1,6 +1,9 @@
 package se.crisp.codekvast.agent.main.codebase;
 
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.SneakyThrows;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import se.crisp.codekvast.agent.config.CollectorConfig;
 
@@ -8,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -29,7 +33,7 @@ public class CodeBase {
             Pattern.compile(".*\\(com\\.google\\.inject\\.internal\\.cglib.*\\)$"),
     };
 
-    private final File codeBaseFile;
+    private final List<File> codeBaseFiles;
 
     @Getter
     private final CollectorConfig config;
@@ -38,20 +42,25 @@ public class CodeBase {
     private final Set<String> signatures = new HashSet<>();
 
     @Getter
-    @Setter
-    private int numClasses;
-
-    @Getter
     private final Map<String, String> overriddenSignatures = new HashMap<>();
 
     private final CodeBaseFingerprint fingerprint;
+
     private List<URL> urls;
     private boolean needsExploding = false;
 
     public CodeBase(CollectorConfig config) {
         this.config = config;
-        this.codeBaseFile = new File(config.getCodeBaseUri());
+        this.codeBaseFiles = getCodeBaseFiles(config.getNormalizedCodeBaseUris());
         this.fingerprint = initUrls();
+    }
+
+    private List<File> getCodeBaseFiles(List<URI> uris) {
+        List<File> result = new ArrayList<>();
+        for (URI uri : uris) {
+            result.add(new File(uri));
+        }
+        return result;
     }
 
     URL[] getUrls() {
@@ -66,23 +75,25 @@ public class CodeBase {
 
         urls = new ArrayList<>();
         CodeBaseFingerprint.Builder builder = CodeBaseFingerprint.builder();
-
-        if (codeBaseFile.isDirectory()) {
-            addUrl(codeBaseFile);
-            traverse(builder, codeBaseFile.listFiles());
-        } else if (codeBaseFile.getName().endsWith(".jar")) {
-            builder.record(codeBaseFile);
-            addUrl(codeBaseFile);
-        } else if (codeBaseFile.getName().endsWith(".war")) {
-            builder.record(codeBaseFile);
-            needsExploding = true;
-        } else if (codeBaseFile.getName().endsWith(".ear")) {
-            builder.record(codeBaseFile);
-            needsExploding = true;
+        for (File codeBaseFile : codeBaseFiles) {
+            if (codeBaseFile.isDirectory()) {
+                addUrl(codeBaseFile);
+                traverse(builder, codeBaseFile.listFiles());
+            } else if (codeBaseFile.getName().endsWith(".jar")) {
+                builder.record(codeBaseFile);
+                addUrl(codeBaseFile);
+            } else if (codeBaseFile.getName().endsWith(".war")) {
+                builder.record(codeBaseFile);
+                needsExploding = true;
+            } else if (codeBaseFile.getName().endsWith(".ear")) {
+                builder.record(codeBaseFile);
+                needsExploding = true;
+            }
         }
+
         CodeBaseFingerprint result = builder.build();
 
-        log.debug("Made fingerprint of code base at {} in {} ms, fingerprint={}", codeBaseFile, System.currentTimeMillis() - startedAt,
+        log.debug("Made fingerprint of code bases at {} in {} ms, fingerprint={}", codeBaseFiles, System.currentTimeMillis() - startedAt,
                   result);
         return result;
     }
@@ -108,24 +119,6 @@ public class CodeBase {
         }
     }
 
-    public void scanSignatures(CodeBaseScanner codeBaseScanner) {
-        long startedAt = System.currentTimeMillis();
-        log.info("Scanning code base {}", this);
-
-        codeBaseScanner.getPublicMethodSignatures(this);
-
-        if (signatures.isEmpty()) {
-            log.warn("Code base at {} does not contain any classes with package prefixes {}.'", codeBaseFile,
-                     config.getNormalizedPackagePrefixes());
-        } else {
-            writeSignaturesTo(config.getSignatureFile(config.getAppName()));
-
-            log.debug("Code base {} with package prefix {} scanned in {} ms, found {} public methods.",
-                      codeBaseFile, config.getNormalizedPackagePrefixes(), System.currentTimeMillis() - startedAt,
-                      signatures.size());
-        }
-    }
-
     void addSignature(String thisSignature, String declaringSignature) {
         String thisNormalizedSignature = normalizeSignature(thisSignature);
         String declaringNormalizedSignature = normalizeSignature(declaringSignature);
@@ -140,7 +133,8 @@ public class CodeBase {
         }
     }
 
-    private void writeSignaturesTo(File file) {
+    void writeSignaturesToDisk() {
+        File file = config.getSignatureFile(config.getAppName());
         PrintWriter out = null;
         try {
             File directory = file.getAbsoluteFile().getParentFile();
@@ -195,4 +189,11 @@ public class CodeBase {
         return signature.replaceAll(" final ", " ").replaceAll("\\.\\.EnhancerByGuice\\.\\..*[0-9a-f]\\.([\\w]+\\()", ".$1").trim();
     }
 
+    public boolean isEmpty() {
+        return signatures.isEmpty();
+    }
+
+    public int size() {
+        return signatures.size();
+    }
 }

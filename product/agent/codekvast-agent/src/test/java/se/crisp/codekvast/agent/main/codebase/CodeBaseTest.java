@@ -37,7 +37,7 @@ public class CodeBaseTest {
     private CodeBase getCodeBase(String codeBase) throws URISyntaxException {
         return new CodeBase(CollectorConfig.builder()
                                            .sharedConfig(SharedConfig.builder().dataPath(new File(".")).build())
-                                           .codeBaseUri(new File(codeBase).toURI())
+                                           .codeBaseUris("file:" + new File(codeBase).getAbsolutePath())
                                            .customerName("customerName")
                                            .packagePrefixes("se.crisp")
                                            .appName("appName")

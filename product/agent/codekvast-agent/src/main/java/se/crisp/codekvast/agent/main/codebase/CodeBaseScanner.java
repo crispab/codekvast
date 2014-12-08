@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URLClassLoader;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Analyzes a code base and detects public methods. Uses the org.reflections for retrieving method signature data.
@@ -23,35 +24,60 @@ import java.util.Set;
 @Component
 public class CodeBaseScanner {
 
-    void getPublicMethodSignatures(CodeBase codeBase) {
-        URLClassLoader appClassLoader = new URLClassLoader(codeBase.getUrls(), System.class.getClassLoader());
-        Set<String> prefixes = codeBase.getConfig().getNormalizedPackagePrefixes();
-
+    /**
+     * Scans the code base for public methods in the correct packages. The result is stored in the code base.
+     *
+     * @param codeBase The code base to scan.
+     * @return The number of scanned classes.
+     */
+    public int scanSignatures(CodeBase codeBase) {
+        int result = 0;
         long startedAt = System.currentTimeMillis();
+        log.info("Scanning code base {}", codeBase);
+
+        URLClassLoader appClassLoader = new URLClassLoader(codeBase.getUrls(), System.class.getClassLoader());
+        Set<String> prefixes = new TreeSet<>(codeBase.getConfig().getNormalizedPackagePrefixes());
+
         Set<String> recognizedTypes = getRecognizedTypes(prefixes, appClassLoader);
+
         for (String type : recognizedTypes) {
             try {
                 Class<?> clazz = Class.forName(type, false, appClassLoader);
-                findPublicMethods(codeBase, prefixes, clazz);
-            } catch (ClassNotFoundException e) {
-                log.warn("Cannot analyze " + type, e);
+                result += findPublicMethods(codeBase, prefixes, clazz);
+            } catch (ClassNotFoundException | NoClassDefFoundError e) {
+                log.warn("Cannot analyze " + type + ": " + e);
             }
         }
-        codeBase.setNumClasses(recognizedTypes.size());
-        log.info("Found {} methods in {} classes in packages {} in {} ms", codeBase.getSignatures().size(), recognizedTypes.size(),
-                 prefixes, System
-                .currentTimeMillis() - startedAt);
+
+        if (codeBase.isEmpty()) {
+            log.warn("{} does not contain any classes with package prefixes {}.'", codeBase,
+                     codeBase.getConfig().getNormalizedPackagePrefixes());
+        }
+
+        codeBase.writeSignaturesToDisk();
+
+        log.info("{} with package prefix {} scanned in {} ms, found {} methods in {} classes.",
+                 codeBase, codeBase.getConfig().getNormalizedPackagePrefixes(), System.currentTimeMillis() - startedAt,
+                 codeBase.size(), result);
+
+        return result;
     }
 
-
     private Set<String> getRecognizedTypes(Set<String> packagePrefixes, URLClassLoader appClassLoader) {
+        // This is a weird way of using Reflections.
+        // We're only interested in it's ability to enumerate everything inside a class loader.
+        // The actual Reflections object is immediately discarded. Our data is collected by the filter.
+
         RecordingClassFileFilter recordingClassNameFilter = new RecordingClassFileFilter(packagePrefixes);
+
         new Reflections(appClassLoader, new SubTypesScanner(), recordingClassNameFilter);
+
         return recordingClassNameFilter.getMatchedClassNames();
     }
 
-    void findPublicMethods(CodeBase codeBase, Set<String> packagePrefixes, Class<?> clazz) {
+    int findPublicMethods(CodeBase codeBase, Set<String> packagePrefixes, Class<?> clazz) {
         log.debug("Analyzing {}", clazz);
+        int result = 1;
         try {
             Method[] methods = clazz.getMethods();
 
@@ -72,11 +98,12 @@ public class CodeBaseScanner {
             }
 
             for (Class<?> innerClass : clazz.getDeclaredClasses()) {
-                findPublicMethods(codeBase, packagePrefixes, innerClass);
+                result += findPublicMethods(codeBase, packagePrefixes, innerClass);
             }
         } catch (NoClassDefFoundError e) {
             log.warn("Cannot analyze {}: {}", clazz, e.toString());
         }
+        return result;
     }
 
     private Class findDeclaringClass(Class<?> clazz, Method method, Set<String> packagePrefixes) {

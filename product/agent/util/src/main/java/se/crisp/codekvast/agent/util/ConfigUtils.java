@@ -3,10 +3,10 @@ package se.crisp.codekvast.agent.util;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Utility class for config stuff.
@@ -20,8 +20,8 @@ public final class ConfigUtils {
     private ConfigUtils() {
     }
 
-    public static Set<String> getNormalizedPackagePrefixes(String packagePrefixes) {
-        Set<String> result = new TreeSet<String>();
+    public static List<String> getNormalizedPackagePrefixes(String packagePrefixes) {
+        List<String> result = new ArrayList<String>();
         if (packagePrefixes != null) {
             String[] prefixes = packagePrefixes.split("[:;,]");
             for (String prefix : prefixes) {
@@ -89,5 +89,22 @@ public final class ConfigUtils {
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException(String.format("Illegal URI value for %s: %s", key, value));
         }
+    }
+
+    public static List<URI> getNormalizedUriValues(String uris, boolean removeTrailingSlashes) {
+        List<URI> result = new ArrayList<URI>();
+        String[] parts = uris.split("[;,]");
+        for (String value : parts) {
+            value = value.trim();
+            if (removeTrailingSlashes && value.endsWith("/")) {
+                value = value.substring(0, value.length() - 1);
+            }
+            try {
+                result.add(new URI(value));
+            } catch (URISyntaxException e) {
+                throw new IllegalArgumentException(String.format("Illegal URI value %s", value));
+            }
+        }
+        return result;
     }
 }

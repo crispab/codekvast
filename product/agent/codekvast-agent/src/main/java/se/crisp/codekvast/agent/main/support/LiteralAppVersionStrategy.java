@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
+import java.util.Collection;
 
 /**
  * A strategy for literal versions. Handles "literal v" and "constant v".
@@ -24,7 +25,7 @@ public class LiteralAppVersionStrategy extends AbstractAppVersionStrategy {
     }
 
     @Override
-    public String resolveAppVersion(URI codeBaseUri, String[] args) {
+    public String resolveAppVersion(Collection<URI> codeBaseUris, String[] args) {
         return args[1].trim();
     }
 }

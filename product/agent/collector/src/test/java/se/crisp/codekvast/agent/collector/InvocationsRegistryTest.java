@@ -36,7 +36,7 @@ public class InvocationsRegistryTest {
         //@formatter:off
         config = CollectorConfig.builder()
                                 .sharedConfig(SharedConfig.builder().dataPath(dataPath).build())
-                                .codeBaseUri(codeBaseUri)
+                                .codeBaseUris(codeBaseUri.toString())
                                 .customerName(CUSTOMER_NAME)
                                 .packagePrefixes("se.crisp")
                                 .appName(APP_NAME)
@@ -73,7 +73,7 @@ public class InvocationsRegistryTest {
         assertThat(jvm.getCollectorConfig().getCustomerName(), is(CUSTOMER_NAME));
         assertThat(jvm.getCollectorConfig().getAppName(), is(APP_NAME));
         assertThat(jvm.getCollectorConfig().getAppVersion(), is(APP_VERSION));
-        assertThat(jvm.getCollectorConfig().getCodeBaseUri(), is(codeBaseUri));
+        assertThat(jvm.getCollectorConfig().getCodeBaseUris(), is(codeBaseUri.toString()));
     }
 
 }

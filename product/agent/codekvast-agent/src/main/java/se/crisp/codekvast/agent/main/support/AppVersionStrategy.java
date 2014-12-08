@@ -1,6 +1,7 @@
 package se.crisp.codekvast.agent.main.support;
 
 import java.net.URI;
+import java.util.Collection;
 
 /**
  * Strategy for how to obtain the version of an application.
@@ -21,9 +22,9 @@ public interface AppVersionStrategy {
     /**
      * Use args for resolving the app version
      *
-     * @param codeBaseUri The location of the code base.
+     * @param codeBaseUris The locations of the code base.
      * @param args The value of CollectorConfig.getAppVersionStrategy()
      * @return The resolved application version.
      */
-    String resolveAppVersion(URI codeBaseUri, String[] args);
+    String resolveAppVersion(Collection<URI> codeBaseUris, String[] args);
 }

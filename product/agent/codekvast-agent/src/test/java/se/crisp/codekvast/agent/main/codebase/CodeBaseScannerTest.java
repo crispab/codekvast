@@ -25,7 +25,7 @@ public class CodeBaseScannerTest {
     private CodeBase getCodeBase(String codeBase) throws URISyntaxException {
         return new CodeBase(CollectorConfig.builder()
                                            .sharedConfig(SharedConfig.builder().dataPath(new File(".")).build())
-                                           .codeBaseUri(new File(codeBase).toURI())
+                                           .codeBaseUris("file:" + new File(codeBase).getAbsolutePath())
                                            .customerName("customerName")
                                            .packagePrefixes(ScannerTest1.class.getPackage().getName())
                                            .appName("appName")
@@ -39,9 +39,9 @@ public class CodeBaseScannerTest {
     @Test
     public void testScanCodeBaseForDirectoryWithMyClassFiles() throws URISyntaxException {
         CodeBase codeBase = getCodeBase(TEST_CLASSES_DIR);
-        scanner.getPublicMethodSignatures(codeBase);
+        int numClasses = scanner.scanSignatures(codeBase);
         assertThat(codeBase.getSignatures(), notNullValue());
-        assertThat(codeBase.getNumClasses(), is(6));
+        assertThat(numClasses, is(8));
         assertThat(codeBase.getSignatures().size(), is(9));
     }
 
@@ -78,7 +78,6 @@ public class CodeBaseScannerTest {
         scanner.findPublicMethods(codeBase, of("se."), ScannerTest4.class);
 
         assertThat(codeBase.getSignatures().size(), is(6));
-        System.out.println("codeBase.getSignatures() = " + codeBase.getSignatures());
     }
 
 }

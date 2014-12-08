@@ -9,6 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 
@@ -38,27 +39,29 @@ public class ManifestAppVersionStrategy extends AbstractAppVersionStrategy {
     }
 
     @Override
-    public String resolveAppVersion(URI codeBaseUri, String[] args) {
+    public String resolveAppVersion(Collection<URI> codeBaseUris, String[] args) {
         String jarUri = args[1];
         String manifestAttribute = args.length > 2 ? args[2] : DEFAULT_MANIFEST_ATTRIBUTE;
-        try {
-            File file = getJarFile(codeBaseUri, jarUri);
-            JarFile jarFile = new JarFile(file);
-            Attributes attributes = jarFile.getManifest().getMainAttributes();
-            String resolvedVersion = attributes.getValue(manifestAttribute);
-            if (resolvedVersion != null) {
-                log.info("{}!/META-INF/MANIFEST.MF:{}={}", jarUri, manifestAttribute, resolvedVersion);
-                return resolvedVersion;
+        for (URI codeBaseUri : codeBaseUris) {
+            try {
+                File file = getJarFile(codeBaseUri, jarUri);
+                JarFile jarFile = new JarFile(file);
+                Attributes attributes = jarFile.getManifest().getMainAttributes();
+                String resolvedVersion = attributes.getValue(manifestAttribute);
+                if (resolvedVersion != null) {
+                    log.info("{}!/META-INF/MANIFEST.MF:{}={}", jarUri, manifestAttribute, resolvedVersion);
+                    return resolvedVersion;
+                }
+                if (!manifestAttribute.equalsIgnoreCase(DEFAULT_MANIFEST_ATTRIBUTE)) {
+                    resolvedVersion = attributes.getValue(DEFAULT_MANIFEST_ATTRIBUTE);
+                }
+                if (resolvedVersion != null) {
+                    log.info("{}!/META-INF/MANIFEST.MF:{}={}", jarUri, DEFAULT_MANIFEST_ATTRIBUTE, resolvedVersion);
+                    return resolvedVersion;
+                }
+            } catch (Exception e) {
+                log.warn("Cannot open " + jarUri + ": " + e);
             }
-            if (!manifestAttribute.equalsIgnoreCase(DEFAULT_MANIFEST_ATTRIBUTE)) {
-                resolvedVersion = attributes.getValue(DEFAULT_MANIFEST_ATTRIBUTE);
-            }
-            if (resolvedVersion != null) {
-                log.info("{}!/META-INF/MANIFEST.MF:{}={}", jarUri, DEFAULT_MANIFEST_ATTRIBUTE, resolvedVersion);
-                return resolvedVersion;
-            }
-        } catch (Exception e) {
-            log.warn("Cannot open " + jarUri + ": " + e);
         }
         log.warn("Cannot resolve {}!/META-INF/MANIFEST.MF:{}", jarUri, manifestAttribute);
         return UNKNOWN_VERSION;

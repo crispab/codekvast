@@ -8,14 +8,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * This is a Reflections filter that rejects everything, but remembers the names of "our" classes, i.e.,
+ * classes with correct package prefixes.
+ *
+ * After doing {@code new Reflections(... new RecordingClassFileFilter(prefixes))} one can retrieve the
+ * matched set of class names from the filter.
+ *
  * @author Olle Hallin
  */
 class RecordingClassFileFilter implements Predicate<String> {
     private final Pattern pattern;
     private final Set<String> matches = new HashSet<>();
 
-    RecordingClassFileFilter(Set<String> prefixes) {
-        this.pattern = buildPattern(prefixes);
+    RecordingClassFileFilter(Set<String> packagePrefixes) {
+        this.pattern = buildPattern(packagePrefixes);
     }
 
     @Override
@@ -23,7 +29,6 @@ class RecordingClassFileFilter implements Predicate<String> {
         Matcher matcher = pattern.matcher(input);
         if (matcher.matches()) {
             matches.add(matcher.group(1));
-            return true;
         }
         return false;
     }
