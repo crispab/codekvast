@@ -1,6 +1,8 @@
 package se.crisp.codekvast.agent.main.codebase;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import se.crisp.codekvast.agent.config.CollectorConfig;
 import se.crisp.codekvast.agent.config.SharedConfig;
 import se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest1;
@@ -18,13 +20,16 @@ import static org.junit.Assert.assertThat;
 
 public class CodeBaseScannerTest {
 
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
     public static final String TEST_CLASSES_DIR = "build/classes/test";
 
     private final CodeBaseScanner scanner = new CodeBaseScanner();
 
     private CodeBase getCodeBase(String codeBase) throws URISyntaxException {
         return new CodeBase(CollectorConfig.builder()
-                                           .sharedConfig(SharedConfig.builder().dataPath(new File(".")).build())
+                                           .sharedConfig(SharedConfig.builder().dataPath(temporaryFolder.getRoot()).build())
                                            .codeBaseUris("file:" + new File(codeBase).getAbsolutePath())
                                            .customerName("customerName")
                                            .packagePrefixes(ScannerTest1.class.getPackage().getName())
