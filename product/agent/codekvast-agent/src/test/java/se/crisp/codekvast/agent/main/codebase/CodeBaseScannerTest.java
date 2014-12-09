@@ -30,7 +30,7 @@ public class CodeBaseScannerTest {
     private CodeBase getCodeBase(String codeBase) throws URISyntaxException {
         return new CodeBase(CollectorConfig.builder()
                                            .sharedConfig(SharedConfig.builder().dataPath(temporaryFolder.getRoot()).build())
-                                           .codeBases(new File(codeBase).getAbsolutePath())
+                                           .codeBase(new File(codeBase).getAbsolutePath())
                                            .customerName("customerName")
                                            .packagePrefixes(ScannerTest1.class.getPackage().getName())
                                            .appName("appName")

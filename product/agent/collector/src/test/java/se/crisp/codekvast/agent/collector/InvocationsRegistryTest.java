@@ -25,18 +25,18 @@ public class InvocationsRegistryTest {
     public final TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     private CollectorConfig config;
-    private String codeBases;
+    private String codeBase;
 
     @Before
     public void beforeTest() throws IOException {
-        codeBases =
+        codeBase =
                 temporaryFolder.newFolder("codebase1").getAbsolutePath() + ", " + temporaryFolder.newFolder("codebase2").getAbsolutePath();
         File dataPath = temporaryFolder.newFolder("collector");
 
         //@formatter:off
         config = CollectorConfig.builder()
                                 .sharedConfig(SharedConfig.builder().dataPath(dataPath).build())
-                                .codeBases(codeBases)
+                                .codeBase(codeBase)
                                 .customerName(CUSTOMER_NAME)
                                 .packagePrefixes("se.crisp")
                                 .appName(APP_NAME)
@@ -73,7 +73,7 @@ public class InvocationsRegistryTest {
         assertThat(jvm.getCollectorConfig().getCustomerName(), is(CUSTOMER_NAME));
         assertThat(jvm.getCollectorConfig().getAppName(), is(APP_NAME));
         assertThat(jvm.getCollectorConfig().getAppVersion(), is(APP_VERSION));
-        assertThat(jvm.getCollectorConfig().getCodeBases(), is(codeBases));
+        assertThat(jvm.getCollectorConfig().getCodeBase(), is(codeBase));
     }
 
 }

@@ -51,7 +51,7 @@ public class CodeBase {
 
     public CodeBase(CollectorConfig config) {
         this.config = config;
-        this.codeBaseFiles = getCodeBaseFiles(config.getNormalizedCodeBaseUris());
+        this.codeBaseFiles = getCodeBaseFiles(config.getCodeBaseUris());
         this.fingerprint = initUrls();
     }
 

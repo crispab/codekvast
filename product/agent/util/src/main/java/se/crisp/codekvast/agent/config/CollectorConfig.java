@@ -55,7 +55,7 @@ public class CollectorConfig implements CodekvastConfig {
     @NonNull
     private final String appVersion;
     @NonNull
-    private final String codeBases;
+    private final String codeBase;
     @NonNull
     private final String packagePrefixes;
 
@@ -88,8 +88,8 @@ public class CollectorConfig implements CodekvastConfig {
         return ConfigUtils.getNormalizedPackagePrefixes(packagePrefixes);
     }
 
-    public List<URI> getNormalizedCodeBaseUris() {
-        return ConfigUtils.getNormalizedUriValues(codeBases, false);
+    public List<URI> getCodeBaseUris() {
+        return ConfigUtils.getCommaSeparatedUriValues(codeBase, false);
     }
 
     public void saveTo(File file) {
@@ -126,7 +126,7 @@ public class CollectorConfig implements CodekvastConfig {
                               .customerName(ConfigUtils.getMandatoryStringValue(props, "customerName"))
                               .appName(ConfigUtils.getMandatoryStringValue(props, "appName"))
                               .appVersion(ConfigUtils.getOptionalStringValue(props, "appVersion", UNSPECIFIED_VERSION))
-                              .codeBases(ConfigUtils.getMandatoryStringValue(props, "codeBases"))
+                              .codeBase(ConfigUtils.getMandatoryStringValue(props, "codeBase"))
                               .packagePrefixes(ConfigUtils.getMandatoryStringValue(props, "packagePrefixes"))
                               .collectorResolutionSeconds(ConfigUtils.getOptionalIntValue(props, "collectorResolutionSeconds",
                                                                                           DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS))
@@ -143,7 +143,7 @@ public class CollectorConfig implements CodekvastConfig {
                               .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
                               .appName("Sample Application Name")
                               .appVersion(UNSPECIFIED_VERSION)
-                              .codeBases(SAMPLE_CODEBASE_URI1 + " , " + SAMPLE_CODEBASE_URI2)
+                              .codeBase(SAMPLE_CODEBASE_URI1 + " , " + SAMPLE_CODEBASE_URI2)
                               .packagePrefixes("com.acme. , foo.bar.")
                               .collectorResolutionSeconds(DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS)
                               .verbose(DEFAULT_VERBOSE)

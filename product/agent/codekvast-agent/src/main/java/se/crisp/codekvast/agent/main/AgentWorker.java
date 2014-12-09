@@ -99,7 +99,7 @@ public class AgentWorker {
     private String getAppVersion(Jvm jvm) {
         String appVersion = appVersions.get(jvm.getJvmFingerprint());
         if (appVersion == null) {
-            appVersion = resolveAppVersion(appVersionStrategies, jvm.getCollectorConfig().getNormalizedCodeBaseUris(),
+            appVersion = resolveAppVersion(appVersionStrategies, jvm.getCollectorConfig().getCodeBaseUris(),
                                            jvm.getCollectorConfig().getAppVersion());
             appVersions.put(jvm.getJvmFingerprint(), appVersion);
         }

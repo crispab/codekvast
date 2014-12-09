@@ -91,7 +91,7 @@ public final class ConfigUtils {
         }
     }
 
-    public static List<URI> getNormalizedUriValues(String uriValues, boolean removeTrailingSlashes) {
+    public static List<URI> getCommaSeparatedUriValues(String uriValues, boolean removeTrailingSlashes) {
         List<URI> result = new ArrayList<URI>();
         String[] parts = uriValues.split("[;,]");
         for (String value : parts) {
