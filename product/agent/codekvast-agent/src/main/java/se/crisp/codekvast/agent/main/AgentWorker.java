@@ -169,7 +169,7 @@ public class AgentWorker {
                 return resolvedVersion;
             }
         }
-        log.warn("Cannot resolve appVersion '{}', using it verbatim", version);
+        log.info("Cannot resolve appVersion '{}', using it verbatim", version);
         return version;
     }
 
@@ -245,11 +245,11 @@ public class AgentWorker {
                 } else if (normalizedSignature.equals(rawSignature)) {
                     unrecognized += 1;
                     confidence = SignatureConfidence.NOT_FOUND_IN_CODE_BASE;
-                    log.warn("Unrecognized signature: {}", normalizedSignature);
+                    log.debug("Unrecognized signature: {}", normalizedSignature);
                 } else {
                     unrecognized += 1;
                     confidence = SignatureConfidence.NOT_FOUND_IN_CODE_BASE;
-                    log.warn("Unrecognized signature: {} (was {})", normalizedSignature, rawSignature);
+                    log.debug("Unrecognized signature: {} (was {})", normalizedSignature, rawSignature);
                 }
             }
 
