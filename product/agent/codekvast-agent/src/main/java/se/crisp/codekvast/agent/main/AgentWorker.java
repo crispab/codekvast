@@ -156,7 +156,7 @@ public class AgentWorker {
         }
     }
 
-    static String resolveAppVersion(Collection<? extends AppVersionStrategy> appVersionStrategies, Collection<URI> codeBaseUris, String
+    static String resolveAppVersion(Collection<? extends AppVersionStrategy> appVersionStrategies, Collection<URI> codeBases, String
             appVersion) {
         String version = appVersion.trim();
         String args[] = version.split("\\s+");
@@ -164,7 +164,7 @@ public class AgentWorker {
         for (AppVersionStrategy strategy : appVersionStrategies) {
             if (strategy.canHandle(args)) {
                 long startedAt = System.currentTimeMillis();
-                String resolvedVersion = strategy.resolveAppVersion(codeBaseUris, args);
+                String resolvedVersion = strategy.resolveAppVersion(codeBases, args);
                 log.debug("Resolved '{}' to '{}' in {} ms", version, resolvedVersion, System.currentTimeMillis() - startedAt);
                 return resolvedVersion;
             }

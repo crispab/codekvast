@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
  *
  * @author Olle Hallin (qolha), olle.hallin@crisp.se
  */
-@ToString(of = "codeBaseFile", includeFieldNames = false)
+@ToString(of = "codeBaseFiles", includeFieldNames = false)
 @EqualsAndHashCode(of = "fingerprint")
 @Slf4j
 public class CodeBase {

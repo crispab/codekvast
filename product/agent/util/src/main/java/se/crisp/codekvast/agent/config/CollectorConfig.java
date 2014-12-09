@@ -35,8 +35,8 @@ public class CollectorConfig implements CodekvastConfig {
     public static final int DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS = 600;
     public static final boolean DEFAULT_VERBOSE = false;
     public static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
-    public static final String SAMPLE_CODEBASE_URI1 = "file:path/to/codebase1/";
-    public static final String SAMPLE_CODEBASE_URI2 = "file:path/to/codebase2/";
+    public static final String SAMPLE_CODEBASE_URI1 = "/path/to/codebase1/";
+    public static final String SAMPLE_CODEBASE_URI2 = "/path/to/codebase2/";
     public static final String OVERRIDE_SEPARATOR = ";";
     public static final String UNSPECIFIED_VERSION = "unspecified";
 
@@ -55,7 +55,7 @@ public class CollectorConfig implements CodekvastConfig {
     @NonNull
     private final String appVersion;
     @NonNull
-    private final String codeBaseUris;
+    private final String codeBases;
     @NonNull
     private final String packagePrefixes;
 
@@ -89,7 +89,7 @@ public class CollectorConfig implements CodekvastConfig {
     }
 
     public List<URI> getNormalizedCodeBaseUris() {
-        return ConfigUtils.getNormalizedUriValues(codeBaseUris, false);
+        return ConfigUtils.getNormalizedUriValues(codeBases, false);
     }
 
     public void saveTo(File file) {
@@ -126,7 +126,7 @@ public class CollectorConfig implements CodekvastConfig {
                               .customerName(ConfigUtils.getMandatoryStringValue(props, "customerName"))
                               .appName(ConfigUtils.getMandatoryStringValue(props, "appName"))
                               .appVersion(ConfigUtils.getOptionalStringValue(props, "appVersion", UNSPECIFIED_VERSION))
-                              .codeBaseUris(ConfigUtils.getMandatoryStringValue(props, "codeBaseUris"))
+                              .codeBases(ConfigUtils.getMandatoryStringValue(props, "codeBases"))
                               .packagePrefixes(ConfigUtils.getMandatoryStringValue(props, "packagePrefixes"))
                               .collectorResolutionSeconds(ConfigUtils.getOptionalIntValue(props, "collectorResolutionSeconds",
                                                                                           DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS))
@@ -143,7 +143,7 @@ public class CollectorConfig implements CodekvastConfig {
                               .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
                               .appName("Sample Application Name")
                               .appVersion(UNSPECIFIED_VERSION)
-                              .codeBaseUris(SAMPLE_CODEBASE_URI1 + " , " + SAMPLE_CODEBASE_URI2)
+                              .codeBases(SAMPLE_CODEBASE_URI1 + " , " + SAMPLE_CODEBASE_URI2)
                               .packagePrefixes("com.acme. , foo.bar.")
                               .collectorResolutionSeconds(DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS)
                               .verbose(DEFAULT_VERBOSE)

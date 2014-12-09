@@ -25,7 +25,7 @@ public class LiteralAppVersionStrategy extends AbstractAppVersionStrategy {
     }
 
     @Override
-    public String resolveAppVersion(Collection<URI> codeBaseUris, String[] args) {
+    public String resolveAppVersion(Collection<URI> codeBases, String[] args) {
         return args[1].trim();
     }
 }

@@ -10,7 +10,6 @@ import se.crisp.codekvast.agent.model.Jvm;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -26,17 +25,18 @@ public class InvocationsRegistryTest {
     public final TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     private CollectorConfig config;
-    private URI codeBaseUri;
+    private String codeBases;
 
     @Before
     public void beforeTest() throws IOException {
-        codeBaseUri = temporaryFolder.newFolder("codebase").toURI();
+        codeBases =
+                temporaryFolder.newFolder("codebase1").getAbsolutePath() + ", " + temporaryFolder.newFolder("codebase2").getAbsolutePath();
         File dataPath = temporaryFolder.newFolder("collector");
 
         //@formatter:off
         config = CollectorConfig.builder()
                                 .sharedConfig(SharedConfig.builder().dataPath(dataPath).build())
-                                .codeBaseUris(codeBaseUri.toString())
+                                .codeBases(codeBases)
                                 .customerName(CUSTOMER_NAME)
                                 .packagePrefixes("se.crisp")
                                 .appName(APP_NAME)
@@ -73,7 +73,7 @@ public class InvocationsRegistryTest {
         assertThat(jvm.getCollectorConfig().getCustomerName(), is(CUSTOMER_NAME));
         assertThat(jvm.getCollectorConfig().getAppName(), is(APP_NAME));
         assertThat(jvm.getCollectorConfig().getAppVersion(), is(APP_VERSION));
-        assertThat(jvm.getCollectorConfig().getCodeBaseUris(), is(codeBaseUri.toString()));
+        assertThat(jvm.getCollectorConfig().getCodeBases(), is(codeBases));
     }
 
 }

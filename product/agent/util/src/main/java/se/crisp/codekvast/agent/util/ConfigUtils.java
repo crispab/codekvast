@@ -91,20 +91,30 @@ public final class ConfigUtils {
         }
     }
 
-    public static List<URI> getNormalizedUriValues(String uris, boolean removeTrailingSlashes) {
+    public static List<URI> getNormalizedUriValues(String uriValues, boolean removeTrailingSlashes) {
         List<URI> result = new ArrayList<URI>();
-        String[] parts = uris.split("[;,]");
+        String[] parts = uriValues.split("[;,]");
         for (String value : parts) {
             value = value.trim();
             if (removeTrailingSlashes && value.endsWith("/")) {
                 value = value.substring(0, value.length() - 1);
             }
-            try {
-                result.add(new URI(value));
-            } catch (URISyntaxException e) {
-                throw new IllegalArgumentException(String.format("Illegal URI value %s", value));
+            URI uri = makeUri(value);
+            if (uri.getScheme() == null) {
+                uri = makeUri("file:" + value);
             }
+            result.add(uri);
         }
         return result;
+    }
+
+    private static URI makeUri(String value) {
+        URI uri;
+        try {
+            uri = new URI(value);
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException(String.format("Illegal URI value %s", value));
+        }
+        return uri;
     }
 }

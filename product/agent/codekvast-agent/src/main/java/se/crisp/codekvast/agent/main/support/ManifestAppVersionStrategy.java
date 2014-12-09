@@ -39,10 +39,10 @@ public class ManifestAppVersionStrategy extends AbstractAppVersionStrategy {
     }
 
     @Override
-    public String resolveAppVersion(Collection<URI> codeBaseUris, String[] args) {
+    public String resolveAppVersion(Collection<URI> codeBases, String[] args) {
         String jarUri = args[1];
         String manifestAttribute = args.length > 2 ? args[2] : DEFAULT_MANIFEST_ATTRIBUTE;
-        for (URI codeBaseUri : codeBaseUris) {
+        for (URI codeBaseUri : codeBases) {
             try {
                 File file = getJarFile(codeBaseUri, jarUri);
                 JarFile jarFile = new JarFile(file);

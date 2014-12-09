@@ -55,18 +55,10 @@ jar.dependsOn tasks.getByPath(":product:agent:util:test")
 applicationDistribution.from("src/main/resources") {
     into "conf"
     include "logback.xml"
-    include "codekvast-agent.conf"
     rename { "${it}.sample" }
 }
+
 apply from: "$rootDir/gradle/sources-javadoc.gradle"
-
-applicationDistribution.from(tasks.getByPath(":product:agent:util:test").sampleCollectorConfigFile) {
-    into "conf"
-}
-
-applicationDistribution.from(tasks.getByPath(":product:agent:util:test").sampleAgentConfigFile) {
-    into "conf"
-}
 
 startScripts {
     doLast {

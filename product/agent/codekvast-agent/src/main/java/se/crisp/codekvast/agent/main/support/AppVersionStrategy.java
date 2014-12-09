@@ -22,9 +22,9 @@ public interface AppVersionStrategy {
     /**
      * Use args for resolving the app version
      *
-     * @param codeBaseUris The locations of the code base.
+     * @param codeBases The locations of the code base.
      * @param args The value of CollectorConfig.getAppVersionStrategy()
      * @return The resolved application version.
      */
-    String resolveAppVersion(Collection<URI> codeBaseUris, String[] args);
+    String resolveAppVersion(Collection<URI> codeBases, String[] args);
 }
