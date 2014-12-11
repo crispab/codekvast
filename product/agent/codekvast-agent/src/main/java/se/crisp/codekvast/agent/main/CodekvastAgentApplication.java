@@ -105,6 +105,6 @@ public class CodekvastAgentApplication {
 
     @Bean
     public ComputerID computerID() {
-        return ComputerID.get();
+        return ComputerID.compute();
     }
 }

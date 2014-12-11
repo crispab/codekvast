@@ -5,14 +5,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.UUID;
-import java.util.prefs.Preferences;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.Enumeration;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
- * This is a UUID in disguise. It support creating a random UUID and stuff it into java.util.prefs.Preferences so that it remains invariant
- * on the same computer.
- * <p/>
- * The reason for wrapping the UUID is that it should be simpler to {@literal @Inject}
+ * This is a computed value of the computer identity. It uses various stuff for computing the value, that is unlikely to change between
+ * reboots.
  *
  * @author Olle Hallin
  */
@@ -20,9 +23,6 @@ import java.util.prefs.Preferences;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public class ComputerID {
-    private static final String PREFS_NODE_PATH = "se/crisp/codekvast/agent";
-    private static final String PREFS_AGENT_ID_KEY = "agentId";
-
     private final String value;
 
     @Override
@@ -30,17 +30,46 @@ public class ComputerID {
         return value;
     }
 
-    public static ComputerID get() {
-
-        Preferences preferences = Preferences.userRoot().node(PREFS_NODE_PATH);
-        String value = preferences.get(PREFS_AGENT_ID_KEY, null);
-        if (value == null) {
-            value = UUID.randomUUID().toString();
-            log.info("Generated the computer ID {}", value);
-            preferences.put(PREFS_AGENT_ID_KEY, value);
-        } else {
-            log.debug("Retrieved the computer ID {}", value);
-        }
+    public static ComputerID compute() {
+        String value = computeComputerIdentity();
+        log.info("Computed the computer ID '{}'", value);
         return new ComputerID(value);
+    }
+
+    private static String computeComputerIdentity() {
+        Set<String> items = new TreeSet<>();
+        addMacAddresses(items);
+        addHostName(items);
+        return Integer.toHexString(items.hashCode()).toLowerCase();
+    }
+
+    private static void addHostName(Set<String> items) {
+        try {
+            items.add(InetAddress.getLocalHost().getCanonicalHostName());
+        } catch (UnknownHostException e) {
+            log.error("Cannot get name of localhost");
+        }
+    }
+
+    private static void addMacAddresses(Set<String> items) {
+        try {
+            for (Enumeration<NetworkInterface> it = NetworkInterface.getNetworkInterfaces(); it.hasMoreElements(); ) {
+                items.add(prettyPrintMacAddress(it.nextElement().getHardwareAddress()));
+            }
+        } catch (SocketException e) {
+            log.error("Cannot enumerate network interfaces");
+        }
+    }
+
+    private static String prettyPrintMacAddress(byte[] macAddress) throws SocketException {
+        StringBuilder sb = new StringBuilder();
+        if (macAddress != null) {
+            String delimiter = "";
+            for (byte b : macAddress) {
+                sb.append(String.format("%s%02x", delimiter, b));
+                delimiter = ":";
+            }
+        }
+        return sb.toString();
     }
 }
