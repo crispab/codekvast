@@ -54,7 +54,10 @@ public class ComputerID {
     private static void addMacAddresses(Set<String> items) {
         try {
             for (Enumeration<NetworkInterface> it = NetworkInterface.getNetworkInterfaces(); it.hasMoreElements(); ) {
-                items.add(prettyPrintMacAddress(it.nextElement().getHardwareAddress()));
+                NetworkInterface ni = it.nextElement();
+                if (!ni.isLoopback() && !ni.getName().contains("vbox") && !ni.getName().contains("docker")) {
+                    items.add(prettyPrintMacAddress(ni.getHardwareAddress()));
+                }
             }
         } catch (SocketException e) {
             log.error("Cannot enumerate network interfaces");
