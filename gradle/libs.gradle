@@ -1,5 +1,5 @@
 ext {
-    springBootVersion = '1.1.9.RELEASE'
+    springBootVersion = '1.2.0.RELEASE'
 
     // This one is required by the aspectj-plugin
     // Synchronize it with "org.springframework.boot:spring-boot-dependencies:$springBootVersion" (available as HTML
@@ -8,8 +8,8 @@ ext {
 
     // These are used by non-spring-boot modules. Make sure the version is synchronized with
     // spring-boot-dependencies
-    junit = "junit:junit:4.11"
-    mockito = "org.mockito:mockito-core:1.10.10"
+    junit = "junit:junit:4.12"
+    mockito = "org.mockito:mockito-core:1.10.16"
 
     // Development tools, not part of the product
     lombok = "org.projectlombok:lombok:1.14.8"

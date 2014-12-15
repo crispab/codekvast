@@ -30,8 +30,8 @@ dependencies {
 
     runtime 'org.webjars:headjs:1.0.3'
     runtime 'org.webjars:jquery:2.1.1'
-    runtime 'org.webjars:angularjs:1.3.2'
-    runtime 'org.webjars:angular-ui-bootstrap:0.11.2'
+    runtime 'org.webjars:angularjs:1.3.6'
+    runtime 'org.webjars:angular-ui-bootstrap:0.12.0'
     runtime 'org.webjars:bootstrap:3.3.1'
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'

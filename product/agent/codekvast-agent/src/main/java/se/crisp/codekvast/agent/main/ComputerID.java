@@ -67,10 +67,8 @@ public class ComputerID {
     private static String prettyPrintMacAddress(byte[] macAddress) throws SocketException {
         StringBuilder sb = new StringBuilder();
         if (macAddress != null) {
-            String delimiter = "";
             for (byte b : macAddress) {
-                sb.append(String.format("%s%02x", delimiter, b));
-                delimiter = ":";
+                sb.append(String.format("%02x", b));
             }
         }
         return sb.toString();
