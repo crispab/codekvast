@@ -1,9 +1,7 @@
 package se.crisp.codekvast.server.codekvast_server;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,9 +12,7 @@ import java.util.Properties;
  *
  * @author Olle Hallin
  */
-@Configuration
-@ComponentScan
-@EnableAutoConfiguration
+@SpringBootApplication
 public class CodekvastServerApplication {
 
     public static void main(String[] args) throws IOException {

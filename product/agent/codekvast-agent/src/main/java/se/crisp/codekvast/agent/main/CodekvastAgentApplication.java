@@ -3,10 +3,9 @@ package se.crisp.codekvast.agent.main;
 
 import com.google.common.base.Preconditions;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -26,10 +25,9 @@ import java.util.Properties;
  *
  * @author Olle Hallin
  */
-@Configuration
-@EnableAutoConfiguration
-@EnableScheduling
+@SpringBootApplication
 @ComponentScan("se.crisp.codekvast")
+@EnableScheduling
 public class CodekvastAgentApplication {
 
     public static final String SYSPROP_CODEKVAST_AGENT_CONFIGURATION = "codekvast.agent-configuration";
