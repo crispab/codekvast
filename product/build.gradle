@@ -193,7 +193,7 @@ task redeployWeb {
 
     doFirst {
         if (!deployStatusFile.exists()) {
-            throw new IllegalStateException("Cannot deployWeb $version before installWeb")
+            throw new TaskExecutionException("Cannot redeployWeb $version before installWeb")
         }
     }
 
