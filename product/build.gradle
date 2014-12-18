@@ -16,7 +16,7 @@ import org.ajoberstar.grgit.Grgit
 
 import java.text.SimpleDateFormat
 
-version = "0.7.5"
+version = "0.7.6"
 
 ext.gitCommit = Grgit.open("$rootDir").log(maxCommits: 1)[0]
 ext.gitVersionTokens = [
@@ -105,10 +105,16 @@ remotes {
 
 task prepareTargetServers << {
     def etcDir = file('src/provision/etc/')
+    def keystoreFile = new File(System.properties['user.home'], ".ssh/star.crisp.se.jks")
+
+    if (!keystoreFile.exists()) {
+        throw new TaskExecutionException(keystoreFile + " is missing")
+    }
 
     ssh.run {
         session(remotes.role('all')) {
             put "$etcDir/redirectPort80", "."
+            put keystoreFile, "."
 
             execute """
 sudo apt-get -q update;
@@ -116,12 +122,16 @@ sudo apt-get -q upgrade -y;
 sudo apt-get install -y unzip;
 sudo apt-get install -y openjdk-7-jdk;
 
-sudo echo 'Europe/Stockholm' > /etc/timezone
+sudo "echo 'Europe/Stockholm' > /etc/timezone";
 
 sudo mv -f redirectPort80 /etc/init.d;
-cd /etc/init.d;
-chmod +x redirectPort80
-sudo update-rc.d redirectPort80 defaults
+sudo mv -f ${keystoreFile.name} /etc/ssl/certs/java;
+
+pushd /etc/init.d;
+chmod +x redirectPort80;
+sudo update-rc.d redirectPort80 defaults;
+popd
+
 """
         }
     }
@@ -170,7 +180,7 @@ sudo chmod +x codekvast-web
     }
 }
 
-task deployWeb {
+task redeployWeb {
     group "Provisioning"
     description "Redeploys Codekvast-web with same version and configuration"
     dependsOn webDistZip
