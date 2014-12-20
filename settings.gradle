@@ -1,11 +1,12 @@
 rootProject.name = 'codekvast'
 
 include ':product'
-include ':product:agent:util'
-include ':product:agent:collector'
 include ':product:agent:codekvast-agent'
-include ':product:server:codekvast-server'
+include ':product:agent:collector'
+include ':product:agent:util'
 include ':product:server:agent-delegate'
+include ':product:server:codekvast-server'
+include ':product:support:websupport'
 include ':product:web'
 
 include ':tools'

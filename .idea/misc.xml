@@ -31,12 +31,13 @@
   </component>
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
-    <list size="5">
+    <list size="6">
       <item index="0" class="java.lang.String" itemvalue="com.google.common.annotations.VisibleForTesting" />
-      <item index="1" class="java.lang.String" itemvalue="org.springframework.messaging.handler.annotation.MessageMapping" />
-      <item index="2" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.ExceptionHandler" />
-      <item index="3" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.InitBinder" />
-      <item index="4" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.RequestMapping" />
+      <item index="1" class="java.lang.String" itemvalue="org.springframework.context.annotation.Configuration" />
+      <item index="2" class="java.lang.String" itemvalue="org.springframework.messaging.handler.annotation.MessageMapping" />
+      <item index="3" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.ExceptionHandler" />
+      <item index="4" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.InitBinder" />
+      <item index="5" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.RequestMapping" />
     </list>
   </component>
   <component name="FrameworkDetectionExcludesConfiguration">

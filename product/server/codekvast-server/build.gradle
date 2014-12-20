@@ -37,6 +37,7 @@ dependencies {
     compile "org.webjars:stomp-websocket:2.3.1"
     compile "org.webjars:bootstrap:3.3.1"
 
+    runtime project(':product:support:websupport')
     runtime "org.hibernate:hibernate-validator"
 
     testCompile "org.springframework.boot:spring-boot-starter-test"

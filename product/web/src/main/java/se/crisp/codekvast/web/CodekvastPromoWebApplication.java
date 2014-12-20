@@ -2,6 +2,7 @@ package se.crisp.codekvast.web;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.util.Properties;
  * @author Olle Hallin
  */
 @SpringBootApplication
+@ComponentScan("se.crisp.codekvast")
 @EnableScheduling
 public class CodekvastPromoWebApplication {
 

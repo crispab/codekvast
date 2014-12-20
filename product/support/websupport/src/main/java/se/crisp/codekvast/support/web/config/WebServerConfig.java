@@ -1,4 +1,4 @@
-package se.crisp.codekvast.web.config;
+package se.crisp.codekvast.support.web.config;
 
 import com.planetj.servlet.filter.compression.CompressingFilter;
 import org.apache.catalina.connector.Connector;
@@ -12,29 +12,33 @@ import javax.servlet.Filter;
 import java.io.File;
 
 /**
- * Configures the servlet container..
+ * Configures the embedded web server.
  *
  * @author Olle Hallin
  */
 @Configuration
-public class ServletContainerConfig {
+public class WebServerConfig {
 
+    /**
+     * If it finds a keystore in a well-known location, add an https connector on port 8443 in addition to the standard http connector on
+     * port 8080.
+     */
     @Bean
     public EmbeddedServletContainerFactory servletContainer() {
         TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory();
 
         File keystore = new File("/etc/ssl/certs/java/star.crisp.se.jks");
         if (keystore.canRead()) {
-            tomcat.addAdditionalTomcatConnectors(createSslConnector(keystore));
+            tomcat.addAdditionalTomcatConnectors(createSslConnector(keystore, 8443));
         }
         return tomcat;
     }
 
-    private Connector createSslConnector(File keystore) {
+    private Connector createSslConnector(File keystore, int port) {
         Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
         connector.setScheme("https");
         connector.setSecure(true);
-        connector.setPort(8443);
+        connector.setPort(port);
 
         Http11NioProtocol protocol = (Http11NioProtocol) connector.getProtocolHandler();
         protocol.setSSLEnabled(true);
