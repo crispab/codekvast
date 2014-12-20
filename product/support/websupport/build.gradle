@@ -5,6 +5,9 @@ plugins {
 apply plugin: 'spring-boot'
 
 dependencies {
+    compile lombok
+    compile 'ch.qos.logback:logback-classic'
     compile 'org.springframework.boot:spring-boot-starter-web'
+    compile "javax.inject:javax.inject:1"
     compile 'net.sourceforge.pjl-comp-filter:pjl-comp-filter:1.7'
 }
