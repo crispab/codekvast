@@ -30,7 +30,7 @@ dependencies {
 
     runtime project(':product:support:websupport')
     runtime 'org.webjars:headjs:1.0.3'
-    runtime 'org.webjars:jquery:2.1.1'
+    runtime 'org.webjars:jquery:2.1.3'
     runtime 'org.webjars:angularjs:1.3.6'
     runtime 'org.webjars:angular-ui-bootstrap:0.12.0'
     runtime 'org.webjars:bootstrap:3.3.1'
