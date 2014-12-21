@@ -1,7 +1,8 @@
 //noinspection JSUnusedGlobalSymbols
 var codekvastApp = angular.module('codekvastApp', [])
-    .controller('SignaturesCtrl', ['$scope', function ($scope) {
+    .controller('MainCtrl', ['$scope', function ($scope) {
         $scope.applications = [];
+        $scope.application = undefined;
         $scope.signatures = [];
 
         $scope.socket = {
@@ -12,6 +13,9 @@ var codekvastApp = angular.module('codekvastApp', [])
         $scope.updateApplications = function (data) {
             console.log("Received applications %o", data);
             $scope.applications = JSON.parse(data.body);
+            if ($scope.applications.length > 0 && angular.isUndefined($scope.application)) {
+                $scope.application = $scope.applications[0]
+            }
             $scope.$apply()
         };
 
@@ -31,7 +35,7 @@ var codekvastApp = angular.module('codekvastApp', [])
 
             $scope.socket.stomp = Stomp.over($scope.socket.client);
 
-            $scope.socket.stomp.connect({}, function (frame) {
+            $scope.socket.stomp.connect({}, function () {
                 $scope.socket.stomp.subscribe("/app/applications", $scope.updateApplications);
                 // $scope.socket.stomp.subscribe("/app/signatures", $scope.updateSignatures);
             }, function (error) {
@@ -42,6 +46,7 @@ var codekvastApp = angular.module('codekvastApp', [])
 
         $scope.initSockets();
     }])
+
     .filter('suppressEmptyDate', function () {
         return function (input) {
             return input == 0 ? "" : input;

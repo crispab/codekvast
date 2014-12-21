@@ -9,6 +9,7 @@ import se.crisp.codekvast.server.codekvast_server.model.Application;
 import se.crisp.codekvast.server.codekvast_server.model.Role;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author Olle Hallin
@@ -17,6 +18,10 @@ public interface UserDAO {
 
     long getCustomerId(String customerName) throws UndefinedCustomerException;
 
+    /**
+     * Retrieve an application ID. If not found, a new row is inserted into APPLICATIONS and an ApplicationCreatedEvent is posted on the
+     * event bus.
+     */
     long getAppId(long customerId, String environment, String appName, String appVersion) throws UndefinedApplicationException;
 
     AppId getAppIdByJvmFingerprint(String jvmFingerprint);
@@ -34,7 +39,19 @@ public interface UserDAO {
 
     Collection<InvocationEntry> getSignatures(Long customerId);
 
-    Collection<Long> getCustomerIds(String username);
+    /**
+     * Retrieve all customers this user has access to.
+     *
+     * @param username The username
+     * @return A map with customerId as keys and customerNames as values.
+     */
+    Map<Long, String> getCustomers(String username);
 
+    /**
+     * Retrieve all applications for a certain customer
+     *
+     * @param customerId The customerId
+     * @return All applications for a certain customer. Does never return null.
+     */
     Collection<Application> getApplications(Long customerId);
 }

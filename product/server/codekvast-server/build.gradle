@@ -31,11 +31,11 @@ dependencies {
     compile "com.h2database:h2"
     compile "org.flywaydb:flyway-core"
 
-    compile "org.webjars:jquery:2.1.3"
-    compile "org.webjars:angularjs:1.3.6"
-    compile "org.webjars:sockjs-client:0.3.4"
-    compile "org.webjars:stomp-websocket:2.3.1"
-    compile "org.webjars:bootstrap:3.3.1"
+    runtime "org.webjars:jquery:2.1.3"
+    runtime "org.webjars:angularjs:1.3.6"
+    runtime "org.webjars:sockjs-client:0.3.4"
+    runtime "org.webjars:stomp-websocket:2.3.1"
+    runtime "org.webjars:bootstrap:3.3.1"
 
     runtime project(':product:support:websupport')
     runtime "org.hibernate:hibernate-validator"

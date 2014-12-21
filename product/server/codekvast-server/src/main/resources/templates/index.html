@@ -18,10 +18,12 @@
     </div>
 </div>
 <div class="container" ng-app="codekvastApp">
-    <div class="ng-cloak">
+    <div class="ng-cloak" ng-controller="MainCtrl">
         <h1>Welcome to {{'Code' + 'kvast!' }}</h1>
+        Application: <select ng-model="application"
+                             ng-options="app.name + ' ' + app.version group by app.customerName for app in applications"/>
 
-        <table ng-controller="SignaturesCtrl">
+        <table>
             <tr>
                 <th style="text-align: left">Signature</th>
                 <th>Used at</th>

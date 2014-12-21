@@ -13,6 +13,8 @@ public class Application {
     @NonNull
     private final AppId appId;
     @NonNull
+    private final String customerName;
+    @NonNull
     private final String name;
     @NonNull
     private final String version;

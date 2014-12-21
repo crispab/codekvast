@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * @author Olle Hallin
@@ -87,9 +88,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public Collection<Application> getApplications(String username) {
         Collection<Application> result = new ArrayList<>();
-        Collection<Long> customerIds = userDAO.getCustomerIds(username);
-        for (Long customerId : customerIds) {
-            result.addAll(userDAO.getApplications(customerId));
+        Map<Long, String> customers = userDAO.getCustomers(username);
+        for (Map.Entry<Long, String> entry : customers.entrySet()) {
+            result.addAll(userDAO.getApplications(entry.getKey()));
         }
         return result;
     }

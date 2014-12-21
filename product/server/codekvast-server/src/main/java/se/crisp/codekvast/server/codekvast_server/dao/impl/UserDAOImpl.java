@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
@@ -28,6 +29,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -44,6 +48,8 @@ public class UserDAOImpl implements UserDAO {
     private final PasswordEncoder passwordEncoder;
     private final Boolean autoCreateCustomer;
     private final EventBus eventBus;
+
+    private final Map<Long, String> customerId2Name = new ConcurrentHashMap<>();
 
     @Inject
     public UserDAOImpl(JdbcTemplate jdbcTemplate,
@@ -151,10 +157,20 @@ public class UserDAOImpl implements UserDAO {
     @Override
     @Transactional(readOnly = true)
     @Cacheable("user")
-    public Collection<Long> getCustomerIds(String username) {
-        return jdbcTemplate.queryForList("SELECT CM.CUSTOMER_ID FROM CUSTOMER_MEMBERS CM, USERS U " +
-                                                 "WHERE CM.USER_ID = U.ID " +
-                                                 "AND U.USERNAME = ? ", Long.class, username);
+    public Map<Long, String> getCustomers(String username) {
+        final Map<Long, String> result = new HashMap<>();
+
+        jdbcTemplate.query("SELECT CM.CUSTOMER_ID, C.NAME FROM CUSTOMER_MEMBERS CM, USERS U, CUSTOMERS C " +
+                                   "WHERE CM.USER_ID = U.ID " +
+                                   "AND CM.CUSTOMER_ID = C.ID " +
+                                   "AND U.USERNAME = ? ", new RowCallbackHandler() {
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                result.put(rs.getLong("CUSTOMER_ID"), rs.getString("NAME"));
+            }
+        }, username);
+
+        return result;
     }
 
     @Override
@@ -184,13 +200,16 @@ public class UserDAOImpl implements UserDAO {
 
         long appId = doInsertRow("INSERT INTO applications(customer_id, environment, name, version) VALUES(?, ?, ?, ?)",
                                  customerId, environment, appName, appVersion);
+
         Application app = Application.builder()
                                      .appId(AppId.builder().customerId(customerId).appId(appId).build())
+                                     .customerName(getCustomerName(customerId))
                                      .name(appName)
                                      .version(appVersion)
                                      .environment(environment)
                                      .build();
         eventBus.post(new ApplicationCreatedEvent(app));
+
         log.info("Created {}", app);
         return appId;
     }
@@ -226,19 +245,33 @@ public class UserDAOImpl implements UserDAO {
         }
     }
 
-    private static class ApplicationRowMapper implements RowMapper<Application> {
+    private class ApplicationRowMapper implements RowMapper<Application> {
         @Override
         public Application mapRow(ResultSet rs, int rowNum) throws SQLException {
             // ID, CUSTOMER_ID, NAME, VERSION, ENVIRONMENT
+            long customerId = rs.getLong("CUSTOMER_ID");
             return Application.builder()
                               .appId(AppId.builder()
                                           .appId(rs.getLong("ID"))
-                                          .customerId(rs.getLong("CUSTOMER_ID"))
+                                          .customerId(customerId)
                                           .build())
+                              .customerName(getCustomerName(customerId))
                               .name(rs.getString("NAME"))
                               .version((rs.getString("VERSION")))
                               .environment(rs.getString("ENVIRONMENT"))
                               .build();
         }
+    }
+
+
+    private String getCustomerName(Long customerId) {
+        // Cannot use @Cacheable here, since it is used internally. Do the caching manually...
+        String result = customerId2Name.get(customerId);
+        if (result == null) {
+            log.debug("Looking up the name for customer {}", customerId);
+            result = jdbcTemplate.queryForObject("SELECT NAME FROM CUSTOMERS WHERE ID = ?", String.class, customerId);
+            customerId2Name.put(customerId, result);
+        }
+        return result;
     }
 }
