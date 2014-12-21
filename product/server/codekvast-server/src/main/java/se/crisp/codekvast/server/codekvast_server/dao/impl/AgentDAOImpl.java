@@ -15,6 +15,7 @@ import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 
 /**
@@ -49,6 +50,10 @@ public class AgentDAOImpl implements AgentDAO {
         final Collection<InvocationEntry> result = new ArrayList<>();
 
         AppId appId = userDAO.getAppIdByJvmFingerprint(invocationData.getJvmFingerprint());
+        if (appId == null) {
+            log.info("Ignoring invocation data for JVM {}", invocationData.getJvmFingerprint());
+            return Collections.emptyList();
+        }
 
         for (InvocationEntry entry : invocationData.getInvocations()) {
             storeOrUpdateInvocationEntry(result, appId, invocationData.getJvmFingerprint(), entry);

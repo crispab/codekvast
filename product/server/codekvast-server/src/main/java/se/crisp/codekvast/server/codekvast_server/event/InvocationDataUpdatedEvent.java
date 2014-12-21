@@ -1,6 +1,6 @@
-package se.crisp.codekvast.server.codekvast_server.event.internal;
+package se.crisp.codekvast.server.codekvast_server.event;
 
-import lombok.Getter;
+import lombok.Value;
 import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
 
@@ -9,16 +9,10 @@ import java.util.Collection;
 /**
  * @author Olle Hallin
  */
-@Getter
-public class InvocationDataUpdatedEvent extends CodekvastEvent {
+@Value
+public class InvocationDataUpdatedEvent {
     private final AppId appId;
     private final Collection<InvocationEntry> invocationEntries;
-
-    public InvocationDataUpdatedEvent(Object source, AppId appId, Collection<InvocationEntry> invocationEntries) {
-        super(source);
-        this.appId = appId;
-        this.invocationEntries = invocationEntries;
-    }
 
     @Override
     public String toString() {

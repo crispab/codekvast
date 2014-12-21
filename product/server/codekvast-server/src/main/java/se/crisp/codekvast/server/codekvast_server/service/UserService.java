@@ -2,6 +2,7 @@ package se.crisp.codekvast.server.codekvast_server.service;
 
 import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
+import se.crisp.codekvast.server.codekvast_server.model.Application;
 import se.crisp.codekvast.server.codekvast_server.model.RegistrationRequest;
 
 import java.util.Collection;
@@ -39,4 +40,11 @@ public interface UserService {
      */
     Collection<InvocationEntry> getSignatures(String customerName) throws CodekvastException;
 
+    /**
+     * Retrieve all applications this user has access to.
+     *
+     * @param username The logged in user's name
+     * @return A collection of applications. Does never return null.
+     */
+    Collection<Application> getApplications(String username);
 }

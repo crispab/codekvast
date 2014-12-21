@@ -1,13 +1,19 @@
 package se.crisp.codekvast.server.codekvast_server.service.impl;
 
+import com.google.common.eventbus.AllowConcurrentEvents;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import se.crisp.codekvast.server.codekvast_server.controller.StompController;
-import se.crisp.codekvast.server.codekvast_server.event.internal.InvocationDataUpdatedEvent;
+import se.crisp.codekvast.server.codekvast_server.event.ApplicationCreatedEvent;
+import se.crisp.codekvast.server.codekvast_server.event.CustomerCreatedEvent;
+import se.crisp.codekvast.server.codekvast_server.event.InvocationDataUpdatedEvent;
 import se.crisp.codekvast.server.codekvast_server.service.AgentService;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 /**
@@ -15,19 +21,46 @@ import javax.inject.Inject;
  */
 @Slf4j
 @Component
-public class ClientNotifierImpl implements ApplicationListener<InvocationDataUpdatedEvent> {
+public class ClientNotifierImpl {
 
+    private final EventBus eventBus;
     private final SimpMessagingTemplate messagingTemplate;
     private final AgentService agentService;
 
     @Inject
-    public ClientNotifierImpl(SimpMessagingTemplate messagingTemplate, AgentService agentService) {
+    public ClientNotifierImpl(EventBus eventBus, SimpMessagingTemplate messagingTemplate, AgentService agentService) {
+        this.eventBus = eventBus;
         this.messagingTemplate = messagingTemplate;
         this.agentService = agentService;
     }
 
-    @Override
-    public void onApplicationEvent(InvocationDataUpdatedEvent event) {
+    @PostConstruct
+    public void postConstruct() {
+        eventBus.register(this);
+    }
+
+    @PreDestroy
+    public void preDestroy() {
+        eventBus.unregister(this);
+    }
+
+    @Subscribe
+    @AllowConcurrentEvents
+    public void onCustomerCreated(CustomerCreatedEvent event) {
+        log.debug("Handling {}", event);
+        // TODO: notify STOMP subscribers
+    }
+
+    @Subscribe
+    @AllowConcurrentEvents
+    public void onApplicationCreated(ApplicationCreatedEvent event) {
+        log.debug("Handling {}", event);
+        // TODO: notify STOMP subscribers
+    }
+
+    @Subscribe
+    @AllowConcurrentEvents
+    public void onInvocationDataUpdated(InvocationDataUpdatedEvent event) {
         if (log.isTraceEnabled()) {
             log.debug("Handling {}", event.toLongString());
         } else {

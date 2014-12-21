@@ -1,7 +1,7 @@
 package se.crisp.codekvast.server.codekvast_server.service.impl;
 
+import com.google.common.eventbus.EventBus;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import se.crisp.codekvast.server.agent.model.v1.InvocationData;
 import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
@@ -9,7 +9,7 @@ import se.crisp.codekvast.server.agent.model.v1.JvmData;
 import se.crisp.codekvast.server.agent.model.v1.SignatureData;
 import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
-import se.crisp.codekvast.server.codekvast_server.event.internal.InvocationDataUpdatedEvent;
+import se.crisp.codekvast.server.codekvast_server.event.InvocationDataUpdatedEvent;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import se.crisp.codekvast.server.codekvast_server.service.AgentService;
@@ -27,13 +27,13 @@ import java.util.Collection;
 @Slf4j
 public class AgentServiceImpl implements AgentService {
 
-    private final ApplicationContext applicationContext;
+    private final EventBus eventBus;
     private final AgentDAO agentDAO;
     private final UserDAO userDAO;
 
     @Inject
-    public AgentServiceImpl(ApplicationContext applicationContext, AgentDAO agentDAO, UserDAO userDAO) {
-        this.applicationContext = applicationContext;
+    public AgentServiceImpl(EventBus eventBus, AgentDAO agentDAO, UserDAO userDAO) {
+        this.eventBus = eventBus;
         this.agentDAO = agentDAO;
         this.userDAO = userDAO;
     }
@@ -55,7 +55,7 @@ public class AgentServiceImpl implements AgentService {
 
         Collection<InvocationEntry> updatedEntries = agentDAO.storeInvocationData(toInitialInvocationsData(data));
         AppId appId = userDAO.getAppIdByJvmFingerprint(data.getJvmFingerprint());
-        applicationContext.publishEvent(new InvocationDataUpdatedEvent(getClass(), appId, updatedEntries));
+        eventBus.post(new InvocationDataUpdatedEvent(appId, updatedEntries));
     }
 
     private InvocationData toInitialInvocationsData(SignatureData signatureData) {
@@ -77,7 +77,7 @@ public class AgentServiceImpl implements AgentService {
 
         Collection<InvocationEntry> updatedEntries = agentDAO.storeInvocationData(data);
         AppId appId = userDAO.getAppIdByJvmFingerprint(data.getJvmFingerprint());
-        applicationContext.publishEvent(new InvocationDataUpdatedEvent(getClass(), appId, updatedEntries));
+        eventBus.post(new InvocationDataUpdatedEvent(appId, updatedEntries));
     }
 
 }

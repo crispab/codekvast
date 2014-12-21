@@ -1,5 +1,6 @@
 package se.crisp.codekvast.server.codekvast_server.dao.impl;
 
+import com.google.common.eventbus.EventBus;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,9 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.agent.model.v1.SignatureConfidence;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
+import se.crisp.codekvast.server.codekvast_server.event.ApplicationCreatedEvent;
+import se.crisp.codekvast.server.codekvast_server.event.CustomerCreatedEvent;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedCustomerException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
+import se.crisp.codekvast.server.codekvast_server.model.Application;
+import se.crisp.codekvast.server.codekvast_server.model.Customer;
 import se.crisp.codekvast.server.codekvast_server.model.Role;
 
 import javax.inject.Inject;
@@ -34,17 +39,21 @@ import static com.google.common.base.Preconditions.checkArgument;
 @Repository
 @Slf4j
 public class UserDAOImpl implements UserDAO {
+
     private final JdbcTemplate jdbcTemplate;
     private final PasswordEncoder passwordEncoder;
     private final Boolean autoCreateCustomer;
+    private final EventBus eventBus;
 
     @Inject
     public UserDAOImpl(JdbcTemplate jdbcTemplate,
                        PasswordEncoder passwordEncoder,
-                       @Value("${codekvast.auto-register-customer}") Boolean autoCreateCustomer) {
+                       @Value("${codekvast.auto-register-customer}") Boolean autoCreateCustomer,
+                       EventBus eventBus) {
         this.jdbcTemplate = jdbcTemplate;
         this.passwordEncoder = passwordEncoder;
         this.autoCreateCustomer = autoCreateCustomer;
+        this.eventBus = eventBus;
     }
 
     @Override
@@ -75,11 +84,16 @@ public class UserDAOImpl implements UserDAO {
     @Cacheable("user")
     public AppId getAppIdByJvmFingerprint(String jvmFingerprint) {
         log.debug("Looking up AppId for JVM {}...", jvmFingerprint);
-        AppId result = jdbcTemplate
-                .queryForObject("SELECT CUSTOMER_ID, APPLICATION_ID FROM JVM_RUNS WHERE JVM_FINGERPRINT = ?", new AppIdRowMapper(),
-                                jvmFingerprint);
-        log.debug("Result = {}", result);
-        return result;
+        try {
+            AppId result = jdbcTemplate
+                    .queryForObject("SELECT CUSTOMER_ID, APPLICATION_ID FROM JVM_RUNS WHERE JVM_FINGERPRINT = ?", new AppIdRowMapper(),
+                                    jvmFingerprint);
+            log.debug("Result = {}", result);
+            return result;
+        } catch (EmptyResultDataAccessException e) {
+            log.info("No AppId found for JVM {}, probably an agent that uploaded stale data", jvmFingerprint);
+            return null;
+        }
     }
 
     @Override
@@ -134,9 +148,28 @@ public class UserDAOImpl implements UserDAO {
                                   args, new InvocationsEntryRowMapper());
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable("user")
+    public Collection<Long> getCustomerIds(String username) {
+        return jdbcTemplate.queryForList("SELECT CM.CUSTOMER_ID FROM CUSTOMER_MEMBERS CM, USERS U " +
+                                                 "WHERE CM.USER_ID = U.ID " +
+                                                 "AND U.USERNAME = ? ", Long.class, username);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable("user")
+    public Collection<Application> getApplications(Long customerId) {
+        return jdbcTemplate.query("SELECT ID, CUSTOMER_ID, NAME, VERSION, ENVIRONMENT FROM APPLICATIONS WHERE CUSTOMER_ID = ?",
+                                  new ApplicationRowMapper(), customerId);
+    }
+
     private long doCreateCustomer(String customerName) {
         long customerId = doInsertRow("INSERT INTO customers(name) VALUES(?)", customerName);
-        log.info("Created customer {}:'{}'", customerId, customerName);
+        Customer customer = Customer.builder().id(customerId).name(customerName).build();
+        log.info("Created {}", customer);
+        eventBus.post(new CustomerCreatedEvent(customer));
         return customerId;
     }
 
@@ -151,7 +184,14 @@ public class UserDAOImpl implements UserDAO {
 
         long appId = doInsertRow("INSERT INTO applications(customer_id, environment, name, version) VALUES(?, ?, ?, ?)",
                                  customerId, environment, appName, appVersion);
-        log.info("Created application {}:{}:'{}':'{}':'{}'", customerId, appId, environment, appName, appVersion);
+        Application app = Application.builder()
+                                     .appId(AppId.builder().customerId(customerId).appId(appId).build())
+                                     .name(appName)
+                                     .version(appVersion)
+                                     .environment(environment)
+                                     .build();
+        eventBus.post(new ApplicationCreatedEvent(app));
+        log.info("Created {}", app);
         return appId;
     }
 
@@ -165,7 +205,10 @@ public class UserDAOImpl implements UserDAO {
         @Override
         public AppId mapRow(ResultSet rs, int rowNum)
                 throws SQLException {
-            return new AppId(rs.getLong(1), rs.getLong(2));
+            return AppId.builder()
+                        .customerId(rs.getLong("CUSTOMER_ID"))
+                        .appId(rs.getLong("APPLICATION_ID"))
+                        .build();
         }
     }
 
@@ -180,6 +223,22 @@ public class UserDAOImpl implements UserDAO {
         private Long getTimeMillis(ResultSet rs, int columnIndex) throws SQLException {
             Date date = rs.getTimestamp(columnIndex);
             return date == null ? EPOCH : Long.valueOf(date.getTime());
+        }
+    }
+
+    private static class ApplicationRowMapper implements RowMapper<Application> {
+        @Override
+        public Application mapRow(ResultSet rs, int rowNum) throws SQLException {
+            // ID, CUSTOMER_ID, NAME, VERSION, ENVIRONMENT
+            return Application.builder()
+                              .appId(AppId.builder()
+                                          .appId(rs.getLong("ID"))
+                                          .customerId(rs.getLong("CUSTOMER_ID"))
+                                          .build())
+                              .name(rs.getString("NAME"))
+                              .version((rs.getString("VERSION")))
+                              .environment(rs.getString("ENVIRONMENT"))
+                              .build();
         }
     }
 }

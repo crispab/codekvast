@@ -8,7 +8,7 @@ import lombok.experimental.Builder;
  */
 @Value
 @Builder
-public class AppId {
-    private final long customerId;
-    private final long appId;
+public class Customer {
+    private final Long id;
+    private String name;
 }

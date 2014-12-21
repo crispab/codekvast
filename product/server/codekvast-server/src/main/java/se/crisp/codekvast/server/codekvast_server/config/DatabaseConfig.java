@@ -36,6 +36,7 @@ public class DatabaseConfig {
 
     @Bean
     public Flyway flyway(PasswordEncoder passwordEncoder, DataSource dataSource) throws SQLException {
+        // TODO: perform a backup before migrating database
         log.info("Migrating database at {}", dataSource.getConnection().getMetaData().getURL());
         Flyway flyway = new Flyway();
         flyway.setDataSource(dataSource);

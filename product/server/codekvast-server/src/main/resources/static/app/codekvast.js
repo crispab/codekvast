@@ -1,11 +1,18 @@
 //noinspection JSUnusedGlobalSymbols
 var codekvastApp = angular.module('codekvastApp', [])
     .controller('SignaturesCtrl', ['$scope', function ($scope) {
+        $scope.applications = [];
         $scope.signatures = [];
 
         $scope.socket = {
             client: null,
             stomp: null
+        };
+
+        $scope.updateApplications = function (data) {
+            console.log("Received applications %o", data);
+            $scope.applications = JSON.parse(data.body);
+            $scope.$apply()
         };
 
         $scope.updateSignatures = function (data) {
@@ -20,14 +27,13 @@ var codekvastApp = angular.module('codekvastApp', [])
         };
 
         $scope.initSockets = function () {
-            $scope.socket.client = new SockJS("/websocket", null, {debug: true});
+            $scope.socket.client = new SockJS("/codekvast", null, {debug: true});
 
             $scope.socket.stomp = Stomp.over($scope.socket.client);
 
-            $scope.socket.stomp.connect({
-            }, function () {
-                $scope.socket.stomp.subscribe("/topic/signatures", $scope.updateSignatures);
-                $scope.socket.stomp.send("/app/hello", {}, "Hello!")
+            $scope.socket.stomp.connect({}, function (frame) {
+                $scope.socket.stomp.subscribe("/app/applications", $scope.updateApplications);
+                // $scope.socket.stomp.subscribe("/app/signatures", $scope.updateSignatures);
             }, function (error) {
                 console.log("Cannot connect %o", error)
             });

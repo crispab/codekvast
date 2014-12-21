@@ -10,11 +10,13 @@ import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.exception.DuplicateNameException;
+import se.crisp.codekvast.server.codekvast_server.model.Application;
 import se.crisp.codekvast.server.codekvast_server.model.RegistrationRequest;
 import se.crisp.codekvast.server.codekvast_server.model.Role;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
 
@@ -80,6 +82,16 @@ public class UserServiceImpl implements UserService {
     public Collection<InvocationEntry> getSignatures(String customerName) throws CodekvastException {
         Long customerId = customerName == null ? null : userDAO.getCustomerId(customerName);
         return userDAO.getSignatures(customerId);
+    }
+
+    @Override
+    public Collection<Application> getApplications(String username) {
+        Collection<Application> result = new ArrayList<>();
+        Collection<Long> customerIds = userDAO.getCustomerIds(username);
+        for (Long customerId : customerIds) {
+            result.addAll(userDAO.getApplications(customerId));
+        }
+        return result;
     }
 
 }

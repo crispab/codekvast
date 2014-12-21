@@ -121,6 +121,7 @@ INSERT INTO user_roles (user_id, role) VALUES (0, 'MONITOR');
 
 INSERT INTO users (id, username, plaintext_password, enabled) VALUES (1, 'monitor', '0000', TRUE);
 INSERT INTO customer_members (customer_id, user_id) VALUES (0, 1);
+INSERT INTO user_roles (user_id, role) VALUES (1, 'USER');
 INSERT INTO user_roles (user_id, role) VALUES (1, 'MONITOR');
 
 // --- Demo account ---------------------------------------------------------------------------
@@ -138,3 +139,8 @@ INSERT INTO user_roles (user_id, role) VALUES (3, 'USER');
 INSERT INTO users (id, username, plaintext_password, enabled, email_address) VALUES (4, 'user', '0000', TRUE, 'user@demo.com');
 INSERT INTO customer_members (customer_id, user_id) VALUES (1, 4);
 INSERT INTO user_roles (user_id, role) VALUES (4, 'USER');
+
+// --- Sample account ---------------------------------------------------------------------------
+INSERT INTO customers (id, name) VALUES (2, 'Sample');
+INSERT INTO customer_members (customer_id, user_id) VALUES (2, 2);
+INSERT INTO customer_members (customer_id, user_id) VALUES (2, 4);
