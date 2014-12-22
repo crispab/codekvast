@@ -21,8 +21,8 @@ dependencies {
     compile "org.springframework:spring-context"
     compile "org.springframework:spring-web"
     compile lombok
+    compile "org.hibernate:hibernate-validator"
 
-    runtime "org.hibernate:hibernate-validator"
     runtime "org.glassfish:javax.el:3.0.0"
 
     testCompile "junit:junit"

@@ -1,8 +1,8 @@
 package se.crisp.codekvast.web.model;
 
 import lombok.*;
+import org.hibernate.validator.constraints.NotBlank;
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
@@ -13,7 +13,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class RegistrationRequest {
-    @NotNull
+    @NotBlank
     @Size(min = 1, max = 255)
     private String emailAddress;
 }

@@ -17,6 +17,6 @@ public interface Constraints {
     int MAX_SIGNATURE_LENGTH = 2000;
     int MAX_USER_NAME_LENGTH = 100;
     int MIN_FINGERPRINT_LENGTH = 30;
-    int MAX_EMAIL_ADDRESS_LENGTH = 255;
+    int MAX_EMAIL_ADDRESS_LENGTH = 64;
     int MAX_FULL_NAME_LENGTH = 255;
 }

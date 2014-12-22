@@ -2,6 +2,7 @@ package se.crisp.codekvast.server.agent.model.v1;
 
 import lombok.*;
 import lombok.experimental.Builder;
+import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
@@ -9,7 +10,7 @@ import javax.validation.constraints.Size;
 
 /**
  * REST data about one instrumented JVM.
- *
+ * <p/>
  * Should be uploaded regularly during the lifetime of a JVM.
  *
  * @author Olle Hallin
@@ -25,22 +26,27 @@ public class JvmData {
     private Header header;
 
     @NonNull
-    @Size(min = 1, max = Constraints.MAX_CUSTOMER_NAME_LENGTH)
+    @NotBlank
+    @Size(max = Constraints.MAX_CUSTOMER_NAME_LENGTH)
     private String customerName;
 
     @NonNull
-    @Size(min = 1, max = Constraints.MAX_APP_NAME_LENGTH)
+    @NotBlank
+    @Size(max = Constraints.MAX_APP_NAME_LENGTH)
     private String appName;
 
     @NonNull
-    @Size(min = 1, max = Constraints.MAX_APP_VERSION_LENGTH)
+    @NotBlank
+    @Size(max = Constraints.MAX_APP_VERSION_LENGTH)
     private String appVersion;
 
     @NonNull
-    @Size(min = 1, max = Constraints.MAX_HOST_NAME_LENGTH)
+    @NotBlank
+    @Size(max = Constraints.MAX_HOST_NAME_LENGTH)
     private String hostName;
 
     @NonNull
+    @NotBlank
     @Size(min = Constraints.MIN_FINGERPRINT_LENGTH, max = Constraints.MAX_FINGERPRINT_LENGTH)
     private String jvmFingerprint;
 
@@ -48,13 +54,13 @@ public class JvmData {
     private long dumpedAtMillis;
 
     @NonNull
-    @Size(min = 1, max = Constraints.MAX_CODEKVAST_VERSION_LENGTH)
+    @Size(max = Constraints.MAX_CODEKVAST_VERSION_LENGTH)
     @Pattern(regexp = "[a-zA-Z0-9.-_]+")
     private String codekvastVersion;
 
 
     @NonNull
-    @Size(min = 1, max = Constraints.MAX_CODEKVAST_VCS_ID_LENGTH)
+    @Size(max = Constraints.MAX_CODEKVAST_VCS_ID_LENGTH)
     @Pattern(regexp = "[a-zA-Z0-9]+")
     private String codekvastVcsId;
 }

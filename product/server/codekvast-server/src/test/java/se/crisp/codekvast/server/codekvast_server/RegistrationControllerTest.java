@@ -50,7 +50,7 @@ public class RegistrationControllerTest {
         RegistrationRequest request = RegistrationRequest.builder()
                                                          .fullName(fullName)
                                                          .username(randomString(MAX_USER_NAME_LENGTH))
-                                                         .emailAddress(randomString(MAX_EMAIL_ADDRESS_LENGTH))
+                                                         .emailAddress(randomEmailAddress(MAX_EMAIL_ADDRESS_LENGTH))
                                                          .password(randomString(100))
                                                          .customerName(randomString(MAX_CUSTOMER_NAME_LENGTH))
                                                          .build();
@@ -65,7 +65,7 @@ public class RegistrationControllerTest {
         RegistrationRequest request = RegistrationRequest.builder()
                                                          .fullName(randomString(MAX_FULL_NAME_LENGTH + 1))
                                                          .username(randomString(MAX_USER_NAME_LENGTH))
-                                                         .emailAddress(randomString(MAX_EMAIL_ADDRESS_LENGTH))
+                                                         .emailAddress(randomEmailAddress(MAX_EMAIL_ADDRESS_LENGTH))
                                                          .password(randomString(100))
                                                          .customerName(randomString(MAX_CUSTOMER_NAME_LENGTH))
                                                          .build();
@@ -79,7 +79,7 @@ public class RegistrationControllerTest {
         RegistrationRequest request = RegistrationRequest.builder()
                                                          .fullName(randomString(MAX_FULL_NAME_LENGTH))
                                                          .username("user")
-                                                         .emailAddress(randomString(MAX_EMAIL_ADDRESS_LENGTH))
+                                                         .emailAddress(randomEmailAddress(MAX_EMAIL_ADDRESS_LENGTH))
                                                          .password(randomString(100))
                                                          .customerName(randomString(MAX_CUSTOMER_NAME_LENGTH))
                                                          .build();
@@ -113,4 +113,11 @@ public class RegistrationControllerTest {
         return result;
     }
 
+    private String randomEmailAddress(int length) {
+        int boxLength = length / 2;
+        int atLength = 1;
+        int tldLength = 4;
+        int domainLength = length - boxLength - atLength - tldLength;
+        return randomString(boxLength) + "@" + randomString(domainLength) + ".com";
+    }
 }

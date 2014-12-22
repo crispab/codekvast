@@ -2,6 +2,7 @@ package se.crisp.codekvast.server.agent.model.v1;
 
 import lombok.*;
 import lombok.experimental.Builder;
+import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.Size;
 
@@ -17,6 +18,7 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Header {
     @NonNull
-    @Size(min = 1, max = Constraints.MAX_ENVIRONMENT_NAME_LENGTH)
+    @NotBlank
+    @Size(max = Constraints.MAX_ENVIRONMENT_NAME_LENGTH)
     private String environment;
 }

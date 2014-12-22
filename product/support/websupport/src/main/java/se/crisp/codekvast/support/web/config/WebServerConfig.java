@@ -31,7 +31,8 @@ public class WebServerConfig {
         TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory();
 
         File keystore = new File(KEYSTORE_PATH);
-        if (keystore.canRead()) {
+        if (keystore.canRead() && serverPort != 0) {
+            // Don't configure an SSL port during tests.
             tomcat.addAdditionalTomcatConnectors(createSslConnector(keystore, computeSslPort(serverPort)));
         }
         return tomcat;

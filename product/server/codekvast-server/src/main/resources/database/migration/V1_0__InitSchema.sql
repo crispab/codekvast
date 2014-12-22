@@ -12,7 +12,7 @@ CREATE TABLE users (
   encoded_password   VARCHAR(80),
   plaintext_password VARCHAR(255),
   enabled            BOOLEAN DEFAULT TRUE                NOT NULL,
-  email_address VARCHAR(255) UNIQUE,
+  email_address VARCHAR(64) UNIQUE,
   full_name          VARCHAR(255),
   created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   modified_at   TIMESTAMP AS NOW()

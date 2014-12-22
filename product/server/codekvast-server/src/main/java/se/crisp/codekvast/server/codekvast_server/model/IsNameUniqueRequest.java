@@ -2,8 +2,7 @@ package se.crisp.codekvast.server.codekvast_server.model;
 
 import lombok.*;
 import lombok.experimental.Builder;
-
-import javax.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * @author Olle Hallin
@@ -14,9 +13,9 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 public class IsNameUniqueRequest {
-    @NotNull
+    @NotBlank
     private String kind;
 
-    @NotNull
+    @NotBlank
     private String name;
 }

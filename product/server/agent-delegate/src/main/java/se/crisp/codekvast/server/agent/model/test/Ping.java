@@ -2,6 +2,7 @@ package se.crisp.codekvast.server.agent.model.test;
 
 import lombok.*;
 import lombok.experimental.Builder;
+import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.Size;
 
@@ -17,6 +18,7 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Ping {
     @NonNull
-    @Size(min = 1, max = 10)
+    @NotBlank
+    @Size(max = 10)
     private String message;
 }

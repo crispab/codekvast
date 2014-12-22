@@ -1,6 +1,7 @@
 package se.crisp.codekvast.server.agent.model.v1;
 
 import lombok.*;
+import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.Size;
 
@@ -16,7 +17,8 @@ import javax.validation.constraints.Size;
 @ToString
 public class InvocationEntry {
     @NonNull
-    @Size(min = 1, max = Constraints.MAX_SIGNATURE_LENGTH)
+    @NotBlank
+    @Size(max = Constraints.MAX_SIGNATURE_LENGTH)
     private String signature;
 
     private Long invokedAtMillis;

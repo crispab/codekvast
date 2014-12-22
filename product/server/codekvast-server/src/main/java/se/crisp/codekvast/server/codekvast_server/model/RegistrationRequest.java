@@ -2,9 +2,10 @@ package se.crisp.codekvast.server.codekvast_server.model;
 
 import lombok.*;
 import lombok.experimental.Builder;
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotBlank;
 import se.crisp.codekvast.server.agent.model.v1.Constraints;
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
@@ -16,23 +17,23 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 public class RegistrationRequest {
-    @NotNull
-    @Size(min = 1, max = Constraints.MAX_FULL_NAME_LENGTH)
+    @NotBlank
+    @Size(max = Constraints.MAX_FULL_NAME_LENGTH)
     private String fullName;
 
-    @NotNull
-    @Size(min = 1, max = Constraints.MAX_EMAIL_ADDRESS_LENGTH)
+    @NotBlank
+    @Size(max = Constraints.MAX_EMAIL_ADDRESS_LENGTH)
+    @Email
     private String emailAddress;
 
-    @NotNull
-    @Size(min = 1, max = Constraints.MAX_USER_NAME_LENGTH)
+    @NotBlank
+    @Size(max = Constraints.MAX_USER_NAME_LENGTH)
     private String username;
 
-    @NotNull
-    @Size(min = 1)
+    @NotBlank
     private String password;
 
-    @NotNull
-    @Size(min = 1, max = Constraints.MAX_CUSTOMER_NAME_LENGTH)
+    @NotBlank
+    @Size(max = Constraints.MAX_CUSTOMER_NAME_LENGTH)
     private String customerName;
 }
