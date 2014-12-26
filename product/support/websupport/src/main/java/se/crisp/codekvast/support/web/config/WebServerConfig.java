@@ -14,9 +14,12 @@ import java.io.File;
 
 /**
  * Configures the embedded web server.
+ *
  * If it finds a keystore in a well-known location, add an https connector on port 8443.
  * If the environment property "server.port" is something other than 8080 then the SSL port is chosen so that the difference is maintained.
  * Example: server.port=8090 results in the SSL port 8453.
+ *
+ * It also installs a response compressing filter.
  *
  * @author Olle Hallin
  */
