@@ -1,9 +1,11 @@
-package se.crisp.codekvast.server.codekvast_server.model;
+package se.crisp.codekvast.server.codekvast_server.event.ajax;
 
 import lombok.*;
 import lombok.experimental.Builder;
 
 /**
+ * Sent in response to a IsNameUniqueRequest back to the JavaScript layer in the registration wizard.
+ *
  * @author Olle Hallin
  */
 @Data

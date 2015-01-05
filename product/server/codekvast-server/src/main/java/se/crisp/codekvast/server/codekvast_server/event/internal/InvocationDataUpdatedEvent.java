@@ -1,4 +1,4 @@
-package se.crisp.codekvast.server.codekvast_server.event;
+package se.crisp.codekvast.server.codekvast_server.event.internal;
 
 import lombok.Value;
 import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;

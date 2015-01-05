@@ -8,10 +8,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
+import se.crisp.codekvast.server.codekvast_server.event.ajax.RegistrationRequest;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.exception.DuplicateNameException;
 import se.crisp.codekvast.server.codekvast_server.model.Application;
-import se.crisp.codekvast.server.codekvast_server.model.RegistrationRequest;
 import se.crisp.codekvast.server.codekvast_server.model.Role;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
 

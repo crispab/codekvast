@@ -7,9 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import se.crisp.codekvast.server.codekvast_server.controller.StompController;
-import se.crisp.codekvast.server.codekvast_server.event.ApplicationCreatedEvent;
-import se.crisp.codekvast.server.codekvast_server.event.CustomerCreatedEvent;
-import se.crisp.codekvast.server.codekvast_server.event.InvocationDataUpdatedEvent;
+import se.crisp.codekvast.server.codekvast_server.event.internal.ApplicationCreatedEvent;
+import se.crisp.codekvast.server.codekvast_server.event.internal.CustomerCreatedEvent;
+import se.crisp.codekvast.server.codekvast_server.event.internal.InvocationDataUpdatedEvent;
 import se.crisp.codekvast.server.codekvast_server.service.AgentService;
 
 import javax.annotation.PostConstruct;

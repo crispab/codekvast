@@ -1,4 +1,4 @@
-package se.crisp.codekvast.server.codekvast_server.model;
+package se.crisp.codekvast.server.codekvast_server.event.ajax;
 
 import lombok.*;
 import lombok.experimental.Builder;
@@ -9,6 +9,8 @@ import se.crisp.codekvast.server.agent.model.v1.Constraints;
 import javax.validation.constraints.Size;
 
 /**
+ * Sent from JavaScript as the final step in the registration wizard.
+ *
  * @author Olle Hallin
  */
 @Data

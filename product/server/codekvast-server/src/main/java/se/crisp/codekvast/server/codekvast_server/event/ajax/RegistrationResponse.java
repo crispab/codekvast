@@ -1,10 +1,11 @@
-package se.crisp.codekvast.server.codekvast_server.model;
+package se.crisp.codekvast.server.codekvast_server.event.ajax;
 
 import lombok.*;
 import lombok.experimental.Builder;
-import org.hibernate.validator.constraints.NotBlank;
 
 /**
+ * Sent back to the JavaScript layer as response to a RegistrationRequest.
+ *
  * @author Olle Hallin
  */
 @Data
@@ -12,10 +13,6 @@ import org.hibernate.validator.constraints.NotBlank;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-public class IsNameUniqueRequest {
-    @NotBlank
-    private String kind;
-
-    @NotBlank
-    private String name;
+public class RegistrationResponse {
+    private String greeting;
 }

@@ -7,8 +7,8 @@ import org.springframework.boot.test.TestRestTemplate
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.web.WebAppConfiguration
 import org.springframework.web.client.RestTemplate
-import se.crisp.codekvast.server.codekvast_server.model.IsNameUniqueRequest
-import se.crisp.codekvast.server.codekvast_server.model.IsNameUniqueResponse
+import se.crisp.codekvast.server.codekvast_server.event.ajax.IsNameUniqueRequest
+import se.crisp.codekvast.server.codekvast_server.event.ajax.IsNameUniqueResponse
 import spock.lang.Specification
 import spock.lang.Unroll
 
