@@ -15,6 +15,23 @@ configurations {
     springLoaded
 }
 
+sourceSets {
+    integTest {
+        java.srcDir file('src/integTest/java')
+        resources.srcDir file('src/integTest/resources')
+    }
+}
+
+task integTest(type: Test) {
+    group = "Verification"
+    description = "Runs all integration tests"
+
+    testClassesDir = sourceSets.integTest.output.classesDir
+    classpath = sourceSets.integTest.runtimeClasspath
+}
+
+check.dependsOn integTest
+
 dependencies {
     compile lombok
     compile project(":product:server:agent-delegate")
@@ -44,9 +61,13 @@ dependencies {
     testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
     testCompile "org.spockframework:spock-spring:0.7-groovy-2.0"
 
+    integTestCompile sourceSets.main.output
+    integTestCompile configurations.testCompile
+    integTestCompile sourceSets.test.output
+    integTestRuntime configurations.testRuntime
+
     springLoaded springLoadedAgent
 }
-
 
 import org.apache.tools.ant.filters.ReplaceTokens
 
