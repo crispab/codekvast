@@ -174,4 +174,4 @@ task jasmineWatch(type: NpmTask) {
     args = ['run', 'watch-test']
 }
 
-// check.dependsOn jasmineSingleRun
+check.dependsOn jasmineSingleRun

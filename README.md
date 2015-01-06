@@ -18,10 +18,12 @@ and use that script instead of `path/to/gradlew`
 
 ### IDE
 
-**Intellij Ultimate Edition 14+** is the recommended IDE with the following required plugins:
+**Intellij Ultimate Edition 14+** is the recommended IDE with the following plugins:
 
-1. Lombok Support
-1. AspectJ Support
+1. **Lombok Support** (required)
+1. **AspectJ Support** (required)
+1. AngularJS (optional)
+1. Karma (optional)
 
 _TODO: fill out this section together with Per_
 
