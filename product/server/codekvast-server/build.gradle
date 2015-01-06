@@ -161,16 +161,45 @@ task unpackWebjars {
 }
 
 task jasmineSingleRun(type: NpmTask) {
-    group = "Verification"
-    description = "Runs the Jasmine tests."
+    group = 'Verification'
+    description = 'Runs the Jasmine tests a single time.'
     dependsOn npmInstall, unpackWebjars
+
+    def jasmineLog = file('build/reports/jasmine.log')
+    def npmDebugLog = file("$buildDir/npm-debug.log")
+
+    inputs.dir file('build/webjarJs')
+    inputs.dir file('src/main/resources/static/app')
+    inputs.dir file('src/test/js')
+
+    outputs.file jasmineLog
+
     args = ['run', 'single-run-test']
+
+    execOverrides {
+        it.workingDir = 'build'
+        it.standardOutput = new FileOutputStream(jasmineLog)
+        it.errorOutput = new FileOutputStream(npmDebugLog)
+        it.ignoreExitValue = true
+    }
+
+    doFirst {
+        jasmineLog.parentFile.mkdirs()
+        npmDebugLog.delete()
+    }
+
+    doLast {
+        if (npmDebugLog.exists()) {
+            throw new RuntimeException("Jasmine tests failed, see " + jasmineLog);
+        }
+    }
 }
 
 task jasmineWatch(type: NpmTask) {
     group = "Verification"
-    description = "Continuously runs the Jasmine tests."
+    description = "Runs the Jasmine tests as soon as any source or test is changed."
     dependsOn npmInstall, unpackWebjars
+
     args = ['run', 'watch-test']
 }
 
