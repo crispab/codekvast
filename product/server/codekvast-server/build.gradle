@@ -171,10 +171,12 @@ task jasmineSingleRun(type: NpmTask) {
     inputs.dir file('build/webjarJs')
     inputs.dir file('src/main/resources/static/app')
     inputs.dir file('src/test/js')
+    inputs.file file('karma.conf.js')
+    inputs.file file('package.json')
 
     outputs.file jasmineLog
 
-    args = ['run', 'single-run-test']
+    args = ['run', 'single-run']
 
     execOverrides {
         it.workingDir = 'build'
@@ -200,7 +202,7 @@ task jasmineWatch(type: NpmTask) {
     description = "Runs the Jasmine tests as soon as any source or test is changed."
     dependsOn npmInstall, unpackWebjars
 
-    args = ['run', 'watch-test']
+    args = ['run', 'watch']
 }
 
 check.dependsOn jasmineSingleRun

@@ -6,11 +6,13 @@
   "dependencies": {
     "karma": "0.12.31",
     "karma-chrome-launcher": "0.1.7",
+    "karma-coverage": "0.2.7",
+    "karma-firefox-launcher": "0.1.4",
     "karma-jasmine": "0.3.4",
     "karma-phantomjs-launcher": "0.1.4"
   },
   "scripts": {
-    "single-run-test": "node_modules/karma/bin/karma start karma.conf.js --single-run",
-    "watch-test": "node_modules/karma/bin/karma start karma.conf.js --auto-watch"
+    "single-run": "node_modules/karma/bin/karma start karma.conf.js --single-run",
+    "watch": "node_modules/karma/bin/karma start karma.conf.js --auto-watch"
   }
 }

@@ -28,6 +28,10 @@ module.exports = function (config) {
             'src/test/js/**/*.js',
         ],
 
+        preprocessors: {
+            'src/main/resources/static/app/*.js': ['coverage']
+        },
+
         // list of files / patterns to exclude
         exclude: [],
 
@@ -48,8 +52,11 @@ module.exports = function (config) {
 
         // Which plugins to enable
         plugins: [
-            'karma-phantomjs-launcher',
-            'karma-jasmine'
+            'karma-chrome-launcher',
+            'karma-coverage',
+            'karma-firefox-launcher',
+            'karma-jasmine',
+            'karma-phantomjs-launcher'
         ],
 
         // Continuous Integration mode
@@ -60,7 +67,7 @@ module.exports = function (config) {
 
         // level of logging
         // possible values: LOG_DISABLE || LOG_ERROR || LOG_WARN || LOG_INFO || LOG_DEBUG
-        logLevel: config.LOG_INFO,
+        logLevel: config.LOG_INFO
 
         // Uncomment the following lines if you are using grunt's server to run the tests
         // proxies: {
