@@ -1,0 +1,19 @@
+{
+  "name": "demo-app",
+  "version": "1.0.0",
+  "description": "foobar",
+  "repository": "foobar",
+  "dependencies": {
+    "karma": "0.12.31",
+    "karma-chrome-launcher": "latest",
+    "grunt-cli": "0.1.13",
+    "grunt": "^0.4.5",
+    "grunt-karma": "^0.9.0",
+    "karma-jasmine": "^0.3.4",
+    "karma-phantomjs-launcher": "^0.1.4"
+  },
+  "scripts": {
+    "single-run-test": "node_modules/karma/bin/karma start karma.conf.js --single-run",
+    "watch-test": "node_modules/karma/bin/karma start karma.conf.js --auto-watch"
+  }
+}

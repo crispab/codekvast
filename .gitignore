@@ -12,3 +12,6 @@ build/
 tools/downloaded/
 target/
 .vagrant/
+.nodejs/
+node_modules/
+npm-debug.log
