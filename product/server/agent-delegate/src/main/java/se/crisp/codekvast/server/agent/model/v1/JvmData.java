@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
 
 /**
  * REST data about one instrumented JVM.
- * <p/>
+ * 
  * Should be uploaded regularly during the lifetime of a JVM.
  *
  * @author Olle Hallin

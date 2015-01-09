@@ -15,10 +15,10 @@ import java.util.jar.JarFile;
 
 /**
  * A strategy for picking the app version from a jar manifest.
- * <p/>
+ *
  * It handles the cases {@code manifest some.jar} and {@code manifest some.jar My-Custom-Manifest-Attribute} where some.jar can be either an
  * URI or a file path.
- * <p/>
+ *
  * The two-arg version uses {@code Implementation-Version} as manifest attribute.
  *
  * @author Olle Hallin (qolha), olle.hallin@crisp.se
