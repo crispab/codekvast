@@ -16,6 +16,12 @@ Codekvast uses **Gradle** as build tool. It uses the Gradle Wrapper, `gradlew`, 
 There is the convenience script `tools/src/script/gradle` which simplifies invocation of gradlew. Install that script in your PATH
 and use that script instead of `path/to/gradlew`
 
+### Software publishing
+Part of Codekvast is published to Bintray. To be able to build you need the following lines in your `~/.gradle/gradle.properties`:
+
+    bintrayUser=
+    bintrayKey=
+
 ### IDE
 
 **Intellij Ultimate Edition 14+** is the recommended IDE with the following plugins:
