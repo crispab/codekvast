@@ -3,6 +3,7 @@
 **/*.log.*.zip
 **/*.iml
 .gradle
+.idea/copyright/**
 .idea/dictionaries/**
 .idea/gradle.xml
 .idea/libraries/**
