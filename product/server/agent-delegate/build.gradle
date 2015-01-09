@@ -4,7 +4,6 @@ plugins {
     id 'com.ofg.uptodate' version "1.1.0"
 }
 apply plugin: 'spring-boot'
-apply plugin: 'errorprone'
 
 description = "The agent-side business delegate of the Codekvast server"
 archivesBaseName = "codekvast-server-agent-delegate"

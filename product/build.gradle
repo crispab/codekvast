@@ -1,7 +1,6 @@
 buildscript {
     dependencies {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
-        classpath 'net.ltgt.gradle:gradle-errorprone-plugin:0.0.5'
     }
 }
 plugins {

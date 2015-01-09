@@ -3,7 +3,6 @@ plugins {
     id 'com.ofg.uptodate' version "1.1.0"
 }
 apply from: "$rootDir/gradle/sources-javadoc.gradle"
-apply plugin: 'errorprone'
 
 description = "Code that is shared between codekvast-agent and the collector"
 archivesBaseName = "codekvast-agent-util"
