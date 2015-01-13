@@ -66,7 +66,7 @@ public class InvocationsRegistryTest {
         files = files[0].listFiles();
         assertThat(files.length, is(2));
         Arrays.sort(files);
-        assertThat(files[0].getName(), is(CollectorConfig.INVOCATIONS_BASENAME));
+        assertThat(files[0].getName(), is(CollectorConfig.INVOCATIONS_BASENAME + ".00000"));
         assertThat(files[1].getName(), is(CollectorConfig.JVM_BASENAME));
 
         Jvm jvm = Jvm.readFrom(files[1]);
