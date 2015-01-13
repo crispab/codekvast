@@ -33,7 +33,7 @@ public class InvocationsTest {
 
         // when
         FileUtils.writeInvocationDataTo(invocationsFile, 1, 1000L, signatures, true);
-        List<Invocation> result = FileUtils.readInvocationDataFrom(invocationsFile);
+        List<Invocation> result = FileUtils.readInvocationDataFrom(new File(temporaryFolder.getRoot(), "invocations.dat.00000"));
 
         // then
         assertThat(result.size(), is(3));

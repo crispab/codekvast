@@ -62,7 +62,7 @@ public class FileUtilsTest {
         assertThat(files.length, is(4));
 
         Arrays.sort(files);
-        assertThat(files[0].getName(), is("invocations.dat"));
+        assertThat(files[0].getName(), is("invocations.dat.00000"));
         assertThat(files[1].getName(), is("invocations.dat.00001" + CONSUMED_SUFFIX));
         assertThat(files[2].getName(), is("invocations.dat.00002"));
         assertThat(files[3].getName(), is("zzz_other.file"));
@@ -74,9 +74,9 @@ public class FileUtilsTest {
         assertThat(files.length, is(4));
 
         Arrays.sort(files);
-        assertThat(files[0].getName(), is("invocations.dat.00001" + CONSUMED_SUFFIX));
-        assertThat(files[1].getName(), is("invocations.dat.00002" + CONSUMED_SUFFIX));
-        assertThat(files[2].getName(), is("invocations.dat" + CONSUMED_SUFFIX));
+        assertThat(files[0].getName(), is("invocations.dat.00000" + CONSUMED_SUFFIX));
+        assertThat(files[1].getName(), is("invocations.dat.00001" + CONSUMED_SUFFIX));
+        assertThat(files[2].getName(), is("invocations.dat.00002" + CONSUMED_SUFFIX));
         assertThat(files[3].getName(), is("zzz_other.file"));
 
         FileUtils.deleteAllConsumedInvocationDataFiles(invocationsFile);

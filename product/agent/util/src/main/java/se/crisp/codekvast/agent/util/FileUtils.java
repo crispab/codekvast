@@ -128,13 +128,13 @@ public final class FileUtils {
 
     private static File makeUnique(File file) {
         int count = 0;
-        File result = new File(file.getAbsolutePath());
-        File consumed = new File(file.getAbsolutePath() + CONSUMED_SUFFIX);
-        while (result.exists() || consumed.exists()) {
-            count += 1;
+        File result;
+        File consumed;
+        do {
             result = new File(String.format("%s.%05d", file.getAbsolutePath(), count));
             consumed = new File(String.format("%s.%05d%s", file.getAbsolutePath(), count, CONSUMED_SUFFIX));
-        }
+            count += 1;
+        } while (result.exists() || consumed.exists());
         return result;
     }
 
