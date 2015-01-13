@@ -54,24 +54,24 @@ The rest of this README assumes you use the convenience script.
 This will download Tomcat 8 and then download and deploy Jenkins into Tomcat. Finally, Tomcat is started with Codekvast Collector attached.
 Terminate with Ctrl-C.
 
+You can access Jenkins at [http://localhost:8080/jenkins](http://localhost:8080/jenkins)
+
 ### Start codekvast-agent in terminal 2
 
     cd <root>/product/agent/codekvast-agent
-    gradle bootRun
+    gradle run
 
-This will launch `codekvast-agent`, that will process the output from the collector attached to Tomcat. The agent will try to upload the
-data to http://localhost:8090, which is the default URL for the `codekvast-server`.
-
-The bootRun command is a standard Gradle run command, but with support for hot-deploy of changed classes and resources.
+This will launch **codekvast-agent**, that will process output from all collectors. The agent will try to upload the
+data to **http://localhost:8090**, which is the default URL for the **codekvast-server**.
 
 ### Start codekvast-server in terminal 3
 
     cd <root>/product/server/codekvast-server
     gradle bootRun
 
-This will start `codekvast-server` on http://localhost:8090.
+This will start **codekvast-server** on [http://localhost:8090](http://localhost:8090).
 
-### Open a browser at http://localhost:8090
+### Open a browser at [http://localhost:8090](http://localhost:8090)
 
 Log in with `user` / `0000`
 
