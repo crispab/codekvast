@@ -1,5 +1,0 @@
-<t:layout xmlns:t="http://tapestry.apache.org/schema/tapestry_5_1_0.xsd">
-    <h2>Detta är Start</h2>
-    <t:pagelink page="About">Om Crisp Sample WAR...</t:pagelink>
-</t:layout>
-

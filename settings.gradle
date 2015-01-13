@@ -13,6 +13,4 @@ include ':tools'
 
 include ':sample:jenkins'
 include ':sample:standalone-app'
-include ':sample:tapestry5-war'
-include ':sample:vanilla-jsp'
 

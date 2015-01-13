@@ -14,10 +14,8 @@
       <module fileurl="file://$PROJECT_DIR$/product/server/server.iml" filepath="$PROJECT_DIR$/product/server/server.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/standalone-app/standalone-app.iml" filepath="$PROJECT_DIR$/sample/standalone-app/standalone-app.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/support/support.iml" filepath="$PROJECT_DIR$/product/support/support.iml" />
-      <module fileurl="file://$PROJECT_DIR$/sample/tapestry5-war/tapestry5-war.iml" filepath="$PROJECT_DIR$/sample/tapestry5-war/tapestry5-war.iml" />
       <module fileurl="file://$PROJECT_DIR$/tools/tools.iml" filepath="$PROJECT_DIR$/tools/tools.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/agent/util/util.iml" filepath="$PROJECT_DIR$/product/agent/util/util.iml" />
-      <module fileurl="file://$PROJECT_DIR$/sample/vanilla-jsp/vanilla-jsp.iml" filepath="$PROJECT_DIR$/sample/vanilla-jsp/vanilla-jsp.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/web/web.iml" filepath="$PROJECT_DIR$/product/web/web.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/support/websupport/websupport.iml" filepath="$PROJECT_DIR$/product/support/websupport/websupport.iml" />
     </modules>
