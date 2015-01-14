@@ -35,7 +35,7 @@ public class DatabaseConfig {
     }
 
     @Bean
-    public Flyway flyway(PasswordEncoder passwordEncoder, DataSource dataSource) throws SQLException {
+    public Flyway flyway(DataSource dataSource) throws SQLException {
         // TODO: perform a backup before migrating database
         log.info("Migrating database at {}", dataSource.getConnection().getMetaData().getURL());
         Flyway flyway = new Flyway();
@@ -43,12 +43,12 @@ public class DatabaseConfig {
         flyway.setLocations(SQL_MIGRATION_LOCATION, JAVA_MIGRATION_LOCATION);
         flyway.migrate();
 
-        replacePlaintextPasswords(passwordEncoder, dataSource.getConnection());
+        replacePlaintextPasswords(dataSource.getConnection());
 
         return flyway;
     }
 
-    private void replacePlaintextPasswords(PasswordEncoder passwordEncoder, Connection connection) throws SQLException {
+    private void replacePlaintextPasswords(Connection connection) throws SQLException {
         log.debug("Replacing plaintext passwords...");
 
         try (
@@ -58,6 +58,8 @@ public class DatabaseConfig {
                                                                 "NULL");
                 PreparedStatement update = connection
                         .prepareStatement("UPDATE users SET encoded_password = ?, plaintext_password = NULL WHERE username = ?")) {
+
+            PasswordEncoder passwordEncoder = passwordEncoder();
 
             while (resultSet.next()) {
                 String username = resultSet.getString(1);
