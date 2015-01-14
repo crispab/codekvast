@@ -44,7 +44,7 @@ jar {
 
 test.dependsOn ":sample:standalone-app:jar"
 
-// We collect sample:standalone-app by default...
+// We collect the sample standalone-app by default...
 run {
     dependsOn = [":sample:standalone-app:installApp", ":sample:standalone-app:generateCodekvastConfig"]
     systemProperties = ['codekvast.agent-configuration': tasks.getByPath(":sample:standalone-app:generateCodekvastConfig").configFile]
