@@ -78,7 +78,9 @@ dependencies {
     webjar webjars
 }
 
+import org.apache.tools.ant.filters.LineContainsRegExp
 import org.apache.tools.ant.filters.ReplaceTokens
+import org.apache.tools.ant.types.RegularExpression
 
 processResources {
     from(sourceSets.main.resources.srcDirs) {
@@ -97,10 +99,11 @@ applicationDistribution.from("src/main/resources") {
         def name = it == "default.properties" ? "application.properties" : it
         "${name}.default"
     }
-    // Hide lines starting with info.build.
-    filter { line ->
-        line.startsWith('info.build.') ? "" : line
-    }
+
+    // Suppress lines starting with info.build.
+    def regexp = new RegularExpression()
+    regexp.pattern = /^info\.build\./
+    filter(LineContainsRegExp, negate: true, regexps: [regexp])
 }
 
 startScripts {
