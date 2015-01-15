@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'jacoco'
     id 'com.ofg.uptodate' version "1.1.0"
     id "com.moowork.node" version "0.8"
     // id "com.eriwen.gradle.js" version "1.12.1"
@@ -125,6 +126,29 @@ bootRun {
 
 }
 
+jacoco {
+    applyTo run
+}
+
+task coverageReport(type: JacocoReport) {
+    group "Documentation"
+    description "Generates a test coverage report"
+    sourceSets sourceSets.main
+
+    // One could do
+    // executionData integTest, run
+    // but then *all* of build/jacoco/integTest.exec and run.exec  must exist, or else the report will be skipped.
+    // Instead, build a report on what execution data we happen to have.
+    file("build/jacoco").eachFileMatch( ~/.*\.exec/) { executionData it }
+
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination "${buildDir}/reports/coverage"
+    }
+}
+build.dependsOn coverageReport
+
 node {
     version = '0.10.35'
     npmVersion = '2.1.17'
@@ -209,3 +233,4 @@ task jasmineWatch(type: NpmTask) {
 }
 
 check.dependsOn jasmineSingleRun
+
