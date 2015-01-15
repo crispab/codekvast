@@ -139,7 +139,10 @@ task coverageReport(type: JacocoReport) {
     // executionData integTest, run
     // but then *all* of build/jacoco/integTest.exec and run.exec  must exist, or else the report will be skipped.
     // Instead, build a report on what execution data we happen to have.
-    file("build/jacoco").eachFileMatch( ~/.*\.exec/) { executionData it }
+
+    enabled = false
+    def jacocoDir = file("build/jacoco")
+    jacocoDir.eachFileMatch(~/.*\.exec/) { executionData it; enabled = true }
 
     reports {
         xml.enabled false
