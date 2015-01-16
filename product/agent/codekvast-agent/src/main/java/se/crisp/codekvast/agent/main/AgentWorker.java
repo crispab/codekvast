@@ -24,7 +24,6 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.net.ConnectException;
-import java.net.URI;
 import java.util.*;
 
 /**
@@ -99,7 +98,7 @@ public class AgentWorker {
     private String getAppVersion(Jvm jvm) {
         String appVersion = appVersions.get(jvm.getJvmFingerprint());
         if (appVersion == null) {
-            appVersion = resolveAppVersion(appVersionStrategies, jvm.getCollectorConfig().getCodeBaseUris(),
+            appVersion = resolveAppVersion(appVersionStrategies, jvm.getCollectorConfig().getCodeBaseFiles(),
                                            jvm.getCollectorConfig().getAppVersion());
             appVersions.put(jvm.getJvmFingerprint(), appVersion);
         }
@@ -156,7 +155,7 @@ public class AgentWorker {
         }
     }
 
-    static String resolveAppVersion(Collection<? extends AppVersionStrategy> appVersionStrategies, Collection<URI> codeBases, String
+    static String resolveAppVersion(Collection<? extends AppVersionStrategy> appVersionStrategies, Collection<File> codeBases, String
             appVersion) {
         String version = appVersion.trim();
         String args[] = version.split("\\s+");

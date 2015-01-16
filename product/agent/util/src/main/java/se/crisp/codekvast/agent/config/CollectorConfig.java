@@ -88,8 +88,8 @@ public class CollectorConfig implements CodekvastConfig {
         return ConfigUtils.getNormalizedPackagePrefixes(packagePrefixes);
     }
 
-    public List<URI> getCodeBaseUris() {
-        return ConfigUtils.getCommaSeparatedUriValues(codeBase, false);
+    public List<File> getCodeBaseFiles() {
+        return ConfigUtils.getCommaSeparatedFileValues(codeBase, false);
     }
 
     public void saveTo(File file) {

@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
@@ -39,10 +38,10 @@ public class ManifestAppVersionStrategy extends AbstractAppVersionStrategy {
     }
 
     @Override
-    public String resolveAppVersion(Collection<URI> codeBases, String[] args) {
+    public String resolveAppVersion(Collection<File> codeBases, String[] args) {
         String jarUri = args[1];
         String manifestAttribute = args.length > 2 ? args[2] : DEFAULT_MANIFEST_ATTRIBUTE;
-        for (URI codeBaseUri : codeBases) {
+        for (File codeBaseUri : codeBases) {
             try {
                 File file = getJarFile(codeBaseUri, jarUri);
                 JarFile jarFile = new JarFile(file);
@@ -67,7 +66,7 @@ public class ManifestAppVersionStrategy extends AbstractAppVersionStrategy {
         return UNKNOWN_VERSION;
     }
 
-    private File getJarFile(URI codeBaseUri, String jarUri) throws IOException, URISyntaxException {
+    private File getJarFile(File codeBaseUri, String jarUri) throws IOException, URISyntaxException {
         URL url = null;
         // try to parse it as a URL...
         try {
@@ -84,7 +83,7 @@ public class ManifestAppVersionStrategy extends AbstractAppVersionStrategy {
         }
         if (url == null) {
             // Search for it in codeBaseUri. Treat it as a regular expression for the basename
-            url = search(new File(codeBaseUri.toURL().toURI()), jarUri);
+            url = search(codeBaseUri, jarUri);
         }
 
         File result = url == null ? null : new File(url.toURI());

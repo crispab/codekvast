@@ -51,7 +51,7 @@ The rest of this README assumes you use the convenience script.
     cd <root>/sample/jenkins
     gradle run
 
-This will download Tomcat 8 and then download and deploy Jenkins into Tomcat. Finally, Tomcat is started with Codekvast Collector attached.
+This will download Tomcat 7 and then download and deploy Jenkins into Tomcat. Finally, Tomcat is started with Codekvast Collector attached.
 Terminate with Ctrl-C.
 
 You can access Jenkins at [http://localhost:8080/jenkins](http://localhost:8080/jenkins)

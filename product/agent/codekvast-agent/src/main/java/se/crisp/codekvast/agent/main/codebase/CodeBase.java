@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -51,16 +50,8 @@ public class CodeBase {
 
     public CodeBase(CollectorConfig config) {
         this.config = config;
-        this.codeBaseFiles = getCodeBaseFiles(config.getCodeBaseUris());
+        this.codeBaseFiles = config.getCodeBaseFiles();
         this.fingerprint = initUrls();
-    }
-
-    private List<File> getCodeBaseFiles(List<URI> uris) {
-        List<File> result = new ArrayList<>();
-        for (URI uri : uris) {
-            result.add(new File(uri));
-        }
-        return result;
     }
 
     URL[] getUrls() {
