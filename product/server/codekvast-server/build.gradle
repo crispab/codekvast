@@ -236,5 +236,6 @@ task jasmineWatch(type: NpmTask) {
     args = ['run', 'watch']
 }
 
-check.dependsOn jasmineSingleRun
-
+if (!System.properties['os.name'].contains("indows")) {
+    check.dependsOn jasmineSingleRun
+}
