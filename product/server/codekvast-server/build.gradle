@@ -223,7 +223,7 @@ task jasmineSingleRun(type: NpmTask) {
 
     doLast {
         if (npmDebugLog.exists()) {
-            throw new RuntimeException("Jasmine tests failed, see " + jasmineLog);
+            throw new RuntimeException("Jasmine tests failed, see " + jasmineLog + " or " + npmDebugLog);
         }
     }
 }

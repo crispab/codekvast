@@ -37,7 +37,7 @@ var codekvastApp = angular.module('codekvastApp', [])
 
             $scope.socket.stomp.connect({}, function () {
                 $scope.socket.stomp.subscribe("/app/applications", $scope.updateApplications);
-                // $scope.socket.stomp.subscribe("/app/signatures", $scope.updateSignatures);
+                $scope.socket.stomp.subscribe("/app/signatures", $scope.updateSignatures);
             }, function (error) {
                 console.log("Cannot connect %o", error)
             });
