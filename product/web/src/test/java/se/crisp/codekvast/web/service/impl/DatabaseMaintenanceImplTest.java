@@ -23,7 +23,7 @@ public class DatabaseMaintenanceImplTest {
     @Test
     public void testGetDumpFile() throws Exception {
         assertThat(DatabaseMaintenanceImpl.getDumpFile(new File("foo/bar"), T1, ".h2.zip"),
-                   hasToString("foo/bar/20141121_125408" + SUFFIX));
+                   hasToString("foo" + File.separator + "bar" + File.separator + "20141121_125408" + SUFFIX));
     }
 
     @Test
