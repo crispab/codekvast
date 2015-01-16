@@ -19,9 +19,9 @@ public class CodeBaseTest {
     private CodeBase codeBase;
 
     private final String[] guiceGeneratedMethods = {
-            "public int se.transmode.tnm.module.l2mgr.impl.persistence.FlowDomainFragmentLongTransactionEAO..EnhancerByGuice..969b9638." +
+            "public int se.customer.module.l2mgr.impl.persistence.FlowDomainFragmentLongTransactionEAO..EnhancerByGuice..969b9638." +
                     ".FastClassByGuice..96f9109e.getIndex(com.google.inject.internal.cglib.core..Signature)",
-            "public int se.transmode.tnm.module.l1mgr.connectivity.persistence.TrailEAO..EnhancerByGuice..a219ec4a..FastClassByGuice." +
+            "public int se.customer.module.l1mgr.connectivity.persistence.TrailEAO..EnhancerByGuice..a219ec4a..FastClassByGuice." +
                     ".2d349e96.getIndex(java.lang.Class[])",
     };
 
@@ -52,11 +52,11 @@ public class CodeBaseTest {
     public void testNormalizeGuiceEnhancedMethod() throws URISyntaxException {
         codeBase = getCodeBase(SAMPLE_APP_JAR);
         String sig = codeBase.normalizeSignature(
-                "public final void se.transmode.tnm.module.l1mgr.connectivity.persistence.TrailEAO..EnhancerByGuice..a219ec4a" +
+                "public final void se.customer.module.l1mgr.connectivity.persistence.TrailEAO..EnhancerByGuice..a219ec4a" +
                         ".removeTrails(java.util.Collection)"
         );
         assertThat(sig,
-                   is("public void se.transmode.tnm.module.l1mgr.connectivity.persistence.TrailEAO.removeTrails(java.util.Collection)"));
+                   is("public void se.customer.module.l1mgr.connectivity.persistence.TrailEAO.removeTrails(java.util.Collection)"));
     }
 
     @Test(expected = NullPointerException.class)
