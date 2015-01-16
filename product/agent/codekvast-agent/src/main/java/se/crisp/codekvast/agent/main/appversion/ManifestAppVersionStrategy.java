@@ -41,9 +41,9 @@ public class ManifestAppVersionStrategy extends AbstractAppVersionStrategy {
     public String resolveAppVersion(Collection<File> codeBases, String[] args) {
         String jarUri = args[1];
         String manifestAttribute = args.length > 2 ? args[2] : DEFAULT_MANIFEST_ATTRIBUTE;
-        for (File codeBaseUri : codeBases) {
+        for (File codeBaseFile : codeBases) {
             try {
-                File file = getJarFile(codeBaseUri, jarUri);
+                File file = getJarFile(codeBaseFile, jarUri);
                 JarFile jarFile = new JarFile(file);
                 Attributes attributes = jarFile.getManifest().getMainAttributes();
                 String resolvedVersion = attributes.getValue(manifestAttribute);
@@ -66,7 +66,7 @@ public class ManifestAppVersionStrategy extends AbstractAppVersionStrategy {
         return UNKNOWN_VERSION;
     }
 
-    private File getJarFile(File codeBaseUri, String jarUri) throws IOException, URISyntaxException {
+    private File getJarFile(File codeBaseFile, String jarUri) throws IOException, URISyntaxException {
         URL url = null;
         // try to parse it as a URL...
         try {
@@ -82,8 +82,8 @@ public class ManifestAppVersionStrategy extends AbstractAppVersionStrategy {
             }
         }
         if (url == null) {
-            // Search for it in codeBaseUri. Treat it as a regular expression for the basename
-            url = search(codeBaseUri, jarUri);
+            // Search for it in codeBaseFile. Treat it as a regular expression for the basename
+            url = search(codeBaseFile, jarUri);
         }
 
         File result = url == null ? null : new File(url.toURI());
