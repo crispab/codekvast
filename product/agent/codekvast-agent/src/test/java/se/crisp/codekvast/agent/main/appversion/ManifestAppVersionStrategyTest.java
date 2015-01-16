@@ -48,7 +48,7 @@ public class ManifestAppVersionStrategyTest {
 
     @Test
     public void testResolveWhen_validJarURI() throws Exception {
-        String args[] = {"manifest", "file:" + System.getProperty("user.dir") + File.separator + VALID_JAR_1_7_7};
+        String args[] = {"manifest", new File(System.getProperty("user.dir") + File.separator + VALID_JAR_1_7_7).toURI().toString()};
 
         assertThat(strategy.resolveAppVersion(VALID_URIS, args), is(EXPECTED_VERSION));
     }
