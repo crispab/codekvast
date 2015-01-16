@@ -3,7 +3,6 @@ package se.crisp.codekvast.agent.main.appversion;
 import org.junit.Test;
 
 import java.io.File;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,14 +15,14 @@ public class ManifestAppVersionStrategyTest {
     private static final String VALID_JAR_1_7_7 = "src/test/resources/sample-app/lib/slf4j-api-1.7.7.jar";
     private static final String EXPECTED_VERSION = "1.7.7";
 
-    private final Collection<URI> VALID_URIS;
-    private final Collection<URI> INVALID_URIS;
+    private final Collection<File> VALID_URIS;
+    private final Collection<File> INVALID_URIS;
 
     private final AppVersionStrategy strategy = new ManifestAppVersionStrategy();
 
     public ManifestAppVersionStrategyTest() throws URISyntaxException {
-        VALID_URIS = Arrays.asList(new URI("file:" + System.getProperty("user.dir") + File.separator + "src/test/resources"));
-        INVALID_URIS = Arrays.asList(new URI("file:" + System.getProperty("user.dir") + File.separator + "src/test/resourcesXXX"));
+        VALID_URIS = Arrays.asList(new File(System.getProperty("user.dir") + File.separator + "src/test/resources"));
+        INVALID_URIS = Arrays.asList(new File(System.getProperty("user.dir") + File.separator + "src/test/resourcesXXX"));
     }
 
     @Test

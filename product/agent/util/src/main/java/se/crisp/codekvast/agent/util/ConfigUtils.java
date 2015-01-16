@@ -91,30 +91,17 @@ public final class ConfigUtils {
         }
     }
 
-    public static List<URI> getCommaSeparatedUriValues(String uriValues, boolean removeTrailingSlashes) {
-        List<URI> result = new ArrayList<URI>();
+    public static List<File> getCommaSeparatedFileValues(String uriValues, boolean removeTrailingSlashes) {
+        List<File> result = new ArrayList<File>();
         String[] parts = uriValues.split("[;,]");
         for (String value : parts) {
             value = value.trim();
             if (removeTrailingSlashes && value.endsWith("/")) {
                 value = value.substring(0, value.length() - 1);
             }
-            URI uri = makeUri(value);
-            if (uri.getScheme() == null) {
-                uri = makeUri("file:" + value);
-            }
-            result.add(uri);
+            result.add(new File(value));
         }
         return result;
     }
 
-    private static URI makeUri(String value) {
-        URI uri;
-        try {
-            uri = new URI(value);
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException(String.format("Illegal URI value %s", value));
-        }
-        return uri;
-    }
 }
