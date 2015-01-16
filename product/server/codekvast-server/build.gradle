@@ -142,6 +142,7 @@ task coverageReport(type: JacocoReport) {
 
     enabled = false
     def jacocoDir = file("build/jacoco")
+    jacocoDir.mkdirs()
     jacocoDir.eachFileMatch(~/.*\.exec/) { executionData it; enabled = true }
 
     reports {
