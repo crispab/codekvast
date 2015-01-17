@@ -39,6 +39,12 @@
 # NOTE: Some applications (e.g., Jenkins) will download plugins on the fly and store them in some well-known location on disk.
 # In the case of Jenkins this path is $HOME/.jenkins/plugins.
 #
+# NOTE: Spaces in a path must be escaped, i.e., preceded with a bask slash ('\') character.
+#
+# NOTE: When running on Windows, the colon after the drive letter must be escaped, i.e., preceded with a backslash '\'.
+# Example:
+# codeBase = C\:/Program\ Files/Tomcat/webapps/myapp
+#
 # Mandatory.
 #--------------------------------------------------------------------------------------------------------
 # codeBase = /path/to/codebase1/, /path/to/codebase2/
