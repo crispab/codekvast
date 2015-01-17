@@ -16,18 +16,8 @@ dependencies {
     // Absolutely NO other compile or runtime dependencies are allowed here!
 
     // All transitive compile and runtime dependencies will end up in the collected app's system
-    // class path. (Lombok will be excluded when assembling the codekvast-collector jar).
+    // class path. (Lombok will be excluded when assembling codekvast-collector jar).
 
     testCompile junit
     testCompile mockito
-}
-
-test {
-    // Make it possible to retrieve the sample config files produced by a test
-    ext.sampleAgentConfigFile = file("$buildDir/codekvast-agent.conf.sample")
-    ext.sampleCollectorConfigFile = file("$buildDir/codekvast-collector.conf.sample")
-
-    // Also make the file name available to the test that produces it...
-    systemProperty 'sampleAgentConfigFile.path', sampleAgentConfigFile.absolutePath
-    systemProperty 'sampleCollectorConfigFile.path', sampleCollectorConfigFile.absolutePath
 }

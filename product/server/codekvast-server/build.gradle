@@ -111,7 +111,11 @@ startScripts {
     doLast {
         outputs.files.each { script ->
             logger.info "Adjusting CLASSPATH in {} to start with \$APP_HOME/conf/ ...", script.name
-            script.text = script.text.replace('CLASSPATH=$APP_HOME/lib', 'CLASSPATH=$APP_HOME/conf/:$APP_HOME/lib')
+            if (script.name.toLowerCase().endsWith('.bat')) {
+                script.text = script.text.replace('CLASSPATH=%APP_HOME%\\lib', 'CLASSPATH=%APP_HOME%\\conf\\;%APP_HOME%\\lib')
+            } else {
+                script.text = script.text.replace('CLASSPATH=$APP_HOME/lib', 'CLASSPATH=$APP_HOME/conf/:$APP_HOME/lib')
+            }
         }
     }
 }

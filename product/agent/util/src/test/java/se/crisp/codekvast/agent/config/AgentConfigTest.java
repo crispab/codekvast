@@ -12,7 +12,9 @@ public class AgentConfigTest {
     @Test
     public void testSaveSampleConfigToFile() throws IOException {
         AgentConfig config1 = AgentConfig.createSampleAgentConfig();
-        File file = new File(System.getProperty("sampleAgentConfigFile.path", "build/codekvast-agent.conf.sample"));
+        File file = File.createTempFile("codekvast-agent", ".tmp");
+        file.deleteOnExit();
+
         config1.saveTo(file);
 
         AgentConfig config2 = AgentConfig.parseAgentConfigFile(file.toURI());

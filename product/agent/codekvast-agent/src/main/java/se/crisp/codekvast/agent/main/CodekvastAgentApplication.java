@@ -10,12 +10,12 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import se.crisp.codekvast.agent.config.AgentConfig;
+import se.crisp.codekvast.agent.config.Sysprop;
 import se.crisp.codekvast.agent.main.spring.AgentConfigPropertySource;
+import se.crisp.codekvast.agent.util.FileUtils;
 import se.crisp.codekvast.server.agent.ServerDelegateConfig;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Properties;
@@ -29,8 +29,6 @@ import java.util.Properties;
 @ComponentScan("se.crisp.codekvast")
 @EnableScheduling
 public class CodekvastAgentApplication {
-
-    public static final String SYSPROP_CODEKVAST_AGENT_CONFIGURATION = "codekvast.agent-configuration";
 
     public static void main(String[] args) throws IOException, URISyntaxException {
         SpringApplication application = new SpringApplication(CodekvastAgentApplication.class);
@@ -51,7 +49,7 @@ public class CodekvastAgentApplication {
      */
     @Bean
     public AgentConfig agentConfig(ConfigurableEnvironment environment) throws URISyntaxException {
-        URL resource = getFromFileSystem(System.getProperty(SYSPROP_CODEKVAST_AGENT_CONFIGURATION));
+        URL resource = FileUtils.safeGetURL(System.getProperty(Sysprop.AGENT_CONFIGURATION.toString()));
         if (resource == null) {
             resource = getClass().getResource("/codekvast-agent.conf");
         }
@@ -59,25 +57,6 @@ public class CodekvastAgentApplication {
         AgentConfig agentConfig = AgentConfig.parseAgentConfigFile(resource.toURI());
         environment.getPropertySources().addLast(new AgentConfigPropertySource(agentConfig));
         return agentConfig;
-    }
-
-    private URL getFromFileSystem(String location) {
-        if (location != null) {
-            try {
-                URL url = new URL(location);
-                return url;
-            } catch (MalformedURLException ignore) {
-            }
-            File file = new File(location);
-
-            if (file.isFile() && file.canRead()) {
-                try {
-                    return file.toURI().toURL();
-                } catch (MalformedURLException ignore) {
-                }
-            }
-        }
-        return null;
     }
 
     /**

@@ -8,6 +8,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -262,5 +263,25 @@ public final class FileUtils {
             safeClose(writer);
         }
     }
+
+    public static URL safeGetURL(String location) {
+        if (location != null && !location.trim().isEmpty()) {
+            try {
+                return new URL(location);
+            } catch (Exception ignore) {
+            }
+
+            File file = new File(location);
+            if (file.isFile() && file.canRead()) {
+                try {
+                    return file.toURI().toURL();
+                } catch (Exception ignore) {
+                }
+            }
+            throw new IllegalArgumentException("Cannot load " + location);
+        }
+        return null;
+    }
+
 
 }
