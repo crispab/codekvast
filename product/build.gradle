@@ -63,8 +63,8 @@ task build(dependsOn: [agentDistZip, serverDistZip, webDistZip]) {
 
 bintray {
     // These are supposed to be defined in $HOME/.gradle/gradle.properties
-    user = "$bintrayUser"
-    key = "$bintrayKey"
+    user = project.hasProperty('bintrayUser') ? bintrayUser : "undefined"
+    key = project.hasProperty('bintrayKey') ? bintrayKey : "undefined"
 
     filesSpec {
         from tasks.getByPath(":product:agentDistZip")
@@ -86,6 +86,18 @@ bintray {
         // labels = ['runtime-intelligence', 'dead-code', 'dead-code-detector', 'truly-dead-code', 'YANIA', 'java', 'java-6', 'jvm']
 
         publicDownloadNumbers = false
+    }
+}
+
+bintrayUpload {
+    doFirst {
+        def gradleProperties = new File(System.properties['user.home'], ".gradle/gradle.properties")
+        if (!project.hasProperty('bintrayUser')) {
+            throw new IllegalArgumentException("You must define bintrayUser in $gradleProperties before trying to upload to Bintray")
+        }
+        if (!project.hasProperty('bintrayKey')) {
+            throw new IllegalArgumentException("You must define bintrayKey in $gradleProperties before trying to upload to Bintray")
+        }
     }
 }
 

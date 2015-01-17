@@ -17,10 +17,11 @@ There is the convenience script `tools/src/script/gradle` which simplifies invoc
 and use that script instead of `path/to/gradlew`
 
 ### Software publishing
-Part of Codekvast is published to Bintray. To be able to build you need the following lines in your `~/.gradle/gradle.properties`:
+The agent part of Codekvast is published to Bintray. To be able to upload to Bintray you need the following lines in your `~/.gradle/gradle
+.properties`:
 
-    bintrayUser=
-    bintrayKey=
+    bintrayUser=my-bintray-user
+    bintrayKey=my-bintray-key
 
 ### IDE
 
@@ -48,28 +49,27 @@ The rest of this README assumes you use the convenience script.
 
 ### Start Jenkins in terminal 1
 
-    cd <root>/sample/jenkins
-    gradle run
+    gradle :sample:jenkins:run
 
 This will download Tomcat 7 and then download and deploy Jenkins into Tomcat. Finally, Tomcat is started with Codekvast Collector attached.
-Terminate with Ctrl-C.
+Terminate with `Ctrl-C`.
 
 You can access Jenkins at [http://localhost:8080/jenkins](http://localhost:8080/jenkins)
 
 ### Start codekvast-agent in terminal 2
 
-    cd <root>/product/agent/codekvast-agent
-    gradle run
+    gradle :product:agent:codekvast-agent:run
 
 This will launch **codekvast-agent**, that will process output from all collectors. The agent will try to upload the
 data to **http://localhost:8090**, which is the default URL for the **codekvast-server**.
+Terminate with `Ctrl-C`.
 
 ### Start codekvast-server in terminal 3
 
-    cd <root>/product/server/codekvast-server
-    gradle bootRun
+    gradle :product:server:codekvast-server:run
 
 This will start **codekvast-server** on [http://localhost:8090](http://localhost:8090).
+Terminate with `Ctrl-C`.
 
 ### Open a browser at [http://localhost:8090](http://localhost:8090)
 
