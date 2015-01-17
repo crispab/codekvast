@@ -58,6 +58,11 @@ applicationDistribution.from("src/main/resources") {
     rename { "${it}.sample" }
 }
 
+applicationDistribution.from("src/dist") {
+    into "/"
+    filter { it.replace "@CODEKVAST_VERSION@", project.version }
+}
+
 apply from: "$rootDir/gradle/sources-javadoc.gradle"
 
 startScripts {
