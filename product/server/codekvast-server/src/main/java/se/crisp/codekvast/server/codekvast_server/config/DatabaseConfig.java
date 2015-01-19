@@ -79,7 +79,7 @@ public class DatabaseConfig {
     }
 
     /**
-     * Override the default JdbcTemplate created by Spring Boot, to make sure that plaintext passwords have been encoded.
+     * Override the default JdbcTemplate created by Spring Boot, to make sure that Flyway.migrate() has run first.
      */
     @Bean
     @DependsOn("flyway")
