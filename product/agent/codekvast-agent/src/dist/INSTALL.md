@@ -9,28 +9,36 @@ directory
 
 1. Unpack the zip file to any location in the file system
 
-1. `cd path/to/codekvast-agent-@CODEKVAST_VERSION@/conf`
+1. `cd path/to/codekvast-agent-@CODEKVAST_VERSION@/conf` (substitute `path/to` with the actual path were codekvast-agent is installed).
 
-1. Copy `codekvast-agent.conf.sample` to `codekvast-agent.conf`
+1. `cp codekvast-agent.conf.sample codekvast-agent.conf`
 
-1. Copy `codekvast-collector.conf.sample` to `codekvast-collector.conf`
-
-1. Edit codekvast-agent.conf to suit your needs
-
-1. Edit codekvast-collector.conf to suit your needs
+1. Edit `codekvast-agent.conf` to suit your needs.
 
 ### Modify your application's start script
 
-#### Tomcat
+#### Tomcat (Linux)
 
-1. Copy `path/to/codekvast-agent-@CODEKVAST_VERSION@/bin/setenv.sh` to Tomcat's `bin/` folder.
+1. `cd path/to/tomcat` (substitute `path/to` with the actual path were Tomcat is installed).
 
-1. Edit `setenv.sh` so that CODEKVAST_HOME points to the folder where Codekvast Agent is installed.
+1. `mkdir endorsed/`.
+
+1. `ln -s path/to/codekvast-agent-@CODEKVAST_VERSION@/javaagents/aspectjweaver-@ASPECTJ_VERSION@.jar endorsed/`
+
+1. `cp path/to/codekvast-agent-@CODEKVAST_VERSION@/conf/codekvast-collector.conf.sample conf/codekvast.conf`
+
+1. Edit `conf/codekvast.conf` to suit your needs.
+
+1. `cp path/to/codekvast-agent-@CODEKVAST_VERSION@/tomcat/setenv.sh bin/`
+
+1. Edit `bin/setenv.sh` so that CODEKVAST_HOME points to the folder where Codekvast Agent is installed.
+
+#### Tomcat (Windows)
+
+Follow the instructions for Linux but replace all '/' characters with '\'. Also replace `.sh` with `.bat`.
+The `cp` command is named `copy` in Windows.
+The `ln -s` command does not exist in Windows. Use `copy` instead.
 
 #### Other applications
 
-1. Copy the output from  `path/to/codekvast-agent-@CODEKVAST_VERSION@/bin/showJvmParams.sh`
-
-1. Modify your application's start script, so that the output from the command above appears first in the command line that launches `java`.
-
-
+Use the installation guide for Tomcat as a basis.

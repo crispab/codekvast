@@ -1,14 +1,26 @@
 package se.crisp.codekvast.agent.util;
 
 import org.hamcrest.CoreMatchers;
+import org.junit.After;
 import org.junit.Test;
 
 import java.net.URISyntaxException;
+import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 public class ConfigUtilsTest {
+
+    private static final String MY_PROP1 = ConfigUtilsTest.class.getName() + ".prop1";
+    private static final String MY_PROP2 = ConfigUtilsTest.class.getName() + ".prop2";
+
+    @After
+    public void afterTest() {
+        System.getProperties().remove(MY_PROP1);
+        System.getProperties().remove(MY_PROP2);
+    }
 
     @Test
     public void testGetNormalizedPackagePrefix1() throws URISyntaxException {
@@ -49,5 +61,21 @@ public class ConfigUtilsTest {
     public void testGetNormalizedPrefixes2() throws Exception {
         assertThat(ConfigUtils.getNormalizedPackagePrefixes(",   , x, : y  ; : com.acme... , foo.bar..  , "),
                    hasItems("x", "y", "com.acme", "foo.bar"));
+    }
+
+    @Test
+    public void testExpandExistingVariables() {
+        System.setProperty(MY_PROP1, "XXX");
+        System.setProperty(MY_PROP2, "YYY");
+        assertThat(ConfigUtils.expandVariables("$HOME ${" + MY_PROP1 + "} foo ${" + MY_PROP2 + "} bar"),
+                   is(System.getProperty("user.home") + " XXX foo YYY bar"));
+    }
+
+    @Test
+    public void testExpandMissingVariable() {
+        String nonExistingEnvVar = "MYVAR_" + UUID.randomUUID().toString().replaceAll("[-_]", "").toUpperCase();
+
+        assertThat(ConfigUtils.expandVariables("$" + nonExistingEnvVar + " ${missing.prop1} foo ${missing.prop2} bar"),
+                   is("$" + nonExistingEnvVar + " ${missing.prop1} foo ${missing.prop2} bar"));
     }
 }
