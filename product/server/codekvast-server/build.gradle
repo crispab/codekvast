@@ -57,11 +57,15 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-security"
     compile "org.springframework.boot:spring-boot-starter-actuator"
     compile "org.springframework:spring-messaging"
+    compile 'org.springframework.session:spring-session:1.0.0.RELEASE'
+    compile 'org.springframework.session:spring-session-data-redis:1.0.0.RELEASE'
     compile "com.h2database:h2"
     compile "org.flywaydb:flyway-core"
+    compile 'com.orange.redis-embedded:embedded-redis:0.6'
 
     runtime project(':product:support:websupport')
     runtime "org.hibernate:hibernate-validator"
+    runtime 'org.springframework.data:spring-data-redis:1.4.1.RELEASE'
 
     runtime webjars
 
