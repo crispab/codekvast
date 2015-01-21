@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import se.crisp.codekvast.server.codekvast_server.migration.V1_1__DummyJavaMigration;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -26,7 +27,7 @@ import java.sql.SQLException;
 @Configuration
 @Slf4j
 public class DatabaseConfig {
-    public static final String JAVA_MIGRATION_LOCATION = DatabaseConfig.class.getPackage().getName() + ".migration";
+    public static final String JAVA_MIGRATION_LOCATION = V1_1__DummyJavaMigration.class.getPackage().getName();
     public static final String SQL_MIGRATION_LOCATION = "database.migration";
 
     @Bean

@@ -1,4 +1,4 @@
-package se.crisp.codekvast.server.codekvast_server.config.migration;
+package se.crisp.codekvast.server.codekvast_server.migration;
 
 import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
 

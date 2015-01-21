@@ -17,7 +17,7 @@ import javax.sql.DataSource;
  */
 @Configuration
 @EnableWebSecurity
-@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 15 * 60)
+@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 10)
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 

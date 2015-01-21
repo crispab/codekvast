@@ -1,6 +1,6 @@
 //noinspection JSUnusedGlobalSymbols
 var codekvastApp = angular.module('codekvastApp', [])
-    .controller('MainCtrl', ['$scope', function ($scope) {
+    .controller('MainCtrl', ['$scope', '$location', function ($scope, $location) {
         $scope.applications = [];
         $scope.application = undefined;
         $scope.signatures = [];
@@ -26,9 +26,10 @@ var codekvastApp = angular.module('codekvastApp', [])
             $scope.$apply()
         };
 
-        $scope.reconnect = function () {
-            setTimeout($scope.initSockets, 10000);
-        };
+        $scope.loggedOut = function () {
+            console.log("Logged out");
+            $location.path('/login').search('logout').replace();
+        }
 
         $scope.initSockets = function () {
             $scope.socket.client = new SockJS("/codekvast", null, {debug: true});
@@ -41,7 +42,7 @@ var codekvastApp = angular.module('codekvastApp', [])
             }, function (error) {
                 console.log("Cannot connect %o", error)
             });
-            $scope.socket.client.onclose = $scope.reconnect;
+            $scope.socket.client.onclose = $scope.loggedOut;
         };
 
         $scope.initSockets();

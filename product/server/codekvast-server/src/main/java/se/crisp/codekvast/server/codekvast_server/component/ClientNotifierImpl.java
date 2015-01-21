@@ -1,4 +1,4 @@
-package se.crisp.codekvast.server.codekvast_server.service.impl;
+package se.crisp.codekvast.server.codekvast_server.component;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
