@@ -1,6 +1,11 @@
 //noinspection JSUnusedGlobalSymbols
 var codekvastApp = angular.module('codekvastApp', [])
-    .controller('MainCtrl', ['$scope', '$location', function ($scope, $location) {
+
+    .config(['$locationProvider', function ($locationProvider) {
+        $locationProvider.html5Mode(true);
+    }])
+
+    .controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
         $scope.applications = [];
         $scope.application = undefined;
         $scope.signatures = [];
@@ -28,8 +33,9 @@ var codekvastApp = angular.module('codekvastApp', [])
 
         $scope.loggedOut = function () {
             console.log("Logged out");
-            $location.path('/login').search('logout').replace();
-        }
+            // Cannot use $location here, since /login is outside the Angular app
+            $window.location.href = "/login?logout";
+        };
 
         $scope.initSockets = function () {
             $scope.socket.client = new SockJS("/codekvast", null, {debug: true});

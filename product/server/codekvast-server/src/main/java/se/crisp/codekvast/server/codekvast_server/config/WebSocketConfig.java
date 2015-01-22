@@ -18,7 +18,7 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 @EnableScheduling
 @EnableWebSocketMessageBroker
 @Slf4j
-public class MessagingConfig extends AbstractSessionWebSocketMessageBrokerConfigurer<ExpiringSession> {
+public class WebSocketConfig extends AbstractSessionWebSocketMessageBrokerConfigurer<ExpiringSession> {
 
     @Override
     protected void configureStompEndpoints(StompEndpointRegistry registry) {

@@ -149,8 +149,9 @@ task coverageReport(type: JacocoReport) {
 
     enabled = false
     def jacocoDir = file("build/jacoco")
-    jacocoDir.mkdirs()
-    jacocoDir.eachFileMatch(~/.*\.exec/) { executionData it; enabled = true }
+    if (jacocoDir.exists()) {
+        jacocoDir.eachFileMatch(~/.*\.exec/) { executionData it; enabled = true }
+    }
 
     reports {
         xml.enabled false

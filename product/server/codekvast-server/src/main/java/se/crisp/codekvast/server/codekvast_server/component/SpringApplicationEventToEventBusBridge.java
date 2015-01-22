@@ -11,6 +11,9 @@ import javax.inject.Inject;
 /**
  * A bridge from Spring ApplicationEvents to Guava EventBus.
  *
+ * The EventBus is much easier to use, since you can name the event handling methods anything you like,
+ * and you can have more than one handler method in the same class.
+ *
  * @author Olle Hallin
  */
 @Component
@@ -26,7 +29,7 @@ public class SpringApplicationEventToEventBusBridge implements ApplicationListen
 
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
-        log.debug("On {}", event);
+        log.debug("On {}", event.getClass().getSimpleName());
         eventBus.post(event);
     }
 
