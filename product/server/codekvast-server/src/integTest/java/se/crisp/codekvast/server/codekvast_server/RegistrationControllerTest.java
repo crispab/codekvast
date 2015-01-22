@@ -19,7 +19,7 @@ import java.util.Random;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static se.crisp.codekvast.server.agent.model.v1.Constraints.*;
+import static se.crisp.codekvast.server.agent_api.model.v1.Constraints.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = CodekvastServerApplication.class)
