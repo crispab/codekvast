@@ -20,8 +20,6 @@ import java.util.regex.PatternSyntaxException;
 @Component
 public class FilenameAppVersionStrategy extends AbstractAppVersionStrategy {
 
-    private static final String DEFAULT_MANIFEST_ATTRIBUTE = "Implementation-Version";
-
     public FilenameAppVersionStrategy() {
         super("filename", "pattern");
     }
