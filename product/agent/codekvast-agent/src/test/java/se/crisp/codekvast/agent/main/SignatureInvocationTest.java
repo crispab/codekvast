@@ -1,15 +1,15 @@
 package se.crisp.codekvast.agent.main;
 
 import org.junit.Test;
-import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
+import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
 
 import java.util.Set;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static se.crisp.codekvast.server.agent.model.v1.SignatureConfidence.EXACT_MATCH;
-import static se.crisp.codekvast.server.agent.model.v1.SignatureConfidence.FOUND_IN_PARENT_CLASS;
+import static se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence.EXACT_MATCH;
+import static se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence.FOUND_IN_PARENT_CLASS;
 
 public class SignatureInvocationTest {
 

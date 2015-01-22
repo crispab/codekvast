@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
-import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
+import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.Application;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;

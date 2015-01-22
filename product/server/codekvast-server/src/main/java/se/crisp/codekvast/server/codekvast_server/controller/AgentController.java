@@ -7,12 +7,12 @@ import org.springframework.validation.Validator;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import se.crisp.codekvast.server.agent.AgentRestEndpoints;
-import se.crisp.codekvast.server.agent.model.test.Ping;
-import se.crisp.codekvast.server.agent.model.test.Pong;
-import se.crisp.codekvast.server.agent.model.v1.InvocationData;
-import se.crisp.codekvast.server.agent.model.v1.JvmData;
-import se.crisp.codekvast.server.agent.model.v1.SignatureData;
+import se.crisp.codekvast.server.agent_api.AgentRestEndpoints;
+import se.crisp.codekvast.server.agent_api.model.test.Ping;
+import se.crisp.codekvast.server.agent_api.model.test.Pong;
+import se.crisp.codekvast.server.agent_api.model.v1.InvocationData;
+import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
+import se.crisp.codekvast.server.agent_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.service.AgentService;
 

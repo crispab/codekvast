@@ -21,7 +21,7 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter"
     compile lombok
     compile project(":product:agent:util")
-    compile project(":product:server:agent-delegate")
+    compile project(":product:server:agent-api")
 
     testCompile junit
     testCompile mockito

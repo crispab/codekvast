@@ -6,7 +6,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
+import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.event.registration.RegistrationRequest;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;

@@ -1,8 +1,8 @@
 package se.crisp.codekvast.server.codekvast_server.dao;
 
-import se.crisp.codekvast.server.agent.model.v1.InvocationData;
-import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
-import se.crisp.codekvast.server.agent.model.v1.JvmData;
+import se.crisp.codekvast.server.agent_api.model.v1.InvocationData;
+import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
+import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 
 import java.util.Collection;

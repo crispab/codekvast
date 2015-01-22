@@ -4,7 +4,7 @@ import lombok.*;
 import lombok.experimental.Builder;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
-import se.crisp.codekvast.server.agent.model.v1.Constraints;
+import se.crisp.codekvast.server.agent_api.model.v1.Constraints;
 
 import javax.validation.constraints.Size;
 

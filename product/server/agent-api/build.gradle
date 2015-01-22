@@ -1,0 +1,34 @@
+buildscript { dependencies { classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion" } }
+plugins {
+    id 'java'
+    id 'com.ofg.uptodate' version "1.1.0"
+}
+apply plugin: 'spring-boot'
+
+description = "The agent-side business delegate of the Codekvast server"
+archivesBaseName = "codekvast-agent-api"
+version = project.parent.parent.version
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+dependencies {
+    compile "com.fasterxml.jackson.core:jackson-annotations"
+    compile "com.fasterxml.jackson.core:jackson-databind"
+    compile "javax.inject:javax.inject:1"
+    compile "javax.validation:validation-api:1.1.0.Final"
+    compile "org.apache.httpcomponents:httpclient"
+    compile "org.slf4j:slf4j-api"
+    compile "org.springframework:spring-context"
+    compile "org.springframework:spring-web"
+    compile lombok
+    compile "org.hibernate:hibernate-validator"
+
+    runtime "org.glassfish:javax.el:3.0.0"
+
+    testCompile "junit:junit"
+    testCompile "org.mockito:mockito-core"
+}
+
+// Disable the bootRepackage task, since this isn't really a spring-boot app.
+// We just want the dependency management from spring-boot-starter.
+bootRepackage.enabled = false

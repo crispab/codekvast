@@ -15,10 +15,10 @@ import se.crisp.codekvast.agent.main.codebase.CodeBaseScanner;
 import se.crisp.codekvast.agent.model.Invocation;
 import se.crisp.codekvast.agent.model.Jvm;
 import se.crisp.codekvast.agent.util.FileUtils;
-import se.crisp.codekvast.server.agent.ServerDelegate;
-import se.crisp.codekvast.server.agent.ServerDelegateException;
-import se.crisp.codekvast.server.agent.model.v1.JvmData;
-import se.crisp.codekvast.server.agent.model.v1.SignatureConfidence;
+import se.crisp.codekvast.server.agent_api.AgentApi;
+import se.crisp.codekvast.server.agent_api.AgentApiException;
+import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
+import se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -38,7 +38,7 @@ public class AgentWorker {
 
     private final AgentConfig config;
     private final CodeBaseScanner codeBaseScanner;
-    private final ServerDelegate serverDelegate;
+    private final AgentApi agentApi;
     private final String codekvastGradleVersion;
     private final String codekvastVcsId;
     private final Map<String, Long> jvmProcessedAt = new HashMap<>();
@@ -49,7 +49,7 @@ public class AgentWorker {
     @Inject
     public AgentWorker(@Value("${info.build.gradle.version}") String codekvastGradleVersion,
                        @Value("${info.build.git.id}") String codekvastVcsId,
-                       ServerDelegate serverDelegate,
+                       AgentApi agentApi,
                        AgentConfig config,
                        CodeBaseScanner codeBaseScanner,
                        Collection<AppVersionStrategy> appVersionStrategies) {
@@ -57,7 +57,7 @@ public class AgentWorker {
         Preconditions.checkArgument(!codekvastVcsId.contains("{info.build"));
         this.config = config;
         this.codeBaseScanner = codeBaseScanner;
-        this.serverDelegate = serverDelegate;
+        this.agentApi = agentApi;
         this.codekvastGradleVersion = codekvastGradleVersion;
         this.codekvastVcsId = codekvastVcsId;
         this.appVersionStrategies.addAll(appVersionStrategies);
@@ -142,7 +142,7 @@ public class AgentWorker {
     private void uploadJvmData(Jvm jvm, String appVersion) {
         try {
             //@formatter:off
-            serverDelegate.uploadJvmData(
+            agentApi.uploadJvmData(
                     JvmData.builder()
                            .customerName(jvm.getCollectorConfig().getCustomerName())
                            .appName(jvm.getCollectorConfig().getAppName())
@@ -156,8 +156,8 @@ public class AgentWorker {
                            .codekvastVcsId(codekvastVcsId)
                            .build());
             //@formatter:on
-        } catch (ServerDelegateException e) {
-            logException("Cannot upload JVM data to " + serverDelegate.getServerUri(), e);
+        } catch (AgentApiException e) {
+            logException("Cannot upload JVM data to " + agentApi.getServerUri(), e);
         }
     }
 
@@ -192,11 +192,11 @@ public class AgentWorker {
         if (!newCodeBase.equals(jvmState.getCodeBase())) {
             codeBaseScanner.scanSignatures(newCodeBase);
             try {
-                serverDelegate.uploadSignatureData(jvmState.getJvm().getJvmFingerprint(), newCodeBase.getSignatures());
+                agentApi.uploadSignatureData(jvmState.getJvm().getJvmFingerprint(), newCodeBase.getSignatures());
                 jvmState.setCodeBase(newCodeBase);
                 codeBases.put(jvmState.getJvm().getJvmFingerprint(), newCodeBase);
-            } catch (ServerDelegateException e) {
-                logException("Cannot upload signature data to " + serverDelegate.getServerUri(), e);
+            } catch (AgentApiException e) {
+                logException("Cannot upload signature data to " + agentApi.getServerUri(), e);
             }
         }
     }
@@ -211,12 +211,12 @@ public class AgentWorker {
 
     private void uploadUsedSignatures(JvmState jvmState) {
         try {
-            serverDelegate
+            agentApi
                     .uploadInvocationsData(jvmState.getJvm().getJvmFingerprint(),
                                            jvmState.getInvocationsCollector().getNotUploadedInvocations());
             jvmState.getInvocationsCollector().clearNotUploadedSignatures();
             FileUtils.deleteAllConsumedInvocationDataFiles(jvmState.getInvocationsFile());
-        } catch (ServerDelegateException e) {
+        } catch (AgentApiException e) {
             logException("Cannot upload invocation data", e);
         }
     }

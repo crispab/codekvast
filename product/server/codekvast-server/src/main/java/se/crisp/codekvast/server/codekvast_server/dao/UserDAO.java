@@ -1,7 +1,7 @@
 package se.crisp.codekvast.server.codekvast_server.dao;
 
 import org.springframework.dao.DataAccessException;
-import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
+import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedCustomerException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;

@@ -13,7 +13,7 @@ import se.crisp.codekvast.agent.config.AgentConfig;
 import se.crisp.codekvast.agent.config.Sysprop;
 import se.crisp.codekvast.agent.main.spring.AgentConfigPropertySource;
 import se.crisp.codekvast.agent.util.FileUtils;
-import se.crisp.codekvast.server.agent.ServerDelegateConfig;
+import se.crisp.codekvast.server.agent_api.AgentApiConfig;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -60,14 +60,14 @@ public class CodekvastAgentApplication {
     }
 
     /**
-     * Converts an AgentConfig to a ServerDelegateConfig
+     * Converts an AgentConfig to a AgentApiConfig
      *
      * @param agentConfig The agent configuration object.
      * @return A server delegate config object.
      */
     @Bean
-    public ServerDelegateConfig serverDelegateConfig(AgentConfig agentConfig) {
-        return ServerDelegateConfig.builder()
+    public AgentApiConfig serverDelegateConfig(AgentConfig agentConfig) {
+        return AgentApiConfig.builder()
                                    .serverUri(agentConfig.getServerUri())
                                    .apiAccessID(agentConfig.getApiAccessID())
                                    .apiAccessSecret(agentConfig.getApiAccessSecret())

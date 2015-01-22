@@ -1,8 +1,8 @@
 package se.crisp.codekvast.agent.main;
 
 import lombok.Getter;
-import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
-import se.crisp.codekvast.server.agent.model.v1.SignatureConfidence;
+import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
+import se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.*;

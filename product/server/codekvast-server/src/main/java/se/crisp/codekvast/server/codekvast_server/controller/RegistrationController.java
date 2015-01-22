@@ -9,7 +9,7 @@ import org.springframework.validation.Validator;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import se.crisp.codekvast.server.agent.model.v1.Constraints;
+import se.crisp.codekvast.server.agent_api.model.v1.Constraints;
 import se.crisp.codekvast.server.codekvast_server.event.registration.IsNameUniqueRequest;
 import se.crisp.codekvast.server.codekvast_server.event.registration.IsNameUniqueResponse;
 import se.crisp.codekvast.server.codekvast_server.event.registration.RegistrationRequest;
