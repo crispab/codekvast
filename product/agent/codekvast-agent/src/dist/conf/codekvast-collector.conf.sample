@@ -89,8 +89,18 @@
 # Short-hand for "manifest my-application.jar Implementation-Version"
 # appVersion = manifest my-application.jar
 
-# Use this exact URI for locating the jar
-# appVersion = manifest file:/path/to/my-application.jar
+# Search in the code base for a file with a name that matches the regular expression.
+#
+# If there are no parenthesis in the pattern, the whole filename is used as version, else just the part between the parenthesis.
+# java.util.regex.Pattern is used for matching.
+#
+# Example 1: "appVersion = filename my-application-(.*).jar" will return "1.7.7" if there is a file somewhere in the codebase with the
+# name "my-application-1.7.7.jar"
+#
+# Example 2: "appVersion = filename my-application-.*.jar" will return "my-application-1.7.7.jar" if there is a file somewhere in the
+# codebase with the name "my-application-1.7.7.jar"
+#
+# appVersion = filename my-application-(.*).jar
 
 #--------------------------------------------------------------------------------------------------------
 # What packages should be tracked?
