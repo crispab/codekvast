@@ -12,21 +12,21 @@
     <base th:href="@{/}"/>
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" th:href="@{/webjars/bootstrap/3.3.1/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/__${bootstrapVersion}__/css/bootstrap__${dotCss}__}"/>
 </div>
 
 <div id="scripts-twitter-bootstrap"> <!-- Twitter Bootstrap -->
-    <script th:src="@{/webjars/jquery/2.1.3/jquery.min.js}"></script>
-    <script th:src="@{/webjars/bootstrap/3.3.1/js/bootstrap.min.js}"></script>
+    <script th:src="@{/webjars/jquery/__${jqueryVersion}__/jquery__${dotJs}__}"></script>
+    <script th:src="@{/webjars/bootstrap/__${bootstrapVersion}__/js/bootstrap__${dotJs}__}"></script>
 </div>
 
 <div id="scripts-angularjs"> <!-- AngularJS -->
-    <script th:src="@{/webjars/angularjs/1.3.8/angular.js}"></script>
+    <script th:src="@{/webjars/angularjs/__${angularjsVersion}__/angular__${dotJs}__}"></script>
 </div>
 
 <div id="scripts-sockjs"> <!-- SockJS -->
-    <script th:src="@{/webjars/sockjs-client/0.3.4/sockjs.js}"></script>
-    <script th:src="@{/webjars/stomp-websocket/2.3.1/stomp.js}"></script>
+    <script th:src="@{/webjars/sockjs-client/__${sockjsclientVersion}__/sockjs__${dotJs}__}"></script>
+    <script th:src="@{/webjars/stomp-websocket/__${stompwebsocketVersion}__/stomp__${dotJs}__}"></script>
 </div>
 
 </html>

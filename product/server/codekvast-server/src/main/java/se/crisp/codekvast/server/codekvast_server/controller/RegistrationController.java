@@ -29,7 +29,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 @Controller
 @Slf4j
-public class RegistrationController {
+public class RegistrationController extends AbstractThymeleafController {
 
     public static final String IS_UNIQUE_PATH = "/register/isUnique";
     public static final String REGISTER_PATH = "/register";

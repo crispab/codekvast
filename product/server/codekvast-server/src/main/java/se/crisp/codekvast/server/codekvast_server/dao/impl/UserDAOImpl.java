@@ -177,7 +177,7 @@ public class UserDAOImpl implements UserDAO {
     @Transactional(readOnly = true)
     @Cacheable("user")
     public Collection<Application> getApplications(Long customerId) {
-        return jdbcTemplate.query("SELECT ID, CUSTOMER_ID, NAME, VERSION FROM APPLICATIONS WHERE CUSTOMER_ID = ?",
+        return jdbcTemplate.query("SELECT ID, CUSTOMER_ID, NAME FROM APPLICATIONS WHERE CUSTOMER_ID = ?",
                                   new ApplicationRowMapper(), customerId);
     }
 
