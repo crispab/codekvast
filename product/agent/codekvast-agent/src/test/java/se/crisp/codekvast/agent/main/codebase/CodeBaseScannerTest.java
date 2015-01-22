@@ -35,6 +35,7 @@ public class CodeBaseScannerTest {
                                            .packagePrefixes(ScannerTest1.class.getPackage().getName())
                                            .appName("appName")
                                            .appVersion("1.0")
+                                           .tags("tags")
                                            .collectorResolutionSeconds(1)
                                            .aspectjOptions("")
                                            .methodExecutionPointcut(CollectorConfig.DEFAULT_METHOD_EXECUTION_POINTCUT)

@@ -2,8 +2,10 @@ package se.crisp.codekvast.server.agent.model.v1;
 
 import lombok.*;
 import lombok.experimental.Builder;
+import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Size;
 import java.util.Collection;
 
 /**
@@ -18,9 +20,8 @@ import java.util.Collection;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class InvocationData {
     @NonNull
-    @Valid
-    private Header header;
-
+    @NotBlank
+    @Size(min = Constraints.MIN_FINGERPRINT_LENGTH, max = Constraints.MAX_FINGERPRINT_LENGTH)
     private String jvmFingerprint;
 
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
@@ -30,12 +31,12 @@ public class InvocationData {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(header=" + header + ", jvmFingerprint=" + jvmFingerprint + ", invocations.size=" + invocations
+        return getClass().getSimpleName() + "(jvmFingerprint=" + jvmFingerprint + ", invocations.size=" + invocations
                 .size() + ')';
     }
 
     public String toLongString() {
-        return getClass().getSimpleName() + "(header=" + header + ", jvmFingerprint=" + jvmFingerprint + ", invocations.size=" + invocations
+        return getClass().getSimpleName() + "(jvmFingerprint=" + jvmFingerprint + ", invocations.size=" + invocations
                 .size() + ", invocations=" + invocations + ')';
     }
 }

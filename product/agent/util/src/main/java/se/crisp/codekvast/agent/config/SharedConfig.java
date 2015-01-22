@@ -20,9 +20,14 @@ public class SharedConfig implements CodekvastConfig {
     private final File dataPath;
 
     protected static SharedConfig buildSharedConfig(Properties props) {
+        File tmpDir = new File("/tmp");
+        if (!tmpDir.isDirectory()) {
+            tmpDir = new File(System.getProperty("java.io.tmpdir"));
+        }
+        String defaultValue = new File(tmpDir, "codekvast").getAbsolutePath();
+
         return builder()
-                .dataPath(new File(ConfigUtils.getOptionalStringValue(props, "dataPath", System.getProperty("java.io.tmpdir") +
-                        "/codekvast")))
+                .dataPath(new File(ConfigUtils.getOptionalStringValue(props, "dataPath", defaultValue)))
                 .build();
     }
 

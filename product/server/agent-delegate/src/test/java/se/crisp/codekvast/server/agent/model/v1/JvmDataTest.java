@@ -12,31 +12,10 @@ import static org.junit.Assert.assertThat;
 public class JvmDataTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Test(expected = NullPointerException.class)
-    public void jvmDataShouldRejectNullHeader() {
-        JvmData.builder().header(null).build();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void jvmDataShouldRejectMissingValues() {
-        JvmData.builder().header(HeaderTest.HEADER).build();
-    }
-
     @Test
-    public void jvmDataShouldBeJsonSerializable() throws IOException {
+    public void jvmDataWithTagsShouldBeJsonSerializable() throws IOException {
         // given
-        JvmData data1 = JvmData.builder()
-                               .header(HeaderTest.HEADER)
-                               .customerName("customerName")
-                               .appName("appName")
-                               .appVersion("appVersion")
-                               .hostName("hostName")
-                               .startedAtMillis(1000L)
-                               .dumpedAtMillis(2000L)
-                               .jvmFingerprint(UUID.randomUUID().toString())
-                               .codekvastVersion("codekvastVersion")
-                               .codekvastVcsId("codekvastVcsId")
-                               .build();
+        JvmData data1 = getJvmData("tag1, tag2, tag3");
 
         // when
         String json = objectMapper.writeValueAsString(data1);
@@ -44,6 +23,34 @@ public class JvmDataTest {
 
         // then
         assertThat(data1, is(data2));
+    }
+
+    @Test
+    public void jvmDataWithoutTagsShouldBeJsonSerializable() throws IOException {
+        // given
+        JvmData data1 = getJvmData("");
+
+        // when
+        String json = objectMapper.writeValueAsString(data1);
+        JvmData data2 = objectMapper.readValue(json, JvmData.class);
+
+        // then
+        assertThat(data1, is(data2));
+    }
+
+    private JvmData getJvmData(String tags) {
+        return JvmData.builder()
+                      .customerName("customerName")
+                      .appName("appName")
+                      .appVersion("appVersion")
+                      .tags(tags)
+                      .hostName("hostName")
+                      .startedAtMillis(1000L)
+                      .dumpedAtMillis(2000L)
+                      .jvmFingerprint(UUID.randomUUID().toString())
+                      .codekvastVersion("codekvastVersion")
+                      .codekvastVcsId("codekvastVcsId")
+                      .build();
     }
 
 }

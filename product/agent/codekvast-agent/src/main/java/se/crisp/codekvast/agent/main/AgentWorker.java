@@ -17,6 +17,7 @@ import se.crisp.codekvast.agent.model.Jvm;
 import se.crisp.codekvast.agent.util.FileUtils;
 import se.crisp.codekvast.server.agent.ServerDelegate;
 import se.crisp.codekvast.server.agent.ServerDelegateException;
+import se.crisp.codekvast.server.agent.model.v1.JvmData;
 import se.crisp.codekvast.server.agent.model.v1.SignatureConfidence;
 
 import javax.annotation.PreDestroy;
@@ -140,16 +141,21 @@ public class AgentWorker {
 
     private void uploadJvmData(Jvm jvm, String appVersion) {
         try {
+            //@formatter:off
             serverDelegate.uploadJvmData(
-                    jvm.getCollectorConfig().getCustomerName(),
-                    jvm.getCollectorConfig().getAppName(),
-                    appVersion,
-                    jvm.getHostName(),
-                    jvm.getStartedAtMillis(),
-                    jvm.getDumpedAtMillis(),
-                    jvm.getJvmFingerprint(),
-                    codekvastGradleVersion,
-                    codekvastVcsId);
+                    JvmData.builder()
+                           .customerName(jvm.getCollectorConfig().getCustomerName())
+                           .appName(jvm.getCollectorConfig().getAppName())
+                           .tags(jvm.getCollectorConfig().getTags())
+                           .appVersion(appVersion)
+                           .hostName(jvm.getHostName())
+                           .startedAtMillis(jvm.getStartedAtMillis())
+                           .dumpedAtMillis(jvm.getDumpedAtMillis())
+                           .jvmFingerprint(jvm.getJvmFingerprint())
+                           .codekvastVersion(codekvastGradleVersion)
+                           .codekvastVcsId(codekvastVcsId)
+                           .build());
+            //@formatter:on
         } catch (ServerDelegateException e) {
             logException("Cannot upload JVM data to " + serverDelegate.getServerUri(), e);
         }

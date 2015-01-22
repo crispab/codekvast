@@ -41,6 +41,7 @@ public class InvocationsRegistryTest {
                                 .packagePrefixes("se.crisp")
                                 .appName(APP_NAME)
                                 .appVersion(APP_VERSION)
+                                .tags("")
                                 .collectorResolutionSeconds(1)
                                 .aspectjOptions("")
                                 .methodExecutionPointcut(CollectorConfig.DEFAULT_METHOD_EXECUTION_POINTCUT)

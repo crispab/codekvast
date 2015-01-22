@@ -16,9 +16,6 @@ import java.net.URI;
 public class ServerDelegateConfig {
 
     @NonNull
-    private final String environment;
-
-    @NonNull
     private final URI serverUri;
 
     @NonNull

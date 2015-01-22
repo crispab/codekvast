@@ -58,7 +58,7 @@ public class AgentController {
     @ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     private void onApplicationException(CodekvastException e) {
-        log.warn("Application exception: " + e);
+        log.error("Application exception: " + e);
     }
 
     @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_JVM_RUN, method = RequestMethod.POST)
@@ -72,7 +72,7 @@ public class AgentController {
         if (log.isTraceEnabled()) {
             log.trace("Received {}", data);
         } else {
-            log.debug("Received {} signatures from {}", data.getSignatures().size(), data.getHeader());
+            log.debug("Received {} signatures", data.getSignatures().size());
         }
         agentService.storeSignatureData(data);
     }
@@ -82,7 +82,7 @@ public class AgentController {
         if (log.isTraceEnabled()) {
             log.trace("Received {}", data);
         } else {
-            log.debug("Received {} invocations from {}", data.getInvocations().size(), data.getHeader());
+            log.debug("Received {} invocations", data.getInvocations().size());
         }
         agentService.storeInvocationData(data);
     }

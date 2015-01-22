@@ -16,10 +16,12 @@ public class InvocationDataTest {
     public void invocationDataShouldBeJsonSerializable() throws IOException {
         // given
 
-        InvocationData data1 = InvocationData.builder().header(HeaderTest.HEADER).invocations(asList(
-                new InvocationEntry("sig1", 10000L, SignatureConfidence.EXACT_MATCH),
-                new InvocationEntry("sig2", 20000L, SignatureConfidence.FOUND_IN_PARENT_CLASS)))
-                                   .build();
+        InvocationData data1 = InvocationData.builder()
+                                             .jvmFingerprint("jvmFingerprint")
+                                             .invocations(asList(
+                                                     new InvocationEntry("sig1", 10000L, SignatureConfidence.EXACT_MATCH),
+                                                     new InvocationEntry("sig2", 20000L, SignatureConfidence.FOUND_IN_PARENT_CLASS)))
+                                             .build();
 
         // when
         String json = objectMapper.writeValueAsString(data1);

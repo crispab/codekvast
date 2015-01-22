@@ -31,7 +31,7 @@ task generateCodekvastConfig {
 customerName = Sample
 appName = $archivesBaseName
 appVersion = $version
-environment = development
+tags = development, sample
 codeBase = ${file("build/install/${project.name}/lib/")}
 packagePrefixes = sample. , foo.bar.
 serverUri = http://localhost:8090

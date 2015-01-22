@@ -60,8 +60,6 @@ CREATE TABLE applications (
   id          INTEGER                             NOT NULL IDENTITY,
   customer_id INTEGER                             NOT NULL REFERENCES customers (id),
   name        VARCHAR(100)                        NOT NULL,
-  version     VARCHAR(100),
-  environment VARCHAR(100),
   created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   modified_at TIMESTAMP AS NOW()
 );

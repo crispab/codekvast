@@ -13,6 +13,7 @@ import se.crisp.codekvast.server.agent.ServerDelegateConfig;
 import se.crisp.codekvast.server.agent.ServerDelegateException;
 import se.crisp.codekvast.server.agent.impl.ServerDelegateImpl;
 import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
+import se.crisp.codekvast.server.agent.model.v1.JvmData;
 import se.crisp.codekvast.server.agent.model.v1.SignatureConfidence;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
@@ -58,7 +59,6 @@ public class ServerDelegateTest {
 
     private void createServerDelegate(String apiAccessID, String apiAccessSecret) throws URISyntaxException {
         serverDelegate = new ServerDelegateImpl(ServerDelegateConfig.builder()
-                                                                    .environment("environment")
                                                                     .serverUri(new URI(String.format("http://localhost:%d", port)))
                                                                     .apiAccessID(apiAccessID)
                                                                     .apiAccessSecret(apiAccessSecret)
@@ -95,9 +95,8 @@ public class ServerDelegateTest {
     @Test
     public void testUploadSignatureData() throws ServerDelegateException, URISyntaxException, CodekvastException {
         // when
-        serverDelegate
-                .uploadJvmData("customerName", "appName", "appVersion", "hostName", System.currentTimeMillis(), System.currentTimeMillis(),
-                                     jvmFingerprint, "codekvastVersion", "codekvastVcsId");
+
+        serverDelegate.uploadJvmData(getJvmData());
         serverDelegate.uploadSignatureData(jvmFingerprint, Arrays.asList(signature1, signature2));
 
         // then
@@ -112,14 +111,27 @@ public class ServerDelegateTest {
                                                                       new InvocationEntry(signature2, now,
                                                                                           SignatureConfidence.EXACT_MATCH));
         // when
-        serverDelegate
-                .uploadJvmData("customerName", "appName", "appVersion", "hostName", System.currentTimeMillis(), System.currentTimeMillis(),
-                                     jvmFingerprint, "codekvastVersion", "codekvastVcsId");
+        serverDelegate.uploadJvmData(getJvmData());
         serverDelegate.uploadInvocationsData(jvmFingerprint, invocationEntries);
 
         // then
         assertThat(userService.getSignatures(CUSTOMER_NAME), hasSize(2));
         assertThat(userService.getSignatures(CUSTOMER_NAME + "X"), hasSize(0));
+    }
+
+    private JvmData getJvmData() {
+        return JvmData.builder()
+                      .customerName("customerName")
+                      .appName("appName")
+                      .appVersion("appVersion")
+                      .tags("tags")
+                      .hostName("hostName")
+                      .startedAtMillis(System.currentTimeMillis())
+                      .dumpedAtMillis(System.currentTimeMillis())
+                      .jvmFingerprint(jvmFingerprint)
+                      .codekvastVersion("codekvastVersion")
+                      .codekvastVcsId("codekvastVcsId")
+                      .build();
     }
 
     private void assertThatPingThrowsHttpClientErrorException(String pingMessage, String expectedRootCauseMessage) {

@@ -37,6 +37,7 @@ public class CollectorConfig implements CodekvastConfig {
     public static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
     public static final String SAMPLE_CODEBASE_URI1 = "/path/to/codebase1/";
     public static final String SAMPLE_CODEBASE_URI2 = "/path/to/codebase2/";
+    public static final String SAMPLE_TAGS = "production, frontend-web";
     public static final String OVERRIDE_SEPARATOR = ";";
     public static final String UNSPECIFIED_VERSION = "unspecified";
 
@@ -58,6 +59,8 @@ public class CollectorConfig implements CodekvastConfig {
     private final String codeBase;
     @NonNull
     private final String packagePrefixes;
+    @NonNull
+    private final String tags;
 
 
     public File getAspectFile() {
@@ -128,6 +131,7 @@ public class CollectorConfig implements CodekvastConfig {
                               .appVersion(ConfigUtils.getOptionalStringValue(props, "appVersion", UNSPECIFIED_VERSION))
                               .codeBase(ConfigUtils.getMandatoryStringValue(props, "codeBase"))
                               .packagePrefixes(ConfigUtils.getMandatoryStringValue(props, "packagePrefixes"))
+                              .tags(ConfigUtils.getOptionalStringValue(props, "tags", ""))
                               .collectorResolutionSeconds(ConfigUtils.getOptionalIntValue(props, "collectorResolutionSeconds",
                                                                                           DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS))
                               .verbose(ConfigUtils.getOptionalBooleanValue(props, "verbose", DEFAULT_VERBOSE))
@@ -145,6 +149,7 @@ public class CollectorConfig implements CodekvastConfig {
                               .appVersion(UNSPECIFIED_VERSION)
                               .codeBase(SAMPLE_CODEBASE_URI1 + " , " + SAMPLE_CODEBASE_URI2)
                               .packagePrefixes("com.acme. , foo.bar.")
+                              .tags(SAMPLE_TAGS)
                               .collectorResolutionSeconds(DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS)
                               .verbose(DEFAULT_VERBOSE)
                               .clobberAopXml(DEFAULT_CLOBBER_AOP_XML)

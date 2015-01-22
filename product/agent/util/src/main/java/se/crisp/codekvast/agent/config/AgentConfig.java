@@ -33,8 +33,6 @@ public class AgentConfig implements CodekvastConfig {
     @NonNull
     private final String apiAccessSecret;
     @NonNull
-    private final String environment;
-    @NonNull
     private final URI serverUri;
     private final int serverUploadIntervalSeconds;
 
@@ -58,7 +56,6 @@ public class AgentConfig implements CodekvastConfig {
                               .sharedConfig(SharedConfig.buildSharedConfig(props))
                               .apiAccessID(ConfigUtils.getOptionalStringValue(props, "apiAccessID", DEFAULT_API_ACCESS_ID))
                               .apiAccessSecret(ConfigUtils.getOptionalStringValue(props, "apiAccessSecret", DEFAULT_API_ACCESS_SECRET))
-                              .environment(ConfigUtils.getMandatoryStringValue(props, "environment"))
                               .serverUploadIntervalSeconds(ConfigUtils.getOptionalIntValue(props, "serverUploadIntervalSeconds",
                                                                                            DEFAULT_UPLOAD_INTERVAL_SECONDS))
                               .serverUri(ConfigUtils.getMandatoryUriValue(props, "serverUri", true))
@@ -74,7 +71,6 @@ public class AgentConfig implements CodekvastConfig {
                           .sharedConfig(SharedConfig.buildSampleSharedConfig())
                           .apiAccessID(DEFAULT_API_ACCESS_ID)
                           .apiAccessSecret(DEFAULT_API_ACCESS_SECRET)
-                          .environment("environment")
                           .serverUploadIntervalSeconds(DEFAULT_UPLOAD_INTERVAL_SECONDS)
                           .serverUri(new URI("http://localhost:8090"))
                           .build();

@@ -21,12 +21,4 @@ public class Application {
     @NonNull
     @NotBlank
     private final String name;
-
-    @NonNull
-    @NotBlank
-    private final String version;
-
-    @NonNull
-    @NotBlank
-    private final String environment;
 }

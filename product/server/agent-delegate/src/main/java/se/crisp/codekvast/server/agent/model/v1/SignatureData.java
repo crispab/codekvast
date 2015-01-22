@@ -4,7 +4,6 @@ import lombok.*;
 import lombok.experimental.Builder;
 import org.hibernate.validator.constraints.NotBlank;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import java.util.Collection;
 
@@ -22,10 +21,6 @@ import java.util.Collection;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class SignatureData {
     @NonNull
-    @Valid
-    private Header header;
-
-    @NonNull
     @NotBlank
     @Size(min = Constraints.MIN_FINGERPRINT_LENGTH, max = Constraints.MAX_FINGERPRINT_LENGTH)
     private String jvmFingerprint;
@@ -36,12 +31,12 @@ public class SignatureData {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(header=" + header + ", jvmFingerprint=" + jvmFingerprint + ", signatures.size=" + signatures
+        return getClass().getSimpleName() + "(jvmFingerprint=" + jvmFingerprint + ", signatures.size=" + signatures
                 .size() + ')';
     }
 
     public String toLongString() {
-        return getClass().getSimpleName() + "(header=" + header + ", jvmFingerprint=" + jvmFingerprint + ", signatures.size=" + signatures
+        return getClass().getSimpleName() + "(jvmFingerprint=" + jvmFingerprint + ", signatures.size=" + signatures
                 .size() + ", signatures=" + signatures + ')';
     }
 }

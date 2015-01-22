@@ -19,7 +19,10 @@ import se.crisp.codekvast.server.agent.ServerDelegateConfig;
 import se.crisp.codekvast.server.agent.ServerDelegateException;
 import se.crisp.codekvast.server.agent.model.test.Ping;
 import se.crisp.codekvast.server.agent.model.test.Pong;
-import se.crisp.codekvast.server.agent.model.v1.*;
+import se.crisp.codekvast.server.agent.model.v1.InvocationData;
+import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
+import se.crisp.codekvast.server.agent.model.v1.JvmData;
+import se.crisp.codekvast.server.agent.model.v1.SignatureData;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
@@ -41,7 +44,6 @@ import java.util.Set;
 public class ServerDelegateImpl implements ServerDelegate {
 
     private final ServerDelegateConfig config;
-    private final Header header;
     private final Validator validator;
 
     @Getter
@@ -51,7 +53,6 @@ public class ServerDelegateImpl implements ServerDelegate {
     public ServerDelegateImpl(ServerDelegateConfig config, Validator validator) {
         this.config = config;
         this.validator = validator;
-        this.header = Header.builder().environment(config.getEnvironment()).build();
         this.restTemplate = new RestTemplate(createBasicAuthHttpClient(config.getApiAccessID(), config.getApiAccessSecret()));
     }
 
@@ -62,9 +63,7 @@ public class ServerDelegateImpl implements ServerDelegate {
     }
 
     @Override
-    public void uploadJvmData(String customerName, String appName, String appVersion, String hostName, long startedAtMillis, long
-            dumpedAtMillis,
-                              String jvmFingerprint, String codekvastVersion, String codekvastVcsId)
+    public void uploadJvmData(JvmData jvmData)
             throws ServerDelegateException {
         String endPoint = config.getServerUri() + AgentRestEndpoints.UPLOAD_V1_JVM_RUN;
 
@@ -73,21 +72,9 @@ public class ServerDelegateImpl implements ServerDelegate {
         try {
             long startedAt = System.currentTimeMillis();
 
-            JvmData data = JvmData.builder().header(header)
-                                  .customerName(customerName)
-                                  .appName(appName)
-                                  .appVersion(appVersion)
-                                  .hostName(hostName)
-                                  .startedAtMillis(startedAtMillis)
-                                  .dumpedAtMillis(dumpedAtMillis)
-                                  .jvmFingerprint(jvmFingerprint)
-                                  .codekvastVersion(codekvastVersion)
-                                  .codekvastVcsId(codekvastVcsId)
-                                  .build();
+            restTemplate.postForEntity(new URI(endPoint), validate(jvmData), Void.class);
 
-            restTemplate.postForEntity(new URI(endPoint), validate(data), Void.class);
-
-            log.info("Uploaded {} to {} in {}s", data, endPoint, elapsedSeconds(startedAt));
+            log.info("Uploaded {} to {} in {}s", jvmData, endPoint, elapsedSeconds(startedAt));
         } catch (URISyntaxException e) {
             throw new ServerDelegateException("Illegal REST endpoint: " + endPoint, e);
         } catch (RestClientException e) {
@@ -108,7 +95,7 @@ public class ServerDelegateImpl implements ServerDelegate {
         try {
             long startedAtMillis = System.currentTimeMillis();
 
-            SignatureData data = SignatureData.builder().header(header).jvmFingerprint(jvmFingerprint).signatures(signatures).build();
+            SignatureData data = SignatureData.builder().jvmFingerprint(jvmFingerprint).signatures(signatures).build();
 
             restTemplate.postForEntity(new URI(endPoint), validate(data), Void.class);
 
@@ -134,7 +121,7 @@ public class ServerDelegateImpl implements ServerDelegate {
         try {
             long startedAtMillis = System.currentTimeMillis();
 
-            InvocationData data = InvocationData.builder().header(header).jvmFingerprint(jvmFingerprint).invocations(invocations).build();
+            InvocationData data = InvocationData.builder().jvmFingerprint(jvmFingerprint).invocations(invocations).build();
 
             restTemplate.postForEntity(new URI(endPoint), validate(data), Void.class);
 
@@ -151,7 +138,6 @@ public class ServerDelegateImpl implements ServerDelegate {
         String endPoint = config.getServerUri() + AgentRestEndpoints.PING;
         log.debug("Sending ping '{}' to {}", message, endPoint);
         try {
-
             Ping data = Ping.builder().message(message).build();
 
             ResponseEntity<Pong> response = restTemplate.postForEntity(new URI(endPoint), data, Pong.class);

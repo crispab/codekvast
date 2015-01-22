@@ -11,8 +11,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import se.crisp.codekvast.server.codekvast_server.controller.RegistrationController;
-import se.crisp.codekvast.server.codekvast_server.event.ajax.RegistrationRequest;
-import se.crisp.codekvast.server.codekvast_server.event.ajax.RegistrationResponse;
+import se.crisp.codekvast.server.codekvast_server.event.registration.RegistrationRequest;
+import se.crisp.codekvast.server.codekvast_server.event.registration.RegistrationResponse;
 
 import java.net.URI;
 import java.util.Random;

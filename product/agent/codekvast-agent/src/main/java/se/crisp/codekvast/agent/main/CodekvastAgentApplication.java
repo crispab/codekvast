@@ -68,7 +68,6 @@ public class CodekvastAgentApplication {
     @Bean
     public ServerDelegateConfig serverDelegateConfig(AgentConfig agentConfig) {
         return ServerDelegateConfig.builder()
-                                   .environment(agentConfig.getEnvironment())
                                    .serverUri(agentConfig.getServerUri())
                                    .apiAccessID(agentConfig.getApiAccessID())
                                    .apiAccessSecret(agentConfig.getApiAccessSecret())

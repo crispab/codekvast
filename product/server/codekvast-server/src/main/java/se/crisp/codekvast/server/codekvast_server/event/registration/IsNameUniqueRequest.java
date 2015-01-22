@@ -1,24 +1,23 @@
-package se.crisp.codekvast.server.agent.model.v1;
+package se.crisp.codekvast.server.codekvast_server.event.registration;
 
 import lombok.*;
 import lombok.experimental.Builder;
 import org.hibernate.validator.constraints.NotBlank;
 
-import javax.validation.constraints.Size;
-
 /**
- * The common header part of all REST messages.
+ * Send by the registration wizard JavaScript to check whether a name is unique or not.
  *
  * @author Olle Hallin
  */
 @Data
-@Builder
 @Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Header {
-    @NonNull
+@Builder
+public class IsNameUniqueRequest {
     @NotBlank
-    @Size(max = Constraints.MAX_ENVIRONMENT_NAME_LENGTH)
-    private String environment;
+    private String kind;
+
+    @NotBlank
+    private String name;
 }

@@ -10,10 +10,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import se.crisp.codekvast.server.agent.model.v1.Constraints;
-import se.crisp.codekvast.server.codekvast_server.event.ajax.IsNameUniqueRequest;
-import se.crisp.codekvast.server.codekvast_server.event.ajax.IsNameUniqueResponse;
-import se.crisp.codekvast.server.codekvast_server.event.ajax.RegistrationRequest;
-import se.crisp.codekvast.server.codekvast_server.event.ajax.RegistrationResponse;
+import se.crisp.codekvast.server.codekvast_server.event.registration.IsNameUniqueRequest;
+import se.crisp.codekvast.server.codekvast_server.event.registration.IsNameUniqueResponse;
+import se.crisp.codekvast.server.codekvast_server.event.registration.RegistrationRequest;
+import se.crisp.codekvast.server.codekvast_server.event.registration.RegistrationResponse;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
 

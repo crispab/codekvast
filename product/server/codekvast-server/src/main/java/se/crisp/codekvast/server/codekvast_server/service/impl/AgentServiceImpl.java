@@ -63,7 +63,7 @@ public class AgentServiceImpl implements AgentService {
         for (String sig : signatureData.getSignatures()) {
             invocationEntries.add(new InvocationEntry(sig, null, null));
         }
-        return InvocationData.builder().header(signatureData.getHeader()).jvmFingerprint(signatureData.getJvmFingerprint()).invocations(
+        return InvocationData.builder().jvmFingerprint(signatureData.getJvmFingerprint()).invocations(
                 invocationEntries).build();
     }
 

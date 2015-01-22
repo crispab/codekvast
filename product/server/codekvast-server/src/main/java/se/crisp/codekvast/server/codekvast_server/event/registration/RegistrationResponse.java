@@ -1,4 +1,4 @@
-package se.crisp.codekvast.server.codekvast_server.event.ajax;
+package se.crisp.codekvast.server.codekvast_server.event.registration;
 
 import lombok.*;
 import lombok.experimental.Builder;

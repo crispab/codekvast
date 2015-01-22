@@ -42,6 +42,7 @@ public class CodeBaseTest {
                                            .packagePrefixes("se.crisp")
                                            .appName("appName")
                                            .appVersion("appVersion")
+                                           .tags("tag1, tag2")
                                            .collectorResolutionSeconds(1)
                                            .aspectjOptions("")
                                            .methodExecutionPointcut(CollectorConfig.DEFAULT_METHOD_EXECUTION_POINTCUT)

@@ -1,7 +1,7 @@
 package se.crisp.codekvast.server.codekvast_server.service;
 
 import se.crisp.codekvast.server.agent.model.v1.InvocationEntry;
-import se.crisp.codekvast.server.codekvast_server.event.ajax.RegistrationRequest;
+import se.crisp.codekvast.server.codekvast_server.event.registration.RegistrationRequest;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.Application;
 

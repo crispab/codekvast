@@ -4,7 +4,6 @@ import lombok.*;
 import lombok.experimental.Builder;
 import org.hibernate.validator.constraints.NotBlank;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -22,10 +21,6 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class JvmData {
     @NonNull
-    @Valid
-    private Header header;
-
-    @NonNull
     @NotBlank
     @Size(max = Constraints.MAX_CUSTOMER_NAME_LENGTH)
     private String customerName;
@@ -39,6 +34,10 @@ public class JvmData {
     @NotBlank
     @Size(max = Constraints.MAX_APP_VERSION_LENGTH)
     private String appVersion;
+
+    @NonNull
+    @Size(max = Constraints.MAX_TAGS_LENGTH)
+    private String tags;
 
     @NonNull
     @NotBlank

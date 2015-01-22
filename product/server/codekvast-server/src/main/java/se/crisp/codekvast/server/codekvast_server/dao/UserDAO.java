@@ -22,7 +22,7 @@ public interface UserDAO {
      * Retrieve an application ID. If not found, a new row is inserted into APPLICATIONS and an ApplicationCreatedEvent is posted on the
      * event bus.
      */
-    long getAppId(long customerId, String environment, String appName, String appVersion) throws UndefinedApplicationException;
+    long getAppId(long customerId, String appName) throws UndefinedApplicationException;
 
     AppId getAppIdByJvmFingerprint(String jvmFingerprint);
 

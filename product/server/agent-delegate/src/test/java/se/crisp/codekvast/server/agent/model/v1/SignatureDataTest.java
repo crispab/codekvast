@@ -18,7 +18,7 @@ public class SignatureDataTest {
     public void signatureDataShouldBeJsonSerializable() throws IOException {
         // given
         SignatureData data1 =
-                SignatureData.builder().header(HeaderTest.HEADER).jvmFingerprint(UUID.randomUUID().toString()).signatures(Arrays.asList
+                SignatureData.builder().jvmFingerprint(UUID.randomUUID().toString()).signatures(Arrays.asList
                         ("sig1", "sig2")).build();
 
         // when

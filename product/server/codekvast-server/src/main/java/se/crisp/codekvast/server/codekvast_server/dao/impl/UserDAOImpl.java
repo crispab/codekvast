@@ -80,9 +80,9 @@ public class UserDAOImpl implements UserDAO {
     @Override
     @Transactional(rollbackFor = Exception.class)
     @Cacheable("user")
-    public long getAppId(long customerId, String environment, String appName, String appVersion) throws UndefinedApplicationException {
-        log.debug("Looking up app id for {}:{}:{}", customerId, appName, appVersion);
-        return doGetOrCreateApp(customerId, environment, appName, appVersion);
+    public long getAppId(long customerId, String appName) throws UndefinedApplicationException {
+        log.debug("Looking up app id for {}:{}", customerId, appName);
+        return doGetOrCreateApp(customerId, appName);
     }
 
     @Override
@@ -177,7 +177,7 @@ public class UserDAOImpl implements UserDAO {
     @Transactional(readOnly = true)
     @Cacheable("user")
     public Collection<Application> getApplications(Long customerId) {
-        return jdbcTemplate.query("SELECT ID, CUSTOMER_ID, NAME, VERSION, ENVIRONMENT FROM APPLICATIONS WHERE CUSTOMER_ID = ?",
+        return jdbcTemplate.query("SELECT ID, CUSTOMER_ID, NAME, VERSION FROM APPLICATIONS WHERE CUSTOMER_ID = ?",
                                   new ApplicationRowMapper(), customerId);
     }
 
@@ -189,24 +189,21 @@ public class UserDAOImpl implements UserDAO {
         return customerId;
     }
 
-    private Long doGetOrCreateApp(long customerId, String environment, String appName, String appVersion)
+    private Long doGetOrCreateApp(long customerId, String appName)
             throws UndefinedApplicationException {
         try {
             return jdbcTemplate.queryForObject("SELECT ID FROM APPLICATIONS " +
-                                                       "WHERE CUSTOMER_ID = ? AND ENVIRONMENT = ? AND NAME = ? AND VERSION = ? ",
-                                               Long.class, customerId, environment, appName, appVersion);
+                                                       "WHERE CUSTOMER_ID = ? AND NAME = ? ",
+                                               Long.class, customerId, appName);
         } catch (EmptyResultDataAccessException ignored) {
         }
 
-        long appId = doInsertRow("INSERT INTO applications(customer_id, environment, name, version) VALUES(?, ?, ?, ?)",
-                                 customerId, environment, appName, appVersion);
+        long appId = doInsertRow("INSERT INTO applications(customer_id, name) VALUES(?, ?)", customerId, appName);
 
         Application app = Application.builder()
                                      .appId(AppId.builder().customerId(customerId).appId(appId).build())
                                      .customerName(getCustomerName(customerId))
                                      .name(appName)
-                                     .version(appVersion)
-                                     .environment(environment)
                                      .build();
         eventBus.post(new ApplicationCreatedEvent(app));
 
@@ -248,7 +245,7 @@ public class UserDAOImpl implements UserDAO {
     private class ApplicationRowMapper implements RowMapper<Application> {
         @Override
         public Application mapRow(ResultSet rs, int rowNum) throws SQLException {
-            // ID, CUSTOMER_ID, NAME, VERSION, ENVIRONMENT
+            // ID, CUSTOMER_ID, NAME, VERSION
             long customerId = rs.getLong("CUSTOMER_ID");
             return Application.builder()
                               .appId(AppId.builder()
@@ -257,8 +254,6 @@ public class UserDAOImpl implements UserDAO {
                                           .build())
                               .customerName(getCustomerName(customerId))
                               .name(rs.getString("NAME"))
-                              .version((rs.getString("VERSION")))
-                              .environment(rs.getString("ENVIRONMENT"))
                               .build();
         }
     }
