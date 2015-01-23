@@ -11,7 +11,7 @@
 .idea/tasks.xml
 .idea/workspace.xml
 .idea/dataSources.*
-,idea/shelf/
+.idea/shelf/
 build/
 tools/downloaded/
 target/

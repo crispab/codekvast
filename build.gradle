@@ -2,6 +2,8 @@ task wrapper(type: Wrapper) {
     gradleVersion "2.2.1"
 }
 
+apply plugin: 'idea'
+
 subprojects {
     buildscript {
         repositories { jcenter() }
