@@ -1,11 +1,9 @@
 package se.crisp.codekvast.server.codekvast_server
 
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.test.IntegrationTest
 import org.springframework.boot.test.SpringApplicationContextLoader
 import org.springframework.boot.test.TestRestTemplate
 import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.context.web.WebAppConfiguration
 import org.springframework.web.client.RestTemplate
 import se.crisp.codekvast.server.codekvast_server.event.registration.IsNameUniqueRequest
 import se.crisp.codekvast.server.codekvast_server.event.registration.IsNameUniqueResponse
@@ -15,14 +13,8 @@ import spock.lang.Unroll
 /**
  * @author Olle Hallin
  */
+@EmbeddedCodekvastServerTest
 @ContextConfiguration(loader = SpringApplicationContextLoader.class, classes = CodekvastServerApplication.class)
-@WebAppConfiguration
-@IntegrationTest([
-        'server.port=0',
-        'management.port=0',
-        'spring.datasource.url=jdbc:h2:mem:integrationTest',
-        'codekvast.auto-register-customer=true',
-])
 public class RegistrationIsUniqueSpec extends Specification {
 
     @Value('${local.server.port}')
