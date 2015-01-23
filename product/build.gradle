@@ -16,7 +16,7 @@ import org.ajoberstar.grgit.Grgit
 
 import java.text.SimpleDateFormat
 
-version = "0.7.10"
+version = "0.7.11"
 
 ext.gitCommit = Grgit.open("$rootDir").log(maxCommits: 1)[0]
 ext.gitVersionTokens = [
