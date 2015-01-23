@@ -4,6 +4,8 @@ plugins {
 }
 apply plugin: 'spring-boot'
 
+archivesBaseName = "codekvast-websupport"
+
 dependencies {
     compile lombok
     compile 'ch.qos.logback:logback-classic'

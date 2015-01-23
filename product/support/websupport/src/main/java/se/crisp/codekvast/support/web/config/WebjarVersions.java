@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.JarEntry;
@@ -13,7 +14,29 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @author Olle Hallin (qolha), olle.hallin@crisp.se
+ * A support class for finding webjars in classpath and putting their names and versions in a map.
+ * <br/>
+ * <br/>
+ * It makes it possible to declare webjar versions only once, in build.gradle. This reduces risk for errors
+ * when updating dependencies. Forgetting to update the html templates will most likely be detected very late
+ * in the deployment pipeline.
+ * <br/>
+ * <br/>
+ * The Thymeleaf template can use e.g.,
+ * <code><pre>
+ *
+ *   &lt;script th:src="@{/webjars/angularjs/<b>__${angularjsVersion}__</b>/angular.js}"&gt;&lt;/script&gt;
+ *
+ * </pre> </code>
+ * instead of
+ * <code><pre>
+ *
+ *   &lt;script th:src="@{/webjars/angularjs/<b>1.3.10</b>/angular.js}"&gt;&lt;/script&gt;
+ *
+ * </pre> </code>
+ * where <b>1.3.10</b> also appears in the build.gradle that brought in angular-1.3.10.jar in the first place.
+ *
+ * @author Olle Hallin, olle.hallin@crisp.se
  */
 @Slf4j
 public class WebjarVersions {
@@ -73,6 +96,6 @@ public class WebjarVersions {
     }
 
     public Map getVersions() {
-        return versions;
+        return Collections.unmodifiableMap(versions);
     }
 }
