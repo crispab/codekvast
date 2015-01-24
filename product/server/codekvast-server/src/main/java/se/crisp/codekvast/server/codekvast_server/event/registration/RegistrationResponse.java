@@ -4,7 +4,7 @@ import lombok.*;
 import lombok.experimental.Builder;
 
 /**
- * Sent back to the JavaScript layer as response to a RegistrationRequest.
+ * Sent back to the JavaScript layer as successful response to a RegistrationRequest.
  *
  * @author Olle Hallin
  */

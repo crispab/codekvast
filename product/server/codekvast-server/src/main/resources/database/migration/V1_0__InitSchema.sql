@@ -109,7 +109,7 @@ INSERT INTO roles (name) VALUES ('MONITOR');
 // --- System account ---------------------------------------------------------------------------
 INSERT INTO customers (id, name) VALUES (0, 'System');
 
-INSERT INTO users (id, username, plaintext_password, enabled) VALUES (0, 'system', '0000', FALSE);
+INSERT INTO users (id, username, plaintext_password, enabled) VALUES (0, 'system', '0000', TRUE);
 INSERT INTO customer_members (customer_id, user_id) VALUES (0, 0);
 INSERT INTO user_roles (user_id, role) VALUES (0, 'SUPERUSER');
 INSERT INTO user_roles (user_id, role) VALUES (0, 'AGENT');

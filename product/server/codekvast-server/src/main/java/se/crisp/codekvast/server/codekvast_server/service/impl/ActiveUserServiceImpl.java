@@ -16,6 +16,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import java.security.Principal;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -71,4 +72,8 @@ public class ActiveUserServiceImpl implements ActiveUserService {
         }
     }
 
+    @Override
+    public Collection<ActiveUser> getActiveUsers() {
+        return activeUsers.values();
+    }
 }
