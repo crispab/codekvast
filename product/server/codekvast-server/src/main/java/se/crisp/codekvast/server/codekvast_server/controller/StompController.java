@@ -79,7 +79,13 @@ public class StompController {
         int c = (int) (count + random.nextGaussian() * count * 0.2d);
 
         for (int i = 0; i < c; i++) {
-            result.add(prefix + i + "-" + random.nextInt(100));
+            String value = prefix + i;
+            if (i >= 2) {
+                // Don't append random values to the first couple of values, so that we can see that it is possible to select something
+                // in the web page and that it remains selected when new filter values arrive.
+                value += "-" + random.nextInt(100);
+            }
+            result.add(value);
         }
         return result;
     }
