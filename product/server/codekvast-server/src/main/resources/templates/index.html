@@ -20,7 +20,10 @@
 <div class="container" ng-app="codekvastApp">
     <div class="ng-cloak" ng-controller="MainCtrl">
         <h1>Welcome to {{'Code' + 'kvast!' }}</h1>
-        Application: <select ng-model="application" ng-options="applications"/>
+        Customer: <select ng-model="customerName" ng-options="o for o in filterValues.customerNames"/> Application:
+        <select ng-model="application" ng-options="o for o in filterValues.applications"/> Version: <select ng-model="version"
+                                                                                                            ng-options="o for o in filterValues.versions"/>
+        Package: <select ng-model="package" ng-options="o for o in filterValues.packages"/>
     </div>
 </div>
 

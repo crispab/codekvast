@@ -42,9 +42,9 @@ public class StompController {
     }
 
     @SubscribeMapping("/filterValues")
-    public FilterValues subscribeApplications(Principal principal) throws CodekvastException {
+    public FilterValues subscribeFilterValues(Principal principal) throws CodekvastException {
         String username = principal.getName();
-        log.debug("'{}' is subscribing for filter values", username);
+        log.debug("'{}' is subscribing to filterValues", username);
 
         FilterValues filterValues = createRandomFilterValues(username);
 

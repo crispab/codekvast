@@ -6,10 +6,12 @@ var codekvastApp = angular.module('codekvastApp', [])
     }])
 
     .controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
-        $scope.customerNames = [];
-        $scope.applications = [];
-        $scope.versions = [];
-        $scope.packages = [];
+        $scope.filterValues = {
+            customerNames: [],
+            applications: [],
+            versions: [],
+            packages: []
+        };
 
         $scope.customerName = undefined;
         $scope.application = undefined;
@@ -23,13 +25,9 @@ var codekvastApp = angular.module('codekvastApp', [])
 
         $scope.updateFilterValues = function (data) {
             console.log("Received filter values %o", data);
-            var body = JSON.parse(data.body);
-            $scope.customerNames = body.customerNames;
-            $scope.applications = body.applications;
-            $scope.versions = body.versions;
-            $scope.packages = body.packages;
-            $scope.$apply()
-
+            $scope.$apply(function () {
+                $scope.filterValues = JSON.parse(data.body);
+            });
         };
 
         $scope.loggedOut = function () {
