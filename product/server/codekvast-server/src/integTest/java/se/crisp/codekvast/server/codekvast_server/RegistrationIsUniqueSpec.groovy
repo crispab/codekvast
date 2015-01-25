@@ -1,14 +1,14 @@
 package se.crisp.codekvast.server.codekvast_server
-
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.SpringApplicationContextLoader
 import org.springframework.boot.test.TestRestTemplate
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.web.client.RestTemplate
-import se.crisp.codekvast.server.codekvast_server.event.registration.IsNameUniqueRequest
-import se.crisp.codekvast.server.codekvast_server.event.registration.IsNameUniqueResponse
 import spock.lang.Specification
 import spock.lang.Unroll
+
+import static se.crisp.codekvast.server.codekvast_server.controller.RegistrationController.IsNameUniqueRequest
+import static se.crisp.codekvast.server.codekvast_server.controller.RegistrationController.IsNameUniqueResponse
 
 /**
  * @author Olle Hallin

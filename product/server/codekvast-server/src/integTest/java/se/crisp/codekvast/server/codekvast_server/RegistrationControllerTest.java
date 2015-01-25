@@ -7,9 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import se.crisp.codekvast.server.codekvast_server.controller.RegistrationController;
-import se.crisp.codekvast.server.codekvast_server.event.registration.RegistrationRequest;
-import se.crisp.codekvast.server.codekvast_server.event.registration.RegistrationResponse;
 
 import java.net.URI;
 import java.util.Random;
@@ -17,6 +14,7 @@ import java.util.Random;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static se.crisp.codekvast.server.agent_api.model.v1.Constraints.*;
+import static se.crisp.codekvast.server.codekvast_server.controller.RegistrationController.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @EmbeddedCodekvastServerTest
@@ -31,7 +29,7 @@ public class RegistrationControllerTest {
 
     @Before
     public void before() throws Exception {
-        registrationUri = new URI(String.format("http://localhost:%d%s", port, RegistrationController.REGISTER_PATH));
+        registrationUri = new URI(String.format("http://localhost:%d%s", port, REGISTER_PATH));
     }
 
     @Test

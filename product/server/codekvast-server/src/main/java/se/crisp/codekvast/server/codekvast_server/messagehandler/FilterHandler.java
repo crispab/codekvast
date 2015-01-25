@@ -1,8 +1,10 @@
-package se.crisp.codekvast.server.codekvast_server.eventhandler;
+package se.crisp.codekvast.server.codekvast_server.messagehandler;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import lombok.Value;
+import lombok.experimental.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -14,8 +16,6 @@ import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import se.crisp.codekvast.server.codekvast_server.event.internal.ApplicationCreatedEvent;
 import se.crisp.codekvast.server.codekvast_server.event.internal.CustomerCreatedEvent;
-import se.crisp.codekvast.server.codekvast_server.event.web.FilterValues;
-import se.crisp.codekvast.server.codekvast_server.model.ActiveUser;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
 
 import javax.annotation.PostConstruct;
@@ -26,7 +26,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Responsible for maintaining the {@link FilterValues} objects for each active web socket user.
+ * Responsible for maintaining {@link FilterValues} objects for each active web socket user.
  * <p/>
  * Upon connection of a new user, an initial FilterValues object is built by querying other services. After that, the object is maintained
  * by subscribing to internal messages.
@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Service
 @Slf4j
-public class FilterValuesHandler {
+public class FilterHandler {
 
     private final EventBus eventBus;
     private final SimpMessagingTemplate messagingTemplate;
@@ -47,7 +47,7 @@ public class FilterValuesHandler {
     private final Map<String, FilterValues> usernameToFilterValues = new ConcurrentHashMap<>();
 
     @Inject
-    public FilterValuesHandler(EventBus eventBus, SimpMessagingTemplate messagingTemplate, UserService userService) {
+    public FilterHandler(EventBus eventBus, SimpMessagingTemplate messagingTemplate, UserService userService) {
         this.eventBus = eventBus;
         this.messagingTemplate = messagingTemplate;
         this.userService = userService;
@@ -195,4 +195,32 @@ public class FilterValuesHandler {
         return result;
     }
 
+    /**
+     * A value object containing everything that can be specified as filters in the web layer. It is sent as a STOMP message from the server
+     * to the web layer as soon as there is a change in filter values.
+     *
+     * @author Olle Hallin
+     */
+    @Value
+    @Builder
+    public static class FilterValues {
+        private Collection<String> customerNames;
+        private Collection<String> applications;
+        private Collection<String> versions;
+        private Collection<String> packages;
+        private Collection<String> tags;
+    }
+
+    /**
+     * Binds a web socket session id to a username.
+     *
+     * @author Olle Hallin
+     */
+    @Value
+    @Builder
+    public static class ActiveUser {
+        private final String sessionId;
+        private final String username;
+        private final Date loggedInAt;
+    }
 }

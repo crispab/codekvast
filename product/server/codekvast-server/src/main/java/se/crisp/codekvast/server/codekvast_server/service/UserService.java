@@ -1,7 +1,7 @@
 package se.crisp.codekvast.server.codekvast_server.service;
 
 import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
-import se.crisp.codekvast.server.codekvast_server.event.registration.RegistrationRequest;
+import se.crisp.codekvast.server.codekvast_server.controller.RegistrationController;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.Application;
 
@@ -30,7 +30,7 @@ public interface UserService {
      * @return The id of the created user.
      * @throws CodekvastException If anything fails.
      */
-    long registerUserAndCustomer(RegistrationRequest data) throws CodekvastException;
+    long registerUserAndCustomer(RegistrationController.RegistrationRequest data) throws CodekvastException;
 
     /**
      * Retrieve all signatures for a certain customer.

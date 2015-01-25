@@ -1,7 +1,10 @@
 package se.crisp.codekvast.server.codekvast_server.controller;
 
-import lombok.NonNull;
+import lombok.*;
+import lombok.experimental.Builder;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -10,15 +13,12 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import se.crisp.codekvast.server.agent_api.model.v1.Constraints;
-import se.crisp.codekvast.server.codekvast_server.event.registration.IsNameUniqueRequest;
-import se.crisp.codekvast.server.codekvast_server.event.registration.IsNameUniqueResponse;
-import se.crisp.codekvast.server.codekvast_server.event.registration.RegistrationRequest;
-import se.crisp.codekvast.server.codekvast_server.event.registration.RegistrationResponse;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
+import javax.validation.constraints.Size;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -97,5 +97,83 @@ public class RegistrationController extends AbstractThymeleafController {
         default:
             throw new IllegalArgumentException("Unknown kind: " + kind);
         }
+    }
+
+    /**
+     * Send by the registration wizard JavaScript to check whether a name is unique or not.
+     *
+     * @author Olle Hallin
+     */
+    @Data
+    @Setter(AccessLevel.PRIVATE)
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @Builder
+    public static class IsNameUniqueRequest {
+        @NotBlank
+        private String kind;
+
+        @NotBlank
+        private String name;
+    }
+
+    /**
+     * Sent in response to a IsNameUniqueRequest back to the JavaScript layer in the registration wizard.
+     *
+     * @author Olle Hallin
+     */
+    @Data
+    @Setter(AccessLevel.PRIVATE)
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @Builder
+    public static class IsNameUniqueResponse {
+        private boolean isUnique;
+    }
+
+    /**
+     * Sent from JavaScript as the final step in the registration wizard.
+     *
+     * @author Olle Hallin
+     */
+    @Data
+    @Setter(AccessLevel.PRIVATE)
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @Builder
+    public static class RegistrationRequest {
+        @NotBlank
+        @Size(max = Constraints.MAX_FULL_NAME_LENGTH)
+        private String fullName;
+
+        @NotBlank
+        @Size(max = Constraints.MAX_EMAIL_ADDRESS_LENGTH)
+        @Email
+        private String emailAddress;
+
+        @NotBlank
+        @Size(max = Constraints.MAX_USER_NAME_LENGTH)
+        private String username;
+
+        @NotBlank
+        private String password;
+
+        @NotBlank
+        @Size(max = Constraints.MAX_CUSTOMER_NAME_LENGTH)
+        private String customerName;
+    }
+
+    /**
+     * Sent back to the JavaScript layer as successful response to a RegistrationRequest.
+     *
+     * @author Olle Hallin
+     */
+    @Data
+    @Setter(AccessLevel.PRIVATE)
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @Builder
+    public static class RegistrationResponse {
+        private String greeting;
     }
 }

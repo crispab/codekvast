@@ -7,8 +7,8 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
+import se.crisp.codekvast.server.codekvast_server.controller.RegistrationController;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
-import se.crisp.codekvast.server.codekvast_server.event.registration.RegistrationRequest;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.exception.DuplicateNameException;
 import se.crisp.codekvast.server.codekvast_server.model.Application;
@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public long registerUserAndCustomer(@NonNull RegistrationRequest data) throws CodekvastException {
+    public long registerUserAndCustomer(@NonNull RegistrationController.RegistrationRequest data) throws CodekvastException {
         try {
             long userId = userDAO.createUser(data.getFullName(), normalizeName(data.getUsername()), normalizeName(data.getEmailAddress()),
                                              data.getPassword(), Role.ADMIN, Role.USER);
