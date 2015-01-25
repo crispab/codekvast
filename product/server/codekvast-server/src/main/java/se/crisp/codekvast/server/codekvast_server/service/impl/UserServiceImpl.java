@@ -16,10 +16,7 @@ import se.crisp.codekvast.server.codekvast_server.model.Role;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Olle Hallin
@@ -93,6 +90,12 @@ public class UserServiceImpl implements UserService {
             result.addAll(userDAO.getApplications(entry.getKey()));
         }
         return result;
+    }
+
+    @Override
+    public Collection<String> getUsernamesWithRightsToViewCustomer(String customerName) {
+        // TODO: implement
+        return Arrays.asList("user", "system");
     }
 
 }

@@ -47,4 +47,13 @@ public interface UserService {
      * @return A collection of applications. Does never return null.
      */
     Collection<Application> getApplications(String username);
+
+    /**
+     * Retrieve all usernames that has rights to view data for this customer.
+     *
+     * @param customerId The primary key for the customer.
+     * @return A collection of usernames.
+     */
+    Collection<String> getUsernamesWithRightsToViewCustomer(String customerName);
+
 }

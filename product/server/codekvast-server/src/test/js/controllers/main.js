@@ -17,7 +17,7 @@ describe('Controller: MainCtrl', function () {
     }));
 
     it('should have an empty list of applications', function () {
-        expect(scope.applications.length).toBe(0);
+        expect(scope.filterValues.applications.length).toBe(0);
     });
 
     it('should have an undefined application', function () {

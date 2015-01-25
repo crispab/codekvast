@@ -1,4 +1,4 @@
-package se.crisp.codekvast.server.codekvast_server.component;
+package se.crisp.codekvast.server.codekvast_server.config;
 
 import com.google.common.eventbus.EventBus;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +13,9 @@ import javax.inject.Inject;
  *
  * The EventBus is much easier to use, since you can name the event handling methods anything you like,
  * and you can have more than one handler method in the same class.
+ *
+ * In contrast, a Spring ApplicationListener can only subscribe to one message type per class, and the
+ * handling method must be named onApplicationEvent().
  *
  * @author Olle Hallin
  */

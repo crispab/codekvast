@@ -58,7 +58,7 @@ public class RegistrationController extends AbstractThymeleafController {
 
     @ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    private void onApplicationException(CodekvastException e) {
+    private void onCodekvastException(CodekvastException e) {
         log.warn("Application exception: " + e);
     }
 

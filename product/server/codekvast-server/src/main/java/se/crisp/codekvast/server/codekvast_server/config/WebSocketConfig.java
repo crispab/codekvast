@@ -10,7 +10,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 
 /**
- * Configures the STOMP and WebSocket messaging.
+ * Configures the STOMP and WebSocket eventhandler.
  *
  * @author Olle Hallin
  */
