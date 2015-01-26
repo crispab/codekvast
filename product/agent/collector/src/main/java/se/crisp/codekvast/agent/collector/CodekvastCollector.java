@@ -117,7 +117,7 @@ public class CodekvastCollector {
                 "<aspectj>\n"
                         + "  <aspects>\n"
                         + "    <!-- Work-in-progress: aspect name='%1$s'/ -->\n"
-                        + "    <concrete-aspect name='se.crisp.codekvast.agent.collector.aspects.PublicMethodExecutionAspect'\n"
+                        + "    <concrete-aspect name='se.crisp.codekvast.agent.collector.aspects.MethodExecutionAspect'\n"
                         + "                     extends='%2$s'>\n"
                         + "      <pointcut name='withinScope' expression='(%3$s)'/>\n"
                         + "      <pointcut name='methodExecution' expression='execution(%4$s)'/>\n"
