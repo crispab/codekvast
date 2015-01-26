@@ -14,19 +14,22 @@ import javax.inject.Inject;
  * The EventBus is much easier to use, since you can name the event handling methods anything you like,
  * and you can have more than one handler method in the same class.
  *
- * In contrast, a Spring ApplicationListener can only subscribe to one message type per class, and the
- * handling method must be named onApplicationEvent().
+ * It also handles asynchronous event delivery, which is critical when a {@literal @Transactional} method posts a message.
+ * The receiver will handle the message in a different thread, and the transaction can commit immediately.
+ *
+ * In contrast, a Spring ApplicationListener can only subscribe to one message type per class, the
+ * handling method must be named onApplicationEvent() and the event processing is done in the sender's thread.
  *
  * @author Olle Hallin
  */
 @Component
 @Slf4j
-public class SpringApplicationEventToEventBusBridge implements ApplicationListener {
+public class SpringToEventBusBridge implements ApplicationListener {
 
     private final EventBus eventBus;
 
     @Inject
-    public SpringApplicationEventToEventBusBridge(EventBus eventBus) {
+    public SpringToEventBusBridge(EventBus eventBus) {
         this.eventBus = eventBus;
     }
 
