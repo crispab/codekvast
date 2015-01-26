@@ -3,11 +3,9 @@ package se.crisp.codekvast.server.codekvast_server.dao.impl;
 import com.google.common.eventbus.EventBus;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
@@ -16,7 +14,6 @@ import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.event.internal.ApplicationCreatedEvent;
-import se.crisp.codekvast.server.codekvast_server.event.internal.CustomerCreatedEvent;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedCustomerException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
@@ -27,11 +24,9 @@ import se.crisp.codekvast.server.codekvast_server.model.Role;
 import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -46,35 +41,27 @@ public class UserDAOImpl implements UserDAO {
 
     private final JdbcTemplate jdbcTemplate;
     private final PasswordEncoder passwordEncoder;
-    private final Boolean autoCreateCustomer;
     private final EventBus eventBus;
 
-    private final Map<Long, String> customerId2Name = new ConcurrentHashMap<>();
-
     @Inject
-    public UserDAOImpl(JdbcTemplate jdbcTemplate,
-                       PasswordEncoder passwordEncoder,
-                       @Value("${codekvast.auto-register-customer}") Boolean autoCreateCustomer,
-                       EventBus eventBus) {
+    public UserDAOImpl(JdbcTemplate jdbcTemplate, PasswordEncoder passwordEncoder, EventBus eventBus) {
         this.jdbcTemplate = jdbcTemplate;
         this.passwordEncoder = passwordEncoder;
-        this.autoCreateCustomer = autoCreateCustomer;
         this.eventBus = eventBus;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     @Cacheable("user")
-    public long getCustomerId(final String customerName) throws UndefinedCustomerException {
-        log.debug("Looking up customer id for '{}'", customerName);
+    public long usernameToCustomerId(final String username) throws UndefinedCustomerException {
+        log.debug("Looking up customer id for username '{}'", username);
         try {
-            return jdbcTemplate.queryForObject("SELECT ID FROM CUSTOMERS WHERE NAME = ?", Long.class, customerName);
+            return jdbcTemplate.queryForObject("SELECT cm.CUSTOMER_ID FROM CUSTOMER_MEMBERS cm, USERS u " +
+                                                       "WHERE cm.USER_ID = u.ID " +
+                                                       "AND u.USERNAME = ?", Long.class, username);
         } catch (EmptyResultDataAccessException ignored) {
         }
-        if (!autoCreateCustomer) {
-            throw new UndefinedCustomerException("No such customer: " + customerName);
-        }
-        return doCreateCustomer(customerName);
+        throw new UndefinedCustomerException("No such user: " + username);
     }
 
     @Override
@@ -145,47 +132,23 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     @Transactional(readOnly = true)
-    public Collection<InvocationEntry> getSignatures(Long customerId) {
-        // TODO: don't allow null customerId
-        Object[] args = customerId == null ? new Object[0] : new Object[]{customerId};
-        String where = customerId == null ? "" : " WHERE CUSTOMER_ID = ?";
-
-        return jdbcTemplate.query("SELECT SIGNATURE, INVOKED_AT, CONFIDENCE FROM SIGNATURES " + where,
-                                  args, new InvocationsEntryRowMapper());
+    public Collection<InvocationEntry> getSignatures(String username) {
+        // TODO: include username in query
+        return jdbcTemplate.query("SELECT SIGNATURE, INVOKED_AT, CONFIDENCE FROM SIGNATURES ", new InvocationsEntryRowMapper());
     }
 
     @Override
     @Transactional(readOnly = true)
     @Cacheable("user")
-    public Map<Long, String> getCustomers(String username) {
-        final Map<Long, String> result = new HashMap<>();
-
-        jdbcTemplate.query("SELECT CM.CUSTOMER_ID, C.NAME FROM CUSTOMER_MEMBERS CM, USERS U, CUSTOMERS C " +
-                                   "WHERE CM.USER_ID = U.ID " +
-                                   "AND CM.CUSTOMER_ID = C.ID " +
-                                   "AND U.USERNAME = ? ", new RowCallbackHandler() {
-            @Override
-            public void processRow(ResultSet rs) throws SQLException {
-                result.put(rs.getLong("CUSTOMER_ID"), rs.getString("NAME"));
-            }
-        }, username);
-
-        return result;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    @Cacheable("user")
-    public Collection<Application> getApplications(Long customerId) {
-        return jdbcTemplate.query("SELECT ID, CUSTOMER_ID, NAME FROM APPLICATIONS WHERE CUSTOMER_ID = ?",
-                                  new ApplicationRowMapper(), customerId);
+    public Collection<Application> getApplications(String username) {
+        // TODO: include username in query
+        return jdbcTemplate.query("SELECT ID, CUSTOMER_ID, NAME FROM APPLICATIONS ", new ApplicationRowMapper());
     }
 
     private long doCreateCustomer(String customerName) {
         long customerId = doInsertRow("INSERT INTO customers(name) VALUES(?)", customerName);
         Customer customer = Customer.builder().id(customerId).name(customerName).build();
         log.info("Created {}", customer);
-        eventBus.post(new CustomerCreatedEvent(customer));
         return customerId;
     }
 
@@ -202,10 +165,9 @@ public class UserDAOImpl implements UserDAO {
 
         Application app = Application.builder()
                                      .appId(AppId.builder().customerId(customerId).appId(appId).build())
-                                     .customerName(getCustomerName(customerId))
                                      .name(appName)
                                      .build();
-        eventBus.post(new ApplicationCreatedEvent(app));
+        eventBus.post(new ApplicationCreatedEvent(app, Arrays.asList("user", "system")));
 
         log.info("Created {}", app);
         return appId;
@@ -246,27 +208,15 @@ public class UserDAOImpl implements UserDAO {
         @Override
         public Application mapRow(ResultSet rs, int rowNum) throws SQLException {
             // ID, CUSTOMER_ID, NAME, VERSION
-            long customerId = rs.getLong("CUSTOMER_ID");
             return Application.builder()
                               .appId(AppId.builder()
                                           .appId(rs.getLong("ID"))
-                                          .customerId(customerId)
+                                          .customerId(rs.getLong("CUSTOMER_ID"))
                                           .build())
-                              .customerName(getCustomerName(customerId))
                               .name(rs.getString("NAME"))
                               .build();
         }
     }
 
 
-    private String getCustomerName(Long customerId) {
-        // Cannot use @Cacheable here, since it is used internally. Do the caching manually...
-        String result = customerId2Name.get(customerId);
-        if (result == null) {
-            log.debug("Looking up the name for customer {}", customerId);
-            result = jdbcTemplate.queryForObject("SELECT NAME FROM CUSTOMERS WHERE ID = ?", String.class, customerId);
-            customerId2Name.put(customerId, result);
-        }
-        return result;
-    }
 }

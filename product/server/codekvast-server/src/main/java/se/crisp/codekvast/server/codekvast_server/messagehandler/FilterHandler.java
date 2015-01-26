@@ -15,8 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import se.crisp.codekvast.server.codekvast_server.event.internal.ApplicationCreatedEvent;
-import se.crisp.codekvast.server.codekvast_server.event.internal.CustomerCreatedEvent;
-import se.crisp.codekvast.server.codekvast_server.service.UserService;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -41,16 +39,14 @@ public class FilterHandler {
 
     private final EventBus eventBus;
     private final SimpMessagingTemplate messagingTemplate;
-    private final UserService userService;
 
     private final Map<String, ActiveUser> sessionIdToActiveUser = new ConcurrentHashMap<>();
     private final Map<String, FilterValues> usernameToFilterValues = new ConcurrentHashMap<>();
 
     @Inject
-    public FilterHandler(EventBus eventBus, SimpMessagingTemplate messagingTemplate, UserService userService) {
+    public FilterHandler(EventBus eventBus, SimpMessagingTemplate messagingTemplate) {
         this.eventBus = eventBus;
         this.messagingTemplate = messagingTemplate;
-        this.userService = userService;
     }
 
     @PostConstruct
@@ -111,32 +107,12 @@ public class FilterHandler {
     }
 
     /**
-     * A new customer has been created. Identify the relevant active users and update their filter values.
-     */
-    @Subscribe
-    public void onCustomerCreated(CustomerCreatedEvent event) {
-        log.debug("Handling {}", event);
-        Collection<String> usernames = userService.getUsernamesWithRightsToViewCustomer(event.getCustomer().getName());
-        for (String username : usernames) {
-            FilterValues fv = usernameToFilterValues.get(username);
-            if (fv != null) {
-                String customerName = event.getCustomer().getName();
-                log.debug("Adding customerName '{}' to filter values for {}", customerName, username);
-
-                fv.getCustomerNames().add(customerName);
-                messagingTemplate.convertAndSendToUser(username, "/queue/filterValues", fv);
-            }
-        }
-    }
-
-    /**
      * A new application has been created. Identify the relevant active users and update their filter values.
      */
     @Subscribe
     public void onApplicationCreated(ApplicationCreatedEvent event) {
         log.debug("Handling {}", event);
-        Collection<String> usernames = userService.getUsernamesWithRightsToViewCustomer(event.getApplication().getCustomerName());
-        for (String username : usernames) {
+        for (String username : event.getUsernames()) {
             FilterValues fv = usernameToFilterValues.get(username);
             if (fv != null) {
                 String applicationName = event.getApplication().getName();
@@ -150,14 +126,12 @@ public class FilterHandler {
 
     private FilterValues createInitialFilterValues(String username) {
         // TODO: implement
-        Collection<String> customerNames = randomStrings(username + "-customer", 3);
         Collection<String> applications = randomStrings(username + "-app", 3);
         Collection<String> versions = randomStrings(username + "-v", 10);
         Collection<String> packages = randomStrings(username + "-pkg", 100);
         Collection<String> tags = randomStrings(username + "-tag", 10);
 
         return FilterValues.builder()
-                           .customerNames(customerNames)
                            .applications(applications)
                            .versions(versions)
                            .packages(packages)
@@ -204,7 +178,6 @@ public class FilterHandler {
     @Value
     @Builder
     public static class FilterValues {
-        private Collection<String> customerNames;
         private Collection<String> applications;
         private Collection<String> versions;
         private Collection<String> packages;

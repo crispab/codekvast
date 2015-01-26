@@ -43,8 +43,6 @@ public class CollectorConfig implements CodekvastConfig {
 
     @NonNull
     private final SharedConfig sharedConfig;
-    @NonNull
-    private final String customerName;
     private final String aspectjOptions;
     @NonNull
     private final String methodExecutionPointcut;
@@ -84,7 +82,7 @@ public class CollectorConfig implements CodekvastConfig {
     }
 
     protected File myDataPath(String appName) {
-        return new File(sharedConfig.getDataPath(), ConfigUtils.getNormalizedChildPath(customerName, appName));
+        return new File(sharedConfig.getDataPath(), ConfigUtils.normalizePathName(appName));
     }
 
     public List<String> getNormalizedPackagePrefixes() {
@@ -126,7 +124,6 @@ public class CollectorConfig implements CodekvastConfig {
         return CollectorConfig.builder()
                               .sharedConfig(SharedConfig.buildSharedConfig(props))
                               .aspectjOptions(ConfigUtils.getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
-                              .customerName(ConfigUtils.getMandatoryStringValue(props, "customerName"))
                               .appName(ConfigUtils.getMandatoryStringValue(props, "appName"))
                               .appVersion(ConfigUtils.getOptionalStringValue(props, "appVersion", UNSPECIFIED_VERSION))
                               .codeBase(ConfigUtils.getMandatoryStringValue(props, "codeBase"))
@@ -154,7 +151,6 @@ public class CollectorConfig implements CodekvastConfig {
                               .verbose(DEFAULT_VERBOSE)
                               .clobberAopXml(DEFAULT_CLOBBER_AOP_XML)
                               .methodExecutionPointcut(DEFAULT_METHOD_EXECUTION_POINTCUT)
-                              .customerName("Customer Name")
                               .build();
     }
 

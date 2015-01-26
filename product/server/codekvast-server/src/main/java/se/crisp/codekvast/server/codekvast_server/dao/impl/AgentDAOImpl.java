@@ -38,8 +38,8 @@ public class AgentDAOImpl implements AgentDAO {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void storeJvmData(JvmData data) throws CodekvastException {
-        long customerId = userDAO.getCustomerId(data.getCustomerName());
+    public void storeJvmData(String apiAccessID, JvmData data) throws CodekvastException {
+        long customerId = userDAO.usernameToCustomerId(apiAccessID);
         long appId = userDAO.getAppId(customerId, data.getAppName());
         storeJvmData(customerId, appId, data);
     }

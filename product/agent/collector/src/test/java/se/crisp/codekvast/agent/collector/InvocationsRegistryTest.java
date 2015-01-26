@@ -17,7 +17,6 @@ import static org.junit.Assert.assertThat;
 
 public class InvocationsRegistryTest {
 
-    private static final String CUSTOMER_NAME = "Customer Name";
     private static final String APP_NAME = "Invocations Registry Test";
     private static final String APP_VERSION = "1.2.3-rc-2";
 
@@ -37,7 +36,6 @@ public class InvocationsRegistryTest {
         config = CollectorConfig.builder()
                                 .sharedConfig(SharedConfig.builder().dataPath(dataPath).build())
                                 .codeBase(codeBase)
-                                .customerName(CUSTOMER_NAME)
                                 .packagePrefixes("se.crisp")
                                 .appName(APP_NAME)
                                 .appVersion(APP_VERSION)
@@ -58,10 +56,6 @@ public class InvocationsRegistryTest {
 
         File[] files = config.getSharedConfig().getDataPath().listFiles();
         assertThat(files.length, is(1));
-        assertThat(files[0].getName(), is("customername"));
-
-        files = files[0].listFiles();
-        assertThat(files.length, is(1));
         assertThat(files[0].getName(), is("invocationsregistrytest"));
 
         files = files[0].listFiles();
@@ -71,7 +65,6 @@ public class InvocationsRegistryTest {
         assertThat(files[1].getName(), is(CollectorConfig.JVM_BASENAME));
 
         Jvm jvm = Jvm.readFrom(files[1]);
-        assertThat(jvm.getCollectorConfig().getCustomerName(), is(CUSTOMER_NAME));
         assertThat(jvm.getCollectorConfig().getAppName(), is(APP_NAME));
         assertThat(jvm.getCollectorConfig().getAppVersion(), is(APP_VERSION));
         assertThat(jvm.getCollectorConfig().getCodeBase(), is(codeBase));

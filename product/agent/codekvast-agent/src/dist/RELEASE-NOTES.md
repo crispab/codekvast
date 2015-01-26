@@ -1,5 +1,9 @@
 # Codekvast Agent Release Notes
 
+## 0.7.11
+
+- Removed parameter `customerName` from **codekvast-collector.conf**
+
 ## 0.7.10
 
 - New strategy in **codekvast-collector.conf**

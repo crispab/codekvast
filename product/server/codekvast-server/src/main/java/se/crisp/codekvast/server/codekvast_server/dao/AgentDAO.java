@@ -14,7 +14,12 @@ import java.util.Collection;
  */
 public interface AgentDAO {
 
-    void storeJvmData(JvmData jvmData) throws CodekvastException;
+    /**
+     * @param apiAccessID The identity of the agent (in reality a Spring Security username)
+     * @param jvmData
+     * @throws CodekvastException
+     */
+    void storeJvmData(String apiAccessID, JvmData jvmData) throws CodekvastException;
 
     /**
      * Stores invocation data in the database.

@@ -144,7 +144,6 @@ public class AgentWorker {
             //@formatter:off
             agentApi.uploadJvmData(
                     JvmData.builder()
-                           .customerName(jvm.getCollectorConfig().getCustomerName())
                            .appName(jvm.getCollectorConfig().getAppName())
                            .tags(jvm.getCollectorConfig().getTags())
                            .appVersion(appVersion)

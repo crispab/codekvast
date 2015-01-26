@@ -16,9 +16,5 @@ public class Application {
 
     @NonNull
     @NotBlank
-    private final String customerName;
-
-    @NonNull
-    @NotBlank
     private final String name;
 }

@@ -69,7 +69,6 @@ task generateCodekvastConfig {
         configFile.parentFile.mkdirs()
         configFile.text = """# Run Codekvast against Jenkins in Tomcat
 dataPath=/tmp/codekvast
-customerName = Sample
 appName = Jenkins
 appVersion = manifest jenkins-cli.*\\\\.jar Jenkins-CLI-Version
 tags = development, sample

@@ -31,7 +31,6 @@ public class CodeBaseScannerTest {
         return new CodeBase(CollectorConfig.builder()
                                            .sharedConfig(SharedConfig.builder().dataPath(temporaryFolder.getRoot()).build())
                                            .codeBase(new File(codeBase).getAbsolutePath())
-                                           .customerName("customerName")
                                            .packagePrefixes(ScannerTest1.class.getPackage().getName())
                                            .appName("appName")
                                            .appVersion("1.0")

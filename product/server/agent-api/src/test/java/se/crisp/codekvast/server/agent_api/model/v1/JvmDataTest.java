@@ -40,7 +40,6 @@ public class JvmDataTest {
 
     private JvmData getJvmData(String tags) {
         return JvmData.builder()
-                      .customerName("customerName")
                       .appName("appName")
                       .appVersion("appVersion")
                       .tags(tags)

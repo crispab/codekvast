@@ -7,13 +7,11 @@ var codekvastApp = angular.module('codekvastApp', [])
 
     .controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
         $scope.filterValues = {
-            customerNames: [],
             applications: [],
             versions: [],
             packages: []
         };
 
-        $scope.customerName = undefined;
         $scope.application = undefined;
         $scope.version = undefined;
         $scope.package = undefined;

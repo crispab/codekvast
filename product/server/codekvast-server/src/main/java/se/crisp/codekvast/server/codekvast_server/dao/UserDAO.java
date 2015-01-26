@@ -9,14 +9,20 @@ import se.crisp.codekvast.server.codekvast_server.model.Application;
 import se.crisp.codekvast.server.codekvast_server.model.Role;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * @author Olle Hallin
  */
 public interface UserDAO {
 
-    long getCustomerId(String customerName) throws UndefinedCustomerException;
+    /**
+     * Translates a username to a customer ID
+     *
+     * @param username A real user's login name or an agent's agentAccessID
+     * @return The username for that user or agent.
+     * @throws UndefinedCustomerException
+     */
+    long usernameToCustomerId(String username) throws UndefinedCustomerException;
 
     /**
      * Retrieve an application ID. If not found, a new row is inserted into APPLICATIONS and an ApplicationCreatedEvent is posted on the
@@ -37,21 +43,13 @@ public interface UserDAO {
 
     void createCustomerWithPrimaryContact(String customerName, long userId) throws DataAccessException;
 
-    Collection<InvocationEntry> getSignatures(Long customerId);
+    Collection<InvocationEntry> getSignatures(String username);
 
     /**
-     * Retrieve all customers this user has access to.
+     * Retrieve all applications for a certain username
      *
      * @param username The username
-     * @return A map with customerId as keys and customerNames as values.
+     * @return All applications that a certain user has rights to view. Does never return null.
      */
-    Map<Long, String> getCustomers(String username);
-
-    /**
-     * Retrieve all applications for a certain customer
-     *
-     * @param customerId The customerId
-     * @return All applications for a certain customer. Does never return null.
-     */
-    Collection<Application> getApplications(Long customerId);
+    Collection<Application> getApplications(String username);
 }

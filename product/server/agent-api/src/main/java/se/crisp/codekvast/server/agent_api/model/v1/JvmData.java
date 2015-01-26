@@ -22,11 +22,6 @@ import javax.validation.constraints.Size;
 public class JvmData {
     @NonNull
     @NotBlank
-    @Size(max = Constraints.MAX_CUSTOMER_NAME_LENGTH)
-    private String customerName;
-
-    @NonNull
-    @NotBlank
     @Size(max = Constraints.MAX_APP_NAME_LENGTH)
     private String appName;
 

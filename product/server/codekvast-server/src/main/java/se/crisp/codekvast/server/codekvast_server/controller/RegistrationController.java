@@ -14,7 +14,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import se.crisp.codekvast.server.agent_api.model.v1.Constraints;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
-import se.crisp.codekvast.server.codekvast_server.service.UserService;
+import se.crisp.codekvast.server.codekvast_server.service.RegistrationService;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -33,15 +33,16 @@ public class RegistrationController extends AbstractThymeleafController {
 
     public static final String IS_UNIQUE_PATH = "/register/isUnique";
     public static final String REGISTER_PATH = "/register";
+    public static final int MAX_CUSTOMER_NAME_LENGTH = 100;
 
-    private final UserService userService;
+    private final RegistrationService registrationService;
 
     @NonNull
     private final Validator validator;
 
     @Inject
-    public RegistrationController(UserService userService, Validator validator) {
-        this.userService = userService;
+    public RegistrationController(RegistrationService registrationService, Validator validator) {
+        this.registrationService = registrationService;
         this.validator = validator;
     }
 
@@ -66,7 +67,7 @@ public class RegistrationController extends AbstractThymeleafController {
     @RequestMapping(value = REGISTER_PATH, method = RequestMethod.GET)
     public String registerGet(ModelMap modelMap) {
         modelMap.put("maxAppNameLength", Constraints.MAX_APP_NAME_LENGTH);
-        modelMap.put("maxCustomerNameLength", Constraints.MAX_CUSTOMER_NAME_LENGTH);
+        modelMap.put("maxCustomerNameLength", MAX_CUSTOMER_NAME_LENGTH);
         modelMap.put("maxEmailAddressLength", Constraints.MAX_EMAIL_ADDRESS_LENGTH);
         modelMap.put("maxFullNameLength", Constraints.MAX_FULL_NAME_LENGTH);
         modelMap.put("maxUsernameLength", Constraints.MAX_USER_NAME_LENGTH);
@@ -76,24 +77,24 @@ public class RegistrationController extends AbstractThymeleafController {
     @RequestMapping(value = REGISTER_PATH, method = RequestMethod.POST)
     @ResponseBody
     public RegistrationResponse registerPost(@RequestBody @Valid RegistrationRequest data) throws CodekvastException {
-        userService.registerUserAndCustomer(data);
+        registrationService.registerUserAndCustomer(data);
         return RegistrationResponse.builder().greeting(String.format("Welcome %s!", data.getFullName())).build();
     }
 
     @RequestMapping(value = IS_UNIQUE_PATH, method = RequestMethod.POST)
     @ResponseBody
     public IsNameUniqueResponse isUnique(@RequestBody @Valid IsNameUniqueRequest request) {
-        return IsNameUniqueResponse.builder().isUnique(userService.isUnique(toKind(request.getKind()), request.getName())).build();
+        return IsNameUniqueResponse.builder().isUnique(registrationService.isUnique(toKind(request.getKind()), request.getName())).build();
     }
 
-    private UserService.UniqueKind toKind(String kind) {
+    private RegistrationService.UniqueKind toKind(String kind) {
         switch (kind.toLowerCase()) {
         case "username":
-            return UserService.UniqueKind.USERNAME;
+            return RegistrationService.UniqueKind.USERNAME;
         case "customername":
-            return UserService.UniqueKind.CUSTOMER_NAME;
+            return RegistrationService.UniqueKind.CUSTOMER_NAME;
         case "emailaddress":
-            return UserService.UniqueKind.EMAIL_ADDRESS;
+            return RegistrationService.UniqueKind.EMAIL_ADDRESS;
         default:
             throw new IllegalArgumentException("Unknown kind: " + kind);
         }
@@ -159,7 +160,7 @@ public class RegistrationController extends AbstractThymeleafController {
         private String password;
 
         @NotBlank
-        @Size(max = Constraints.MAX_CUSTOMER_NAME_LENGTH)
+        @Size(max = MAX_CUSTOMER_NAME_LENGTH)
         private String customerName;
     }
 

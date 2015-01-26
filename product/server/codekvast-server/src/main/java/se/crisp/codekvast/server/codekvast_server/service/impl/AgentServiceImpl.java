@@ -39,10 +39,10 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
-    public void storeJvmData(JvmData data) throws CodekvastException {
-        log.debug("Storing {}", data);
+    public void storeJvmData(String agentApiID, JvmData data) throws CodekvastException {
+        log.debug("Storing {} from {}", data, agentApiID);
 
-        agentDAO.storeJvmData(data);
+        agentDAO.storeJvmData(agentApiID, data);
     }
 
     @Override

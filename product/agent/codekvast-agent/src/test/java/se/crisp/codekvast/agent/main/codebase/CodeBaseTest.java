@@ -38,7 +38,6 @@ public class CodeBaseTest {
         return new CodeBase(CollectorConfig.builder()
                                            .sharedConfig(SharedConfig.builder().dataPath(new File(".")).build())
                                            .codeBase(new File(codeBase).getAbsolutePath())
-                                           .customerName("customerName")
                                            .packagePrefixes("se.crisp")
                                            .appName("appName")
                                            .appVersion("appVersion")

@@ -42,13 +42,6 @@ public final class ConfigUtils {
     }
 
 
-    public static String getNormalizedChildPath(String customerName, String appName) {
-        if (appName != null) {
-            return normalizePathName(customerName) + File.separator + normalizePathName(appName);
-        }
-        return normalizePathName(customerName);
-    }
-
     public static String normalizePathName(String path) {
         return path.replaceAll("[^a-zA-Z0-9_-]", "").toLowerCase(Locale.ENGLISH);
     }
@@ -104,7 +97,7 @@ public final class ConfigUtils {
     public static String getMandatoryStringValue(Properties props, String key) {
         String value = expandVariables(props.getProperty(key));
         if (value == null || value.trim().length() == 0) {
-            throw new IllegalArgumentException("Missing property: " + key);
+            throw new IllegalArgumentException("Missing or empty property: " + key);
         }
         return value;
     }

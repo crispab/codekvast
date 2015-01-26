@@ -18,6 +18,7 @@ import se.crisp.codekvast.server.codekvast_server.service.AgentService;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
+import java.security.Principal;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -62,9 +63,9 @@ public class AgentController {
     }
 
     @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_JVM_RUN, method = RequestMethod.POST)
-    public void receiveJvmDataV1(@Valid @RequestBody JvmData data) throws CodekvastException {
-        log.info("Received {}", data);
-        agentService.storeJvmData(data);
+    public void receiveJvmDataV1(@Valid @RequestBody JvmData data, Principal principal) throws CodekvastException {
+        log.info("Received {} from {}", data, principal.getName());
+        agentService.storeJvmData(principal.getName(), data);
     }
 
     @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_SIGNATURES, method = RequestMethod.POST)

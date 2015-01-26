@@ -17,7 +17,7 @@ public interface AgentService {
      *
      * @param data The received JVM data
      */
-    void storeJvmData(JvmData data) throws CodekvastException;
+    void storeJvmData(String agentApiID, JvmData data) throws CodekvastException;
 
     /**
      * Stores signature data received from an agent.
