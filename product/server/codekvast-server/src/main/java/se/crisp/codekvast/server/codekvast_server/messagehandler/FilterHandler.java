@@ -6,94 +6,58 @@ import com.google.common.eventbus.Subscribe;
 import lombok.Value;
 import lombok.experimental.Builder;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.MessageHeaders;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.messaging.SessionConnectedEvent;
-import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import se.crisp.codekvast.server.codekvast_server.event.internal.ApplicationCreatedEvent;
+import se.crisp.codekvast.server.codekvast_server.messagehandler.UserHandler.UserConnectedEvent;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import java.security.Principal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static se.crisp.codekvast.server.codekvast_server.messagehandler.UserHandler.UserDisconnectedEvent;
+
 /**
- * Responsible for maintaining {@link FilterValues} objects for each active web socket user.
+ * Responsible for maintaining one {@link FilterValues} object for each active web socket user.
  * <p/>
- * Upon connection of a new user, an initial FilterValues object is built by querying other services. After that, the object is maintained
- * by subscribing to internal messages.
+ * Upon connection of a new web socket user, an initial FilterValues object is built by querying other services.
+ * After that, the object is maintained by subscribing to internal messages.
  * <p/>
- * Each time a FilterValues object is updated, the relevant user is notified via STOMP.
+ * Each time a FilterValues object is updated, the relevant user is notified via a STOMP message to that user..
  *
  * @author Olle Hallin
  */
 @Service
 @Slf4j
-public class FilterHandler {
+public class FilterHandler extends AbstractMessageHandler {
 
-    private final EventBus eventBus;
-    private final SimpMessagingTemplate messagingTemplate;
-
-    private final Map<String, ActiveUser> sessionIdToActiveUser = new ConcurrentHashMap<>();
     private final Map<String, FilterValues> usernameToFilterValues = new ConcurrentHashMap<>();
 
     @Inject
     public FilterHandler(EventBus eventBus, SimpMessagingTemplate messagingTemplate) {
-        this.eventBus = eventBus;
-        this.messagingTemplate = messagingTemplate;
+        super(eventBus, messagingTemplate);
     }
 
-    @PostConstruct
-    void registerOnEventBus() {
-        eventBus.register(this);
-    }
-
-    @PreDestroy
-    void unregisterFromEventBus() {
-        eventBus.unregister(this);
-    }
-
-    /**
-     * A web socket user has logged in.
-     */
     @Subscribe
     @AllowConcurrentEvents
-    public void onSessionConnected(SessionConnectedEvent event) {
-        log.debug("On {}", event.getClass().getSimpleName());
-        MessageHeaders headers = event.getMessage().getHeaders();
-        Principal user = SimpMessageHeaderAccessor.getUser(headers);
-        if (user == null) {
-            return;
-        }
-
-        String sessionId = SimpMessageHeaderAccessor.getSessionId(headers);
-        String username = user.getName();
-        sessionIdToActiveUser.put(sessionId, ActiveUser.builder().sessionId(sessionId).username(username).loggedInAt(new Date()).build());
-        usernameToFilterValues.put(username, createInitialFilterValues(username));
+    public void onUserConnectedEvent(UserConnectedEvent event) {
+        usernameToFilterValues.put(event.getUsername(), createInitialFilterValues(event.getUsername()));
     }
 
-    /**
-     * A web socket user leaves.
-     */
     @Subscribe
-    public void onSessionDisconnected(SessionDisconnectEvent event) {
-        log.debug("On {}", event.getClass().getSimpleName());
-        String sessionId = event.getSessionId();
-        ActiveUser removedUser = sessionId == null ? null : sessionIdToActiveUser.remove(sessionId);
-        if (removedUser != null) {
-            usernameToFilterValues.remove(removedUser.getUsername());
-            log.debug("Removed {} {} (logged in at {})", sessionId, removedUser, removedUser.getLoggedInAt());
-        }
+    @AllowConcurrentEvents
+    public void onUserDisconnectedEvent(UserDisconnectedEvent event) {
+        usernameToFilterValues.remove(event.getUsername());
     }
 
     /**
-     * The JavaScript layer starts a STOMP subscription to filter values.
+     * The JavaScript layer starts a STOMP subscription for filter values.
      *
      * @param principal The identity of the authenticated user.
      * @return The current FilterValues that the user shall use.
@@ -114,7 +78,9 @@ public class FilterHandler {
         log.debug("Handling {}", event);
         for (String username : event.getUsernames()) {
             FilterValues fv = usernameToFilterValues.get(username);
-            if (fv != null) {
+            if (fv == null) {
+                log.debug("{} is not logged in", username);
+            } else {
                 String applicationName = event.getApplication().getName();
                 log.debug("Adding application '{}' to filter values for {}", applicationName, username);
 
@@ -123,6 +89,23 @@ public class FilterHandler {
             }
         }
     }
+
+    /**
+     * A value object containing everything that can be specified as filters in the web layer. It is sent as a STOMP message from the server
+     * to the web layer as soon as there is a change in filter values.
+     *
+     * @author Olle Hallin
+     */
+    @Value
+    @Builder
+    public static class FilterValues {
+        private Collection<String> applications;
+        private Collection<String> versions;
+        private Collection<String> packages;
+        private Collection<String> tags;
+    }
+
+    //---- Fake stuff below ----------------------------------------
 
     private FilterValues createInitialFilterValues(String username) {
         // TODO: implement
@@ -169,31 +152,4 @@ public class FilterHandler {
         return result;
     }
 
-    /**
-     * A value object containing everything that can be specified as filters in the web layer. It is sent as a STOMP message from the server
-     * to the web layer as soon as there is a change in filter values.
-     *
-     * @author Olle Hallin
-     */
-    @Value
-    @Builder
-    public static class FilterValues {
-        private Collection<String> applications;
-        private Collection<String> versions;
-        private Collection<String> packages;
-        private Collection<String> tags;
-    }
-
-    /**
-     * Binds a web socket session id to a username.
-     *
-     * @author Olle Hallin
-     */
-    @Value
-    @Builder
-    public static class ActiveUser {
-        private final String sessionId;
-        private final String username;
-        private final Date loggedInAt;
-    }
 }

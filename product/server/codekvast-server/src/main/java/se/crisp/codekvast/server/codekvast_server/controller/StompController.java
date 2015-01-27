@@ -72,7 +72,6 @@ public class StompController {
         messagingTemplate.convertAndSend(StompController.TOPIC_SIGNATURES, event.getInvocationEntries());
     }
 
-
     @SubscribeMapping("/signatures")
     public Collection<InvocationEntry> subscribeSignatures(Message message, Principal principal) throws CodekvastException {
         String username = principal.getName();

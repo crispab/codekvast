@@ -16,6 +16,8 @@ var codekvastApp = angular.module('codekvastApp', [])
         $scope.version = undefined;
         $scope.package = undefined;
 
+        $scope.signatures = [];
+
         $scope.socket = {
             client: null,
             stomp: null
@@ -27,6 +29,13 @@ var codekvastApp = angular.module('codekvastApp', [])
                 $scope.filterValues = JSON.parse(data.body);
             });
         };
+
+        $scope.updateSignatures = function(data) {
+            console.log("Received signatures");
+            $scope.$apply(function() {
+                $scope.signatures = JSON.parse(data.body);
+            })
+        }
 
         $scope.loggedOut = function () {
             console.log("Logged out");
@@ -42,6 +51,8 @@ var codekvastApp = angular.module('codekvastApp', [])
             $scope.socket.stomp.connect({}, function () {
                 $scope.socket.stomp.subscribe("/app/filterValues", $scope.updateFilterValues);
                 $scope.socket.stomp.subscribe("/user/queue/filterValues", $scope.updateFilterValues);
+                $scope.socket.stomp.subscribe("/app/signatures", $scope.updateSignatures);
+                $scope.socket.stomp.subscribe("/user/queue/signatures", $scope.updateSignatures);
             }, function (error) {
                 console.log("Cannot connect %o", error)
             });
