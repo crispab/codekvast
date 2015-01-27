@@ -7,7 +7,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import java.lang.annotation.*;
 
 /**
- * Meta annotation for tests against an embedded CodekvastServerApplication
+ * Meta annotation for integration tests against an embedded CodekvastServerApplication
  *
  * @author Olle Hallin
  */
@@ -20,7 +20,6 @@ import java.lang.annotation.*;
                   "management.port=0",
                   "spring.thymeleaf.cache=true",
                   "spring.datasource.url=jdbc:h2:mem:integrationTest",
-                  "codekvast.auto-register-customer=true",
 })
 public @interface EmbeddedCodekvastServerTest {
 }

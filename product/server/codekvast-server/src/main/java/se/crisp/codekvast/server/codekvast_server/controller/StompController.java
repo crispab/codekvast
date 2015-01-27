@@ -64,7 +64,7 @@ public class StompController {
 
         /*
         try {
-            messagingTemplate.convertAndSend(StompController.TOPIC_SIGNATURES, agentService.getSignatures(event.getCustomerName()));
+            messagingTemplate.convertAndSend(StompController.TOPIC_SIGNATURES, agentService.getSignatures(event.getOrganisationName()));
         } catch (CodekvastException e) {
             log.warn("Cannot get signatures", e);
         }

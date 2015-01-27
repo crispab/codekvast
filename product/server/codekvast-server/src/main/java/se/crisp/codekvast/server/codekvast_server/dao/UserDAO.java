@@ -3,7 +3,7 @@ package se.crisp.codekvast.server.codekvast_server.dao;
 import org.springframework.dao.DataAccessException;
 import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
-import se.crisp.codekvast.server.codekvast_server.exception.UndefinedCustomerException;
+import se.crisp.codekvast.server.codekvast_server.exception.UndefinedOrganisationException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import se.crisp.codekvast.server.codekvast_server.model.Application;
 import se.crisp.codekvast.server.codekvast_server.model.Role;
@@ -16,19 +16,19 @@ import java.util.Collection;
 public interface UserDAO {
 
     /**
-     * Translates a username to a customer ID
+     * Translates a username to a organisation ID
      *
      * @param username A real user's login name or an agent's agentAccessID
      * @return The username for that user or agent.
-     * @throws UndefinedCustomerException
+     * @throws UndefinedOrganisationException
      */
-    long usernameToCustomerId(String username) throws UndefinedCustomerException;
+    long usernameToOrganisationId(String username) throws UndefinedOrganisationException;
 
     /**
      * Retrieve an application ID. If not found, a new row is inserted into APPLICATIONS and an ApplicationCreatedEvent is posted on the
      * event bus.
      */
-    long getAppId(long customerId, String appName) throws UndefinedApplicationException;
+    long getAppId(long organisationId, String appName) throws UndefinedApplicationException;
 
     AppId getAppIdByJvmFingerprint(String jvmFingerprint);
 
@@ -36,12 +36,12 @@ public interface UserDAO {
 
     int countUsersByEmailAddress(String emailAddress);
 
-    int countCustomersByNameLc(String customerName);
+    int countOrganisationsByNameLc(String organisationName);
 
     long createUser(String fullName, String username, String emailAddress, String plaintextPassword, Role... roles)
             throws DataAccessException;
 
-    void createCustomerWithPrimaryContact(String customerName, long userId) throws DataAccessException;
+    void createOrganisationWithPrimaryContact(String organisationName, long userId) throws DataAccessException;
 
     Collection<InvocationEntry> getSignatures(String username);
 

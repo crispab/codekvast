@@ -46,8 +46,8 @@ public class RegistrationServiceImpl implements RegistrationService {
         case EMAIL_ADDRESS:
             count = userDAO.countUsersByEmailAddress(normalizedName);
             break;
-        case CUSTOMER_NAME:
-            count = userDAO.countCustomersByNameLc(normalizedName);
+        case ORGANISATION_NAME:
+            count = userDAO.countOrganisationsByNameLc(normalizedName);
             break;
         default:
             throw new IllegalArgumentException("Unknown kind: " + kind);
@@ -60,12 +60,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public long registerUserAndCustomer(@NonNull RegistrationController.RegistrationRequest data) throws CodekvastException {
+    public long registerUserAndOrganisation(@NonNull RegistrationController.RegistrationRequest data) throws CodekvastException {
         try {
             long userId = userDAO.createUser(data.getFullName(), normalizeName(data.getUsername()), normalizeName(data.getEmailAddress()),
                                              data.getPassword(), Role.ADMIN, Role.USER);
             // TODO: create Role.AGENT
-            userDAO.createCustomerWithPrimaryContact(data.getCustomerName(), userId);
+            userDAO.createOrganisationWithPrimaryContact(data.getOrganisationName(), userId);
             return userId;
         } catch (DuplicateKeyException e) {
             throw new DuplicateNameException("Cannot register " + data);

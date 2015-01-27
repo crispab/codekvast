@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
 @Slf4j
 public class WebjarVersions {
 
-    private final Map versions = new HashMap<>();
+    private final Map<String, String> versions = new HashMap<>();
 
     public WebjarVersions() {
         scanWebjars();
@@ -95,7 +95,7 @@ public class WebjarVersions {
         return path.substring(slash + 1);
     }
 
-    public Map getVersions() {
+    public Map<String, String> getVersions() {
         return Collections.unmodifiableMap(versions);
     }
 }

@@ -15,10 +15,10 @@ import se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.event.internal.ApplicationCreatedEvent;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
-import se.crisp.codekvast.server.codekvast_server.exception.UndefinedCustomerException;
+import se.crisp.codekvast.server.codekvast_server.exception.UndefinedOrganisationException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import se.crisp.codekvast.server.codekvast_server.model.Application;
-import se.crisp.codekvast.server.codekvast_server.model.Customer;
+import se.crisp.codekvast.server.codekvast_server.model.Organisation;
 import se.crisp.codekvast.server.codekvast_server.model.Role;
 
 import javax.inject.Inject;
@@ -31,7 +31,7 @@ import java.util.Date;
 import static com.google.common.base.Preconditions.checkArgument;
 
 /**
- * DAO for user, customer and application data.
+ * DAO for user, organisation and application data.
  *
  * @author Olle Hallin
  */
@@ -53,23 +53,23 @@ public class UserDAOImpl implements UserDAO {
     @Override
     @Transactional(rollbackFor = Exception.class)
     @Cacheable("user")
-    public long usernameToCustomerId(final String username) throws UndefinedCustomerException {
-        log.debug("Looking up customer id for username '{}'", username);
+    public long usernameToOrganisationId(final String username) throws UndefinedOrganisationException {
+        log.debug("Looking up organisation id for username '{}'", username);
         try {
-            return jdbcTemplate.queryForObject("SELECT cm.CUSTOMER_ID FROM CUSTOMER_MEMBERS cm, USERS u " +
+            return jdbcTemplate.queryForObject("SELECT cm.ORGANISATION_ID FROM ORGANISATION_MEMBERS cm, USERS u " +
                                                        "WHERE cm.USER_ID = u.ID " +
                                                        "AND u.USERNAME = ?", Long.class, username);
         } catch (EmptyResultDataAccessException ignored) {
         }
-        throw new UndefinedCustomerException("No such user: " + username);
+        throw new UndefinedOrganisationException("No such user: " + username);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     @Cacheable("user")
-    public long getAppId(long customerId, String appName) throws UndefinedApplicationException {
-        log.debug("Looking up app id for {}:{}", customerId, appName);
-        return doGetOrCreateApp(customerId, appName);
+    public long getAppId(long organisationId, String appName) throws UndefinedApplicationException {
+        log.debug("Looking up app id for {}:{}", organisationId, appName);
+        return doGetOrCreateApp(organisationId, appName);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class UserDAOImpl implements UserDAO {
         log.debug("Looking up AppId for JVM {}...", jvmFingerprint);
         try {
             AppId result = jdbcTemplate
-                    .queryForObject("SELECT CUSTOMER_ID, APPLICATION_ID FROM JVM_RUNS WHERE JVM_FINGERPRINT = ?", new AppIdRowMapper(),
+                    .queryForObject("SELECT ORGANISATION_ID, APPLICATION_ID FROM JVM_RUNS WHERE JVM_FINGERPRINT = ?", new AppIdRowMapper(),
                                     jvmFingerprint);
             log.debug("Result = {}", result);
             return result;
@@ -103,8 +103,8 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     @Transactional(readOnly = true)
-    public int countCustomersByNameLc(@NonNull String customerName) {
-        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM CUSTOMERS WHERE NAME_LC = ?", Integer.class, customerName);
+    public int countOrganisationsByNameLc(@NonNull String organisationName) {
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM ORGANISATIONS WHERE NAME_LC = ?", Integer.class, organisationName);
     }
 
     @Override
@@ -124,9 +124,10 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void createCustomerWithPrimaryContact(String customerName, long userId) {
-        long customerId = doCreateCustomer(customerName);
-        jdbcTemplate.update("INSERT INTO CUSTOMER_MEMBERS(CUSTOMER_ID, USER_ID, PRIMARY_CONTACT) VALUES(?, ?, ?)", customerId, userId,
+    public void createOrganisationWithPrimaryContact(String organisationName, long userId) {
+        long organisationId = doCreateOrganisation(organisationName);
+        jdbcTemplate.update("INSERT INTO ORGANISATION_MEMBERS(ORGANISATION_ID, USER_ID, PRIMARY_CONTACT) VALUES(?, ?, ?)", organisationId,
+                            userId,
                             true);
     }
 
@@ -142,29 +143,29 @@ public class UserDAOImpl implements UserDAO {
     @Cacheable("user")
     public Collection<Application> getApplications(String username) {
         // TODO: include username in query
-        return jdbcTemplate.query("SELECT ID, CUSTOMER_ID, NAME FROM APPLICATIONS ", new ApplicationRowMapper());
+        return jdbcTemplate.query("SELECT ID, ORGANISATION_ID, NAME FROM APPLICATIONS ", new ApplicationRowMapper());
     }
 
-    private long doCreateCustomer(String customerName) {
-        long customerId = doInsertRow("INSERT INTO customers(name) VALUES(?)", customerName);
-        Customer customer = Customer.builder().id(customerId).name(customerName).build();
-        log.info("Created {}", customer);
-        return customerId;
+    private long doCreateOrganisation(String organisationName) {
+        long organisationId = doInsertRow("INSERT INTO organisations(name) VALUES(?)", organisationName);
+        Organisation organisation = Organisation.builder().id(organisationId).name(organisationName).build();
+        log.info("Created {}", organisation);
+        return organisationId;
     }
 
-    private Long doGetOrCreateApp(long customerId, String appName)
+    private Long doGetOrCreateApp(long organisationId, String appName)
             throws UndefinedApplicationException {
         try {
             return jdbcTemplate.queryForObject("SELECT ID FROM APPLICATIONS " +
-                                                       "WHERE CUSTOMER_ID = ? AND NAME = ? ",
-                                               Long.class, customerId, appName);
+                                                       "WHERE ORGANISATION_ID = ? AND NAME = ? ",
+                                               Long.class, organisationId, appName);
         } catch (EmptyResultDataAccessException ignored) {
         }
 
-        long appId = doInsertRow("INSERT INTO applications(customer_id, name) VALUES(?, ?)", customerId, appName);
+        long appId = doInsertRow("INSERT INTO applications(organisation_id, name) VALUES(?, ?)", organisationId, appName);
 
         Application app = Application.builder()
-                                     .appId(AppId.builder().customerId(customerId).appId(appId).build())
+                                     .appId(AppId.builder().organisationId(organisationId).appId(appId).build())
                                      .name(appName)
                                      .build();
         eventBus.post(new ApplicationCreatedEvent(app, Arrays.asList("user", "system")));
@@ -184,7 +185,7 @@ public class UserDAOImpl implements UserDAO {
         public AppId mapRow(ResultSet rs, int rowNum)
                 throws SQLException {
             return AppId.builder()
-                        .customerId(rs.getLong("CUSTOMER_ID"))
+                        .organisationId(rs.getLong("ORGANISATION_ID"))
                         .appId(rs.getLong("APPLICATION_ID"))
                         .build();
         }
@@ -207,11 +208,11 @@ public class UserDAOImpl implements UserDAO {
     private class ApplicationRowMapper implements RowMapper<Application> {
         @Override
         public Application mapRow(ResultSet rs, int rowNum) throws SQLException {
-            // ID, CUSTOMER_ID, NAME, VERSION
+            // ID, ORGANISATION_ID, NAME, VERSION
             return Application.builder()
                               .appId(AppId.builder()
                                           .appId(rs.getLong("ID"))
-                                          .customerId(rs.getLong("CUSTOMER_ID"))
+                                          .organisationId(rs.getLong("ORGANISATION_ID"))
                                           .build())
                               .name(rs.getString("NAME"))
                               .build();

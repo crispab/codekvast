@@ -39,9 +39,9 @@ public class AgentDAOImpl implements AgentDAO {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void storeJvmData(String apiAccessID, JvmData data) throws CodekvastException {
-        long customerId = userDAO.usernameToCustomerId(apiAccessID);
-        long appId = userDAO.getAppId(customerId, data.getAppName());
-        storeJvmData(customerId, appId, data);
+        long organisationId = userDAO.usernameToOrganisationId(apiAccessID);
+        long appId = userDAO.getAppId(organisationId, data.getAppName());
+        storeJvmData(organisationId, appId, data);
     }
 
     @Override
@@ -76,9 +76,10 @@ public class AgentDAOImpl implements AgentDAO {
         }
 
         try {
-            jdbcTemplate.update("INSERT INTO SIGNATURES(CUSTOMER_ID, APPLICATION_ID, SIGNATURE, JVM_FINGERPRINT, INVOKED_AT, CONFIDENCE) " +
+            jdbcTemplate
+                    .update("INSERT INTO SIGNATURES(ORGANISATION_ID, APPLICATION_ID, SIGNATURE, JVM_FINGERPRINT, INVOKED_AT, CONFIDENCE) " +
                                         "VALUES(?, ?, ?, ?, ?, ?)",
-                                appId.getCustomerId(), appId.getAppId(), entry.getSignature(), jvmFingerprint, invokedAt, confidence);
+                            appId.getOrganisationId(), appId.getAppId(), entry.getSignature(), jvmFingerprint, invokedAt, confidence);
             log.trace("Stored {}", entry);
             result.add(entry);
         } catch (Exception ignore) {
@@ -91,24 +92,26 @@ public class AgentDAOImpl implements AgentDAO {
         if (invokedAt == null) {
             // An uninvoked signature is not allowed to overwrite an invoked signature
             return jdbcTemplate.update("UPDATE SIGNATURES SET CONFIDENCE = ? " +
-                                               "WHERE CUSTOMER_ID = ? AND APPLICATION_ID = ? AND SIGNATURE = ? AND INVOKED_AT IS NULL ",
-                                       confidence, appId.getCustomerId(), appId.getAppId(), entry.getSignature());
+                                               "WHERE ORGANISATION_ID = ? AND APPLICATION_ID = ? AND SIGNATURE = ? AND INVOKED_AT IS NULL ",
+                                       confidence, appId.getOrganisationId(), appId.getAppId(), entry.getSignature());
         }
 
         // An invocation. Overwrite whatever was there.
         return jdbcTemplate.update("UPDATE SIGNATURES SET INVOKED_AT = ?, JVM_FINGERPRINT = ?, CONFIDENCE = ? " +
-                                           "WHERE CUSTOMER_ID = ? AND APPLICATION_ID = ? AND SIGNATURE = ? ",
-                                   invokedAt, jvmFingerprint, confidence, appId.getCustomerId(), appId.getAppId(), entry.getSignature());
+                                           "WHERE ORGANISATION_ID = ? AND APPLICATION_ID = ? AND SIGNATURE = ? ",
+                                   invokedAt, jvmFingerprint, confidence, appId.getOrganisationId(), appId.getAppId(),
+                                   entry.getSignature());
 
     }
 
-    private void storeJvmData(long customerId, long appId, JvmData data) {
+    private void storeJvmData(long organisationId, long appId, JvmData data) {
         Date dumpedAt = new Date(data.getDumpedAtMillis());
 
         int updated =
                 jdbcTemplate
-                        .update("UPDATE JVM_RUNS SET DUMPED_AT = ? WHERE CUSTOMER_ID = ? AND APPLICATION_ID = ? AND JVM_FINGERPRINT = ?",
-                                dumpedAt, customerId, appId, data.getJvmFingerprint());
+                        .update("UPDATE JVM_RUNS SET DUMPED_AT = ? WHERE ORGANISATION_ID = ? AND APPLICATION_ID = ? AND JVM_FINGERPRINT =" +
+                                        " ?",
+                                dumpedAt, organisationId, appId, data.getJvmFingerprint());
         if (updated > 0) {
             log.debug("Updated dumped_at={} for JVM run {}", dumpedAt, data.getJvmFingerprint());
             return;
@@ -116,10 +119,10 @@ public class AgentDAOImpl implements AgentDAO {
 
         int inserted =
                 jdbcTemplate
-                        .update("INSERT INTO JVM_RUNS(CUSTOMER_ID, APPLICATION_ID, HOST_NAME, JVM_FINGERPRINT, CODEKVAST_VERSION, " +
+                        .update("INSERT INTO JVM_RUNS(ORGANISATION_ID, APPLICATION_ID, HOST_NAME, JVM_FINGERPRINT, CODEKVAST_VERSION, " +
                                         "CODEKVAST_VCS_ID, STARTED_AT, DUMPED_AT)" +
                                         " VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                                customerId, appId, data.getHostName(), data.getJvmFingerprint(),
+                                organisationId, appId, data.getHostName(), data.getJvmFingerprint(),
                                 data.getCodekvastVersion(), data.getCodekvastVcsId(), new Date(data.getStartedAtMillis()),
                                 dumpedAt);
         if (inserted > 0) {

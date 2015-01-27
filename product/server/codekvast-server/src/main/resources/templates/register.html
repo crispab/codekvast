@@ -92,18 +92,23 @@
             </div>
         </fieldset>
         <fieldset>
-            <legend>Customer details</legend>
+            <legend>Organisation details</legend>
             <div class="form-group">
-                <label class="col-md-2 control-label" for="customerName">Company name</label>
-                <input class="col-md-6" id="customerName" name="customerName" type="text" ng-model="registration.customerName"
+                <label class="col-md-2 control-label" for="organisationName">Organisation name</label>
+                <input class="col-md-6"
+                       id="organisationName"
+                       name="organisationName"
+                       type="text"
+                       ng-model="registration.organisationName"
                        ng-required="true"
-                       th:attr="ng-maxlength=${maxCustomerNameLength}" placeholder="Your Company or Organisation Name"
-                       ck-unique="customerName"
+                       th:attr="ng-maxlength=${maxOrganisationNameLength}"
+                       placeholder="Your organisation or company name"
+                       ck-unique="organisationName"
                        ng-model-options="{debounce: 500}"/>
-                <span ng-show="form.customerName.$pristine" class="glyphicon glyphicon-asterisk"></span>
-                <span ng-show="isFieldValid(form.customerName)" class="glyphicon glyphicon-ok"></span>
-                <span ng-show="isFieldInvalid(form.customerName)" class="glyphicon glyphicon-ban-circle"></span>
-                <span ng-show="isAjaxPending(form.customerName)" class="glyphicon glyphicon-flash"></span>
+                <span ng-show="form.organisationName.$pristine" class="glyphicon glyphicon-asterisk"></span>
+                <span ng-show="isFieldValid(form.organisationName)" class="glyphicon glyphicon-ok"></span>
+                <span ng-show="isFieldInvalid(form.organisationName)" class="glyphicon glyphicon-ban-circle"></span>
+                <span ng-show="isAjaxPending(form.organisationName)" class="glyphicon glyphicon-flash"></span>
             </div>
         </fieldset>
         <button type="submit" ng-disabled="isSubmitDisabled" class="col-md-offset-2 col-md-3 btn btn-primary">Start Using Codekvast</button>

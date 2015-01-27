@@ -33,7 +33,7 @@ public class RegistrationController extends AbstractThymeleafController {
 
     public static final String IS_UNIQUE_PATH = "/register/isUnique";
     public static final String REGISTER_PATH = "/register";
-    public static final int MAX_CUSTOMER_NAME_LENGTH = 100;
+    public static final int MAX_ORGANISATION_NAME_LENGTH = 100;
 
     private final RegistrationService registrationService;
 
@@ -67,7 +67,7 @@ public class RegistrationController extends AbstractThymeleafController {
     @RequestMapping(value = REGISTER_PATH, method = RequestMethod.GET)
     public String registerGet(ModelMap modelMap) {
         modelMap.put("maxAppNameLength", Constraints.MAX_APP_NAME_LENGTH);
-        modelMap.put("maxCustomerNameLength", MAX_CUSTOMER_NAME_LENGTH);
+        modelMap.put("maxOrganisationNameLength", MAX_ORGANISATION_NAME_LENGTH);
         modelMap.put("maxEmailAddressLength", Constraints.MAX_EMAIL_ADDRESS_LENGTH);
         modelMap.put("maxFullNameLength", Constraints.MAX_FULL_NAME_LENGTH);
         modelMap.put("maxUsernameLength", Constraints.MAX_USER_NAME_LENGTH);
@@ -77,7 +77,7 @@ public class RegistrationController extends AbstractThymeleafController {
     @RequestMapping(value = REGISTER_PATH, method = RequestMethod.POST)
     @ResponseBody
     public RegistrationResponse registerPost(@RequestBody @Valid RegistrationRequest data) throws CodekvastException {
-        registrationService.registerUserAndCustomer(data);
+        registrationService.registerUserAndOrganisation(data);
         return RegistrationResponse.builder().greeting(String.format("Welcome %s!", data.getFullName())).build();
     }
 
@@ -91,8 +91,8 @@ public class RegistrationController extends AbstractThymeleafController {
         switch (kind.toLowerCase()) {
         case "username":
             return RegistrationService.UniqueKind.USERNAME;
-        case "customername":
-            return RegistrationService.UniqueKind.CUSTOMER_NAME;
+        case "organisationname":
+            return RegistrationService.UniqueKind.ORGANISATION_NAME;
         case "emailaddress":
             return RegistrationService.UniqueKind.EMAIL_ADDRESS;
         default:
@@ -160,8 +160,8 @@ public class RegistrationController extends AbstractThymeleafController {
         private String password;
 
         @NotBlank
-        @Size(max = MAX_CUSTOMER_NAME_LENGTH)
-        private String customerName;
+        @Size(max = MAX_ORGANISATION_NAME_LENGTH)
+        private String organisationName;
     }
 
     /**

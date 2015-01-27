@@ -7,7 +7,7 @@ import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
  * @author Olle Hallin
  */
 public interface RegistrationService {
-    enum UniqueKind {USERNAME, EMAIL_ADDRESS, CUSTOMER_NAME}
+    enum UniqueKind {USERNAME, EMAIL_ADDRESS, ORGANISATION_NAME}
 
     /**
      * Tests whether a name is unique.
@@ -19,13 +19,14 @@ public interface RegistrationService {
     boolean isUnique(UniqueKind kind, String name);
 
     /**
-     * Creates a user and customer. Assigns roles ADMIN and USER to the new USER. Inserts the new user as primary contact and ADMIN for the
-     * customer.
+     * Creates a user and organisation. Assigns roles ADMIN and USER to the new USER. Inserts the new user as primary contact and ADMIN
+     * for the
+     * organisation.
      *
      * @param data The registration data.
      * @return The id of the created user.
      * @throws se.crisp.codekvast.server.codekvast_server.exception.CodekvastException If anything fails.
      */
-    long registerUserAndCustomer(RegistrationController.RegistrationRequest data) throws CodekvastException;
+    long registerUserAndOrganisation(RegistrationController.RegistrationRequest data) throws CodekvastException;
 
 }

@@ -1,4 +1,5 @@
 package se.crisp.codekvast.server.codekvast_server
+
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.SpringApplicationContextLoader
 import org.springframework.boot.test.TestRestTemplate
@@ -23,7 +24,7 @@ public class RegistrationIsUniqueSpec extends Specification {
     RestTemplate template = new TestRestTemplate();
 
     @Unroll
-    def "#kind '#name' is #unrollDescription"() {
+    def "'#kind' '#name' should #unrollDescription"() {
         when:
         def entity = template.postForEntity("http://localhost:${port}/register/isUnique".toString(),
                 IsNameUniqueRequest.builder().kind(kind).name(name).build(),
@@ -33,20 +34,22 @@ public class RegistrationIsUniqueSpec extends Specification {
         entity.body.isUnique() == expected
 
         where:
-        kind           | name             | expected
-        'username'     | 'user'           | false
-        'username'     | 'USer'           | false
-        'username'     | 'USer '          | false
-        'username'     | ' USer'          | false
-        'username'     | 'userx'          | true
-        'emailAddress' | 'user@demo.com'  | false
-        'emailaddress' | 'user@demo.com'  | false
-        'emailaddress' | 'user@demo.com ' | false
-        'emailaddress' | 'user@demo.comx' | true
-        'customerName' | "demo"           | false
-        'customerName' | "demoX"          | true
+        kind               | name             | expected
+        'username'         | 'user'           | false
+        'username'         | 'USer'           | false
+        'userName'         | 'USer'           | false
+        'username'         | 'USer '          | false
+        'username'         | ' USer'          | false
+        'username'         | 'userx'          | true
+        'emailAddress'     | 'user@demo.com'  | false
+        'emailaddress'     | 'user@demo.com'  | false
+        'emailaddress'     | 'user@demo.com ' | false
+        'emailaddress'     | 'user@demo.comx' | true
+        'organisationName' | "demo"           | false
+        'organisAtionname' | "demo"           | false
+        'organisationName' | "demoX"          | true
 
-        unrollDescription = expected ? "unique" : "not unique"
+        unrollDescription = expected ? "be unique" : "not be unique"
     }
 
 }

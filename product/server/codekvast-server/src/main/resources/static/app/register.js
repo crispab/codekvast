@@ -55,19 +55,19 @@ var codekvastRegistration = angular.module('codekvastRegistration', [])
                         var descr = v + " " + field.$name;
                         switch (descr) {
                             case "ckMustMatch emailAddress2":
-                                $scope.errorMessages.push("Email addresses must match");
+                                $scope.errorMessages.push("Email addresses must match.");
                                 break;
                             case "ckMustMatch pw2":
-                                $scope.errorMessages.push("Passwords must match");
+                                $scope.errorMessages.push("Passwords must match.");
                                 break;
                             case "ckUnique username":
-                                $scope.errorMessages.push("The username is already taken");
+                                $scope.errorMessages.push("The username is already taken.");
                                 break;
                             case "ckUnique emailAddress":
-                                $scope.errorMessages.push("There is another user with that email address");
+                                $scope.errorMessages.push("There is another user with that email address.");
                                 break;
-                            case "ckUnique customerName":
-                                $scope.errorMessages.push("The company name is already taken");
+                            case "ckUnique organisationName":
+                                $scope.errorMessages.push("The organisation name is already taken.");
                                 break;
                             default:
                                 break;

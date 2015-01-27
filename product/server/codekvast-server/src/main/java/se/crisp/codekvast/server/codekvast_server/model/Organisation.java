@@ -10,7 +10,7 @@ import org.hibernate.validator.constraints.NotBlank;
  */
 @Value
 @Builder
-public class Customer {
+public class Organisation {
     private final long id;
 
     @NonNull

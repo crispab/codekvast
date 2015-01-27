@@ -41,7 +41,7 @@ public class RegistrationControllerTest {
                                                          .username(randomString(MAX_USER_NAME_LENGTH))
                                                          .emailAddress(randomEmailAddress(MAX_EMAIL_ADDRESS_LENGTH))
                                                          .password(randomString(100))
-                                                         .customerName(randomString(MAX_CUSTOMER_NAME_LENGTH))
+                                                         .organisationName(randomString(MAX_ORGANISATION_NAME_LENGTH))
                                                          .build();
         // @formatter:on
         RegistrationResponse response = restTemplate.postForEntity(registrationUri, request, RegistrationResponse.class).getBody();
@@ -56,7 +56,7 @@ public class RegistrationControllerTest {
                                                          .username(randomString(MAX_USER_NAME_LENGTH))
                                                          .emailAddress(randomEmailAddress(MAX_EMAIL_ADDRESS_LENGTH))
                                                          .password(randomString(100))
-                                                         .customerName(randomString(MAX_CUSTOMER_NAME_LENGTH))
+                                                         .organisationName(randomString(MAX_ORGANISATION_NAME_LENGTH))
                                                          .build();
         // @formatter:on
         restTemplate.postForEntity(registrationUri, request, RegistrationResponse.class).getBody();
@@ -70,7 +70,7 @@ public class RegistrationControllerTest {
                                                          .username("user")
                                                          .emailAddress(randomEmailAddress(MAX_EMAIL_ADDRESS_LENGTH))
                                                          .password(randomString(100))
-                                                         .customerName(randomString(MAX_CUSTOMER_NAME_LENGTH))
+                                                         .organisationName(randomString(MAX_ORGANISATION_NAME_LENGTH))
                                                          .build();
         // @formatter:on
         restTemplate.postForEntity(registrationUri, request, RegistrationResponse.class).getBody();
@@ -84,7 +84,7 @@ public class RegistrationControllerTest {
                                                          .username(randomString(MAX_USER_NAME_LENGTH))
                                                          .emailAddress("user@demo.com")
                                                          .password(randomString(100))
-                                                         .customerName(randomString(MAX_CUSTOMER_NAME_LENGTH))
+                                                         .organisationName(randomString(MAX_ORGANISATION_NAME_LENGTH))
                                                          .build();
         // @formatter:on
         restTemplate.postForEntity(registrationUri, request, RegistrationResponse.class).getBody();
