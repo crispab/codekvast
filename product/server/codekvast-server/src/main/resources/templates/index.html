@@ -17,26 +17,45 @@
         </form>
     </div>
 </div>
-<div class="container" ng-app="codekvastApp">
-    <div class="ng-cloak" ng-controller="MainCtrl">
-        <h1>Welcome to {{'Code' + 'kvast!' }}</h1>
-        Application: <select ng-model="application" ng-options="o for o in filterValues.applications"/> Version: <select ng-model="version"
-                                                                                                                         ng-options="o for o in filterValues.versions"/>
-        Package: <select ng-model="package" ng-options="o for o in packages"/>
-        <hr/>
-        <table>
-            <tr>
-                <th class="signature-name"><a href="" ng-click="predicate='name'; reverse = !reverse">Name</a></th>
-                <th class="signature-age"><a href="" ng-click="predicate='invokedAtMillis'; reverse = !reverse">Age</a></th>
-                <th class="signature-invoked-at"><a href="" ng-click="predicate='invokedAtMillis'; reverse = !reverse">Invoked At</a></th>
-            </tr>
-            <tr ng-repeat="s in signatures | filter: package | orderBy:predicate:reverse">
-                <td>{{s.name}}</td>
-                <td>{{s.age}}</td>
-                <td>{{s.invokedAtString}}</td>
-            </tr>
 
-        </table>
+<div class="container ng-cloak" ng-app="codekvastApp">
+    <div ng-controller="MainCtrl">
+        <h1>Codekvast Invocation Data</h1>
+
+        <div class="status-panel alert alert-info" ng-show="haveData">
+            <table>
+                <tr>
+                    <td>Collection started:</td>
+                    <td>{{timestamp.collectionStartedAt}}</td>
+                    <td>({{timestamp.collectionAge}})</td>
+                </tr>
+                <tr>
+                    <td>Update received:</td>
+                    <td>{{timestamp.updateReceivedAt}}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="jumbotron" ng-hide="haveData"><h2>Waiting for data...</h2></div>
+
+        <div ng-show="haveData">
+            Show only package: <select ng-model="package" ng-options="o for o in packages"/>
+            <hr/>
+
+            <table>
+                <tr>
+                    <th class="signature-name"><a href="" ng-click="predicate='name'; reverse = !reverse">Signature</a></th>
+                    <th class="signature-age"><a href="" ng-click="predicate='invokedAtMillis'; reverse = !reverse">Age</a></th>
+                    <th class="signature-invoked-at"><a href="" ng-click="predicate='invokedAtMillis'; reverse = !reverse">Invoked At</a>
+                    </th>
+                </tr>
+                <tr ng-repeat="s in signatures | filter: package | orderBy:predicate:reverse">
+                    <td>{{s.name}}</td>
+                    <td>{{s.age}}</td>
+                    <td>{{s.invokedAtString}}</td>
+                </tr>
+            </table>
+        </div>
     </div>
 </div>
 

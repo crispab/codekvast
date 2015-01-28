@@ -1,4 +1,4 @@
-package se.crisp.codekvast.server.codekvast_server.messagehandler;
+package se.crisp.codekvast.server.codekvast_server.controller;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
@@ -9,9 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Controller;
 import se.crisp.codekvast.server.codekvast_server.event.internal.ApplicationCreatedEvent;
-import se.crisp.codekvast.server.codekvast_server.messagehandler.UserHandler.UserConnectedEvent;
 
 import javax.inject.Inject;
 import java.security.Principal;
@@ -20,8 +19,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static se.crisp.codekvast.server.codekvast_server.messagehandler.UserHandler.UserDisconnectedEvent;
 
 /**
  * Responsible for maintaining one {@link FilterValues} object for each active web socket user.
@@ -33,7 +30,7 @@ import static se.crisp.codekvast.server.codekvast_server.messagehandler.UserHand
  *
  * @author Olle Hallin
  */
-@Service
+@Controller
 @Slf4j
 public class FilterHandler extends AbstractMessageHandler {
 
@@ -46,13 +43,13 @@ public class FilterHandler extends AbstractMessageHandler {
 
     @Subscribe
     @AllowConcurrentEvents
-    public void onUserConnectedEvent(UserConnectedEvent event) {
+    public void onUserConnectedEvent(UserHandler.UserConnectedEvent event) {
         usernameToFilterValues.put(event.getUsername(), createInitialFilterValues(event.getUsername()));
     }
 
     @Subscribe
     @AllowConcurrentEvents
-    public void onUserDisconnectedEvent(UserDisconnectedEvent event) {
+    public void onUserDisconnectedEvent(UserHandler.UserDisconnectedEvent event) {
         usernameToFilterValues.remove(event.getUsername());
     }
 

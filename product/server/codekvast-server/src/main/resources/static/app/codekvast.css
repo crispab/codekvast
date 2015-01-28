@@ -11,3 +11,7 @@
 .signature-invoked-at {
     width: 10em;
 }
+
+.status-panel td {
+    padding-left: 1em;
+}

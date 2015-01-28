@@ -1,4 +1,4 @@
-package se.crisp.codekvast.server.codekvast_server.messagehandler;
+package se.crisp.codekvast.server.codekvast_server.controller;
 
 import com.google.common.eventbus.EventBus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -7,6 +7,8 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 /**
+ * Base class for message-driven handlers
+ *
  * @author Olle Hallin
  */
 abstract class AbstractMessageHandler {

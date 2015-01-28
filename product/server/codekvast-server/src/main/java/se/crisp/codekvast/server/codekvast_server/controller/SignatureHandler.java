@@ -1,17 +1,18 @@
-package se.crisp.codekvast.server.codekvast_server.messagehandler;
+package se.crisp.codekvast.server.codekvast_server.controller;
 
 import com.google.common.eventbus.EventBus;
+import lombok.NonNull;
 import lombok.Value;
 import lombok.experimental.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Controller;
+import se.crisp.codekvast.server.codekvast_server.util.DateUtils;
 
 import javax.inject.Inject;
 import java.security.Principal;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,7 +22,7 @@ import java.util.regex.Pattern;
  *
  * @author Olle Hallin
  */
-@Service
+@Controller
 @Slf4j
 public class SignatureHandler extends AbstractMessageHandler {
     private final UserHandler userHandler;
@@ -33,46 +34,71 @@ public class SignatureHandler extends AbstractMessageHandler {
     }
 
     /**
-     * The JavaScript layer starts a STOMP subscription for signatures.
+     * The JavaScript layer requests all signatures.
      *
      * @param principal The identity of the authenticated user.
-     * @return The current FilterValues that the user shall use.
+     * @return All signatures that this user has permission to view
      */
     @SubscribeMapping("/signatures")
     public Signatures subscribeSignatures(Principal principal) {
         String username = principal.getName();
         log.debug("'{}' is subscribing to signatures", username);
 
-        return getSignatures(username);
+        return getSignatures(username, 100);
     }
 
     @Value
     @Builder
     static class Signatures {
+        @NonNull
+        Timestamp timestamp;
+        @NonNull
         private final List<Signature> signatures;
+        @NonNull
         private final Set<String> packages;
     }
 
     @Value
     @Builder
+    static class Timestamp {
+        @NonNull
+        private final String collectionStartedAt;
+        @NonNull
+        private final String collectionAge;
+        @NonNull
+        private final String updateReceivedAt;
+        @NonNull
+        private final String updateAge;
+    }
+
+    @Value
+    @Builder
     static class Signature {
+        @NonNull
         private final String name;
         private final long invokedAtMillis;
+        @NonNull
         private final String invokedAtString;
+        @NonNull
         private final String age;
     }
 
     //---- Fake stuff below ---------------------------
 
-    static Signatures getSignatures(String username) {
+    private static final long collectionStartedAt = System.currentTimeMillis();
+
+    static Signatures getSignatures(String username, int usePercentOfFakeData) {
         List<Signature> signatures = new ArrayList<>();
         Set<String> packages = new TreeSet<>();
 
         long now = System.currentTimeMillis();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Pattern pkgPattern = Pattern.compile("([\\p{javaLowerCase}\\.]+)\\.");
 
         for (String s : fakeSignatures) {
+            if (random.nextInt(100) >= usePercentOfFakeData) {
+                continue;
+            }
+
             Matcher m = pkgPattern.matcher(s);
             if (m.find()) {
                 String pkg = m.group(1);
@@ -80,8 +106,8 @@ public class SignatureHandler extends AbstractMessageHandler {
             }
 
             long invokedAtMillis = getRandomInvokedAtMillis(now);
-            String invokedAtString = invokedAtMillis == 0L ? "" : sdf.format(new Date(invokedAtMillis));
-            String age = getAge(now, invokedAtMillis);
+            String invokedAtString = invokedAtMillis == 0L ? "" : DateUtils.formatDate(invokedAtMillis);
+            String age = DateUtils.getAge(now, invokedAtMillis);
 
             signatures.add(Signature.builder()
                                     .name(s)
@@ -91,7 +117,7 @@ public class SignatureHandler extends AbstractMessageHandler {
                                     .build());
         }
 
-        Set<String> parentPackages = new HashSet<String>();
+        Set<String> parentPackages = new HashSet<>();
         for (String pkg : packages) {
             int dot = pkg.lastIndexOf('.');
             if (dot > 0) {
@@ -100,32 +126,17 @@ public class SignatureHandler extends AbstractMessageHandler {
             }
         }
         packages.addAll(parentPackages);
-        return Signatures.builder().signatures(signatures).packages(packages).build();
-    }
-
-    static String getAge(long now, long invokedAtMillis) {
-        if (invokedAtMillis == 0L) {
-            return "";
-        }
-
-        long age = now - invokedAtMillis;
-
-        long minutes = 60 * 1000L;
-        if (age < 60 * minutes) {
-            return String.format("%d min", age / minutes);
-        }
-
-        long hours = minutes * 60;
-        if (age < 24 * hours) {
-            return String.format("%d hours", age / hours);
-        }
-        long days = hours * 24;
-        if (age < 30 * days) {
-            return String.format("%d days", age / days);
-        }
-
-        long week = days * 7;
-        return String.format("%d weeks", age / week);
+        // Simulate that there is a lag
+        long updateReceivedAt = now - 20_000L;
+        return Signatures.builder()
+                         .timestamp(Timestamp.builder()
+                                             .collectionStartedAt(DateUtils.formatDate(collectionStartedAt))
+                                             .collectionAge(DateUtils.getAge(now, collectionStartedAt))
+                                             .updateReceivedAt(DateUtils.formatDate(updateReceivedAt))
+                                             .updateAge(DateUtils.getAge(now, updateReceivedAt)).build())
+                         .signatures(signatures)
+                         .packages(packages)
+                         .build();
     }
 
     static long getRandomInvokedAtMillis(long now) {
@@ -143,19 +154,19 @@ public class SignatureHandler extends AbstractMessageHandler {
      * Fake way to see that STOMP updates work.
      */
     @Scheduled(fixedRate = 5000L)
-    public void sendSignaturesToActiveUsers() {
+    public void sendSignatureUpdatesToActiveUsers() {
         for (String username : userHandler.getActiveUsernames()) {
-            Signatures sig = getSignatures(username);
+            Signatures sig = getSignatures(username, 10);
 
-            log.debug("Sending {} signatures and {} packages to '{}'", sig.getSignatures().size(), sig.getPackages().size(), username);
-            messagingTemplate.convertAndSendToUser(username, "/queue/signatures", sig);
+            log.debug("Sending {} signature and {} package updates to '{}'", sig.getSignatures().size(), sig.getPackages().size(),
+                      username);
+            messagingTemplate.convertAndSendToUser(username, "/queue/signatureUpdates", sig);
         }
     }
 
     private static Random random = new Random();
 
     private static final String[] fakeSignatures = {
-            //@formatter:off
         "se.su.dsv.exia.services.AnswerService.hasAnswerWithoutPoints(se.su.dsv.exia.domain.Examination)",
         "se.su.dsv.exia.services.AnswerService.setComment(se.su.dsv.exia.domain.Answer, java.lang.String)",
         "se.su.dsv.exia.services.AssessmentDelegationService.deleteByExamination(se.su.dsv.exia.domain.Examination)",
@@ -414,6 +425,5 @@ public class SignatureHandler extends AbstractMessageHandler {
         "se.su.dsv.exia.view.panel.WordCountContainer.visitWordCountingTextAreas(org.apache.wicket.ajax.AjaxRequestTarget)",
         "se.su.dsv.exia.view.panel.WordCountingAnswerPanel.AutoSavingBehavior.getCallbackUrl()",
         "se.su.dsv.exia.view.util.ExiaUtil.setLanguage(org.apache.wicket.request.mapper.parameter.PageParameters)",
-        //@formatter:on
     };
 }

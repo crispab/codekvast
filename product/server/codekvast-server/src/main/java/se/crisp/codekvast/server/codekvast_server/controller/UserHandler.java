@@ -1,4 +1,4 @@
-package se.crisp.codekvast.server.codekvast_server.messagehandler;
+package se.crisp.codekvast.server.codekvast_server.controller;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
@@ -63,7 +63,7 @@ public class UserHandler extends AbstractMessageHandler {
         }
 
         sessionIdToUsername.put(sessionId, username);
-        log.info("Added username {}", username);
+        log.info("Added username '{}'", username);
         eventBus.post(new UserConnectedEvent(username));
     }
 
@@ -85,7 +85,7 @@ public class UserHandler extends AbstractMessageHandler {
             return;
         }
 
-        log.info("Removed user {}", username);
+        log.info("Removed username '{}'", username);
         eventBus.post(new UserDisconnectedEvent(username));
     }
 

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import se.crisp.codekvast.support.web.config.WebjarVersions;
 
 /**
- * A base class for controllers which render Thymeleaf views.
+ * A base class for traditional controllers which render Thymeleaf views.
  *
  * @author Olle Hallin
  */
