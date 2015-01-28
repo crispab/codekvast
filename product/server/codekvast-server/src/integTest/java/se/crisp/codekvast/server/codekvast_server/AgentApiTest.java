@@ -90,7 +90,7 @@ public class AgentApiTest {
         agentApi.uploadSignatureData(jvmFingerprint, Arrays.asList(signature1, signature2));
 
         // then
-        assertThat(userService.getSignatures(null), hasSize(2));
+        assertThat(userService.getSignatures("user"), hasSize(2));
     }
 
     @Test
@@ -106,7 +106,6 @@ public class AgentApiTest {
 
         // then
         assertThat(userService.getSignatures("user"), hasSize(2));
-        // TODO: assertThat(userService.getSignatures("userX"), hasSize(0));
     }
 
     private JvmData getJvmData() {

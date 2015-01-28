@@ -3,12 +3,15 @@ package se.crisp.codekvast.server.codekvast_server.service.impl;
 import com.google.common.eventbus.EventBus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.server.agent_api.model.v1.InvocationData;
 import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
+import se.crisp.codekvast.server.codekvast_server.dao.CollectorTimestamp;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
+import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorUptimeEvent;
 import se.crisp.codekvast.server.codekvast_server.event.internal.InvocationDataUpdatedEvent;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
@@ -39,13 +42,27 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
-    public void storeJvmData(String agentApiID, JvmData data) throws CodekvastException {
-        log.debug("Storing {} from {}", data, agentApiID);
+    @Transactional(rollbackFor = Exception.class)
+    public void storeJvmData(String apiAccessID, JvmData data) throws CodekvastException {
+        long organisationId = userDAO.getOrganisationIdForUsername(apiAccessID);
+        long appId = userDAO.getAppId(organisationId, data.getAppName(), data.getAppVersion());
 
-        agentDAO.storeJvmData(agentApiID, data);
+        agentDAO.storeJvmData(organisationId, appId, data);
+
+        postCollectorUptimeEvent(organisationId);
     }
 
+    private void postCollectorUptimeEvent(long organisationId) {
+        Collection<String> usernames = userDAO.getUsernamesInOrganisation(organisationId);
+        CollectorTimestamp timestamp = agentDAO.getCollectorTimestamp(organisationId);
+        CollectorUptimeEvent event = new CollectorUptimeEvent(timestamp, usernames);
+        log.debug("Posting {}", event);
+        eventBus.post(event);
+    }
+
+
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void storeSignatureData(SignatureData data) throws CodekvastException {
         if (log.isTraceEnabled()) {
             log.trace("Storing {}", data.toLongString());
@@ -53,8 +70,27 @@ public class AgentServiceImpl implements AgentService {
             log.debug("Storing {}", data);
         }
 
-        Collection<InvocationEntry> updatedEntries = agentDAO.storeInvocationData(toInitialInvocationsData(data));
         AppId appId = userDAO.getAppIdByJvmFingerprint(data.getJvmFingerprint());
+        Collection<InvocationEntry> updatedEntries = agentDAO.storeInvocationData(appId, toInitialInvocationsData(data));
+        eventBus.post(new InvocationDataUpdatedEvent(appId, updatedEntries));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void storeInvocationData(InvocationData data) throws CodekvastException {
+        if (log.isTraceEnabled()) {
+            log.trace("Storing {}", data.toLongString());
+        } else {
+            log.debug("Storing {}", data);
+        }
+
+        AppId appId = userDAO.getAppIdByJvmFingerprint(data.getJvmFingerprint());
+        if (appId == null) {
+            log.info("Ignoring invocation data for JVM {}", data.getJvmFingerprint());
+            return;
+        }
+
+        Collection<InvocationEntry> updatedEntries = agentDAO.storeInvocationData(appId, data);
         eventBus.post(new InvocationDataUpdatedEvent(appId, updatedEntries));
     }
 
@@ -65,19 +101,6 @@ public class AgentServiceImpl implements AgentService {
         }
         return InvocationData.builder().jvmFingerprint(signatureData.getJvmFingerprint()).invocations(
                 invocationEntries).build();
-    }
-
-    @Override
-    public void storeInvocationData(InvocationData data) throws CodekvastException {
-        if (log.isTraceEnabled()) {
-            log.trace("Storing {}", data.toLongString());
-        } else {
-            log.debug("Storing {}", data);
-        }
-
-        Collection<InvocationEntry> updatedEntries = agentDAO.storeInvocationData(data);
-        AppId appId = userDAO.getAppIdByJvmFingerprint(data.getJvmFingerprint());
-        eventBus.post(new InvocationDataUpdatedEvent(appId, updatedEntries));
     }
 
 }

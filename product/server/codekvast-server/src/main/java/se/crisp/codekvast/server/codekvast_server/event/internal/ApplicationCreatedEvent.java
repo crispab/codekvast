@@ -13,5 +13,6 @@ import java.util.Collection;
 @Value
 public class ApplicationCreatedEvent {
     private final Application application;
+    private final String appVersion;
     private final Collection<String> usernames;
 }

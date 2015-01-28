@@ -18,6 +18,11 @@ public class DateUtils {
     };
 
     private DateUtils() {
+        // utility class
+    }
+
+    public static String formatDate(Date date) {
+        return sdf.get().format(date);
     }
 
     public static String formatDate(long timestampMillis) {

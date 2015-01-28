@@ -2,20 +2,20 @@ package se.crisp.codekvast.server.codekvast_server.dao.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.server.agent_api.model.v1.InvocationData;
 import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
 import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
-import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
-import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
+import se.crisp.codekvast.server.codekvast_server.dao.CollectorTimestamp;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
 
 import javax.inject.Inject;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 
 /**
@@ -28,32 +28,15 @@ import java.util.Date;
 public class AgentDAOImpl implements AgentDAO {
 
     private final JdbcTemplate jdbcTemplate;
-    private final UserDAO userDAO;
 
     @Inject
-    public AgentDAOImpl(JdbcTemplate jdbcTemplate, UserDAO userDAO) {
+    public AgentDAOImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.userDAO = userDAO;
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void storeJvmData(String apiAccessID, JvmData data) throws CodekvastException {
-        long organisationId = userDAO.usernameToOrganisationId(apiAccessID);
-        long appId = userDAO.getAppId(organisationId, data.getAppName());
-        storeJvmData(organisationId, appId, data);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public Collection<InvocationEntry> storeInvocationData(InvocationData invocationData) {
+    public Collection<InvocationEntry> storeInvocationData(AppId appId, InvocationData invocationData) {
         final Collection<InvocationEntry> result = new ArrayList<>();
-
-        AppId appId = userDAO.getAppIdByJvmFingerprint(invocationData.getJvmFingerprint());
-        if (appId == null) {
-            log.info("Ignoring invocation data for JVM {}", invocationData.getJvmFingerprint());
-            return Collections.emptyList();
-        }
 
         for (InvocationEntry entry : invocationData.getInvocations()) {
             storeOrUpdateInvocationEntry(result, appId, invocationData.getJvmFingerprint(), entry);
@@ -92,44 +75,58 @@ public class AgentDAOImpl implements AgentDAO {
         if (invokedAt == null) {
             // An uninvoked signature is not allowed to overwrite an invoked signature
             return jdbcTemplate.update("UPDATE SIGNATURES SET CONFIDENCE = ? " +
-                                               "WHERE ORGANISATION_ID = ? AND APPLICATION_ID = ? AND SIGNATURE = ? AND INVOKED_AT IS NULL ",
-                                       confidence, appId.getOrganisationId(), appId.getAppId(), entry.getSignature());
+                                               "WHERE APPLICATION_ID = ? AND SIGNATURE = ? AND INVOKED_AT IS NULL ",
+                                       confidence, appId.getAppId(), entry.getSignature());
         }
 
         // An invocation. Overwrite whatever was there.
         return jdbcTemplate.update("UPDATE SIGNATURES SET INVOKED_AT = ?, JVM_FINGERPRINT = ?, CONFIDENCE = ? " +
-                                           "WHERE ORGANISATION_ID = ? AND APPLICATION_ID = ? AND SIGNATURE = ? ",
-                                   invokedAt, jvmFingerprint, confidence, appId.getOrganisationId(), appId.getAppId(),
-                                   entry.getSignature());
-
+                                           "WHERE APPLICATION_ID = ? AND SIGNATURE = ? ",
+                                   invokedAt, jvmFingerprint, confidence, appId.getAppId(), entry.getSignature());
     }
 
-    private void storeJvmData(long organisationId, long appId, JvmData data) {
-        Date dumpedAt = new Date(data.getDumpedAtMillis());
-
+    @Override
+    public void storeJvmData(long organisationId, long appId, JvmData data) {
         int updated =
                 jdbcTemplate
-                        .update("UPDATE JVM_RUNS SET DUMPED_AT = ? WHERE ORGANISATION_ID = ? AND APPLICATION_ID = ? AND JVM_FINGERPRINT =" +
-                                        " ?",
-                                dumpedAt, organisationId, appId, data.getJvmFingerprint());
+                        .update("UPDATE jvm_runs SET dumped_at = ? WHERE application_id = ? AND jvm_fingerprint = ?",
+                                data.getDumpedAtMillis(), appId, data.getJvmFingerprint());
         if (updated > 0) {
-            log.debug("Updated dumped_at={} for JVM run {}", dumpedAt, data.getJvmFingerprint());
+            log.debug("Updated dumped_at={} for JVM run {}", new Date(data.getDumpedAtMillis()), data.getJvmFingerprint());
             return;
         }
 
-        int inserted =
-                jdbcTemplate
-                        .update("INSERT INTO JVM_RUNS(ORGANISATION_ID, APPLICATION_ID, HOST_NAME, JVM_FINGERPRINT, CODEKVAST_VERSION, " +
-                                        "CODEKVAST_VCS_ID, STARTED_AT, DUMPED_AT)" +
-                                        " VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                                organisationId, appId, data.getHostName(), data.getJvmFingerprint(),
-                                data.getCodekvastVersion(), data.getCodekvastVcsId(), new Date(data.getStartedAtMillis()),
-                                dumpedAt);
-        if (inserted > 0) {
+        updated = jdbcTemplate
+                .update("INSERT INTO jvm_runs(organisation_id, application_id, application_version, host_name, jvm_fingerprint, " +
+                                "codekvast_version, " +
+                                "codekvast_vcs_id, started_at, dumped_at)" +
+                                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        organisationId, appId, data.getAppVersion(), data.getHostName(), data.getJvmFingerprint(),
+                        data.getCodekvastVersion(), data.getCodekvastVcsId(), data.getStartedAtMillis(),
+                        data.getDumpedAtMillis());
+
+        if (updated == 1) {
             log.debug("Stored new JVM run {}", data);
         } else {
-            log.warn("Could not insert {}", data);
+            log.warn("Cannot store JVM run {}", data);
         }
     }
 
+    @Override
+    public CollectorTimestamp getCollectorTimestamp(long organisationId) {
+
+        return jdbcTemplate.queryForObject("SELECT MIN(started_at), MAX(dumped_at) FROM jvm_runs WHERE organisation_id = ? ",
+                                           new CollectorTimestampRowMapper(), organisationId);
+    }
+
+    private static class CollectorTimestampRowMapper implements RowMapper<CollectorTimestamp> {
+        @Override
+        public CollectorTimestamp mapRow(ResultSet rs, int rowNum) throws SQLException {
+            // SELECT MIN(started_at), MAX(dumped_at) FROM jvm_runs
+            return CollectorTimestamp.builder()
+                                     .startedAtMillis(rs.getLong(1))
+                                     .dumpedAtMillis(rs.getLong(2))
+                                     .build();
+        }
+    }
 }

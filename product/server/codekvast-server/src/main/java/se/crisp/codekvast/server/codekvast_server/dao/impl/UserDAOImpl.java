@@ -15,7 +15,7 @@ import se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.event.internal.ApplicationCreatedEvent;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
-import se.crisp.codekvast.server.codekvast_server.exception.UndefinedOrganisationException;
+import se.crisp.codekvast.server.codekvast_server.exception.UndefinedUserException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import se.crisp.codekvast.server.codekvast_server.model.Application;
 import se.crisp.codekvast.server.codekvast_server.model.Organisation;
@@ -24,7 +24,6 @@ import se.crisp.codekvast.server.codekvast_server.model.Role;
 import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 
@@ -53,23 +52,23 @@ public class UserDAOImpl implements UserDAO {
     @Override
     @Transactional(rollbackFor = Exception.class)
     @Cacheable("user")
-    public long usernameToOrganisationId(final String username) throws UndefinedOrganisationException {
+    public long getOrganisationIdForUsername(final String username) throws UndefinedUserException {
         log.debug("Looking up organisation id for username '{}'", username);
         try {
             return jdbcTemplate.queryForObject("SELECT cm.ORGANISATION_ID FROM ORGANISATION_MEMBERS cm, USERS u " +
                                                        "WHERE cm.USER_ID = u.ID " +
                                                        "AND u.USERNAME = ?", Long.class, username);
         } catch (EmptyResultDataAccessException ignored) {
+            throw new UndefinedUserException("No such user: '" + username + "'");
         }
-        throw new UndefinedOrganisationException("No such user: " + username);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     @Cacheable("user")
-    public long getAppId(long organisationId, String appName) throws UndefinedApplicationException {
+    public long getAppId(long organisationId, String appName, String appVersion) throws UndefinedApplicationException {
         log.debug("Looking up app id for {}:{}", organisationId, appName);
-        return doGetOrCreateApp(organisationId, appName);
+        return doGetOrCreateApp(organisationId, appName, appVersion);
     }
 
     @Override
@@ -133,17 +132,25 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     @Transactional(readOnly = true)
-    public Collection<InvocationEntry> getSignatures(String username) {
-        // TODO: include username in query
-        return jdbcTemplate.query("SELECT SIGNATURE, INVOKED_AT, CONFIDENCE FROM SIGNATURES ", new InvocationsEntryRowMapper());
+    public Collection<InvocationEntry> getSignatures(long organisationId) {
+        return jdbcTemplate.query("SELECT signature, invoked_at, confidence FROM signatures " +
+                                          "WHERE organisation_id = ?", new InvocationsEntryRowMapper(), organisationId);
     }
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable("user")
-    public Collection<Application> getApplications(String username) {
-        // TODO: include username in query
-        return jdbcTemplate.query("SELECT ID, ORGANISATION_ID, NAME FROM APPLICATIONS ", new ApplicationRowMapper());
+    public Collection<Application> getApplications(long organisationId) {
+        return jdbcTemplate.query("SELECT id, organisation_id, name FROM applications " +
+                                          "WHERE organisation_id = ?", new ApplicationRowMapper(), organisationId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Collection<String> getUsernamesInOrganisation(long organisationId) {
+        return jdbcTemplate.queryForList("SELECT u.username " +
+                                                 "FROM users u, organisation_members m " +
+                                                 "WHERE u.id = m.user_id AND m.organisation_id = ?",
+                                         String.class, organisationId);
     }
 
     private long doCreateOrganisation(String organisationName) {
@@ -153,7 +160,7 @@ public class UserDAOImpl implements UserDAO {
         return organisationId;
     }
 
-    private Long doGetOrCreateApp(long organisationId, String appName)
+    private Long doGetOrCreateApp(long organisationId, String appName, String appVersion)
             throws UndefinedApplicationException {
         try {
             return jdbcTemplate.queryForObject("SELECT ID FROM APPLICATIONS " +
@@ -168,9 +175,9 @@ public class UserDAOImpl implements UserDAO {
                                      .appId(AppId.builder().organisationId(organisationId).appId(appId).build())
                                      .name(appName)
                                      .build();
-        eventBus.post(new ApplicationCreatedEvent(app, Arrays.asList("user", "system")));
 
-        log.info("Created {}", app);
+        eventBus.post(new ApplicationCreatedEvent(app, appVersion, getUsernamesInOrganisation(organisationId)));
+        log.info("Created {} {}", app, appVersion);
         return appId;
     }
 
@@ -218,6 +225,4 @@ public class UserDAOImpl implements UserDAO {
                               .build();
         }
     }
-
-
 }

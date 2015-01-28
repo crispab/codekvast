@@ -14,7 +14,7 @@ CREATE TABLE users (
   enabled            BOOLEAN DEFAULT TRUE                NOT NULL,
   email_address VARCHAR(64) UNIQUE,
   full_name          VARCHAR(255),
-  created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  created_at    TIMESTAMP DEFAULT current_timestamp NOT NULL,
   modified_at   TIMESTAMP AS NOW()
 );
 
@@ -22,7 +22,7 @@ DROP TABLE IF EXISTS user_roles;
 CREATE TABLE user_roles (
   user_id     INTEGER                             NOT NULL REFERENCES users (id),
   role        VARCHAR(20)                         NOT NULL REFERENCES roles (name),
-  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  created_at TIMESTAMP DEFAULT current_timestamp NOT NULL,
   modified_at TIMESTAMP AS NOW()
 );
 
@@ -33,9 +33,9 @@ CREATE UNIQUE INDEX ix_user_roles ON user_roles (user_id, role);
 DROP TABLE IF EXISTS organisations;
 CREATE TABLE organisations (
   id          INTEGER                             NOT NULL IDENTITY,
-  name    VARCHAR(100) NOT NULL,
-  name_lc VARCHAR(100) AS LOWER(name),
-  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  name       VARCHAR(100)                        NOT NULL,
+  name_lc    VARCHAR(100) AS LOWER(name),
+  created_at TIMESTAMP DEFAULT current_timestamp NOT NULL,
   modified_at TIMESTAMP AS NOW()
 );
 
@@ -44,11 +44,11 @@ CREATE UNIQUE INDEX ix_organisation_name_lc ON organisations (name_lc);
 
 DROP TABLE IF EXISTS organisation_members;
 CREATE TABLE organisation_members (
-  organisation_id INTEGER NOT NULL REFERENCES organisations (id),
+  organisation_id INTEGER                             NOT NULL REFERENCES organisations (id),
   user_id         INTEGER                             NOT NULL REFERENCES users (id),
   primary_contact BOOLEAN DEFAULT FALSE               NOT NULL,
-  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  modified_at TIMESTAMP AS NOW()
+  created_at      TIMESTAMP DEFAULT current_timestamp NOT NULL,
+  modified_at     TIMESTAMP AS NOW()
 );
 
 DROP INDEX IF EXISTS ix_organisation_members;
@@ -57,11 +57,11 @@ CREATE UNIQUE INDEX ix_organisation_members ON organisation_members (organisatio
 //--- Applications ---------------------------------------------------------------------------------------------
 DROP TABLE IF EXISTS applications;
 CREATE TABLE applications (
-  id          INTEGER                             NOT NULL IDENTITY,
-  organisation_id INTEGER NOT NULL REFERENCES organisations (id),
-  name        VARCHAR(100)                        NOT NULL,
-  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  modified_at TIMESTAMP AS NOW()
+  id              INTEGER                             NOT NULL IDENTITY,
+  organisation_id INTEGER                             NOT NULL REFERENCES organisations (id),
+  name            VARCHAR(100)                        NOT NULL,
+  created_at      TIMESTAMP DEFAULT current_timestamp NOT NULL,
+  modified_at     TIMESTAMP AS NOW()
 );
 
 DROP INDEX IF EXISTS ix_applications;
@@ -70,15 +70,16 @@ CREATE UNIQUE INDEX ix_applications ON applications (organisation_id, name);
 //--- JVM runs -------------------------------------------------------------------------------------------------
 DROP TABLE IF EXISTS jvm_runs;
 CREATE TABLE jvm_runs (
-  id                INTEGER      NOT NULL IDENTITY,
-  organisation_id INTEGER NOT NULL REFERENCES organisations (id),
-  application_id    INTEGER      NOT NULL REFERENCES applications (id),
-  host_name         VARCHAR(255) NOT NULL,
-  jvm_fingerprint   VARCHAR(50)  NOT NULL,
-  codekvast_version VARCHAR(20)  NOT NULL,
-  codekvast_vcs_id  VARCHAR(50)  NOT NULL,
-  started_at        TIMESTAMP    NOT NULL,
-  dumped_at         TIMESTAMP    NOT NULL
+  id                  INTEGER      NOT NULL IDENTITY,
+  organisation_id     INTEGER      NOT NULL REFERENCES organisations (id),
+  application_id      INTEGER      NOT NULL REFERENCES applications (id),
+  application_version VARCHAR(100) NOT NULL,
+  host_name           VARCHAR(255) NOT NULL,
+  jvm_fingerprint     VARCHAR(50)  NOT NULL,
+  codekvast_version   VARCHAR(20)  NOT NULL,
+  codekvast_vcs_id    VARCHAR(50)  NOT NULL,
+  started_at          BIGINT       NOT NULL,
+  dumped_at           BIGINT       NOT NULL
 );
 
 DROP INDEX IF EXISTS ix_jvm_runs;
@@ -88,11 +89,11 @@ CREATE UNIQUE INDEX ix_jvm_runs ON jvm_runs (organisation_id, application_id, jv
 DROP TABLE IF EXISTS signatures;
 CREATE TABLE signatures (
   id              INTEGER       NOT NULL IDENTITY,
-  organisation_id INTEGER NOT NULL REFERENCES organisations (id),
+  organisation_id INTEGER       NOT NULL REFERENCES organisations (id),
   application_id  INTEGER       NOT NULL REFERENCES applications (id),
-  signature  VARCHAR(2000) NOT NULL,
+  signature       VARCHAR(2000) NOT NULL,
   jvm_fingerprint VARCHAR(50),
-  invoked_at TIMESTAMP,
+  invoked_at      TIMESTAMP,
   confidence      TINYINT
 );
 

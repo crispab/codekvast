@@ -3,7 +3,10 @@ package se.crisp.codekvast.server.codekvast_server.service.impl;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
+import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
+import se.crisp.codekvast.server.codekvast_server.dao.CollectorTimestamp;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.Application;
@@ -20,20 +23,32 @@ import java.util.Collection;
 public class UserServiceImpl implements UserService {
 
     private final UserDAO userDAO;
+    private final AgentDAO agentDAO;
 
     @Inject
-    public UserServiceImpl(@NonNull UserDAO userDAO) {
+    public UserServiceImpl(@NonNull UserDAO userDAO, AgentDAO agentDAO) {
         this.userDAO = userDAO;
+        this.agentDAO = agentDAO;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Collection<InvocationEntry> getSignatures(String username) throws CodekvastException {
-        return userDAO.getSignatures(username);
+        long organisationId = userDAO.getOrganisationIdForUsername(username);
+        return userDAO.getSignatures(organisationId);
     }
 
     @Override
-    public Collection<Application> getApplications(String username) {
-        return userDAO.getApplications(username);
+    @Transactional(rollbackFor = Exception.class)
+    public Collection<Application> getApplications(String username) throws CodekvastException {
+        long organisationId = userDAO.getOrganisationIdForUsername(username);
+        return userDAO.getApplications(organisationId);
+    }
+
+    @Override
+    public CollectorTimestamp getCollectorTimestamp(String username) throws CodekvastException {
+        long organisationId = userDAO.getOrganisationIdForUsername(username);
+        return agentDAO.getCollectorTimestamp(organisationId);
     }
 
 }

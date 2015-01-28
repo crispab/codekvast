@@ -3,7 +3,7 @@ package se.crisp.codekvast.server.codekvast_server.dao;
 import org.springframework.dao.DataAccessException;
 import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
-import se.crisp.codekvast.server.codekvast_server.exception.UndefinedOrganisationException;
+import se.crisp.codekvast.server.codekvast_server.exception.UndefinedUserException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import se.crisp.codekvast.server.codekvast_server.model.Application;
 import se.crisp.codekvast.server.codekvast_server.model.Role;
@@ -20,15 +20,15 @@ public interface UserDAO {
      *
      * @param username A real user's login name or an agent's agentAccessID
      * @return The username for that user or agent.
-     * @throws UndefinedOrganisationException
+     * @throws se.crisp.codekvast.server.codekvast_server.exception.UndefinedUserException
      */
-    long usernameToOrganisationId(String username) throws UndefinedOrganisationException;
+    long getOrganisationIdForUsername(String username) throws UndefinedUserException;
 
     /**
      * Retrieve an application ID. If not found, a new row is inserted into APPLICATIONS and an ApplicationCreatedEvent is posted on the
      * event bus.
      */
-    long getAppId(long organisationId, String appName) throws UndefinedApplicationException;
+    long getAppId(long organisationId, String appName, String appVersion) throws UndefinedApplicationException;
 
     AppId getAppIdByJvmFingerprint(String jvmFingerprint);
 
@@ -43,13 +43,21 @@ public interface UserDAO {
 
     void createOrganisationWithPrimaryContact(String organisationName, long userId) throws DataAccessException;
 
-    Collection<InvocationEntry> getSignatures(String username);
+    /**
+     * Retrieve all signatures for a certain organisation
+     */
+    Collection<InvocationEntry> getSignatures(long organisationId);
 
     /**
-     * Retrieve all applications for a certain username
-     *
-     * @param username The username
-     * @return All applications that a certain user has rights to view. Does never return null.
+     * Retrieve all applications for a certain organisation
      */
-    Collection<Application> getApplications(String username);
+    Collection<Application> getApplications(long organisationId);
+
+    /**
+     * Return all usernames that belong to this organisation
+     *
+     * @param organisationId
+     * @return Never null, an empty collection should organisationId be invalid.
+     */
+    Collection<String> getUsernamesInOrganisation(long organisationId);
 }
