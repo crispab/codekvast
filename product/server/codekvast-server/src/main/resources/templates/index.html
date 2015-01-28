@@ -57,7 +57,7 @@
                     </thead>
 
                     <tbody>
-                    <tr ng-repeat="s in signatures | filter: package | orderBy:predicate:reverse | limitTo:maxRows">
+                    <tr ng-repeat="s in signatures | filter: {name: package} | orderBy:predicate:reverse | limitTo:maxRows">
                         <td class="signature-name">{{::s.name}}</td>
                         <td class="signature-age">{{::s.age}}</td>
                         <td class="signature-invoked-at">{{::s.invokedAtString}}</td>
