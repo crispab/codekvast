@@ -101,7 +101,6 @@ public class FilterHandler extends AbstractMessageHandler {
     public static class FilterValues {
         private Collection<String> applications;
         private Collection<String> versions;
-        private Collection<String> packages;
         private Collection<String> tags;
     }
 
@@ -111,13 +110,11 @@ public class FilterHandler extends AbstractMessageHandler {
         // TODO: implement
         Collection<String> applications = randomStrings(username + "-app", 3);
         Collection<String> versions = randomStrings(username + "-v", 10);
-        Collection<String> packages = randomStrings(username + "-pkg", 100);
         Collection<String> tags = randomStrings(username + "-tag", 10);
 
         return FilterValues.builder()
                            .applications(applications)
                            .versions(versions)
-                           .packages(packages)
                            .tags(tags)
                            .build();
     }

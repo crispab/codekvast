@@ -2,8 +2,6 @@ package se.crisp.codekvast.server.codekvast_server.messagehandler;
 
 import org.junit.Test;
 
-import java.util.List;
-
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -13,8 +11,9 @@ public class SignatureHandlerTest {
 
     @Test
     public void testGetSignatures() throws Exception {
-        List<SignatureHandler.Signature> signatures = SignatureHandler.getSignatures("user");
-        System.out.println("signatures.get(0) = " + signatures.get(0));
+        SignatureHandler.Signatures signatures = SignatureHandler.getSignatures("user");
+        System.out.println("signatures.getPackages() = " + signatures.getPackages());
+        System.out.println("signatures.get(0) = " + signatures.getSignatures().get(0));
     }
 
     @Test

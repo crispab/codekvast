@@ -8,15 +8,17 @@ var codekvastApp = angular.module('codekvastApp', [])
     .controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
         $scope.filterValues = {
             applications: [],
-            versions: [],
-            packages: []
+            versions: []
         };
 
         $scope.application = undefined;
         $scope.version = undefined;
+        $scope.packages = [];
         $scope.package = undefined;
-
         $scope.signatures = [];
+
+        $scope.predicate = 'invokedAtMillis';
+        $scope.reverse = false;
 
         $scope.socket = {
             client: null,
@@ -33,7 +35,9 @@ var codekvastApp = angular.module('codekvastApp', [])
         $scope.updateSignatures = function(data) {
             console.log("Received signatures");
             $scope.$apply(function() {
-                $scope.signatures = JSON.parse(data.body);
+                var rsp = JSON.parse(data.body);
+                $scope.signatures = rsp.signatures;
+                $scope.packages = rsp.packages;
             })
         }
 
