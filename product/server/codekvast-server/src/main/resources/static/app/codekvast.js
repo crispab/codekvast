@@ -7,6 +7,7 @@ var codekvastApp = angular.module('codekvastApp', [])
 
     .controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
         $scope.haveData = false;
+        $scope.maxRows = 100;
 
         $scope.filterValues = {
             applications: [],
@@ -32,6 +33,13 @@ var codekvastApp = angular.module('codekvastApp', [])
             console.log("Received filter values %o", data);
             $scope.$apply(function () {
                 $scope.filterValues = JSON.parse(data.body);
+            });
+        };
+
+        $scope.updateTimestamps = function (data) {
+            console.log("Received timestamps %o", data);
+            $scope.$apply(function () {
+                $scope.timestamp = JSON.parse(data.body);
             });
         };
 
@@ -98,6 +106,7 @@ var codekvastApp = angular.module('codekvastApp', [])
                 $scope.socket.stomp.subscribe("/app/signatures", $scope.setSignatures);
                 $scope.socket.stomp.subscribe("/user/queue/filterValues", $scope.updateFilterValues);
                 $scope.socket.stomp.subscribe("/user/queue/signatureUpdates", $scope.updateSignatures);
+                $scope.socket.stomp.subscribe("/user/queue/timestamps", $scope.updateTimestamps);
             }, function (error) {
                 console.log("Cannot connect %o", error)
             });

@@ -26,7 +26,7 @@ public class DateUtils {
     }
 
     public static String formatDate(long timestampMillis) {
-        return sdf.get().format(new Date(timestampMillis));
+        return timestampMillis == 0L ? "" : sdf.get().format(new Date(timestampMillis));
     }
 
     public static String getAge(long now, long timestampMillis) {

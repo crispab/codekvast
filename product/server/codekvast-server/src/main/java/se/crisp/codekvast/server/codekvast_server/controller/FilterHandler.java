@@ -75,9 +75,7 @@ public class FilterHandler extends AbstractMessageHandler {
         log.debug("Handling {}", event);
         for (String username : event.getUsernames()) {
             FilterValues fv = usernameToFilterValues.get(username);
-            if (fv == null) {
-                log.debug("{} is not logged in", username);
-            } else {
+            if (fv != null) {
                 String applicationName = event.getApplication().getName();
                 log.debug("Adding application '{}' to filter values for {}", applicationName, username);
 

@@ -30,13 +30,11 @@ import java.util.regex.Pattern;
 @Controller
 @Slf4j
 public class SignatureHandler extends AbstractMessageHandler {
-    private final UserHandler userHandler;
     private final UserService userService;
 
     @Inject
-    public SignatureHandler(EventBus eventBus, SimpMessagingTemplate messagingTemplate, UserHandler userHandler, UserService userService) {
+    public SignatureHandler(EventBus eventBus, SimpMessagingTemplate messagingTemplate, UserService userService) {
         super(eventBus, messagingTemplate);
-        this.userHandler = userHandler;
         this.userService = userService;
     }
 
@@ -67,7 +65,7 @@ public class SignatureHandler extends AbstractMessageHandler {
 
     private SignatureData getSignatures(String username) throws CodekvastException {
         long now = System.currentTimeMillis();
-        CollectorTimestamp timestamp = userService.getCollectorTimestamp(username);
+        CollectorTimestamp cts = userService.getCollectorTimestamp(username);
 
         List<Signature> signatures = new ArrayList<>();
         Set<String> packages = new TreeSet<>();
@@ -83,14 +81,12 @@ public class SignatureHandler extends AbstractMessageHandler {
             }
 
             long invokedAtMillis = entry.getInvokedAtMillis();
-            String invokedAtString = invokedAtMillis == 0L ? "" : DateUtils.formatDate(invokedAtMillis);
-            String age = DateUtils.getAge(now, invokedAtMillis);
 
             signatures.add(Signature.builder()
                                     .name(s)
                                     .invokedAtMillis(invokedAtMillis)
-                                    .invokedAtString(invokedAtString)
-                                    .age(age)
+                                    .invokedAtString(DateUtils.formatDate(invokedAtMillis))
+                                    .age(DateUtils.getAge(now, invokedAtMillis))
                                     .build());
         }
 
@@ -99,7 +95,7 @@ public class SignatureHandler extends AbstractMessageHandler {
         addImmediateParentPackages(packages);
 
         return SignatureData.builder()
-                            .timestamp(toStompTimestamp(now, timestamp))
+                            .timestamp(toStompTimestamp(now, cts))
                             .signatures(signatures)
                             .packages(packages)
                             .build();
@@ -159,6 +155,7 @@ public class SignatureHandler extends AbstractMessageHandler {
             }
         }
         packages.addAll(parentPackages);
+        packages.add("");
     }
 
 }
