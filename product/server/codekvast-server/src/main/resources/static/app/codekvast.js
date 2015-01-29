@@ -6,12 +6,14 @@ var codekvastApp = angular.module('codekvastApp', [])
     }])
 
     .controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
+        $scope.connected = false;
         $scope.haveData = false;
         $scope.maxRows = 100;
 
         $scope.filterValues = {
             applications: [],
-            versions: []
+            versions: [],
+            tags: []
         };
 
         $scope.application = undefined;
@@ -21,7 +23,7 @@ var codekvastApp = angular.module('codekvastApp', [])
         $scope.signatures = [];
         $scope.timestamp = undefined;
 
-        $scope.predicate = 'invokedAtMillis';
+        $scope.sortField = 'invokedAtMillis';
         $scope.reverse = false;
 
         $scope.socket = {
@@ -91,8 +93,10 @@ var codekvastApp = angular.module('codekvastApp', [])
             })
         };
 
-        $scope.loggedOut = function () {
-            console.log("Logged out");
+        $scope.disconnected = function () {
+            console.log("Disconnected");
+            $scope.connected = false;
+
             // Cannot use $location here, since /login is outside the Angular app
             $window.location.href = "/login?logout";
         };
@@ -102,6 +106,8 @@ var codekvastApp = angular.module('codekvastApp', [])
             $scope.socket.stomp = Stomp.over($scope.socket.client);
 
             $scope.socket.stomp.connect({}, function () {
+                console.log("Connected");
+                $scope.connected = true;
                 $scope.socket.stomp.subscribe("/app/filterValues", $scope.updateFilterValues);
                 $scope.socket.stomp.subscribe("/app/signatures", $scope.setSignatures);
                 $scope.socket.stomp.subscribe("/user/queue/filterValues", $scope.updateFilterValues);
@@ -110,7 +116,7 @@ var codekvastApp = angular.module('codekvastApp', [])
             }, function (error) {
                 console.log("Cannot connect %o", error)
             });
-            $scope.socket.client.onclose = $scope.loggedOut;
+            $scope.socket.client.onclose = $scope.disconnected;
         };
 
         $scope.initSockets();

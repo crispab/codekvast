@@ -23,6 +23,8 @@
     <div ng-controller="MainCtrl">
         <h1>Codekvast Invocation Data</h1>
 
+        <div class="jumbotron" ng-hide="connected"><h2>Disconnected from server</h2></div>
+
         <div class="status-panel alert alert-info" ng-show="haveData">
             <table>
                 <tr>
@@ -48,18 +50,16 @@
                 <table class="table table-striped table-hover table-condensed">
                     <thead>
                     <tr>
-                        <th class="signature-name"><a href="" ng-click="predicate='name'; reverse = !reverse">Signature</a></th>
-                        <th class="signature-age"><a href="" ng-click="predicate='invokedAtMillis'; reverse = !reverse">Age</a></th>
-                        <th class="signature-invoked-at"><a href="" ng-click="predicate='invokedAtMillis'; reverse = !reverse">Invoked
+                        <th class="signature-name"><a href="" ng-click="sortField='name'; reverse = !reverse">Signature</a></th>
+                        <th class="signature-invoked-at"><a href="" ng-click="sortField='invokedAtMillis'; reverse = !reverse">Invoked
                                                                                                                                &nbsp;At</a>
                         </th>
                     </tr>
                     </thead>
 
                     <tbody>
-                    <tr ng-repeat="s in signatures | filter: {name: package} | orderBy:predicate:reverse | limitTo:maxRows">
+                    <tr ng-repeat="s in signatures | filter: {name: package} | orderBy:sortField:reverse | limitTo:maxRows">
                         <td class="signature-name">{{::s.name}}</td>
-                        <td class="signature-age">{{::s.age}}</td>
                         <td class="signature-invoked-at">{{::s.invokedAtString}}</td>
                     </tr>
                     </tbody>
