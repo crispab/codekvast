@@ -3,6 +3,7 @@
 ## 0.7.11
 
 - Removed parameter `customerName` from **codekvast-collector.conf**
+- Implemented a first version of Codekvast Invocation Data page, with live display of collected data. Still very rough, not entirely snappy ;)
 
 ## 0.7.10
 
