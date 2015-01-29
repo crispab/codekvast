@@ -14,9 +14,9 @@ import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * DAO for signature data.
@@ -35,54 +35,43 @@ public class AgentDAOImpl implements AgentDAO {
     }
 
     @Override
-    public Collection<InvocationEntry> storeInvocationData(AppId appId, InvocationData invocationData) {
-        final Collection<InvocationEntry> result = new ArrayList<>();
+    public void storeInvocationData(AppId appId, InvocationData invocationData) {
+
+        Set<String> existing =
+                new HashSet<>(jdbcTemplate
+                                      .queryForList("SELECT signature FROM signatures WHERE application_id = ? AND organisation_id = ? ",
+                                                    String.class, appId.getAppId(), appId.getOrganisationId()));
+
+        String jvmFingerprint = invocationData.getJvmFingerprint();
 
         for (InvocationEntry entry : invocationData.getInvocations()) {
-            storeOrUpdateInvocationEntry(result, appId, invocationData.getJvmFingerprint(), entry);
-        }
+            Integer confidence = entry.getConfidence() == null ? null : entry.getConfidence().ordinal();
 
-        return result;
-    }
-
-    private void storeOrUpdateInvocationEntry(Collection<InvocationEntry> result, AppId appId, String jvmFingerprint,
-                                              InvocationEntry entry) {
-        Integer confidence = entry.getConfidence() == null ? null : entry.getConfidence().ordinal();
-
-        int updated = attemptToUpdateSignature(appId, jvmFingerprint, entry, confidence);
-
-        if (updated > 0) {
-            log.trace("Updated {}", entry);
-            result.add(entry);
-            return;
-        }
-
-        try {
-            jdbcTemplate
-                    .update("INSERT INTO SIGNATURES(ORGANISATION_ID, APPLICATION_ID, SIGNATURE, JVM_FINGERPRINT, INVOKED_AT, CONFIDENCE) " +
+            if (existing.contains(entry.getSignature())) {
+                if (entry.getInvokedAtMillis() == null) {
+                    // An uninvoked signature is not allowed to overwrite an invoked signature
+                    jdbcTemplate
+                            .update("UPDATE signatures SET confidence = ? " +
+                                            "WHERE signature = ? AND application_id = ? AND invoked_at IS NULL ",
+                                    confidence, entry.getSignature(), appId.getAppId());
+                } else {
+                    // An invocation. Overwrite whatever was there.
+                    jdbcTemplate
+                            .update("UPDATE signatures SET invoked_at = ?, jvm_fingerprint = ?, confidence = ? " +
+                                            "WHERE signature = ? AND application_id = ? ",
+                                    entry.getInvokedAtMillis(), jvmFingerprint, confidence, entry.getSignature(), appId.getAppId());
+                }
+                log.trace("Updated {}", entry);
+            } else {
+                jdbcTemplate
+                        .update("INSERT INTO signatures(organisation_id, application_id, signature, jvm_fingerprint, invoked_at, " +
+                                        "confidence) " +
                                         "VALUES(?, ?, ?, ?, ?, ?)",
-                            appId.getOrganisationId(), appId.getAppId(), entry.getSignature(), jvmFingerprint, entry.getInvokedAtMillis(),
-                            confidence);
-            log.trace("Stored {}", entry);
-            result.add(entry);
-        } catch (Exception ignore) {
-            log.trace("Ignored attempt to insert duplicate signature");
+                                appId.getOrganisationId(), appId.getAppId(), entry.getSignature(), jvmFingerprint,
+                                entry.getInvokedAtMillis(), confidence);
+                log.trace("Stored {}", entry);
+            }
         }
-    }
-
-    private int attemptToUpdateSignature(AppId appId, String jvmFingerprint, InvocationEntry entry,
-                                         Integer confidence) {
-        if (entry.getInvokedAtMillis() == null) {
-            // An uninvoked signature is not allowed to overwrite an invoked signature
-            return jdbcTemplate.update("UPDATE SIGNATURES SET CONFIDENCE = ? " +
-                                               "WHERE SIGNATURE = ? AND APPLICATION_ID = ? AND INVOKED_AT IS NULL ",
-                                       confidence, entry.getSignature(), appId.getAppId());
-        }
-
-        // An invocation. Overwrite whatever was there.
-        return jdbcTemplate.update("UPDATE SIGNATURES SET INVOKED_AT = ?, JVM_FINGERPRINT = ?, CONFIDENCE = ? " +
-                                           "WHERE SIGNATURE = ? AND APPLICATION_ID = ? ",
-                                   entry.getInvokedAtMillis(), jvmFingerprint, confidence, entry.getSignature(), appId.getAppId());
     }
 
     @Override

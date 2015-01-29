@@ -1,11 +1,8 @@
 package se.crisp.codekvast.server.codekvast_server.dao;
 
 import se.crisp.codekvast.server.agent_api.model.v1.InvocationData;
-import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
-
-import java.util.Collection;
 
 /**
  * A data access object for things related to the agent API.
@@ -20,9 +17,8 @@ public interface AgentDAO {
      *
      * @param appId The identity of the application
      * @param invocationData The invocation data to store.
-     * @return The actually stored or updated invocation entries.
      */
-    Collection<InvocationEntry> storeInvocationData(AppId appId, InvocationData invocationData);
+    void storeInvocationData(AppId appId, InvocationData invocationData);
 
     /**
      * Stores data about a JVM run

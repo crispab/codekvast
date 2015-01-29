@@ -44,7 +44,7 @@ import java.util.Set;
 @Component
 public class AgentApiImpl implements AgentApi {
 
-    private static final int UPLOAD_CHUNK_SIZE = 250;
+    private static final int UPLOAD_CHUNK_SIZE = 1000;
 
     private final AgentApiConfig config;
     private final Validator validator;
