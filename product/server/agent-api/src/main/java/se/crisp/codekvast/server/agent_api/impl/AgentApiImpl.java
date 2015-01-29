@@ -22,7 +22,6 @@ import se.crisp.codekvast.server.agent_api.model.test.Pong;
 import se.crisp.codekvast.server.agent_api.model.v1.InvocationData;
 import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
-import se.crisp.codekvast.server.agent_api.model.v1.SignatureData;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
@@ -91,32 +90,12 @@ public class AgentApiImpl implements AgentApi {
             return;
         }
 
-        String endPoint = config.getServerUri() + AgentRestEndpoints.UPLOAD_V1_SIGNATURES;
-        log.debug("Uploading {} signatures to {}", signatures.size(), endPoint);
-        long startedAtMillis = System.currentTimeMillis();
-
-        try {
-            URI uri = new URI(endPoint);
-
-            List<String> list = new ArrayList<>(signatures);
-            int from = 0;
-            int chunkNo = 1;
-            int uploaded = 0;
-            while (from < list.size()) {
-                int to = Math.min(from + UPLOAD_CHUNK_SIZE, list.size());
-
-                uploaded += uploadSignatureChunk(jvmFingerprint, uri, list.subList(from, to), chunkNo);
-
-                from = to;
-                chunkNo += 1;
-            }
-
-            checkState(uploaded == signatures.size(), "Bad chunk logic: uploaded=" + uploaded + ", input.size()=" + signatures.size());
-
-            log.info("Uploaded {} signatures to {} in {}s", uploaded, endPoint, elapsedSeconds(startedAtMillis));
-        } catch (URISyntaxException e) {
-            throw new AgentApiException("Illegal REST endpoint: " + endPoint, e);
+        List<InvocationEntry> invocations = new ArrayList<>(signatures.size());
+        for (String s : signatures) {
+            invocations.add(new InvocationEntry(s, null, null));
         }
+
+        uploadInvocationsData(jvmFingerprint, invocations);
     }
 
     @Override
@@ -157,19 +136,6 @@ public class AgentApiImpl implements AgentApi {
     private void checkState(boolean b, String message) {
         if (!b) {
             throw new IllegalStateException(message);
-        }
-    }
-
-    private int uploadSignatureChunk(String jvmFingerprint, URI endPoint, Collection<String> chunk, int chunkNo) throws AgentApiException {
-        try {
-            long startedAt = System.currentTimeMillis();
-            log.debug("Uploading chunk #{} of size {}", chunkNo, chunk.size());
-            SignatureData data = SignatureData.builder().jvmFingerprint(jvmFingerprint).signatures(chunk).build();
-            restTemplate.postForEntity(endPoint, validate(data), Void.class);
-            log.debug("Uploaded chunk #{} in {} ms", chunkNo, System.currentTimeMillis() - startedAt);
-            return chunk.size();
-        } catch (RestClientException e) {
-            throw new AgentApiException("Failed to post signature data", e);
         }
     }
 

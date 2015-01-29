@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.server.agent_api.model.v1.InvocationData;
 import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
-import se.crisp.codekvast.server.agent_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
 import se.crisp.codekvast.server.codekvast_server.dao.CollectorTimestamp;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
@@ -18,7 +17,6 @@ import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import se.crisp.codekvast.server.codekvast_server.service.AgentService;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -63,20 +61,6 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void storeSignatureData(SignatureData data) throws CodekvastException {
-        if (log.isTraceEnabled()) {
-            log.trace("Storing {}", data.toLongString());
-        } else {
-            log.debug("Storing {}", data);
-        }
-
-        AppId appId = userDAO.getAppIdByJvmFingerprint(data.getJvmFingerprint());
-        Collection<InvocationEntry> updatedEntries = agentDAO.storeInvocationData(appId, toInitialInvocationsData(data));
-        eventBus.post(new InvocationDataUpdatedEvent(appId, updatedEntries));
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
     public void storeInvocationData(InvocationData data) throws CodekvastException {
         if (log.isTraceEnabled()) {
             log.trace("Storing {}", data.toLongString());
@@ -92,15 +76,6 @@ public class AgentServiceImpl implements AgentService {
 
         Collection<InvocationEntry> updatedEntries = agentDAO.storeInvocationData(appId, data);
         eventBus.post(new InvocationDataUpdatedEvent(appId, updatedEntries));
-    }
-
-    private InvocationData toInitialInvocationsData(SignatureData signatureData) {
-        Collection<InvocationEntry> invocationEntries = new ArrayList<>();
-        for (String sig : signatureData.getSignatures()) {
-            invocationEntries.add(new InvocationEntry(sig, null, null));
-        }
-        return InvocationData.builder().jvmFingerprint(signatureData.getJvmFingerprint()).invocations(
-                invocationEntries).build();
     }
 
 }

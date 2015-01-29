@@ -12,7 +12,6 @@ import se.crisp.codekvast.server.agent_api.model.test.Ping;
 import se.crisp.codekvast.server.agent_api.model.test.Pong;
 import se.crisp.codekvast.server.agent_api.model.v1.InvocationData;
 import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
-import se.crisp.codekvast.server.agent_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.service.AgentService;
 
@@ -70,16 +69,6 @@ public class AgentController {
         agentService.storeJvmData(principal.getName(), data);
 
         log.debug("JVM data stored in {} ms", System.currentTimeMillis() - startedAt);
-    }
-
-    @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_SIGNATURES, method = RequestMethod.POST)
-    public void receiveSignatureDataV1(@Valid @RequestBody SignatureData data) throws CodekvastException {
-        long startedAt = System.currentTimeMillis();
-        log.debug("Received {} signatures", data.getSignatures().size());
-
-        agentService.storeSignatureData(data);
-
-        log.debug("{} signatures stored in {} ms", data.getSignatures().size(), System.currentTimeMillis() - startedAt);
     }
 
     @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_INVOCATIONS, method = RequestMethod.POST)

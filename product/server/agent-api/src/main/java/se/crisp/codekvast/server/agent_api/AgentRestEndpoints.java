@@ -19,11 +19,6 @@ public interface AgentRestEndpoints {
     final String UPLOAD_V1_JVM_RUN = "/agent/v1/jvm-run";
 
     /**
-     * POST a {@link se.crisp.codekvast.server.agent_api.model.v1.SignatureData} object to this endpoint.
-     */
-    final String UPLOAD_V1_SIGNATURES = "/agent/v1/signatures";
-
-    /**
      * POST a {@link se.crisp.codekvast.server.agent_api.model.v1.InvocationData} object to this endpoint.
      */
     final String UPLOAD_V1_INVOCATIONS = "/agent/v1/invocations";

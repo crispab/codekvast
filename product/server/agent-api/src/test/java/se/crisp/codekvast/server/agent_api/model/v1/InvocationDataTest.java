@@ -13,6 +13,25 @@ public class InvocationDataTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
+    public void signatureDataShouldBeJsonSerializable() throws IOException {
+        // given
+
+        InvocationData data1 = InvocationData.builder()
+                                             .jvmFingerprint("jvmFingerprint")
+                                             .invocations(asList(
+                                                     new InvocationEntry("sig1", null, null),
+                                                     new InvocationEntry("sig2", null, null)))
+                                             .build();
+
+        // when
+        String json = objectMapper.writeValueAsString(data1);
+        InvocationData data2 = objectMapper.readValue(json, InvocationData.class);
+
+        // then
+        assertThat(data1, is(data2));
+    }
+
+    @Test
     public void invocationDataShouldBeJsonSerializable() throws IOException {
         // given
 
