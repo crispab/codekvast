@@ -19,7 +19,7 @@
     </div>
 </div>
 
-<div class="container ng-cloak" ng-app="codekvastApp">
+    <div class="container-fluid ng-cloak" ng-app="codekvastApp">
     <div ng-controller="MainCtrl">
         <h1>Codekvast Invocation Data</h1>
 
@@ -36,12 +36,20 @@
                     <td>Update received:</td>
                     <td>{{timestamp.updateReceivedAt}}</td>
                 </tr>
+                <tr>
+                    <td>Packages:</td>
+                    <td>{{numPackages()}}</td>
+                </tr>
+                <tr>
+                    <td>Signatures:</td>
+                    <td>{{numSignatures()}}</td>
+                </tr>
             </table>
         </div>
 
         <div class="jumbotron" ng-hide="haveData"><h2>Waiting for data...</h2></div>
 
-        <div ng-show="haveData">
+        <div class="row" ng-show="haveData">
             Show only package: <select ng-model="package" ng-options="o for o in packages"/> Max rows:
             <input type="number" step="10" ng-model="maxRows"/>
             <hr/>

@@ -60,7 +60,9 @@ public class SignatureHandler extends AbstractMessageHandler {
         String username = principal.getName();
         log.debug("'{}' is subscribing to signatures", username);
 
-        return getSignatures(username);
+        SignatureData sig = getSignatures(username);
+        log.debug("Sending {} signatures and {} packages to '{}'", sig.getSignatures().size(), sig.getPackages().size(), username);
+        return sig;
     }
 
     private SignatureData getSignatures(String username) throws CodekvastException {

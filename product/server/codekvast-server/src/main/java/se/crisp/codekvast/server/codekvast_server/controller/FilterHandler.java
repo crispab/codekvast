@@ -8,7 +8,6 @@ import lombok.experimental.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import se.crisp.codekvast.server.codekvast_server.event.internal.ApplicationCreatedEvent;
 
@@ -117,7 +116,7 @@ public class FilterHandler extends AbstractMessageHandler {
     /**
      * Fake way to see that STOMP updates work.
      */
-    @Scheduled(fixedRate = 5000L)
+    // @Scheduled(fixedRate = 5000L)
     public void sendFilterValuesToActiveUsers() {
         for (String username : usernameToFilterValues.keySet()) {
             log.debug("Sending filter values to '{}'", username);

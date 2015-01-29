@@ -17,6 +17,6 @@ public class EventBusConfig {
 
     @Bean
     public EventBus eventBus() {
-        return new AsyncEventBus(Executors.newSingleThreadExecutor());
+        return new AsyncEventBus(Executors.newFixedThreadPool(10));
     }
 }

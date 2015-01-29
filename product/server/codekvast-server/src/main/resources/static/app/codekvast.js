@@ -31,6 +31,14 @@ var codekvastApp = angular.module('codekvastApp', [])
             stomp: null
         };
 
+        $scope.numSignatures = function () {
+            return $scope.signatures.length
+        };
+
+        $scope.numPackages = function () {
+            return $scope.packages.length
+        };
+
         $scope.updateFilterValues = function (data) {
             console.log("Received filter values %o", data);
             $scope.$apply(function () {
