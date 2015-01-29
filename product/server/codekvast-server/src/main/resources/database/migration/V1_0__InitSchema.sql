@@ -74,6 +74,7 @@ CREATE TABLE jvm_runs (
   organisation_id     INTEGER      NOT NULL REFERENCES organisations (id),
   application_id      INTEGER      NOT NULL REFERENCES applications (id),
   application_version VARCHAR(100) NOT NULL,
+  computer_id VARCHAR(50) NOT NULL,
   host_name           VARCHAR(255) NOT NULL,
   jvm_fingerprint     VARCHAR(50)  NOT NULL,
   codekvast_version   VARCHAR(20)  NOT NULL,
@@ -93,12 +94,15 @@ CREATE TABLE signatures (
   application_id  INTEGER       NOT NULL REFERENCES applications (id),
   signature       VARCHAR(2000) NOT NULL,
   jvm_fingerprint VARCHAR(50),
-  invoked_at      TIMESTAMP,
+  invoked_at BIGINT,
   confidence      TINYINT
 );
 
 DROP INDEX IF EXISTS ix_signatures;
 CREATE UNIQUE INDEX ix_signatures ON signatures (organisation_id, application_id, signature);
+
+DROP INDEX IF EXISTS ix_signatures_invoked_at;
+CREATE INDEX ix_signatures_invoked_at ON signatures (invoked_at);
 
 //--- System data ----------------------------------------------------------------------------------------------
 INSERT INTO roles (name) VALUES ('SUPERUSER');

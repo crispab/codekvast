@@ -25,7 +25,6 @@ import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Date;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -199,16 +198,10 @@ public class UserDAOImpl implements UserDAO {
     }
 
     private static class InvocationsEntryRowMapper implements RowMapper<InvocationEntry> {
-        public static final Long EPOCH = 0L;
-
         @Override
         public InvocationEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new InvocationEntry(rs.getString(1), getTimeMillis(rs, 2), SignatureConfidence.fromOrdinal(rs.getInt(3)));
-        }
-
-        private Long getTimeMillis(ResultSet rs, int columnIndex) throws SQLException {
-            Date date = rs.getTimestamp(columnIndex);
-            return date == null ? EPOCH : Long.valueOf(date.getTime());
+            // SIGNATURE, INVOKED_AT, CONFIDENCE
+            return new InvocationEntry(rs.getString(1), rs.getLong(2), SignatureConfidence.fromOrdinal(rs.getInt(3)));
         }
     }
 

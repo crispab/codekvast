@@ -75,29 +75,21 @@ public class AgentController {
     @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_SIGNATURES, method = RequestMethod.POST)
     public void receiveSignatureDataV1(@Valid @RequestBody SignatureData data) throws CodekvastException {
         long startedAt = System.currentTimeMillis();
-        if (log.isTraceEnabled()) {
-            log.trace("Received {}", data);
-        } else {
-            log.debug("Received {} signatures", data.getSignatures().size());
-        }
+        log.debug("Received {} signatures", data.getSignatures().size());
 
         agentService.storeSignatureData(data);
 
-        log.debug("Signature data stored in {} ms", System.currentTimeMillis() - startedAt);
+        log.debug("{} signatures stored in {} ms", data.getSignatures().size(), System.currentTimeMillis() - startedAt);
     }
 
     @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_INVOCATIONS, method = RequestMethod.POST)
     public void receiveInvocationsDataV1(@Valid @RequestBody InvocationData data) throws CodekvastException {
         long startedAt = System.currentTimeMillis();
-        if (log.isTraceEnabled()) {
-            log.trace("Received {}", data);
-        } else {
-            log.debug("Received {} invocations", data.getInvocations().size());
-        }
+        log.debug("Received {} invocations", data.getInvocations().size());
 
         agentService.storeInvocationData(data);
 
-        log.debug("Invocation data stored in {} ms", System.currentTimeMillis() - startedAt);
+        log.debug("{} invocations stored in {} ms", data.getInvocations().size(), System.currentTimeMillis() - startedAt);
     }
 
     @RequestMapping(value = AgentRestEndpoints.PING, method = RequestMethod.POST)

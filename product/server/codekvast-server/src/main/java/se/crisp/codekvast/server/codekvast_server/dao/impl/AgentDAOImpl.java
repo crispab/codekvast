@@ -47,10 +47,9 @@ public class AgentDAOImpl implements AgentDAO {
 
     private void storeOrUpdateInvocationEntry(Collection<InvocationEntry> result, AppId appId, String jvmFingerprint,
                                               InvocationEntry entry) {
-        Date invokedAt = entry.getInvokedAtMillis() == null ? null : new Date(entry.getInvokedAtMillis());
         Integer confidence = entry.getConfidence() == null ? null : entry.getConfidence().ordinal();
 
-        int updated = attemptToUpdateSignature(appId, jvmFingerprint, entry, invokedAt, confidence);
+        int updated = attemptToUpdateSignature(appId, jvmFingerprint, entry, confidence);
 
         if (updated > 0) {
             log.trace("Updated {}", entry);
@@ -62,7 +61,8 @@ public class AgentDAOImpl implements AgentDAO {
             jdbcTemplate
                     .update("INSERT INTO SIGNATURES(ORGANISATION_ID, APPLICATION_ID, SIGNATURE, JVM_FINGERPRINT, INVOKED_AT, CONFIDENCE) " +
                                         "VALUES(?, ?, ?, ?, ?, ?)",
-                            appId.getOrganisationId(), appId.getAppId(), entry.getSignature(), jvmFingerprint, invokedAt, confidence);
+                            appId.getOrganisationId(), appId.getAppId(), entry.getSignature(), jvmFingerprint, entry.getInvokedAtMillis(),
+                            confidence);
             log.trace("Stored {}", entry);
             result.add(entry);
         } catch (Exception ignore) {
@@ -70,19 +70,19 @@ public class AgentDAOImpl implements AgentDAO {
         }
     }
 
-    private int attemptToUpdateSignature(AppId appId, String jvmFingerprint, InvocationEntry entry, Date invokedAt,
+    private int attemptToUpdateSignature(AppId appId, String jvmFingerprint, InvocationEntry entry,
                                          Integer confidence) {
-        if (invokedAt == null) {
+        if (entry.getInvokedAtMillis() == null) {
             // An uninvoked signature is not allowed to overwrite an invoked signature
             return jdbcTemplate.update("UPDATE SIGNATURES SET CONFIDENCE = ? " +
-                                               "WHERE APPLICATION_ID = ? AND SIGNATURE = ? AND INVOKED_AT IS NULL ",
-                                       confidence, appId.getAppId(), entry.getSignature());
+                                               "WHERE SIGNATURE = ? AND APPLICATION_ID = ? AND INVOKED_AT IS NULL ",
+                                       confidence, entry.getSignature(), appId.getAppId());
         }
 
         // An invocation. Overwrite whatever was there.
         return jdbcTemplate.update("UPDATE SIGNATURES SET INVOKED_AT = ?, JVM_FINGERPRINT = ?, CONFIDENCE = ? " +
-                                           "WHERE APPLICATION_ID = ? AND SIGNATURE = ? ",
-                                   invokedAt, jvmFingerprint, confidence, appId.getAppId(), entry.getSignature());
+                                           "WHERE SIGNATURE = ? AND APPLICATION_ID = ? ",
+                                   entry.getInvokedAtMillis(), jvmFingerprint, confidence, entry.getSignature(), appId.getAppId());
     }
 
     @Override
@@ -97,11 +97,11 @@ public class AgentDAOImpl implements AgentDAO {
         }
 
         updated = jdbcTemplate
-                .update("INSERT INTO jvm_runs(organisation_id, application_id, application_version, host_name, jvm_fingerprint, " +
+                .update("INSERT INTO jvm_runs(organisation_id, application_id, application_version, computer_id, host_name, jvm_fingerprint, " +
                                 "codekvast_version, " +
                                 "codekvast_vcs_id, started_at, dumped_at)" +
-                                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                        organisationId, appId, data.getAppVersion(), data.getHostName(), data.getJvmFingerprint(),
+                                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        organisationId, appId, data.getAppVersion(), data.getComputerId(), data.getHostName(), data.getJvmFingerprint(),
                         data.getCodekvastVersion(), data.getCodekvastVcsId(), data.getStartedAtMillis(),
                         data.getDumpedAtMillis());
 

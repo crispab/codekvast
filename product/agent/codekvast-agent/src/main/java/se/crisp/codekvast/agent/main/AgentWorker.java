@@ -45,6 +45,7 @@ public class AgentWorker {
     private final Map<String, String> appVersions = new HashMap<>();
     private final Map<String, CodeBase> codeBases = new HashMap<>();
     private final Collection<AppVersionStrategy> appVersionStrategies = new ArrayList<>();
+    private final ComputerID computerId;
 
     @Inject
     public AgentWorker(@Value("${info.build.gradle.version}") String codekvastGradleVersion,
@@ -52,7 +53,8 @@ public class AgentWorker {
                        AgentApi agentApi,
                        AgentConfig config,
                        CodeBaseScanner codeBaseScanner,
-                       Collection<AppVersionStrategy> appVersionStrategies) {
+                       Collection<AppVersionStrategy> appVersionStrategies,
+                       ComputerID computerId) {
         Preconditions.checkArgument(!codekvastGradleVersion.contains("{info.build"));
         Preconditions.checkArgument(!codekvastVcsId.contains("{info.build"));
         this.config = config;
@@ -61,6 +63,7 @@ public class AgentWorker {
         this.codekvastGradleVersion = codekvastGradleVersion;
         this.codekvastVcsId = codekvastVcsId;
         this.appVersionStrategies.addAll(appVersionStrategies);
+        this.computerId = computerId;
         log.info("Starting agent worker {} ({})", codekvastGradleVersion, codekvastVcsId);
     }
 
@@ -151,6 +154,7 @@ public class AgentWorker {
                            .startedAtMillis(jvm.getStartedAtMillis())
                            .dumpedAtMillis(jvm.getDumpedAtMillis())
                            .jvmFingerprint(jvm.getJvmFingerprint())
+                           .computerId(computerId.toString())
                            .codekvastVersion(codekvastGradleVersion)
                            .codekvastVcsId(codekvastVcsId)
                            .build());

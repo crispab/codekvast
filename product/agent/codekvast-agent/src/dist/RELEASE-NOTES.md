@@ -1,5 +1,10 @@
 # Codekvast Agent Release Notes
 
+## 0.8.0
+
+- Added JvmData.computerID. Agent 0.8 is now incompatible with server 0.7.x
+- Implemented chunking in AgentApi.uploadSignatureData() and AgentApi.uploadInvocationsData()
+
 ## 0.7.11
 
 - Removed parameter `customerName` from **codekvast-collector.conf**

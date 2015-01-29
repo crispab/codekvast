@@ -41,6 +41,11 @@ public class JvmData {
 
     @NonNull
     @NotBlank
+    @Size(max = Constraints.MAX_COMPUTER_ID_LENGTH)
+    private String computerId;
+
+    @NonNull
+    @NotBlank
     @Size(min = Constraints.MIN_FINGERPRINT_LENGTH, max = Constraints.MAX_FINGERPRINT_LENGTH)
     private String jvmFingerprint;
 

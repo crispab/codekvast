@@ -11,7 +11,6 @@ import se.crisp.codekvast.server.agent_api.AgentApiException;
 import se.crisp.codekvast.server.agent_api.impl.AgentApiImpl;
 import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
-import se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
 
@@ -19,22 +18,24 @@ import javax.inject.Inject;
 import javax.validation.Validator;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.UUID;
+import java.util.*;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
+import static se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence.EXACT_MATCH;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @EmbeddedCodekvastServerTest
 public class AgentApiTest {
 
-    private final String signature1 = "public String com.acme.Foo.foo()";
-    private final String signature2 = "public void com.acme.Foo.bar()";
+    private static final int SIGNATURES_SIZE = 30_000;
+
     private final String jvmFingerprint = UUID.randomUUID().toString();
+    private final Random random = new Random();
+    private final List<String> signatures = getRandomSignatures(SIGNATURES_SIZE);
 
     @Value("${local.server.port}")
     private int port;
@@ -83,29 +84,41 @@ public class AgentApiTest {
     }
 
     @Test
-    public void testUploadSignatureData() throws AgentApiException, URISyntaxException, CodekvastException {
+    public void testUploadSignatures() throws AgentApiException, URISyntaxException, CodekvastException {
         // when
-
         agentApi.uploadJvmData(getJvmData());
-        agentApi.uploadSignatureData(jvmFingerprint, Arrays.asList(signature1, signature2));
+        agentApi.uploadSignatureData(jvmFingerprint, signatures);
 
         // then
-        assertThat(userService.getSignatures("user"), hasSize(2));
-    }
+        assertThat(userService.getSignatures("user"), hasSize(SIGNATURES_SIZE));
 
-    @Test
-    public void testUploadInvocationsData() throws AgentApiException, URISyntaxException, CodekvastException {
-        // Given
+        // given
         long now = System.currentTimeMillis();
-        Collection<InvocationEntry> invocationEntries = Arrays.asList(new InvocationEntry(signature1, now, SignatureConfidence.EXACT_MATCH),
-                                                                      new InvocationEntry(signature2, now,
-                                                                                          SignatureConfidence.EXACT_MATCH));
+        Collection<InvocationEntry> invocationEntries = asList(new InvocationEntry(signatures.get(1), now, EXACT_MATCH),
+                                                               new InvocationEntry(signatures.get(2), now, EXACT_MATCH));
         // when
-        agentApi.uploadJvmData(getJvmData());
         agentApi.uploadInvocationsData(jvmFingerprint, invocationEntries);
 
         // then
-        assertThat(userService.getSignatures("user"), hasSize(2));
+        assertThat(userService.getSignatures("user"), hasSize(SIGNATURES_SIZE));
+    }
+
+    private List<String> getRandomSignatures(int size) {
+        List<String> result = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            result.add(getRandomString(100));
+        }
+        return result;
+    }
+
+    private String getRandomString(int meanSize) {
+        StringBuilder sb = new StringBuilder();
+        int len = Math.max(10, meanSize / 2 + (int) (random.nextGaussian() * meanSize));
+        for (int i = 0; i < len; i++) {
+            char c = (char) ('a' + random.nextInt(25));
+            sb.append(c);
+        }
+        return sb.toString();
     }
 
     private JvmData getJvmData() {
@@ -117,6 +130,7 @@ public class AgentApiTest {
                       .startedAtMillis(System.currentTimeMillis())
                       .dumpedAtMillis(System.currentTimeMillis())
                       .jvmFingerprint(jvmFingerprint)
+                      .computerId("computerId")
                       .codekvastVersion("codekvastVersion")
                       .codekvastVcsId("codekvastVcsId")
                       .build();
