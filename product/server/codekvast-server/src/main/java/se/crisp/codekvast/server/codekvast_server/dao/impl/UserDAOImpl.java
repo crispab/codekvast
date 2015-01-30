@@ -46,9 +46,9 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
     public long getOrganisationIdForUsername(final String username) throws UndefinedUserException {
         log.debug("Looking up organisation id for username '{}'", username);
         try {
-            return jdbcTemplate.queryForObject("SELECT cm.ORGANISATION_ID FROM ORGANISATION_MEMBERS cm, USERS u " +
-                                                       "WHERE cm.USER_ID = u.ID " +
-                                                       "AND u.USERNAME = ?", Long.class, username);
+            return jdbcTemplate.queryForObject("SELECT cm.organisation_id FROM organisation_members cm, users u " +
+                                                       "WHERE cm.user_id = u.id " +
+                                                       "AND u.username = ?", Long.class, username);
         } catch (EmptyResultDataAccessException ignored) {
             throw new UndefinedUserException("No such user: '" + username + "'");
         }
@@ -61,7 +61,7 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
         log.debug("Looking up AppId for JVM {}...", jvmFingerprint);
         try {
             AppId result = jdbcTemplate
-                    .queryForObject("SELECT ORGANISATION_ID, APPLICATION_ID FROM JVM_RUNS WHERE JVM_FINGERPRINT = ?", new AppIdRowMapper(),
+                    .queryForObject("SELECT organisation_id, application_id FROM jvm_runs WHERE jvm_fingerprint = ?", new AppIdRowMapper(),
                                     jvmFingerprint);
             log.debug("Result = {}", result);
             return result;
@@ -74,19 +74,19 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
     @Override
     @Transactional(readOnly = true)
     public int countUsersByUsername(@NonNull String username) {
-        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM USERS WHERE USERNAME = ?", Integer.class, username);
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM users WHERE username = ?", Integer.class, username);
     }
 
     @Override
     @Transactional(readOnly = true)
     public int countUsersByEmailAddress(@NonNull String emailAddress) {
-        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM USERS WHERE EMAIL_ADDRESS = ?", Integer.class, emailAddress);
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM users WHERE email_address = ?", Integer.class, emailAddress);
     }
 
     @Override
     @Transactional(readOnly = true)
     public int countOrganisationsByNameLc(@NonNull String organisationName) {
-        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM ORGANISATIONS WHERE NAME_LC = ?", Integer.class, organisationName);
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM organisations WHERE name_lc = ?", Integer.class, organisationName);
     }
 
     @Override
@@ -97,7 +97,7 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
         log.info("Created user {}:'{}':'{}':'{}'", userId, fullName, username, emailAddress);
 
         for (Role role : roles) {
-            jdbcTemplate.update("INSERT INTO USER_ROLES(USER_ID, ROLE) VALUES (?, ?)", userId, role.name());
+            jdbcTemplate.update("INSERT INTO user_roles(user_id, role) VALUES (?, ?)", userId, role.name());
             log.info("Assigned role {} to {}:'{}'", role, userId, username);
         }
 
@@ -108,7 +108,7 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
     @Transactional(rollbackFor = Exception.class)
     public void createOrganisationWithPrimaryContact(String organisationName, long userId) {
         long organisationId = doCreateOrganisation(organisationName);
-        jdbcTemplate.update("INSERT INTO ORGANISATION_MEMBERS(ORGANISATION_ID, USER_ID, PRIMARY_CONTACT) VALUES(?, ?, ?)", organisationId,
+        jdbcTemplate.update("INSERT INTO organisation_members(organisation_id, user_id, primary_contact) VALUES(?, ?, ?)", organisationId,
                             userId,
                             true);
     }
@@ -156,14 +156,9 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
     private class ApplicationRowMapper implements RowMapper<Application> {
         @Override
         public Application mapRow(ResultSet rs, int rowNum) throws SQLException {
-            // ID, ORGANISATION_ID, NAME, VERSION
-            return Application.builder()
-                              .appId(AppId.builder()
-                                          .appId(rs.getLong("ID"))
-                                          .organisationId(rs.getLong("ORGANISATION_ID"))
-                                          .build())
-                              .name(rs.getString("NAME"))
-                              .build();
+            // ID, ORGANISATION_ID, NAME
+            return new Application(AppId.builder().appId(rs.getLong("ID")).organisationId(rs.getLong("ORGANISATION_ID")).build(),
+                                   rs.getString("NAME"));
         }
     }
 }

@@ -59,11 +59,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
 
         long appId = doInsertRow("INSERT INTO applications(organisation_id, name) VALUES(?, ?)", organisationId, appName);
 
-        Application app = Application.builder()
-                                     .appId(AppId.builder().organisationId(organisationId).appId(appId).build())
-                                     .name(appName)
-                                     .build();
-
+        Application app = new Application(AppId.builder().organisationId(organisationId).appId(appId).build(), appName);
         eventBus.post(new ApplicationCreatedEvent(app, appVersion, getUsernamesInOrganisation(organisationId)));
         log.info("Created {} {}", app, appVersion);
         return appId;
