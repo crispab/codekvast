@@ -109,7 +109,7 @@ public class SignatureHandler extends AbstractMessageHandler {
 
         // Add the immediate parent packages, or else it will be impossible to reset the Packages filter without
         // a lot of Angular code...
-        addImmediateParentPackages(packages);
+        addParentPackages(packages);
 
         return SignatureData.builder()
                             .signatures(signatures)
@@ -159,13 +159,14 @@ public class SignatureHandler extends AbstractMessageHandler {
         private final String age;
     }
 
-    private static void addImmediateParentPackages(Set<String> packages) {
+    static void addParentPackages(Set<String> packages) {
         Set<String> parentPackages = new HashSet<>();
         for (String pkg : packages) {
-            int dot = pkg.lastIndexOf('.');
-            if (dot > 0) {
+            int dot = pkg.indexOf('.');
+            while (dot > 0) {
                 String parentPkg = pkg.substring(0, dot);
                 parentPackages.add(parentPkg);
+                dot = pkg.indexOf('.', dot + 1);
             }
         }
         packages.addAll(parentPackages);
