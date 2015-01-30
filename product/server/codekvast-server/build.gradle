@@ -65,6 +65,7 @@ dependencies {
     compile 'com.orange.redis-embedded:embedded-redis:0.6'
 
     runtime project(':product:support:websupport')
+    // WIP: port to MySQL runtime "mysql:mysql-connector-java"
     runtime "org.hibernate:hibernate-validator"
     runtime 'org.springframework.data:spring-data-redis:1.4.1.RELEASE'
     runtime webjars

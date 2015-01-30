@@ -1,10 +1,10 @@
-//--- Roles ----------------------------------------------------------------------------------------------------
+-- Roles ----------------------------------------------------------------------------------------------------
 DROP TABLE IF EXISTS roles;
 CREATE TABLE roles (
   name VARCHAR(20) NOT NULL UNIQUE,
 );
 
-//--- Users ----------------------------------------------------------------------------------------------------
+-- Users ----------------------------------------------------------------------------------------------------
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
   id                 INTEGER                             NOT NULL IDENTITY,
@@ -29,7 +29,7 @@ CREATE TABLE user_roles (
 DROP INDEX IF EXISTS ix_user_roles;
 CREATE UNIQUE INDEX ix_user_roles ON user_roles (user_id, role);
 
-//--- Organisations --------------------------------------------------------------------------------------------
+-- Organisations --------------------------------------------------------------------------------------------
 DROP TABLE IF EXISTS organisations;
 CREATE TABLE organisations (
   id          INTEGER                             NOT NULL IDENTITY,
@@ -54,7 +54,7 @@ CREATE TABLE organisation_members (
 DROP INDEX IF EXISTS ix_organisation_members;
 CREATE UNIQUE INDEX ix_organisation_members ON organisation_members (organisation_id, user_id);
 
-//--- Applications ---------------------------------------------------------------------------------------------
+-- Applications ---------------------------------------------------------------------------------------------
 DROP TABLE IF EXISTS applications;
 CREATE TABLE applications (
   id              INTEGER                             NOT NULL IDENTITY,
@@ -67,7 +67,7 @@ CREATE TABLE applications (
 DROP INDEX IF EXISTS ix_applications;
 CREATE UNIQUE INDEX ix_applications ON applications (organisation_id, name);
 
-//--- JVM runs -------------------------------------------------------------------------------------------------
+-- JVM runs -------------------------------------------------------------------------------------------------
 DROP TABLE IF EXISTS jvm_runs;
 CREATE TABLE jvm_runs (
   id                  INTEGER      NOT NULL IDENTITY,
@@ -86,7 +86,7 @@ CREATE TABLE jvm_runs (
 DROP INDEX IF EXISTS ix_jvm_runs;
 CREATE UNIQUE INDEX ix_jvm_runs ON jvm_runs (organisation_id, application_id, jvm_fingerprint);
 
-//--- Signatures -----------------------------------------------------------------------------------------------
+-- Signatures -----------------------------------------------------------------------------------------------
 DROP TABLE IF EXISTS signatures;
 CREATE TABLE signatures (
   id              INTEGER       NOT NULL IDENTITY,
@@ -104,14 +104,14 @@ CREATE UNIQUE INDEX ix_signatures ON signatures (organisation_id, application_id
 DROP INDEX IF EXISTS ix_signatures_invoked_at;
 CREATE INDEX ix_signatures_invoked_at ON signatures (invoked_at);
 
-//--- System data ----------------------------------------------------------------------------------------------
+-- System data ----------------------------------------------------------------------------------------------
 INSERT INTO roles (name) VALUES ('SUPERUSER');
 INSERT INTO roles (name) VALUES ('AGENT');
 INSERT INTO roles (name) VALUES ('ADMIN');
 INSERT INTO roles (name) VALUES ('USER');
 INSERT INTO roles (name) VALUES ('MONITOR');
 
-// --- System account ---------------------------------------------------------------------------
+-- System account ---------------------------------------------------------------------------
 INSERT INTO organisations (id, name) VALUES (0, 'System');
 
 INSERT INTO users (id, username, plaintext_password, enabled) VALUES (0, 'system', '0000', TRUE);
@@ -127,7 +127,7 @@ INSERT INTO organisation_members (organisation_id, user_id) VALUES (0, 1);
 INSERT INTO user_roles (user_id, role) VALUES (1, 'USER');
 INSERT INTO user_roles (user_id, role) VALUES (1, 'MONITOR');
 
-// --- Demo account ---------------------------------------------------------------------------
+-- Demo account ---------------------------------------------------------------------------
 INSERT INTO organisations (id, name) VALUES (1, 'Demo');
 
 INSERT INTO users (id, username, plaintext_password, enabled) VALUES (2, 'agent', '0000', TRUE);
