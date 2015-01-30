@@ -7,16 +7,13 @@ import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.server.agent_api.model.v1.InvocationData;
 import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
 import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
-import se.crisp.codekvast.server.codekvast_server.dao.CollectorTimestamp;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
-import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorUptimeEvent;
 import se.crisp.codekvast.server.codekvast_server.event.internal.InvocationDataUpdatedEvent;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import se.crisp.codekvast.server.codekvast_server.service.AgentService;
 
 import javax.inject.Inject;
-import java.util.Collection;
 
 /**
  * The implementation of the AgentService.
@@ -42,11 +39,10 @@ public class AgentServiceImpl implements AgentService {
     @Transactional(rollbackFor = Exception.class)
     public void storeJvmData(String apiAccessID, JvmData data) throws CodekvastException {
         long organisationId = userDAO.getOrganisationIdForUsername(apiAccessID);
-        long appId = userDAO.getAppId(organisationId, data.getAppName(), data.getAppVersion());
+        long appId = agentDAO.getAppId(organisationId, data.getAppName(), data.getAppVersion());
 
         agentDAO.storeJvmData(organisationId, appId, data);
-
-        postCollectorUptimeEvent(organisationId);
+        eventBus.post(agentDAO.createCollectorUpTimeEvent(organisationId));
     }
 
     @Override
@@ -68,11 +64,4 @@ public class AgentServiceImpl implements AgentService {
         eventBus.post(new InvocationDataUpdatedEvent(appId, data.getInvocations()));
     }
 
-    private void postCollectorUptimeEvent(long organisationId) {
-        Collection<String> usernames = userDAO.getUsernamesInOrganisation(organisationId);
-        CollectorTimestamp timestamp = agentDAO.getCollectorTimestamp(organisationId);
-        CollectorUptimeEvent event = new CollectorUptimeEvent(timestamp, usernames);
-        log.debug("Posting {}", event);
-        eventBus.post(event);
-    }
 }

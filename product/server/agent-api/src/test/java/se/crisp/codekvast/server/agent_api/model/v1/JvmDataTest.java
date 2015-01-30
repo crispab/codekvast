@@ -43,6 +43,7 @@ public class JvmDataTest {
                       .appName("appName")
                       .appVersion("appVersion")
                       .tags(tags)
+                      .computerId("computerId")
                       .hostName("hostName")
                       .startedAtMillis(1000L)
                       .dumpedAtMillis(2000L)

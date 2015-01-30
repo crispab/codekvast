@@ -13,8 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
-import se.crisp.codekvast.server.codekvast_server.event.internal.ApplicationCreatedEvent;
-import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedUserException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import se.crisp.codekvast.server.codekvast_server.model.Application;
@@ -26,8 +24,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 /**
  * DAO for user, organisation and application data.
  *
@@ -35,21 +31,17 @@ import static com.google.common.base.Preconditions.checkArgument;
  */
 @Repository
 @Slf4j
-public class UserDAOImpl implements UserDAO {
+public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
 
-    private final JdbcTemplate jdbcTemplate;
     private final PasswordEncoder passwordEncoder;
-    private final EventBus eventBus;
 
     @Inject
     public UserDAOImpl(JdbcTemplate jdbcTemplate, PasswordEncoder passwordEncoder, EventBus eventBus) {
-        this.jdbcTemplate = jdbcTemplate;
+        super(eventBus, jdbcTemplate);
         this.passwordEncoder = passwordEncoder;
-        this.eventBus = eventBus;
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     @Cacheable("user")
     public long getOrganisationIdForUsername(final String username) throws UndefinedUserException {
         log.debug("Looking up organisation id for username '{}'", username);
@@ -60,14 +52,6 @@ public class UserDAOImpl implements UserDAO {
         } catch (EmptyResultDataAccessException ignored) {
             throw new UndefinedUserException("No such user: '" + username + "'");
         }
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    @Cacheable("user")
-    public long getAppId(long organisationId, String appName, String appVersion) throws UndefinedApplicationException {
-        log.debug("Looking up app id for {}:{}", organisationId, appName);
-        return doGetOrCreateApp(organisationId, appName, appVersion);
     }
 
     @Override
@@ -143,47 +127,11 @@ public class UserDAOImpl implements UserDAO {
                                           "WHERE organisation_id = ?", new ApplicationRowMapper(), organisationId);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Collection<String> getUsernamesInOrganisation(long organisationId) {
-        return jdbcTemplate.queryForList("SELECT u.username " +
-                                                 "FROM users u, organisation_members m " +
-                                                 "WHERE u.id = m.user_id AND m.organisation_id = ?",
-                                         String.class, organisationId);
-    }
-
     private long doCreateOrganisation(String organisationName) {
         long organisationId = doInsertRow("INSERT INTO organisations(name) VALUES(?)", organisationName);
-        Organisation organisation = Organisation.builder().id(organisationId).name(organisationName).build();
+        Organisation organisation = new Organisation(organisationId, organisationName);
         log.info("Created {}", organisation);
         return organisationId;
-    }
-
-    private Long doGetOrCreateApp(long organisationId, String appName, String appVersion)
-            throws UndefinedApplicationException {
-        try {
-            return jdbcTemplate.queryForObject("SELECT ID FROM APPLICATIONS " +
-                                                       "WHERE ORGANISATION_ID = ? AND NAME = ? ",
-                                               Long.class, organisationId, appName);
-        } catch (EmptyResultDataAccessException ignored) {
-        }
-
-        long appId = doInsertRow("INSERT INTO applications(organisation_id, name) VALUES(?, ?)", organisationId, appName);
-
-        Application app = Application.builder()
-                                     .appId(AppId.builder().organisationId(organisationId).appId(appId).build())
-                                     .name(appName)
-                                     .build();
-
-        eventBus.post(new ApplicationCreatedEvent(app, appVersion, getUsernamesInOrganisation(organisationId)));
-        log.info("Created {} {}", app, appVersion);
-        return appId;
-    }
-
-    private long doInsertRow(String sql, Object... args) {
-        checkArgument(sql.toUpperCase().startsWith("INSERT INTO "));
-        jdbcTemplate.update(sql, args);
-        return jdbcTemplate.queryForObject("SELECT IDENTITY()", Long.class);
     }
 
     private static class AppIdRowMapper implements RowMapper<AppId> {

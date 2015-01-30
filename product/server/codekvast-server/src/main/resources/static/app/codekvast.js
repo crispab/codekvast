@@ -57,7 +57,6 @@ var codekvastApp = angular.module('codekvastApp', [])
             console.log("Received signatures");
             $scope.$apply(function() {
                 var rsp = JSON.parse(data.body);
-                $scope.timestamp = rsp.timestamp;
                 $scope.signatures = rsp.signatures;
                 $scope.packages = rsp.packages;
                 $scope.haveData = true;
@@ -68,8 +67,6 @@ var codekvastApp = angular.module('codekvastApp', [])
             console.log("Received signature updates");
             $scope.$apply(function () {
                 var update = JSON.parse(data.body);
-
-                $scope.timestamp = update.timestamp;
 
                 for (var i = 0; i < update.signatures.length; i++) {
                     var s = update.signatures[i];

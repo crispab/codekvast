@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
-import se.crisp.codekvast.server.codekvast_server.dao.CollectorTimestamp;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.Application;
@@ -43,12 +42,6 @@ public class UserServiceImpl implements UserService {
     public Collection<Application> getApplications(String username) throws CodekvastException {
         long organisationId = userDAO.getOrganisationIdForUsername(username);
         return userDAO.getApplications(organisationId);
-    }
-
-    @Override
-    public CollectorTimestamp getCollectorTimestamp(String username) throws CodekvastException {
-        long organisationId = userDAO.getOrganisationIdForUsername(username);
-        return agentDAO.getCollectorTimestamp(organisationId);
     }
 
 }

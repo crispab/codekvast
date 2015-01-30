@@ -67,7 +67,6 @@ public class SignatureHandler extends AbstractMessageHandler {
 
     private SignatureData getSignatures(String username) throws CodekvastException {
         long now = System.currentTimeMillis();
-        CollectorTimestamp cts = userService.getCollectorTimestamp(username);
 
         List<Signature> signatures = new ArrayList<>();
         Set<String> packages = new TreeSet<>();
@@ -97,7 +96,6 @@ public class SignatureHandler extends AbstractMessageHandler {
         addImmediateParentPackages(packages);
 
         return SignatureData.builder()
-                            .timestamp(toStompTimestamp(now, cts))
                             .signatures(signatures)
                             .packages(packages)
                             .build();
@@ -114,8 +112,6 @@ public class SignatureHandler extends AbstractMessageHandler {
     @Value
     @Builder
     static class SignatureData {
-        @NonNull
-        Timestamp timestamp;
         @NonNull
         private final List<Signature> signatures;
         @NonNull

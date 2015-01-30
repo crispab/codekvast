@@ -1,6 +1,9 @@
 package se.crisp.codekvast.server.codekvast_server.dao.impl;
 
+import com.google.common.eventbus.EventBus;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -9,11 +12,16 @@ import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
 import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
 import se.crisp.codekvast.server.codekvast_server.dao.CollectorTimestamp;
+import se.crisp.codekvast.server.codekvast_server.event.internal.ApplicationCreatedEvent;
+import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorUptimeEvent;
+import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
+import se.crisp.codekvast.server.codekvast_server.model.Application;
 
 import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -25,14 +33,41 @@ import java.util.Set;
  */
 @Repository
 @Slf4j
-public class AgentDAOImpl implements AgentDAO {
-
-    private final JdbcTemplate jdbcTemplate;
+public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
 
     @Inject
-    public AgentDAOImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public AgentDAOImpl(EventBus eventBus, JdbcTemplate jdbcTemplate) {
+        super(eventBus, jdbcTemplate);
     }
+
+    @Override
+    @Cacheable("agent")
+    public long getAppId(long organisationId, String appName, String appVersion) throws UndefinedApplicationException {
+        log.debug("Looking up app id for {}:{}", organisationId, appName);
+        return doGetOrCreateApp(organisationId, appName, appVersion);
+    }
+
+    private Long doGetOrCreateApp(long organisationId, String appName, String appVersion)
+            throws UndefinedApplicationException {
+        try {
+            return jdbcTemplate.queryForObject("SELECT id FROM applications " +
+                                                       "WHERE organisation_id = ? AND name = ? ",
+                                               Long.class, organisationId, appName);
+        } catch (EmptyResultDataAccessException ignored) {
+        }
+
+        long appId = doInsertRow("INSERT INTO applications(organisation_id, name) VALUES(?, ?)", organisationId, appName);
+
+        Application app = Application.builder()
+                                     .appId(AppId.builder().organisationId(organisationId).appId(appId).build())
+                                     .name(appName)
+                                     .build();
+
+        eventBus.post(new ApplicationCreatedEvent(app, appVersion, getUsernamesInOrganisation(organisationId)));
+        log.info("Created {} {}", app, appVersion);
+        return appId;
+    }
+
 
     @Override
     public void storeInvocationData(AppId appId, InvocationData invocationData) {
@@ -102,10 +137,13 @@ public class AgentDAOImpl implements AgentDAO {
     }
 
     @Override
-    public CollectorTimestamp getCollectorTimestamp(long organisationId) {
+    public CollectorUptimeEvent createCollectorUpTimeEvent(long organisationId) {
+        Collection<String> usernames = getUsernamesInOrganisation(organisationId);
 
-        return jdbcTemplate.queryForObject("SELECT MIN(started_at), MAX(dumped_at) FROM jvm_runs WHERE organisation_id = ? ",
-                                           new CollectorTimestampRowMapper(), organisationId);
+        CollectorTimestamp timestamp =
+                jdbcTemplate.queryForObject("SELECT MIN(started_at), MAX(dumped_at) FROM jvm_runs WHERE organisation_id = ? ",
+                                            new CollectorTimestampRowMapper(), organisationId);
+        return new CollectorUptimeEvent(timestamp, usernames);
     }
 
     private static class CollectorTimestampRowMapper implements RowMapper<CollectorTimestamp> {

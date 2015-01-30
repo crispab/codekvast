@@ -2,7 +2,6 @@ package se.crisp.codekvast.server.codekvast_server.dao;
 
 import org.springframework.dao.DataAccessException;
 import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
-import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedUserException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import se.crisp.codekvast.server.codekvast_server.model.Application;
@@ -23,12 +22,6 @@ public interface UserDAO {
      * @throws se.crisp.codekvast.server.codekvast_server.exception.UndefinedUserException
      */
     long getOrganisationIdForUsername(String username) throws UndefinedUserException;
-
-    /**
-     * Retrieve an application ID. If not found, a new row is inserted into APPLICATIONS and an ApplicationCreatedEvent is posted on the
-     * event bus.
-     */
-    long getAppId(long organisationId, String appName, String appVersion) throws UndefinedApplicationException;
 
     AppId getAppIdByJvmFingerprint(String jvmFingerprint);
 
@@ -53,11 +46,4 @@ public interface UserDAO {
      */
     Collection<Application> getApplications(long organisationId);
 
-    /**
-     * Return all usernames that belong to this organisation
-     *
-     * @param organisationId
-     * @return Never null, an empty collection should organisationId be invalid.
-     */
-    Collection<String> getUsernamesInOrganisation(long organisationId);
 }
