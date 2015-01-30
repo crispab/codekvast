@@ -13,6 +13,7 @@ import java.util.Collection;
 public class InvocationDataUpdatedEvent {
     private final AppId appId;
     private final Collection<InvocationEntry> invocationEntries;
+    private final Collection<String> usernames;
 
     @Override
     public String toString() {

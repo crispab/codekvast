@@ -59,16 +59,15 @@
                         <thead>
                         <tr>
                             <th class="signature-name"><a href="" ng-click="sortField='name'; reverse = !reverse">Signature</a></th>
-                            <th class="signature-invoked-at"><a href="" ng-click="sortField='invokedAtMillis'; reverse = !reverse">Invoked
-                                                                                                                                   &nbsp;At</a>
+                            <th class="signature-invoked-at"><a href="" ng-click="sortField='invokedAtMillis'; reverse = !reverse">Invoked&nbsp;At</a>
                             </th>
                         </tr>
                         </thead>
 
                         <tbody>
-                        <tr ng-repeat="s in signatures | filter: {name: package} | orderBy:sortField:reverse | limitTo:maxRows">
-                            <td class="signature-name">{{::s.name}}</td>
-                            <td class="signature-invoked-at">{{::s.invokedAtString}}</td>
+                        <tr ng-repeat="s in signatures | filter: package | orderBy:sortField:reverse | limitTo:maxRows">
+                            <td class="signature-name">{{s.name}}</td>
+                            <td class="signature-invoked-at">{{s.invokedAtString}}</td>
                         </tr>
                         </tbody>
                     </table>

@@ -13,10 +13,10 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import javax.inject.Inject;
 import java.security.Principal;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 
 /**
  * Responsible for maintaining a collection of currently connected web socket usernames.
@@ -29,7 +29,10 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class UserHandler extends AbstractMessageHandler {
 
-    private final Map<String, String> sessionIdToUsername = new ConcurrentHashMap<>();
+    private final Map<String, String> sessionIdToUsername = new HashMap<>();
+    private final Set<String> presentUsers = new HashSet<>();
+
+    private final Object lock = new Object();
 
     @Inject
     public UserHandler(EventBus eventBus) {
@@ -62,7 +65,10 @@ public class UserHandler extends AbstractMessageHandler {
             return;
         }
 
-        sessionIdToUsername.put(sessionId, username);
+        synchronized (lock) {
+            sessionIdToUsername.put(sessionId, username);
+            presentUsers.add(username);
+        }
         log.info("Added username '{}'", username);
         eventBus.post(new UserConnectedEvent(username));
     }
@@ -79,18 +85,26 @@ public class UserHandler extends AbstractMessageHandler {
             return;
         }
 
-        String username = sessionIdToUsername.remove(sessionId);
-        if (username == null) {
-            log.warn("Cannot find username for session {}, ignoring...", sessionId);
-            return;
+        String username;
+        synchronized (lock) {
+            username = sessionIdToUsername.remove(sessionId);
+            if (username == null) {
+                log.warn("Cannot find username for session {}, ignoring...", sessionId);
+                return;
+            }
+            presentUsers.remove(username);
         }
 
-        log.info("Removed username '{}'", username);
-        eventBus.post(new UserDisconnectedEvent(username));
+        if (username != null) {
+            log.info("Removed username '{}'", username);
+            eventBus.post(new UserDisconnectedEvent(username));
+        }
     }
 
-    public Collection<String> getActiveUsernames() {
-        return new HashSet<>(sessionIdToUsername.values());
+    public boolean isPresent(String username) {
+        synchronized (lock) {
+            return presentUsers.contains(username);
+        }
     }
 
     @Value

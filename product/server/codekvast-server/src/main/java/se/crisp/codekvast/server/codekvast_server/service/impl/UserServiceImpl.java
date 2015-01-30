@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
-import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.Application;
@@ -22,12 +21,10 @@ import java.util.Collection;
 public class UserServiceImpl implements UserService {
 
     private final UserDAO userDAO;
-    private final AgentDAO agentDAO;
 
     @Inject
-    public UserServiceImpl(@NonNull UserDAO userDAO, AgentDAO agentDAO) {
+    public UserServiceImpl(@NonNull UserDAO userDAO) {
         this.userDAO = userDAO;
-        this.agentDAO = agentDAO;
     }
 
     @Override

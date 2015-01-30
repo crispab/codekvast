@@ -8,6 +8,7 @@ import se.crisp.codekvast.server.agent_api.model.v1.InvocationData;
 import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
 import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
+import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorUptimeEvent;
 import se.crisp.codekvast.server.codekvast_server.event.internal.InvocationDataUpdatedEvent;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
@@ -42,7 +43,8 @@ public class AgentServiceImpl implements AgentService {
         long appId = agentDAO.getAppId(organisationId, data.getAppName(), data.getAppVersion());
 
         agentDAO.storeJvmData(organisationId, appId, data);
-        eventBus.post(agentDAO.createCollectorUpTimeEvent(organisationId));
+        CollectorUptimeEvent event = agentDAO.createCollectorUpTimeEvent(organisationId);
+        eventBus.post(event);
     }
 
     @Override
@@ -61,7 +63,8 @@ public class AgentServiceImpl implements AgentService {
         }
 
         agentDAO.storeInvocationData(appId, data);
-        eventBus.post(new InvocationDataUpdatedEvent(appId, data.getInvocations()));
+        InvocationDataUpdatedEvent event = agentDAO.createInvocationDataUpdatedEvent(appId, data);
+        eventBus.post(event);
     }
 
 }

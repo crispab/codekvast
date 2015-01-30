@@ -14,6 +14,7 @@ import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
 import se.crisp.codekvast.server.codekvast_server.dao.CollectorTimestamp;
 import se.crisp.codekvast.server.codekvast_server.event.internal.ApplicationCreatedEvent;
 import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorUptimeEvent;
+import se.crisp.codekvast.server.codekvast_server.event.internal.InvocationDataUpdatedEvent;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import se.crisp.codekvast.server.codekvast_server.model.Application;
@@ -144,6 +145,11 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                 jdbcTemplate.queryForObject("SELECT MIN(started_at), MAX(dumped_at) FROM jvm_runs WHERE organisation_id = ? ",
                                             new CollectorTimestampRowMapper(), organisationId);
         return new CollectorUptimeEvent(timestamp, usernames);
+    }
+
+    @Override
+    public InvocationDataUpdatedEvent createInvocationDataUpdatedEvent(AppId appId, InvocationData data) {
+        return new InvocationDataUpdatedEvent(appId, data.getInvocations(), getUsernamesInOrganisation(appId.getOrganisationId()));
     }
 
     private static class CollectorTimestampRowMapper implements RowMapper<CollectorTimestamp> {

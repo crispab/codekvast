@@ -19,7 +19,7 @@ var codekvastApp = angular.module('codekvastApp', [])
         $scope.application = undefined;
         $scope.version = undefined;
         $scope.packages = [];
-        $scope.package = undefined;
+        $scope.package = "";
         $scope.signatures = [];
         $scope.timestamp = undefined;
 
@@ -40,31 +40,18 @@ var codekvastApp = angular.module('codekvastApp', [])
         };
 
         $scope.updateFilterValues = function (data) {
-            console.log("Received filter values %o", data);
             $scope.$apply(function () {
                 $scope.filterValues = JSON.parse(data.body);
             });
         };
 
         $scope.updateTimestamps = function (data) {
-            console.log("Received timestamps %o", data);
             $scope.$apply(function () {
                 $scope.timestamp = JSON.parse(data.body);
             });
         };
 
-        $scope.setSignatures = function (data) {
-            console.log("Received signatures");
-            $scope.$apply(function() {
-                var rsp = JSON.parse(data.body);
-                $scope.signatures = rsp.signatures;
-                $scope.packages = rsp.packages;
-                $scope.haveData = true;
-            })
-        };
-
         $scope.updateSignatures = function (data) {
-            console.log("Received signature updates");
             $scope.$apply(function () {
                 var update = JSON.parse(data.body);
 
@@ -74,16 +61,15 @@ var codekvastApp = angular.module('codekvastApp', [])
 
                     for (var j = 0; j < $scope.signatures.length; j++) {
                         if ($scope.signatures[j].name === s.name) {
-                            $scope.signatures[j] = s;
+                            $scope.signatures[j].invokedAtMillis = s.invokedAtMillis;
+                            $scope.signatures[j].invokedAtString = s.invokedAtString;
                             found = true;
-                            console.log("Updated signature %o received", s);
                             break;
                         }
                     }
 
                     if (!found) {
-                        console.log("New signature %o received", s);
-                        $scope.signatures.push(s)
+                        $scope.signatures[$scope.signatures.length] = s
                     }
                 }
 
@@ -91,7 +77,6 @@ var codekvastApp = angular.module('codekvastApp', [])
                     var p = update.packages[i];
                     if ($scope.packages.indexOf(p) == -1) {
                         $scope.packages.push(p)
-                        console.log("Added new package " + p)
                     }
                 }
                 $scope.haveData = true;
@@ -114,7 +99,7 @@ var codekvastApp = angular.module('codekvastApp', [])
                 console.log("Connected");
                 $scope.connected = true;
                 $scope.socket.stomp.subscribe("/app/filterValues", $scope.updateFilterValues);
-                $scope.socket.stomp.subscribe("/app/signatures", $scope.setSignatures);
+                $scope.socket.stomp.subscribe("/app/signatures", $scope.updateSignatures);
                 $scope.socket.stomp.subscribe("/user/queue/filterValues", $scope.updateFilterValues);
                 $scope.socket.stomp.subscribe("/user/queue/signatureUpdates", $scope.updateSignatures);
                 $scope.socket.stomp.subscribe("/user/queue/timestamps", $scope.updateTimestamps);

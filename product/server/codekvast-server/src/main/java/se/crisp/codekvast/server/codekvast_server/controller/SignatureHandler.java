@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.codekvast_server.dao.CollectorTimestamp;
 import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorUptimeEvent;
+import se.crisp.codekvast.server.codekvast_server.event.internal.InvocationDataUpdatedEvent;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
 import se.crisp.codekvast.server.codekvast_server.util.DateUtils;
@@ -31,11 +32,13 @@ import java.util.regex.Pattern;
 @Slf4j
 public class SignatureHandler extends AbstractMessageHandler {
     private final UserService userService;
+    private final UserHandler userHandler;
 
     @Inject
-    public SignatureHandler(EventBus eventBus, SimpMessagingTemplate messagingTemplate, UserService userService) {
+    public SignatureHandler(EventBus eventBus, SimpMessagingTemplate messagingTemplate, UserService userService, UserHandler userHandler) {
         super(eventBus, messagingTemplate);
         this.userService = userService;
+        this.userHandler = userHandler;
     }
 
     @Subscribe
@@ -44,8 +47,21 @@ public class SignatureHandler extends AbstractMessageHandler {
         Timestamp timestamp = toStompTimestamp(now, event.getCollectorTimestamp());
 
         for (String username : event.getUsernames()) {
-            log.debug("Sending {}  '{}'", timestamp, username);
-            messagingTemplate.convertAndSendToUser(username, "/queue/timestamps", timestamp);
+            if (userHandler.isPresent(username)) {
+                log.debug("Sending {} to '{}'", timestamp, username);
+                messagingTemplate.convertAndSendToUser(username, "/queue/timestamps", timestamp);
+            }
+        }
+    }
+
+    @Subscribe
+    public void onInvocationDataUpdatedEvent(InvocationDataUpdatedEvent event) throws CodekvastException {
+        SignatureData sig = toSignatureData(event.getInvocationEntries());
+        for (String username : event.getUsernames()) {
+            if (userHandler.isPresent(username)) {
+                log.debug("Sending {} signatures and {} packages to '{}'", sig.getSignatures().size(), sig.getPackages().size(), username);
+                messagingTemplate.convertAndSendToUser(username, "/queue/signatureUpdates", sig);
+            }
         }
     }
 
@@ -60,19 +76,19 @@ public class SignatureHandler extends AbstractMessageHandler {
         String username = principal.getName();
         log.debug("'{}' is subscribing to signatures", username);
 
-        SignatureData sig = getSignatures(username);
+        SignatureData sig = toSignatureData(userService.getSignatures(username));
         log.debug("Sending {} signatures and {} packages to '{}'", sig.getSignatures().size(), sig.getPackages().size(), username);
         return sig;
     }
 
-    private SignatureData getSignatures(String username) throws CodekvastException {
+    private SignatureData toSignatureData(Collection<InvocationEntry> invocationEntries) {
         long now = System.currentTimeMillis();
 
         List<Signature> signatures = new ArrayList<>();
         Set<String> packages = new TreeSet<>();
         Pattern pkgPattern = Pattern.compile("([\\p{javaLowerCase}\\.]+)\\.");
 
-        for (InvocationEntry entry : userService.getSignatures(username)) {
+        for (InvocationEntry entry : invocationEntries) {
             String s = entry.getSignature();
 
             Matcher m = pkgPattern.matcher(s);
