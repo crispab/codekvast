@@ -35,7 +35,7 @@ public class SpringToEventBusBridge implements ApplicationListener {
 
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
-        log.debug("On {}", event.getClass().getSimpleName());
+        log.trace("On {}", event.getClass().getSimpleName());
         eventBus.post(event);
     }
 
