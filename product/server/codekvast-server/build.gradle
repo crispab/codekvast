@@ -1,4 +1,8 @@
-buildscript { dependencies { classpath "org.flywaydb:flyway-gradle-plugin:3.1" } }
+buildscript {
+    dependencies {
+        classpath "org.flywaydb:flyway-gradle-plugin:3.1"
+    }
+}
 plugins {
     id 'java'
     id 'application'
@@ -20,6 +24,7 @@ mainClassName = "se.crisp.codekvast.server.codekvast_server.CodekvastServerAppli
 configurations {
     springLoaded
     webjar
+    h2server
 }
 
 sourceSets {
@@ -48,42 +53,44 @@ def webjars = ["org.webjars:jquery:2.1.3",
 
 dependencies {
     compile lombok
-    compile project(":product:server:agent-api")
-    compile project(":product:support:websupport")
-    compile "com.google.guava:guava:18.0"
-    compile "ch.qos.logback:logback-classic"
+    compile project(':product:server:agent-api')
+    compile project(':product:support:websupport')
+    compile 'com.google.guava:guava:18.0'
+    compile 'ch.qos.logback:logback-classic'
 
-    compile "org.springframework.boot:spring-boot-starter-jdbc"
-    compile "org.springframework.boot:spring-boot-starter-web"
-    compile "org.springframework.boot:spring-boot-starter-websocket"
-    compile "org.springframework.boot:spring-boot-starter-thymeleaf"
-    compile "org.springframework.boot:spring-boot-starter-security"
-    compile "org.springframework.boot:spring-boot-starter-actuator"
-    compile "org.springframework:spring-messaging"
+    compile 'org.springframework.boot:spring-boot-starter-jdbc'
+    compile 'org.springframework.boot:spring-boot-starter-web'
+    compile 'org.springframework.boot:spring-boot-starter-websocket'
+    compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    compile 'org.springframework.boot:spring-boot-starter-security'
+    compile 'org.springframework.boot:spring-boot-starter-actuator'
+    compile 'org.springframework:spring-messaging'
     compile 'org.springframework.session:spring-session:1.0.0.RELEASE'
     compile 'org.springframework.session:spring-session-data-redis:1.0.0.RELEASE'
-    compile "com.h2database:h2"
-    compile "org.flywaydb:flyway-core"
+    compile 'com.h2database:h2'
+    compile 'org.flywaydb:flyway-core'
     compile 'com.orange.redis-embedded:embedded-redis:0.6'
 
     runtime project(':product:support:websupport')
     // WIP: port to MySQL runtime "mysql:mysql-connector-java"
-    runtime "org.hibernate:hibernate-validator"
+    runtime 'org.hibernate:hibernate-validator'
     runtime 'org.springframework.data:spring-data-redis:1.4.1.RELEASE'
     runtime webjars
 
-    testCompile "org.springframework.boot:spring-boot-starter-test"
-    testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
-    testCompile "org.spockframework:spock-spring:0.7-groovy-2.0"
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
+    testCompile 'org.spockframework:spock-spring:0.7-groovy-2.0'
 
     integTestCompile sourceSets.main.output
-    integTestCompile configurations.testCompile
     integTestCompile sourceSets.test.output
+    integTestCompile configurations.testCompile
     integTestRuntime configurations.testRuntime
 
     springLoaded springLoadedAgent
 
     webjar webjars
+
+    h2server 'com.h2database:h2'
 }
 
 import org.apache.tools.ant.filters.LineContainsRegExp
@@ -127,7 +134,50 @@ startScripts {
     }
 }
 
+ext.databasePath = file("build/database/codekvast")
+
+task startH2Server {
+    description "Starts a H2 server"
+
+    outputs.upToDateWhen {
+        ["jps", "-l"].execute().text.contains('org.h2.tools.Server')
+    }
+
+    doLast {
+        logger.lifecycle "Starting an H2 server..."
+        def process = ["java",
+                       "-cp", configurations.h2server.asPath,
+                       "-Duser.dir=${buildDir.absolutePath}",
+                       'org.h2.tools.Server',
+                       "-tcp",
+                       "-web"].execute()
+        process.in.close()
+        process.out.close()
+        process.err.close()
+    }
+}
+
+task stopH2Server {
+    description "Stops the H2 server"
+
+    outputs.upToDateWhen {
+        !["jps", "-l"].execute().text.contains('org.h2.tools.Server')
+    }
+
+    doLast {
+        logger.lifecycle "Shutting down the H2 server..."
+        def process = ["java", "-cp", configurations.h2server.asPath, 'org.h2.tools.Server', "-tcpShutdown", "tcp://localhost"].execute()
+
+        process.in.close()
+        process.out.close()
+        process.err.close()
+    }
+}
+
+run.dependsOn startH2Server
+
 bootRun {
+    dependsOn startH2Server
     jvmArgs = [
             "-javaagent:${configurations.springLoaded.asPath}",
             "-noverify",
@@ -173,11 +223,13 @@ node {
 }
 
 task copyWebjars(type: Sync) {
+    // Collect all webjars into a folder so that they easily can be unpacked
     from configurations.webjar
     into file("build/webjars")
 }
 
 task unpackWebjars {
+    // Unpack the webjars so that the Jasmine tests can reference them with static (non-versioned) names...
     dependsOn copyWebjars
 
     def webjarsDir = file("build/webjars")
@@ -253,8 +305,9 @@ if (!System.properties['os.name'].contains("indows")) {
 }
 
 flyway {
-    url = "jdbc:h2:file:$buildDir/database/codekvast"
+    url = "jdbc:h2:tcp://localhost/$databasePath"
     user = 'codekvast'
     password = 'codekvast'
     locations = ['classpath:/database/migration', 'classpath:/se/crisp/codekvast/server/codekvast_server/migration']
 }
+
