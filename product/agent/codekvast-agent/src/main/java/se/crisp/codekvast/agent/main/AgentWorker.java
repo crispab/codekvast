@@ -283,7 +283,7 @@ public class AgentWorker {
 
     @Data
     @Builder
-    static class JvmState {
+    private static class JvmState {
         private final Jvm jvm;
         private final File invocationsFile;
         private final InvocationsCollector invocationsCollector = new InvocationsCollector();

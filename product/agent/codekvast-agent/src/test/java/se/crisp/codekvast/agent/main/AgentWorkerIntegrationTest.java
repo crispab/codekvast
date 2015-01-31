@@ -9,12 +9,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import se.crisp.codekvast.agent.config.AgentConfig;
-import se.crisp.codekvast.agent.config.CollectorConfig;
 import se.crisp.codekvast.agent.config.SharedConfig;
 import se.crisp.codekvast.agent.main.appversion.AppVersionStrategy;
 import se.crisp.codekvast.agent.main.appversion.LiteralAppVersionStrategy;
 import se.crisp.codekvast.agent.main.codebase.CodeBaseScanner;
-import se.crisp.codekvast.agent.model.Jvm;
 import se.crisp.codekvast.server.agent_api.AgentApi;
 import se.crisp.codekvast.server.agent_api.AgentApiException;
 
@@ -94,16 +92,6 @@ public class AgentWorkerIntegrationTest {
 
         // then
         verify(agentApi, times(1)).uploadSignatureData(anyString(), anyCollection());
-    }
-
-    private AgentWorker.JvmState buildJvmState() {
-        return AgentWorker.JvmState.builder()
-                                   .jvm(Jvm.builder()
-                                           .jvmFingerprint("jvmFingerprint")
-                                           .hostName("hostName")
-                                           .collectorConfig(CollectorConfig.createSampleCollectorConfig())
-                                           .build())
-                                   .build();
     }
 
 }
