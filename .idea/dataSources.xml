@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" hash="3539695821">
+    <data-source source="LOCAL" name="server - in-memory" uuid="a9e7fe3c-7620-4c74-b308-198387685d55">
+      <driver-ref>h2.in-memory</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.h2.Driver</jdbc-driver>
+      <jdbc-url>jdbc:h2:mem:codekvast</jdbc-url>
+      <libraries />
+    </data-source>
+    <data-source source="LOCAL" name="web - file" uuid="fe362d3e-fb5b-4d0e-abd0-1b048693ad3e">
+      <driver-ref>h2.embedded</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.h2.Driver</jdbc-driver>
+      <jdbc-url>jdbc:h2:file:$PROJECT_DIR$/product/web/build/database/web</jdbc-url>
+      <libraries />
+    </data-source>
+    <data-source source="LOCAL" name="server (started with 'gradle startH2Server')" uuid="0c3c07ae-6c80-484c-9386-be5631208992">
+      <driver-ref>h2.remote</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.h2.Driver</jdbc-driver>
+      <jdbc-url>jdbc:h2:tcp://localhost/$PROJECT_DIR$/product/server/codekvast-server/build/database/codekvast</jdbc-url>
+      <libraries>
+        <library>
+          <url>file://$PROJECT_DIR$/product/server/codekvast-server/build/jdbcDriver/h2-1.4.183.jar</url>
+        </library>
+      </libraries>
+    </data-source>
+  </component>
+</project>
