@@ -11,9 +11,9 @@ import java.util.regex.PatternSyntaxException;
 
 /**
  * A strategy for picking the app version from the name of a file
- * <p/>
+ * <p>
  * It handles the cases {@code filename somefile-(.*).jar}. The part inside the parenthesis is used as version.
- *
+ *</p>
  * @author Olle Hallin (qolha), olle.hallin@crisp.se
  */
 @Slf4j
