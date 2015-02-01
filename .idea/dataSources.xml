@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="DataSourceManagerImpl" format="xml" hash="3539695821">
+  <component name="DataSourceManagerImpl" format="xml" hash="1513804620">
     <data-source source="LOCAL" name="server - in-memory" uuid="a9e7fe3c-7620-4c74-b308-198387685d55">
       <driver-ref>h2.in-memory</driver-ref>
       <synchronize>true</synchronize>

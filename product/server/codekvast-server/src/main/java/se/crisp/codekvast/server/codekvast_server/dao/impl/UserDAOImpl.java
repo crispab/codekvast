@@ -61,7 +61,8 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
         log.debug("Looking up AppId for JVM {}...", jvmFingerprint);
         try {
             AppId result = jdbcTemplate
-                    .queryForObject("SELECT organisation_id, application_id FROM jvm_runs WHERE jvm_fingerprint = ?", new AppIdRowMapper(),
+                    .queryForObject("SELECT id, organisation_id, application_id FROM jvm_runs WHERE jvm_fingerprint = ?",
+                                    new AppIdRowMapper(),
                                     jvmFingerprint);
             log.debug("Result = {}", result);
             return result;
@@ -116,8 +117,15 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
     @Override
     @Transactional(readOnly = true)
     public Collection<InvocationEntry> getSignatures(long organisationId) {
-        return jdbcTemplate.query("SELECT signature, invoked_at, confidence FROM signatures " +
-                                          "WHERE organisation_id = ?", new InvocationsEntryRowMapper(), organisationId);
+        return jdbcTemplate.query("SELECT s.signature, s.invoked_at, s.confidence FROM signatures s " +
+                                          "INNER JOIN (" +
+                                          "  SELECT organisation_id, signature, max(invoked_at) invoked_at " +
+                                          "  FROM signatures " +
+                                          "  GROUP BY signature " +
+                                          ") ss ON s.organisation_id = ss.organisation_id AND s.signature = ss.signature AND s.invoked_at" +
+                                          " = ss.invoked_at " +
+                                          "WHERE s.organisation_id = ? ",
+                                  new InvocationsEntryRowMapper(), organisationId);
     }
 
     @Override
@@ -136,9 +144,9 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
 
     private static class AppIdRowMapper implements RowMapper<AppId> {
         @Override
-        public AppId mapRow(ResultSet rs, int rowNum)
-                throws SQLException {
+        public AppId mapRow(ResultSet rs, int rowNum) throws SQLException {
             return AppId.builder()
+                        .jvmId(rs.getLong("ID"))
                         .organisationId(rs.getLong("ORGANISATION_ID"))
                         .appId(rs.getLong("APPLICATION_ID"))
                         .build();

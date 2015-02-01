@@ -11,4 +11,5 @@ import lombok.experimental.Builder;
 public class AppId {
     private final long organisationId;
     private final long appId;
+    private final long jvmId;
 }

@@ -92,9 +92,9 @@ CREATE TABLE signatures (
   id              INTEGER       NOT NULL IDENTITY,
   organisation_id INTEGER       NOT NULL REFERENCES organisations (id),
   application_id  INTEGER       NOT NULL REFERENCES applications (id),
+  jvm_id     INTEGER NOT NULL REFERENCES jvm_runs (id),
   signature       VARCHAR(2000) NOT NULL,
-  jvm_fingerprint VARCHAR(50) NOT NULL,
-  invoked_at      BIGINT      NOT NULL,
+  invoked_at BIGINT  NOT NULL,
   confidence      TINYINT
 );
 

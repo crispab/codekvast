@@ -45,5 +45,4 @@ public interface UserDAO {
      * Retrieve all applications for a certain organisation
      */
     Collection<Application> getApplications(long organisationId);
-
 }

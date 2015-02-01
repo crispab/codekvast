@@ -19,8 +19,8 @@ public class InvocationDataTest {
         InvocationData data1 = InvocationData.builder()
                                              .jvmFingerprint("jvmFingerprint")
                                              .invocations(asList(
-                                                     new InvocationEntry("sig1", null, null),
-                                                     new InvocationEntry("sig2", null, null)))
+                                                     new InvocationEntry("sig1", 0L, null),
+                                                     new InvocationEntry("sig2", 0L, null)))
                                              .build();
 
         // when

@@ -61,7 +61,6 @@ public class AgentServiceImpl implements AgentService {
             log.info("Ignoring invocation data for JVM {}", data.getJvmFingerprint());
             return;
         }
-
         InvocationData storedData = agentDAO.storeInvocationData(appId, data);
         InvocationDataReceivedEvent event = new InvocationDataReceivedEvent(appId, storedData.getInvocations());
         eventBus.post(event);
