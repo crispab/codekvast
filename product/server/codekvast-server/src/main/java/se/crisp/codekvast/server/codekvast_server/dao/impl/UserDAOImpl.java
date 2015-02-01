@@ -117,6 +117,10 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
     @Override
     @Transactional(readOnly = true)
     public Collection<InvocationEntry> getSignatures(long organisationId) {
+        throw new UnsupportedOperationException("Work In Progress!!!");
+        /*
+        See http://stackoverflow.com/questions/7745609/sql-select-only-rows-with-max-value-on-a-column
+
         return jdbcTemplate.query("SELECT s.signature, s.invoked_at, s.confidence FROM signatures s " +
                                           "INNER JOIN (" +
                                           "  SELECT organisation_id, signature, max(invoked_at) invoked_at " +
@@ -126,6 +130,7 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
                                           " = ss.invoked_at " +
                                           "WHERE s.organisation_id = ? ",
                                   new InvocationsEntryRowMapper(), organisationId);
+                                  */
     }
 
     @Override
