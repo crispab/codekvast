@@ -22,10 +22,7 @@ import se.crisp.codekvast.server.codekvast_server.model.Application;
 import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * DAO for signature data.
@@ -67,7 +64,9 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
 
 
     @Override
-    public void storeInvocationData(AppId appId, InvocationData invocationData) {
+    public InvocationData storeInvocationData(AppId appId, InvocationData invocationData) {
+
+        List<InvocationEntry> result = new ArrayList<>();
 
         Set<String> existing =
                 new HashSet<>(jdbcTemplate
@@ -79,23 +78,24 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         for (InvocationEntry entry : invocationData.getInvocations()) {
             Integer confidence = entry.getConfidence() == null ? null : entry.getConfidence().ordinal();
 
+            int updated;
             if (existing.contains(entry.getSignature())) {
                 if (entry.getInvokedAtMillis() == null) {
                     // An uninvoked signature is not allowed to overwrite an invoked signature
-                    jdbcTemplate
+                    updated = jdbcTemplate
                             .update("UPDATE signatures SET confidence = ? " +
                                             "WHERE signature = ? AND application_id = ? AND invoked_at IS NULL ",
                                     confidence, entry.getSignature(), appId.getAppId());
                 } else {
                     // An invocation. Overwrite whatever was there.
-                    jdbcTemplate
+                    updated = jdbcTemplate
                             .update("UPDATE signatures SET invoked_at = ?, jvm_fingerprint = ?, confidence = ? " +
                                             "WHERE signature = ? AND application_id = ? ",
                                     entry.getInvokedAtMillis(), jvmFingerprint, confidence, entry.getSignature(), appId.getAppId());
                 }
-                log.trace("Updated {}", entry);
+                log.trace("{} {}", updated == 0 ? "Ignored" : "Updated", entry);
             } else {
-                jdbcTemplate
+                updated = jdbcTemplate
                         .update("INSERT INTO signatures(organisation_id, application_id, signature, jvm_fingerprint, invoked_at, " +
                                         "confidence) " +
                                         "VALUES(?, ?, ?, ?, ?, ?)",
@@ -103,7 +103,11 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                 entry.getInvokedAtMillis(), confidence);
                 log.trace("Stored {}", entry);
             }
+            if (updated > 0) {
+                result.add(entry);
+            }
         }
+        return InvocationData.builder().jvmFingerprint(jvmFingerprint).invocations(result).build();
     }
 
     @Override

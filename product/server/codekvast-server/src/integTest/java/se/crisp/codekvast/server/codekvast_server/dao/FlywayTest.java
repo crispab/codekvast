@@ -1,6 +1,5 @@
 package se.crisp.codekvast.server.codekvast_server.dao;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -17,16 +16,13 @@ import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertThat;
 
 /**
- * @author Olle Hallin (qolha), olle.hallin@crisp.se
+ * @author Olle Hallin <olle.hallin@crisp.se>
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {DataSourceAutoConfiguration.class, DatabaseConfig.class})
 @IntegrationTest({
-        "spring.datasource.url=jdbc:mysql://localhost/codekvast_integrationTest",
-        "spring.datasource.username=root",
-        "spring.datasource.password=root",
+        "spring.datasource.url=jdbc:h2:mem:daoTest",
 })
-@Ignore("WIP: porting from H2 to MySQL")
 public class FlywayTest {
 
     @Inject

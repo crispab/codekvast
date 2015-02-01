@@ -62,8 +62,8 @@ public class AgentServiceImpl implements AgentService {
             return;
         }
 
-        agentDAO.storeInvocationData(appId, data);
-        InvocationDataUpdatedEvent event = agentDAO.createInvocationDataUpdatedEvent(appId, data);
+        InvocationData updatedData = agentDAO.storeInvocationData(appId, data);
+        InvocationDataUpdatedEvent event = agentDAO.createInvocationDataUpdatedEvent(appId, updatedData);
         eventBus.post(event);
     }
 

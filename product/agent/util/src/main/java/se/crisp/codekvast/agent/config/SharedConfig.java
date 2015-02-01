@@ -11,7 +11,7 @@ import java.util.Properties;
 /**
  * Base class for agent side configuration objects.
  *
- * @author Olle Hallin (qolha), olle.hallin@crisp.se
+ * @author Olle Hallin <olle.hallin@crisp.se>
  */
 @Value
 @Builder

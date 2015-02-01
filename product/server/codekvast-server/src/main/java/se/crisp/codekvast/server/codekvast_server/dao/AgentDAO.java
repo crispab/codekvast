@@ -26,8 +26,9 @@ public interface AgentDAO {
      *
      * @param appId The identity of the application
      * @param invocationData The invocation data to store.
+     * @return The data that has actually been inserted or updated in the database
      */
-    void storeInvocationData(AppId appId, InvocationData invocationData);
+    InvocationData storeInvocationData(AppId appId, InvocationData invocationData);
 
     /**
      * Stores data about a JVM run

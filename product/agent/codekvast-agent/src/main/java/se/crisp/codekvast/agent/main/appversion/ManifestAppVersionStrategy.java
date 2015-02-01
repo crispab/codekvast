@@ -20,7 +20,7 @@ import java.util.jar.JarFile;
  *
  * The two-arg version uses {@code Implementation-Version} as manifest attribute.
  *
- * @author Olle Hallin (qolha), olle.hallin@crisp.se
+ * @author Olle Hallin <olle.hallin@crisp.se>
  */
 @Slf4j
 @Component

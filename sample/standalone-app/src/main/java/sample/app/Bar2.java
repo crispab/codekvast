@@ -1,7 +1,7 @@
 package sample.app;
 
 /**
- * @author Olle Hallin (qolha), olle.hallin@crisp.se
+ * @author Olle Hallin <olle.hallin@crisp.se>
  */
 public class Bar2 extends Bar1 {
 

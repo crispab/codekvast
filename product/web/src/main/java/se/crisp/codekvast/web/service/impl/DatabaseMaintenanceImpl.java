@@ -18,7 +18,7 @@ import java.util.Locale;
 /**
  * Database maintenance functions.
  *
- * @author Olle Hallin (qolha), olle.hallin@crisp.se
+ * @author Olle Hallin <olle.hallin@crisp.se>
  */
 @Service
 @Slf4j

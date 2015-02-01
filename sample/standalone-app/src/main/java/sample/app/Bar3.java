@@ -1,7 +1,7 @@
 package sample.app;
 
 /**
- * @author Olle Hallin (qolha), olle.hallin@crisp.se
+ * @author Olle Hallin <olle.hallin@crisp.se>
  */
 @SuppressWarnings("ClassTooDeepInInheritanceTree")
 public class Bar3 extends Bar2 {
