@@ -5,7 +5,10 @@ import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * InvocationsCollector keeps track of which invocations have not yet been uploaded to the codekvast-server.
@@ -21,24 +24,21 @@ class InvocationsCollector {
     private final Map<String, Long> ages = new HashMap<>();
 
     void put(String signature, long invokedAtMillis, SignatureConfidence confidence) {
-        if (signature != null) {
-            Long age = ages.get(signature);
-            if (age == null || age < invokedAtMillis) {
-                if (age != null) {
-                    removeSignature(signature);
-                }
-                notUploadedInvocations.add(new InvocationEntry(signature, invokedAtMillis, confidence));
-                ages.put(signature, invokedAtMillis);
-            }
+        if (signature == null) {
+            throw new IllegalArgumentException("signature is null");
         }
-    }
 
-    private void removeSignature(String signature) {
-        for (Iterator<InvocationEntry> iterator = notUploadedInvocations.iterator(); iterator.hasNext(); ) {
-            InvocationEntry entry = iterator.next();
-            if (entry.getSignature().equals(signature)) {
-                iterator.remove();
-            }
+        if (invokedAtMillis < 0L) {
+            throw new IllegalArgumentException("invokedAtMillis cannot be negative");
+        }
+
+        Long age = ages.get(signature);
+        if (age == null || age <= invokedAtMillis) {
+            InvocationEntry invocationEntry = new InvocationEntry(signature, invokedAtMillis, confidence);
+            // Replace it. Must remove first or, else the add is a no-op.
+            notUploadedInvocations.remove(invocationEntry);
+            notUploadedInvocations.add(invocationEntry);
+            ages.put(signature, invokedAtMillis);
         }
     }
 

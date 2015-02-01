@@ -6,8 +6,8 @@ import org.junit.Before;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author Olle Hallin
@@ -16,7 +16,7 @@ public abstract class AbstractServiceTest extends AbstractTransactionalJUnit4Spr
     protected final long startedAtMillis = System.currentTimeMillis() - 3600_000L;
     protected final long now = System.currentTimeMillis();
 
-    protected final List<Object> events = new ArrayList<>();
+    protected final List<Object> events = new CopyOnWriteArrayList<>();
 
     @Inject
     private EventBus eventBus;
@@ -33,11 +33,9 @@ public abstract class AbstractServiceTest extends AbstractTransactionalJUnit4Spr
         long stopWaitAt = System.currentTimeMillis() + maxWaitMillis;
 
         while (true) {
-            synchronized (events) {
-                int currentLength = events.size();
-                if (currentLength >= expectedEvents) {
-                    return;
-                }
+            int currentLength = events.size();
+            if (currentLength >= expectedEvents) {
+                return;
             }
             try {
                 Thread.sleep(5L);

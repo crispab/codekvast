@@ -92,7 +92,7 @@ public class AgentApiImpl implements AgentApi {
 
         List<InvocationEntry> invocations = new ArrayList<>(signatures.size());
         for (String s : signatures) {
-            invocations.add(new InvocationEntry(s, null, null));
+            invocations.add(new InvocationEntry(s, 0L, null));
         }
 
         uploadInvocationsData(jvmFingerprint, invocations);

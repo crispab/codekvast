@@ -11,7 +11,7 @@ import static org.junit.Assert.assertThat;
 import static se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence.EXACT_MATCH;
 import static se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence.FOUND_IN_PARENT_CLASS;
 
-public class SignatureInvocationTest {
+public class InvocationsCollectorTest {
 
     private final long now = System.currentTimeMillis();
     private final InvocationsCollector invocationsCollector = new InvocationsCollector();
@@ -54,6 +54,7 @@ public class SignatureInvocationTest {
         invocationsCollector.put("sig", now, FOUND_IN_PARENT_CLASS);
         Set<InvocationEntry> signatures = invocationsCollector.getNotUploadedInvocations();
         assertThat(signatures, hasSize(1));
+        assertThat(signatures.iterator().next().getConfidence(), is(FOUND_IN_PARENT_CLASS));
     }
 
     @Test
@@ -62,5 +63,21 @@ public class SignatureInvocationTest {
         assertThat(invocationsCollector.getNotUploadedInvocations(), hasSize(1));
         invocationsCollector.clearNotUploadedSignatures();
         assertThat(invocationsCollector.getNotUploadedInvocations(), hasSize(0));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testPutNullSignature() throws Exception {
+        invocationsCollector.put(null, 100L, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testPutNegativeSignature() throws Exception {
+        invocationsCollector.put("sig", -1L, null);
+    }
+
+    @Test
+    public void testPutZeroSignature() throws Exception {
+        invocationsCollector.put("sig", 0L, null);
+        assertThat(invocationsCollector.getNotUploadedInvocations(), hasSize(1));
     }
 }

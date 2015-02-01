@@ -14,7 +14,6 @@ import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
 import se.crisp.codekvast.server.codekvast_server.dao.CollectorTimestamp;
 import se.crisp.codekvast.server.codekvast_server.event.internal.ApplicationCreatedEvent;
 import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorUptimeEvent;
-import se.crisp.codekvast.server.codekvast_server.event.internal.InvocationDataUpdatedEvent;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import se.crisp.codekvast.server.codekvast_server.model.Application;
@@ -22,7 +21,10 @@ import se.crisp.codekvast.server.codekvast_server.model.Application;
 import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 /**
  * DAO for signature data.
@@ -66,48 +68,35 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     @Override
     public InvocationData storeInvocationData(AppId appId, InvocationData invocationData) {
 
-        List<InvocationEntry> result = new ArrayList<>();
-
-        Set<String> existing =
-                new HashSet<>(jdbcTemplate
-                                      .queryForList("SELECT signature FROM signatures WHERE application_id = ? AND organisation_id = ? ",
-                                                    String.class, appId.getAppId(), appId.getOrganisationId()));
-
-        String jvmFingerprint = invocationData.getJvmFingerprint();
+        List<Object[]> args = new ArrayList<>();
 
         for (InvocationEntry entry : invocationData.getInvocations()) {
             Integer confidence = entry.getConfidence() == null ? null : entry.getConfidence().ordinal();
+            args.add(new Object[]{
+                    appId.getOrganisationId(),
+                    appId.getAppId(),
+                    entry.getSignature(),
+                    invocationData.getJvmFingerprint(),
+                    entry.getInvokedAtMillis(),
+                    confidence
+            });
+        }
 
-            int updated;
-            if (existing.contains(entry.getSignature())) {
-                if (entry.getInvokedAtMillis() == null) {
-                    // An uninvoked signature is not allowed to overwrite an invoked signature
-                    updated = jdbcTemplate
-                            .update("UPDATE signatures SET confidence = ? " +
-                                            "WHERE signature = ? AND application_id = ? AND invoked_at IS NULL ",
-                                    confidence, entry.getSignature(), appId.getAppId());
-                } else {
-                    // An invocation. Overwrite whatever was there.
-                    updated = jdbcTemplate
-                            .update("UPDATE signatures SET invoked_at = ?, jvm_fingerprint = ?, confidence = ? " +
-                                            "WHERE signature = ? AND application_id = ? ",
-                                    entry.getInvokedAtMillis(), jvmFingerprint, confidence, entry.getSignature(), appId.getAppId());
-                }
-                log.trace("{} {}", updated == 0 ? "Ignored" : "Updated", entry);
-            } else {
-                updated = jdbcTemplate
-                        .update("INSERT INTO signatures(organisation_id, application_id, signature, jvm_fingerprint, invoked_at, " +
-                                        "confidence) " +
-                                        "VALUES(?, ?, ?, ?, ?, ?)",
-                                appId.getOrganisationId(), appId.getAppId(), entry.getSignature(), jvmFingerprint,
-                                entry.getInvokedAtMillis(), confidence);
-                log.trace("Stored {}", entry);
-            }
-            if (updated > 0) {
+        int[] inserted = jdbcTemplate.batchUpdate(
+                "INSERT INTO signatures(organisation_id, application_id, signature, jvm_fingerprint, invoked_at, " +
+                        "confidence) " +
+                        "VALUES(?, ?, ?, ?, ?, ?)", args);
+
+        // Now check what really made it into the table...
+        List<InvocationEntry> result = new ArrayList<>();
+        int i = 0;
+        for (InvocationEntry entry : invocationData.getInvocations()) {
+            if (inserted[i] > 0) {
                 result.add(entry);
             }
+            i += 1;
         }
-        return InvocationData.builder().jvmFingerprint(jvmFingerprint).invocations(result).build();
+        return InvocationData.builder().jvmFingerprint(invocationData.getJvmFingerprint()).invocations(result).build();
     }
 
     @Override
@@ -145,11 +134,6 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                 jdbcTemplate.queryForObject("SELECT MIN(started_at), MAX(dumped_at) FROM jvm_runs WHERE organisation_id = ? ",
                                             new CollectorTimestampRowMapper(), organisationId);
         return new CollectorUptimeEvent(timestamp, usernames);
-    }
-
-    @Override
-    public InvocationDataUpdatedEvent createInvocationDataUpdatedEvent(AppId appId, InvocationData data) {
-        return new InvocationDataUpdatedEvent(appId, data.getInvocations(), getUsernamesInOrganisation(appId.getOrganisationId()));
     }
 
     private static class CollectorTimestampRowMapper implements RowMapper<CollectorTimestamp> {

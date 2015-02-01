@@ -93,16 +93,13 @@ CREATE TABLE signatures (
   organisation_id INTEGER       NOT NULL REFERENCES organisations (id),
   application_id  INTEGER       NOT NULL REFERENCES applications (id),
   signature       VARCHAR(2000) NOT NULL,
-  jvm_fingerprint VARCHAR(50),
-  invoked_at BIGINT,
+  jvm_fingerprint VARCHAR(50) NOT NULL,
+  invoked_at      BIGINT      NOT NULL,
   confidence      TINYINT
 );
 
-DROP INDEX IF EXISTS ix_signatures;
-CREATE UNIQUE INDEX ix_signatures ON signatures (organisation_id, application_id, signature);
-
 DROP INDEX IF EXISTS ix_signatures_invoked_at;
-CREATE INDEX ix_signatures_invoked_at ON signatures (invoked_at);
+CREATE INDEX ix_signatures_invoked_at ON signatures (organisation_id, invoked_at);
 
 -- System data ----------------------------------------------------------------------------------------------
 INSERT INTO roles (name) VALUES ('SUPERUSER');

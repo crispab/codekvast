@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
-import java.util.Collection;
+import java.util.List;
 
 /**
  * REST data about used signatures.
@@ -27,7 +27,7 @@ public class InvocationData {
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     @NonNull
     @Valid
-    private Collection<InvocationEntry> invocations;
+    private List<InvocationEntry> invocations;
 
     @Override
     public String toString() {

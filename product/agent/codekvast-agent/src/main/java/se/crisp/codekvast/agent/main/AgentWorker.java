@@ -254,7 +254,9 @@ public class AgentWorker {
                 }
             }
 
-            jvmState.getInvocationsCollector().put(normalizedSignature, invocation.getInvokedAtMillis(), confidence);
+            if (normalizedSignature != null) {
+                jvmState.getInvocationsCollector().put(normalizedSignature, invocation.getInvokedAtMillis(), confidence);
+            }
         }
 
         if (unrecognized > 0) {
