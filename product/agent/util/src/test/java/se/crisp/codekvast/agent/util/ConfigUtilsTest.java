@@ -67,8 +67,15 @@ public class ConfigUtilsTest {
     public void testExpandExistingVariables() {
         System.setProperty(MY_PROP1, "XXX");
         System.setProperty(MY_PROP2, "YYY");
-        assertThat(ConfigUtils.expandVariables("$HOME ${" + MY_PROP1 + "} foo ${" + MY_PROP2 + "} bar"),
-                   is(System.getProperty("user.home") + " XXX foo YYY bar"));
+        String userVariableName;
+        if (System.getProperty("os.name").startsWith(("Windows"))) {
+            userVariableName = "$USERNAME";
+        } else {
+             userVariableName = "$USER";
+        }
+        assertThat(ConfigUtils.expandVariables(userVariableName + " ${" + MY_PROP1 + "} foo ${" + MY_PROP2 + "} bar"),
+                   is(System.getProperty("user.name") + " XXX foo YYY bar"));
+
     }
 
     @Test
