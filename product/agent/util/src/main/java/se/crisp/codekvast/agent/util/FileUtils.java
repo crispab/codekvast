@@ -156,6 +156,8 @@ public final class FileUtils {
     public static void writePropertiesTo(File file, Object object, String comment) {
         Writer out = null;
         try {
+            file.getParentFile().mkdirs();
+
             // Write the properties alphabetically
             Set<String> lines = new TreeSet<String>();
 

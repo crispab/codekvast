@@ -2,7 +2,6 @@ package se.crisp.codekvast.agent.main;
 
 import com.google.common.base.Preconditions;
 import lombok.Data;
-import lombok.experimental.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -41,11 +40,11 @@ public class AgentWorker {
     private final AgentApi agentApi;
     private final String codekvastGradleVersion;
     private final String codekvastVcsId;
-    private final Map<String, Long> jvmProcessedAt = new HashMap<>();
-    private final Map<String, String> appVersions = new HashMap<>();
-    private final Map<String, CodeBase> codeBases = new HashMap<>();
+    private final Map<String, JvmState> jvmStates = new HashMap<>();
     private final Collection<AppVersionStrategy> appVersionStrategies = new ArrayList<>();
     private final ComputerID computerId;
+
+    private long now;
 
     @Inject
     public AgentWorker(@Value("${info.build.gradle.version}") String codekvastGradleVersion,
@@ -70,97 +69,90 @@ public class AgentWorker {
     @Scheduled(initialDelay = 10L, fixedDelayString = "${codekvast.serverUploadIntervalMillis}")
     public void analyseCollectorData() {
         log.debug("Analyzing collector data");
-        long now = System.currentTimeMillis();
+        now = System.currentTimeMillis();
 
-        for (JvmState jvmState : findJvmStates()) {
-            Jvm jvm = jvmState.getJvm();
+        findJvmStates();
 
-            String appVersion = getAppVersion(jvm);
-
-            String fingerprint = jvm.getJvmFingerprint();
-            Long oldProcessedAt = jvmProcessedAt.get(fingerprint);
-
-            if (oldProcessedAt == null) {
+        for (JvmState jvmState : jvmStates.values()) {
+            if (jvmState.getInvocationDataUploadedAt() == 0L) {
                 // The agent might have crashed between consuming invocation data files and uploading them to the server.
                 // Make sure that invocation data is not lost...
                 FileUtils.resetAllConsumedInvocationDataFiles(jvmState.getInvocationsFile());
-
-                uploadJvmData(jvm, appVersion);
-
-                analyzeAndUploadCodeBaseIfNeeded(jvmState, new CodeBase(jvm.getCollectorConfig()));
-
-                processInvocationsDataIfNeeded(jvmState);
-            } else if (oldProcessedAt < jvm.getDumpedAtMillis()) {
-                uploadJvmData(jvm, appVersion);
-
-                processInvocationsDataIfNeeded(jvmState);
             }
-            jvmProcessedAt.put(fingerprint, now);
+            uploadJvmData(jvmState);
+            analyzeAndUploadCodeBaseIfNeeded(jvmState, new CodeBase(jvmState.getJvm().getCollectorConfig()));
+            processInvocationsDataIfNeeded(jvmState);
         }
     }
 
-    private String getAppVersion(Jvm jvm) {
-        String appVersion = appVersions.get(jvm.getJvmFingerprint());
-        if (appVersion == null) {
-            appVersion = resolveAppVersion(appVersionStrategies, jvm.getCollectorConfig().getCodeBaseFiles(),
-                                           jvm.getCollectorConfig().getAppVersion());
-            appVersions.put(jvm.getJvmFingerprint(), appVersion);
-        }
-        return appVersion;
+    private void findJvmStates() {
+        findJvmState(config.getSharedConfig().getDataPath());
     }
 
-    private Collection<JvmState> findJvmStates() {
-        Collection<JvmState> result = new ArrayList<>();
-        findJvmState(result, config.getSharedConfig().getDataPath());
-        return result;
-    }
-
-    private void findJvmState(Collection<JvmState> result, File dataPath) {
+    private void findJvmState(File dataPath) {
         log.debug("Looking for jvm.dat in {}", dataPath);
 
         File[] files = dataPath.listFiles();
         if (files != null) {
             for (File file : files) {
                 if (file.isFile() && file.getName().equals(CollectorConfig.JVM_BASENAME)) {
-                    addJvmState(result, file);
+                    addJvmState(file);
                 } else if (file.isDirectory()) {
-                    findJvmState(result, file);
+                    findJvmState(file);
                 }
             }
         }
     }
 
-    private void addJvmState(Collection<JvmState> result, File file) {
+    private void addJvmState(File file) {
         try {
-            JvmState jvmState = JvmState.builder()
-                                        .invocationsFile(new File(file.getParentFile(), CollectorConfig.INVOCATIONS_BASENAME))
-                                        .jvm(Jvm.readFrom(file)).build();
-            jvmState.setCodeBase(codeBases.get(jvmState.getJvm().getJvmFingerprint()));
-            result.add(jvmState);
+
+            Jvm jvm = Jvm.readFrom(file);
+
+            JvmState jvmState = jvmStates.get(jvm.getJvmFingerprint());
+            if (jvmState == null) {
+                jvmState = new JvmState(jvm);
+                jvmState.setAppVersion(getAppVersion(jvm));
+
+                jvmStates.put(jvm.getJvmFingerprint(), jvmState);
+            }
+
+            jvmState.setInvocationsFile(new File(file.getParentFile(), CollectorConfig.INVOCATIONS_BASENAME));
         } catch (IOException e) {
             log.error("Cannot load " + file, e);
         }
     }
 
-    private void uploadJvmData(Jvm jvm, String appVersion) {
-        try {
-            //@formatter:off
-            agentApi.uploadJvmData(
-                    JvmData.builder()
-                           .appName(jvm.getCollectorConfig().getAppName())
-                           .tags(jvm.getCollectorConfig().getTags())
-                           .appVersion(appVersion)
-                           .hostName(jvm.getHostName())
-                           .startedAtMillis(jvm.getStartedAtMillis())
-                           .dumpedAtMillis(jvm.getDumpedAtMillis())
-                           .jvmFingerprint(jvm.getJvmFingerprint())
-                           .computerId(computerId.toString())
-                           .codekvastVersion(codekvastGradleVersion)
-                           .codekvastVcsId(codekvastVcsId)
-                           .build());
-            //@formatter:on
-        } catch (AgentApiException e) {
-            logException("Cannot upload JVM data to " + agentApi.getServerUri(), e);
+    private String getAppVersion(Jvm jvm) {
+        return resolveAppVersion(appVersionStrategies, jvm.getCollectorConfig().getCodeBaseFiles(),
+                                 jvm.getCollectorConfig().getAppVersion());
+    }
+
+    private void uploadJvmData(JvmState jvmState) {
+        Jvm jvm = jvmState.getJvm();
+
+        if (jvmState.getJvmDataUploadedAt() < jvm.getDumpedAtMillis()) {
+            try {
+                //@formatter:off
+
+                agentApi.uploadJvmData(
+                        JvmData.builder()
+                               .appName(jvm.getCollectorConfig().getAppName())
+                               .tags(jvm.getCollectorConfig().getTags())
+                               .appVersion(jvmState.getAppVersion())
+                               .hostName(jvm.getHostName())
+                               .startedAtMillis(jvm.getStartedAtMillis())
+                               .dumpedAtMillis(jvm.getDumpedAtMillis())
+                               .jvmFingerprint(jvm.getJvmFingerprint())
+                               .computerId(computerId.toString())
+                               .codekvastVersion(codekvastGradleVersion)
+                               .codekvastVcsId(codekvastVcsId)
+                               .build());
+                //@formatter:on
+                jvmState.setJvmDataUploadedAt(jvm.getDumpedAtMillis());
+            } catch (AgentApiException e) {
+                logException("Cannot upload JVM data to " + agentApi.getServerUri(), e);
+            }
         }
     }
 
@@ -192,12 +184,12 @@ public class AgentWorker {
     }
 
     private void analyzeAndUploadCodeBaseIfNeeded(JvmState jvmState, CodeBase newCodeBase) {
-        if (!newCodeBase.equals(jvmState.getCodeBase())) {
+        if (jvmState.getCodebaseUploadedAt() == 0 || !newCodeBase.equals(jvmState.getCodeBase())) {
             codeBaseScanner.scanSignatures(newCodeBase);
             try {
                 agentApi.uploadSignatureData(jvmState.getJvm().getJvmFingerprint(), newCodeBase.getSignatures());
                 jvmState.setCodeBase(newCodeBase);
-                codeBases.put(jvmState.getJvm().getJvmFingerprint(), newCodeBase);
+                jvmState.setCodebaseUploadedAt(now);
             } catch (AgentApiException e) {
                 logException("Cannot upload signature data to " + agentApi.getServerUri(), e);
             }
@@ -214,13 +206,13 @@ public class AgentWorker {
 
     private void uploadUsedSignatures(JvmState jvmState) {
         try {
-            agentApi
-                    .uploadInvocationsData(jvmState.getJvm().getJvmFingerprint(),
+            agentApi.uploadInvocationsData(jvmState.getJvm().getJvmFingerprint(),
                                            jvmState.getInvocationsCollector().getNotUploadedInvocations());
             jvmState.getInvocationsCollector().clearNotUploadedSignatures();
             FileUtils.deleteAllConsumedInvocationDataFiles(jvmState.getInvocationsFile());
         } catch (AgentApiException e) {
-            logException("Cannot upload invocation data", e);
+            logException("Cannot upload invocation data to " + agentApi.getServerUri(), e);
+            FileUtils.resetAllConsumedInvocationDataFiles(jvmState.getInvocationsFile());
         }
     }
 
@@ -282,11 +274,15 @@ public class AgentWorker {
     }
 
     @Data
-    @Builder
     private static class JvmState {
         private final Jvm jvm;
-        private final File invocationsFile;
         private final InvocationsCollector invocationsCollector = new InvocationsCollector();
+
+        private File invocationsFile;
         private CodeBase codeBase;
+        private String appVersion;
+        private long jvmDataUploadedAt;
+        private long codebaseUploadedAt;
+        private long invocationDataUploadedAt;
     }
 }
