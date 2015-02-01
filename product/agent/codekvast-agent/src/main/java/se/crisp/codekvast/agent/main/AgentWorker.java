@@ -96,7 +96,7 @@ public class AgentWorker {
         if (files != null) {
             for (File file : files) {
                 if (file.isFile() && file.getName().equals(CollectorConfig.JVM_BASENAME)) {
-                    addJvmState(file);
+                    addOrUpdateJvmState(file);
                 } else if (file.isDirectory()) {
                     findJvmState(file);
                 }
@@ -104,7 +104,7 @@ public class AgentWorker {
         }
     }
 
-    private void addJvmState(File file) {
+    private void addOrUpdateJvmState(File file) {
         try {
 
             Jvm jvm = Jvm.readFrom(file);
@@ -174,12 +174,13 @@ public class AgentWorker {
     }
 
     private void logException(String msg, Exception e) {
-        if (log.isDebugEnabled() && !(getRootCause(e) instanceof ConnectException)) {
+        Throwable rootCause = getRootCause(e);
+        if (log.isDebugEnabled() && !(rootCause instanceof ConnectException)) {
             // log with full stack trace
             log.error(msg, e);
         } else {
             // log a one-liner with the root cause
-            log.error("{}: {}", msg, getRootCause(e).toString());
+            log.error("{}: {}", msg, rootCause.toString());
         }
     }
 

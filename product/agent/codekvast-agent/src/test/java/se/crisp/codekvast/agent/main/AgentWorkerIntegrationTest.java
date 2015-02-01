@@ -1,7 +1,6 @@
 package se.crisp.codekvast.agent.main;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -66,27 +65,6 @@ public class AgentWorkerIntegrationTest {
 
         // then
         verify(agentApi, times(1)).uploadSignatureData(eq("fingerprint1"), anyCollection());
-    }
-
-    @Test
-    @Ignore("Work In Progress")
-    public void testUploadSignatureData_uploadCodeBaseWhenChanged() throws AgentApiException, IOException {
-        // given
-        thereIsCollectorDataFromJvm("fingerprint1", "codebase1", now - 4711L);
-
-        // when
-        worker.analyseCollectorData();
-        worker.analyseCollectorData();
-
-        // given
-        thereIsCollectorDataFromJvm("fingerprint1", "codebase2", now - 2311L);
-
-        // when
-        worker.analyseCollectorData();
-        worker.analyseCollectorData();
-
-        // then
-        verify(agentApi, times(2)).uploadSignatureData(eq("fingerprint1"), anyCollection());
     }
 
     @Test
