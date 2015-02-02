@@ -1,7 +1,6 @@
 package se.crisp.codekvast.server.agent_api.impl;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -75,7 +74,7 @@ public class AgentApiImpl implements AgentApi {
 
             restTemplate.postForEntity(new URI(endPoint), validate(jvmData), Void.class);
 
-            log.info("Uploaded {} to {} in {}s", jvmData, endPoint, elapsedSeconds(startedAt));
+            log.info("Uploaded JVM data from {} to {} in {}s", jvmData.getAppName(), endPoint, elapsedSeconds(startedAt));
         } catch (URISyntaxException e) {
             throw new AgentApiException("Illegal REST endpoint: " + endPoint, e);
         } catch (RestClientException e) {
@@ -84,7 +83,7 @@ public class AgentApiImpl implements AgentApi {
     }
 
     @Override
-    public void uploadSignatureData(String jvmFingerprint, Collection<String> signatures) throws AgentApiException {
+    public void uploadSignatureData(JvmData jvmData, Collection<String> signatures) throws AgentApiException {
         if (signatures.isEmpty()) {
             log.debug("Not uploading empty signatures");
             return;
@@ -95,11 +94,11 @@ public class AgentApiImpl implements AgentApi {
             invocations.add(new InvocationEntry(s, 0L, null));
         }
 
-        uploadInvocationsData(jvmFingerprint, invocations);
+        uploadInvocationsData(jvmData, invocations);
     }
 
     @Override
-    public void uploadInvocationsData(@NonNull String jvmFingerprint, Collection<InvocationEntry> invocations)
+    public void uploadInvocationsData(JvmData jvmData, Collection<InvocationEntry> invocations)
             throws AgentApiException {
         if (invocations.isEmpty()) {
             log.debug("Not uploading empty invocations");
@@ -107,7 +106,7 @@ public class AgentApiImpl implements AgentApi {
         }
 
         String endPoint = config.getServerUri() + AgentRestEndpoints.UPLOAD_V1_INVOCATIONS;
-        log.debug("Uploading {} signatures to {}", invocations.size(), endPoint);
+        log.debug("Uploading {} signatures from {} to {}", invocations.size(), jvmData.getAppName(), endPoint);
         long startedAtMillis = System.currentTimeMillis();
 
         try {
@@ -120,14 +119,15 @@ public class AgentApiImpl implements AgentApi {
             while (from < list.size()) {
                 int to = Math.min(from + UPLOAD_CHUNK_SIZE, list.size());
 
-                uploaded += uploadInvocationChunk(jvmFingerprint, uri, list.subList(from, to), chunkNo);
+                uploaded += uploadInvocationChunk(jvmData, uri, list.subList(from, to), chunkNo);
 
                 from = to;
                 chunkNo += 1;
             }
 
             checkState(uploaded == invocations.size(), "Bad chunk logic: uploaded=" + uploaded + ", input.size()=" + invocations.size());
-            log.info("Uploaded {} invocations to {} in {}s", uploaded, endPoint, elapsedSeconds(startedAtMillis));
+            log.info("Uploaded {} invocations from {} to {} in {}s", uploaded, jvmData.getAppName(), endPoint,
+                     elapsedSeconds(startedAtMillis));
         } catch (URISyntaxException e) {
             throw new AgentApiException("Illegal REST endpoint: " + endPoint, e);
         }
@@ -139,11 +139,11 @@ public class AgentApiImpl implements AgentApi {
         }
     }
 
-    private int uploadInvocationChunk(String jvmFingerprint, URI uri, List<InvocationEntry> chunk, int chunkNo) throws AgentApiException {
+    private int uploadInvocationChunk(JvmData jvmData, URI uri, List<InvocationEntry> chunk, int chunkNo) throws AgentApiException {
         try {
             long startedAt = System.currentTimeMillis();
             log.debug("Uploading chunk #{} of size {}", chunkNo, chunk.size());
-            InvocationData data = InvocationData.builder().jvmFingerprint(jvmFingerprint).invocations(chunk).build();
+            InvocationData data = InvocationData.builder().jvmFingerprint(jvmData.getJvmFingerprint()).invocations(chunk).build();
             restTemplate.postForEntity(uri, validate(data), Void.class);
             log.debug("Uploaded chunk #{} in {} ms", chunkNo, System.currentTimeMillis() - startedAt);
             return chunk.size();

@@ -147,27 +147,32 @@ public class AgentWorker {
             try {
                 //@formatter:off
 
-                agentApi.uploadJvmData(
-                        JvmData.builder()
-                               .appName(jvm.getCollectorConfig().getAppName())
-                               .tags(jvm.getCollectorConfig().getTags())
-                               .appVersion(jvmState.getAppVersion())
-                               .collectorComputerId(jvm.getComputerId())
-                               .collectorHostName(jvm.getHostName())
-                               .startedAtMillis(jvm.getStartedAtMillis())
-                               .dumpedAtMillis(jvm.getDumpedAtMillis())
-                               .jvmFingerprint(jvm.getJvmFingerprint())
-                               .agentComputerId(agentComputerId.toString())
-                               .agentHostName(agentHostName)
-                               .codekvastVersion(codekvastGradleVersion)
-                               .codekvastVcsId(codekvastVcsId)
-                               .build());
+                agentApi.uploadJvmData(getJvmData(jvmState));
                 //@formatter:on
                 jvmState.setJvmDataUploadedAt(jvm.getDumpedAtMillis());
             } catch (AgentApiException e) {
                 logException("Cannot upload JVM data to " + agentApi.getServerUri(), e);
             }
         }
+    }
+
+    private JvmData getJvmData(JvmState jvmState) {
+        Jvm jvm = jvmState.getJvm();
+
+        return JvmData.builder()
+                      .appName(jvm.getCollectorConfig().getAppName())
+                      .tags(jvm.getCollectorConfig().getTags())
+                      .appVersion(jvmState.getAppVersion())
+                      .collectorComputerId(jvm.getComputerId())
+                      .collectorHostName(jvm.getHostName())
+                      .startedAtMillis(jvm.getStartedAtMillis())
+                      .dumpedAtMillis(jvm.getDumpedAtMillis())
+                      .jvmFingerprint(jvm.getJvmFingerprint())
+                      .agentComputerId(agentComputerId)
+                      .agentHostName(agentHostName)
+                      .codekvastVersion(codekvastGradleVersion)
+                      .codekvastVcsId(codekvastVcsId)
+                      .build();
     }
 
     static String resolveAppVersion(Collection<? extends AppVersionStrategy> appVersionStrategies, Collection<File> codeBases, String
@@ -202,7 +207,7 @@ public class AgentWorker {
         if (jvmState.getCodebaseUploadedAt() == 0 || !newCodeBase.equals(jvmState.getCodeBase())) {
             codeBaseScanner.scanSignatures(newCodeBase);
             try {
-                agentApi.uploadSignatureData(jvmState.getJvm().getJvmFingerprint(), newCodeBase.getSignatures());
+                agentApi.uploadSignatureData(getJvmData(jvmState), newCodeBase.getSignatures());
                 jvmState.setCodeBase(newCodeBase);
                 jvmState.setCodebaseUploadedAt(now);
             } catch (AgentApiException e) {
@@ -221,7 +226,7 @@ public class AgentWorker {
 
     private void uploadUsedSignatures(JvmState jvmState) {
         try {
-            agentApi.uploadInvocationsData(jvmState.getJvm().getJvmFingerprint(),
+            agentApi.uploadInvocationsData(getJvmData(jvmState),
                                            jvmState.getInvocationsCollector().getNotUploadedInvocations());
             jvmState.getInvocationsCollector().clearNotUploadedSignatures();
             FileUtils.deleteAllConsumedInvocationDataFiles(jvmState.getInvocationsFile());

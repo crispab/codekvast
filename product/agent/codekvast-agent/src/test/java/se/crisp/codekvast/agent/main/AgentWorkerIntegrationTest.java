@@ -15,6 +15,7 @@ import se.crisp.codekvast.agent.main.codebase.CodeBaseScanner;
 import se.crisp.codekvast.agent.model.Jvm;
 import se.crisp.codekvast.server.agent_api.AgentApi;
 import se.crisp.codekvast.server.agent_api.AgentApiException;
+import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
 
 import java.io.IOException;
 import java.net.URI;
@@ -23,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.Matchers.anyCollection;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -63,7 +63,7 @@ public class AgentWorkerIntegrationTest {
         worker.analyseCollectorData();
 
         // then
-        verify(agentApi, times(1)).uploadSignatureData(eq("fingerprint1"), anyCollection());
+        verify(agentApi, times(1)).uploadSignatureData(any(JvmData.class), anyCollection());
     }
 
     @Test
@@ -72,7 +72,7 @@ public class AgentWorkerIntegrationTest {
         thereIsCollectorDataFromJvm("fingerprint1", "codebase1", now - 4711L);
 
         doThrow(new AgentApiException("Failed to contact server")).doNothing()
-                                                                  .when(agentApi).uploadSignatureData(eq("fingerprint1"), anyCollection());
+                                                                  .when(agentApi).uploadSignatureData(any(JvmData.class), anyCollection());
 
         // when
         worker.analyseCollectorData();
@@ -80,7 +80,7 @@ public class AgentWorkerIntegrationTest {
         worker.analyseCollectorData();
 
         // then
-        verify(agentApi, times(2)).uploadSignatureData(eq("fingerprint1"), anyCollection());
+        verify(agentApi, times(2)).uploadSignatureData(any(JvmData.class), anyCollection());
     }
 
     private void thereIsCollectorDataFromJvm(String jvmFingerprint, String codebase, long dumpedAtMillis) throws IOException {

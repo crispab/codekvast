@@ -24,22 +24,22 @@ public interface AgentApi {
      *
      * This should typically be done when the agent detects that a JVM has started and then each time it detects a change in the code base.
      *
-     * @param jvmFingerprint The unique id of the JVM run
+     * @param jvmData Data about the JVM
      * @param signatures     The complete set of signatures found in the application
      * @throws AgentApiException Should the upload fail for some reason.
      */
-    void uploadSignatureData(String jvmFingerprint, Collection<String> signatures) throws AgentApiException;
+    void uploadSignatureData(JvmData jvmData, Collection<String> signatures) throws AgentApiException;
 
     /**
      * Upload method invocations to the server.
      *
      * This should be done as soon as a new invocations file is produced by the collector.
      *
-     * @param jvmFingerprint The fingerprint of the JVM that produced this invocations data.
+     * @param jvmData Data about the JVM
      * @param invocations    A collection of invocations entries.
      * @throws AgentApiException For all problems.
      */
-    void uploadInvocationsData(String jvmFingerprint, Collection<InvocationEntry> invocations) throws AgentApiException;
+    void uploadInvocationsData(JvmData jvmData, Collection<InvocationEntry> invocations) throws AgentApiException;
 
     /**
      * Pings the server.

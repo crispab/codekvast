@@ -86,8 +86,9 @@ public class AgentApiTest {
     @Test
     public void testUploadSignatures() throws AgentApiException, URISyntaxException, CodekvastException {
         // when
-        agentApi.uploadJvmData(getJvmData());
-        agentApi.uploadSignatureData(jvmFingerprint, signatures);
+        JvmData jvmData = getJvmData();
+        agentApi.uploadJvmData(jvmData);
+        agentApi.uploadSignatureData(jvmData, signatures);
 
         // then
         assertThat(userService.getSignatures("user"), hasSize(SIGNATURES_SIZE));
@@ -98,7 +99,7 @@ public class AgentApiTest {
                                                                new InvocationEntry(signatures.get(2), now, EXACT_MATCH),
                                                                new InvocationEntry(signatures.get(2), now + 1000L, EXACT_MATCH));
         // when
-        agentApi.uploadInvocationsData(jvmFingerprint, invocationEntries);
+        agentApi.uploadInvocationsData(jvmData, invocationEntries);
 
         // then
         Collection<InvocationEntry> actual = userService.getSignatures("user");
