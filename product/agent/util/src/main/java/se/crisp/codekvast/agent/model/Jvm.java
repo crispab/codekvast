@@ -24,6 +24,8 @@ public class Jvm {
     @NonNull
     private final CollectorConfig collectorConfig;
     @NonNull
+    private final String computerId;
+    @NonNull
     private final String hostName;
     private final long startedAtMillis;
 
@@ -39,6 +41,7 @@ public class Jvm {
 
         return Jvm.builder()
                   .collectorConfig(CollectorConfig.buildCollectorConfig(props))
+                  .computerId(props.getProperty("computerId"))
                   .hostName(props.getProperty("hostName"))
                   .jvmFingerprint(props.getProperty("jvmFingerprint"))
                   .startedAtMillis(Long.parseLong(props.getProperty("startedAtMillis")))

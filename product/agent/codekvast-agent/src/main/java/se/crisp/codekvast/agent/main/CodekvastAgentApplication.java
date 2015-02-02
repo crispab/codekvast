@@ -79,8 +79,4 @@ public class CodekvastAgentApplication {
         return new LocalValidatorFactoryBean();
     }
 
-    @Bean
-    public ComputerID computerID() {
-        return ComputerID.compute();
-    }
 }

@@ -18,6 +18,7 @@ public class JvmTest {
         file.deleteOnExit();
         Jvm sr1 = Jvm.builder()
                      .collectorConfig(CollectorConfig.createSampleCollectorConfig())
+                     .computerId("computerId")
                            .hostName("hostName")
                            .jvmFingerprint(UUID.randomUUID().toString())
                            .startedAtMillis(System.currentTimeMillis())

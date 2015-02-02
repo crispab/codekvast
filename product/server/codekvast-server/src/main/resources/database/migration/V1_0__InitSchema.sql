@@ -3,11 +3,12 @@ DROP TABLE IF EXISTS roles;
 CREATE TABLE roles (
   name VARCHAR(20) NOT NULL UNIQUE,
 );
+COMMENT ON TABLE roles IS 'Spring Security roles, without the ROLE_ prefix';
 
 -- Users ----------------------------------------------------------------------------------------------------
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
-  id                 INTEGER                             NOT NULL IDENTITY,
+  id            BIGINT                              NOT NULL AUTO_INCREMENT PRIMARY KEY,
   username           VARCHAR(100)                        NOT NULL UNIQUE,
   encoded_password   VARCHAR(80),
   plaintext_password VARCHAR(255),
@@ -17,10 +18,11 @@ CREATE TABLE users (
   created_at    TIMESTAMP DEFAULT current_timestamp NOT NULL,
   modified_at   TIMESTAMP AS NOW()
 );
+COMMENT ON COLUMN users.plaintext_password IS 'Will be replaced by an encoded password at application startup';
 
 DROP TABLE IF EXISTS user_roles;
 CREATE TABLE user_roles (
-  user_id     INTEGER                             NOT NULL REFERENCES users (id),
+  user_id    BIGINT                              NOT NULL REFERENCES users (id),
   role        VARCHAR(20)                         NOT NULL REFERENCES roles (name),
   created_at TIMESTAMP DEFAULT current_timestamp NOT NULL,
   modified_at TIMESTAMP AS NOW()
@@ -32,20 +34,16 @@ CREATE UNIQUE INDEX ix_user_roles ON user_roles (user_id, role);
 -- Organisations --------------------------------------------------------------------------------------------
 DROP TABLE IF EXISTS organisations;
 CREATE TABLE organisations (
-  id          INTEGER                             NOT NULL IDENTITY,
-  name       VARCHAR(100)                        NOT NULL,
-  name_lc    VARCHAR(100) AS LOWER(name),
+  id         BIGINT                              NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  name       VARCHAR(100)                        NOT NULL UNIQUE,
   created_at TIMESTAMP DEFAULT current_timestamp NOT NULL,
   modified_at TIMESTAMP AS NOW()
 );
 
-DROP INDEX IF EXISTS ix_organisation_name_lc;
-CREATE UNIQUE INDEX ix_organisation_name_lc ON organisations (name_lc);
-
 DROP TABLE IF EXISTS organisation_members;
 CREATE TABLE organisation_members (
-  organisation_id INTEGER                             NOT NULL REFERENCES organisations (id),
-  user_id         INTEGER                             NOT NULL REFERENCES users (id),
+  organisation_id BIGINT NOT NULL REFERENCES organisations (id),
+  user_id         BIGINT NOT NULL REFERENCES users (id),
   primary_contact BOOLEAN DEFAULT FALSE               NOT NULL,
   created_at      TIMESTAMP DEFAULT current_timestamp NOT NULL,
   modified_at     TIMESTAMP AS NOW()
@@ -57,8 +55,8 @@ CREATE UNIQUE INDEX ix_organisation_members ON organisation_members (organisatio
 -- Applications ---------------------------------------------------------------------------------------------
 DROP TABLE IF EXISTS applications;
 CREATE TABLE applications (
-  id              INTEGER                             NOT NULL IDENTITY,
-  organisation_id INTEGER                             NOT NULL REFERENCES organisations (id),
+  id              BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  organisation_id BIGINT NOT NULL REFERENCES organisations (id),
   name            VARCHAR(100)                        NOT NULL,
   created_at      TIMESTAMP DEFAULT current_timestamp NOT NULL,
   modified_at     TIMESTAMP AS NOW()
@@ -68,38 +66,59 @@ DROP INDEX IF EXISTS ix_applications;
 CREATE UNIQUE INDEX ix_applications ON applications (organisation_id, name);
 
 -- JVM runs -------------------------------------------------------------------------------------------------
-DROP TABLE IF EXISTS jvm_runs;
-CREATE TABLE jvm_runs (
-  id                  INTEGER      NOT NULL IDENTITY,
-  organisation_id     INTEGER      NOT NULL REFERENCES organisations (id),
-  application_id      INTEGER      NOT NULL REFERENCES applications (id),
-  application_version VARCHAR(100) NOT NULL,
-  computer_id VARCHAR(50) NOT NULL,
-  host_name           VARCHAR(255) NOT NULL,
-  jvm_fingerprint     VARCHAR(50)  NOT NULL,
-  codekvast_version   VARCHAR(20)  NOT NULL,
-  codekvast_vcs_id    VARCHAR(50)  NOT NULL,
-  started_at          BIGINT       NOT NULL,
-  dumped_at           BIGINT       NOT NULL
+DROP TABLE IF EXISTS jvm_stats;
+CREATE TABLE jvm_stats (
+  id                    BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  organisation_id       BIGINT       NOT NULL REFERENCES organisations (id),
+  application_id        BIGINT       NOT NULL REFERENCES applications (id),
+  application_version   VARCHAR(100) NOT NULL,
+  jvm_fingerprint       VARCHAR(50)  NOT NULL,
+  collector_computer_id VARCHAR(50)  NOT NULL,
+  collector_host_name   VARCHAR(255) NOT NULL,
+  agent_computer_id     VARCHAR(50)  NOT NULL,
+  agent_host_name       VARCHAR(255) NOT NULL,
+  codekvast_version     VARCHAR(20)  NOT NULL,
+  codekvast_vcs_id      VARCHAR(50)  NOT NULL,
+  started_at            BIGINT       NOT NULL,
+  dumped_at             BIGINT       NOT NULL
 );
+COMMENT ON TABLE jvm_stats IS 'Data about one JVM that is instrumented by the Codekvast Collector';
+COMMENT ON COLUMN jvm_stats.jvm_fingerprint IS 'The UUID generated by each Codekvast Collector instance';
+COMMENT ON COLUMN jvm_stats.collector_computer_id IS 'The se.crisp.codekvast.agent.util.ComputerID value generated by the Codekvast Collector';
+COMMENT ON COLUMN jvm_stats.collector_host_name IS 'The hostname of the machine in which Codekvast Collector executes';
+COMMENT ON COLUMN jvm_stats.agent_computer_id IS 'The se.crisp.codekvast.agent.util.ComputerID value generated by the Codekvast Agent';
+COMMENT ON COLUMN jvm_stats.agent_host_name IS 'The hostname of the machine in which Codekvast Agent executes';
+COMMENT ON COLUMN jvm_stats.codekvast_version IS 'The version of Codekvast used for collecting the data';
+COMMENT ON COLUMN jvm_stats.codekvast_vcs_id IS 'The Git hash of Codekvast used for collecting the data';
+COMMENT ON COLUMN jvm_stats.started_at IS 'The value of System.currentTimeMillis() when Codekvast Collector instance was started';
+COMMENT ON COLUMN jvm_stats.dumped_at IS 'The value of System.currentTimeMillis() when Codekvast Collector made an output of the collected
+data';
 
 DROP INDEX IF EXISTS ix_jvm_runs;
-CREATE UNIQUE INDEX ix_jvm_runs ON jvm_runs (organisation_id, application_id, jvm_fingerprint);
+CREATE UNIQUE INDEX ix_jvm_runs ON jvm_stats (organisation_id, application_id, jvm_fingerprint);
 
 -- Signatures -----------------------------------------------------------------------------------------------
 DROP TABLE IF EXISTS signatures;
 CREATE TABLE signatures (
-  id              INTEGER       NOT NULL IDENTITY,
-  organisation_id INTEGER       NOT NULL REFERENCES organisations (id),
-  application_id  INTEGER       NOT NULL REFERENCES applications (id),
-  jvm_id     INTEGER NOT NULL REFERENCES jvm_runs (id),
+  id              BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  organisation_id BIGINT NOT NULL REFERENCES organisations (id),
+  application_id  BIGINT NOT NULL REFERENCES applications (id),
+  jvm_id          BIGINT NOT NULL REFERENCES jvm_stats (id),
   signature       VARCHAR(2000) NOT NULL,
-  invoked_at BIGINT  NOT NULL,
+  invoked_at      BIGINT NOT NULL,
   confidence      TINYINT
 );
+COMMENT ON COLUMN signatures.jvm_id IS 'From which JVM does this signature originate?';
+COMMENT ON COLUMN signatures.invoked_at IS 'The value of System.currentTimeMillis() the method was invoked (rounded to nearest collection
+ interval). 0 means not yet invoked';
+COMMENT ON COLUMN signatures.confidence IS 'The ordinal for se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence. NULL for
+not yet invoked.';
+
+DROP INDEX IF EXISTS ix_signatures_id;
+CREATE INDEX ix_signatures_organisation_id ON signatures (organisation_id, signature);
 
 DROP INDEX IF EXISTS ix_signatures_invoked_at;
-CREATE INDEX ix_signatures_invoked_at ON signatures (organisation_id, invoked_at);
+CREATE INDEX ix_signatures_invoked_at ON signatures (invoked_at);
 
 -- System data ----------------------------------------------------------------------------------------------
 INSERT INTO roles (name) VALUES ('SUPERUSER');

@@ -64,10 +64,10 @@ public class AgentServiceImplTest extends AbstractServiceTest {
         agentService.storeJvmData("agent", createJvmData(dumpedAtMillis + 1000L));
 
         // then
-        assertThat(countRows("jvm_runs WHERE jvm_fingerprint = ? AND started_at = ? AND dumped_at = ? ", "fingerprint", startedAtMillis,
+        assertThat(countRows("jvm_stats WHERE jvm_fingerprint = ? AND started_at = ? AND dumped_at = ? ", "fingerprint", startedAtMillis,
                              dumpedAtMillis + 1000L), is(1));
 
-        assertEventsWithinMillis(1, 10L);
+        assertEventsWithinMillis(2, 1000L);
 
         assertThat(events, hasSize(2));
         assertThat(events.get(0), is(instanceOf(CollectorUptimeEvent.class)));
@@ -89,7 +89,7 @@ public class AgentServiceImplTest extends AbstractServiceTest {
     @Test
     public void testStoreInvocationData() throws Exception {
         agentService.storeJvmData("agent", createJvmData(now));
-        assertEventsWithinMillis(1, 10L);
+        assertEventsWithinMillis(1, 1000L);
         events.clear();
 
         List<InvocationEntry> invocations = new ArrayList<>();
@@ -103,20 +103,23 @@ public class AgentServiceImplTest extends AbstractServiceTest {
 
         agentService.storeInvocationData(data);
 
-        assertEventsWithinMillis(1, 10L);
+        assertEventsWithinMillis(1, 1000L);
         assertThat(events, hasSize(1));
         assertThat(events.get(0), is(instanceOf(InvocationDataReceivedEvent.class)));
     }
 
     private JvmData createJvmData(long dumpedAtMillis) {
         return JvmData.builder()
+                      .agentComputerId("agentComputerId")
+                      .agentComputerId("agentComputerId")
+                      .agentHostName("agentHostName")
                       .appName(getClass().getName())
                       .appVersion("appVersion")
                       .codekvastVcsId("vcsId")
                       .codekvastVersion("codekvastVersion")
-                      .computerId("computerId")
+                      .collectorComputerId("collectorComputerId")
+                      .collectorHostName("collectorHostName")
                       .dumpedAtMillis(dumpedAtMillis)
-                      .hostName("hostName")
                       .jvmFingerprint(JVM_FINGERPRINT)
                       .startedAtMillis(startedAtMillis)
                       .tags("")

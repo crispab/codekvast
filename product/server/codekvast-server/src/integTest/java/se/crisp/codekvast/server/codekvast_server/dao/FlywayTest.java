@@ -20,9 +20,7 @@ import static org.junit.Assert.assertThat;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {DataSourceAutoConfiguration.class, DatabaseConfig.class})
-@IntegrationTest({
-        "spring.datasource.url=jdbc:h2:mem:daoTest",
-})
+@IntegrationTest("spring.datasource.url=jdbc:h2:mem:flywayTest")
 public class FlywayTest {
 
     @Inject

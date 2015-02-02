@@ -40,16 +40,18 @@ public class JvmDataTest {
 
     private JvmData getJvmData(String tags) {
         return JvmData.builder()
+                      .agentComputerId("agentComputerId")
+                      .agentHostName("agentHostName")
                       .appName("appName")
                       .appVersion("appVersion")
-                      .tags(tags)
-                      .computerId("computerId")
-                      .hostName("hostName")
-                      .startedAtMillis(1000L)
+                      .codekvastVcsId("codekvastVcsId")
+                      .codekvastVersion("codekvastVersion")
+                      .collectorComputerId("collectorComputerId")
+                      .collectorHostName("collectorHostName")
                       .dumpedAtMillis(2000L)
                       .jvmFingerprint(UUID.randomUUID().toString())
-                      .codekvastVersion("codekvastVersion")
-                      .codekvastVcsId("codekvastVcsId")
+                      .startedAtMillis(1000L)
+                      .tags(tags)
                       .build();
     }
 

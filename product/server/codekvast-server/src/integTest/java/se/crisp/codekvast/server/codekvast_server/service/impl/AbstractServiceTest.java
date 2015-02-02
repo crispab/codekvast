@@ -43,7 +43,7 @@ public abstract class AbstractServiceTest extends AbstractTransactionalJUnit4Spr
             }
 
             if (System.currentTimeMillis() > stopWaitAt) {
-                throw new AssertionFailedError("Expected " + expectedEvents + " within " + maxWaitMillis + " ms.");
+                throw new AssertionFailedError("Expected " + expectedEvents + " event(s) within " + maxWaitMillis + " ms.");
             }
         }
 

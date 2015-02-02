@@ -1,18 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="dataSourceStorageLocal">
-    <data-source name="server - in-memory" uuid="a9e7fe3c-7620-4c74-b308-198387685d55">
-      <secret-storage>memory</secret-storage>
-    </data-source>
-    <data-source name="web - file" uuid="fe362d3e-fb5b-4d0e-abd0-1b048693ad3e">
-      <secret-storage>master_key</secret-storage>
-      <user-name>codekvast</user-name>
-      <schema-pattern>WEB.PUBLIC</schema-pattern>
-      <default-schemas>WEB.PUBLIC</default-schemas>
-    </data-source>
-    <data-source name="server (started with 'gradle startH2Server')" uuid="0c3c07ae-6c80-484c-9386-be5631208992">
-      <secret-storage>master_key</secret-storage>
-      <user-name>codekvast</user-name>
-    </data-source>
+    <data-source name="server - in-memory" uuid="a9e7fe3c-7620-4c74-b308-198387685d55" />
+    <data-source name="web - file" uuid="fe362d3e-fb5b-4d0e-abd0-1b048693ad3e" />
+    <data-source name="server (started with 'gradle startH2Server')" uuid="0c3c07ae-6c80-484c-9386-be5631208992" />
   </component>
 </project>

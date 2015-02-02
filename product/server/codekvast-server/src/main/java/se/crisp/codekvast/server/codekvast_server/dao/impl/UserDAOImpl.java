@@ -61,7 +61,7 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
         log.debug("Looking up AppId for JVM {}...", jvmFingerprint);
         try {
             AppId result = jdbcTemplate
-                    .queryForObject("SELECT id, organisation_id, application_id FROM jvm_runs WHERE jvm_fingerprint = ?",
+                    .queryForObject("SELECT id, organisation_id, application_id FROM jvm_stats WHERE jvm_fingerprint = ?",
                                     new AppIdRowMapper(),
                                     jvmFingerprint);
             log.debug("Result = {}", result);
@@ -87,7 +87,7 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
     @Override
     @Transactional(readOnly = true)
     public int countOrganisationsByNameLc(@NonNull String organisationName) {
-        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM organisations WHERE name_lc = ?", Integer.class, organisationName);
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM organisations WHERE LOWER(name) = ?", Integer.class, organisationName);
     }
 
     @Override
@@ -117,20 +117,20 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
     @Override
     @Transactional(readOnly = true)
     public Collection<InvocationEntry> getSignatures(long organisationId) {
-        throw new UnsupportedOperationException("Work In Progress!!!");
-        /*
-        See http://stackoverflow.com/questions/7745609/sql-select-only-rows-with-max-value-on-a-column
+        // See http://stackoverflow.com/questions/7745609/sql-select-only-rows-with-max-value-on-a-column
 
-        return jdbcTemplate.query("SELECT s.signature, s.invoked_at, s.confidence FROM signatures s " +
-                                          "INNER JOIN (" +
-                                          "  SELECT organisation_id, signature, max(invoked_at) invoked_at " +
-                                          "  FROM signatures " +
-                                          "  GROUP BY signature " +
-                                          ") ss ON s.organisation_id = ss.organisation_id AND s.signature = ss.signature AND s.invoked_at" +
-                                          " = ss.invoked_at " +
-                                          "WHERE s.organisation_id = ? ",
+        // TODO: this query scales very badly. Replace it by a simple query to a helper table.
+        // Implement a mechanism for updating the helper table when invocation data has been received.
+
+        return jdbcTemplate.query("SELECT s1.signature, s1.invoked_at, s1.confidence FROM signatures s1 " +
+                                          "LEFT OUTER JOIN signatures s2 " +
+                                          "ON (s1.organisation_id = s2.organisation_id " +
+                                          "  AND s1.signature = s2.signature " +
+                                          "  AND s1.invoked_at < s2.invoked_at) " +
+                                          "WHERE s1.organisation_id = ? " +
+                                          "AND s2.signature IS NULL ",
                                   new InvocationsEntryRowMapper(), organisationId);
-                                  */
+
     }
 
     @Override

@@ -30,26 +30,33 @@ public class JvmData {
     private String appVersion;
 
     @NonNull
+    @NotBlank
+    @Size(min = Constraints.MIN_FINGERPRINT_LENGTH, max = Constraints.MAX_FINGERPRINT_LENGTH)
+    private String jvmFingerprint;
+
+    @NonNull
     @Size(max = Constraints.MAX_TAGS_LENGTH)
     private String tags;
 
     @NonNull
     @NotBlank
     @Size(max = Constraints.MAX_HOST_NAME_LENGTH)
-    private String hostName;
+    private String collectorHostName;
 
     @NonNull
     @NotBlank
     @Size(max = Constraints.MAX_COMPUTER_ID_LENGTH)
-    private String computerId;
+    private String collectorComputerId;
 
     @NonNull
     @NotBlank
-    @Size(min = Constraints.MIN_FINGERPRINT_LENGTH, max = Constraints.MAX_FINGERPRINT_LENGTH)
-    private String jvmFingerprint;
+    @Size(max = Constraints.MAX_HOST_NAME_LENGTH)
+    private String agentHostName;
 
-    private long startedAtMillis;
-    private long dumpedAtMillis;
+    @NonNull
+    @NotBlank
+    @Size(max = Constraints.MAX_COMPUTER_ID_LENGTH)
+    private String agentComputerId;
 
     @NonNull
     @Size(max = Constraints.MAX_CODEKVAST_VERSION_LENGTH)
@@ -59,4 +66,7 @@ public class JvmData {
     @NonNull
     @Size(max = Constraints.MAX_CODEKVAST_VCS_ID_LENGTH)
     private String codekvastVcsId;
+
+    private long startedAtMillis;
+    private long dumpedAtMillis;
 }

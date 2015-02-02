@@ -13,6 +13,7 @@ import se.crisp.codekvast.agent.main.codebase.CodeBase;
 import se.crisp.codekvast.agent.main.codebase.CodeBaseScanner;
 import se.crisp.codekvast.agent.model.Invocation;
 import se.crisp.codekvast.agent.model.Jvm;
+import se.crisp.codekvast.agent.util.ComputerID;
 import se.crisp.codekvast.agent.util.FileUtils;
 import se.crisp.codekvast.server.agent_api.AgentApi;
 import se.crisp.codekvast.server.agent_api.AgentApiException;
@@ -24,6 +25,8 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.*;
 
 /**
@@ -42,7 +45,8 @@ public class AgentWorker {
     private final String codekvastVcsId;
     private final Map<String, JvmState> jvmStates = new HashMap<>();
     private final Collection<AppVersionStrategy> appVersionStrategies = new ArrayList<>();
-    private final ComputerID computerId;
+    private final String agentComputerId = ComputerID.compute().toString();
+    private final String agentHostName = getHostName();
 
     private long now;
 
@@ -52,18 +56,26 @@ public class AgentWorker {
                        AgentApi agentApi,
                        AgentConfig config,
                        CodeBaseScanner codeBaseScanner,
-                       Collection<AppVersionStrategy> appVersionStrategies,
-                       ComputerID computerId) {
+                       Collection<AppVersionStrategy> appVersionStrategies) {
         Preconditions.checkArgument(!codekvastGradleVersion.contains("{info.build"));
         Preconditions.checkArgument(!codekvastVcsId.contains("{info.build"));
-        this.config = config;
-        this.codeBaseScanner = codeBaseScanner;
-        this.agentApi = agentApi;
         this.codekvastGradleVersion = codekvastGradleVersion;
         this.codekvastVcsId = codekvastVcsId;
+        this.agentApi = agentApi;
+        this.config = config;
+        this.codeBaseScanner = codeBaseScanner;
         this.appVersionStrategies.addAll(appVersionStrategies);
-        this.computerId = computerId;
+
         log.info("Starting agent worker {} ({})", codekvastGradleVersion, codekvastVcsId);
+    }
+
+    private String getHostName() {
+        try {
+            return InetAddress.getLocalHost().getCanonicalHostName();
+        } catch (UnknownHostException e) {
+            log.error("Cannot get name of localhost");
+            return "-- unknown --";
+        }
     }
 
     @Scheduled(initialDelay = 10L, fixedDelayString = "${codekvast.serverUploadIntervalMillis}")
@@ -140,11 +152,13 @@ public class AgentWorker {
                                .appName(jvm.getCollectorConfig().getAppName())
                                .tags(jvm.getCollectorConfig().getTags())
                                .appVersion(jvmState.getAppVersion())
-                               .hostName(jvm.getHostName())
+                               .collectorComputerId(jvm.getComputerId())
+                               .collectorHostName(jvm.getHostName())
                                .startedAtMillis(jvm.getStartedAtMillis())
                                .dumpedAtMillis(jvm.getDumpedAtMillis())
                                .jvmFingerprint(jvm.getJvmFingerprint())
-                               .computerId(computerId.toString())
+                               .agentComputerId(agentComputerId.toString())
+                               .agentHostName(agentHostName)
                                .codekvastVersion(codekvastGradleVersion)
                                .codekvastVcsId(codekvastVcsId)
                                .build());

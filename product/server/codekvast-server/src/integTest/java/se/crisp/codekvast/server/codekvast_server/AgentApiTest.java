@@ -31,7 +31,7 @@ import static se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence.E
 @EmbeddedCodekvastServerTest
 public class AgentApiTest {
 
-    private static final int SIGNATURES_SIZE = 30_000;
+    private static final int SIGNATURES_SIZE = 1300;
 
     private final String jvmFingerprint = UUID.randomUUID().toString();
     private final Random random = new Random();
@@ -95,12 +95,28 @@ public class AgentApiTest {
         // given
         long now = System.currentTimeMillis();
         Collection<InvocationEntry> invocationEntries = asList(new InvocationEntry(signatures.get(1), now, EXACT_MATCH),
-                                                               new InvocationEntry(signatures.get(2), now, EXACT_MATCH));
+                                                               new InvocationEntry(signatures.get(2), now, EXACT_MATCH),
+                                                               new InvocationEntry(signatures.get(2), now + 1000L, EXACT_MATCH));
         // when
         agentApi.uploadInvocationsData(jvmFingerprint, invocationEntries);
 
         // then
-        assertThat(userService.getSignatures("user"), hasSize(SIGNATURES_SIZE));
+        Collection<InvocationEntry> actual = userService.getSignatures("user");
+        assertThat(actual, hasSize(SIGNATURES_SIZE));
+        for (InvocationEntry entry : actual) {
+            if (entry.getSignature().equals(signatures.get(0))) {
+                assertThat(entry.getInvokedAtMillis(), is(0L));
+            }
+            if (entry.getSignature().equals(signatures.get(1))) {
+                assertThat(entry.getInvokedAtMillis(), is(now));
+            }
+            if (entry.getSignature().equals(signatures.get(2))) {
+                assertThat(entry.getInvokedAtMillis(), is(now + 1000L));
+            }
+        }
+
+        // assert that only signatures from the own organisation is returned...
+        assertThat(userService.getSignatures("system"), hasSize(0));
     }
 
     private List<String> getRandomSignatures(int size) {
@@ -123,16 +139,18 @@ public class AgentApiTest {
 
     private JvmData getJvmData() {
         return JvmData.builder()
+                      .agentComputerId("agentComputerId")
+                      .agentHostName("agentHostName")
                       .appName("appName")
                       .appVersion("appVersion")
-                      .tags("tags")
-                      .hostName("hostName")
-                      .startedAtMillis(System.currentTimeMillis())
+                      .codekvastVcsId("codekvastVcsId")
+                      .codekvastVersion("codekvastVersion")
+                      .collectorComputerId("collectorComputerId")
+                      .collectorHostName("collectorHostName")
                       .dumpedAtMillis(System.currentTimeMillis())
                       .jvmFingerprint(jvmFingerprint)
-                      .computerId("computerId")
-                      .codekvastVersion("codekvastVersion")
-                      .codekvastVcsId("codekvastVcsId")
+                      .startedAtMillis(System.currentTimeMillis())
+                      .tags("tags")
                       .build();
     }
 

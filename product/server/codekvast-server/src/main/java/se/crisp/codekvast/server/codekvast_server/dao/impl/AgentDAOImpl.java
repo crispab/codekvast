@@ -101,7 +101,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     public void storeJvmData(long organisationId, long appId, JvmData data) {
         int updated =
                 jdbcTemplate
-                        .update("UPDATE jvm_runs SET dumped_at = ? WHERE application_id = ? AND jvm_fingerprint = ?",
+                        .update("UPDATE jvm_stats SET dumped_at = ? WHERE application_id = ? AND jvm_fingerprint = ?",
                                 data.getDumpedAtMillis(), appId, data.getJvmFingerprint());
         if (updated > 0) {
             log.debug("Updated dumped_at={} for JVM run {}", new Date(data.getDumpedAtMillis()), data.getJvmFingerprint());
@@ -109,13 +109,13 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         }
 
         updated = jdbcTemplate
-                .update("INSERT INTO jvm_runs(organisation_id, application_id, application_version, computer_id, host_name, jvm_fingerprint, " +
-                                "codekvast_version, " +
-                                "codekvast_vcs_id, started_at, dumped_at)" +
-                                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                        organisationId, appId, data.getAppVersion(), data.getComputerId(), data.getHostName(), data.getJvmFingerprint(),
-                        data.getCodekvastVersion(), data.getCodekvastVcsId(), data.getStartedAtMillis(),
-                        data.getDumpedAtMillis());
+                .update("INSERT INTO jvm_stats(organisation_id, application_id, application_version, jvm_fingerprint, " +
+                                "collector_computer_id, collector_host_name, agent_computer_id, agent_host_name, " +
+                                "codekvast_version, codekvast_vcs_id, started_at, dumped_at)" +
+                                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        organisationId, appId, data.getAppVersion(), data.getJvmFingerprint(),
+                        data.getCollectorComputerId(), data.getCollectorHostName(), data.getAgentComputerId(), data.getAgentHostName(),
+                        data.getCodekvastVersion(), data.getCodekvastVcsId(), data.getStartedAtMillis(), data.getDumpedAtMillis());
 
         if (updated == 1) {
             log.debug("Stored new JVM run {}", data);
@@ -129,7 +129,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         Collection<String> usernames = getUsernamesInOrganisation(organisationId);
 
         CollectorTimestamp timestamp =
-                jdbcTemplate.queryForObject("SELECT MIN(started_at), MAX(dumped_at) FROM jvm_runs WHERE organisation_id = ? ",
+                jdbcTemplate.queryForObject("SELECT MIN(started_at), MAX(dumped_at) FROM jvm_stats WHERE organisation_id = ? ",
                                             new CollectorTimestampRowMapper(), organisationId);
         return new CollectorUptimeEvent(timestamp, usernames);
     }
@@ -137,7 +137,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     private static class CollectorTimestampRowMapper implements RowMapper<CollectorTimestamp> {
         @Override
         public CollectorTimestamp mapRow(ResultSet rs, int rowNum) throws SQLException {
-            // SELECT MIN(started_at), MAX(dumped_at) FROM jvm_runs
+            // SELECT MIN(started_at), MAX(dumped_at) FROM jvm_stats
             return CollectorTimestamp.builder()
                                      .startedAtMillis(rs.getLong(1))
                                      .dumpedAtMillis(rs.getLong(2))

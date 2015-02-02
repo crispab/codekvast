@@ -32,7 +32,6 @@ public class AgentWorkerIntegrationTest {
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-    private final ComputerID computerId = ComputerID.compute();
     private final CodeBaseScanner scanner = new CodeBaseScanner();
     private SharedConfig sharedConfig;
     private long jvmStartedAtMillis = System.currentTimeMillis() - 60_000L;
@@ -51,7 +50,7 @@ public class AgentWorkerIntegrationTest {
         sharedConfig = SharedConfig.builder().dataPath(temporaryFolder.getRoot()).build();
         AgentConfig agentConfig = createAgentConfig(sharedConfig);
 
-        worker = new AgentWorker("codekvastVersion", "gitHash", agentApi, agentConfig, scanner, appVersionStrategies, computerId);
+        worker = new AgentWorker("codekvastVersion", "gitHash", agentApi, agentConfig, scanner, appVersionStrategies);
     }
 
     @Test
@@ -96,11 +95,13 @@ public class AgentWorkerIntegrationTest {
                                             .build();
 
         Jvm jvm = Jvm.builder()
-                     .jvmFingerprint(jvmFingerprint)
                      .collectorConfig(cc)
+                     .computerId("computerId")
                      .dumpedAtMillis(dumpedAtMillis)
-                     .startedAtMillis
-                             (jvmStartedAtMillis).hostName("hostName").build();
+                     .hostName("hostName")
+                     .jvmFingerprint(jvmFingerprint)
+                     .startedAtMillis(jvmStartedAtMillis)
+                     .build();
 
         jvm.saveTo(cc.getJvmFile());
     }

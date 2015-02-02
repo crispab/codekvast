@@ -3,6 +3,7 @@ package se.crisp.codekvast.agent.collector;
 import org.aspectj.lang.Signature;
 import se.crisp.codekvast.agent.config.CollectorConfig;
 import se.crisp.codekvast.agent.model.Jvm;
+import se.crisp.codekvast.agent.util.ComputerID;
 import se.crisp.codekvast.agent.util.FileUtils;
 import se.crisp.codekvast.agent.util.SignatureUtils;
 
@@ -53,12 +54,13 @@ public class InvocationRegistry {
      */
     public static void initialize(CollectorConfig config) {
         InvocationRegistry.instance = new InvocationRegistry(config,
-                                                   Jvm.builder()
-                                                      .collectorConfig(config)
-                                                         .hostName(getHostName())
-                                                         .jvmFingerprint(UUID.randomUUID().toString())
-                                                         .startedAtMillis(System.currentTimeMillis())
-                                                         .build());
+                                                             Jvm.builder()
+                                                                .collectorConfig(config)
+                                                                .computerId(ComputerID.compute().toString())
+                                                                .hostName(getHostName())
+                                                                .jvmFingerprint(UUID.randomUUID().toString())
+                                                                .startedAtMillis(System.currentTimeMillis())
+                                                                .build());
     }
 
     private static String getHostName() {
