@@ -46,6 +46,10 @@ run {
     systemProperties = ['codekvast.agent.configuration': file('src/test/resources/codekvast-agent-run.conf')]
 }
 
+bootRun {
+    systemProperties = ['codekvast.agent.configuration': file('src/test/resources/codekvast-agent-run.conf')]
+}
+
 jar.dependsOn tasks.getByPath(":product:agent:util:test")
 
 applicationDistribution.from("src/main/resources") {

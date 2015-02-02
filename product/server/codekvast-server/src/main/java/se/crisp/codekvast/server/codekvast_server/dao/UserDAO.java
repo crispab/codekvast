@@ -8,6 +8,7 @@ import se.crisp.codekvast.server.codekvast_server.model.Application;
 import se.crisp.codekvast.server.codekvast_server.model.Role;
 
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * @author Olle Hallin
@@ -22,6 +23,8 @@ public interface UserDAO {
      * @throws se.crisp.codekvast.server.codekvast_server.exception.UndefinedUserException
      */
     long getOrganisationIdForUsername(String username) throws UndefinedUserException;
+
+    Collection<String> getUsernamesInOrganisation(long organisationId);
 
     AppId getAppIdByJvmFingerprint(String jvmFingerprint);
 
@@ -39,7 +42,7 @@ public interface UserDAO {
     /**
      * Retrieve all signatures for a certain organisation
      */
-    Collection<InvocationEntry> getSignatures(long organisationId);
+    Set<InvocationEntry> getSignatures(long organisationId);
 
     /**
      * Retrieve all applications for a certain organisation

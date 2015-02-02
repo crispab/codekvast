@@ -29,7 +29,7 @@ public abstract class AbstractDAOImpl {
         return jdbcTemplate.queryForObject("SELECT IDENTITY()", Long.class);
     }
 
-    protected Collection<String> getUsernamesInOrganisation(long organisationId) {
+    public Collection<String> getUsernamesInOrganisation(long organisationId) {
         return jdbcTemplate.queryForList("SELECT u.username " +
                                                  "FROM users u, organisation_members m " +
                                                  "WHERE u.id = m.user_id AND m.organisation_id = ?",

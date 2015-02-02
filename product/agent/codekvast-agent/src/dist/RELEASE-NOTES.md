@@ -1,5 +1,9 @@
 # Codekvast Agent Release Notes
 
+## 0.8.1
+
+- Added even mode stuff to JvmData. 0.8.1 is incompatible with 0.8.0
+
 ## 0.8.0
 
 - Added JvmData.computerID. Agent 0.8 is now incompatible with server 0.7.x

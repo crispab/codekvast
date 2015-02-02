@@ -118,7 +118,7 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
 
     @Override
     @Transactional(readOnly = true)
-    public Collection<InvocationEntry> getSignatures(long organisationId) {
+    public Set<InvocationEntry> getSignatures(long organisationId) {
 
         // The database contains several rows for the same signature, with different invoked_at values.
         // We only want to return the entries with highest (latest) invoked_at for each signature.

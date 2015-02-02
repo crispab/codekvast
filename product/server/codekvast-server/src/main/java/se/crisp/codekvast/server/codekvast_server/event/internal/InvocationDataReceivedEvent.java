@@ -16,7 +16,7 @@ public class InvocationDataReceivedEvent {
 
     @Override
     public String toString() {
-        return "InvocationDataReceivedEvent(appId='" + appId + '\'' + ", invocationEntries.size=" + invocationEntries
+        return "InvocationDataReceivedEvent(appId=" + appId + ", invocationEntries.size=" + invocationEntries
                 .size() + ")";
     }
 }
