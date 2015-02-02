@@ -123,12 +123,12 @@ public class AgentWorker {
 
             JvmState jvmState = jvmStates.get(jvm.getJvmFingerprint());
             if (jvmState == null) {
-                jvmState = new JvmState(jvm);
+                jvmState = new JvmState();
                 jvmState.setAppVersion(getAppVersion(jvm));
 
                 jvmStates.put(jvm.getJvmFingerprint(), jvmState);
             }
-
+            jvmState.setJvm(jvm);
             jvmState.setInvocationsFile(new File(file.getParentFile(), CollectorConfig.INVOCATIONS_BASENAME));
         } catch (IOException e) {
             log.error("Cannot load " + file, e);
@@ -292,9 +292,9 @@ public class AgentWorker {
 
     @Data
     private static class JvmState {
-        private final Jvm jvm;
         private final InvocationsCollector invocationsCollector = new InvocationsCollector();
 
+        private Jvm jvm;
         private File invocationsFile;
         private CodeBase codeBase;
         private String appVersion;
