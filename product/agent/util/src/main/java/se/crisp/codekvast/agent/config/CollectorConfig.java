@@ -32,7 +32,7 @@ public class CollectorConfig implements CodekvastConfig {
     public static final boolean DEFAULT_CLOBBER_AOP_XML = true;
     public static final String DEFAULT_ASPECTJ_OPTIONS = "";
     public static final String DEFAULT_METHOD_EXECUTION_POINTCUT = "public * *..*(..)";
-    public static final int DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS = 600;
+    public static final int DEFAULT_COLLECTOR_RESOLUTION_SECONDS = 600;
     public static final boolean DEFAULT_VERBOSE = false;
     public static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
     public static final String SAMPLE_CODEBASE_URI1 = "/path/to/codebase1/";
@@ -130,7 +130,7 @@ public class CollectorConfig implements CodekvastConfig {
                               .packagePrefixes(ConfigUtils.getMandatoryStringValue(props, "packagePrefixes"))
                               .tags(ConfigUtils.getOptionalStringValue(props, "tags", ""))
                               .collectorResolutionSeconds(ConfigUtils.getOptionalIntValue(props, "collectorResolutionSeconds",
-                                                                                          DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS))
+                                                                                          DEFAULT_COLLECTOR_RESOLUTION_SECONDS))
                               .verbose(ConfigUtils.getOptionalBooleanValue(props, "verbose", DEFAULT_VERBOSE))
                               .clobberAopXml(ConfigUtils.getOptionalBooleanValue(props, "clobberAopXml", DEFAULT_CLOBBER_AOP_XML))
                               .methodExecutionPointcut(ConfigUtils.getOptionalStringValue(props, "methodExecutionPointcut",
@@ -147,7 +147,7 @@ public class CollectorConfig implements CodekvastConfig {
                               .codeBase(SAMPLE_CODEBASE_URI1 + " , " + SAMPLE_CODEBASE_URI2)
                               .packagePrefixes("com.acme. , foo.bar.")
                               .tags(SAMPLE_TAGS)
-                              .collectorResolutionSeconds(DEFAULT_COLLECTOR_RESOLUTION_INTERVAL_SECONDS)
+                              .collectorResolutionSeconds(DEFAULT_COLLECTOR_RESOLUTION_SECONDS)
                               .verbose(DEFAULT_VERBOSE)
                               .clobberAopXml(DEFAULT_CLOBBER_AOP_XML)
                               .methodExecutionPointcut(DEFAULT_METHOD_EXECUTION_POINTCUT)

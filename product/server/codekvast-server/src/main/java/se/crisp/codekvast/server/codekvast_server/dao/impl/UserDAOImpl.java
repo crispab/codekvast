@@ -10,8 +10,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence;
+import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedUserException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
@@ -59,17 +59,17 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
     @Override
     @Transactional(readOnly = true)
     @Cacheable("user")
-    public AppId getAppIdByJvmFingerprint(String jvmFingerprint) {
-        log.debug("Looking up AppId for JVM {}...", jvmFingerprint);
+    public AppId getAppIdByJvmUuid(String jvmUuid) {
+        log.debug("Looking up AppId for JVM {}...", jvmUuid);
         try {
             AppId result = jdbcTemplate
-                    .queryForObject("SELECT id, organisation_id, application_id FROM jvm_stats WHERE jvm_fingerprint = ?",
+                    .queryForObject("SELECT id, organisation_id, application_id FROM jvm_info WHERE jvm_uuid = ?",
                                     new AppIdRowMapper(),
-                                    jvmFingerprint);
+                                    jvmUuid);
             log.debug("Result = {}", result);
             return result;
         } catch (EmptyResultDataAccessException e) {
-            log.info("No AppId found for JVM {}, probably an agent that uploaded stale data", jvmFingerprint);
+            log.info("No AppId found for JVM {}, probably an agent that uploaded stale data", jvmUuid);
             return null;
         }
     }
@@ -118,7 +118,7 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
 
     @Override
     @Transactional(readOnly = true)
-    public Set<InvocationEntry> getSignatures(long organisationId) {
+    public Set<SignatureEntry> getSignatures(long organisationId) {
 
         // The database contains several rows for the same signature, with different invoked_at values.
         // We only want to return the entries with highest (latest) invoked_at for each signature.
@@ -126,14 +126,14 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
         // The algorithm below relies on the fact that a java.util.Set.add() will not replace an already present element.
         // By ordering by invoked_at DESC, the first returned row (i.e., the latest invoked_at) will win.
         //
-        // It is possible to do this as a one-liner because InvocationEntry.hashCode() and equals() uses InvocationEntry.signature only.
+        // It is possible to do this as a one-liner because SignatureEntry.hashCode() and equals() uses SignatureEntry.signature only.
         //
         // PS. Doing the filtering in Java is magnitudes faster than trying to to the same in pure SQL.
 
         long startedAt = System.currentTimeMillis();
-        Set<InvocationEntry> result = new HashSet<>(jdbcTemplate.query(
+        Set<SignatureEntry> result = new HashSet<>(jdbcTemplate.query(
                 "SELECT signature, invoked_at, confidence FROM signatures WHERE organisation_id = ? ORDER BY signature, invoked_at DESC",
-                new InvocationsEntryRowMapper(), organisationId));
+                new SignatureEntryRowMapper(), organisationId));
         log.debug("getSignatures({}) took {} ms", organisationId, System.currentTimeMillis() - startedAt);
         return result;
     }
@@ -163,11 +163,11 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
         }
     }
 
-    private static class InvocationsEntryRowMapper implements RowMapper<InvocationEntry> {
+    private static class SignatureEntryRowMapper implements RowMapper<SignatureEntry> {
         @Override
-        public InvocationEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
+        public SignatureEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
             // SIGNATURE, INVOKED_AT, CONFIDENCE
-            return new InvocationEntry(rs.getString(1), rs.getLong(2), SignatureConfidence.fromOrdinal(rs.getInt(3)));
+            return new SignatureEntry(rs.getString(1), rs.getLong(2), SignatureConfidence.fromOrdinal(rs.getInt(3)));
         }
     }
 

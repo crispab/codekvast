@@ -48,8 +48,10 @@ public class JvmDataTest {
                       .codekvastVersion("codekvastVersion")
                       .collectorComputerId("collectorComputerId")
                       .collectorHostName("collectorHostName")
+                      .collectorResolutionSeconds(600)
                       .dumpedAtMillis(2000L)
-                      .jvmFingerprint(UUID.randomUUID().toString())
+                      .jvmUuid(UUID.randomUUID().toString())
+                      .methodExecutionPointcut("methodExecutionPointcut")
                       .startedAtMillis(1000L)
                       .tags(tags)
                       .build();

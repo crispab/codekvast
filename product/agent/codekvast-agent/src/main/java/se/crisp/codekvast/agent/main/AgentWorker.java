@@ -121,12 +121,12 @@ public class AgentWorker {
 
             Jvm jvm = Jvm.readFrom(file);
 
-            JvmState jvmState = jvmStates.get(jvm.getJvmFingerprint());
+            JvmState jvmState = jvmStates.get(jvm.getJvmUuid());
             if (jvmState == null) {
                 jvmState = new JvmState();
                 jvmState.setAppVersion(getAppVersion(jvm));
 
-                jvmStates.put(jvm.getJvmFingerprint(), jvmState);
+                jvmStates.put(jvm.getJvmUuid(), jvmState);
             }
             jvmState.setJvm(jvm);
             jvmState.setInvocationsFile(new File(file.getParentFile(), CollectorConfig.INVOCATIONS_BASENAME));
@@ -160,18 +160,20 @@ public class AgentWorker {
         Jvm jvm = jvmState.getJvm();
 
         return JvmData.builder()
-                      .appName(jvm.getCollectorConfig().getAppName())
-                      .tags(jvm.getCollectorConfig().getTags())
-                      .appVersion(jvmState.getAppVersion())
-                      .collectorComputerId(jvm.getComputerId())
-                      .collectorHostName(jvm.getHostName())
-                      .startedAtMillis(jvm.getStartedAtMillis())
-                      .dumpedAtMillis(jvm.getDumpedAtMillis())
-                      .jvmFingerprint(jvm.getJvmFingerprint())
                       .agentComputerId(agentComputerId)
                       .agentHostName(agentHostName)
-                      .codekvastVersion(codekvastGradleVersion)
+                      .appName(jvm.getCollectorConfig().getAppName())
+                      .appVersion(jvmState.getAppVersion())
                       .codekvastVcsId(codekvastVcsId)
+                      .codekvastVersion(codekvastGradleVersion)
+                      .collectorComputerId(jvm.getComputerId())
+                      .collectorHostName(jvm.getHostName())
+                      .collectorResolutionSeconds(jvm.getCollectorConfig().getCollectorResolutionSeconds())
+                      .dumpedAtMillis(jvm.getDumpedAtMillis())
+                      .jvmUuid(jvm.getJvmUuid())
+                      .methodExecutionPointcut(jvm.getCollectorConfig().getMethodExecutionPointcut())
+                      .startedAtMillis(jvm.getStartedAtMillis())
+                      .tags(jvm.getCollectorConfig().getTags())
                       .build();
     }
 
@@ -226,13 +228,13 @@ public class AgentWorker {
 
     private void uploadUsedSignatures(JvmState jvmState) {
         try {
-            agentApi.uploadInvocationsData(getJvmData(jvmState),
-                                           jvmState.getInvocationsCollector().getNotUploadedInvocations());
+            agentApi.uploadInvocationData(getJvmData(jvmState),
+                                          jvmState.getInvocationsCollector().getNotUploadedInvocations());
             jvmState.getInvocationsCollector().clearNotUploadedSignatures();
             FileUtils.deleteAllConsumedInvocationDataFiles(jvmState.getInvocationsFile());
         } catch (AgentApiException e) {
             logException("Cannot upload invocation data to " + agentApi.getServerUri(), e);
-            FileUtils.resetAllConsumedInvocationDataFiles(jvmState.getInvocationsFile());
+            // Don't reset consumed invocation files, the data is still in the InvocationsCollector
         }
     }
 
@@ -279,7 +281,7 @@ public class AgentWorker {
         }
 
         if (unrecognized > 0) {
-            log.warn("{} recognized, {} overridden, {} unrecognized and {} ignored signature invocations applied", recognized, overridden,
+            log.warn("{} recognized, {} overridden, {} unrecognized and {} ignored method invocations applied", recognized, overridden,
                      unrecognized, ignored);
         } else {
             log.info("{} signature invocations applied ({} overridden, {} ignored)", recognized, overridden, ignored);

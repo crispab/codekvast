@@ -1,8 +1,8 @@
 package se.crisp.codekvast.agent.main;
 
 import lombok.Getter;
-import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence;
+import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.HashMap;
@@ -20,7 +20,7 @@ import java.util.Set;
 class InvocationsCollector {
 
     @Getter
-    private final Set<InvocationEntry> notUploadedInvocations = new HashSet<>();
+    private final Set<SignatureEntry> notUploadedInvocations = new HashSet<>();
     private final Map<String, Long> ages = new HashMap<>();
 
     void put(String signature, long invokedAtMillis, SignatureConfidence confidence) {
@@ -34,10 +34,10 @@ class InvocationsCollector {
 
         Long age = ages.get(signature);
         if (age == null || age <= invokedAtMillis) {
-            InvocationEntry invocationEntry = new InvocationEntry(signature, invokedAtMillis, confidence);
+            SignatureEntry signatureEntry = new SignatureEntry(signature, invokedAtMillis, confidence);
             // Replace it. Must remove first or, else the add is a no-op.
-            notUploadedInvocations.remove(invocationEntry);
-            notUploadedInvocations.add(invocationEntry);
+            notUploadedInvocations.remove(signatureEntry);
+            notUploadedInvocations.add(signatureEntry);
             ages.put(signature, invokedAtMillis);
         }
     }

@@ -7,10 +7,10 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import se.crisp.codekvast.server.agent_api.model.v1.InvocationData;
-import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence;
+import se.crisp.codekvast.server.agent_api.model.v1.SignatureData;
+import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
 import se.crisp.codekvast.server.codekvast_server.config.DatabaseConfig;
 import se.crisp.codekvast.server.codekvast_server.config.EventBusConfig;
 import se.crisp.codekvast.server.codekvast_server.dao.impl.AgentDAOImpl;
@@ -40,7 +40,7 @@ import static org.junit.Assert.assertThat;
 })
 public class AgentServiceImplTest extends AbstractServiceTest {
 
-    private static final String JVM_FINGERPRINT = "fingerprint";
+    private static final String Jvm_uuid = "fingerprint";
     @Inject
     private AgentService agentService;
 
@@ -64,7 +64,7 @@ public class AgentServiceImplTest extends AbstractServiceTest {
         agentService.storeJvmData("agent", createJvmData(dumpedAtMillis + 1000L));
 
         // then
-        assertThat(countRows("jvm_stats WHERE jvm_fingerprint = ? AND started_at = ? AND dumped_at = ? ", "fingerprint", startedAtMillis,
+        assertThat(countRows("jvm_info WHERE jvm_uuid = ? AND started_at = ? AND dumped_at = ? ", "fingerprint", startedAtMillis,
                              dumpedAtMillis + 1000L), is(1));
 
         assertEventsWithinMillis(2, 1000L);
@@ -92,16 +92,16 @@ public class AgentServiceImplTest extends AbstractServiceTest {
         assertEventsWithinMillis(1, 1000L);
         events.clear();
 
-        List<InvocationEntry> invocations = new ArrayList<>();
-        invocations.add(new InvocationEntry("sig1", 0L, null));
-        invocations.add(new InvocationEntry("sig2", 100L, SignatureConfidence.EXACT_MATCH));
-        invocations.add(new InvocationEntry("sig1", 200L, SignatureConfidence.EXACT_MATCH));
+        List<SignatureEntry> signatures = new ArrayList<>();
+        signatures.add(new SignatureEntry("sig1", 0L, null));
+        signatures.add(new SignatureEntry("sig2", 100L, SignatureConfidence.EXACT_MATCH));
+        signatures.add(new SignatureEntry("sig1", 200L, SignatureConfidence.EXACT_MATCH));
 
-        InvocationData data = InvocationData.builder()
-                                            .jvmFingerprint(JVM_FINGERPRINT)
-                                            .invocations(invocations).build();
+        SignatureData data = SignatureData.builder()
+                                          .jvmUuid(Jvm_uuid)
+                                          .signatures(signatures).build();
 
-        agentService.storeInvocationData(data);
+        agentService.storeSignatureData(data);
 
         assertEventsWithinMillis(1, 1000L);
         assertThat(events, hasSize(1));
@@ -119,8 +119,10 @@ public class AgentServiceImplTest extends AbstractServiceTest {
                       .codekvastVersion("codekvastVersion")
                       .collectorComputerId("collectorComputerId")
                       .collectorHostName("collectorHostName")
+                      .collectorResolutionSeconds(600)
                       .dumpedAtMillis(dumpedAtMillis)
-                      .jvmFingerprint(JVM_FINGERPRINT)
+                      .jvmUuid(Jvm_uuid)
+                      .methodExecutionPointcut("methodExecutionPointcut")
                       .startedAtMillis(startedAtMillis)
                       .tags("")
                       .build();

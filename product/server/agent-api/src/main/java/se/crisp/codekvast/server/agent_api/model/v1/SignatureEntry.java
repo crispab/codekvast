@@ -17,7 +17,7 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @ToString
 @EqualsAndHashCode(of = "signature")
-public class InvocationEntry {
+public class SignatureEntry {
     @NonNull
     @NotBlank
     @Size(max = Constraints.MAX_SIGNATURE_LENGTH)

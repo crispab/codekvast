@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
-import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
+import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
 import se.crisp.codekvast.server.codekvast_server.dao.CollectorTimestamp;
 import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorUptimeEvent;
 import se.crisp.codekvast.server.codekvast_server.event.internal.InvocationDataUpdatedEvent;
@@ -81,14 +81,14 @@ public class SignatureHandler extends AbstractMessageHandler {
         return sig;
     }
 
-    private SignatureData toSignatureData(Collection<InvocationEntry> invocationEntries) {
+    private SignatureData toSignatureData(Collection<SignatureEntry> invocationEntries) {
         long now = System.currentTimeMillis();
 
         List<Signature> signatures = new ArrayList<>();
         Set<String> packages = new TreeSet<>();
         Pattern pkgPattern = Pattern.compile("([\\p{javaLowerCase}\\.]+)\\.");
 
-        for (InvocationEntry entry : invocationEntries) {
+        for (SignatureEntry entry : invocationEntries) {
             String s = entry.getSignature();
 
             Matcher m = pkgPattern.matcher(s);

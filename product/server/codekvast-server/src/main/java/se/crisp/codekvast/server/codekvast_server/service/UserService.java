@@ -1,6 +1,6 @@
 package se.crisp.codekvast.server.codekvast_server.service;
 
-import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
+import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.Application;
 
@@ -16,7 +16,7 @@ public interface UserService {
      * @param username The logged in user's username
      * @return A list of invocation entries. Does never return null.
      */
-    Collection<InvocationEntry> getSignatures(String username) throws CodekvastException;
+    Collection<SignatureEntry> getSignatures(String username) throws CodekvastException;
 
     /**
      * Retrieve all applications that a certain user has access to.

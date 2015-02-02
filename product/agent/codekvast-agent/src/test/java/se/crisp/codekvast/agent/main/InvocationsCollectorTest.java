@@ -1,7 +1,7 @@
 package se.crisp.codekvast.agent.main;
 
 import org.junit.Test;
-import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
+import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
 
 import java.util.Set;
 
@@ -43,7 +43,7 @@ public class InvocationsCollectorTest {
         invocationsCollector.put("sig", now - 1, EXACT_MATCH);
         invocationsCollector.put("sig", now, EXACT_MATCH);
         invocationsCollector.put("sig", now - 2, EXACT_MATCH);
-        Set<InvocationEntry> signatures = invocationsCollector.getNotUploadedInvocations();
+        Set<SignatureEntry> signatures = invocationsCollector.getNotUploadedInvocations();
         assertThat(signatures, hasSize(1));
         assertThat(signatures.iterator().next().getInvokedAtMillis(), is(now));
     }
@@ -52,7 +52,7 @@ public class InvocationsCollectorTest {
     public void testPutSignatureTwiceWithDifferentConfidence() {
         invocationsCollector.put("sig", now, EXACT_MATCH);
         invocationsCollector.put("sig", now, FOUND_IN_PARENT_CLASS);
-        Set<InvocationEntry> signatures = invocationsCollector.getNotUploadedInvocations();
+        Set<SignatureEntry> signatures = invocationsCollector.getNotUploadedInvocations();
         assertThat(signatures, hasSize(1));
         assertThat(signatures.iterator().next().getConfidence(), is(FOUND_IN_PARENT_CLASS));
     }

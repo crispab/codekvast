@@ -1,7 +1,7 @@
 package se.crisp.codekvast.server.agent_api;
 
-import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
+import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
 
 import java.net.URI;
 import java.util.Collection;
@@ -31,7 +31,7 @@ public interface AgentApi {
     void uploadSignatureData(JvmData jvmData, Collection<String> signatures) throws AgentApiException;
 
     /**
-     * Upload method invocations to the server.
+     * Upload data about method invocations to the server.
      *
      * This should be done as soon as a new invocations file is produced by the collector.
      *
@@ -39,7 +39,7 @@ public interface AgentApi {
      * @param invocations    A collection of invocations entries.
      * @throws AgentApiException For all problems.
      */
-    void uploadInvocationsData(JvmData jvmData, Collection<InvocationEntry> invocations) throws AgentApiException;
+    void uploadInvocationData(JvmData jvmData, Collection<SignatureEntry> invocations) throws AgentApiException;
 
     /**
      * Pings the server.

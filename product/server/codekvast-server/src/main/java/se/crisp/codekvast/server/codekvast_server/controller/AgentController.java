@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import se.crisp.codekvast.server.agent_api.AgentRestEndpoints;
 import se.crisp.codekvast.server.agent_api.model.test.Ping;
 import se.crisp.codekvast.server.agent_api.model.test.Pong;
-import se.crisp.codekvast.server.agent_api.model.v1.InvocationData;
 import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
+import se.crisp.codekvast.server.agent_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.service.AgentService;
 
@@ -61,7 +61,7 @@ public class AgentController {
         log.error("Application exception: " + e);
     }
 
-    @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_JVM_RUN, method = RequestMethod.POST)
+    @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_JVM_DATA, method = RequestMethod.POST)
     public void receiveJvmDataV1(@Valid @RequestBody JvmData data, Principal principal) throws CodekvastException {
         long startedAt = System.currentTimeMillis();
         log.info("Received {} from {}", data, principal.getName());
@@ -71,14 +71,14 @@ public class AgentController {
         log.debug("JVM data stored in {} ms", System.currentTimeMillis() - startedAt);
     }
 
-    @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_INVOCATIONS, method = RequestMethod.POST)
-    public void receiveInvocationsDataV1(@Valid @RequestBody InvocationData data) throws CodekvastException {
+    @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_SIGNATURES, method = RequestMethod.POST)
+    public void receiveSignatureDataV1(@Valid @RequestBody SignatureData data) throws CodekvastException {
         long startedAt = System.currentTimeMillis();
-        log.debug("Received {} invocations", data.getInvocations().size());
+        log.debug("Received {} signatures", data.getSignatures().size());
 
-        agentService.storeInvocationData(data);
+        agentService.storeSignatureData(data);
 
-        log.debug("{} invocations stored in {} ms", data.getInvocations().size(), System.currentTimeMillis() - startedAt);
+        log.debug("{} signatures stored in {} ms", data.getSignatures().size(), System.currentTimeMillis() - startedAt);
     }
 
     @RequestMapping(value = AgentRestEndpoints.PING, method = RequestMethod.POST)

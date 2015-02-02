@@ -18,9 +18,9 @@ import se.crisp.codekvast.server.agent_api.AgentApiException;
 import se.crisp.codekvast.server.agent_api.AgentRestEndpoints;
 import se.crisp.codekvast.server.agent_api.model.test.Ping;
 import se.crisp.codekvast.server.agent_api.model.test.Pong;
-import se.crisp.codekvast.server.agent_api.model.v1.InvocationData;
-import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
+import se.crisp.codekvast.server.agent_api.model.v1.SignatureData;
+import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
@@ -66,7 +66,7 @@ public class AgentApiImpl implements AgentApi {
 
     @Override
     public void uploadJvmData(JvmData jvmData) throws AgentApiException {
-        String endPoint = config.getServerUri() + AgentRestEndpoints.UPLOAD_V1_JVM_RUN;
+        String endPoint = config.getServerUri() + AgentRestEndpoints.UPLOAD_V1_JVM_DATA;
         log.debug("Uploading JVM data to {}", endPoint);
 
         try {
@@ -89,30 +89,30 @@ public class AgentApiImpl implements AgentApi {
             return;
         }
 
-        List<InvocationEntry> invocations = new ArrayList<>(signatures.size());
+        List<SignatureEntry> signatureEntries = new ArrayList<>(signatures.size());
         for (String s : signatures) {
-            invocations.add(new InvocationEntry(s, 0L, null));
+            signatureEntries.add(new SignatureEntry(s, 0L, null));
         }
 
-        uploadInvocationsData(jvmData, invocations);
+        uploadInvocationData(jvmData, signatureEntries);
     }
 
     @Override
-    public void uploadInvocationsData(JvmData jvmData, Collection<InvocationEntry> invocations)
+    public void uploadInvocationData(JvmData jvmData, Collection<SignatureEntry> signatures)
             throws AgentApiException {
-        if (invocations.isEmpty()) {
+        if (signatures.isEmpty()) {
             log.debug("Not uploading empty invocations");
             return;
         }
 
-        String endPoint = config.getServerUri() + AgentRestEndpoints.UPLOAD_V1_INVOCATIONS;
-        log.debug("Uploading {} signatures from {} to {}", invocations.size(), jvmData.getAppName(), endPoint);
+        String endPoint = config.getServerUri() + AgentRestEndpoints.UPLOAD_V1_SIGNATURES;
+        log.debug("Uploading {} invocations from {} to {}", signatures.size(), jvmData.getAppName(), endPoint);
         long startedAtMillis = System.currentTimeMillis();
 
         try {
             URI uri = new URI(endPoint);
 
-            List<InvocationEntry> list = new ArrayList<>(invocations);
+            List<SignatureEntry> list = new ArrayList<>(signatures);
             int from = 0;
             int chunkNo = 1;
             int uploaded = 0;
@@ -125,8 +125,8 @@ public class AgentApiImpl implements AgentApi {
                 chunkNo += 1;
             }
 
-            checkState(uploaded == invocations.size(), "Bad chunk logic: uploaded=" + uploaded + ", input.size()=" + invocations.size());
-            log.info("Uploaded {} invocations from {} to {} in {}s", uploaded, jvmData.getAppName(), endPoint,
+            checkState(uploaded == signatures.size(), "Bad chunk logic: uploaded=" + uploaded + ", input.size()=" + signatures.size());
+            log.info("Uploaded {} signatures from {} to {} in {}s", uploaded, jvmData.getAppName(), endPoint,
                      elapsedSeconds(startedAtMillis));
         } catch (URISyntaxException e) {
             throw new AgentApiException("Illegal REST endpoint: " + endPoint, e);
@@ -139,16 +139,16 @@ public class AgentApiImpl implements AgentApi {
         }
     }
 
-    private int uploadInvocationChunk(JvmData jvmData, URI uri, List<InvocationEntry> chunk, int chunkNo) throws AgentApiException {
+    private int uploadInvocationChunk(JvmData jvmData, URI uri, List<SignatureEntry> chunk, int chunkNo) throws AgentApiException {
         try {
             long startedAt = System.currentTimeMillis();
             log.debug("Uploading chunk #{} of size {}", chunkNo, chunk.size());
-            InvocationData data = InvocationData.builder().jvmFingerprint(jvmData.getJvmFingerprint()).invocations(chunk).build();
+            SignatureData data = SignatureData.builder().jvmUuid(jvmData.getJvmUuid()).signatures(chunk).build();
             restTemplate.postForEntity(uri, validate(data), Void.class);
             log.debug("Uploaded chunk #{} in {} ms", chunkNo, System.currentTimeMillis() - startedAt);
             return chunk.size();
         } catch (RestClientException e) {
-            throw new AgentApiException("Failed to post invocations data", e);
+            throw new AgentApiException("Failed to post signatures data", e);
         }
     }
 
@@ -167,7 +167,7 @@ public class AgentApiImpl implements AgentApi {
         } catch (URISyntaxException e) {
             throw new AgentApiException("Illegal REST endpoint: " + endPoint, e);
         } catch (RestClientException e) {
-            throw new AgentApiException("Failed to post invocations data", e);
+            throw new AgentApiException("Failed to ping server", e);
         }
     }
 

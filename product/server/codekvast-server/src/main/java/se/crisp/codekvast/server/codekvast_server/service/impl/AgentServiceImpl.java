@@ -4,8 +4,8 @@ import com.google.common.eventbus.EventBus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import se.crisp.codekvast.server.agent_api.model.v1.InvocationData;
 import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
+import se.crisp.codekvast.server.agent_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorUptimeEvent;
@@ -49,20 +49,20 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void storeInvocationData(InvocationData data) throws CodekvastException {
+    public void storeSignatureData(SignatureData data) throws CodekvastException {
         if (log.isTraceEnabled()) {
             log.trace("Storing {}", data.toLongString());
         } else {
             log.debug("Storing {}", data);
         }
 
-        AppId appId = userDAO.getAppIdByJvmFingerprint(data.getJvmFingerprint());
+        AppId appId = userDAO.getAppIdByJvmUuid(data.getJvmUuid());
         if (appId == null) {
-            log.info("Ignoring invocation data for JVM {}", data.getJvmFingerprint());
+            log.info("Ignoring invocation data for JVM {}", data.getJvmUuid());
             return;
         }
-        InvocationData storedData = agentDAO.storeInvocationData(appId, data);
-        InvocationDataReceivedEvent event = new InvocationDataReceivedEvent(appId, storedData.getInvocations());
+        SignatureData storedData = agentDAO.storeInvocationData(appId, data);
+        InvocationDataReceivedEvent event = new InvocationDataReceivedEvent(appId, storedData.getSignatures());
         eventBus.post(event);
     }
 

@@ -18,25 +18,25 @@ import java.util.List;
 @Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class InvocationData {
+public class SignatureData {
     @NonNull
     @NotBlank
     @Size(min = Constraints.MIN_FINGERPRINT_LENGTH, max = Constraints.MAX_FINGERPRINT_LENGTH)
-    private String jvmFingerprint;
+    private String jvmUuid;
 
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     @NonNull
     @Valid
-    private List<InvocationEntry> invocations;
+    private List<SignatureEntry> signatures;
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(jvmFingerprint=" + jvmFingerprint + ", invocations.size=" + invocations
+        return getClass().getSimpleName() + "(jvmUuid=" + jvmUuid + ", signatures.size=" + signatures
                 .size() + ')';
     }
 
     public String toLongString() {
-        return getClass().getSimpleName() + "(jvmFingerprint=" + jvmFingerprint + ", invocations.size=" + invocations
-                .size() + ", invocations=" + invocations + ')';
+        return getClass().getSimpleName() + "(jvmUuid=" + jvmUuid + ", signatures.size=" + signatures
+                .size() + ", signatures=" + signatures + ')';
     }
 }

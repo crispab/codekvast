@@ -32,7 +32,7 @@ public class JvmData {
     @NonNull
     @NotBlank
     @Size(min = Constraints.MIN_FINGERPRINT_LENGTH, max = Constraints.MAX_FINGERPRINT_LENGTH)
-    private String jvmFingerprint;
+    private String jvmUuid;
 
     @NonNull
     @Size(max = Constraints.MAX_TAGS_LENGTH)
@@ -47,6 +47,13 @@ public class JvmData {
     @NotBlank
     @Size(max = Constraints.MAX_COMPUTER_ID_LENGTH)
     private String collectorComputerId;
+
+    private int collectorResolutionSeconds;
+
+    @NonNull
+    @NotBlank
+    @Size(max = Constraints.MAX_METHOD_EXECUTION_POINTCUT_LENGTH)
+    private String methodExecutionPointcut;
 
     @NonNull
     @NotBlank

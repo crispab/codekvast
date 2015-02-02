@@ -83,7 +83,7 @@ public class AgentWorkerIntegrationTest {
         verify(agentApi, times(2)).uploadSignatureData(any(JvmData.class), anyCollection());
     }
 
-    private void thereIsCollectorDataFromJvm(String jvmFingerprint, String codebase, long dumpedAtMillis) throws IOException {
+    private void thereIsCollectorDataFromJvm(String jvmUuid, String codebase, long dumpedAtMillis) throws IOException {
         CollectorConfig cc = CollectorConfig.builder()
                                             .appName("appName")
                                             .appVersion("appVersion")
@@ -99,7 +99,7 @@ public class AgentWorkerIntegrationTest {
                      .computerId("computerId")
                      .dumpedAtMillis(dumpedAtMillis)
                      .hostName("hostName")
-                     .jvmFingerprint(jvmFingerprint)
+                     .jvmUuid(jvmUuid)
                      .startedAtMillis(jvmStartedAtMillis)
                      .build();
 

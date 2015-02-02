@@ -9,8 +9,8 @@ import se.crisp.codekvast.server.agent_api.AgentApi;
 import se.crisp.codekvast.server.agent_api.AgentApiConfig;
 import se.crisp.codekvast.server.agent_api.AgentApiException;
 import se.crisp.codekvast.server.agent_api.impl.AgentApiImpl;
-import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
+import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
 
@@ -33,7 +33,7 @@ public class AgentApiTest {
 
     private static final int SIGNATURES_SIZE = 1300;
 
-    private final String jvmFingerprint = UUID.randomUUID().toString();
+    private final String jvmUuid = UUID.randomUUID().toString();
     private final Random random = new Random();
     private final List<String> signatures = getRandomSignatures(SIGNATURES_SIZE);
 
@@ -95,16 +95,16 @@ public class AgentApiTest {
 
         // given
         long now = System.currentTimeMillis();
-        Collection<InvocationEntry> invocationEntries = asList(new InvocationEntry(signatures.get(1), now, EXACT_MATCH),
-                                                               new InvocationEntry(signatures.get(2), now, EXACT_MATCH),
-                                                               new InvocationEntry(signatures.get(2), now + 1000L, EXACT_MATCH));
+        Collection<SignatureEntry> invocationEntries = asList(new SignatureEntry(signatures.get(1), now, EXACT_MATCH),
+                                                               new SignatureEntry(signatures.get(2), now, EXACT_MATCH),
+                                                               new SignatureEntry(signatures.get(2), now + 1000L, EXACT_MATCH));
         // when
-        agentApi.uploadInvocationsData(jvmData, invocationEntries);
+        agentApi.uploadInvocationData(jvmData, invocationEntries);
 
         // then
-        Collection<InvocationEntry> actual = userService.getSignatures("user");
+        Collection<SignatureEntry> actual = userService.getSignatures("user");
         assertThat(actual, hasSize(SIGNATURES_SIZE));
-        for (InvocationEntry entry : actual) {
+        for (SignatureEntry entry : actual) {
             if (entry.getSignature().equals(signatures.get(0))) {
                 assertThat(entry.getInvokedAtMillis(), is(0L));
             }
@@ -148,8 +148,10 @@ public class AgentApiTest {
                       .codekvastVersion("codekvastVersion")
                       .collectorComputerId("collectorComputerId")
                       .collectorHostName("collectorHostName")
+                      .collectorResolutionSeconds(600)
                       .dumpedAtMillis(System.currentTimeMillis())
-                      .jvmFingerprint(jvmFingerprint)
+                      .jvmUuid(jvmUuid)
+                      .methodExecutionPointcut("methodExecutionPointcut")
                       .startedAtMillis(System.currentTimeMillis())
                       .tags("tags")
                       .build();

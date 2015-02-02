@@ -7,9 +7,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import se.crisp.codekvast.server.agent_api.model.v1.InvocationData;
-import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
 import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
+import se.crisp.codekvast.server.agent_api.model.v1.SignatureData;
+import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
 import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
 import se.crisp.codekvast.server.codekvast_server.dao.CollectorTimestamp;
 import se.crisp.codekvast.server.codekvast_server.event.internal.ApplicationCreatedEvent;
@@ -66,11 +66,11 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
 
 
     @Override
-    public InvocationData storeInvocationData(AppId appId, InvocationData invocationData) {
+    public SignatureData storeInvocationData(AppId appId, SignatureData signatureData) {
 
         List<Object[]> args = new ArrayList<>();
 
-        for (InvocationEntry entry : invocationData.getInvocations()) {
+        for (SignatureEntry entry : signatureData.getSignatures()) {
             args.add(new Object[]{
                     appId.getOrganisationId(),
                     appId.getAppId(),
@@ -86,34 +86,34 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                         "VALUES(?, ?, ?, ?, ?, ?)", args);
 
         // Now check what really made it into the table...
-        List<InvocationEntry> result = new ArrayList<>();
+        List<SignatureEntry> result = new ArrayList<>();
         int i = 0;
-        for (InvocationEntry entry : invocationData.getInvocations()) {
+        for (SignatureEntry entry : signatureData.getSignatures()) {
             if (inserted[i] > 0) {
                 result.add(entry);
             }
             i += 1;
         }
-        return InvocationData.builder().jvmFingerprint(invocationData.getJvmFingerprint()).invocations(result).build();
+        return SignatureData.builder().jvmUuid(signatureData.getJvmUuid()).signatures(result).build();
     }
 
     @Override
     public void storeJvmData(long organisationId, long appId, JvmData data) {
         int updated =
                 jdbcTemplate
-                        .update("UPDATE jvm_stats SET dumped_at = ? WHERE application_id = ? AND jvm_fingerprint = ?",
-                                data.getDumpedAtMillis(), appId, data.getJvmFingerprint());
+                        .update("UPDATE jvm_info SET dumped_at = ? WHERE application_id = ? AND jvm_uuid = ?",
+                                data.getDumpedAtMillis(), appId, data.getJvmUuid());
         if (updated > 0) {
-            log.debug("Updated dumped_at={} for JVM run {}", new Date(data.getDumpedAtMillis()), data.getJvmFingerprint());
+            log.debug("Updated dumped_at={} for JVM run {}", new Date(data.getDumpedAtMillis()), data.getJvmUuid());
             return;
         }
 
         updated = jdbcTemplate
-                .update("INSERT INTO jvm_stats(organisation_id, application_id, application_version, jvm_fingerprint, " +
+                .update("INSERT INTO jvm_info(organisation_id, application_id, application_version, jvm_uuid, " +
                                 "collector_computer_id, collector_host_name, agent_computer_id, agent_host_name, " +
                                 "codekvast_version, codekvast_vcs_id, started_at, dumped_at)" +
                                 " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                        organisationId, appId, data.getAppVersion(), data.getJvmFingerprint(),
+                        organisationId, appId, data.getAppVersion(), data.getJvmUuid(),
                         data.getCollectorComputerId(), data.getCollectorHostName(), data.getAgentComputerId(), data.getAgentHostName(),
                         data.getCodekvastVersion(), data.getCodekvastVcsId(), data.getStartedAtMillis(), data.getDumpedAtMillis());
 
@@ -129,7 +129,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         Collection<String> usernames = getUsernamesInOrganisation(organisationId);
 
         CollectorTimestamp timestamp =
-                jdbcTemplate.queryForObject("SELECT MIN(started_at), MAX(dumped_at) FROM jvm_stats WHERE organisation_id = ? ",
+                jdbcTemplate.queryForObject("SELECT MIN(started_at), MAX(dumped_at) FROM jvm_info WHERE organisation_id = ? ",
                                             new CollectorTimestampRowMapper(), organisationId);
         return new CollectorUptimeEvent(timestamp, usernames);
     }
@@ -137,7 +137,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     private static class CollectorTimestampRowMapper implements RowMapper<CollectorTimestamp> {
         @Override
         public CollectorTimestamp mapRow(ResultSet rs, int rowNum) throws SQLException {
-            // SELECT MIN(started_at), MAX(dumped_at) FROM jvm_stats
+            // SELECT MIN(started_at), MAX(dumped_at) FROM jvm_info
             return CollectorTimestamp.builder()
                                      .startedAtMillis(rs.getLong(1))
                                      .dumpedAtMillis(rs.getLong(2))

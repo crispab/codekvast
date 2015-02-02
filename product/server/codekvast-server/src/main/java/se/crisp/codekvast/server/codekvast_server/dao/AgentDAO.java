@@ -1,7 +1,7 @@
 package se.crisp.codekvast.server.codekvast_server.dao;
 
-import se.crisp.codekvast.server.agent_api.model.v1.InvocationData;
 import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
+import se.crisp.codekvast.server.agent_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorUptimeEvent;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
@@ -24,10 +24,10 @@ public interface AgentDAO {
      *
      *
      * @param appId The identity of the application
-     * @param invocationData The invocation data to store.
+     * @param signatureData The invocation data to store.
      * @return The data that has actually been inserted in the database (i.e., duplicates are eliminated)
      */
-    InvocationData storeInvocationData(AppId appId, InvocationData invocationData);
+    SignatureData storeInvocationData(AppId appId, SignatureData signatureData);
 
     /**
      * Stores data about a JVM run

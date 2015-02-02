@@ -1,7 +1,7 @@
 package se.crisp.codekvast.server.codekvast_server.service;
 
-import se.crisp.codekvast.server.agent_api.model.v1.InvocationData;
 import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
+import se.crisp.codekvast.server.agent_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 
 /**
@@ -23,6 +23,6 @@ public interface AgentService {
      *
      * @param data The received invocation data
      */
-    void storeInvocationData(InvocationData data) throws CodekvastException;
+    void storeSignatureData(SignatureData data) throws CodekvastException;
 
 }

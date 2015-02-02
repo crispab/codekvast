@@ -58,7 +58,7 @@ public class InvocationRegistry {
                                                                 .collectorConfig(config)
                                                                 .computerId(ComputerID.compute().toString())
                                                                 .hostName(getHostName())
-                                                                .jvmFingerprint(UUID.randomUUID().toString())
+                                                                .jvmUuid(UUID.randomUUID().toString())
                                                                 .startedAtMillis(System.currentTimeMillis())
                                                                 .build());
     }

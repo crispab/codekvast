@@ -20,7 +20,7 @@ public class JvmTest {
                      .collectorConfig(CollectorConfig.createSampleCollectorConfig())
                      .computerId("computerId")
                            .hostName("hostName")
-                           .jvmFingerprint(UUID.randomUUID().toString())
+                     .jvmUuid(UUID.randomUUID().toString())
                            .startedAtMillis(System.currentTimeMillis())
                            .build();
         sr1.saveTo(file);

@@ -6,7 +6,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import se.crisp.codekvast.server.agent_api.model.v1.InvocationEntry;
+import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.event.internal.InvocationDataReceivedEvent;
 import se.crisp.codekvast.server.codekvast_server.event.internal.InvocationDataUpdatedEvent;
@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserDAO userDAO;
     private final EventBus eventBus;
-    private final Map<Long, Map<String, InvocationEntry>> signatureCache = new ConcurrentHashMap<>();
+    private final Map<Long, Map<String, SignatureEntry>> signatureCache = new ConcurrentHashMap<>();
 
     @Inject
     public UserServiceImpl(@NonNull UserDAO userDAO, EventBus eventBus) {
@@ -56,16 +56,16 @@ public class UserServiceImpl implements UserService {
      */
     @Subscribe
     public void onInvocationDataReceivedEvent(InvocationDataReceivedEvent event) {
-        Set<InvocationEntry> newSignatures = new HashSet<>();
+        Set<SignatureEntry> newSignatures = new HashSet<>();
 
-        Map<String, InvocationEntry> cache = signatureCache.get(event.getAppId().getOrganisationId());
+        Map<String, SignatureEntry> cache = signatureCache.get(event.getAppId().getOrganisationId());
         if (cache == null) {
             // No user has logged in yet...
             return;
         }
 
-        for (InvocationEntry newEntry : event.getInvocationEntries()) {
-            InvocationEntry oldEntry = cache.get(newEntry.getSignature());
+        for (SignatureEntry newEntry : event.getInvocationEntries()) {
+            SignatureEntry oldEntry = cache.get(newEntry.getSignature());
             if (oldEntry == null || oldEntry.getInvokedAtMillis() < newEntry.getInvokedAtMillis()) {
                 // Inform active users that there is a new invocation...
                 newSignatures.add(newEntry);
@@ -83,19 +83,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Collection<InvocationEntry> getSignatures(String username) throws CodekvastException {
+    public Collection<SignatureEntry> getSignatures(String username) throws CodekvastException {
         long organisationId = userDAO.getOrganisationIdForUsername(username);
-        Set<InvocationEntry> signatures = userDAO.getSignatures(organisationId);
+        Set<SignatureEntry> signatures = userDAO.getSignatures(organisationId);
         fillSignatureCache(organisationId, signatures);
         return signatures;
     }
 
-    private void fillSignatureCache(long organisationId, Set<InvocationEntry> signatures) {
+    private void fillSignatureCache(long organisationId, Set<SignatureEntry> signatures) {
         synchronized (signatureCache) {
-            Map<String, InvocationEntry> cache = signatureCache.get(organisationId);
+            Map<String, SignatureEntry> cache = signatureCache.get(organisationId);
             if (cache == null) {
                 cache = new ConcurrentHashMap<>();
-                for (InvocationEntry entry : signatures) {
+                for (SignatureEntry entry : signatures) {
                     cache.put(entry.getSignature(), entry);
                 }
 

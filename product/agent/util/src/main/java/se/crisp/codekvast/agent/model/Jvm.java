@@ -20,7 +20,7 @@ import java.util.Properties;
 @Builder
 public class Jvm {
     @NonNull
-    private final String jvmFingerprint;
+    private final String jvmUuid;
     @NonNull
     private final CollectorConfig collectorConfig;
     @NonNull
@@ -39,13 +39,17 @@ public class Jvm {
     public static Jvm readFrom(File file) throws IOException {
         Properties props = FileUtils.readPropertiesFrom(file);
 
-        return Jvm.builder()
-                  .collectorConfig(CollectorConfig.buildCollectorConfig(props))
-                  .computerId(props.getProperty("computerId"))
-                  .hostName(props.getProperty("hostName"))
-                  .jvmFingerprint(props.getProperty("jvmFingerprint"))
-                  .startedAtMillis(Long.parseLong(props.getProperty("startedAtMillis")))
-                  .dumpedAtMillis(Long.parseLong(props.getProperty("dumpedAtMillis")))
-                  .build();
+        try {
+            return Jvm.builder()
+                      .collectorConfig(CollectorConfig.buildCollectorConfig(props))
+                      .computerId(props.getProperty("computerId"))
+                      .hostName(props.getProperty("hostName"))
+                      .jvmUuid(props.getProperty("jvmUuid"))
+                      .startedAtMillis(Long.parseLong(props.getProperty("startedAtMillis")))
+                      .dumpedAtMillis(Long.parseLong(props.getProperty("dumpedAtMillis")))
+                      .build();
+        } catch (Exception e) {
+            throw new IOException("Cannot parse " + file);
+        }
     }
 }
