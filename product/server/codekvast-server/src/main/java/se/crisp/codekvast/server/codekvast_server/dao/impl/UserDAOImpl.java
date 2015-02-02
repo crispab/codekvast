@@ -23,7 +23,8 @@ import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * DAO for user, organisation and application data.
@@ -118,52 +119,22 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
     @Override
     @Transactional(readOnly = true)
     public Collection<InvocationEntry> getSignatures(long organisationId) {
-        // See http://stackoverflow.com/questions/7745609/sql-select-only-rows-with-max-value-on-a-column
 
-        // TODO: this query scales very badly. Replace it by a simple query to a denormalized helper table.
-        // Implement a mechanism for updating the helper table when invocation data has been received.
-
-        // These strategies were tried. They are sorted by speed (fastest on top).
-        String queries[] = {
-                "SELECT s1.signature, s1.invoked_at, s1.confidence FROM signatures s1 " +
-                        "LEFT OUTER JOIN signatures s2 " +
-                        "ON (s1.organisation_id = s2.organisation_id " +
-                        "  AND s1.signature = s2.signature " +
-                        "  AND s1.invoked_at < s2.invoked_at) " +
-                        "WHERE s1.organisation_id = ? " +
-                        "AND s2.signature IS NULL ",
-
-                "SELECT s1.signature, s1.invoked_at, s1.confidence FROM signatures s1 " +
-                        "WHERE s1.organisation_id = ? " +
-                        "AND NOT EXISTS( " +
-                        "  SELECT 1 FROM signatures s2" +
-                        "  WHERE s2.organisation_id = s1.organisation_id " +
-                        "  AND s2.signature = s1.signature " +
-                        "  AND s2.invoked_at > s1.invoked_at " +
-                        ")",
-
-                "SELECT s1.signature, s1.invoked_at, s1.confidence FROM signatures s1 " +
-                        "WHERE s1.organisation_id = ? " +
-                        "AND s1.invoked_at = (" +
-                        "  SELECT MAX(invoked_at) FROM signatures s2 " +
-                        "    WHERE s2.signature = s1.signature " +
-                        "    AND s2.organisation_id = s1.organisation_id" +
-                        ")",
-
-                "SELECT s1.signature, s1.invoked_at, s1.confidence FROM signatures s1 " +
-                        "INNER JOIN(" +
-                        "  SELECT organisation_id, signature, MAX(invoked_at) invoked_at " +
-                        "  FROM signatures " +
-                        "  GROUP BY organisation_id, signature " +
-                        ") s2 ON (s1.organisation_id = s2.organisation_id AND s1.signature = s2.signature AND s1.invoked_at = s2" +
-                        ".invoked_at) " +
-                        "WHERE s1.organisation_id = ? ",
-
-        };
+        // The database contains several rows for the same signature, with different invoked_at values.
+        // We only want to return the entries with highest (latest) invoked_at for each signature.
+        //
+        // The algorithm below relies on the fact that a java.util.Set.add() will not replace an already present element.
+        // By ordering by invoked_at DESC, the first returned row (i.e., the latest invoked_at) will win.
+        //
+        // It is possible to do this as a one-liner because InvocationEntry.hashCode() and equals() uses signature only.
+        //
+        // PS. Doing the filtering in Java is magnitudes faster than trying to to the same in pure SQL.
 
         long startedAt = System.currentTimeMillis();
-        List<InvocationEntry> result = jdbcTemplate.query(queries[0], new InvocationsEntryRowMapper(), organisationId);
-        log.warn("getSignatures({}) took {} s", organisationId, (System.currentTimeMillis() - startedAt) / 1000L);
+        Set<InvocationEntry> result = new HashSet<>(jdbcTemplate.query(
+                "SELECT signature, invoked_at, confidence FROM signatures WHERE organisation_id = ? ORDER BY signature, invoked_at DESC",
+                new InvocationsEntryRowMapper(), organisationId));
+        log.debug("getSignatures({}) took {} ms", organisationId, System.currentTimeMillis() - startedAt);
         return result;
     }
 
