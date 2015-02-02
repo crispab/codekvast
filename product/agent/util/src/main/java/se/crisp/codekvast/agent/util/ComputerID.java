@@ -52,6 +52,7 @@ public class ComputerID {
             for (Enumeration<NetworkInterface> it = NetworkInterface.getNetworkInterfaces(); it.hasMoreElements(); ) {
                 NetworkInterface ni = it.nextElement();
                 if (!ni.isLoopback() && !ni.getName().contains("vbox") && !ni.getName().contains("docker")) {
+                    // TODO: Are there other strange interface names to avoid?
                     items.add(prettyPrintMacAddress(ni.getHardwareAddress()));
                 }
             }
