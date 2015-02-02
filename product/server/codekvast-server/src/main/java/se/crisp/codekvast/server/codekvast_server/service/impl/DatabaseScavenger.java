@@ -29,36 +29,37 @@ public class DatabaseScavenger {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    @Scheduled(initialDelay = 10_000L, fixedRate = 20_000L)
+    @Scheduled(initialDelay = 15_000L, fixedRate = 120_000L)
     public void removeOldSignatures() {
+        long startedAt = System.currentTimeMillis();
         log.trace("Looking for garbage signature rows...");
 
-        List<Object[]> garbageIds = new ArrayList<>();
+        List<Object[]> rowsToDelete = new ArrayList<>();
+
+        List<TmpSignature> allSignatures = jdbcTemplate.query(
+                "SELECT id, organisation_id, signature, invoked_at FROM signatures ORDER BY invoked_at DESC ",
+                new TmpSignatureRowMapper());
 
         Set<TmpSignature> keepSignatures = new HashSet<>();
-        List<TmpSignature> allSignatures = jdbcTemplate.query(
-                "SELECT id, organisation_id, signature, invoked_at FROM signatures ORDER BY organisation_id, signature, invoked_at DESC ",
-                new SignatureRowMapper());
-
         for (TmpSignature sig : allSignatures) {
             if (!keepSignatures.add(sig)) {
                 // There was already an equal object in keepSignatures, i.e., with same organisation_id and signature.
                 // The ORDER BY clause guarantees that this first one has the highest invoked_at value.
                 log.trace("Found garbage row {}", sig);
-                garbageIds.add(new Object[]{sig.getId()});
+                rowsToDelete.add(new Object[]{sig.getId()});
             }
         }
 
-        if (!garbageIds.isEmpty()) {
-            log.debug("Will delete {} garbage signature rows...", garbageIds.size());
+        if (!rowsToDelete.isEmpty()) {
+            log.debug("Will delete {} garbage signature rows...", rowsToDelete.size());
 
-            int[] deletedInBatch = jdbcTemplate.batchUpdate("DELETE FROM signatures WHERE id = ?", garbageIds);
+            int[] deletedInBatch = jdbcTemplate.batchUpdate("DELETE FROM signatures WHERE id = ?", rowsToDelete);
 
             int sum = 0;
             for (int d : deletedInBatch) {
                 sum += d;
             }
-            log.info("Deleted {} garbage signature rows", sum);
+            log.debug("Deleted {} garbage signature rows in {} ms", sum, System.currentTimeMillis() - startedAt);
         }
     }
 
@@ -71,7 +72,7 @@ public class DatabaseScavenger {
         private final long invokedAt;
     }
 
-    private class SignatureRowMapper implements RowMapper<TmpSignature> {
+    private class TmpSignatureRowMapper implements RowMapper<TmpSignature> {
         @Override
         public TmpSignature mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new TmpSignature(rs.getLong(1), rs.getLong(2), rs.getString(3), rs.getLong(4));

@@ -110,10 +110,12 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
 
         updated = jdbcTemplate
                 .update("INSERT INTO jvm_info(organisation_id, application_id, application_version, jvm_uuid, " +
+                                "collector_resolution_seconds, method_execution_pointcut, " +
                                 "collector_computer_id, collector_host_name, agent_computer_id, agent_host_name, " +
                                 "codekvast_version, codekvast_vcs_id, started_at, dumped_at)" +
-                                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                         organisationId, appId, data.getAppVersion(), data.getJvmUuid(),
+                        data.getCollectorResolutionSeconds(), data.getMethodExecutionPointcut(),
                         data.getCollectorComputerId(), data.getCollectorHostName(), data.getAgentComputerId(), data.getAgentHostName(),
                         data.getCodekvastVersion(), data.getCodekvastVcsId(), data.getStartedAtMillis(), data.getDumpedAtMillis());
 

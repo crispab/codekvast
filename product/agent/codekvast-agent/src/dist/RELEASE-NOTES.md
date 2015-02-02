@@ -1,5 +1,10 @@
 # Codekvast Agent Release Notes
 
+## 0.8.4
+
+- Added columns JVM_INFO.COLLECTOR_RESOLUTION_SECONDS and JVM_INFO.METHOD_EXECUTION_POINTCUT. Breaks compatibility to 0.8.3
+- Added DatabaseScavenger which keeps SIGNATURES from growing.
+
 ## 0.8.1
 
 - Added even mode stuff to JvmData. 0.8.1 is incompatible with 0.8.0
