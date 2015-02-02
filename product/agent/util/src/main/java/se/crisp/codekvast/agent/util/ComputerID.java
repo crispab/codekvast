@@ -42,7 +42,7 @@ public class ComputerID {
 
     private static void addHostName(Set<String> items) {
         try {
-            items.add(InetAddress.getLocalHost().getCanonicalHostName());
+            items.add(InetAddress.getLocalHost().getHostName());
         } catch (UnknownHostException ignore) {
         }
     }

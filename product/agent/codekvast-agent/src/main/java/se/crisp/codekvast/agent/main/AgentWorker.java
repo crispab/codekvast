@@ -71,7 +71,7 @@ public class AgentWorker {
 
     private String getHostName() {
         try {
-            return InetAddress.getLocalHost().getCanonicalHostName();
+            return InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException e) {
             log.error("Cannot get name of localhost");
             return "-- unknown --";
