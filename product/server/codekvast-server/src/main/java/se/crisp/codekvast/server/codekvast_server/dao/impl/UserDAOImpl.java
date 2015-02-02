@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * DAO for user, organisation and application data.
@@ -119,18 +120,51 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
     public Collection<InvocationEntry> getSignatures(long organisationId) {
         // See http://stackoverflow.com/questions/7745609/sql-select-only-rows-with-max-value-on-a-column
 
-        // TODO: this query scales very badly. Replace it by a simple query to a helper table.
+        // TODO: this query scales very badly. Replace it by a simple query to a denormalized helper table.
         // Implement a mechanism for updating the helper table when invocation data has been received.
 
-        return jdbcTemplate.query("SELECT s1.signature, s1.invoked_at, s1.confidence FROM signatures s1 " +
-                                          "LEFT OUTER JOIN signatures s2 " +
-                                          "ON (s1.organisation_id = s2.organisation_id " +
-                                          "  AND s1.signature = s2.signature " +
-                                          "  AND s1.invoked_at < s2.invoked_at) " +
-                                          "WHERE s1.organisation_id = ? " +
-                                          "AND s2.signature IS NULL ",
-                                  new InvocationsEntryRowMapper(), organisationId);
+        // These strategies were tried. They are sorted by speed (fastest on top).
+        String queries[] = {
+                "SELECT s1.signature, s1.invoked_at, s1.confidence FROM signatures s1 " +
+                        "LEFT OUTER JOIN signatures s2 " +
+                        "ON (s1.organisation_id = s2.organisation_id " +
+                        "  AND s1.signature = s2.signature " +
+                        "  AND s1.invoked_at < s2.invoked_at) " +
+                        "WHERE s1.organisation_id = ? " +
+                        "AND s2.signature IS NULL ",
 
+                "SELECT s1.signature, s1.invoked_at, s1.confidence FROM signatures s1 " +
+                        "WHERE s1.organisation_id = ? " +
+                        "AND NOT EXISTS( " +
+                        "  SELECT 1 FROM signatures s2" +
+                        "  WHERE s2.organisation_id = s1.organisation_id " +
+                        "  AND s2.signature = s1.signature " +
+                        "  AND s2.invoked_at > s1.invoked_at " +
+                        ")",
+
+                "SELECT s1.signature, s1.invoked_at, s1.confidence FROM signatures s1 " +
+                        "WHERE s1.organisation_id = ? " +
+                        "AND s1.invoked_at = (" +
+                        "  SELECT MAX(invoked_at) FROM signatures s2 " +
+                        "    WHERE s2.signature = s1.signature " +
+                        "    AND s2.organisation_id = s1.organisation_id" +
+                        ")",
+
+                "SELECT s1.signature, s1.invoked_at, s1.confidence FROM signatures s1 " +
+                        "INNER JOIN(" +
+                        "  SELECT organisation_id, signature, MAX(invoked_at) invoked_at " +
+                        "  FROM signatures " +
+                        "  GROUP BY organisation_id, signature " +
+                        ") s2 ON (s1.organisation_id = s2.organisation_id AND s1.signature = s2.signature AND s1.invoked_at = s2" +
+                        ".invoked_at) " +
+                        "WHERE s1.organisation_id = ? ",
+
+        };
+
+        long startedAt = System.currentTimeMillis();
+        List<InvocationEntry> result = jdbcTemplate.query(queries[0], new InvocationsEntryRowMapper(), organisationId);
+        log.warn("getSignatures({}) took {} s", organisationId, (System.currentTimeMillis() - startedAt) / 1000L);
+        return result;
     }
 
     @Override
