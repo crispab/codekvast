@@ -126,7 +126,7 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
         // The algorithm below relies on the fact that a java.util.Set.add() will not replace an already present element.
         // By ordering by invoked_at DESC, the first returned row (i.e., the latest invoked_at) will win.
         //
-        // It is possible to do this as a one-liner because InvocationEntry.hashCode() and equals() uses signature only.
+        // It is possible to do this as a one-liner because InvocationEntry.hashCode() and equals() uses InvocationEntry.signature only.
         //
         // PS. Doing the filtering in Java is magnitudes faster than trying to to the same in pure SQL.
 
