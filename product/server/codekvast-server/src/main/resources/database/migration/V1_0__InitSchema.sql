@@ -104,15 +104,16 @@ DROP TABLE IF EXISTS signatures;
 CREATE TABLE signatures (
   id              BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   organisation_id BIGINT NOT NULL REFERENCES organisations (id),
-  application_id  BIGINT NOT NULL REFERENCES applications (id),
-  jvm_id          BIGINT NOT NULL REFERENCES jvm_info (id),
   signature       VARCHAR(2000) NOT NULL,
   invoked_at      BIGINT NOT NULL,
+  application_id BIGINT NOT NULL REFERENCES applications (id),
+  jvm_id         BIGINT NOT NULL REFERENCES jvm_info (id),
   confidence      TINYINT
 );
-COMMENT ON COLUMN signatures.jvm_id IS 'From which JVM does this signature originate?';
 COMMENT ON COLUMN signatures.invoked_at IS 'The value of System.currentTimeMillis() the method was invoked (rounded to nearest collection
  interval). 0 means not yet invoked';
+COMMENT ON COLUMN signatures.application_id IS 'From which application does this signature originate?';
+COMMENT ON COLUMN signatures.jvm_id IS 'From which JVM does this signature originate?';
 COMMENT ON COLUMN signatures.confidence IS 'The ordinal for se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence. NULL for
 not yet invoked.';
 

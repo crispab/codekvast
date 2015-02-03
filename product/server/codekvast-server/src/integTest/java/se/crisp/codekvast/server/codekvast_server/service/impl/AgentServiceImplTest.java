@@ -40,7 +40,8 @@ import static org.junit.Assert.assertThat;
 })
 public class AgentServiceImplTest extends AbstractServiceTest {
 
-    private static final String Jvm_uuid = "fingerprint";
+    private static final String JVM_UUID = "uuid";
+
     @Inject
     private AgentService agentService;
 
@@ -64,7 +65,7 @@ public class AgentServiceImplTest extends AbstractServiceTest {
         agentService.storeJvmData("agent", createJvmData(dumpedAtMillis + 1000L));
 
         // then
-        assertThat(countRows("jvm_info WHERE jvm_uuid = ? AND started_at = ? AND dumped_at = ? ", "fingerprint", startedAtMillis,
+        assertThat(countRows("jvm_info WHERE jvm_uuid = ? AND started_at = ? AND dumped_at = ? ", JVM_UUID, startedAtMillis,
                              dumpedAtMillis + 1000L), is(1));
 
         assertEventsWithinMillis(2, 1000L);
@@ -98,7 +99,7 @@ public class AgentServiceImplTest extends AbstractServiceTest {
         signatures.add(new SignatureEntry("sig1", 200L, SignatureConfidence.EXACT_MATCH));
 
         SignatureData data = SignatureData.builder()
-                                          .jvmUuid(Jvm_uuid)
+                                          .jvmUuid(JVM_UUID)
                                           .signatures(signatures).build();
 
         agentService.storeSignatureData(data);
@@ -121,7 +122,7 @@ public class AgentServiceImplTest extends AbstractServiceTest {
                       .collectorHostName("collectorHostName")
                       .collectorResolutionSeconds(600)
                       .dumpedAtMillis(dumpedAtMillis)
-                      .jvmUuid(Jvm_uuid)
+                      .jvmUuid(JVM_UUID)
                       .methodExecutionPointcut("methodExecutionPointcut")
                       .startedAtMillis(startedAtMillis)
                       .tags("")

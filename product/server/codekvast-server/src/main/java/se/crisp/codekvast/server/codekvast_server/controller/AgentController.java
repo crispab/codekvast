@@ -72,9 +72,9 @@ public class AgentController {
     }
 
     @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_SIGNATURES, method = RequestMethod.POST)
-    public void receiveSignatureDataV1(@Valid @RequestBody SignatureData data) throws CodekvastException {
+    public void receiveSignatureDataV1(@Valid @RequestBody SignatureData data, Principal principal) throws CodekvastException {
         long startedAt = System.currentTimeMillis();
-        log.debug("Received {} signatures", data.getSignatures().size());
+        log.debug("Received {} signatures from {}", data.getSignatures().size(), principal.getName());
 
         agentService.storeSignatureData(data);
 
@@ -82,8 +82,8 @@ public class AgentController {
     }
 
     @RequestMapping(value = AgentRestEndpoints.PING, method = RequestMethod.POST)
-    public Pong ping(@Valid @RequestBody Ping data) {
-        log.debug("Received {}", data);
+    public Pong ping(@Valid @RequestBody Ping data, Principal principal) {
+        log.debug("Received {} from {}", data, principal.getName());
         return Pong.builder().message("You said " + data.getMessage()).build();
     }
 }

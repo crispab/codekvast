@@ -1,5 +1,7 @@
 package se.crisp.codekvast.server.codekvast_server.service.impl;
 
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +11,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import se.crisp.codekvast.server.codekvast_server.event.internal.InvocationDataReceivedEvent;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,10 +33,29 @@ public class DatabaseScavenger {
     private static final String TMP_TABLE = DatabaseScavenger.class.getSimpleName().toLowerCase();
 
     private final JdbcTemplate jdbcTemplate;
+    private final EventBus eventBus;
+
+    private volatile boolean needsScavenging = true;
 
     @Inject
-    public DatabaseScavenger(JdbcTemplate jdbcTemplate) {
+    public DatabaseScavenger(JdbcTemplate jdbcTemplate, EventBus eventBus) {
         this.jdbcTemplate = jdbcTemplate;
+        this.eventBus = eventBus;
+    }
+
+    @PostConstruct
+    public void postConstruct() {
+        eventBus.register(this);
+    }
+
+    @PreDestroy
+    public void preDestroy() {
+        eventBus.unregister(this);
+    }
+
+    @Subscribe
+    public void onInvocationDataReceivedEvent(InvocationDataReceivedEvent event) {
+        needsScavenging = true;
     }
 
     @Scheduled(initialDelay = 60_000L, fixedDelay = 300_000L)
@@ -40,8 +64,13 @@ public class DatabaseScavenger {
         String savedThreadName = Thread.currentThread().getName();
         try {
             Thread.currentThread().setName(getClass().getSimpleName());
+            if (!needsScavenging) {
+                log.debug("No scavenging needed");
+                return;
+            }
+
             long startedAt = System.currentTimeMillis();
-            log.trace("Looking for garbage signature rows...");
+            log.debug("Looking for garbage signature rows...");
 
             int rowsToKeep = 0;
             List<Long> rowsToDelete = new ArrayList<>();
@@ -65,38 +94,36 @@ public class DatabaseScavenger {
             if (!rowsToDelete.isEmpty()) {
                 log.debug("Will delete {} garbage signature rows...", rowsToDelete.size());
 
+                // A quite clumsy way of doing it. The more obvious way,
+                // jdbcTemplate.batchUpdate("DELETE FROM signatures WHERE id = ?", rowsToDelete)
+                // performs lousy.
+
                 fillTemporaryTableWith(rowsToDelete);
 
                 int deleted =
-                        jdbcTemplate.update("DELETE FROM signatures s WHERE EXISTS(SELECT ID FROM " + TMP_TABLE + " t WHERE t.id = s.id )");
+                        jdbcTemplate.update("DELETE FROM signatures s WHERE EXISTS(SELECT id FROM " + TMP_TABLE + " t WHERE t.id = s.id )");
+
                 log.info("Deleted {} and kept {} signatures in {} ms", deleted, rowsToKeep, System.currentTimeMillis() - startedAt);
             }
+            needsScavenging = false;
         } finally {
             Thread.currentThread().setName(savedThreadName);
         }
     }
 
-    private int fillTemporaryTableWith(List<Long> ids) {
+    private void fillTemporaryTableWith(List<Long> ids) {
         jdbcTemplate.update("CREATE MEMORY LOCAL TEMPORARY TABLE IF NOT EXISTS " + TMP_TABLE +
                                     "(id BIGINT PRIMARY KEY) NOT PERSISTENT TRANSACTIONAL ");
 
         jdbcTemplate.update("DELETE FROM " + TMP_TABLE);
 
-        int[][] updates = jdbcTemplate.batchUpdate("INSERT INTO " + TMP_TABLE + " SET id = ?", ids, 500,
-                                                   new ParameterizedPreparedStatementSetter<Long>() {
-                                                       @Override
-                                                       public void setValues(PreparedStatement ps, Long argument) throws SQLException {
-                                                           ps.setLong(1, argument);
-                                                       }
-                                                   });
-
-        int inserted = 0;
-        for (int[] row : updates) {
-            for (int col : row) {
-                inserted += col;
-            }
-        }
-        return inserted;
+        jdbcTemplate.batchUpdate("INSERT INTO " + TMP_TABLE + "(?)", ids, 500,
+                                 new ParameterizedPreparedStatementSetter<Long>() {
+                                     @Override
+                                     public void setValues(PreparedStatement ps, Long argument) throws SQLException {
+                                         ps.setLong(1, argument);
+                                     }
+                                 });
     }
 
     @Value

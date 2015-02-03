@@ -15,14 +15,17 @@ ext.tomcatDownloadUrl = "http://apache.mirrors.spacedump.net/tomcat/tomcat-7/v${
 ext.tomcatDir = file("$buildDir/tomcat")
 ext.catalinaBase = file("$tomcatDir/apache-tomcat-${tomcatVersion}")
 
-ext.jenkinsVersion = "1.592"
+ext.jenkinsVersion = "1.598"
 ext.jenkinsDownloadUrl = "http://mirrors.jenkins-ci.org/war/${jenkinsVersion}/jenkins.war"
 
 task installJenkinsInTomcat7 {
     def downloadDir = file("$buildDir/tmp/download")
     def webappsDir = new File(catalinaBase, "webapps")
+    def jenkinsDir = new File(webappsDir, "jenkins")
 
+    inputs.property "tomcatVersion", tomcatVersion
     inputs.property "tomcat", tomcatDownloadUrl
+    inputs.property "jenkinsVersion", jenkinsVersion
     inputs.property "jenkins", jenkinsDownloadUrl
     inputs.file file("build.gradle")
     outputs.dir tomcatDir
@@ -53,6 +56,11 @@ task installJenkinsInTomcat7 {
                 usetimestamp: true,
                 verbose: true
         )
+
+        if (jenkinsDir.exists()) {
+            logger.lifecycle "Deleting old exploded jenkins dir..."
+            delete jenkinsDir
+        }
     }
 }
 

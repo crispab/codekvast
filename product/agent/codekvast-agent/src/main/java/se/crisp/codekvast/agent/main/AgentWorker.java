@@ -80,6 +80,16 @@ public class AgentWorker {
 
     @Scheduled(initialDelay = 10L, fixedDelayString = "${codekvast.serverUploadIntervalMillis}")
     public void analyseCollectorData() {
+        String oldThreadName = Thread.currentThread().getName();
+        Thread.currentThread().setName(getClass().getSimpleName());
+        try {
+            doAnalyzeCollectorData();
+        } finally {
+            Thread.currentThread().setName(oldThreadName);
+        }
+    }
+
+    private void doAnalyzeCollectorData() {
         log.debug("Analyzing collector data");
         now = System.currentTimeMillis();
 
@@ -207,6 +217,11 @@ public class AgentWorker {
 
     private void analyzeAndUploadCodeBaseIfNeeded(JvmState jvmState, CodeBase newCodeBase) {
         if (jvmState.getCodebaseUploadedAt() == 0 || !newCodeBase.equals(jvmState.getCodeBase())) {
+            if (jvmState.getCodebaseUploadedAt() == 0) {
+                log.debug("Codebase has not yet been uploaded");
+            } else {
+                log.info("Codebase has changed, it will now be scanned and uploaded");
+            }
             codeBaseScanner.scanSignatures(newCodeBase);
             try {
                 agentApi.uploadSignatureData(getJvmData(jvmState), newCodeBase.getSignatures());

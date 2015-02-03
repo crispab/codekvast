@@ -73,16 +73,16 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         for (SignatureEntry entry : signatureData.getSignatures()) {
             args.add(new Object[]{
                     appId.getOrganisationId(),
-                    appId.getAppId(),
-                    appId.getJvmId(),
                     entry.getSignature(),
                     entry.getInvokedAtMillis(),
+                    appId.getAppId(),
+                    appId.getJvmId(),
                     entry.getConfidence() == null ? null : entry.getConfidence().ordinal()
             });
         }
 
         int[] inserted = jdbcTemplate.batchUpdate(
-                "INSERT INTO signatures(organisation_id, application_id, jvm_id, signature, invoked_at, confidence) " +
+                "INSERT INTO signatures(organisation_id, signature, invoked_at, application_id, jvm_id, confidence) " +
                         "VALUES(?, ?, ?, ?, ?, ?)", args);
 
         // Now check what really made it into the table...
