@@ -34,7 +34,7 @@ public class DatabaseScavenger {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    @Scheduled(initialDelay = 10_000L, fixedDelay = 60_000L)
+    @Scheduled(initialDelay = 60_000L, fixedDelay = 300_000L)
     @Transactional
     public void removeOldSignatures() {
         String savedThreadName = Thread.currentThread().getName();
@@ -43,7 +43,7 @@ public class DatabaseScavenger {
             long startedAt = System.currentTimeMillis();
             log.trace("Looking for garbage signature rows...");
 
-            List<Long> rowsToKeep = new ArrayList<>();
+            int rowsToKeep = 0;
             List<Long> rowsToDelete = new ArrayList<>();
 
             List<TmpSignature> allSignatures = jdbcTemplate.query(
@@ -53,7 +53,7 @@ public class DatabaseScavenger {
             Set<TmpSignature> newestSignatures = new HashSet<>();
             for (TmpSignature sig : allSignatures) {
                 if (newestSignatures.add(sig)) {
-                    rowsToKeep.add(sig.getId());
+                    rowsToKeep += 1;
                 } else {
                     // There was already an equal object in newestSignatures, i.e., with same organisation_id and signature.
                     // The ORDER BY clause guarantees that this first one has the highest invoked_at value.
@@ -69,8 +69,7 @@ public class DatabaseScavenger {
 
                 int deleted =
                         jdbcTemplate.update("DELETE FROM signatures s WHERE EXISTS(SELECT ID FROM " + TMP_TABLE + " t WHERE t.id = s.id )");
-                log.debug("Deleted {} garbage signature rows in {} ms (kept {} rows)", deleted, System.currentTimeMillis() -
-                        startedAt, rowsToKeep.size());
+                log.info("Deleted {} and kept {} signatures in {} ms", deleted, rowsToKeep, System.currentTimeMillis() - startedAt);
             }
         } finally {
             Thread.currentThread().setName(savedThreadName);
@@ -79,11 +78,11 @@ public class DatabaseScavenger {
 
     private int fillTemporaryTableWith(List<Long> ids) {
         jdbcTemplate.update("CREATE MEMORY LOCAL TEMPORARY TABLE IF NOT EXISTS " + TMP_TABLE +
-                                    " (id BIGINT PRIMARY KEY ) NOT PERSISTENT TRANSACTIONAL ");
+                                    "(id BIGINT PRIMARY KEY) NOT PERSISTENT TRANSACTIONAL ");
 
         jdbcTemplate.update("DELETE FROM " + TMP_TABLE);
 
-        int[][] updates = jdbcTemplate.batchUpdate("INSERT INTO " + TMP_TABLE + " SET id = ?", ids, 100,
+        int[][] updates = jdbcTemplate.batchUpdate("INSERT INTO " + TMP_TABLE + " SET id = ?", ids, 500,
                                                    new ParameterizedPreparedStatementSetter<Long>() {
                                                        @Override
                                                        public void setValues(PreparedStatement ps, Long argument) throws SQLException {
@@ -92,9 +91,9 @@ public class DatabaseScavenger {
                                                    });
 
         int inserted = 0;
-        for (int i = 0; i < updates.length; i++) {
-            for (int j = 0; j < updates[i].length; j++) {
-                inserted += updates[i][j];
+        for (int[] row : updates) {
+            for (int col : row) {
+                inserted += col;
             }
         }
         return inserted;
