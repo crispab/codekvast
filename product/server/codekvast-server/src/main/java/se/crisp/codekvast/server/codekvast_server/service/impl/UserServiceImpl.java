@@ -76,7 +76,7 @@ public class UserServiceImpl implements UserService {
         }
 
         if (!newSignatures.isEmpty()) {
-            Collection<String> usernames = userDAO.getUsernamesInOrganisation(event.getAppId().getOrganisationId());
+            Collection<String> usernames = userDAO.getInteractiveUsernamesInOrganisation(event.getAppId().getOrganisationId());
             eventBus.post(new InvocationDataUpdatedEvent(event.getAppId(), newSignatures, usernames));
         }
     }

@@ -24,7 +24,7 @@ public interface UserDAO {
      */
     long getOrganisationIdForUsername(String username) throws UndefinedUserException;
 
-    Collection<String> getUsernamesInOrganisation(long organisationId);
+    Collection<String> getInteractiveUsernamesInOrganisation(long organisationId);
 
     AppId getAppIdByJvmUuid(String jvmUuid);
 

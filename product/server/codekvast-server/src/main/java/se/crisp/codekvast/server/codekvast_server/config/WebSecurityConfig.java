@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
+import se.crisp.codekvast.server.codekvast_server.model.Role;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
@@ -37,7 +38,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .authoritiesByUsernameQuery("SELECT users.username, user_roles.role FROM users, user_roles " +
                                         "WHERE users.id = user_roles.user_id " +
                                             "AND users.username = ?")
-            .rolePrefix("ROLE_")
+            .rolePrefix(Role.ANNOTATION_PREFIX)
             .passwordEncoder(passwordEncoder);
         // @formatter:on
     }
@@ -50,9 +51,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/webjars/**").permitAll()
                 .antMatchers("/app/**").permitAll()
                 .antMatchers("/register/**").permitAll()
-                .antMatchers("/management/**").hasRole("MONITOR")
-                .antMatchers("/agent/**").hasRole("AGENT")
-                .antMatchers("/**").hasRole("USER")
+                .antMatchers("/management/**").hasRole(Role.MONITOR.name())
+                .antMatchers("/agent/**").hasRole(Role.AGENT.name())
+                .antMatchers("/**").hasRole(Role.USER.name())
                 .and()
             .formLogin()
                 .loginPage("/login").permitAll()

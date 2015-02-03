@@ -116,12 +116,6 @@ COMMENT ON COLUMN signatures.invoked_at IS 'The value of System.currentTimeMilli
 COMMENT ON COLUMN signatures.confidence IS 'The ordinal for se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence. NULL for
 not yet invoked.';
 
-DROP INDEX IF EXISTS ix_signatures_id;
-CREATE INDEX ix_signatures_organisation_id ON signatures (organisation_id, signature);
-
-DROP INDEX IF EXISTS ix_signatures_invoked_at;
-CREATE INDEX ix_signatures_invoked_at ON signatures (invoked_at);
-
 -- System data ----------------------------------------------------------------------------------------------
 INSERT INTO roles (name) VALUES ('SUPERUSER');
 INSERT INTO roles (name) VALUES ('AGENT');

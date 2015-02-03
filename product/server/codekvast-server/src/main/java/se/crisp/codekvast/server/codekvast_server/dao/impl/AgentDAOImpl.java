@@ -59,7 +59,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         long appId = doInsertRow("INSERT INTO applications(organisation_id, name) VALUES(?, ?)", organisationId, appName);
 
         Application app = new Application(AppId.builder().organisationId(organisationId).appId(appId).build(), appName);
-        eventBus.post(new ApplicationCreatedEvent(app, appVersion, getUsernamesInOrganisation(organisationId)));
+        eventBus.post(new ApplicationCreatedEvent(app, appVersion, getInteractiveUsernamesInOrganisation(organisationId)));
         log.info("Created {} {}", app, appVersion);
         return appId;
     }
@@ -128,7 +128,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
 
     @Override
     public CollectorUptimeEvent createCollectorUpTimeEvent(long organisationId) {
-        Collection<String> usernames = getUsernamesInOrganisation(organisationId);
+        Collection<String> usernames = getInteractiveUsernamesInOrganisation(organisationId);
 
         CollectorTimestamp timestamp =
                 jdbcTemplate.queryForObject("SELECT MIN(started_at), MAX(dumped_at) FROM jvm_info WHERE organisation_id = ? ",
