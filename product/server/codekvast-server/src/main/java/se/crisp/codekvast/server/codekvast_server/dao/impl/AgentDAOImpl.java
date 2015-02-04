@@ -23,7 +23,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -104,7 +103,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                         .update("UPDATE jvm_info SET dumped_at = ? WHERE application_id = ? AND jvm_uuid = ?",
                                 data.getDumpedAtMillis(), appId, data.getJvmUuid());
         if (updated > 0) {
-            log.debug("Updated dumped_at={} for JVM run {}", new Date(data.getDumpedAtMillis()), data.getJvmUuid());
+            log.debug("Updated JVM {}", data.getJvmUuid());
             return;
         }
 
@@ -120,9 +119,9 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                         data.getCodekvastVersion(), data.getCodekvastVcsId(), data.getStartedAtMillis(), data.getDumpedAtMillis());
 
         if (updated == 1) {
-            log.debug("Stored new JVM run {}", data);
+            log.debug("Stored new JVM info {}", data);
         } else {
-            log.warn("Cannot store JVM run {}", data);
+            log.warn("Cannot store JVM info {}", data);
         }
     }
 
