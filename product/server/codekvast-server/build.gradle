@@ -56,7 +56,6 @@ dependencies {
     compile lombok
     compile project(':product:server:agent-api')
     compile project(':product:support:websupport')
-    compile 'com.google.guava:guava:18.0'
     compile 'ch.qos.logback:logback-classic'
 
     compile 'org.springframework.boot:spring-boot-starter-jdbc'

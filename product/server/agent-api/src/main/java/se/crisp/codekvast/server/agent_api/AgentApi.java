@@ -5,6 +5,7 @@ import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * This is the business delegate interface used by a Codekvast agent for communicating with the server.
@@ -39,7 +40,7 @@ public interface AgentApi {
      * @param invocations    A collection of invocations entries.
      * @throws AgentApiException For all problems.
      */
-    void uploadInvocationData(JvmData jvmData, Collection<SignatureEntry> invocations) throws AgentApiException;
+    void uploadInvocationData(JvmData jvmData, List<SignatureEntry> invocations) throws AgentApiException;
 
     /**
      * Pings the server.
