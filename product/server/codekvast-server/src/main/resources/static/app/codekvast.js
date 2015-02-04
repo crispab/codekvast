@@ -1,5 +1,5 @@
 //noinspection JSUnusedGlobalSymbols
-var codekvastApp = angular.module('codekvastApp', [])
+var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
 
     .config(['$locationProvider', function ($locationProvider) {
         $locationProvider.html5Mode(true);

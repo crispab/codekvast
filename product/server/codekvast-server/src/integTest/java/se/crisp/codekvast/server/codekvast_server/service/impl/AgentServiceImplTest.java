@@ -15,7 +15,8 @@ import se.crisp.codekvast.server.codekvast_server.config.DatabaseConfig;
 import se.crisp.codekvast.server.codekvast_server.config.EventBusConfig;
 import se.crisp.codekvast.server.codekvast_server.dao.impl.AgentDAOImpl;
 import se.crisp.codekvast.server.codekvast_server.dao.impl.UserDAOImpl;
-import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorUptimeEvent;
+import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorDataEvent;
+import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorDataEvent.CollectorEntry;
 import se.crisp.codekvast.server.codekvast_server.event.internal.InvocationDataReceivedEvent;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedUserException;
 import se.crisp.codekvast.server.codekvast_server.service.AgentService;
@@ -46,7 +47,7 @@ public class AgentServiceImplTest extends AbstractServiceTest {
     private AgentService agentService;
 
     @Subscribe
-    public void onCollectorUptimeEvent(CollectorUptimeEvent event) {
+    public void onCollectorUptimeEvent(CollectorDataEvent event) {
         events.add(event);
     }
 
@@ -71,15 +72,17 @@ public class AgentServiceImplTest extends AbstractServiceTest {
         assertEventsWithinMillis(2, 1000L);
 
         assertThat(events, hasSize(2));
-        assertThat(events.get(0), is(instanceOf(CollectorUptimeEvent.class)));
-        assertThat(events.get(1), is(instanceOf(CollectorUptimeEvent.class)));
+        assertThat(events.get(0), is(instanceOf(CollectorDataEvent.class)));
+        assertThat(events.get(1), is(instanceOf(CollectorDataEvent.class)));
 
-        CollectorUptimeEvent event = (CollectorUptimeEvent) events.get(0);
-        assertThat(event.getCollectorTimestamp().getStartedAtMillis(), is(startedAtMillis));
-        assertThat(event.getCollectorTimestamp().getDumpedAtMillis(), is(dumpedAtMillis));
+        CollectorDataEvent event = (CollectorDataEvent) events.get(0);
+        CollectorEntry collector = event.getCollectors().iterator().next();
+        assertThat(collector.getStartedAtMillis(), is(startedAtMillis));
+        assertThat(collector.getDumpedAtMillis(), is(dumpedAtMillis));
 
-        event = (CollectorUptimeEvent) events.get(1);
-        assertThat(event.getCollectorTimestamp().getDumpedAtMillis(), is(dumpedAtMillis + 1000L));
+        event = (CollectorDataEvent) events.get(1);
+        collector = event.getCollectors().iterator().next();
+        assertThat(collector.getDumpedAtMillis(), is(dumpedAtMillis + 1000L));
     }
 
     @Test(expected = UndefinedUserException.class)

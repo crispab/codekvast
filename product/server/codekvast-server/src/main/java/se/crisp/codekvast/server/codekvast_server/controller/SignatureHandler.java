@@ -10,8 +10,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
-import se.crisp.codekvast.server.codekvast_server.dao.CollectorTimestamp;
-import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorUptimeEvent;
+import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorDataEvent;
+import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorDataEvent.CollectorEntry;
 import se.crisp.codekvast.server.codekvast_server.event.internal.InvocationDataUpdatedEvent;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
@@ -19,9 +19,9 @@ import se.crisp.codekvast.server.codekvast_server.util.DateUtils;
 
 import javax.inject.Inject;
 import java.security.Principal;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Responsible for sending signatures to the correct users.
@@ -42,9 +42,9 @@ public class SignatureHandler extends AbstractMessageHandler {
     }
 
     @Subscribe
-    public void onCollectorUptimeEvent(CollectorUptimeEvent event) {
+    public void onCollectorUptimeEvent(CollectorDataEvent event) {
         long now = System.currentTimeMillis();
-        Timestamp timestamp = toStompTimestamp(now, event.getCollectorTimestamp());
+        Timestamp timestamp = toStompTimestamp(now, event.getCollectors());
 
         for (String username : event.getUsernames()) {
             if (userHandler.isPresent(username)) {
@@ -56,11 +56,11 @@ public class SignatureHandler extends AbstractMessageHandler {
 
     @Subscribe
     public void onInvocationDataUpdatedEvent(InvocationDataUpdatedEvent event) throws CodekvastException {
-        SignatureData sig = toSignatureData(event.getInvocationEntries());
+        SignatureData data = toSignatureData(event.getInvocationEntries());
         for (String username : event.getUsernames()) {
             if (userHandler.isPresent(username)) {
-                log.debug("Sending {} signatures and {} packages to '{}'", sig.getSignatures().size(), sig.getPackages().size(), username);
-                messagingTemplate.convertAndSendToUser(username, "/queue/signatureUpdates", sig);
+                log.debug("Sending {} signatures to '{}'", data.getSignatures().size(), username);
+                messagingTemplate.convertAndSendToUser(username, "/queue/signatureUpdates", data);
             }
         }
     }
@@ -76,26 +76,18 @@ public class SignatureHandler extends AbstractMessageHandler {
         String username = principal.getName();
         log.debug("'{}' is subscribing to signatures", username);
 
-        SignatureData sig = toSignatureData(userService.getSignatures(username));
-        log.debug("Sending {} signatures and {} packages to '{}'", sig.getSignatures().size(), sig.getPackages().size(), username);
-        return sig;
+        SignatureData data = toSignatureData(userService.getSignatures(username));
+        log.debug("Sending {} signatures to '{}'", data.getSignatures().size(), username);
+        return data;
     }
 
     private SignatureData toSignatureData(Collection<SignatureEntry> invocationEntries) {
         long now = System.currentTimeMillis();
 
         List<Signature> signatures = new ArrayList<>();
-        Set<String> packages = new TreeSet<>();
-        Pattern pkgPattern = Pattern.compile("([\\p{javaLowerCase}\\.]+)\\.");
 
         for (SignatureEntry entry : invocationEntries) {
             String s = entry.getSignature();
-
-            Matcher m = pkgPattern.matcher(s);
-            if (m.find()) {
-                String pkg = m.group(1);
-                packages.add(pkg);
-            }
 
             long invokedAtMillis = entry.getInvokedAtMillis();
 
@@ -103,26 +95,29 @@ public class SignatureHandler extends AbstractMessageHandler {
                                     .name(s)
                                     .invokedAtMillis(invokedAtMillis)
                                     .invokedAtString(DateUtils.formatDate(invokedAtMillis))
-                                    .age(DateUtils.getAge(now, invokedAtMillis))
                                     .build());
         }
 
-        // Add the immediate parent packages, or else it will be impossible to reset the Packages filter without
-        // a lot of Angular code...
-        addParentPackages(packages);
-
         return SignatureData.builder()
                             .signatures(signatures)
-                            .packages(packages)
                             .build();
     }
 
-    private Timestamp toStompTimestamp(long now, CollectorTimestamp timestamp) {
+    private Timestamp toStompTimestamp(long now, Collection<CollectorEntry> collectors) {
+        long startedAt = Long.MAX_VALUE;
+        long updatedAt = Long.MIN_VALUE;
+        for (CollectorEntry entry : collectors) {
+            startedAt = Math.min(startedAt, entry.getStartedAtMillis());
+            updatedAt = Math.max(updatedAt, entry.getDumpedAtMillis());
+        }
+
         return Timestamp.builder()
-                        .collectionStartedAt(DateUtils.formatDate(timestamp.getStartedAtMillis()))
-                        .collectionAge(DateUtils.getAge(now, timestamp.getStartedAtMillis()))
-                        .updateReceivedAt(DateUtils.formatDate(timestamp.getDumpedAtMillis()))
-                        .updateAge(DateUtils.getAge(now, timestamp.getDumpedAtMillis())).build();
+                        .collectionStartedAt(DateUtils.formatDate(startedAt))
+                        .collectionAge(DateUtils.getAge(now, startedAt))
+                        .updateReceivedAt(DateUtils.formatDate(updatedAt))
+                        .updateAge(DateUtils.getAge(now, updatedAt))
+                        .collectors(collectors)
+                        .build();
     }
 
     @Value
@@ -130,8 +125,6 @@ public class SignatureHandler extends AbstractMessageHandler {
     static class SignatureData {
         @NonNull
         private final List<Signature> signatures;
-        @NonNull
-        private final Set<String> packages;
     }
 
     @Value
@@ -145,6 +138,8 @@ public class SignatureHandler extends AbstractMessageHandler {
         private final String updateReceivedAt;
         @NonNull
         private final String updateAge;
+        @NonNull
+        private final Collection<CollectorEntry> collectors;
     }
 
     @Value
@@ -155,22 +150,6 @@ public class SignatureHandler extends AbstractMessageHandler {
         private final long invokedAtMillis;
         @NonNull
         private final String invokedAtString;
-        @NonNull
-        private final String age;
-    }
-
-    static void addParentPackages(Set<String> packages) {
-        Set<String> parentPackages = new HashSet<>();
-        for (String pkg : packages) {
-            int dot = pkg.indexOf('.');
-            while (dot > 0) {
-                String parentPkg = pkg.substring(0, dot);
-                parentPackages.add(parentPkg);
-                dot = pkg.indexOf('.', dot + 1);
-            }
-        }
-        packages.addAll(parentPackages);
-        packages.add("");
     }
 
 }

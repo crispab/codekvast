@@ -1,4 +1,7 @@
 /* codekvast.css */
+.nav, .pagination, .carousel, .panel-title a {
+    cursor: pointer;
+}
 
 .signature-name {
     width: 65em;

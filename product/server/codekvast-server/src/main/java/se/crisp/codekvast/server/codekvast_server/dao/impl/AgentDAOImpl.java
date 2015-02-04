@@ -11,9 +11,8 @@ import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
 import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
-import se.crisp.codekvast.server.codekvast_server.dao.CollectorTimestamp;
 import se.crisp.codekvast.server.codekvast_server.event.internal.ApplicationCreatedEvent;
-import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorUptimeEvent;
+import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorDataEvent;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import se.crisp.codekvast.server.codekvast_server.model.Application;
@@ -126,23 +125,29 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     }
 
     @Override
-    public CollectorUptimeEvent createCollectorUpTimeEvent(long organisationId) {
+    public CollectorDataEvent createCollectorUpTimeEvent(long organisationId) {
         Collection<String> usernames = getInteractiveUsernamesInOrganisation(organisationId);
 
-        CollectorTimestamp timestamp =
-                jdbcTemplate.queryForObject("SELECT MIN(started_at), MAX(dumped_at) FROM jvm_info WHERE organisation_id = ? ",
-                                            new CollectorTimestampRowMapper(), organisationId);
-        return new CollectorUptimeEvent(timestamp, usernames);
+        Collection<CollectorDataEvent.CollectorEntry> collectors =
+                jdbcTemplate.query("SELECT " +
+                                           "a.name, jvm.application_version, MIN(jvm.started_at), MAX(jvm.dumped_at) " +
+                                           "FROM applications a, jvm_info jvm " +
+                                           "WHERE a.id = jvm.application_id " +
+                                           "AND a.organisation_id = ? " +
+                                           "GROUP BY a.name, jvm.application_version ",
+                                   new CollectorEntryRowMapper(), organisationId);
+        return new CollectorDataEvent(collectors, usernames);
     }
 
-    private static class CollectorTimestampRowMapper implements RowMapper<CollectorTimestamp> {
+    private static class CollectorEntryRowMapper implements RowMapper<CollectorDataEvent.CollectorEntry> {
         @Override
-        public CollectorTimestamp mapRow(ResultSet rs, int rowNum) throws SQLException {
-            // SELECT MIN(started_at), MAX(dumped_at) FROM jvm_info
-            return CollectorTimestamp.builder()
-                                     .startedAtMillis(rs.getLong(1))
-                                     .dumpedAtMillis(rs.getLong(2))
-                                     .build();
+        public CollectorDataEvent.CollectorEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
+            // name, version, started_at, dumped_at
+            return CollectorDataEvent.CollectorEntry.builder()
+                                                    .name(rs.getString(1) + " " + rs.getString(2))
+                                                    .startedAtMillis(rs.getLong(3))
+                                                    .dumpedAtMillis(rs.getLong(4))
+                                                    .build();
         }
     }
 }
