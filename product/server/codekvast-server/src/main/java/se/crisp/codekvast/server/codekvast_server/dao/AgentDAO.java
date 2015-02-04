@@ -44,5 +44,5 @@ public interface AgentDAO {
      * @param organisationId The organisation
      * @return An event to post on the EventBus
      */
-    CollectorDataEvent createCollectorUpTimeEvent(long organisationId);
+    CollectorDataEvent createCollectorDataEvent(long organisationId);
 }

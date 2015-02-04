@@ -9,17 +9,11 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
         $scope.connected = false;
         $scope.haveData = false;
         $scope.maxRows = 100;
-
-        $scope.filterValues = {
-            applications: [],
-            versions: [],
-            tags: []
-        };
+        $scope.progress = undefined;
+        $scope.progressMax = undefined;
 
         $scope.application = undefined;
         $scope.version = undefined;
-        $scope.packages = [];
-        $scope.package = "";
         $scope.signatures = [];
         $scope.timestamp = undefined;
 
@@ -35,52 +29,53 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
             return $scope.signatures.length
         };
 
-        $scope.numPackages = function () {
-            return $scope.packages.length
-        };
-
-        $scope.updateFilterValues = function (data) {
-            $scope.$apply(function () {
-                $scope.filterValues = JSON.parse(data.body);
-            });
-        };
-
         $scope.updateTimestamps = function (data) {
             $scope.$apply(function () {
                 $scope.timestamp = JSON.parse(data.body);
+                $scope.haveData = true;
+                $scope.connected = true;
             });
         };
 
         $scope.updateSignatures = function (data) {
+            var update = JSON.parse(data.body);
+            var updateLen = update.signatures.length;
+
             $scope.$apply(function () {
-                var update = JSON.parse(data.body);
+                $scope.haveData = true;
+                $scope.connected = true;
+                $scope.progressMax = updateLen;
+                $scope.progress = 0;
+            });
 
-                for (var i = 0; i < update.signatures.length; i++) {
-                    var s = update.signatures[i];
-                    var found = false;
+            for (var i = 0; i < updateLen; i++) {
+                var s = update.signatures[i];
+                var found = false;
 
-                    for (var j = 0; j < $scope.signatures.length; j++) {
-                        if ($scope.signatures[j].name === s.name) {
+                for (var j = 0, len2 = $scope.signatures.length; j < len2; j++) {
+                    if ($scope.signatures[j].name === s.name) {
+                        $scope.$apply(function () {
+                            $scope.progress = i;
                             $scope.signatures[j].invokedAtMillis = s.invokedAtMillis;
                             $scope.signatures[j].invokedAtString = s.invokedAtString;
-                            found = true;
-                            break;
-                        }
-                    }
-
-                    if (!found) {
-                        $scope.signatures[$scope.signatures.length] = s
+                        });
+                        found = true;
+                        break;
                     }
                 }
 
-                for (var i = 0; i < update.packages.length; i++) {
-                    var p = update.packages[i];
-                    if ($scope.packages.indexOf(p) == -1) {
-                        $scope.packages.push(p)
-                    }
+                if (!found) {
+                    $scope.$apply(function () {
+                        $scope.progress = i;
+                        $scope.signatures[$scope.signatures.length] = s;
+                    });
                 }
-                $scope.haveData = true;
-            })
+            }
+
+            $scope.$apply(function () {
+                $scope.progressMax = undefined;
+                $scope.progress = undefined;
+            });
         };
 
         $scope.disconnected = function () {
@@ -98,11 +93,9 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
             $scope.socket.stomp.connect({}, function () {
                 console.log("Connected");
                 $scope.connected = true;
-                $scope.socket.stomp.subscribe("/app/filterValues", $scope.updateFilterValues);
-                $scope.socket.stomp.subscribe("/app/signatures", $scope.updateSignatures);
-                $scope.socket.stomp.subscribe("/user/queue/filterValues", $scope.updateFilterValues);
-                $scope.socket.stomp.subscribe("/user/queue/signatureUpdates", $scope.updateSignatures);
                 $scope.socket.stomp.subscribe("/user/queue/timestamps", $scope.updateTimestamps);
+                $scope.socket.stomp.subscribe("/app/signatures", $scope.updateSignatures);
+                $scope.socket.stomp.subscribe("/user/queue/signatureUpdates", $scope.updateSignatures);
             }, function (error) {
                 console.log("Cannot connect %o", error)
             });

@@ -42,7 +42,7 @@ public class SignatureHandler extends AbstractMessageHandler {
     }
 
     @Subscribe
-    public void onCollectorUptimeEvent(CollectorDataEvent event) {
+    public void onCollectorDataEvent(CollectorDataEvent event) {
         long now = System.currentTimeMillis();
         Timestamp timestamp = toStompTimestamp(now, event.getCollectors());
 
@@ -76,6 +76,10 @@ public class SignatureHandler extends AbstractMessageHandler {
         String username = principal.getName();
         log.debug("'{}' is subscribing to signatures", username);
 
+        // Make sure the user gets the collector data event immediately...
+        CollectorDataEvent event = userService.getCollectorDataEvent(username);
+        onCollectorDataEvent(event);
+
         SignatureData data = toSignatureData(userService.getSignatures(username));
         log.debug("Sending {} signatures to '{}'", data.getSignatures().size(), username);
         return data;
@@ -106,9 +110,16 @@ public class SignatureHandler extends AbstractMessageHandler {
     private Timestamp toStompTimestamp(long now, Collection<CollectorEntry> collectors) {
         long startedAt = Long.MAX_VALUE;
         long updatedAt = Long.MIN_VALUE;
+        List<String> collectorStrings = new ArrayList<>();
+
         for (CollectorEntry entry : collectors) {
             startedAt = Math.min(startedAt, entry.getStartedAtMillis());
             updatedAt = Math.max(updatedAt, entry.getDumpedAtMillis());
+            collectorStrings.add(String.format("%s started %s (%s), updated %s",
+                                               entry.getName(),
+                                               DateUtils.formatDate(entry.getStartedAtMillis()),
+                                               DateUtils.getAge(now, entry.getStartedAtMillis()),
+                                               DateUtils.formatDate(entry.getDumpedAtMillis())));
         }
 
         return Timestamp.builder()
@@ -116,7 +127,7 @@ public class SignatureHandler extends AbstractMessageHandler {
                         .collectionAge(DateUtils.getAge(now, startedAt))
                         .updateReceivedAt(DateUtils.formatDate(updatedAt))
                         .updateAge(DateUtils.getAge(now, updatedAt))
-                        .collectors(collectors)
+                        .collectors(collectorStrings)
                         .build();
     }
 
@@ -139,7 +150,7 @@ public class SignatureHandler extends AbstractMessageHandler {
         @NonNull
         private final String updateAge;
         @NonNull
-        private final Collection<CollectorEntry> collectors;
+        private final Collection<String> collectors;
     }
 
     @Value

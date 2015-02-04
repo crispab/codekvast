@@ -43,7 +43,7 @@ public class AgentServiceImpl implements AgentService {
         long appId = agentDAO.getAppId(organisationId, data.getAppName(), data.getAppVersion());
 
         agentDAO.storeJvmData(organisationId, appId, data);
-        CollectorDataEvent event = agentDAO.createCollectorUpTimeEvent(organisationId);
+        CollectorDataEvent event = agentDAO.createCollectorDataEvent(organisationId);
         eventBus.post(event);
     }
 

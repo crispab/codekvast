@@ -125,7 +125,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     }
 
     @Override
-    public CollectorDataEvent createCollectorUpTimeEvent(long organisationId) {
+    public CollectorDataEvent createCollectorDataEvent(long organisationId) {
         Collection<String> usernames = getInteractiveUsernamesInOrganisation(organisationId);
 
         Collection<CollectorDataEvent.CollectorEntry> collectors =

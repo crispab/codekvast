@@ -7,11 +7,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
+import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
+import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorDataEvent;
 import se.crisp.codekvast.server.codekvast_server.event.internal.InvocationDataReceivedEvent;
 import se.crisp.codekvast.server.codekvast_server.event.internal.InvocationDataUpdatedEvent;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
-import se.crisp.codekvast.server.codekvast_server.model.Application;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
 
 import javax.annotation.PostConstruct;
@@ -31,12 +32,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public class UserServiceImpl implements UserService {
 
     private final UserDAO userDAO;
+    private final AgentDAO agentDAO;
     private final EventBus eventBus;
     private final Map<Long, Map<String, SignatureEntry>> signatureCache = new ConcurrentHashMap<>();
 
     @Inject
-    public UserServiceImpl(@NonNull UserDAO userDAO, EventBus eventBus) {
+    public UserServiceImpl(@NonNull UserDAO userDAO, AgentDAO agentDAO, EventBus eventBus) {
         this.userDAO = userDAO;
+        this.agentDAO = agentDAO;
         this.eventBus = eventBus;
     }
 
@@ -90,6 +93,13 @@ public class UserServiceImpl implements UserService {
         return signatures;
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CollectorDataEvent getCollectorDataEvent(String username) throws CodekvastException {
+        long organisationId = userDAO.getOrganisationIdForUsername(username);
+        return agentDAO.createCollectorDataEvent(organisationId);
+    }
+
     private void fillSignatureCache(long organisationId, Set<SignatureEntry> signatures) {
         synchronized (signatureCache) {
             Map<String, SignatureEntry> cache = signatureCache.get(organisationId);
@@ -103,12 +113,4 @@ public class UserServiceImpl implements UserService {
             }
         }
     }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public Collection<Application> getApplications(String username) throws CodekvastException {
-        long organisationId = userDAO.getOrganisationIdForUsername(username);
-        return userDAO.getApplications(organisationId);
-    }
-
 }

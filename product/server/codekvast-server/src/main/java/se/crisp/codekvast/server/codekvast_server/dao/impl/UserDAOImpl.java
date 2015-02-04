@@ -22,7 +22,6 @@ import se.crisp.codekvast.server.codekvast_server.model.Role;
 import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -136,13 +135,6 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
                 new SignatureEntryRowMapper(), organisationId));
         log.debug("getSignatures({}) took {} ms", organisationId, System.currentTimeMillis() - startedAt);
         return result;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Collection<Application> getApplications(long organisationId) {
-        return jdbcTemplate.query("SELECT id, organisation_id, name FROM applications " +
-                                          "WHERE organisation_id = ?", new ApplicationRowMapper(), organisationId);
     }
 
     private long doCreateOrganisation(String organisationName) {

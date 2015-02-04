@@ -1,8 +1,8 @@
 package se.crisp.codekvast.server.codekvast_server.service;
 
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
+import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorDataEvent;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
-import se.crisp.codekvast.server.codekvast_server.model.Application;
 
 import java.util.Collection;
 
@@ -19,11 +19,9 @@ public interface UserService {
     Collection<SignatureEntry> getSignatures(String username) throws CodekvastException;
 
     /**
-     * Retrieve all applications that a certain user has access to.
-     *
+     * Retrieve collector data for the organisation the user belongs to.
      * @param username The logged in user's username
-     * @return A collection of applications. Does never return null.
+     * @return The same type of event that is broadcasted each time a collector has delivered new data.
      */
-    Collection<Application> getApplications(String username) throws CodekvastException;
-
+    CollectorDataEvent getCollectorDataEvent(String username) throws CodekvastException;
 }
