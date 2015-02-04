@@ -43,10 +43,12 @@ jar {
 }
 
 run {
+    jvmArgs = ['-ea']
     systemProperties = ['codekvast.agent.configuration': file('src/test/resources/codekvast-agent-run.conf')]
 }
 
 bootRun {
+    jvmArgs = ['-ea']
     systemProperties = ['codekvast.agent.configuration': file('src/test/resources/codekvast-agent-run.conf')]
 }
 

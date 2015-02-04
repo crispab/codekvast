@@ -97,6 +97,33 @@ public class AgentApiImpl implements AgentApi {
         uploadInvocationData(jvmData, signatureEntries);
     }
 
+    private class UploadSignaturesTemplate extends ChunkTemplate<SignatureEntry> {
+
+        private final URI uri;
+        private final String jvmUuid;
+
+        public UploadSignaturesTemplate(List values, URI uri, String jvmUuid) {
+            super(UPLOAD_CHUNK_SIZE, values);
+            this.uri = uri;
+            this.jvmUuid = jvmUuid;
+        }
+
+        @Override
+        public void doWithChunk(List chunk, int chunkNumber) throws AgentApiException {
+            try {
+                long startedAt = System.currentTimeMillis();
+                log.debug("Uploading chunk #{} of size {}", chunkNumber, chunk.size());
+
+                SignatureData data = SignatureData.builder().jvmUuid(jvmUuid).signatures(chunk).build();
+                restTemplate.postForEntity(uri, validate(data), Void.class);
+
+                log.debug("Uploaded chunk #{} in {} ms", chunkNumber, System.currentTimeMillis() - startedAt);
+            } catch (RestClientException e) {
+                throw new AgentApiException("Failed to post signatures data", e);
+            }
+        }
+    }
+
     @Override
     public void uploadInvocationData(JvmData jvmData, Collection<SignatureEntry> signatures)
             throws AgentApiException {
@@ -112,43 +139,15 @@ public class AgentApiImpl implements AgentApi {
         try {
             URI uri = new URI(endPoint);
 
-            List<SignatureEntry> list = new ArrayList<>(signatures);
-            int from = 0;
-            int chunkNo = 1;
-            int uploaded = 0;
-            while (from < list.size()) {
-                int to = Math.min(from + UPLOAD_CHUNK_SIZE, list.size());
+            UploadSignaturesTemplate template =
+                    new UploadSignaturesTemplate(new ArrayList<>(signatures), uri, jvmData.getJvmUuid());
 
-                uploaded += uploadInvocationChunk(jvmData, uri, list.subList(from, to), chunkNo);
+            int uploaded = template.execute();
 
-                from = to;
-                chunkNo += 1;
-            }
-
-            checkState(uploaded == signatures.size(), "Bad chunk logic: uploaded=" + uploaded + ", input.size()=" + signatures.size());
             log.info("Uploaded {} signatures from {} to {} in {}s", uploaded, jvmData.getAppName(), endPoint,
                      elapsedSeconds(startedAtMillis));
         } catch (URISyntaxException e) {
             throw new AgentApiException("Illegal REST endpoint: " + endPoint, e);
-        }
-    }
-
-    private void checkState(boolean b, String message) {
-        if (!b) {
-            throw new IllegalStateException(message);
-        }
-    }
-
-    private int uploadInvocationChunk(JvmData jvmData, URI uri, List<SignatureEntry> chunk, int chunkNo) throws AgentApiException {
-        try {
-            long startedAt = System.currentTimeMillis();
-            log.debug("Uploading chunk #{} of size {}", chunkNo, chunk.size());
-            SignatureData data = SignatureData.builder().jvmUuid(jvmData.getJvmUuid()).signatures(chunk).build();
-            restTemplate.postForEntity(uri, validate(data), Void.class);
-            log.debug("Uploaded chunk #{} in {} ms", chunkNo, System.currentTimeMillis() - startedAt);
-            return chunk.size();
-        } catch (RestClientException e) {
-            throw new AgentApiException("Failed to post signatures data", e);
         }
     }
 
