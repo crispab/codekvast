@@ -33,7 +33,7 @@ public class CodeBaseScanner {
     public int scanSignatures(CodeBase codeBase) {
         int result = 0;
         long startedAt = System.currentTimeMillis();
-        log.info("Scanning code base {}", codeBase);
+        log.debug("Scanning code base {}", codeBase);
 
         URLClassLoader appClassLoader = new URLClassLoader(codeBase.getUrls(), System.class.getClassLoader());
         Set<String> prefixes = new TreeSet<>(codeBase.getConfig().getNormalizedPackagePrefixes());
@@ -56,7 +56,7 @@ public class CodeBaseScanner {
 
         codeBase.writeSignaturesToDisk();
 
-        log.info("{} with package prefix {} scanned in {} ms, found {} methods in {} classes.",
+        log.info("Scanned {} with package prefix {} in {} ms, found {} methods in {} classes.",
                  codeBase, codeBase.getConfig().getNormalizedPackagePrefixes(), System.currentTimeMillis() - startedAt,
                  codeBase.size(), result);
 

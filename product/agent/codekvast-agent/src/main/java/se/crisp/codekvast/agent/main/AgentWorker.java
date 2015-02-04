@@ -134,20 +134,15 @@ public class AgentWorker {
             JvmState jvmState = jvmStates.get(jvm.getJvmUuid());
             if (jvmState == null) {
                 jvmState = new JvmState();
-                jvmState.setAppVersion(getAppVersion(jvm));
-
                 jvmStates.put(jvm.getJvmUuid(), jvmState);
             }
             jvmState.setJvm(jvm);
+            resolveAppVersion(jvmState);
+
             jvmState.setInvocationsFile(new File(file.getParentFile(), CollectorConfig.INVOCATIONS_BASENAME));
         } catch (IOException e) {
             log.error("Cannot load " + file, e);
         }
-    }
-
-    private String getAppVersion(Jvm jvm) {
-        return resolveAppVersion(appVersionStrategies, jvm.getCollectorConfig().getCodeBaseFiles(),
-                                 jvm.getCollectorConfig().getAppVersion());
     }
 
     private void uploadJvmData(JvmState jvmState) {
@@ -200,7 +195,7 @@ public class AgentWorker {
                 return resolvedVersion;
             }
         }
-        log.info("Cannot resolve appVersion '{}', using it verbatim", version);
+        log.debug("Cannot resolve appVersion '{}', using it verbatim", version);
         return version;
     }
 
@@ -220,9 +215,12 @@ public class AgentWorker {
             if (jvmState.getCodebaseUploadedAt() == 0) {
                 log.debug("Codebase has not yet been uploaded");
             } else {
-                log.info("Codebase has changed, it will now be scanned and uploaded");
+                resolveAppVersion(jvmState);
+                log.info("Codebase has changed, it will now be re-scanned and uploaded");
             }
+
             codeBaseScanner.scanSignatures(newCodeBase);
+
             try {
                 agentApi.uploadSignatureData(getJvmData(jvmState), newCodeBase.getSignatures());
                 jvmState.setCodeBase(newCodeBase);
@@ -231,6 +229,23 @@ public class AgentWorker {
                 logException("Cannot upload signature data to " + agentApi.getServerUri(), e);
             }
         }
+    }
+
+    private void resolveAppVersion(JvmState jvmState) {
+        String oldAppVersion = jvmState.getAppVersion();
+
+        Jvm jvm = jvmState.getJvm();
+
+        String newAppVersion = resolveAppVersion(appVersionStrategies, jvm.getCollectorConfig().getCodeBaseFiles(),
+                                                 jvm.getCollectorConfig().getAppVersion());
+
+        if (oldAppVersion == null) {
+            log.info("{} has version '{}'", jvmState.getJvm().getCollectorConfig().getAppName(), newAppVersion);
+        } else if (!newAppVersion.equals(oldAppVersion)) {
+            log.info("The version of {} has changed from '{}' to '{}'", jvmState.getJvm().getCollectorConfig().getAppName());
+        }
+
+        jvmState.setAppVersion(newAppVersion);
     }
 
     private void processInvocationsDataIfNeeded(JvmState jvmState) {
@@ -299,7 +314,7 @@ public class AgentWorker {
             log.warn("{} recognized, {} overridden, {} unrecognized and {} ignored method invocations applied", recognized, overridden,
                      unrecognized, ignored);
         } else {
-            log.info("{} signature invocations applied ({} overridden, {} ignored)", recognized, overridden, ignored);
+            log.debug("{} signature invocations applied ({} overridden, {} ignored)", recognized, overridden, ignored);
         }
     }
 

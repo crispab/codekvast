@@ -28,7 +28,6 @@
     </appender>
 
     <logger name="se.crisp.codekvast" level="INFO"/>
-    <logger name="org.reflections" level="INFO"/>
 
     <root level="WARN">
         <appender-ref ref="CONSOLE"/>

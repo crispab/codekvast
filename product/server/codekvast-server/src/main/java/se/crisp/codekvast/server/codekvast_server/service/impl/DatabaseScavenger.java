@@ -59,55 +59,59 @@ public class DatabaseScavenger {
     }
 
     @Scheduled(initialDelay = 60_000L, fixedDelay = 300_000L)
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void removeOldSignatures() {
         String savedThreadName = Thread.currentThread().getName();
         try {
             Thread.currentThread().setName(getClass().getSimpleName());
             if (!needsScavenging) {
                 log.debug("No scavenging needed");
-                return;
+            } else {
+                doRemoveOldSignatures();
+                needsScavenging = false;
             }
-
-            long startedAt = System.currentTimeMillis();
-            log.debug("Looking for garbage signature rows...");
-
-            int rowsToKeep = 0;
-            List<Long> rowsToDelete = new ArrayList<>();
-
-            List<TmpSignature> allSignatures = jdbcTemplate.query(
-                    "SELECT id, organisation_id, signature, invoked_at FROM signatures ORDER BY invoked_at DESC ",
-                    new TmpSignatureRowMapper());
-
-            Set<TmpSignature> newestSignatures = new HashSet<>();
-            for (TmpSignature sig : allSignatures) {
-                if (newestSignatures.add(sig)) {
-                    rowsToKeep += 1;
-                } else {
-                    // There was already an equal object in newestSignatures, i.e., with same organisation_id and signature.
-                    // The ORDER BY clause guarantees that this first one has the highest invoked_at value.
-                    log.trace("Found garbage row {}", sig);
-                    rowsToDelete.add(sig.getId());
-                }
-            }
-
-            if (!rowsToDelete.isEmpty()) {
-                log.debug("Will delete {} garbage signature rows...", rowsToDelete.size());
-
-                // A quite clumsy way of doing it. The more obvious way,
-                // jdbcTemplate.batchUpdate("DELETE FROM signatures WHERE id = ?", rowsToDelete)
-                // performs lousy.
-
-                fillTemporaryTableWith(rowsToDelete);
-
-                int deleted =
-                        jdbcTemplate.update("DELETE FROM signatures s WHERE EXISTS(SELECT id FROM " + TMP_TABLE + " t WHERE t.id = s.id )");
-
-                log.info("Deleted {} and kept {} signatures in {} ms", deleted, rowsToKeep, System.currentTimeMillis() - startedAt);
-            }
-            needsScavenging = false;
         } finally {
             Thread.currentThread().setName(savedThreadName);
+        }
+    }
+
+    private void doRemoveOldSignatures() {
+        long startedAt = System.currentTimeMillis();
+        log.debug("Looking for garbage signature rows...");
+
+        int rowsToKeep = 0;
+        List<Long> rowsToDelete = new ArrayList<>();
+
+        // Place a table lock on signatures...
+        List<TmpSignature> allSignatures = jdbcTemplate.query(
+                "SELECT id, organisation_id, signature, invoked_at FROM signatures ORDER BY invoked_at DESC FOR UPDATE ",
+                new TmpSignatureRowMapper());
+
+        Set<TmpSignature> newestSignatures = new HashSet<>();
+        for (TmpSignature sig : allSignatures) {
+            if (newestSignatures.add(sig)) {
+                rowsToKeep += 1;
+            } else {
+                // There was already an equal object in newestSignatures, i.e., with same organisation_id and signature.
+                // The ORDER BY clause guarantees that this first one has the highest invoked_at value.
+                log.trace("Found garbage row {}", sig);
+                rowsToDelete.add(sig.getId());
+            }
+        }
+
+        if (!rowsToDelete.isEmpty()) {
+            log.debug("Will delete {} garbage signature rows...", rowsToDelete.size());
+
+            // A quite clumsy way of doing it. The more obvious way,
+            // jdbcTemplate.batchUpdate("DELETE FROM signatures WHERE id = ?", rowsToDelete)
+            // performs lousy.
+
+            fillTemporaryTableWith(rowsToDelete);
+
+            int deleted =
+                    jdbcTemplate.update("DELETE FROM signatures s WHERE EXISTS(SELECT id FROM " + TMP_TABLE + " t WHERE t.id = s.id )");
+
+            log.info("Deleted {} and kept {} signatures in {} ms", deleted, rowsToKeep, System.currentTimeMillis() - startedAt);
         }
     }
 
@@ -117,7 +121,7 @@ public class DatabaseScavenger {
 
         jdbcTemplate.update("DELETE FROM " + TMP_TABLE);
 
-        jdbcTemplate.batchUpdate("INSERT INTO " + TMP_TABLE + "(?)", ids, 500,
+        jdbcTemplate.batchUpdate("INSERT INTO " + TMP_TABLE + "(id) VALUES (?)", ids, 500,
                                  new ParameterizedPreparedStatementSetter<Long>() {
                                      @Override
                                      public void setValues(PreparedStatement ps, Long argument) throws SQLException {
