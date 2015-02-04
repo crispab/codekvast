@@ -64,11 +64,11 @@ public class AgentController {
     @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_JVM_DATA, method = RequestMethod.POST)
     public void receiveJvmDataV1(@Valid @RequestBody JvmData data, Principal principal) throws CodekvastException {
         long startedAt = System.currentTimeMillis();
-        log.info("Received {} from {}", data, principal.getName());
+        log.debug("Received {} from {}", data, principal.getName());
 
         agentService.storeJvmData(principal.getName(), data);
 
-        log.info("Stored JVM info from {} in {} ms", principal.getName(), System.currentTimeMillis() - startedAt);
+        log.info("Stored JVM info from {} {} in {} ms", data.getAppName(), data.getAppVersion(), System.currentTimeMillis() - startedAt);
     }
 
     @RequestMapping(value = AgentRestEndpoints.UPLOAD_V1_SIGNATURES, method = RequestMethod.POST)
@@ -78,8 +78,7 @@ public class AgentController {
 
         agentService.storeSignatureData(data);
 
-        log.info("Stored {} signatures from {} in {} ms", data.getSignatures().size(), principal.getName(),
-                 System.currentTimeMillis() - startedAt);
+        log.info("Stored {} signatures in {} ms", data.getSignatures().size(), System.currentTimeMillis() - startedAt);
     }
 
     @RequestMapping(value = AgentRestEndpoints.PING, method = RequestMethod.POST)
