@@ -34,7 +34,7 @@ import java.util.concurrent.Executors;
 @Controller
 @Slf4j
 public class SignatureHandler extends AbstractMessageHandler {
-    private static final int CHUNK_SIZE = 100;
+    private static final int CHUNK_SIZE = 500;
     private final UserService userService;
     private final UserHandler userHandler;
     private final Executor executor = Executors.newFixedThreadPool(5);
@@ -138,18 +138,22 @@ public class SignatureHandler extends AbstractMessageHandler {
 
         @Override
         public void run() {
-            for (SignatureMessage message = nextChunk(); message != null; ) {
-                for (String username : usernames) {
-                    if (userHandler.isPresent(username)) {
-                        log.debug("Sending {} signatures to '{}' (chunk {} of {})", message.getSignatures().size(), username,
-                                  currentChunk, chunks.size());
-                        messagingTemplate.convertAndSendToUser(username, "/queue/signatureUpdates", message);
-                        try {
-                            // Give the JavaScript client some leeway...
-                            Thread.sleep(100);
-                        } catch (InterruptedException e) {
-                            log.warn("Interrupted");
-                        }
+            for (String username : usernames) {
+                for (SignatureMessage message = nextChunk(); message != null; message = nextChunk()) {
+                    if (!userHandler.isPresent(username)) {
+                        log.info("User '{}' has left", username);
+                        return;
+                    }
+
+                    log.debug("Sending {} signatures to '{}' (chunk {} of {})", message.getSignatures().size(), username,
+                              currentChunk, chunks.size());
+                    messagingTemplate.convertAndSendToUser(username, "/queue/signatureUpdates", message);
+                    try {
+                        // Give the JavaScript client some leeway...
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        log.warn("Interrupted");
+
                     }
                 }
             }
