@@ -6,81 +6,85 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
     }])
 
     .controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
-        $scope.connected = false;
-        $scope.haveData = false;
-        $scope.maxRows = 100;
+        $scope.jumbotronMessage = 'Disconnected from server';
         $scope.progress = undefined;
-        $scope.progressMax = undefined;
 
-        $scope.application = undefined;
-        $scope.version = undefined;
         $scope.signatures = [];
-        $scope.timestamp = undefined;
+        $scope.collectorStatus = undefined;
 
-        $scope.sortField = 'invokedAtMillis';
         $scope.reverse = false;
+
+        $scope.haveSignatures = function () {
+            return $scope.signatures.length > 0;
+        }
+
+        $scope.orderByInvokedAt = function () {
+            $scope.sortField = ['invokedAtMillis', 'name'];
+        };
+
+        $scope.orderByName = function () {
+            $scope.sortField = ['name', 'invokedAtMillis'];
+        };
+
+        $scope.orderByInvokedAt();
+
+        $scope.maxRows = 100;
 
         $scope.socket = {
             client: null,
             stomp: null
         };
 
-        $scope.numSignatures = function () {
-            return $scope.signatures.length
-        };
-
-        $scope.updateTimestamps = function (data) {
+        $scope.updateCollectorStatus = function (data) {
             $scope.$apply(function () {
-                $scope.timestamp = JSON.parse(data.body);
-                $scope.haveData = true;
-                $scope.connected = true;
+                var collectorStatusMessage = JSON.parse(data.body);
+                $scope.collectorStatus = collectorStatusMessage;
             });
         };
 
         $scope.updateSignatures = function (data) {
-            var update = JSON.parse(data.body);
-            var updateLen = update.signatures.length;
+            var signatureMessage = JSON.parse(data.body);
 
             $scope.$apply(function () {
-                $scope.haveData = true;
-                $scope.connected = true;
-                $scope.progressMax = updateLen;
-                $scope.progress = 0;
+                if (signatureMessage.collectorStatus) {
+                    $scope.jumbotronMessage = undefined;
+                    $scope.collectorStatus = signatureMessage.collectorStatus;
+                }
+                $scope.progress = signatureMessage.progress;
             });
 
+            var updateLen = signatureMessage.signatures.length;
             for (var i = 0; i < updateLen; i++) {
-                var s = update.signatures[i];
+                var s = signatureMessage.signatures[i];
                 var found = false;
 
                 for (var j = 0, len2 = $scope.signatures.length; j < len2; j++) {
                     if ($scope.signatures[j].name === s.name) {
-                        $scope.$apply(function () {
-                            $scope.progress = i;
-                            $scope.signatures[j].invokedAtMillis = s.invokedAtMillis;
-                            $scope.signatures[j].invokedAtString = s.invokedAtString;
-                        });
+                        $scope.signatures[j].invokedAtMillis = s.invokedAtMillis;
+                        $scope.signatures[j].invokedAtString = s.invokedAtString;
                         found = true;
                         break;
                     }
                 }
 
                 if (!found) {
-                    $scope.$apply(function () {
-                        $scope.progress = i;
-                        $scope.signatures[$scope.signatures.length] = s;
-                    });
+                    $scope.signatures[$scope.signatures.length] = s;
                 }
+
             }
 
             $scope.$apply(function () {
-                $scope.progressMax = undefined;
                 $scope.progress = undefined;
             });
         };
 
         $scope.disconnected = function () {
             console.log("Disconnected");
-            $scope.connected = false;
+            $scope.$apply(function () {
+                $scope.jumbotronMessage = "Disconnected";
+                $scope.signatures = [];
+                $scope.collectorStatus = undefined;
+            });
 
             // Cannot use $location here, since /login is outside the Angular app
             $window.location.href = "/login?logout";
@@ -92,21 +96,20 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
 
             $scope.socket.stomp.connect({}, function () {
                 console.log("Connected");
-                $scope.connected = true;
-                $scope.socket.stomp.subscribe("/user/queue/timestamps", $scope.updateTimestamps);
+                $scope.jumbotronMessage = 'Waiting for data...';
+                $scope.$apply();
+                $scope.socket.stomp.subscribe("/user/queue/collectorStatus", $scope.updateCollectorStatus);
                 $scope.socket.stomp.subscribe("/app/signatures", $scope.updateSignatures);
                 $scope.socket.stomp.subscribe("/user/queue/signatureUpdates", $scope.updateSignatures);
             }, function (error) {
                 console.log("Cannot connect %o", error)
+                $scope.$apply(function () {
+                    $scope.jumbotronMessage = error.toString();
+                });
             });
             $scope.socket.client.onclose = $scope.disconnected;
         };
 
         $scope.initSockets();
-    }])
+    }]);
 
-    .filter('suppressEmptyDate', function () {
-        return function (input) {
-            return input == 0 ? "" : input;
-        };
-    });

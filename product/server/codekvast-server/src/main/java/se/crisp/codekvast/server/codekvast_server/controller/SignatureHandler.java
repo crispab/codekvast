@@ -1,8 +1,8 @@
 package se.crisp.codekvast.server.codekvast_server.controller;
 
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import lombok.NonNull;
 import lombok.Value;
 import lombok.experimental.Builder;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +20,11 @@ import se.crisp.codekvast.server.codekvast_server.util.DateUtils;
 import javax.inject.Inject;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * Responsible for sending signatures to the correct users.
@@ -31,8 +34,10 @@ import java.util.List;
 @Controller
 @Slf4j
 public class SignatureHandler extends AbstractMessageHandler {
+    private static final int CHUNK_SIZE = 100;
     private final UserService userService;
     private final UserHandler userHandler;
+    private final Executor executor = Executors.newFixedThreadPool(5);
 
     @Inject
     public SignatureHandler(EventBus eventBus, SimpMessagingTemplate messagingTemplate, UserService userService, UserHandler userHandler) {
@@ -43,51 +48,57 @@ public class SignatureHandler extends AbstractMessageHandler {
 
     @Subscribe
     public void onCollectorDataEvent(CollectorDataEvent event) {
-        long now = System.currentTimeMillis();
-        Timestamp timestamp = toStompTimestamp(now, event.getCollectors());
+        CollectorStatusMessage message = toCollectorStatusMessage(event.getCollectors());
 
         for (String username : event.getUsernames()) {
             if (userHandler.isPresent(username)) {
-                log.debug("Sending {} to '{}'", timestamp, username);
-                messagingTemplate.convertAndSendToUser(username, "/queue/timestamps", timestamp);
+                log.debug("Sending {} to '{}'", message, username);
+                messagingTemplate.convertAndSendToUser(username, "/queue/collectorStatus", message);
             }
         }
     }
 
     @Subscribe
     public void onInvocationDataUpdatedEvent(InvocationDataUpdatedEvent event) throws CodekvastException {
-        SignatureData data = toSignatureData(event.getInvocationEntries());
-        for (String username : event.getUsernames()) {
-            if (userHandler.isPresent(username)) {
-                log.debug("Sending {} signatures to '{}'", data.getSignatures().size(), username);
-                messagingTemplate.convertAndSendToUser(username, "/queue/signatureUpdates", data);
-            }
-        }
+        ChunkedSignatureSender sender = createChunkedSignatureSender(false, event.getUsernames(), null, event.getInvocationEntries());
+        executor.execute(sender);
     }
 
     /**
      * The JavaScript layer requests all signatures.
      *
      * @param principal The identity of the authenticated user.
-     * @return All signatures that this user has permission to view
+     * @return A SignatureMessage that bootstraps the angular view
      */
     @SubscribeMapping("/signatures")
-    public SignatureData subscribeSignatures(Principal principal) throws CodekvastException {
+    public SignatureMessage subscribeSignatures(Principal principal) throws CodekvastException {
         String username = principal.getName();
         log.debug("'{}' is subscribing to signatures", username);
 
-        // Make sure the user gets the collector data event immediately...
-        CollectorDataEvent event = userService.getCollectorDataEvent(username);
-        onCollectorDataEvent(event);
+        CollectorStatusMessage collectorStatusMessage = toCollectorStatusMessage(
+                userService.getCollectorDataEvent(username)
+                           .getCollectors());
 
-        SignatureData data = toSignatureData(userService.getSignatures(username));
-        log.debug("Sending {} signatures to '{}'", data.getSignatures().size(), username);
-        return data;
+        Collection<SignatureEntry> signatures = userService.getSignatures(username);
+
+        ChunkedSignatureSender sender = createChunkedSignatureSender(true,
+                                                                     Arrays.asList(username),
+                                                                     collectorStatusMessage,
+                                                                     signatures);
+        SignatureMessage firstChunk = sender.nextChunk();
+
+        try {
+            log.debug("Sending first {} of {} signatures to '{}'", firstChunk.getSignatures().size(), signatures.size(), username);
+            return firstChunk;
+        } finally {
+            executor.execute(sender);
+        }
     }
 
-    private SignatureData toSignatureData(Collection<SignatureEntry> invocationEntries) {
-        long now = System.currentTimeMillis();
-
+    private ChunkedSignatureSender createChunkedSignatureSender(boolean sendProgress,
+                                                                Collection<String> usernames,
+                                                                CollectorStatusMessage collectorStatus,
+                                                                Collection<SignatureEntry> invocationEntries) {
         List<Signature> signatures = new ArrayList<>();
 
         for (SignatureEntry entry : invocationEntries) {
@@ -102,12 +113,63 @@ public class SignatureHandler extends AbstractMessageHandler {
                                     .build());
         }
 
-        return SignatureData.builder()
-                            .signatures(signatures)
-                            .build();
+        return new ChunkedSignatureSender(sendProgress, usernames, collectorStatus, signatures);
     }
 
-    private Timestamp toStompTimestamp(long now, Collection<CollectorEntry> collectors) {
+    private class ChunkedSignatureSender implements Runnable {
+        private final boolean sendProgress;
+        private final Collection<String> usernames;
+        private final CollectorStatusMessage collectorStatus;
+        private final List<List<Signature>> chunks;
+        private final int progressMax;
+
+        private int currentChunk = 0;
+        private int progressValue;
+
+        private ChunkedSignatureSender(boolean sendProgress, Collection<String> usernames, CollectorStatusMessage collectorStatus,
+                                       List<Signature> signatures) {
+            this.sendProgress = sendProgress;
+            this.usernames = usernames;
+            this.collectorStatus = collectorStatus;
+            this.chunks = Lists.partition(signatures, CHUNK_SIZE);
+            this.progressValue = 0;
+            this.progressMax = signatures.size();
+        }
+
+        @Override
+        public void run() {
+            for (SignatureMessage message = nextChunk(); message != null; ) {
+                for (String username : usernames) {
+                    if (userHandler.isPresent(username)) {
+                        log.debug("Sending {} signatures to '{}' (chunk {} of {})", message.getSignatures().size(), username,
+                                  currentChunk, chunks.size());
+                        messagingTemplate.convertAndSendToUser(username, "/queue/signatureUpdates", message);
+                    }
+                }
+            }
+        }
+
+        public SignatureMessage nextChunk() {
+            if (currentChunk >= chunks.size()) {
+                return null;
+            }
+
+            SignatureMessage.SignatureMessageBuilder builder = SignatureMessage.builder()
+                                                                               .collectorStatus(collectorStatus)
+                                                                               .signatures(chunks.get(currentChunk));
+            if (sendProgress) {
+                builder.progress(Progress.builder().value(progressValue).max(progressMax).build());
+            }
+
+            currentChunk += 1;
+            progressValue += currentChunk * CHUNK_SIZE;
+
+            return builder.build();
+        }
+    }
+
+    private CollectorStatusMessage toCollectorStatusMessage(Collection<CollectorEntry> collectors) {
+        long now = System.currentTimeMillis();
         long startedAt = Long.MAX_VALUE;
         long updatedAt = Long.MIN_VALUE;
         List<String> collectorStrings = new ArrayList<>();
@@ -122,45 +184,49 @@ public class SignatureHandler extends AbstractMessageHandler {
                                                DateUtils.formatDate(entry.getDumpedAtMillis())));
         }
 
-        return Timestamp.builder()
-                        .collectionStartedAt(DateUtils.formatDate(startedAt))
-                        .collectionAge(DateUtils.getAge(now, startedAt))
-                        .updateReceivedAt(DateUtils.formatDate(updatedAt))
-                        .updateAge(DateUtils.getAge(now, updatedAt))
-                        .collectors(collectorStrings)
-                        .build();
+        return CollectorStatusMessage.builder()
+                                     .collectionStartedAt(DateUtils.formatDate(startedAt))
+                                     .collectionAge(DateUtils.getAge(now, startedAt))
+                                     .updateReceivedAt(DateUtils.formatDate(updatedAt))
+                                     .updateAge(DateUtils.getAge(now, updatedAt))
+                                     .collectors(collectorStrings)
+                                     .build();
     }
+
+    // --- JSON objects -----------------------------------------------------------------------------------
 
     @Value
     @Builder
-    static class SignatureData {
-        @NonNull
-        private final List<Signature> signatures;
-    }
-
-    @Value
-    @Builder
-    static class Timestamp {
-        @NonNull
-        private final String collectionStartedAt;
-        @NonNull
-        private final String collectionAge;
-        @NonNull
-        private final String updateReceivedAt;
-        @NonNull
-        private final String updateAge;
-        @NonNull
-        private final Collection<String> collectors;
+    static class Progress {
+        String message;
+        int value;
+        int max;
     }
 
     @Value
     @Builder
     static class Signature {
-        @NonNull
-        private final String name;
-        private final long invokedAtMillis;
-        @NonNull
-        private final String invokedAtString;
+        String name;
+        long invokedAtMillis;
+        String invokedAtString;
+    }
+
+    @Value
+    @Builder
+    static class SignatureMessage {
+        CollectorStatusMessage collectorStatus;
+        Progress progress;
+        List<Signature> signatures;
+    }
+
+    @Value
+    @Builder
+    static class CollectorStatusMessage {
+        String collectionStartedAt;
+        String collectionAge;
+        String updateReceivedAt;
+        String updateAge;
+        Collection<String> collectors;
     }
 
 }

@@ -126,7 +126,7 @@ public class AgentApiImpl implements AgentApi {
         }
     }
 
-    public void uploadSignatureChunk(URI uri, String jvmUuid, int chunkNumber, List chunk) throws AgentApiException {
+    public void uploadSignatureChunk(URI uri, String jvmUuid, int chunkNumber, List<SignatureEntry> chunk) throws AgentApiException {
         try {
             long startedAt = System.currentTimeMillis();
             log.debug("Uploading chunk #{} of size {}", chunkNumber, chunk.size());
