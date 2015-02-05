@@ -144,6 +144,12 @@ public class SignatureHandler extends AbstractMessageHandler {
                         log.debug("Sending {} signatures to '{}' (chunk {} of {})", message.getSignatures().size(), username,
                                   currentChunk, chunks.size());
                         messagingTemplate.convertAndSendToUser(username, "/queue/signatureUpdates", message);
+                        try {
+                            // Give the JavaScript client some leeway...
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            log.warn("Interrupted");
+                        }
                     }
                 }
             }
@@ -155,10 +161,12 @@ public class SignatureHandler extends AbstractMessageHandler {
             }
 
             SignatureMessage.SignatureMessageBuilder builder = SignatureMessage.builder()
-                                                                               .collectorStatus(collectorStatus)
                                                                                .signatures(chunks.get(currentChunk));
-            if (sendProgress) {
+            if (sendProgress && currentChunk < chunks.size() - 1) {
                 builder.progress(Progress.builder().value(progressValue).max(progressMax).build());
+            }
+            if (currentChunk == 0) {
+                builder.collectorStatus(collectorStatus);
             }
 
             currentChunk += 1;

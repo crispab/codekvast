@@ -45,13 +45,15 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
         $scope.updateSignatures = function (data) {
             var signatureMessage = JSON.parse(data.body);
 
-            $scope.$apply(function () {
-                if (signatureMessage.collectorStatus) {
+            if (signatureMessage.collectorStatus) {
+                $scope.$apply(function () {
                     $scope.jumbotronMessage = undefined;
                     $scope.collectorStatus = signatureMessage.collectorStatus;
-                }
-                $scope.progress = signatureMessage.progress;
-            });
+                })
+            }
+            ;
+
+            $scope.progress = signatureMessage.progress;
 
             var updateLen = signatureMessage.signatures.length;
             for (var i = 0; i < updateLen; i++) {
@@ -73,9 +75,7 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
 
             }
 
-            $scope.$apply(function () {
-                $scope.progress = undefined;
-            });
+            $scope.$apply();
         };
 
         $scope.disconnected = function () {
