@@ -189,20 +189,24 @@ public class SignatureHandler extends AbstractMessageHandler {
         long now = System.currentTimeMillis();
         long startedAt = Long.MAX_VALUE;
         long updatedAt = Long.MIN_VALUE;
-        List<String> collectorStrings = new ArrayList<>();
+        List<Collector> displayCollectors = new ArrayList<>();
         boolean isEmpty = true;
         for (CollectorEntry entry : collectors) {
             startedAt = Math.min(startedAt, entry.getStartedAtMillis());
             updatedAt = Math.max(updatedAt, entry.getDumpedAtMillis());
-            collectorStrings.add(String.format("%s started %s (%s), updated %s",
-                                               entry.getName(),
-                                               DateUtils.formatDate(entry.getStartedAtMillis()),
-                                               DateUtils.getAge(now, entry.getStartedAtMillis()),
-                                               DateUtils.formatDate(entry.getDumpedAtMillis())));
+            displayCollectors.add(
+                    Collector.builder()
+                             .name(entry.getName())
+                             .version(entry.getVersion())
+                             .collectorStartedAt(DateUtils.formatDate(entry.getStartedAtMillis()))
+                             .collectorAge(DateUtils.getAge(now, entry.getStartedAtMillis()))
+                             .updateReceivedAt(DateUtils.formatDate(entry.getDumpedAtMillis()))
+                             .updateAge(DateUtils.getAge(now, entry.getDumpedAtMillis()))
+                             .build());
             isEmpty = false;
         }
 
-        CollectorStatusMessage.CollectorStatusMessageBuilder builder = CollectorStatusMessage.builder().collectors(collectorStrings);
+        CollectorStatusMessage.CollectorStatusMessageBuilder builder = CollectorStatusMessage.builder().collectors(displayCollectors);
         if (isEmpty) {
             builder.collectionStartedAt("Waiting for collectors to start");
         } else {
@@ -247,7 +251,17 @@ public class SignatureHandler extends AbstractMessageHandler {
         String collectionAge;
         String updateReceivedAt;
         String updateAge;
-        Collection<String> collectors;
+        Collection<Collector> collectors;
     }
 
+    @Value
+    @Builder
+    static class Collector {
+        String name;
+        String version;
+        String collectorStartedAt;
+        String collectorAge;
+        String updateReceivedAt;
+        String updateAge;
+    }
 }

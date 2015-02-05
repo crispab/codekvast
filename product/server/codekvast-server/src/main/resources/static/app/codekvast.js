@@ -11,8 +11,7 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
 
         $scope.signatures = [];
         $scope.collectorStatus = undefined;
-
-        $scope.reverse = false;
+        $scope.statusPanelOpen = true;
 
         $scope.haveSignatures = function () {
             return $scope.signatures.length > 0;
@@ -29,6 +28,8 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
         $scope.orderByInvokedAt();
 
         $scope.maxRows = 100;
+
+        $scope.reverse = false;
 
         $scope.socket = {
             client: null,

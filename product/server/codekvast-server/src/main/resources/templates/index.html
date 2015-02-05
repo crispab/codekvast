@@ -5,13 +5,14 @@
     <title>Codekvast</title>
 </head>
 
-<body>
-<div class="container-fluid">
-    <div th:if="${#httpServletRequest.remoteUser != null}">
-        <div class="pull-right">
-            <form class="form-inline" role="form" th:action="@{/logout}" method="post">
+<body class="ng-cloak" ng-app="codekvastApp">
+<div class="container-fluid" ng-controller="MainController">
+    <div class="row">
+        <div class="col-lg-offset-4 col-lg-6"><h1>Codekvast Invocation Data</h1></div>
+        <div class="col-lg-2">
+            <form class="form-aaa" role="form" th:action="@{/logout}" method="post">
                 <div class="form-group">
-                    <p class="form-control-static" th:text="${#httpServletRequest.remoteUser}">sample_user</p>
+                    <p class="form-control-static" th:text="${'Logged in as ' + #httpServletRequest.remoteUser}">sample_user</p>
 
                     <input class="btn btn-default" type="submit" value="Log out"/>
                 </div>
@@ -19,69 +20,78 @@
         </div>
     </div>
 
-    <div class="ng-cloak" ng-app="codekvastApp">
-        <div ng-controller="MainController">
-            <h1>Codekvast Invocation Data</h1>
+    <div class="jumbotron" ng-show="jumbotronMessage"><h2>{{jumbotronMessage}}</h2></div>
 
-            <div class="jumbotron" ng-show="jumbotronMessage"><h2>{{jumbotronMessage}}</h2></div>
-
-            <div class="status-panel alert alert-info" ng-show="collectorStatus" tooltip="{{collectorStatus.collectors}}">
-                <table>
-                    <tr>
-                        <td>Collection started:</td>
-                        <td>{{collectorStatus.collectionStartedAt}}</td>
-                        <td>{{collectorStatus.collectionAge}}</td>
-                    </tr>
-                    <tr>
-                        <td>Update received:</td>
-                        <td>{{collectorStatus.updateReceivedAt}}</td>
-                    </tr>
-                    <tr>
-                        <td>Signatures:</td>
-                        <td>{{signatures.length}}</td>
-                    </tr>
-                </table>
-            </div>
-
-            <div class="row">
-                <div class="col-lg-4">
-                    <progressbar value="55"></progressbar>
-                </div>
-                <div class="col-lg-4">
-                    <progressbar class="progress-striped" value="22" type="warning">22%</progressbar>
-                </div>
-                <div class="col-lg-4">
-                    <progressbar class="progress-striped active" max="200" value="166" type="danger"><i>166 / 200</i></progressbar>
-                </div>
-            </div>
-
-            <div class="row" ng-show="haveSignatures()">
-                Filter:
-                <input type="text" ng-model="filter" size="50"/>
-                Max rows:
-                <input type="number" step="10" ng-model="maxRows"/>
-                <hr/>
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover table-condensed">
-                        <thead>
-                        <tr>
-                            <th class="signature-name"><a href="" ng-click="orderByName(); reverse = !reverse">Signature</a></th>
-                            <th class="signature-invoked-at"><a href=""
-                                                                ng-click="orderByInvokedAt(); reverse = !reverse">Invoked&nbsp;At</a>
-                            </th>
-                        </tr>
-                        </thead>
-
-                        <tbody>
-                        <tr ng-repeat="s in signatures | filter: filter | orderBy:sortField:reverse | limitTo:maxRows">
-                            <td class="signature-name">{{s.name}}</td>
-                            <td class="signature-invoked-at">{{s.invokedAtString}}</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+    <div class="panel panel-info">
+        <!-- Default panel contents -->
+        <div class="panel-heading" ng-click="statusPanelOpen = !statusPanelOpen">Collector status <i class="pull-right glyphicon"
+                                                                                                     ng-class="{'glyphicon-chevron-down': statusPanelOpen, 'glyphicon-chevron-right': !statusPanelOpen}"></i>
         </div>
+        <div collapse="!statusPanelOpen">
+            <div class="panel-body">
+                <p>The status of all collectors that deliver data to this server.</p>
+            </div>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Application</th>
+                    <th>Version</th>
+                    <th>Started at</th>
+                    <th></th>
+                    <th>Updated at</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="c in collectorStatus.collectors">
+                    <td>{{c.name}}</td>
+                    <td>{{c.version}}</td>
+                    <td>{{c.collectorStartedAt}}</td>
+                    <td>{{c.collectorAge}}</td>
+                    <td>{{c.updateReceivedAt}}</td>
+                    <td>{{c.updateAge}}</td>
+                </tr>
+                <tr>
+                    <td><b>Total</b></td>
+                    <td></td>
+                    <td><b>{{collectorStatus.collectionStartedAt}}</b></td>
+                    <td><b>{{collectorStatus.collectionAge}}</b></td>
+                    <td>{{collectorStatus.updateReceivedAt}}</td>
+                    <td>{{collectorStatus.updateAge}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="panel panel-info" ng-show="haveSignatures()">
+        <!-- Default panel contents -->
+        <div class="panel-heading">Signatures</div>
+
+        <div class="panel-body">
+            Filter:
+            <input type="text" ng-model="filter" size="50"/>
+            Max rows:
+            <input type="number" step="10" ng-model="maxRows"/>
+            of {{signatures.length}}
+        </div>
+
+        <table class="table table-striped table-hover table-condensed">
+            <thead>
+            <tr>
+                <th class="signature-name"><a href="" ng-click="orderByName(); reverse = !reverse">Name</a></th>
+                <th class="signature-invoked-at"><a href="" ng-click="orderByInvokedAt(); reverse = !reverse">Invoked&nbsp;At</a>
+                </th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr ng-repeat="s in signatures | filter: filter | orderBy:sortField:reverse | limitTo:maxRows">
+                <td class="signature-name">{{s.name}}</td>
+                <td class="signature-invoked-at">{{s.invokedAtString}}</td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 </div>
 <th:block th:include="fragments :: #scripts-twitter-bootstrap"/>

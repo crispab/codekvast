@@ -144,7 +144,8 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         public CollectorDataEvent.CollectorEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
             // name, version, started_at, dumped_at
             return CollectorDataEvent.CollectorEntry.builder()
-                                                    .name(rs.getString(1) + " " + rs.getString(2))
+                                                    .name(rs.getString(1))
+                                                    .version(rs.getString(2))
                                                     .startedAtMillis(rs.getLong(3))
                                                     .dumpedAtMillis(rs.getLong(4))
                                                     .build();

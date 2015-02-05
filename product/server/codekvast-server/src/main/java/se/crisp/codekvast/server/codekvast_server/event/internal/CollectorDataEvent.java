@@ -19,6 +19,7 @@ public class CollectorDataEvent {
     @Builder
     public static class CollectorEntry {
         private final String name;
+        private final String version;
         private final long startedAtMillis;
         private final long dumpedAtMillis;
     }
