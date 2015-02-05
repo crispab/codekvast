@@ -56,7 +56,6 @@ dependencies {
     compile lombok
     compile project(':product:server:agent-api')
     compile project(':product:support:websupport')
-    compile 'com.google.guava:guava:18.0'
     compile 'ch.qos.logback:logback-classic'
 
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
@@ -137,14 +136,18 @@ startScripts {
 
 ext.databasePath = file("build/database/codekvast")
 
+run {
+    jvmArgs = ['-ea']
+}
+
 bootRun {
     jvmArgs = [
+            '-ea',
             "-javaagent:${configurations.springLoaded.asPath}",
-            "-noverify",
-            "-Dspring.thymeleaf.cache=false",
-            "-Dspring.messages.cacheSeconds=1"
+            '-noverify',
+            '-Dspring.thymeleaf.cache=false',
+            '-Dspring.messages.cacheSeconds=1'
     ]
-
 }
 
 jacoco {

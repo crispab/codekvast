@@ -1,6 +1,7 @@
 package se.crisp.codekvast.agent.main;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,11 +44,11 @@ public class AgentWorker {
     private final AgentApi agentApi;
     private final String codekvastGradleVersion;
     private final String codekvastVcsId;
-    private final Map<String, JvmState> jvmStates = new HashMap<>();
     private final Collection<AppVersionStrategy> appVersionStrategies = new ArrayList<>();
     private final String agentComputerId = ComputerID.compute().toString();
     private final String agentHostName = getHostName();
 
+    private final Map<String, JvmState> jvmStates = new HashMap<>();
     private long now;
 
     @Inject
@@ -66,7 +67,12 @@ public class AgentWorker {
         this.codeBaseScanner = codeBaseScanner;
         this.appVersionStrategies.addAll(appVersionStrategies);
 
-        log.info("Starting agent worker {} ({})", codekvastGradleVersion, codekvastVcsId);
+        log.info("{} {}-{} started", getClass().getSimpleName(), codekvastGradleVersion, codekvastVcsId);
+    }
+
+    @PreDestroy
+    public void shutdownHook() {
+        log.info("{} {}-{} shuts down", getClass().getSimpleName(), codekvastGradleVersion, codekvastVcsId);
     }
 
     private String getHostName() {
@@ -259,7 +265,7 @@ public class AgentWorker {
     private void uploadUsedSignatures(JvmState jvmState) {
         try {
             agentApi.uploadInvocationData(getJvmData(jvmState),
-                                          jvmState.getInvocationsCollector().getNotUploadedInvocations());
+                                          Lists.newArrayList(jvmState.getInvocationsCollector().getNotUploadedInvocations()));
             jvmState.getInvocationsCollector().clearNotUploadedSignatures();
             FileUtils.deleteAllConsumedInvocationDataFiles(jvmState.getInvocationsFile());
         } catch (AgentApiException e) {
@@ -316,11 +322,6 @@ public class AgentWorker {
         } else {
             log.debug("{} signature invocations applied ({} overridden, {} ignored)", recognized, overridden, ignored);
         }
-    }
-
-    @PreDestroy
-    public void shutdownHook() {
-        log.info("{} shuts down", getClass().getSimpleName());
     }
 
     private Throwable getRootCause(Throwable t) {

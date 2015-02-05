@@ -1,5 +1,6 @@
 package se.crisp.codekvast.server.agent_api.impl;
 
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.auth.AuthScope;
@@ -98,7 +99,7 @@ public class AgentApiImpl implements AgentApi {
     }
 
     @Override
-    public void uploadInvocationData(JvmData jvmData, Collection<SignatureEntry> signatures)
+    public void uploadInvocationData(JvmData jvmData, List<SignatureEntry> signatures)
             throws AgentApiException {
         if (signatures.isEmpty()) {
             log.debug("Not uploading empty invocations");
@@ -112,41 +113,28 @@ public class AgentApiImpl implements AgentApi {
         try {
             URI uri = new URI(endPoint);
 
-            List<SignatureEntry> list = new ArrayList<>(signatures);
-            int from = 0;
-            int chunkNo = 1;
-            int uploaded = 0;
-            while (from < list.size()) {
-                int to = Math.min(from + UPLOAD_CHUNK_SIZE, list.size());
-
-                uploaded += uploadInvocationChunk(jvmData, uri, list.subList(from, to), chunkNo);
-
-                from = to;
-                chunkNo += 1;
+            int chunkNumber = 1;
+            for (List<SignatureEntry> chunk : Lists.partition(signatures, UPLOAD_CHUNK_SIZE)) {
+                uploadSignatureChunk(uri, jvmData.getJvmUuid(), chunkNumber, chunk);
+                chunkNumber += 1;
             }
 
-            checkState(uploaded == signatures.size(), "Bad chunk logic: uploaded=" + uploaded + ", input.size()=" + signatures.size());
-            log.info("Uploaded {} signatures from {} to {} in {}s", uploaded, jvmData.getAppName(), endPoint,
+            log.info("Uploaded {} signatures from {} to {} in {}s", signatures.size(), jvmData.getAppName(), endPoint,
                      elapsedSeconds(startedAtMillis));
         } catch (URISyntaxException e) {
             throw new AgentApiException("Illegal REST endpoint: " + endPoint, e);
         }
     }
 
-    private void checkState(boolean b, String message) {
-        if (!b) {
-            throw new IllegalStateException(message);
-        }
-    }
-
-    private int uploadInvocationChunk(JvmData jvmData, URI uri, List<SignatureEntry> chunk, int chunkNo) throws AgentApiException {
+    public void uploadSignatureChunk(URI uri, String jvmUuid, int chunkNumber, List chunk) throws AgentApiException {
         try {
             long startedAt = System.currentTimeMillis();
-            log.debug("Uploading chunk #{} of size {}", chunkNo, chunk.size());
-            SignatureData data = SignatureData.builder().jvmUuid(jvmData.getJvmUuid()).signatures(chunk).build();
+            log.debug("Uploading chunk #{} of size {}", chunkNumber, chunk.size());
+
+            SignatureData data = SignatureData.builder().jvmUuid(jvmUuid).signatures(chunk).build();
             restTemplate.postForEntity(uri, validate(data), Void.class);
-            log.debug("Uploaded chunk #{} in {} ms", chunkNo, System.currentTimeMillis() - startedAt);
-            return chunk.size();
+
+            log.debug("Uploaded chunk #{} in {} ms", chunkNumber, System.currentTimeMillis() - startedAt);
         } catch (RestClientException e) {
             throw new AgentApiException("Failed to post signatures data", e);
         }

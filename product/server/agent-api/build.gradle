@@ -12,6 +12,7 @@ sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 dependencies {
+    compile lombok
     compile "com.fasterxml.jackson.core:jackson-annotations"
     compile "com.fasterxml.jackson.core:jackson-databind"
     compile "javax.inject:javax.inject:1"
@@ -20,8 +21,8 @@ dependencies {
     compile "org.slf4j:slf4j-api"
     compile "org.springframework:spring-context"
     compile "org.springframework:spring-web"
-    compile lombok
     compile "org.hibernate:hibernate-validator"
+    compile 'com.google.guava:guava:18.0'
 
     runtime "org.glassfish:javax.el:3.0.0"
 
