@@ -81,6 +81,14 @@ public class SignatureHandler extends AbstractMessageHandler {
 
         Collection<SignatureEntry> signatures = userService.getSignatures(username);
 
+        if (signatures.isEmpty()) {
+            log.debug("No signatures to send to '{}'", username);
+            return SignatureMessage.builder()
+                                   .collectorStatus(collectorStatusMessage)
+                                   .signatures(new ArrayList<Signature>())
+                                   .build();
+
+        }
         ChunkedSignatureSender sender = createChunkedSignatureSender(true,
                                                                      Arrays.asList(username),
                                                                      collectorStatusMessage,
@@ -140,20 +148,17 @@ public class SignatureHandler extends AbstractMessageHandler {
         public void run() {
             for (String username : usernames) {
                 for (SignatureMessage message = nextChunk(); message != null; message = nextChunk()) {
-                    if (!userHandler.isPresent(username)) {
-                        log.info("User '{}' has left", username);
-                        return;
-                    }
+                    if (userHandler.isPresent(username)) {
+                        log.debug("Sending {} signatures to '{}' (chunk {} of {})", message.getSignatures().size(), username,
+                                  currentChunk, chunks.size());
+                        messagingTemplate.convertAndSendToUser(username, "/queue/signatureUpdates", message);
+                        try {
+                            // Give the browser some leeway...
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            log.warn("Interrupted");
 
-                    log.debug("Sending {} signatures to '{}' (chunk {} of {})", message.getSignatures().size(), username,
-                              currentChunk, chunks.size());
-                    messagingTemplate.convertAndSendToUser(username, "/queue/signatureUpdates", message);
-                    try {
-                        // Give the JavaScript client some leeway...
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        log.warn("Interrupted");
-
+                        }
                     }
                 }
             }
@@ -185,7 +190,7 @@ public class SignatureHandler extends AbstractMessageHandler {
         long startedAt = Long.MAX_VALUE;
         long updatedAt = Long.MIN_VALUE;
         List<String> collectorStrings = new ArrayList<>();
-
+        boolean isEmpty = true;
         for (CollectorEntry entry : collectors) {
             startedAt = Math.min(startedAt, entry.getStartedAtMillis());
             updatedAt = Math.max(updatedAt, entry.getDumpedAtMillis());
@@ -194,15 +199,19 @@ public class SignatureHandler extends AbstractMessageHandler {
                                                DateUtils.formatDate(entry.getStartedAtMillis()),
                                                DateUtils.getAge(now, entry.getStartedAtMillis()),
                                                DateUtils.formatDate(entry.getDumpedAtMillis())));
+            isEmpty = false;
         }
 
-        return CollectorStatusMessage.builder()
-                                     .collectionStartedAt(DateUtils.formatDate(startedAt))
-                                     .collectionAge(DateUtils.getAge(now, startedAt))
-                                     .updateReceivedAt(DateUtils.formatDate(updatedAt))
-                                     .updateAge(DateUtils.getAge(now, updatedAt))
-                                     .collectors(collectorStrings)
-                                     .build();
+        CollectorStatusMessage.CollectorStatusMessageBuilder builder = CollectorStatusMessage.builder().collectors(collectorStrings);
+        if (isEmpty) {
+            builder.collectionStartedAt("Waiting for collectors to start");
+        } else {
+            builder.collectionStartedAt(DateUtils.formatDate(startedAt))
+                   .collectionAge(DateUtils.getAge(now, startedAt))
+                   .updateReceivedAt(DateUtils.formatDate(updatedAt))
+                   .updateAge(DateUtils.getAge(now, updatedAt));
+        }
+        return builder.build();
     }
 
     // --- JSON objects -----------------------------------------------------------------------------------

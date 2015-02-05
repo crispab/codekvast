@@ -20,7 +20,7 @@
     </div>
 
     <div class="ng-cloak" ng-app="codekvastApp">
-        <div ng-controller="MainCtrl">
+        <div ng-controller="MainController">
             <h1>Codekvast Invocation Data</h1>
 
             <div class="jumbotron" ng-show="jumbotronMessage"><h2>{{jumbotronMessage}}</h2></div>
@@ -30,7 +30,7 @@
                     <tr>
                         <td>Collection started:</td>
                         <td>{{collectorStatus.collectionStartedAt}}</td>
-                        <td>({{collectorStatus.collectionAge}})</td>
+                        <td>{{collectorStatus.collectionAge}}</td>
                     </tr>
                     <tr>
                         <td>Update received:</td>
@@ -43,10 +43,16 @@
                 </table>
             </div>
 
-            <div ng-show="progress">
-                <progressbar class="progress-striped active" max="progress.max" value="progress.value">{{progress.value}} / {{progress
-                                                                                                       .max}}
-                </progressbar>
+            <div class="row">
+                <div class="col-lg-4">
+                    <progressbar value="55"></progressbar>
+                </div>
+                <div class="col-lg-4">
+                    <progressbar class="progress-striped" value="22" type="warning">22%</progressbar>
+                </div>
+                <div class="col-lg-4">
+                    <progressbar class="progress-striped active" max="200" value="166" type="danger"><i>166 / 200</i></progressbar>
+                </div>
             </div>
 
             <div class="row" ng-show="haveSignatures()">

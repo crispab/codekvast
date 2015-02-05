@@ -26,7 +26,7 @@ module.exports = function (config) {
             'build/webjarJs/sockjs.js',
             'build/webjarJs/stomp.js',
             'src/main/resources/static/app/*.js',
-            'src/test/js/**/*.js',
+            'src/test/js/**/*.js'
         ],
 
         preprocessors: {

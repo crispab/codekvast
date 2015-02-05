@@ -5,7 +5,7 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
         $locationProvider.html5Mode(true);
     }])
 
-    .controller('MainCtrl', ['$scope', '$window', function ($scope, $window) {
+    .controller('MainController', ['$scope', '$window', function ($scope, $window) {
         $scope.jumbotronMessage = 'Disconnected from server';
         $scope.progress = undefined;
 
@@ -51,7 +51,6 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
                     $scope.collectorStatus = signatureMessage.collectorStatus;
                 })
             }
-            ;
 
             $scope.progress = signatureMessage.progress;
 
