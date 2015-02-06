@@ -3,13 +3,12 @@ package se.crisp.codekvast.support.web.config;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Priority;
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -42,14 +41,14 @@ import java.util.regex.Pattern;
  */
 @Slf4j
 @WebFilter(urlPatterns = "/*")
-@Order(Integer.MIN_VALUE)
+@Priority(Integer.MIN_VALUE)
 @Component
 public class WebjarVersionFilter implements Filter {
 
     @Getter(AccessLevel.MODULE)
     private final Map<String, String> versions = new HashMap<>();
 
-    final Pattern requestUriPattern = Pattern.compile("^(/webjars/)(\\w+)(/\\D*)$");
+    final Pattern requestUriPattern = Pattern.compile("^(/webjars/)([\\w-]+)(/\\D*)$");
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -63,21 +62,14 @@ public class WebjarVersionFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest req = (HttpServletRequest) request;
-        String requestURI = req.getRequestURI();
-        StringBuffer requestURL = req.getRequestURL();
-
-        if (requestURI == null) {
+        String requestURI = ((HttpServletRequest) request).getRequestURI();
+        String expandedRequestURI = expandRequestURI(requestURI);
+        if (expandedRequestURI != null) {
+            log.debug("Forwarding {} to {}", requestURI, expandedRequestURI);
+            request.getRequestDispatcher(expandedRequestURI).forward(request, response);
+        } else {
             chain.doFilter(request, response);
-            return;
         }
-
-        final String expandedRequestURI = expandRequestURI(requestURI);
-
-        ServletRequest wrappedRequest =
-                expandedRequestURI == null ? request : new WebjarExpandedHttpServletRequestWrapper(req, expandedRequestURI);
-
-        chain.doFilter(wrappedRequest, response);
     }
 
     String expandRequestURI(String requestURI) {
@@ -91,7 +83,6 @@ public class WebjarVersionFilter implements Filter {
             String version = versions.get(jarName);
             if (version != null) {
                 String result = matcher.group(1) + jarName + "/" + version + matcher.group(3);
-                log.debug("Rewrote {} to {}", requestURI, result);
                 return result;
             }
         }
@@ -144,27 +135,5 @@ public class WebjarVersionFilter implements Filter {
     private String basename(String path) {
         int slash = path.replace('\\', '/').lastIndexOf('/');
         return path.substring(slash + 1);
-    }
-
-    private static class WebjarExpandedHttpServletRequestWrapper extends HttpServletRequestWrapper {
-        private final StringBuffer requestURL;
-        private final String requestURI;
-
-        public WebjarExpandedHttpServletRequestWrapper(HttpServletRequest req, String requestURI) {
-            super(req);
-            this.requestURL = new StringBuffer(req.getRequestURL().toString().replace(req.getRequestURI(), requestURI));
-            this.requestURI = requestURI;
-        }
-
-        @Override
-        public StringBuffer getRequestURL() {
-            return requestURL;
-        }
-
-        @Override
-        public String getRequestURI() {
-            return requestURI;
-        }
-
     }
 }
