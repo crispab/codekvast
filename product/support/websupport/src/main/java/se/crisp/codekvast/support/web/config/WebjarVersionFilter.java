@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
  * @author Olle Hallin <olle.hallin@crisp.se>
  */
 @Slf4j
-@WebFilter(urlPatterns = "/webjars/*")
+@WebFilter(urlPatterns = "/*")
 @Order(Integer.MIN_VALUE)
 @Component
 public class WebjarVersionFilter implements Filter {
@@ -65,6 +65,7 @@ public class WebjarVersionFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         String requestURI = req.getRequestURI();
+        StringBuffer requestURL = req.getRequestURL();
 
         if (requestURI == null) {
             chain.doFilter(request, response);
@@ -146,16 +147,24 @@ public class WebjarVersionFilter implements Filter {
     }
 
     private static class WebjarExpandedHttpServletRequestWrapper extends HttpServletRequestWrapper {
+        private final StringBuffer requestURL;
         private final String requestURI;
 
         public WebjarExpandedHttpServletRequestWrapper(HttpServletRequest req, String requestURI) {
             super(req);
+            this.requestURL = new StringBuffer(req.getRequestURL().toString().replace(req.getRequestURI(), requestURI));
             this.requestURI = requestURI;
+        }
+
+        @Override
+        public StringBuffer getRequestURL() {
+            return requestURL;
         }
 
         @Override
         public String getRequestURI() {
             return requestURI;
         }
+
     }
 }
