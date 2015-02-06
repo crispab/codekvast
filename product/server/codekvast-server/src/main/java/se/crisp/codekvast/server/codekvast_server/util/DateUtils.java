@@ -29,7 +29,7 @@ public class DateUtils {
         return timestampMillis == 0L ? "" : sdf.get().format(new Date(timestampMillis));
     }
 
-    public static String getAge(long now, long timestampMillis) {
+    public static String getAgeXX(long now, long timestampMillis) {
         if (timestampMillis == 0L) {
             return "";
         }

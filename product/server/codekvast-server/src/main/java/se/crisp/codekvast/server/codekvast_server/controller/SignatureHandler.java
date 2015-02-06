@@ -186,7 +186,6 @@ public class SignatureHandler extends AbstractMessageHandler {
     }
 
     private CollectorStatusMessage toCollectorStatusMessage(Collection<CollectorEntry> collectors) {
-        long now = System.currentTimeMillis();
         long startedAt = Long.MAX_VALUE;
         long updatedAt = Long.MIN_VALUE;
         List<Collector> displayCollectors = new ArrayList<>();
@@ -198,10 +197,10 @@ public class SignatureHandler extends AbstractMessageHandler {
                     Collector.builder()
                              .name(entry.getName())
                              .version(entry.getVersion())
+                             .collectorStartedAtMillis(entry.getStartedAtMillis())
                              .collectorStartedAt(DateUtils.formatDate(entry.getStartedAtMillis()))
-                             .collectorAge(DateUtils.getAge(now, entry.getStartedAtMillis()))
+                             .updateReceivedAtMillis(entry.getDumpedAtMillis())
                              .updateReceivedAt(DateUtils.formatDate(entry.getDumpedAtMillis()))
-                             .updateAge(DateUtils.getAge(now, entry.getDumpedAtMillis()))
                              .build());
             isEmpty = false;
         }
@@ -210,10 +209,10 @@ public class SignatureHandler extends AbstractMessageHandler {
         if (isEmpty) {
             builder.collectionStartedAt("Waiting for collectors to start");
         } else {
-            builder.collectionStartedAt(DateUtils.formatDate(startedAt))
-                   .collectionAge(DateUtils.getAge(now, startedAt))
-                   .updateReceivedAt(DateUtils.formatDate(updatedAt))
-                   .updateAge(DateUtils.getAge(now, updatedAt));
+            builder.collectionStartedAtMillis(startedAt)
+                   .collectionStartedAt(DateUtils.formatDate(startedAt))
+                   .updateReceivedAtMillis(updatedAt)
+                   .updateReceivedAt(DateUtils.formatDate(updatedAt));
         }
         return builder.build();
     }
@@ -247,10 +246,10 @@ public class SignatureHandler extends AbstractMessageHandler {
     @Value
     @Builder
     static class CollectorStatusMessage {
+        long collectionStartedAtMillis;
         String collectionStartedAt;
-        String collectionAge;
+        long updateReceivedAtMillis;
         String updateReceivedAt;
-        String updateAge;
         Collection<Collector> collectors;
     }
 
@@ -259,9 +258,9 @@ public class SignatureHandler extends AbstractMessageHandler {
     static class Collector {
         String name;
         String version;
+        long collectorStartedAtMillis;
         String collectorStartedAt;
-        String collectorAge;
+        long updateReceivedAtMillis;
         String updateReceivedAt;
-        String updateAge;
     }
 }
