@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * This is the business delegate interface used by a Codekvast agent for communicating with the server.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 public interface AgentApi {
     /**

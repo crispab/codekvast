@@ -9,7 +9,7 @@ import javax.annotation.PreDestroy;
 /**
  * Base class for message-driven handlers
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 abstract class AbstractMessageHandler {
     protected final EventBus eventBus;

@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
  * 
  * Should be uploaded regularly during the lifetime of a JVM.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Data
 @Builder

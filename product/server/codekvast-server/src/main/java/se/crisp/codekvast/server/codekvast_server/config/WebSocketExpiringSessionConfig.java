@@ -13,7 +13,7 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
  * <p/>
  * Without this, no {@link SessionDisconnectEvent}s will be published.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Configuration
 public class WebSocketExpiringSessionConfig<S extends ExpiringSession> {

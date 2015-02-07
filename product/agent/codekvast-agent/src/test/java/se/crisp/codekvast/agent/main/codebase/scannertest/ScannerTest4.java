@@ -3,7 +3,7 @@ package se.crisp.codekvast.agent.main.codebase.scannertest;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @SuppressWarnings("UnusedDeclaration")
 @Slf4j

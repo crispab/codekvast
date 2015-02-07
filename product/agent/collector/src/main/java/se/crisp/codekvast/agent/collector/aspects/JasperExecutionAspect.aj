@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
  * <p/>
  * It is weaved into the target app by the AspectJ load-time weaver.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  * @see se.crisp.codekvast.agent.collector.CodekvastCollector
  */
 public aspect JasperExecutionAspect extends AbstractCodekvastAspect {

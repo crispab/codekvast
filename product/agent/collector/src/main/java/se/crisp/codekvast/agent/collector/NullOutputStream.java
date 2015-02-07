@@ -5,7 +5,7 @@ import java.io.IOException;
 /**
  * A no-op output stream to use if verbose=false
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 public class NullOutputStream extends java.io.OutputStream {
 

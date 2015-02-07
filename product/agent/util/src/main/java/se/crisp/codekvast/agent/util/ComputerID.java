@@ -16,7 +16,7 @@ import java.util.TreeSet;
  * This is a computed value of the computer identity. It uses various stuff for computing the value, that is unlikely to change between
  * reboots.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Value
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 /**
  * Meta annotation for integration tests against an embedded CodekvastServerApplication
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

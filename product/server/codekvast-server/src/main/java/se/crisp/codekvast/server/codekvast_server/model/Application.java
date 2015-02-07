@@ -5,7 +5,7 @@ import lombok.Value;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Value
 public class Application {

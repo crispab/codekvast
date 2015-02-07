@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 /**
  * A base class for traditional controllers which render Thymeleaf views.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Slf4j
 public abstract class AbstractThymeleafController {

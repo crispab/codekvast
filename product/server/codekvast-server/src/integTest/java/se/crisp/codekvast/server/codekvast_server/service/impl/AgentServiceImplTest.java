@@ -29,7 +29,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
- * @author Olle Hallin <olle.hallin@crisp.se>
+ * @author olle.hallin@crisp.se
  */
 @SuppressWarnings("CastToConcreteClass")
 @RunWith(SpringJUnit4ClassRunner.class)

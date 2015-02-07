@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 /**
  * Handles a code base, i.e., the set of public methods of an application.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @ToString(of = "codeBaseFiles", includeFieldNames = false)
 @EqualsAndHashCode(of = "fingerprint")

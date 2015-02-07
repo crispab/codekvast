@@ -1,5 +1,5 @@
 /**
  * Flyway Java migrations.
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 package se.crisp.codekvast.server.codekvast_server.migration;

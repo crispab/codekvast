@@ -5,7 +5,7 @@ import lombok.Value;
 /**
  * Holds data about the invocation of one method.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Value
 public class Invocation {

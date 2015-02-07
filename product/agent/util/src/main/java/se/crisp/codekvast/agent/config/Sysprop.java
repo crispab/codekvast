@@ -3,7 +3,7 @@ package se.crisp.codekvast.agent.config;
 /**
  * Definition of system properties used by the agent or collector.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 public enum Sysprop {
     AGENT_CONFIGURATION,

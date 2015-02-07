@@ -7,7 +7,7 @@ import java.io.File;
 /**
  * Finds out where the codekvast-agent is installed and calculates an absolute path for the Logback log file. See logback.xml
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 public class LogPathDefiner extends PropertyDefinerBase {
 

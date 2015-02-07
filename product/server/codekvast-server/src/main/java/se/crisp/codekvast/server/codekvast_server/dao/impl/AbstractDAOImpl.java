@@ -11,7 +11,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 /**
  * Base class for DAO implementations.
  *
- * @author Olle Hallin <olle.hallin@crisp.se>
+ * @author olle.hallin@crisp.se
  */
 public abstract class AbstractDAOImpl {
 

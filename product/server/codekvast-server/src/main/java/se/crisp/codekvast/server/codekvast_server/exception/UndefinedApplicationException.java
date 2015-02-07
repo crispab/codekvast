@@ -1,7 +1,7 @@
 package se.crisp.codekvast.server.codekvast_server.exception;
 
 /**
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 public class UndefinedApplicationException extends CodekvastException {
 

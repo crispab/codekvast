@@ -11,7 +11,7 @@ import java.util.Properties;
 /**
  * The Spring Boot main for codekvast-server,
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @SpringBootApplication
 @ComponentScan({"se.crisp.codekvast.server.codekvast_server", "se.crisp.codekvast.support"})

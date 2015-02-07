@@ -3,7 +3,7 @@ package sample.app;
 /**
  * This class is outside of the packagePrefix that the Codekvast agent monitors.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 public class TrackedClass {
 

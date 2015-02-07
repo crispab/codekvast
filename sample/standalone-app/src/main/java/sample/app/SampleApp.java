@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import untracked.UntrackedClass;
 
 /**
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
 @Slf4j

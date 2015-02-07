@@ -25,7 +25,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * A Spring MVC Controller that handles registration.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Controller
 @Slf4j
@@ -103,7 +103,7 @@ public class RegistrationController extends AbstractThymeleafController {
     /**
      * Send by the registration wizard JavaScript to check whether a name is unique or not.
      *
-     * @author Olle Hallin
+     * @author olle.hallin@crisp.se
      */
     @Data
     @Setter(AccessLevel.PRIVATE)
@@ -121,7 +121,7 @@ public class RegistrationController extends AbstractThymeleafController {
     /**
      * Sent in response to a IsNameUniqueRequest back to the JavaScript layer in the registration wizard.
      *
-     * @author Olle Hallin
+     * @author olle.hallin@crisp.se
      */
     @Data
     @Setter(AccessLevel.PRIVATE)
@@ -135,7 +135,7 @@ public class RegistrationController extends AbstractThymeleafController {
     /**
      * Sent from JavaScript as the final step in the registration wizard.
      *
-     * @author Olle Hallin
+     * @author olle.hallin@crisp.se
      */
     @Data
     @Setter(AccessLevel.PRIVATE)
@@ -167,7 +167,7 @@ public class RegistrationController extends AbstractThymeleafController {
     /**
      * Sent back to the JavaScript layer as successful response to a RegistrationRequest.
      *
-     * @author Olle Hallin
+     * @author olle.hallin@crisp.se
      */
     @Data
     @Setter(AccessLevel.PRIVATE)

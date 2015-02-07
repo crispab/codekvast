@@ -3,7 +3,7 @@ package se.crisp.codekvast.web.service;
 /**
  * Provides other parts of the application with build version information.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 public interface VersionService {
     /**

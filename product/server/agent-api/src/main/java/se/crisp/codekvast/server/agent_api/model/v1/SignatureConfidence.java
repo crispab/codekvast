@@ -1,7 +1,7 @@
 package se.crisp.codekvast.server.agent_api.model.v1;
 
 /**
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 public enum SignatureConfidence {
     /**

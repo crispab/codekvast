@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 /**
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Import(RedisAutoConfiguration.class)
 @EnableRedisHttpSession

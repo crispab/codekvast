@@ -8,7 +8,7 @@ import java.util.Collection;
 /**
  * An event posted when a new row is inserted in the APPLICATIONS table.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Value
 public class ApplicationCreatedEvent {

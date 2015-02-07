@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 /**
  * Configures the Guava event bus.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Configuration
 public class EventBusConfig {

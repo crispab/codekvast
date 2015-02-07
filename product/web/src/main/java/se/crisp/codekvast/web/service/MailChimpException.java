@@ -1,7 +1,7 @@
 package se.crisp.codekvast.web.service;
 
 /**
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 public class MailChimpException extends Exception {
     public MailChimpException(String message, Throwable cause) {

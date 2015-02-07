@@ -26,7 +26,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * It validates the POST data and delegates to AgentService.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @RestController
 @Slf4j

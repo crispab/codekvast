@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
  *
  * It holds data about method invocations, and methods for outputting the invocation data to disk.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @SuppressWarnings("Singleton")
 public class InvocationRegistry {

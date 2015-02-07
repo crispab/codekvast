@@ -14,7 +14,7 @@ import javax.inject.Inject;
 import javax.sql.DataSource;
 
 /**
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Configuration
 @EnableWebSecurity

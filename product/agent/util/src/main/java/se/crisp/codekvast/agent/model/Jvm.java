@@ -12,7 +12,7 @@ import java.util.Properties;
 /**
  * Data about one JVM that is instrumented with codekvast-collector.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Data
 @AllArgsConstructor(access = AccessLevel.PRIVATE)

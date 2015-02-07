@@ -20,7 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * A Spring MVC Controller that handles REST requests from the Codekvast web UI.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @RestController
 @Slf4j

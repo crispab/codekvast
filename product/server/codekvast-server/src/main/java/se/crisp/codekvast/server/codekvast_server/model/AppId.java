@@ -4,7 +4,7 @@ import lombok.Value;
 import lombok.experimental.Builder;
 
 /**
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Value
 @Builder

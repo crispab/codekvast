@@ -4,7 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Controller
 public class WebController extends AbstractThymeleafController {

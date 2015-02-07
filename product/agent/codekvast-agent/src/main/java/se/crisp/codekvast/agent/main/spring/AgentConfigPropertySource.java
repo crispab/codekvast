@@ -12,7 +12,7 @@ import java.lang.reflect.Method;
  * <pre><code>@Value("${codekvast.packagePrefixes}")</code></pre>
  *
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Slf4j
 public class AgentConfigPropertySource extends PropertySource<AgentConfig> {

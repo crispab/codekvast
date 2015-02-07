@@ -3,7 +3,7 @@ package se.crisp.codekvast.server.agent_api.model.v1;
 /**
  * Constraints of the REST interface.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 public interface Constraints {
     int MAX_APP_NAME_LENGTH = 100;

@@ -3,7 +3,7 @@ package se.crisp.codekvast.server.agent_api.impl;
 /**
  * This is a dummy main method to keep the spring-boot-gradle-plugin happy.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 public class DummyMain {
 

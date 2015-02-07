@@ -4,7 +4,7 @@ import se.crisp.codekvast.server.codekvast_server.controller.RegistrationControl
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 
 /**
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 public interface RegistrationService {
     enum UniqueKind {USERNAME, EMAIL_ADDRESS, ORGANISATION_NAME}

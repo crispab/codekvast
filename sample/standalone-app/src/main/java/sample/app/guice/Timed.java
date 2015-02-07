@@ -9,7 +9,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Marks a method for collection of time metrics by guice aop.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Retention(RUNTIME)
 @Target(METHOD)

@@ -21,7 +21,7 @@ import java.io.File;
  *
  * It also installs a response compressing filter.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Configuration
 public class WebServerConfig {

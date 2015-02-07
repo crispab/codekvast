@@ -28,7 +28,7 @@ import java.util.Set;
 /**
  * DAO for user, organisation and application data.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Repository
 @Slf4j

@@ -14,7 +14,7 @@ import java.util.Set;
  * InvocationsCollector keeps track of which invocations have not yet been uploaded to the codekvast-server.
  * It also makes sure that an older invocation is not uploaded after a younger invocation.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @NotThreadSafe
 class InvocationsCollector {

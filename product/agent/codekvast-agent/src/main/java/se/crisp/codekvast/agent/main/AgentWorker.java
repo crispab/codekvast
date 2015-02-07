@@ -33,7 +33,7 @@ import java.util.*;
 /**
  * This is the meat of the codekvast-agent. It contains a scheduled method that uploads changed data to the codekvast-server.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Component
 @Slf4j

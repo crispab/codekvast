@@ -7,7 +7,7 @@ import se.crisp.codekvast.agent.collector.InvocationRegistry;
  * <p/>
  * It is weaved into the target app by the AspectJ load-time weaver.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  * @see se.crisp.codekvast.agent.collector.CodekvastCollector
  */
 public abstract aspect AbstractMethodExecutionAspect extends AbstractCodekvastAspect {

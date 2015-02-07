@@ -16,7 +16,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertThat;
 
 /**
- * @author Olle Hallin <olle.hallin@crisp.se>
+ * @author olle.hallin@crisp.se
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {DataSourceAutoConfiguration.class, DatabaseConfig.class})

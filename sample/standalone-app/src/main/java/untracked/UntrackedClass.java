@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * This class is outside of the packagePrefix that the Codekvast agent monitors.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Slf4j
 public class UntrackedClass {

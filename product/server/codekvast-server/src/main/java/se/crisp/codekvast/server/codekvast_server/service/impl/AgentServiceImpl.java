@@ -19,7 +19,7 @@ import javax.inject.Inject;
 /**
  * The implementation of the AgentService.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Service
 @Slf4j

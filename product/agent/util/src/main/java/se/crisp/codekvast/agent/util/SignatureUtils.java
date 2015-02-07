@@ -9,7 +9,7 @@ import java.lang.reflect.Modifier;
 /**
  * Utility class for dealing with signatures.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 public class SignatureUtils {
     private SignatureUtils() {

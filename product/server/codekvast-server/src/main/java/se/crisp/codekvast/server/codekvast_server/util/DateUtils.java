@@ -6,7 +6,7 @@ import java.util.Date;
 /**
  * Thread-safe utility class for handling dates.
  *
- * @author Olle Hallin <olle.hallin@crisp.se>
+ * @author olle.hallin@crisp.se
  */
 public class DateUtils {
 

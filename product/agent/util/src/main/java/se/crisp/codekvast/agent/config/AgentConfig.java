@@ -15,7 +15,7 @@ import java.util.Properties;
  *
  * It also contains methods for reading and writing agent configuration files.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @SuppressWarnings({"UnusedDeclaration", "ClassWithTooManyFields", "ClassWithTooManyMethods"})
 @Value

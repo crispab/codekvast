@@ -13,7 +13,7 @@
 # Description:       A simple web application for capturing email addresses
 ### END INIT INFO
 
-# Author: Olle Hallin <olle.hallin@crisp.se>
+# Author: olle.hallin@crisp.se
 
 APP=/home/ubuntu/codekvast-web/bin/web
 NAME=CodekvastPromoWebApplication

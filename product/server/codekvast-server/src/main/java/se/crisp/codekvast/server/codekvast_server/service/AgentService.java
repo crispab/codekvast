@@ -7,7 +7,7 @@ import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 /**
  * Responsible for the agent-facing business logic.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 public interface AgentService {
 

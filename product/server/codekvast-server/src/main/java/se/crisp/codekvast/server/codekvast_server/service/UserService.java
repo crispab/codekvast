@@ -7,7 +7,7 @@ import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import java.util.Collection;
 
 /**
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 public interface UserService {
     /**

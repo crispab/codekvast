@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * REST data about used signatures.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Data
 @Builder

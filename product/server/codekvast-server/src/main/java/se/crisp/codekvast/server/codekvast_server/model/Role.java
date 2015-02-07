@@ -1,7 +1,7 @@
 package se.crisp.codekvast.server.codekvast_server.model;
 
 /**
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 public enum Role {
     SUPERUSER, AGENT, USER, ADMIN, MONITOR;

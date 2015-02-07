@@ -20,7 +20,7 @@ import javax.inject.Inject;
  * In contrast, a Spring ApplicationListener can only subscribe to one message type per class, the
  * handling method must be named onApplicationEvent() and the event processing is done in the sender's thread.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Component
 @Slf4j

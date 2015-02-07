@@ -10,7 +10,7 @@ import static java.lang.Math.max;
 /**
  * An immutable fingerprint of a code base. Used for comparing different code bases for equality.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Value
 @Slf4j

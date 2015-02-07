@@ -6,7 +6,7 @@ import lombok.experimental.Builder;
 /**
  * Test class used in integration tests of the REST interface.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Data
 @Builder

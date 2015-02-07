@@ -1,6 +1,6 @@
 /**
  * Support classes used by Logback.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 package se.crisp.codekvast.server.codekvast_server.logback;

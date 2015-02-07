@@ -7,7 +7,7 @@ import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import java.util.Collection;
 
 /**
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Value
 public class InvocationDataReceivedEvent {

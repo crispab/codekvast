@@ -13,7 +13,7 @@ import org.springframework.web.socket.config.annotation.WebSocketTransportRegist
 /**
  * Configures the STOMP and WebSocket eventhandler.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Configuration
 @EnableScheduling

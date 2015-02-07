@@ -3,7 +3,7 @@ package se.crisp.codekvast.server.agent_api;
 /**
  * Defines the various REST endpoints the server exposes.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 public interface AgentRestEndpoints {
 

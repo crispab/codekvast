@@ -15,7 +15,7 @@ import java.util.Date;
  * A Spring MVC Controller that handles traditional HTTP requests from the Codekvast web UI.
  *
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Controller
 @Slf4j

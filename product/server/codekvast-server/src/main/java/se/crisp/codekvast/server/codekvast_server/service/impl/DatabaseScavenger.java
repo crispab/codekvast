@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @author Olle Hallin <olle.hallin@crisp.se>
+ * @author olle.hallin@crisp.se
  */
 @Component
 @Slf4j

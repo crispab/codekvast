@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  * After doing {@code new Reflections(... new RecordingClassFileFilter(prefixes))} one can retrieve the
  * matched set of class names from the filter.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 class RecordingClassFileFilter implements Predicate<String> {
     private final Pattern pattern;

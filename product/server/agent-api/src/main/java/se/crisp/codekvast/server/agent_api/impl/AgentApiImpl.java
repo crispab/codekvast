@@ -38,7 +38,7 @@ import java.util.Set;
  *
  * Uses a Spring RestTemplate for doing the REST calls.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Slf4j
 @Component

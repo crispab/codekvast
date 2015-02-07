@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Service
 @Slf4j

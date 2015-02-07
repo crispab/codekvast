@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 /**
  * Data about one used method.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Data
 @Setter(AccessLevel.PRIVATE)

@@ -18,7 +18,7 @@ import java.util.Set;
 /**
  * Responsible for uploading new email addresses to MailChimp.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Service
 @Slf4j

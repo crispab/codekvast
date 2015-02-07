@@ -7,7 +7,7 @@ import java.sql.Connection;
 /**
  * This is a dummy Java migration just to keep Flyway happy.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @SuppressWarnings("UnusedDeclaration")
 public class V1_1__DummyJavaMigration implements JdbcMigration {

@@ -12,7 +12,7 @@ import static se.crisp.codekvast.server.codekvast_server.controller.Registration
 import static se.crisp.codekvast.server.codekvast_server.controller.RegistrationController.IsNameUniqueResponse
 
 /**
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @EmbeddedCodekvastServerTest
 @ContextConfiguration(loader = SpringApplicationContextLoader.class, classes = CodekvastServerApplication.class)

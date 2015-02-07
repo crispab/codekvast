@@ -8,7 +8,7 @@ import java.util.Collection;
 /**
  * An event posted on the internal event bus every time JvmData is received from any agent.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Value
 public class CollectorDataEvent {

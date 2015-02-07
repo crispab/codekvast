@@ -22,7 +22,7 @@ import java.sql.SQLException;
  *
  * <ol> <li>runs Flyway.migrate().</li> <li>creates a JdbcTemplate bean</li> </ol>
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Configuration
 @Slf4j

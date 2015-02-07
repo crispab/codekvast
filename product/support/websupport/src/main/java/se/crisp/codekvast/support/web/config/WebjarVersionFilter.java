@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
  * </pre> </code>
  * where <b>1.3.10</b> also appears in the build.gradle that brought in angular-1.3.10.jar in the first place.
  *
- * @author Olle Hallin <olle.hallin@crisp.se>
+ * @author olle.hallin@crisp.se
  */
 @Slf4j
 @WebFilter(urlPatterns = "/*")

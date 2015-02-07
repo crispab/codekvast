@@ -9,7 +9,7 @@ import se.crisp.codekvast.web.service.VersionService;
 import javax.annotation.PostConstruct;
 
 /**
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Service
 @Slf4j

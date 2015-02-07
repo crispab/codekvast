@@ -17,7 +17,7 @@ import javax.inject.Inject;
 import java.util.Locale;
 
 /**
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Service
 @Slf4j

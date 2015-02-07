@@ -1,7 +1,7 @@
 package se.crisp.codekvast.agent.main.codebase.scannertest;
 
 /**
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @SuppressWarnings("UnusedDeclaration")
 public class ScannerTest2 extends ScannerTest1 {

@@ -1,7 +1,7 @@
 package sample.app.useless;
 
 /**
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @SuppressWarnings("UnusedDeclaration")
 public class FooImpl implements Foo {

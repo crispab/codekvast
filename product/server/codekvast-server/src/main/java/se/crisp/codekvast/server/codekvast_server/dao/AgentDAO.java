@@ -9,7 +9,7 @@ import se.crisp.codekvast.server.codekvast_server.model.AppId;
 /**
  * A data access object for things related to the agent API.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 public interface AgentDAO {
 

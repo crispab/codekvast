@@ -1,7 +1,7 @@
 package sample.app;
 
 /**
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @SuppressWarnings("ALL")
 public class Bar1 {

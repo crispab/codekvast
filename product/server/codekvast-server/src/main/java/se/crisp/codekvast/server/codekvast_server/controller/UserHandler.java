@@ -23,7 +23,7 @@ import java.util.Set;
  *
  * It translates Spring's SessionConnectedEvent and SessionDisconnected events to UserConnectedEvent and UserDisconnected events.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Service
 @Slf4j

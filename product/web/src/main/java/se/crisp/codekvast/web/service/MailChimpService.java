@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 public interface MailChimpService {
     /**

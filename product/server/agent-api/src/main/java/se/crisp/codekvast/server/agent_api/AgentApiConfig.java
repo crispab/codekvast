@@ -9,7 +9,7 @@ import java.net.URI;
 /**
  * Configuration data for how to communicate with the server.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Value
 @Builder

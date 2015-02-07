@@ -1,7 +1,7 @@
 package se.crisp.codekvast.server.agent_api;
 
 /**
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 public class AgentApiException extends Exception {
     private static final long serialVersionUID = 1L;

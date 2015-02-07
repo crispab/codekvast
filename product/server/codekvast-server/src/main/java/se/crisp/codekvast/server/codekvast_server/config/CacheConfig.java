@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Configuration
 @EnableCaching

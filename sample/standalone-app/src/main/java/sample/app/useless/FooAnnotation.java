@@ -1,7 +1,7 @@
 package se.crisp.app.useless;
 
 /**
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 public @interface FooAnnotation {
 }

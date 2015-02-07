@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 /**
  * Utility class for config stuff.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 public final class ConfigUtils {
 

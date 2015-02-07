@@ -1,6 +1,6 @@
 /**
  * Internal messages flowing on the Guava EventBus.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 package se.crisp.codekvast.server.codekvast_server.event.internal;

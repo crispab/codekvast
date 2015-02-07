@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * DAO for signature data.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Repository
 @Slf4j

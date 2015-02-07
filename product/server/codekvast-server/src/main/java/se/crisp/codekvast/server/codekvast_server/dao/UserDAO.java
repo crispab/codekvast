@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.Set;
 
 /**
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 public interface UserDAO {
 

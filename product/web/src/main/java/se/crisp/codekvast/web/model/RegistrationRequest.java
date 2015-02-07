@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 /**
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Data
 @Setter(AccessLevel.PRIVATE)

@@ -14,7 +14,7 @@ import java.util.*;
 /**
  * Low-level file utilities used by the codekvast agent and collector.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
 public final class FileUtils {

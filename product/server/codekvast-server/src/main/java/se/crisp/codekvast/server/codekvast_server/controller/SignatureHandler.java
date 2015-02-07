@@ -29,7 +29,7 @@ import java.util.concurrent.Executors;
 /**
  * Responsible for sending signatures to the correct users.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @Controller
 @Slf4j

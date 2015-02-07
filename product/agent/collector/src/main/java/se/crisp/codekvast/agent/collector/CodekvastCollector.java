@@ -26,7 +26,7 @@ import java.util.TimerTask;
  *
  * <em>NOTE: the ordering of the collector and the aspectjweaver is important!</em>
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 public class CodekvastCollector {
 

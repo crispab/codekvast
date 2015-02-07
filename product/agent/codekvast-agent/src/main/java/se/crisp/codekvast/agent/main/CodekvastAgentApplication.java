@@ -23,7 +23,7 @@ import java.util.Properties;
 /**
  * The Spring Boot main program of the codekvast-agent.
  *
- * @author Olle Hallin
+ * @author olle.hallin@crisp.se
  */
 @SpringBootApplication
 @ComponentScan("se.crisp.codekvast")
