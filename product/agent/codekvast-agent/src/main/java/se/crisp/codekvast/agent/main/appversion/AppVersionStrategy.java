@@ -6,7 +6,7 @@ import java.util.Collection;
 /**
  * Strategy for how to obtain the version of an application.
  *
- * @author Olle Hallin <olle.hallin@crisp.se>
+ * @author Olle Hallin
  */
 public interface AppVersionStrategy {
 

@@ -9,7 +9,7 @@ import java.util.Collection;
 /**
  * A strategy for literal versions. Handles "literal v" and "constant v".
  *
- * @author Olle Hallin <olle.hallin@crisp.se>
+ * @author Olle Hallin
  */
 @Slf4j
 @Component
