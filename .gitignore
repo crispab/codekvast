@@ -12,6 +12,9 @@
 .idea/shelf/
 .idea/tasks.xml
 .idea/workspace.xml
+.idea/codeStyleSettings.xml
+.idea/compiler.xml
+.idea/misc.xml
 build/
 tools/downloaded/
 target/
