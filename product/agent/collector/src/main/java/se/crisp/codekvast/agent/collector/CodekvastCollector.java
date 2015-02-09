@@ -4,6 +4,7 @@ import org.aspectj.bridge.Constants;
 import se.crisp.codekvast.agent.collector.aspects.AbstractMethodExecutionAspect;
 import se.crisp.codekvast.agent.collector.aspects.JasperExecutionAspect;
 import se.crisp.codekvast.agent.config.CollectorConfig;
+import se.crisp.codekvast.agent.config.CollectorConfigLocator;
 import se.crisp.codekvast.agent.util.FileUtils;
 
 import java.io.File;
@@ -21,7 +22,7 @@ import java.util.TimerTask;
  *
  * Invocation: Add the following options to the Java command line:
  * <pre><code>
- *    -javaagent:/path/to/codekvast-collector-n.n.jar=path/to/codekvast.conf -javaagent:/path/to/aspectjweaver-n.n.jar
+ *    -javaagent:/path/to/codekvast-collector-n.n.jar -javaagent:/path/to/aspectjweaver-n.n.jar
  * </code></pre>
  *
  * <em>NOTE: the ordering of the collector and the aspectjweaver is important!</em>
@@ -43,15 +44,15 @@ public class CodekvastCollector {
 
     /**
      * This method is invoked by the JVM as part of bootstrapping the -javaagent
-     * @param args The string after the equals sign in -javaagent:codekvast-collector.jar=args. Is used as URL to the collector
+     * @param args The string after the equals sign in -javaagent:codekvast-collector.jar=args. Is used as overrides to the collector
      *             configuration file.
      * @param inst The standard instrumentation hook.
      *             @throws URISyntaxException if args is not a valid URL
      */
+    @SuppressWarnings("UseOfSystemOutOrSystemErr")
     public static void premain(String args, Instrumentation inst) throws URISyntaxException {
-        CollectorConfig config = CollectorConfig.parseCollectorConfig(args);
+        CollectorConfig config = CollectorConfig.parseCollectorConfig(CollectorConfigLocator.locateConfig(System.out), args);
 
-        //noinspection UseOfSystemOutOrSystemErr
         CodekvastCollector.out = config.isVerbose() ? System.err : new PrintStream(new NullOutputStream());
 
         InvocationRegistry.initialize(config);

@@ -43,9 +43,11 @@ The **ln -s** command does not exist in Windows. Use **copy** instead.
 
 Use the installation guide for Tomcat as a basis.
 
-The goal is to make **-javaagent:/path/to/codekvast-collector-@CODEKVAST_VERSION@.jar=/path/to/codekvast.config
--javaagent:/path/to/aspectjweaver-@ASPECTJ_VERSION@.jar** appear as first arguments to the **java** command.
+The goal is to make **-javaagent:/path/to/codekvast-collector-@CODEKVAST_VERSION@.jar -javaagent:/path/to/aspectjweaver-@ASPECTJ_VERSION@.jar** appear as first arguments to the **java** command.
 
+If you get **IllegalArgumentException** for missing codekvast.conf then you could define the system property **codekvast.configuration**
+to point to your config file.
+ 
 If you get **LinkageError** on some aspectj-related type you can try this:
 
 1. Move **aspectjweaver-@ASPECTJ_VERSION@.jar** to a separate directory (called **/path/to/endorsed** below).

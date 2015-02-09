@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 
 import static org.hamcrest.core.Is.is;
@@ -17,7 +18,7 @@ public class CollectorConfigTest {
         File file = new File(System.getProperty("sampleCollectorConfigFile.path", "build/codekvast-collector.conf.sample"));
         config1.saveTo(file);
 
-        CollectorConfig config2 = CollectorConfig.parseCollectorConfig(file.toURI());
+        CollectorConfig config2 = CollectorConfig.parseCollectorConfig(file.toURI(), null);
         assertEquals(config1, config2);
     }
 
@@ -27,8 +28,7 @@ public class CollectorConfigTest {
         File file = new File(System.getProperty("sampleCollectorConfigFile.path", "build/codekvast.conf.sample"));
         config1.saveTo(file);
 
-        String args = file.toURI() + CollectorConfig.OVERRIDE_SEPARATOR + "verbose=true";
-        CollectorConfig config2 = CollectorConfig.parseCollectorConfig(args);
+        CollectorConfig config2 = CollectorConfig.parseCollectorConfig(file.toURI(), "verbose=true");
         assertNotEquals(config1, config2);
         assertThat(config1.isVerbose(), is(false));
         assertThat(config2.isVerbose(), is(true));
@@ -36,8 +36,8 @@ public class CollectorConfigTest {
 
     @Test
     public void testParseConfigFilePathWithOverride() throws IOException, URISyntaxException {
-        String args = "classpath:/incomplete-collector-config.conf;appName=kaka;appVersion=version;";
-        CollectorConfig config = CollectorConfig.parseCollectorConfig(args);
+        CollectorConfig config = CollectorConfig.parseCollectorConfig(new URI("classpath:/incomplete-collector-config.conf"),
+                                                                      "appName=kaka;appVersion=version;");
         assertThat(config.getAppName(), is("kaka"));
         assertThat(config.getAppVersion(), is("version"));
     }

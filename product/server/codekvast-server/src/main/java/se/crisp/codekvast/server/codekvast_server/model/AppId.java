@@ -1,7 +1,7 @@
 package se.crisp.codekvast.server.codekvast_server.model;
 
+import lombok.Builder;
 import lombok.Value;
-import lombok.experimental.Builder;
 
 /**
  * @author olle.hallin@crisp.se

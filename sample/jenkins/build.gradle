@@ -10,7 +10,7 @@ dependencies {
 
 }
 
-ext.tomcatVersion = "7.0.57"
+ext.tomcatVersion = "7.0.59"
 ext.tomcatDownloadUrl = "http://apache.mirrors.spacedump.net/tomcat/tomcat-7/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}.zip"
 ext.tomcatDir = file("$buildDir/tomcat")
 ext.catalinaBase = file("$tomcatDir/apache-tomcat-${tomcatVersion}")
@@ -114,7 +114,7 @@ codekvastCollector = ${codekvastCollector}
 aspectjWeaver = $aspectjWeaver
 -------------------------"""
         setenvFile.text = """
-CATALINA_OPTS=\"-javaagent:$codekvastCollector=$generateCodekvastConfig.configFile -javaagent:$aspectjWeaver\"
+CATALINA_OPTS=\"-Dcodekvast.configuration=$generateCodekvastConfig.configFile -javaagent:$codekvastCollector -javaagent:$aspectjWeaver\"
 """
     }
 }

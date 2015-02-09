@@ -1,8 +1,8 @@
 package se.crisp.codekvast.server.codekvast_server.model;
 
+import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
-import lombok.experimental.Builder;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 

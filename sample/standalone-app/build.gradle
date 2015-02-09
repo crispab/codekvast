@@ -56,7 +56,8 @@ run {
     def aspectjWeaver = configurations.aspectj.asPath
 
     jvmArgs = [
-            "-javaagent:$codekvastCollector=$generateCodekvastConfig.configFile",
+            "-Dcodekvast.configuration=$generateCodekvastConfig.configFile",
+            "-javaagent:$codekvastCollector",
             "-javaagent:$aspectjWeaver"
     ]
 }

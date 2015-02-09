@@ -1,16 +1,11 @@
 package se.crisp.codekvast.agent.config;
 
-import lombok.AccessLevel;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
-import lombok.experimental.Builder;
+import lombok.*;
 import se.crisp.codekvast.agent.util.ConfigUtils;
 import se.crisp.codekvast.agent.util.FileUtils;
 
 import java.io.File;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Properties;
 
@@ -97,26 +92,21 @@ public class CollectorConfig implements CodekvastConfig {
         FileUtils.writePropertiesTo(file, this, "Codekvast CollectorConfig");
     }
 
-    public static CollectorConfig parseCollectorConfig(String args) throws URISyntaxException {
-        String parts[] = args.split(";");
-        URI uri = new URI(parts[0]);
-        String[] overrides = new String[parts.length - 1];
-        System.arraycopy(parts, 1, overrides, 0, overrides.length);
-        return parseCollectorConfig(uri, overrides);
-    }
-
-    public static CollectorConfig parseCollectorConfig(URI uri, String... overrides) {
+    public static CollectorConfig parseCollectorConfig(URI uri, String args) {
         try {
             Properties props = FileUtils.readPropertiesFrom(uri);
 
-            for (String override : overrides) {
-                String parts[] = override.split("=");
-                props.setProperty(parts[0], parts[1]);
+            if (args != null) {
+                String overrides[] = args.split(";");
+                for (String override : overrides) {
+                    String parts[] = override.split("=");
+                    props.setProperty(parts[0], parts[1]);
+                }
             }
 
             return buildCollectorConfig(props);
         } catch (Exception e) {
-            throw new IllegalArgumentException(String.format("Cannot parse %s: %s", uri, e.getMessage()), e);
+            throw new IllegalArgumentException("Cannot parse " + uri, e);
         }
     }
 
