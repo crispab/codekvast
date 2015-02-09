@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Priority;
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
@@ -41,7 +40,6 @@ import java.util.regex.Pattern;
  */
 @Slf4j
 @WebFilter(urlPatterns = "/*")
-@Priority(Integer.MIN_VALUE)
 @Component
 public class WebjarVersionFilter implements Filter {
 
@@ -82,8 +80,7 @@ public class WebjarVersionFilter implements Filter {
             String jarName = matcher.group(2);
             String version = versions.get(jarName);
             if (version != null) {
-                String result = matcher.group(1) + jarName + "/" + version + matcher.group(3);
-                return result;
+                return matcher.group(1) + jarName + "/" + version + matcher.group(3);
             }
         }
         return null;

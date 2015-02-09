@@ -14,6 +14,7 @@ dependencies {
     compile 'net.sourceforge.pjl-comp-filter:pjl-comp-filter:1.7'
 
     testCompile junit
+    testCompile mockito
 
     testRuntime "org.webjars:sockjs-client:0.3.4"
 }
