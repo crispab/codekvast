@@ -19,8 +19,11 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WebjarVersionFilterTest {
-    private static final String RECOGNIZED_WEBJAR_WITHOUT_VERSION = "/webjars/sockjs-client/sockjs-client.js";
-    private static final String RECOGNIZED_WEBJAR_WITH_VERSION = "/webjars/sockjs-client/0.3.4/sockjs-client.js";
+    // These webjars must be defined in build.gradle at scope runtime or testRuntime
+    private static final String RECOGNIZED_WEBJAR_WITHOUT_VERSION1 = "/webjars/sockjs-client/sockjs-client.js";
+    private static final String RECOGNIZED_WEBJAR_WITH_VERSION1 = "/webjars/sockjs-client/0.3.4/sockjs-client.js";
+    private static final String RECOGNIZED_WEBJAR_WITHOUT_VERSION2 = "/webjars/d3js/d3js.js";
+    private static final String RECOGNIZED_WEBJAR_WITH_VERSION2 = "/webjars/d3js/3.5.3/d3js.js";
 
     private static WebjarVersionFilter filter = new WebjarVersionFilter();
 
@@ -44,8 +47,13 @@ public class WebjarVersionFilterTest {
     }
 
     @Test
-    public void testExpandRequestURI_recognized_webjar() throws Exception {
-        assertThat(filter.expandRequestURI(RECOGNIZED_WEBJAR_WITHOUT_VERSION), is(RECOGNIZED_WEBJAR_WITH_VERSION));
+    public void testExpandRequestURI_recognized_webjar1() throws Exception {
+        assertThat(filter.expandRequestURI(RECOGNIZED_WEBJAR_WITHOUT_VERSION1), is(RECOGNIZED_WEBJAR_WITH_VERSION1));
+    }
+
+    @Test
+    public void testExpandRequestURI_recognized_webjar2() throws Exception {
+        assertThat(filter.expandRequestURI(RECOGNIZED_WEBJAR_WITHOUT_VERSION2), is(RECOGNIZED_WEBJAR_WITH_VERSION2));
     }
 
     @Test
@@ -74,18 +82,17 @@ public class WebjarVersionFilterTest {
     @Test
     public void testDoFilter_webjarRequest() throws Exception {
         // given
-        when(request.getRequestURI()).thenReturn(RECOGNIZED_WEBJAR_WITHOUT_VERSION);
+        when(request.getRequestURI()).thenReturn(RECOGNIZED_WEBJAR_WITHOUT_VERSION1);
         RequestDispatcher dispatcher = mock(RequestDispatcher.class);
-        when(request.getRequestDispatcher(RECOGNIZED_WEBJAR_WITH_VERSION)).thenReturn(dispatcher);
+        when(request.getRequestDispatcher(RECOGNIZED_WEBJAR_WITH_VERSION1)).thenReturn(dispatcher);
 
         // when
         filter.doFilter(request, response, filterChain);
 
         // then
-        verify(request).getRequestDispatcher(RECOGNIZED_WEBJAR_WITH_VERSION);
+        verify(request).getRequestDispatcher(RECOGNIZED_WEBJAR_WITH_VERSION1);
         verify(dispatcher).forward(request, response);
         verify(filterChain, times(0)).doFilter(request, response);
     }
-
 
 }

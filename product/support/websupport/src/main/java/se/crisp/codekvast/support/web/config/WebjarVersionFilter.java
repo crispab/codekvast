@@ -46,7 +46,7 @@ public class WebjarVersionFilter implements Filter {
     @Getter(AccessLevel.MODULE)
     private final Map<String, String> versions = new HashMap<>();
 
-    final Pattern requestUriPattern = Pattern.compile("^(/webjars/)([\\w-]+)(/\\D*)$");
+    final Pattern requestUriPattern = Pattern.compile("^(/webjars/)([\\w-]+)(/\\D.*)$");
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
