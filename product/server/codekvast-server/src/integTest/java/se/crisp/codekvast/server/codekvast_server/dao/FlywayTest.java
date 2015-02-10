@@ -29,6 +29,6 @@ public class FlywayTest {
     @Test
     public void testFlywayMigrations() {
         List<String> usernames = jdbcTemplate.queryForList("SELECT username FROM USERS ORDER BY username", String.class);
-        assertThat(usernames, contains("admin", "agent", "monitor", "system", "user"));
+        assertThat(usernames, contains("admin", "agent", "guest", "monitor", "system", "user"));
     }
 }

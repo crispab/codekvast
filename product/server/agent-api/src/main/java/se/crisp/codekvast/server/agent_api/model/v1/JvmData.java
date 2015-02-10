@@ -3,6 +3,7 @@ package se.crisp.codekvast.server.agent_api.model.v1;
 import lombok.*;
 import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
 /**
@@ -13,10 +14,10 @@ import javax.validation.constraints.Size;
  * @author olle.hallin@crisp.se
  */
 @Data
-@Builder
 @Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 public class JvmData {
     @NonNull
     @NotBlank
@@ -47,6 +48,7 @@ public class JvmData {
     @Size(max = Constraints.MAX_COMPUTER_ID_LENGTH)
     private String collectorComputerId;
 
+    @Min(1)
     private int collectorResolutionSeconds;
 
     @NonNull
@@ -63,6 +65,9 @@ public class JvmData {
     @NotBlank
     @Size(max = Constraints.MAX_COMPUTER_ID_LENGTH)
     private String agentComputerId;
+
+    @Min(1)
+    private int agentUploadIntervalSeconds;
 
     @NonNull
     @Size(max = Constraints.MAX_CODEKVAST_VERSION_LENGTH)

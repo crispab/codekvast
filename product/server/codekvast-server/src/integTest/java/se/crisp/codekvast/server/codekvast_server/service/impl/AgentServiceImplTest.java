@@ -117,6 +117,7 @@ public class AgentServiceImplTest extends AbstractServiceTest {
                       .agentComputerId("agentComputerId")
                       .agentComputerId("agentComputerId")
                       .agentHostName("agentHostName")
+                      .agentUploadIntervalSeconds(300)
                       .appName(getClass().getName())
                       .appVersion("appVersion")
                       .codekvastVcsId("vcsId")

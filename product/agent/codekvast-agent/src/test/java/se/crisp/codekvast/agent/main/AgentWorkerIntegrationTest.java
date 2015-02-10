@@ -50,7 +50,7 @@ public class AgentWorkerIntegrationTest {
         sharedConfig = SharedConfig.builder().dataPath(temporaryFolder.getRoot()).build();
         AgentConfig agentConfig = createAgentConfig(sharedConfig);
 
-        worker = new AgentWorker("codekvastVersion", "gitHash", agentApi, agentConfig, scanner, appVersionStrategies);
+        worker = new AgentWorker("codekvastVersion", "gitHash", 300, agentApi, agentConfig, scanner, appVersionStrategies);
     }
 
     @Test

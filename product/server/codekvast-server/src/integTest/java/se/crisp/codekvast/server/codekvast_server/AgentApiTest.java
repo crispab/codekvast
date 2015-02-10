@@ -142,6 +142,7 @@ public class AgentApiTest {
         return JvmData.builder()
                       .agentComputerId("agentComputerId")
                       .agentHostName("agentHostName")
+                      .agentUploadIntervalSeconds(300)
                       .appName("appName")
                       .appVersion("appVersion")
                       .codekvastVcsId("codekvastVcsId")

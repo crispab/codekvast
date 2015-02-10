@@ -50,10 +50,12 @@ public class AgentWorker {
 
     private final Map<String, JvmState> jvmStates = new HashMap<>();
     private long now;
+    private int uploadIntervalSeconds;
 
     @Inject
     public AgentWorker(@Value("${info.build.gradle.version}") String codekvastGradleVersion,
                        @Value("${info.build.git.id}") String codekvastVcsId,
+                       @Value("${codekvast.serverUploadIntervalSeconds}") int uploadIntervalSeconds,
                        AgentApi agentApi,
                        AgentConfig config,
                        CodeBaseScanner codeBaseScanner,
@@ -62,6 +64,7 @@ public class AgentWorker {
         Preconditions.checkArgument(!codekvastVcsId.contains("{info.build"));
         this.codekvastGradleVersion = codekvastGradleVersion;
         this.codekvastVcsId = codekvastVcsId;
+        this.uploadIntervalSeconds = uploadIntervalSeconds;
         this.agentApi = agentApi;
         this.config = config;
         this.codeBaseScanner = codeBaseScanner;
@@ -173,6 +176,7 @@ public class AgentWorker {
         return JvmData.builder()
                       .agentComputerId(agentComputerId)
                       .agentHostName(agentHostName)
+                      .agentUploadIntervalSeconds(uploadIntervalSeconds)
                       .appName(jvm.getCollectorConfig().getAppName())
                       .appVersion(jvmState.getAppVersion())
                       .codekvastVcsId(codekvastVcsId)
