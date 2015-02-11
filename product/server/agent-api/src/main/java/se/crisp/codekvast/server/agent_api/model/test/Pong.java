@@ -1,6 +1,7 @@
 package se.crisp.codekvast.server.agent_api.model.test;
 
 import lombok.*;
+import lombok.experimental.Builder;
 
 /**
  * Test class used in integration tests of the REST interface.

@@ -1,6 +1,7 @@
 package se.crisp.codekvast.web.model;
 
 import lombok.*;
+import lombok.experimental.Builder;
 
 /**
  * @author olle.hallin@crisp.se

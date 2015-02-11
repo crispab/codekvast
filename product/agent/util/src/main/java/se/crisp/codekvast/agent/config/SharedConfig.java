@@ -1,8 +1,8 @@
 package se.crisp.codekvast.agent.config;
 
-import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
+import lombok.experimental.Builder;
 import se.crisp.codekvast.agent.util.ConfigUtils;
 
 import java.io.File;

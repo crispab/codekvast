@@ -1,6 +1,10 @@
 package se.crisp.codekvast.agent.config;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
+import lombok.experimental.Builder;
 import se.crisp.codekvast.agent.util.ConfigUtils;
 import se.crisp.codekvast.agent.util.FileUtils;
 

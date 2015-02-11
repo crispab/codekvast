@@ -10,7 +10,7 @@ archivesBaseName = "standalone-app"
 sourceCompatibility = 1.6
 
 dependencies {
-    compile "org.projectlombok:lombok:1.12.6"
+    compile "org.projectlombok:lombok:1.16.2"
     compile "org.slf4j:slf4j-api:1.7.7"
     compile "aopalliance:aopalliance:1.0"
     compile 'com.google.inject:guice:3.0'

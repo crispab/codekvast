@@ -1,3 +1,6 @@
+
+
+
 package se.crisp.codekvast.server.agent_api.model.v1;
 
 import com.fasterxml.jackson.databind.ObjectMapper;

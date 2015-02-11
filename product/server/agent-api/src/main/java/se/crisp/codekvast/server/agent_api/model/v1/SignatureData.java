@@ -1,6 +1,7 @@
 package se.crisp.codekvast.server.agent_api.model.v1;
 
 import lombok.*;
+import lombok.experimental.Builder;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.Valid;
