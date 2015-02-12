@@ -1,8 +1,6 @@
 package se.crisp.codekvast.agent.main;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Builder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -17,10 +15,8 @@ import java.net.URI;
  */
 @Component
 @ConfigurationProperties(prefix = "codekvast")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
+@AllArgsConstructor
 public class AgentConfig {
     private File dataPath;
     private String apiAccessID;
@@ -28,4 +24,47 @@ public class AgentConfig {
     private URI serverUri;
     private int serverUploadIntervalSeconds;
 
+    public AgentConfig() {
+        int i = 17;
+    }
+
+    public File getDataPath() {
+        return dataPath;
+    }
+
+    public void setDataPath(File dataPath) {
+        this.dataPath = dataPath;
+    }
+
+    public String getApiAccessID() {
+        return apiAccessID;
+    }
+
+    public void setApiAccessID(String apiAccessID) {
+        this.apiAccessID = apiAccessID;
+    }
+
+    public String getApiAccessSecret() {
+        return apiAccessSecret;
+    }
+
+    public void setApiAccessSecret(String apiAccessSecret) {
+        this.apiAccessSecret = apiAccessSecret;
+    }
+
+    public URI getServerUri() {
+        return serverUri;
+    }
+
+    public void setServerUri(URI serverUri) {
+        this.serverUri = serverUri;
+    }
+
+    public int getServerUploadIntervalSeconds() {
+        return serverUploadIntervalSeconds;
+    }
+
+    public void setServerUploadIntervalSeconds(int serverUploadIntervalSeconds) {
+        this.serverUploadIntervalSeconds = serverUploadIntervalSeconds;
+    }
 }
