@@ -23,8 +23,10 @@ import java.net.URISyntaxException;
 public class CodekvastAgentApplication {
 
     public static void main(String[] args) throws IOException, URISyntaxException {
-        System.setProperty("spring.config.location", "classpath:/application.properties,classpath:/default.properties");
-        System.setProperty("spring.config.name", "codekvast-agent");
+        System.setProperty("spring.config.location",
+                           "classpath:/application.properties," +
+                                   "classpath:/default.properties," +
+                                   "classpath:/codekvast-agent.properties");
         SpringApplication application = new SpringApplication(CodekvastAgentApplication.class);
         application.run(args);
     }

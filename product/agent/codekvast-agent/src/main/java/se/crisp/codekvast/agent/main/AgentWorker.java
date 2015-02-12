@@ -1,10 +1,8 @@
 package se.crisp.codekvast.agent.main;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import se.crisp.codekvast.agent.config.CollectorConfig;
@@ -41,40 +39,29 @@ public class AgentWorker {
     private final AgentConfig config;
     private final CodeBaseScanner codeBaseScanner;
     private final AgentApi agentApi;
-    private final String codekvastGradleVersion;
-    private final String codekvastVcsId;
     private final Collection<AppVersionStrategy> appVersionStrategies = new ArrayList<>();
     private final String agentComputerId = ComputerID.compute().toString();
     private final String agentHostName = getHostName();
 
     private final Map<String, JvmState> jvmStates = new HashMap<>();
     private long now;
-    private int uploadIntervalMillis;
 
     @Inject
-    public AgentWorker(@Value("${info.build.gradle.version}") String codekvastGradleVersion,
-                       @Value("${info.build.git.id}") String codekvastVcsId,
-                       @Value("${codekvast.serverUploadIntervalSeconds}") int uploadIntervalMillis,
-                       AgentApi agentApi,
+    public AgentWorker(AgentApi agentApi,
                        AgentConfig config,
                        CodeBaseScanner codeBaseScanner,
                        Collection<AppVersionStrategy> appVersionStrategies) {
-        Preconditions.checkArgument(!codekvastGradleVersion.contains("{info.build"));
-        Preconditions.checkArgument(!codekvastVcsId.contains("{info.build"));
-        this.codekvastGradleVersion = codekvastGradleVersion;
-        this.codekvastVcsId = codekvastVcsId;
-        this.uploadIntervalMillis = uploadIntervalMillis;
         this.agentApi = agentApi;
         this.config = config;
         this.codeBaseScanner = codeBaseScanner;
         this.appVersionStrategies.addAll(appVersionStrategies);
 
-        log.info("{} {}-{} started", getClass().getSimpleName(), codekvastGradleVersion, codekvastVcsId);
+        log.info("{} {}-{} started", getClass().getSimpleName(), config.getVersion(), config.getVcsId());
     }
 
     @PreDestroy
     public void shutdownHook() {
-        log.info("{} {}-{} shuts down", getClass().getSimpleName(), codekvastGradleVersion, codekvastVcsId);
+        log.info("{} {}-{} shuts down", getClass().getSimpleName(), config.getVersion(), config.getVcsId());
     }
 
     private String getHostName() {
@@ -175,11 +162,11 @@ public class AgentWorker {
         return JvmData.builder()
                       .agentComputerId(agentComputerId)
                       .agentHostName(agentHostName)
-                      .agentUploadIntervalSeconds(uploadIntervalMillis)
+                      .agentUploadIntervalSeconds(config.getServerUploadIntervalSeconds())
                       .appName(jvm.getCollectorConfig().getAppName())
                       .appVersion(jvmState.getAppVersion())
-                      .codekvastVcsId(codekvastVcsId)
-                      .codekvastVersion(codekvastGradleVersion)
+                      .codekvastVcsId(config.getVcsId())
+                      .codekvastVersion(config.getVersion())
                       .collectorComputerId(jvm.getComputerId())
                       .collectorHostName(jvm.getHostName())
                       .collectorResolutionSeconds(jvm.getCollectorConfig().getCollectorResolutionSeconds())
@@ -251,7 +238,8 @@ public class AgentWorker {
         if (oldAppVersion == null) {
             log.info("{} has version '{}'", jvmState.getJvm().getCollectorConfig().getAppName(), newAppVersion);
         } else if (!newAppVersion.equals(oldAppVersion)) {
-            log.info("The version of {} has changed from '{}' to '{}'", jvmState.getJvm().getCollectorConfig().getAppName());
+            log.info("The version of {} has changed from '{}' to '{}'", jvmState.getJvm().getCollectorConfig().getAppName(),
+                     oldAppVersion, newAppVersion);
         }
 
         jvmState.setAppVersion(newAppVersion);

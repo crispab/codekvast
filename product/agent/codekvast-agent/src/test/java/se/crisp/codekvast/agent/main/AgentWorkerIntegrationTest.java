@@ -48,7 +48,7 @@ public class AgentWorkerIntegrationTest {
         List<AppVersionStrategy> appVersionStrategies = new ArrayList<>();
         AgentConfig agentConfig = createAgentConfig();
 
-        worker = new AgentWorker("codekvastVersion", "gitHash", 300, agentApi, agentConfig, scanner, appVersionStrategies);
+        worker = new AgentWorker(agentApi, agentConfig, scanner, appVersionStrategies);
     }
 
     @Test
@@ -112,6 +112,8 @@ public class AgentWorkerIntegrationTest {
                               .dataPath(temporaryFolder.getRoot())
                               .serverUploadIntervalSeconds(60)
                               .serverUri(new URI("http://localhost:8090"))
+                              .vcsId("git-hash")
+                              .version("version")
                               .build();
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
