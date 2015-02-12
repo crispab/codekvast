@@ -2,7 +2,6 @@ package se.crisp.codekvast.agent.main.codebase;
 
 import org.junit.Test;
 import se.crisp.codekvast.agent.config.CollectorConfig;
-import se.crisp.codekvast.agent.config.SharedConfig;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -36,7 +35,7 @@ public class CodeBaseTest {
 
     private CodeBase getCodeBase(String codeBase) throws URISyntaxException {
         return new CodeBase(CollectorConfig.builder()
-                                           .sharedConfig(SharedConfig.builder().dataPath(new File(".")).build())
+                                           .dataPath(new File("."))
                                            .codeBase(new File(codeBase).getAbsolutePath())
                                            .packagePrefixes("se.crisp")
                                            .appName("appName")

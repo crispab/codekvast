@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import se.crisp.codekvast.agent.config.AgentConfig;
 import se.crisp.codekvast.agent.config.CollectorConfig;
 import se.crisp.codekvast.agent.main.appversion.AppVersionStrategy;
 import se.crisp.codekvast.agent.main.codebase.CodeBase;
@@ -50,12 +49,12 @@ public class AgentWorker {
 
     private final Map<String, JvmState> jvmStates = new HashMap<>();
     private long now;
-    private int uploadIntervalSeconds;
+    private int uploadIntervalMillis;
 
     @Inject
     public AgentWorker(@Value("${info.build.gradle.version}") String codekvastGradleVersion,
                        @Value("${info.build.git.id}") String codekvastVcsId,
-                       @Value("${codekvast.serverUploadIntervalSeconds}") int uploadIntervalSeconds,
+                       @Value("${codekvast.serverUploadIntervalSeconds}") int uploadIntervalMillis,
                        AgentApi agentApi,
                        AgentConfig config,
                        CodeBaseScanner codeBaseScanner,
@@ -64,7 +63,7 @@ public class AgentWorker {
         Preconditions.checkArgument(!codekvastVcsId.contains("{info.build"));
         this.codekvastGradleVersion = codekvastGradleVersion;
         this.codekvastVcsId = codekvastVcsId;
-        this.uploadIntervalSeconds = uploadIntervalSeconds;
+        this.uploadIntervalMillis = uploadIntervalMillis;
         this.agentApi = agentApi;
         this.config = config;
         this.codeBaseScanner = codeBaseScanner;
@@ -87,7 +86,7 @@ public class AgentWorker {
         }
     }
 
-    @Scheduled(initialDelay = 10L, fixedDelayString = "${codekvast.serverUploadIntervalMillis}")
+    @Scheduled(initialDelay = 10L, fixedDelayString = "${codekvast.serverUploadIntervalSeconds}000")
     public void analyseCollectorData() {
         String oldThreadName = Thread.currentThread().getName();
         Thread.currentThread().setName(getClass().getSimpleName());
@@ -117,7 +116,7 @@ public class AgentWorker {
     }
 
     private void findJvmStates() {
-        findJvmState(config.getSharedConfig().getDataPath());
+        findJvmState(config.getDataPath());
     }
 
     private void findJvmState(File dataPath) {
@@ -176,7 +175,7 @@ public class AgentWorker {
         return JvmData.builder()
                       .agentComputerId(agentComputerId)
                       .agentHostName(agentHostName)
-                      .agentUploadIntervalSeconds(uploadIntervalSeconds)
+                      .agentUploadIntervalSeconds(uploadIntervalMillis)
                       .appName(jvm.getCollectorConfig().getAppName())
                       .appVersion(jvmState.getAppVersion())
                       .codekvastVcsId(codekvastVcsId)

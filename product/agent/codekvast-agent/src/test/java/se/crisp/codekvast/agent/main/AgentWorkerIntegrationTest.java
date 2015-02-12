@@ -7,9 +7,7 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import se.crisp.codekvast.agent.config.AgentConfig;
 import se.crisp.codekvast.agent.config.CollectorConfig;
-import se.crisp.codekvast.agent.config.SharedConfig;
 import se.crisp.codekvast.agent.main.appversion.AppVersionStrategy;
 import se.crisp.codekvast.agent.main.codebase.CodeBaseScanner;
 import se.crisp.codekvast.agent.model.Jvm;
@@ -22,6 +20,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.mockito.Matchers.anyCollection;
 import static org.mockito.Mockito.*;
@@ -33,7 +32,7 @@ public class AgentWorkerIntegrationTest {
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     private final CodeBaseScanner scanner = new CodeBaseScanner();
-    private SharedConfig sharedConfig;
+    private final String JVM_UUID = UUID.randomUUID().toString();
     private long jvmStartedAtMillis = System.currentTimeMillis() - 60_000L;
     private long now = System.currentTimeMillis();
 
@@ -47,8 +46,7 @@ public class AgentWorkerIntegrationTest {
         when(agentApi.getServerUri()).thenReturn(new URI("http://server"));
 
         List<AppVersionStrategy> appVersionStrategies = new ArrayList<>();
-        sharedConfig = SharedConfig.builder().dataPath(temporaryFolder.getRoot()).build();
-        AgentConfig agentConfig = createAgentConfig(sharedConfig);
+        AgentConfig agentConfig = createAgentConfig();
 
         worker = new AgentWorker("codekvastVersion", "gitHash", 300, agentApi, agentConfig, scanner, appVersionStrategies);
     }
@@ -56,7 +54,7 @@ public class AgentWorkerIntegrationTest {
     @Test
     public void testUploadSignatureData_uploadSameCodeBaseOnlyOnce() throws AgentApiException, IOException {
         // given
-        thereIsCollectorDataFromJvm("fingerprint1", "codebase1", now - 4711L);
+        thereIsCollectorDataFromJvm(JVM_UUID, "codebase1", now - 4711L);
 
         // when
         worker.analyseCollectorData();
@@ -69,7 +67,7 @@ public class AgentWorkerIntegrationTest {
     @Test
     public void testUploadSignatureData_shouldRetryOnFailure() throws AgentApiException, IOException {
         // given
-        thereIsCollectorDataFromJvm("fingerprint1", "codebase1", now - 4711L);
+        thereIsCollectorDataFromJvm(JVM_UUID, "codebase1", now - 4711L);
 
         doThrow(new AgentApiException("Failed to contact server")).doNothing()
                                                                   .when(agentApi).uploadSignatureData(any(JvmData.class), anyCollection());
@@ -88,9 +86,9 @@ public class AgentWorkerIntegrationTest {
                                             .appName("appName")
                                             .appVersion("appVersion")
                                             .codeBase("src/test/resources/agentWorkerTest/" + codebase)
+                                            .dataPath(temporaryFolder.getRoot())
                                             .packagePrefixes("org, sample")
                                             .methodExecutionPointcut("methodExecutionPointcut")
-                                            .sharedConfig(sharedConfig)
                                             .tags("tags")
                                             .build();
 
@@ -106,11 +104,12 @@ public class AgentWorkerIntegrationTest {
         jvm.saveTo(cc.getJvmFile());
     }
 
-    private AgentConfig createAgentConfig(SharedConfig sharedConfig) {
+    private AgentConfig createAgentConfig() {
         try {
-            return AgentConfig.builder().sharedConfig(sharedConfig)
+            return AgentConfig.builder()
                               .apiAccessID("accessId")
                               .apiAccessSecret("secret")
+                              .dataPath(temporaryFolder.getRoot())
                               .serverUploadIntervalSeconds(60)
                               .serverUri(new URI("http://localhost:8090"))
                               .build();

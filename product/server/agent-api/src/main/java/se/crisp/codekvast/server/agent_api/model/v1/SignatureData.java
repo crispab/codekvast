@@ -21,7 +21,7 @@ import java.util.List;
 public class SignatureData {
     @NonNull
     @NotBlank
-    @Size(min = Constraints.MIN_FINGERPRINT_LENGTH, max = Constraints.MAX_FINGERPRINT_LENGTH)
+    @Size(min = Constraints.MIN_JVM_UUID_LENGTH, max = Constraints.MAX_FINGERPRINT_LENGTH)
     private String jvmUuid;
 
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")

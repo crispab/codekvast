@@ -19,10 +19,10 @@ public class JvmTest {
         Jvm sr1 = Jvm.builder()
                      .collectorConfig(CollectorConfig.createSampleCollectorConfig())
                      .computerId("computerId")
-                           .hostName("hostName")
+                     .hostName("hostName")
                      .jvmUuid(UUID.randomUUID().toString())
-                           .startedAtMillis(System.currentTimeMillis())
-                           .build();
+                     .startedAtMillis(System.currentTimeMillis())
+                     .build();
         sr1.saveTo(file);
         Jvm sr2 = Jvm.readFrom(file);
         assertEquals(sr1, sr2);

@@ -1,8 +1,6 @@
 package se.crisp.codekvast.agent.util;
 
 import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -16,8 +14,6 @@ import java.util.regex.Pattern;
  * @author olle.hallin@crisp.se
  */
 public final class ConfigUtils {
-
-    public static final String SAMPLE_DATA_PATH = "/tmp/codekvast";
 
     private ConfigUtils() {
     }
@@ -102,18 +98,6 @@ public final class ConfigUtils {
         return value;
     }
 
-    public static URI getMandatoryUriValue(Properties props, String key, boolean removeTrailingSlash) {
-        String value = getMandatoryStringValue(props, key);
-        if (removeTrailingSlash && value.endsWith("/")) {
-            value = value.substring(0, value.length() - 1);
-        }
-        try {
-            return new URI(value);
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException(String.format("Illegal URI value for %s: %s", key, value));
-        }
-    }
-
     public static List<File> getCommaSeparatedFileValues(String uriValues, boolean removeTrailingSlashes) {
         List<File> result = new ArrayList<File>();
         String[] parts = uriValues.split("[;,]");
@@ -127,4 +111,14 @@ public final class ConfigUtils {
         return result;
     }
 
+    public static File getDataPath(Properties props) {
+        // Prefer /tmp over ${java.io.tmpdir}, since the latter is redefined when running inside Tomcat
+        File tmpDir = new File("/tmp");
+        if (!tmpDir.isDirectory()) {
+            tmpDir = new File(System.getProperty("java.io.tmpdir"));
+        }
+        String defaultValue = new File(tmpDir, "codekvast").getAbsolutePath();
+
+        return new File(getOptionalStringValue(props, "dataPath", defaultValue));
+    }
 }

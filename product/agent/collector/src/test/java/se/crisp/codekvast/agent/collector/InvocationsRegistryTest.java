@@ -5,7 +5,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import se.crisp.codekvast.agent.config.CollectorConfig;
-import se.crisp.codekvast.agent.config.SharedConfig;
 import se.crisp.codekvast.agent.model.Jvm;
 
 import java.io.File;
@@ -34,7 +33,7 @@ public class InvocationsRegistryTest {
 
         //@formatter:off
         config = CollectorConfig.builder()
-                                .sharedConfig(SharedConfig.builder().dataPath(dataPath).build())
+                                .dataPath(dataPath)
                                 .codeBase(codeBase)
                                 .packagePrefixes("se.crisp")
                                 .appName(APP_NAME)
@@ -54,7 +53,7 @@ public class InvocationsRegistryTest {
 
         InvocationRegistry.instance.dumpDataToDisk(1);
 
-        File[] files = config.getSharedConfig().getDataPath().listFiles();
+        File[] files = config.getDataPath().listFiles();
         assertThat(files.length, is(1));
         assertThat(files[0].getName(), is("invocationsregistrytest"));
 

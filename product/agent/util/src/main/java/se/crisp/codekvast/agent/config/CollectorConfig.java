@@ -36,12 +36,13 @@ public class CollectorConfig implements CodekvastConfig {
     public static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
     public static final String SAMPLE_CODEBASE_URI1 = "/path/to/codebase1/";
     public static final String SAMPLE_CODEBASE_URI2 = "/path/to/codebase2/";
+    private static final File SAMPLE_DATA_PATH = new File("/tmp)");
     public static final String SAMPLE_TAGS = "production, frontend-web";
     public static final String OVERRIDE_SEPARATOR = ";";
     public static final String UNSPECIFIED_VERSION = "unspecified";
 
     @NonNull
-    private final SharedConfig sharedConfig;
+    private final File dataPath;
     private final String aspectjOptions;
     @NonNull
     private final String methodExecutionPointcut;
@@ -81,7 +82,7 @@ public class CollectorConfig implements CodekvastConfig {
     }
 
     protected File myDataPath(String appName) {
-        return new File(sharedConfig.getDataPath(), ConfigUtils.normalizePathName(appName));
+        return new File(dataPath, ConfigUtils.normalizePathName(appName));
     }
 
     public List<String> getNormalizedPackagePrefixes() {
@@ -116,35 +117,35 @@ public class CollectorConfig implements CodekvastConfig {
 
     public static CollectorConfig buildCollectorConfig(Properties props) {
         return CollectorConfig.builder()
-                              .sharedConfig(SharedConfig.buildSharedConfig(props))
-                              .aspectjOptions(ConfigUtils.getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
                               .appName(ConfigUtils.getMandatoryStringValue(props, "appName"))
                               .appVersion(ConfigUtils.getOptionalStringValue(props, "appVersion", UNSPECIFIED_VERSION))
+                              .aspectjOptions(ConfigUtils.getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
+                              .clobberAopXml(ConfigUtils.getOptionalBooleanValue(props, "clobberAopXml", DEFAULT_CLOBBER_AOP_XML))
                               .codeBase(ConfigUtils.getMandatoryStringValue(props, "codeBase"))
-                              .packagePrefixes(ConfigUtils.getMandatoryStringValue(props, "packagePrefixes"))
-                              .tags(ConfigUtils.getOptionalStringValue(props, "tags", ""))
                               .collectorResolutionSeconds(ConfigUtils.getOptionalIntValue(props, "collectorResolutionSeconds",
                                                                                           DEFAULT_COLLECTOR_RESOLUTION_SECONDS))
-                              .verbose(ConfigUtils.getOptionalBooleanValue(props, "verbose", DEFAULT_VERBOSE))
-                              .clobberAopXml(ConfigUtils.getOptionalBooleanValue(props, "clobberAopXml", DEFAULT_CLOBBER_AOP_XML))
+                              .dataPath(ConfigUtils.getDataPath(props))
                               .methodExecutionPointcut(ConfigUtils.getOptionalStringValue(props, "methodExecutionPointcut",
                                                                                           DEFAULT_METHOD_EXECUTION_POINTCUT))
+                              .packagePrefixes(ConfigUtils.getMandatoryStringValue(props, "packagePrefixes"))
+                              .tags(ConfigUtils.getOptionalStringValue(props, "tags", ""))
+                              .verbose(ConfigUtils.getOptionalBooleanValue(props, "verbose", DEFAULT_VERBOSE))
                               .build();
     }
 
     public static CollectorConfig createSampleCollectorConfig() {
         return CollectorConfig.builder()
-                              .sharedConfig(SharedConfig.buildSampleSharedConfig())
-                              .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
                               .appName("Sample Application Name")
                               .appVersion(UNSPECIFIED_VERSION)
+                              .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
+                              .clobberAopXml(DEFAULT_CLOBBER_AOP_XML)
                               .codeBase(SAMPLE_CODEBASE_URI1 + " , " + SAMPLE_CODEBASE_URI2)
+                              .collectorResolutionSeconds(DEFAULT_COLLECTOR_RESOLUTION_SECONDS)
+                              .dataPath(SAMPLE_DATA_PATH)
+                              .methodExecutionPointcut(DEFAULT_METHOD_EXECUTION_POINTCUT)
                               .packagePrefixes("com.acme. , foo.bar.")
                               .tags(SAMPLE_TAGS)
-                              .collectorResolutionSeconds(DEFAULT_COLLECTOR_RESOLUTION_SECONDS)
                               .verbose(DEFAULT_VERBOSE)
-                              .clobberAopXml(DEFAULT_CLOBBER_AOP_XML)
-                              .methodExecutionPointcut(DEFAULT_METHOD_EXECUTION_POINTCUT)
                               .build();
     }
 

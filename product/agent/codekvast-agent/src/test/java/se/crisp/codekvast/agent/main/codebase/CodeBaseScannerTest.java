@@ -4,7 +4,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import se.crisp.codekvast.agent.config.CollectorConfig;
-import se.crisp.codekvast.agent.config.SharedConfig;
 import se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest1;
 import se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest2;
 import se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest3;
@@ -29,7 +28,7 @@ public class CodeBaseScannerTest {
 
     private CodeBase getCodeBase(String codeBase) throws URISyntaxException {
         return new CodeBase(CollectorConfig.builder()
-                                           .sharedConfig(SharedConfig.builder().dataPath(temporaryFolder.getRoot()).build())
+                                           .dataPath(temporaryFolder.getRoot())
                                            .codeBase(new File(codeBase).getAbsolutePath())
                                            .packagePrefixes(ScannerTest1.class.getPackage().getName())
                                            .appName("appName")

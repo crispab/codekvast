@@ -4,16 +4,43 @@
 package se.crisp.codekvast.server.agent_api.model.v1;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Before;
 import org.junit.Test;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import java.io.IOException;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertThat;
 
 public class JvmDataTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private Validator validator;
+
+    @Before
+    public void beforeTest() throws Exception {
+        LocalValidatorFactoryBean factory = new LocalValidatorFactoryBean();
+        factory.afterPropertiesSet();
+        this.validator = factory.getValidator();
+    }
+
+    @Test
+    public void jvmDataShouldBeValid() {
+        // given
+        JvmData data1 = getJvmData("tag1, tag2, tag3");
+
+        // when
+        Set<ConstraintViolation<JvmData>> violations = validator.validate(data1);
+
+        // then
+        assertThat(violations, empty());
+
+    }
 
     @Test
     public void jvmDataWithTagsShouldBeJsonSerializable() throws IOException {

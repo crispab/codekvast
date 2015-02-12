@@ -49,7 +49,7 @@ public class Jvm {
                       .dumpedAtMillis(Long.parseLong(props.getProperty("dumpedAtMillis")))
                       .build();
         } catch (Exception e) {
-            throw new IOException("Cannot parse " + file);
+            throw new IOException("Cannot parse " + file, e);
         }
     }
 }

@@ -44,20 +44,23 @@ jar {
 
 run {
     jvmArgs = ['-ea']
-    systemProperties = ['codekvast.agent.configuration': file('src/test/resources/codekvast-agent-run.conf')]
+    args = ["--codekvast.serverUploadIntervalSeconds=5"]
 }
 
 bootRun {
-    jvmArgs = ['-ea']
-    systemProperties = ['codekvast.agent.configuration': file('src/test/resources/codekvast-agent-run.conf')]
+    jvmArgs = run.jvmArgs
+    args = run.args
 }
 
 jar.dependsOn tasks.getByPath(":product:agent:util:test")
 
 applicationDistribution.from("src/main/resources") {
     into "conf"
-    include "logback.xml"
-    rename { "${it}.sample" }
+    include "logback.xml", "default.properties"
+    rename {
+        def name = it == "default.properties" ? "codekvast-agent.conf" : it
+        "${name}.sample"
+    }
 }
 
 applicationDistribution.from("src/dist") {
