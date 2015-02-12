@@ -1,13 +1,15 @@
 package se.crisp.codekvast.agent.main;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.experimental.Builder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import se.crisp.codekvast.server.agent_api.model.v1.Constraints;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.File;
 import java.net.URI;
 
@@ -38,8 +40,14 @@ public class AgentConfig {
     private int serverUploadIntervalSeconds;
 
     @NotNull
-    String version;
+    @Size(max = Constraints.MAX_CODEKVAST_VERSION_LENGTH)
+    String codekvastVersion;
 
     @NotNull
-    String vcsId;
+    @Size(max = Constraints.MAX_CODEKVAST_VCS_ID_LENGTH)
+    String codekvastVcsId;
+
+    public String getDisplayVersion() {
+        return codekvastVersion + "-" + codekvastVcsId;
+    }
 }

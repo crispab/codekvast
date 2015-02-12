@@ -1,7 +1,7 @@
 package se.crisp.codekvast.server.codekvast_server.event.internal;
 
+import lombok.Builder;
 import lombok.Value;
-import lombok.experimental.Builder;
 
 import java.util.Collection;
 

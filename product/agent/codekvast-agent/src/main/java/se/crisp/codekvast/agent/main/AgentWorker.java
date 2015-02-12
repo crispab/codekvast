@@ -56,12 +56,12 @@ public class AgentWorker {
         this.codeBaseScanner = codeBaseScanner;
         this.appVersionStrategies.addAll(appVersionStrategies);
 
-        log.info("{} {}-{} started", getClass().getSimpleName(), config.getVersion(), config.getVcsId());
+        log.info("{} {} started", getClass().getSimpleName(), config.getDisplayVersion());
     }
 
     @PreDestroy
     public void shutdownHook() {
-        log.info("{} {}-{} shuts down", getClass().getSimpleName(), config.getVersion(), config.getVcsId());
+        log.info("{} {} shuts down", getClass().getSimpleName(), config.getDisplayVersion());
     }
 
     private String getHostName() {
@@ -165,8 +165,8 @@ public class AgentWorker {
                       .agentUploadIntervalSeconds(config.getServerUploadIntervalSeconds())
                       .appName(jvm.getCollectorConfig().getAppName())
                       .appVersion(jvmState.getAppVersion())
-                      .codekvastVcsId(config.getVcsId())
-                      .codekvastVersion(config.getVersion())
+                      .codekvastVcsId(config.getCodekvastVcsId())
+                      .codekvastVersion(config.getCodekvastVersion())
                       .collectorComputerId(jvm.getComputerId())
                       .collectorHostName(jvm.getHostName())
                       .collectorResolutionSeconds(jvm.getCollectorConfig().getCollectorResolutionSeconds())

@@ -1,7 +1,6 @@
 package se.crisp.codekvast.server.agent_api.model.v1;
 
 import lombok.*;
-import lombok.experimental.Builder;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.Min;
@@ -9,8 +8,8 @@ import javax.validation.constraints.Size;
 
 /**
  * REST data about one instrumented JVM.
- * 
- * Should be uploaded regularly during the lifetime of a JVM.
+ *
+ * Should be uploaded regularly during the lifetime of the JVM.
  *
  * @author olle.hallin@crisp.se
  */

@@ -112,8 +112,8 @@ public class AgentWorkerIntegrationTest {
                               .dataPath(temporaryFolder.getRoot())
                               .serverUploadIntervalSeconds(60)
                               .serverUri(new URI("http://localhost:8090"))
-                              .vcsId("git-hash")
-                              .version("version")
+                              .codekvastVcsId("git-hash")
+                              .codekvastVersion("version")
                               .build();
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);

@@ -1,8 +1,8 @@
 package se.crisp.codekvast.server.agent_api;
 
+import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
-import lombok.experimental.Builder;
 
 import java.net.URI;
 
