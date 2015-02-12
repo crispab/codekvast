@@ -58,8 +58,8 @@ applicationDistribution.from("src/main/resources") {
     into "conf"
     include "logback.xml", "default.properties"
     rename {
-        def name = it == "default.properties" ? "codekvast-agent.conf" : it
-        "${name}.sample"
+        def name = it == "default.properties" ? "codekvast-agent.properties" : it
+        "${name}.sample.${version}"
     }
 }
 
