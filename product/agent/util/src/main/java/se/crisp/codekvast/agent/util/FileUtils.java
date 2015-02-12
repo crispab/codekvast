@@ -1,5 +1,6 @@
 package se.crisp.codekvast.agent.util;
 
+import lombok.experimental.UtilityClass;
 import se.crisp.codekvast.agent.config.CodekvastConfig;
 import se.crisp.codekvast.agent.model.Invocation;
 
@@ -16,15 +17,12 @@ import java.util.*;
  * @author olle.hallin@crisp.se
  */
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
+@UtilityClass
 public final class FileUtils {
 
     private static final String UTF_8 = "UTF-8";
 
     static final String CONSUMED_SUFFIX = ".consumed";
-
-    private FileUtils() {
-        // Utility class
-    }
 
     public static void deleteAllConsumedInvocationDataFiles(File file) {
         File[] files = file.getParentFile().listFiles();

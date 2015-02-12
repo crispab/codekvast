@@ -1,5 +1,7 @@
 package se.crisp.codekvast.server.codekvast_server.util;
 
+import lombok.experimental.UtilityClass;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -8,6 +10,7 @@ import java.util.Date;
  *
  * @author olle.hallin@crisp.se
  */
+@UtilityClass
 public class DateUtils {
 
     private static final ThreadLocal<SimpleDateFormat> sdf = new ThreadLocal<SimpleDateFormat>() {
@@ -16,10 +19,6 @@ public class DateUtils {
             return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         }
     };
-
-    private DateUtils() {
-        // utility class
-    }
 
     public static String formatDate(Date date) {
         return sdf.get().format(date);
@@ -53,6 +52,4 @@ public class DateUtils {
         long week = days * 7;
         return String.format("%d weeks", age / week);
     }
-
-
 }

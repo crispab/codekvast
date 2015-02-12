@@ -166,7 +166,7 @@
     <inspection_tool class="UtilityClassWithoutPrivateConstructor" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="ignorableAnnotations">
         <value>
-          <item value="org.springframework.context.annotation.Configuration" />
+          <item value="lombok.experimental.UtilityClass" />
         </value>
       </option>
       <option name="ignoreClassesWithOnlyMain" value="false" />

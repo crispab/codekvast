@@ -1,5 +1,6 @@
 package se.crisp.codekvast.agent.util;
 
+import lombok.experimental.UtilityClass;
 import org.aspectj.lang.Signature;
 import org.aspectj.runtime.reflect.Factory;
 
@@ -11,10 +12,8 @@ import java.lang.reflect.Modifier;
  *
  * @author olle.hallin@crisp.se
  */
+@UtilityClass
 public class SignatureUtils {
-    private SignatureUtils() {
-        // utility class
-    }
 
     /**
      * Converts a (method) signature to a string containing the bare minimum to uniquely identify the method, namely: <ul> <li>The declaring

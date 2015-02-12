@@ -1,5 +1,7 @@
 package se.crisp.codekvast.agent.util;
 
+import lombok.experimental.UtilityClass;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,10 +15,8 @@ import java.util.regex.Pattern;
  *
  * @author olle.hallin@crisp.se
  */
+@UtilityClass
 public final class ConfigUtils {
-
-    private ConfigUtils() {
-    }
 
     public static List<String> getNormalizedPackagePrefixes(String packagePrefixes) {
         List<String> result = new ArrayList<String>();
