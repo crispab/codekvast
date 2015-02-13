@@ -3,6 +3,7 @@ package se.crisp.codekvast.agent.main;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import se.crisp.codekvast.server.agent_api.model.v1.Constraints;
@@ -22,6 +23,7 @@ import java.net.URI;
 @ConfigurationProperties(prefix = "codekvast")
 @Data
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class AgentConfig {
     @NotNull
@@ -41,13 +43,13 @@ public class AgentConfig {
 
     @NotNull
     @Size(max = Constraints.MAX_CODEKVAST_VERSION_LENGTH)
-    String codekvastVersion;
+    String agentVersion;
 
     @NotNull
     @Size(max = Constraints.MAX_CODEKVAST_VCS_ID_LENGTH)
-    String codekvastVcsId;
+    String agentVcsId;
 
     public String getDisplayVersion() {
-        return codekvastVersion + "-" + codekvastVcsId;
+        return agentVersion + "-" + agentVcsId;
     }
 }

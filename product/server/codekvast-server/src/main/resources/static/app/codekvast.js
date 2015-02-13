@@ -39,7 +39,6 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
         onCollectorStatusMessage = function (data) {
             var collectorStatusMessage = JSON.parse(data.body);
             $scope.collectorStatus = collectorStatusMessage;
-            $scope.$apply();
         };
 
         updateAges = function () {
@@ -47,10 +46,11 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
                 var now = Date.now();
                 $scope.collectorStatus.collectionAge = getAge(now, $scope.collectorStatus.collectionStartedAtMillis);
                 $scope.collectorStatus.updateAge = getAge(now, $scope.collectorStatus.updateReceivedAtMillis);
-                $scope.collectorStatus.collectors.each(function (c) {
-                    c.collectorAge = getAge(now, c.collectorStartedAtMillis)
-                    c.updateAge = getAge(now, c.updateReceivedAtMillis)
-                })
+                for (var i = 0, len = $scope.collectorStatus.collectors.length; i < len; i++) {
+                    var c = $scope.collectorStatus.collectors[i];
+                    c.collectorAge = getAge(now, c.collectorStartedAtMillis);
+                    c.updateAge = getAge(now, c.updateReceivedAtMillis);
+                }
                 $scope.$apply();
             }
         };

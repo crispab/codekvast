@@ -28,28 +28,4 @@ public class DateUtils {
         return timestampMillis == 0L ? "" : sdf.get().format(new Date(timestampMillis));
     }
 
-    public static String getAgeXX(long now, long timestampMillis) {
-        if (timestampMillis == 0L) {
-            return "";
-        }
-
-        long age = now - timestampMillis;
-
-        long minutes = 60 * 1000L;
-        if (age < 60 * minutes) {
-            return String.format("%d min", age / minutes);
-        }
-
-        long hours = minutes * 60;
-        if (age < 24 * hours) {
-            return String.format("%d hours", age / hours);
-        }
-        long days = hours * 24;
-        if (age < 30 * days) {
-            return String.format("%d days", age / days);
-        }
-
-        long week = days * 7;
-        return String.format("%d weeks", age / week);
-    }
 }
