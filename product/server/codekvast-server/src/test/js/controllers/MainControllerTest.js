@@ -31,19 +31,20 @@ describe('Controller: MainController', function () {
 
     it('should calculate age', function () {
         expect(getAge(now, 0)).toBe("");
-        expect(getAge(now, now)).toBe("0 min");
-        expect(getAge(now, now - 29000)).toBe("0 min");
-        expect(getAge(now, now - 30000)).toBe("1 min");
-        expect(getAge(now, now - 31000)).toBe("1 min");
-        expect(getAge(now, now - 59000)).toBe("1 min");
-        expect(getAge(now, now - 61000)).toBe("1 min");
-        expect(getAge(now, now - 119000)).toBe("2 min");
-        expect(getAge(now, now - 120000)).toBe("2 min");
-        expect(getAge(now, now - 121000)).toBe("2 min");
-        expect(getAge(now, now - 59 * 60000)).toBe("59 min");
-        expect(getAge(now, now - 60 * 60000)).toBe("1 hours");
-        expect(getAge(now, now - 24 * 60 * 60000)).toBe("1 days");
-        expect(getAge(now, now - 7 * 24 * 60 * 60000)).toBe("1 weeks");
+        expect(getAge(now, now)).toBe("");
+        expect(getAge(now, now - 29000)).toBe("29s");
+        expect(getAge(now, now - 30000)).toBe("30s");
+        expect(getAge(now, now - 31000)).toBe("31s");
+        expect(getAge(now, now - 59000)).toBe("59s");
+        expect(getAge(now, now - 60000)).toBe("1m");
+        expect(getAge(now, now - 61000)).toBe("1m 1s");
+        expect(getAge(now, now - 119000)).toBe("1m 59s");
+        expect(getAge(now, now - 120000)).toBe("2m");
+        expect(getAge(now, now - 121000)).toBe("2m 1s");
+        expect(getAge(now, now - 59 * 60000)).toBe("59m");
+        expect(getAge(now, now - 60 * 60000)).toBe("1h");
+        expect(getAge(now, now - 24 * 60 * 60000)).toBe("1d");
+        expect(getAge(now, now - 7 * 24 * 60 * 60000)).toBe("7d");
     })
 
     it('should handle collectorStatusMessage', function () {
@@ -70,11 +71,11 @@ describe('Controller: MainController', function () {
         updateAges();
 
         // then
-        expect(scope.collectorStatus.collectionAge).toBe("3 days");
-        expect(scope.collectorStatus.updateAge).toBe("1 min");
-        expect(scope.collectorStatus.collectors[0].collectorAge).toBe("3 days");
-        expect(scope.collectorStatus.collectors[0].updateAge).toBe("2 min");
-        expect(scope.collectorStatus.collectors[1].collectorAge).toBe("5 days");
-        expect(scope.collectorStatus.collectors[1].updateAge).toBe("3 min");
+        expect(scope.collectorStatus.collectionAge).toBe("3d");
+        expect(scope.collectorStatus.updateAge).toBe("1m 1s");
+        expect(scope.collectorStatus.collectors[0].collectorAge).toBe("3d");
+        expect(scope.collectorStatus.collectors[0].updateAge).toBe("2m");
+        expect(scope.collectorStatus.collectors[1].collectorAge).toBe("5d");
+        expect(scope.collectorStatus.collectors[1].updateAge).toBe("3m");
     });
 });

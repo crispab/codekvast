@@ -63,20 +63,33 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
             }
 
             var age = now - timestamp;
-            var minute = 60 * 1000;
-            if (age < 60 * minute) {
-                return Math.round(age / minute) + " min";
-            }
+            var second = 1000;
+            var minute = second * 60;
             var hour = minute * 60;
-            if (age < 24 * hour) {
-                return Math.round(age / hour) + " hours";
-            }
             var day = hour * 24;
-            if (age < 7 * day) {
-                return Math.round(age / day) + " days";
+
+            var result = "";
+            if (age >= day) {
+                var days = Math.floor(age / day);
+                age = age - days * day;
+                result = result + days + "d ";
             }
-            var week = day * 7;
-            return Math.round(age / week) + " weeks";
+            if (age >= hour) {
+                var hours = Math.floor(age / hour);
+                age = age - hours * hour;
+                result = result + hours + "h ";
+            }
+            if (age >= minute) {
+                var minutes = Math.floor(age / minute);
+                age = age - minutes * minute;
+                result = result + minutes + "m ";
+            }
+            if (age >= second) {
+                var seconds = Math.floor(age / second);
+                age = age - seconds * second;
+                result = result + seconds + "s";
+            }
+            return result.trim();
         };
 
         onSignatureMessage = function (data) {

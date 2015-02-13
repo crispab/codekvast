@@ -3,16 +3,22 @@
     cursor: pointer;
 }
 
+.collector-age {
+    width: 9em;
+    text-align: right;
+}
+
+.collector-status tfoot td {
+    font-weight: bold;
+}
+
 .signature-name {
     width: 65em;
 }
 
-.signature-age {
-    width: 7em;
-}
-
 .signature-invoked-at {
     width: 10em;
+    text-align: center;
 }
 
 .status-panel td {

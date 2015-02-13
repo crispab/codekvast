@@ -30,15 +30,15 @@
             <div class="panel-body">
                 <p>The status of all collectors that deliver data to this server.</p>
             </div>
-            <table class="table">
+            <table class="table collector-status">
                 <thead>
                 <tr>
                     <th>Application</th>
                     <th>Version</th>
                     <th>Collection started at</th>
-                    <th></th>
+                    <th class="collector-age"></th>
                     <th>Data received at</th>
-                    <th></th>
+                    <th class="collector-age"></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -46,19 +46,21 @@
                     <td>{{c.name}}</td>
                     <td>{{c.version}}</td>
                     <td>{{c.collectorStartedAt}}</td>
-                    <td>{{c.collectorAge}}</td>
+                    <td class="collector-age">{{c.collectorAge}}</td>
                     <td>{{c.updateReceivedAt}}</td>
-                    <td>{{c.updateAge}}</td>
-                </tr>
-                <tr>
-                    <td><b>Total</b></td>
-                    <td></td>
-                    <td><b>{{collectorStatus.collectionStartedAt}}</b></td>
-                    <td><b>{{collectorStatus.collectionAge}}</b></td>
-                    <td>{{collectorStatus.updateReceivedAt}}</td>
-                    <td>{{collectorStatus.updateAge}}</td>
+                    <td class="collector-age">{{c.updateAge}}</td>
                 </tr>
                 </tbody>
+                <tfoot>
+                <tr>
+                    <td>Total</td>
+                    <td></td>
+                    <td>{{collectorStatus.collectionStartedAt}}</td>
+                    <td class="collector-age">{{collectorStatus.collectionAge}}</td>
+                    <td>{{collectorStatus.updateReceivedAt}}</td>
+                    <td class="collector-age">{{collectorStatus.updateAge}}</td>
+                </tr>
+                </tfoot>
             </table>
         </div>
     </div>
