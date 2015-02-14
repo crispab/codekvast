@@ -11,7 +11,6 @@ plugins {
     id "org.ajoberstar.grgit-release" version "0.10.0"
 }
 
-
 import org.ajoberstar.grgit.Grgit
 
 import java.text.SimpleDateFormat
@@ -115,20 +114,24 @@ remotes {
     }
 }
 
-task prepareTargetServers << {
-    def etcDir = file('src/provision/etc/')
-    def keystoreFile = new File(System.properties['user.home'], ".ssh/star.crisp.se.jks")
+task prepareTargetServers {
+    group = "provisioning"
+    description = "Prepares the target servers for installWeb"
 
-    if (!keystoreFile.exists()) {
-        throw new TaskExecutionException(keystoreFile + " is missing")
-    }
+    doLast {
+        def etcDir = file('src/provision/etc/')
+        def keystoreFile = new File(System.properties['user.home'], ".ssh/star.crisp.se.jks")
 
-    ssh.run {
-        session(remotes.role('all')) {
-            put "$etcDir/redirectPort80", "."
-            put keystoreFile, "."
+        if (!keystoreFile.exists()) {
+            throw new TaskExecutionException(keystoreFile + " is missing")
+        }
 
-            execute """
+        ssh.run {
+            session(remotes.role('all')) {
+                put "$etcDir/redirectPort80", "."
+                put keystoreFile, "."
+
+                execute """
 sudo apt-get -q update;
 sudo apt-get -q upgrade -y;
 sudo apt-get install -y unzip;
@@ -145,6 +148,7 @@ sudo update-rc.d redirectPort80 defaults;
 popd
 
 """
+            }
         }
     }
 }
@@ -225,10 +229,15 @@ task redeployWeb {
     }
 }
 
-task getPeople << {
-    ssh.run {
-        session(remotes.web) {
-            get 'people.csv', buildDir
+task getPeople {
+    description = "Fetches the latest people.csv from http://codekvast.crisp.se"
+    group = "help"
+
+    doLast {
+        ssh.run {
+            session(remotes.web) {
+                get 'people.csv', buildDir
+            }
         }
     }
 }
