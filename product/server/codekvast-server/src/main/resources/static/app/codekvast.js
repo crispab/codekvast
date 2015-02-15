@@ -47,6 +47,8 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
     })
 
     .service('StompService', ['$rootScope', function ($rootScope) {
+        this.receptionInProgress = false;
+
         this.socket = {
             client: null,
             stomp: null
@@ -56,8 +58,28 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
             $rootScope.$broadcast('collectorStatus', JSON.parse(data.body));
         };
 
-        this.onSignaturesMessage = function (data) {
-            $rootScope.$broadcast('signatures', JSON.parse(data.body));
+        this.onSignaturesAvailableMessage = function (message) {
+            var self = this;
+            var signaturesAvailableMessage = JSON.parse(message.body);
+            if (signaturesAvailableMessage.pendingSignatures > 0) {
+                if (!self.receptionInProgress) {
+                    $rootScope.$broadcast('signatureReceptionInProgress', signaturesAvailableMessage.progress);
+                }
+                self.receptionInProgress = true;
+                self.socket.stomp.send("/user/queue/signature/next")
+            }
+        };
+
+        this.onSignatureDataMessage = function (message) {
+            var signatureDataMessage = JSON.parse(message.body);
+            $rootScope.$broadcast('signatureReceptionInProgress', signatureDataMessage.progress);
+            $rootScope.$broadcast('signatures', signatureDataMessage.signatures);
+            if (signatureDataMessage.more) {
+                self.socket.stomp.send("/user/queue/signature/next")
+            } else {
+                self.receptionInProgress = false;
+            }
+            // message.ack();
         };
 
         this.onConnected = function () {
@@ -78,9 +100,10 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
 
             self.socket.stomp.connect({}, function () {
                 self.onConnected();
-                self.socket.stomp.subscribe("/user/queue/collectorStatus", self.onCollectorStatusMessage);
-                self.socket.stomp.subscribe("/app/signatures", self.onSignaturesMessage);
-                self.socket.stomp.subscribe("/user/queue/signatureUpdates", self.onSignaturesMessage);
+                self.socket.stomp.subscribe("/user/queue/collector/status", self.onCollectorStatusMessage);
+                self.socket.stomp.subscribe("/user/queue/signature/available", self.onSignaturesAvailableMessage);
+                self.socket.stomp.subscribe("/user/queue/signature/data", self.onSignatureDataMessage); //, {ack: 'client'});
+                self.socket.stomp.send("/topic/hello", {}, "Hi there, give me my signatures!");
             }, function (error) {
                 console.log("Cannot connect %o", error)
                 self.onDisconnect(error.toString());
