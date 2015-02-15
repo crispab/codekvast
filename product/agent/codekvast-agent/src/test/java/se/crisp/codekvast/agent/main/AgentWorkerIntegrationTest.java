@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.mockito.Matchers.anyCollection;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -61,7 +60,7 @@ public class AgentWorkerIntegrationTest {
         worker.analyseCollectorData();
 
         // then
-        verify(agentApi, times(1)).uploadSignatureData(any(JvmData.class), anyCollection());
+        verify(agentApi, times(1)).uploadSignatureData(any(JvmData.class), anyCollectionOf(String.class));
     }
 
     @Test
@@ -70,7 +69,8 @@ public class AgentWorkerIntegrationTest {
         thereIsCollectorDataFromJvm(JVM_UUID, "codebase1", now - 4711L);
 
         doThrow(new AgentApiException("Failed to contact server")).doNothing()
-                                                                  .when(agentApi).uploadSignatureData(any(JvmData.class), anyCollection());
+                                                                  .when(agentApi).uploadSignatureData(any(JvmData.class),
+                                                                                                      anyCollectionOf(String.class));
 
         // when
         worker.analyseCollectorData();
@@ -78,7 +78,7 @@ public class AgentWorkerIntegrationTest {
         worker.analyseCollectorData();
 
         // then
-        verify(agentApi, times(2)).uploadSignatureData(any(JvmData.class), anyCollection());
+        verify(agentApi, times(2)).uploadSignatureData(any(JvmData.class), anyCollectionOf(String.class));
     }
 
     private void thereIsCollectorDataFromJvm(String jvmUuid, String codebase, long dumpedAtMillis) throws IOException {
