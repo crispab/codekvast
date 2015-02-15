@@ -1,30 +1,38 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="CodekvastPromoWebApplication" type="Application" factoryName="Application" singleton="true" nameIsGenerated="true">
+  <configuration default="false" name="Codekvast Server (no make)" type="Application" factoryName="Application" singleton="true">
+    <extension name="chronon">
+      <include>
+        <pattern>
+          <option name="PATTERN" value="codekvast.spike.server.**" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </include>
+    </extension>
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
       <pattern>
-        <option name="PATTERN" value="se.crisp.codekvast.web.*" />
+        <option name="PATTERN" value="codekvast.spike.server.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
-    <option name="MAIN_CLASS_NAME" value="se.crisp.codekvast.web.CodekvastPromoWebApplication" />
+    <option name="MAIN_CLASS_NAME" value="se.crisp.codekvast.server.codekvast_server.CodekvastServerApplication" />
     <option name="VM_PARAMETERS" value="" />
-    <option name="PROGRAM_PARAMETERS" value="" />
+    <option name="PROGRAM_PARAMETERS" value="--spring.thymeleaf.cache=false" />
     <option name="WORKING_DIRECTORY" value="file://$MODULE_DIR$" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" value="" />
     <option name="ENABLE_SWING_INSPECTOR" value="false" />
     <option name="ENV_VARIABLES" />
     <option name="PASS_PARENT_ENVS" value="true" />
-    <module name="web" />
+    <module name="codekvast-server" />
     <envs />
     <RunnerSettings RunnerId="Debug">
       <option name="DEBUG_PORT" value="" />
       <option name="TRANSPORT" value="0" />
       <option name="LOCAL" value="true" />
     </RunnerSettings>
-    <RunnerSettings RunnerId="Run" />
     <ConfigurationWrapper RunnerId="Debug" />
-    <ConfigurationWrapper RunnerId="Run" />
-    <method />
+    <method>
+      <option name="Make" enabled="false" />
+    </method>
   </configuration>
 </component>

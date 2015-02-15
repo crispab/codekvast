@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="CodekvastServerApplication" type="Application" factoryName="Application" singleton="true" nameIsGenerated="true">
+  <configuration default="false" name="Codekvast Server" type="Application" factoryName="Application" singleton="true">
     <extension name="chronon">
       <include>
         <pattern>
