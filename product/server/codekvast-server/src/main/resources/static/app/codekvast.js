@@ -137,7 +137,9 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
                 $scope.collectorStatus = signatureMessage.collectorStatus;
             }
 
-            $scope.progress = signatureMessage.progress;
+            $scope.$apply(function () {
+                $scope.progress = signatureMessage.progress;
+            });
 
             var updateLen = signatureMessage.signatures.length;
             for (var i = 0; i < updateLen; i++) {
@@ -161,6 +163,7 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
                 }
 
             }
+            $scope.$apply();
         });
 
         $scope.$on('collectorStatus', function (event, data) {

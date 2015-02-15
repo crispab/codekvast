@@ -48,14 +48,14 @@ public class ManifestAppVersionStrategy extends AbstractAppVersionStrategy {
                 Attributes attributes = jarFile.getManifest().getMainAttributes();
                 String resolvedVersion = attributes.getValue(manifestAttribute);
                 if (resolvedVersion != null) {
-                    log.info("{}!/META-INF/MANIFEST.MF:{}={}", jarUri, manifestAttribute, resolvedVersion);
+                    log.debug("{}!/META-INF/MANIFEST.MF:{}={}", jarUri, manifestAttribute, resolvedVersion);
                     return resolvedVersion;
                 }
                 if (!manifestAttribute.equalsIgnoreCase(DEFAULT_MANIFEST_ATTRIBUTE)) {
                     resolvedVersion = attributes.getValue(DEFAULT_MANIFEST_ATTRIBUTE);
                 }
                 if (resolvedVersion != null) {
-                    log.info("{}!/META-INF/MANIFEST.MF:{}={}", jarUri, DEFAULT_MANIFEST_ATTRIBUTE, resolvedVersion);
+                    log.debug("{}!/META-INF/MANIFEST.MF:{}={}", jarUri, DEFAULT_MANIFEST_ATTRIBUTE, resolvedVersion);
                     return resolvedVersion;
                 }
             } catch (Exception e) {
