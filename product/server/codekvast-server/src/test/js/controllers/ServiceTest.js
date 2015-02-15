@@ -13,9 +13,12 @@ describe('DateService', function () {
         dateService = _dateService_;
     }));
 
-    it('should calculate age since', function () {
+    it('should calculate age since timestamp', function () {
         expect(dateService.getAgeSince(now, 0)).toBe("");
         expect(dateService.getAgeSince(now, now)).toBe("");
+        expect(dateService.getAgeSince(now, now - 999)).toBe("");
+        expect(dateService.getAgeSince(now, now - 1000)).toBe("1s");
+        expect(dateService.getAgeSince(now, now - 1001)).toBe("1s");
         expect(dateService.getAgeSince(now, now - 29000)).toBe("29s");
         expect(dateService.getAgeSince(now, now - 30000)).toBe("30s");
         expect(dateService.getAgeSince(now, now - 31000)).toBe("31s");
@@ -31,8 +34,8 @@ describe('DateService', function () {
         expect(dateService.getAgeSince(now, now - 7 * 24 * 60 * 60000 - 120 * 60000 - 60000 - 30000)).toBe("7d 2h 1m 30s");
     })
 
-    it('should calculate age since', function () {
-        expect(dateService.getAge(0)).toBe("");
+    it('should calculate age since now', function () {
+        expect(dateService.getAge(Date.now() - 32999)).toBe("32s");
     })
 
 });
