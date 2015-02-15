@@ -6,12 +6,14 @@ describe('MainController', function () {
     beforeEach(module('codekvastApp'));
 
     var MainController,
+        StompService,
         scope,
         now = Date.now();
 
     // Initialize the controller and a mock scope
-    beforeEach(inject(function ($controller, $rootScope) {
+    beforeEach(inject(function ($controller, $rootScope, _StompService_) {
         scope = $rootScope.$new();
+        StompService = _StompService_;
         MainController = $controller('MainController', {
             $scope: scope
         });
@@ -29,7 +31,20 @@ describe('MainController', function () {
         expect(scope.progress).toBeUndefined();
     });
 
-    it('should handle collectorStatusMessage', function () {
+    it('should handle stompStatus events', function () {
+        expect(scope.jumbotronMessage).toBe("Disconnected from server");
+
+        StompService.onConnected();
+        expect(scope.jumbotronMessage).toBe("Waiting for data...");
+
+        StompService.onCollectorStatusMessage({body: '{}'});
+        expect(scope.jumbotronMessage).toBeUndefined();
+
+        StompService.onDisconnect();
+        expect(scope.jumbotronMessage).toBe('Disconnected');
+    });
+
+    it('should handle collectorStatus event', function () {
         // given
         var data = {
             body: JSON.stringify({
@@ -49,7 +64,8 @@ describe('MainController', function () {
         };
 
         // when
-        onCollectorStatusMessage(data);
+        StompService.onCollectorStatusMessage(data);
+        expect(scope.jumbotronMessage).toBeUndefined();
         updateAges();
 
         // then

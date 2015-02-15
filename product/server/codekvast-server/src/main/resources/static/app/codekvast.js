@@ -5,7 +5,7 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
         $locationProvider.html5Mode(true);
     }])
 
-    .service('dateService', function () {
+    .service('DateService', function () {
         this.getAgeSince = function (now, timestamp) {
             if (timestamp === 0) {
                 return "";
@@ -46,7 +46,50 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
         }
     })
 
-    .controller('MainController', ['$scope', '$window', '$interval', 'dateService', function ($scope, $window, $interval, dateService) {
+    .service('StompService', ['$rootScope', function ($rootScope) {
+        this.socket = {
+            client: null,
+            stomp: null
+        };
+
+        this.onCollectorStatusMessage = function (data) {
+            $rootScope.$broadcast('collectorStatus', JSON.parse(data.body));
+        };
+
+        this.onSignaturesMessage = function (data) {
+            $rootScope.$broadcast('signatures', JSON.parse(data.body));
+        };
+
+        this.onConnected = function () {
+            console.log("Connected");
+            $rootScope.$broadcast('stompConnected');
+            $rootScope.$broadcast('stompStatus', 'Waiting for data...');
+        };
+
+        this.onDisconnect = function (message) {
+            console.log("Disconnected");
+            $rootScope.$broadcast('stompDisconnected', message);
+        };
+
+        this.initSocket = function () {
+            var self = this;
+            self.socket.client = new SockJS("/codekvast", null, {debug: true});
+            self.socket.stomp = Stomp.over(self.socket.client);
+
+            self.socket.stomp.connect({}, function () {
+                self.onConnected();
+                self.socket.stomp.subscribe("/user/queue/collectorStatus", self.onCollectorStatusMessage);
+                self.socket.stomp.subscribe("/app/signatures", self.onSignaturesMessage);
+                self.socket.stomp.subscribe("/user/queue/signatureUpdates", self.onSignaturesMessage);
+            }, function (error) {
+                console.log("Cannot connect %o", error)
+                self.onDisconnect(error.toString());
+            });
+            self.socket.client.onclose = self.onDisconnect;
+        };
+    }])
+
+    .controller('MainController', ['$scope', '$window', '$interval', 'DateService', function ($scope, $window, $interval, DateService) {
         $scope.jumbotronMessage = 'Disconnected from server';
         $scope.progress = undefined;
 
@@ -72,24 +115,14 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
 
         $scope.reverse = false;
 
-        $scope.socket = {
-            client: null,
-            stomp: null
-        };
-
-        onCollectorStatusMessage = function (data) {
-            var collectorStatusMessage = JSON.parse(data.body);
-            $scope.collectorStatus = collectorStatusMessage;
-        };
-
         updateAges = function () {
             if ($scope.collectorStatus) {
-                $scope.collectorStatus.collectionAge = dateService.getAge($scope.collectorStatus.collectionStartedAtMillis);
-                $scope.collectorStatus.updateAge = dateService.getAge($scope.collectorStatus.updateReceivedAtMillis);
+                $scope.collectorStatus.collectionAge = DateService.getAge($scope.collectorStatus.collectionStartedAtMillis);
+                $scope.collectorStatus.updateAge = DateService.getAge($scope.collectorStatus.updateReceivedAtMillis);
                 for (var i = 0, len = $scope.collectorStatus.collectors.length; i < len; i++) {
                     var c = $scope.collectorStatus.collectors[i];
-                    c.collectorAge = dateService.getAge(c.collectorStartedAtMillis);
-                    c.updateAge = dateService.getAge(c.updateReceivedAtMillis);
+                    c.collectorAge = DateService.getAge(c.collectorStartedAtMillis);
+                    c.updateAge = DateService.getAge(c.updateReceivedAtMillis);
                 }
                 $scope.$apply();
             }
@@ -97,8 +130,7 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
 
         updateAgeInterval = $interval(updateAges, 500, false);
 
-        onSignatureMessage = function (data) {
-            var signatureMessage = JSON.parse(data.body);
+        $scope.$on('signatures', function (event, signatureMessage) {
 
             if (signatureMessage.collectorStatus) {
                 $scope.jumbotronMessage = undefined;
@@ -129,44 +161,34 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
                 }
 
             }
+        });
 
-            $scope.$apply();
-        };
+        $scope.$on('collectorStatus', function (event, data) {
+            $scope.jumbotronMessage = undefined;
+            $scope.collectorStatus = data;
+        });
 
-        $scope.disconnected = function () {
-            console.log("Disconnected");
-            $scope.$apply(function () {
-                $scope.jumbotronMessage = "Disconnected";
-                $scope.signatures = [];
-                $scope.collectorStatus = undefined;
-            });
+        $scope.$on('stompStatus', function (event, message) {
+            $scope.jumbotronMessage = message;
+        });
+
+        $scope.$on('stompConnected', function () {
+            $scope.jumbotronMessage = "Connected";
+        });
+
+        $scope.$on('stompDisconnected', function (event, message) {
+            $scope.jumbotronMessage = message || "Disconnected";
+            $scope.signatures = [];
+            $scope.collectorStatus = undefined;
 
             $interval.cancel(updateAgeInterval);
 
             // Cannot use $location here, since /login is outside the Angular app
             $window.location.href = "/login?logout";
-        };
+        });
+    }])
 
-        $scope.initSockets = function () {
-            $scope.socket.client = new SockJS("/codekvast", null, {debug: true});
-            $scope.socket.stomp = Stomp.over($scope.socket.client);
-
-            $scope.socket.stomp.connect({}, function () {
-                console.log("Connected");
-                $scope.jumbotronMessage = 'Waiting for data...';
-                $scope.$apply();
-                $scope.socket.stomp.subscribe("/user/queue/collectorStatus", onCollectorStatusMessage);
-                $scope.socket.stomp.subscribe("/app/signatures", onSignatureMessage);
-                $scope.socket.stomp.subscribe("/user/queue/signatureUpdates", onSignatureMessage);
-            }, function (error) {
-                console.log("Cannot connect %o", error)
-                $scope.$apply(function () {
-                    $scope.jumbotronMessage = error.toString();
-                });
-            });
-            $scope.socket.client.onclose = $scope.disconnected;
-        };
-
-        $scope.initSockets();
+    .run(['StompService', function (StompService) {
+        StompService.initSocket();
     }]);
 
