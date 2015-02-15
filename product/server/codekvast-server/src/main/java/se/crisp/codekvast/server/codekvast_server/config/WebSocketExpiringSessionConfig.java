@@ -20,12 +20,12 @@ public class WebSocketExpiringSessionConfig<S extends ExpiringSession> {
 
     @Bean
     public WebSocketConnectHandler<S> webSocketConnectHandler() {
-        return new WebSocketConnectHandler();
+        return new WebSocketConnectHandler<S>();
     }
 
     @Bean
     public WebSocketDisconnectHandler<S> webSocketDisconnectHandler() {
-        return new WebSocketDisconnectHandler();
+        return new WebSocketDisconnectHandler<S>();
     }
 
     @Slf4j
