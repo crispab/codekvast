@@ -5,7 +5,48 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
         $locationProvider.html5Mode(true);
     }])
 
-    .controller('MainController', ['$scope', '$window', '$interval', function ($scope, $window, $interval) {
+    .service('dateService', function () {
+        this.getAgeSince = function (now, timestamp) {
+            if (timestamp === 0) {
+                return "";
+            }
+
+            var age = now - timestamp;
+            var second = 1000;
+            var minute = second * 60;
+            var hour = minute * 60;
+            var day = hour * 24;
+
+            var result = "";
+            if (age >= day) {
+                var days = Math.floor(age / day);
+                age = age - days * day;
+                result = result + days + "d ";
+            }
+            if (age >= hour) {
+                var hours = Math.floor(age / hour);
+                age = age - hours * hour;
+                result = result + hours + "h ";
+            }
+            if (age >= minute) {
+                var minutes = Math.floor(age / minute);
+                age = age - minutes * minute;
+                result = result + minutes + "m ";
+            }
+            if (age >= second) {
+                var seconds = Math.floor(age / second);
+                age = age - seconds * second;
+                result = result + seconds + "s";
+            }
+            return result.trim();
+        };
+
+        this.getAge = function (timestamp) {
+            return this.getAgeSince(Date.now(), timestamp);
+        }
+    })
+
+    .controller('MainController', ['$scope', '$window', '$interval', 'dateService', function ($scope, $window, $interval, dateService) {
         $scope.jumbotronMessage = 'Disconnected from server';
         $scope.progress = undefined;
 
@@ -43,54 +84,18 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
 
         updateAges = function () {
             if ($scope.collectorStatus) {
-                var now = Date.now();
-                $scope.collectorStatus.collectionAge = getAge(now, $scope.collectorStatus.collectionStartedAtMillis);
-                $scope.collectorStatus.updateAge = getAge(now, $scope.collectorStatus.updateReceivedAtMillis);
+                $scope.collectorStatus.collectionAge = dateService.getAge($scope.collectorStatus.collectionStartedAtMillis);
+                $scope.collectorStatus.updateAge = dateService.getAge($scope.collectorStatus.updateReceivedAtMillis);
                 for (var i = 0, len = $scope.collectorStatus.collectors.length; i < len; i++) {
                     var c = $scope.collectorStatus.collectors[i];
-                    c.collectorAge = getAge(now, c.collectorStartedAtMillis);
-                    c.updateAge = getAge(now, c.updateReceivedAtMillis);
+                    c.collectorAge = dateService.getAge(c.collectorStartedAtMillis);
+                    c.updateAge = dateService.getAge(c.updateReceivedAtMillis);
                 }
                 $scope.$apply();
             }
         };
 
         updateAgeInterval = $interval(updateAges, 500, false);
-
-        getAge = function (now, timestamp) {
-            if (timestamp === 0) {
-                return "";
-            }
-
-            var age = now - timestamp;
-            var second = 1000;
-            var minute = second * 60;
-            var hour = minute * 60;
-            var day = hour * 24;
-
-            var result = "";
-            if (age >= day) {
-                var days = Math.floor(age / day);
-                age = age - days * day;
-                result = result + days + "d ";
-            }
-            if (age >= hour) {
-                var hours = Math.floor(age / hour);
-                age = age - hours * hour;
-                result = result + hours + "h ";
-            }
-            if (age >= minute) {
-                var minutes = Math.floor(age / minute);
-                age = age - minutes * minute;
-                result = result + minutes + "m ";
-            }
-            if (age >= second) {
-                var seconds = Math.floor(age / second);
-                age = age - seconds * second;
-                result = result + seconds + "s";
-            }
-            return result.trim();
-        };
 
         onSignatureMessage = function (data) {
             var signatureMessage = JSON.parse(data.body);
