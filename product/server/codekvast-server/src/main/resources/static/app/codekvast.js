@@ -1,4 +1,6 @@
 //noinspection JSUnusedGlobalSymbols
+'use strict';
+
 var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
 
     .config(['$locationProvider', function ($locationProvider) {
@@ -132,7 +134,7 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
 
         $scope.reverse = false;
 
-        updateAges = function () {
+        $scope.updateAges = function () {
             if ($scope.collectorStatus) {
                 $scope.collectorStatus.collectionAge = DateService.getAge($scope.collectorStatus.collectionStartedAtMillis);
                 $scope.collectorStatus.updateAge = DateService.getAge($scope.collectorStatus.updateReceivedAtMillis);
@@ -144,7 +146,7 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
             }
         };
 
-        updateAgeInterval = $interval(updateAges, 500, false);
+        $scope.updateAgeInterval = $interval($scope.updateAges, 500, false);
 
         $scope.$on('signatures', function (event, message) {
 
@@ -153,7 +155,7 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
             if (message.first) {
                 $scope.collectorStatus = message.collectorStatus;
                 $scope.signatures = message.signatures;
-                updateAges();
+                $scope.updateAges();
                 return;
             }
 
@@ -185,7 +187,7 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
         $scope.$on('collectorStatus', function (event, data) {
             $scope.jumbotronMessage = undefined;
             $scope.collectorStatus = data;
-            updateAges();
+            $scope.updateAges();
         });
 
         $scope.$on('stompStatus', function (event, message) {
@@ -201,7 +203,7 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
             $scope.signatures = [];
             $scope.collectorStatus = undefined;
 
-            $interval.cancel(updateAgeInterval);
+            $interval.cancel($scope.updateAgeInterval);
 
             // Cannot use $location here, since /login is outside the Angular app
             $window.location.href = "/login?logout";

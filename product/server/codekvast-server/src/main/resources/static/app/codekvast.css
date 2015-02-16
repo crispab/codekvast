@@ -1,4 +1,9 @@
 /* codekvast.css */
+
+.ng-cloak {
+    display: none;
+}
+
 .nav, .pagination, .carousel, .panel-title a {
     cursor: pointer;
 }
