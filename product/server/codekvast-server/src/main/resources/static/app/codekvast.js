@@ -46,11 +46,17 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
         }
     })
 
-    .factory('StompService', ['$rootScope', '$http', function ($rootScope, $http) {
+    .factory('StompService', ['$rootScope', '$http', '$timeout', function ($rootScope, $http, $timeout) {
         var socket = {client: null, stomp: null};
 
+        var broadcast = function (event, message) {
+            $timeout(function () {
+                $rootScope.$broadcast(event, message);
+            }, 0);
+        };
+
         var broadcastSignatures = function (collectorStatus, signatures) {
-            $rootScope.$broadcast('signatures', {
+            broadcast('signatures', {
                 first: collectorStatus != null,
                 collectorStatus: collectorStatus,
                 signatures: signatures
@@ -58,7 +64,7 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
         };
 
         var onCollectorStatusMessage = function (data) {
-            $rootScope.$broadcast('collectorStatus', JSON.parse(data.body));
+            broadcast('collectorStatus', JSON.parse(data.body));
         };
 
         var onSignatureDataMessage = function (message) {
@@ -68,13 +74,13 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
 
         var onConnected = function () {
             console.log("Connected");
-            $rootScope.$broadcast('stompConnected');
-            $rootScope.$broadcast('stompStatus', 'Waiting for data...');
+            broadcast('stompConnected');
+            broadcast('stompStatus', 'Waiting for data...');
         };
 
         var onDisconnect = function (message) {
             console.log("Disconnected");
-            $rootScope.$broadcast('stompDisconnected', message);
+            broadcast('stompDisconnected', message);
         };
 
         var initSocket = function () {
@@ -135,7 +141,6 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
                     c.collectorAge = DateService.getAge(c.collectorStartedAtMillis);
                     c.updateAge = DateService.getAge(c.updateReceivedAtMillis);
                 }
-                $scope.$apply();
             }
         };
 
@@ -148,6 +153,7 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
             if (message.first) {
                 $scope.collectorStatus = message.collectorStatus;
                 $scope.signatures = message.signatures;
+                updateAges();
                 return;
             }
 
@@ -179,6 +185,7 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
         $scope.$on('collectorStatus', function (event, data) {
             $scope.jumbotronMessage = undefined;
             $scope.collectorStatus = data;
+            updateAges();
         });
 
         $scope.$on('stompStatus', function (event, message) {

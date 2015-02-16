@@ -4,12 +4,7 @@
 }
 
 .collector-age {
-    width: 9em;
-    text-align: right;
-}
-
-.collector-status tfoot td {
-    font-weight: bold;
+    text-align: left;
 }
 
 .signature-name {

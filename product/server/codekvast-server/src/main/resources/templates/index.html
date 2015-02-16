@@ -33,34 +33,24 @@
             <table class="table collector-status">
                 <thead>
                 <tr>
-                    <th>Application</th>
-                    <th>Version</th>
-                    <th>Collection started at</th>
-                    <th class="collector-age"></th>
-                    <th>Data received at</th>
-                    <th class="collector-age"></th>
+                    <th class="col-lg-2">Application</th>
+                    <th class="col-lg-1">Version</th>
+                    <th class="col-lg-1">Collection started at</th>
+                    <th class="col-lg-1"/>
+                    <th class="col-lg-1">Data received at</th>
+                    <th class="col-lg-1"/>
                 </tr>
                 </thead>
                 <tbody>
                 <tr ng-repeat="c in collectorStatus.collectors">
-                    <td>{{c.name}}</td>
-                    <td>{{c.version}}</td>
-                    <td>{{c.collectorStartedAt}}</td>
-                    <td class="collector-age">{{c.collectorAge}}</td>
-                    <td>{{c.updateReceivedAt}}</td>
-                    <td class="collector-age">{{c.updateAge}}</td>
+                    <td class="col-lg-2">{{c.name}}</td>
+                    <td class="col-lg-1">{{c.version}}</td>
+                    <td class="col-lg-1">{{c.collectorStartedAt}}</td>
+                    <td class="col-lg-1 collector-age">{{c.collectorAge}}</td>
+                    <td class="col-lg-1">{{c.updateReceivedAt}}</td>
+                    <td class="col-lg-1 collector-age">{{c.updateAge}}</td>
                 </tr>
                 </tbody>
-                <tfoot>
-                <tr>
-                    <td>Total</td>
-                    <td></td>
-                    <td>{{collectorStatus.collectionStartedAt}}</td>
-                    <td class="collector-age">{{collectorStatus.collectionAge}}</td>
-                    <td>{{collectorStatus.updateReceivedAt}}</td>
-                    <td class="collector-age">{{collectorStatus.updateAge}}</td>
-                </tr>
-                </tfoot>
             </table>
         </div>
     </div>

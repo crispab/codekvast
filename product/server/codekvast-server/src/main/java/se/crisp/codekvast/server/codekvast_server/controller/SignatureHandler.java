@@ -54,7 +54,13 @@ public class SignatureHandler extends AbstractMessageHandler {
 
     @Subscribe
     public void onInvocationDataUpdatedEvent(InvocationDataUpdatedEvent event) throws CodekvastException {
-        // TODO: stuff event data away and notify clients that there is signature data available
+        SignatureDataMessage message = toSignatureDataMessage(null, event.getInvocationEntries());
+        for (String username : event.getUsernames()) {
+            if (userHandler.isPresent(username)) {
+                log.debug("Sending {} to '{}'", message, username);
+                messagingTemplate.convertAndSendToUser(username, "/queue/signature/data", message);
+            }
+        }
     }
 
     /**
@@ -70,10 +76,10 @@ public class SignatureHandler extends AbstractMessageHandler {
 
         CollectorDataEvent collectorDataEvent = userService.getCollectorDataEvent(username);
         Collection<SignatureEntry> signatures = userService.getSignatures(username);
-        return getSignatureDataMessage(collectorDataEvent.getCollectors(), signatures);
+        return toSignatureDataMessage(collectorDataEvent.getCollectors(), signatures);
     }
 
-    private SignatureDataMessage getSignatureDataMessage(Collection<CollectorEntry> collectors, Collection<SignatureEntry> signatures) {
+    private SignatureDataMessage toSignatureDataMessage(Collection<CollectorEntry> collectors, Collection<SignatureEntry> signatures) {
         List<Signature> sig = new ArrayList<>();
         for (SignatureEntry entry : signatures) {
             sig.add(Signature.builder()
@@ -82,7 +88,10 @@ public class SignatureHandler extends AbstractMessageHandler {
                              .invokedAtString(DateUtils.formatDate(entry.getInvokedAtMillis()))
                              .build());
         }
-        return SignatureDataMessage.builder().collectorStatus(toCollectorStatusMessage(collectors)).signatures(sig).build();
+        return SignatureDataMessage.builder()
+                                   .collectorStatus(collectors == null ? null : toCollectorStatusMessage(collectors))
+                                   .signatures(sig)
+                                   .build();
     }
 
     private CollectorStatusMessage toCollectorStatusMessage(Collection<CollectorEntry> collectors) {
