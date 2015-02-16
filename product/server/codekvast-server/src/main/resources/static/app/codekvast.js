@@ -46,70 +46,68 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
         }
     })
 
-    .service('StompService', ['$rootScope', function ($rootScope) {
-        this.receptionInProgress = false;
+    .factory('StompService', ['$rootScope', function ($rootScope) {
+        var receptionInProgress = false,
+            socket = {client: null, stomp: null};
 
-        this.socket = {
-            client: null,
-            stomp: null
-        };
-
-        this.onCollectorStatusMessage = function (data) {
+        var onCollectorStatusMessage = function (data) {
             $rootScope.$broadcast('collectorStatus', JSON.parse(data.body));
         };
 
-        this.onSignaturesAvailableMessage = function (message) {
-            var self = this;
+        var onSignaturesAvailableMessage = function (message) {
             var signaturesAvailableMessage = JSON.parse(message.body);
             if (signaturesAvailableMessage.pendingSignatures > 0) {
-                if (!self.receptionInProgress) {
+                if (!receptionInProgress) {
                     $rootScope.$broadcast('signatureReceptionInProgress', signaturesAvailableMessage.progress);
                 }
-                self.receptionInProgress = true;
-                self.socket.stomp.send("/user/queue/signature/next")
+                receptionInProgress = true;
+                socket.stomp.send("/app/signature/next", {}, "next chunk, please!")
             }
         };
 
-        this.onSignatureDataMessage = function (message) {
+        var onSignatureDataMessage = function (message) {
             var signatureDataMessage = JSON.parse(message.body);
             $rootScope.$broadcast('signatureReceptionInProgress', signatureDataMessage.progress);
             $rootScope.$broadcast('signatures', signatureDataMessage.signatures);
             if (signatureDataMessage.more) {
-                self.socket.stomp.send("/user/queue/signature/next")
+                socket.stomp.send("/app/signature/next", {}, "next chunk, please!")
             } else {
-                self.receptionInProgress = false;
+                receptionInProgress = false;
             }
             // message.ack();
         };
 
-        this.onConnected = function () {
+        var onConnected = function () {
             console.log("Connected");
             $rootScope.$broadcast('stompConnected');
             $rootScope.$broadcast('stompStatus', 'Waiting for data...');
         };
 
-        this.onDisconnect = function (message) {
+        var onDisconnect = function (message) {
             console.log("Disconnected");
             $rootScope.$broadcast('stompDisconnected', message);
         };
 
-        this.initSocket = function () {
-            var self = this;
-            self.socket.client = new SockJS("/codekvast", null, {debug: true});
-            self.socket.stomp = Stomp.over(self.socket.client);
+        var initSocket = function () {
+            socket.client = new SockJS("/codekvast", null, {debug: true});
+            socket.stomp = Stomp.over(socket.client);
 
-            self.socket.stomp.connect({}, function () {
-                self.onConnected();
-                self.socket.stomp.subscribe("/user/queue/collector/status", self.onCollectorStatusMessage);
-                self.socket.stomp.subscribe("/user/queue/signature/available", self.onSignaturesAvailableMessage);
-                self.socket.stomp.subscribe("/user/queue/signature/data", self.onSignatureDataMessage); //, {ack: 'client'});
-                self.socket.stomp.send("/topic/hello", {}, "Hi there, give me my signatures!");
+            socket.stomp.connect({}, function () {
+                onConnected();
+                socket.stomp.subscribe("/user/queue/collector/status", onCollectorStatusMessage);
+                socket.stomp.subscribe("/user/queue/signature/available", onSignaturesAvailableMessage);
+                socket.stomp.subscribe("/user/queue/signature/data", onSignatureDataMessage); //, {ack: 'client'});
+                socket.stomp.send("/app/hello", {}, "Hi there, give me my signatures!");
             }, function (error) {
                 console.log("Cannot connect %o", error)
-                self.onDisconnect(error.toString());
+                onDisconnect(error.toString());
             });
-            self.socket.client.onclose = self.onDisconnect;
+            socket.client.onclose = onDisconnect;
         };
+
+        return {
+            initSocket: initSocket
+        }
     }])
 
     .controller('MainController', ['$scope', '$window', '$interval', 'DateService', function ($scope, $window, $interval, DateService) {

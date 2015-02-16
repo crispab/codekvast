@@ -3,7 +3,6 @@ package se.crisp.codekvast.server.codekvast_server.controller;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import lombok.Builder;
-import lombok.Singular;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -67,18 +66,19 @@ public class SignatureHandler extends AbstractMessageHandler {
      * @param principal The identity of the authenticated user.
      * @return A SignaturesAvailableMessage that kicks off pulling all signatures for that user.
      */
-    @MessageMapping("/topic/hello")
-    @SendToUser("/user/queue/signature/available")
-    public SignaturesAvailableMessage subscribeSignatures(String greeting, Principal principal) throws CodekvastException {
+    @MessageMapping("/hello")
+    @SendToUser("/queue/signature/available")
+    public WebSocketSessionState.SignaturesAvailableMessage subscribeSignatures(String greeting, Principal principal)
+            throws CodekvastException {
         String username = principal.getName();
-        log.debug("'{}' says {}", username, greeting);
+        log.debug("'{}' says '{}'", username, greeting);
 
-        sessionState.setSignatures(userService.getSignatures(username));
-        return sessionState.getSignaturesAvailableMessage();
+        return sessionState.setSignatures(userService.getSignatures(username));
     }
 
-    @MessageMapping("/user/queue/signature/next")
-    public SignatureDataMessage getNextSignatures(Principal principal) {
+    @MessageMapping("/signature/next")
+    @SendToUser("/queue/signature/data")
+    public WebSocketSessionState.SignatureDataMessage getNextSignatures(Principal principal) {
         log.debug("'{}' requests signatures", principal.getName());
 
         return sessionState.getNextSignatureDataMessage();
@@ -117,38 +117,6 @@ public class SignatureHandler extends AbstractMessageHandler {
     }
 
     // --- JSON objects -----------------------------------------------------------------------------------
-
-    @Value
-    @Builder
-    static class SignaturesAvailableMessage {
-        int pendingSignatures;
-        Progress progress;
-    }
-
-    @Value
-    @Builder
-    static class Progress {
-        String message;
-        int value;
-        int max;
-    }
-
-    @Value
-    @Builder
-    static class Signature {
-        String name;
-        long invokedAtMillis;
-        String invokedAtString;
-    }
-
-    @Value
-    @Builder
-    static class SignatureDataMessage {
-        boolean more;
-        Progress progress;
-        @Singular
-        List<Signature> signatures;
-    }
 
     @Value
     @Builder

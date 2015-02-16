@@ -1,5 +1,8 @@
 package se.crisp.codekvast.server.codekvast_server.controller;
 
+import lombok.Builder;
+import lombok.Singular;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -35,35 +38,33 @@ public class WebSocketSessionState {
         log.debug("Web socket session terminated");
     }
 
-    public void setSignatures(Collection<SignatureEntry> signatures) {
+    public SignaturesAvailableMessage setSignatures(Collection<SignatureEntry> signatures) {
         this.signatures.addAll(signatures);
         this.progressMax = signatures.size();
         this.offset = 0;
+
+        SignaturesAvailableMessage result = SignaturesAvailableMessage.builder()
+                                                                      .pendingSignatures(signatures.size())
+                                                                      .progress(Progress.builder().value(0).max(progressMax).build())
+                                                                      .build();
+        return result;
     }
 
-    public SignatureHandler.SignaturesAvailableMessage getSignaturesAvailableMessage() {
-        return SignatureHandler.SignaturesAvailableMessage.builder()
-                                                          .pendingSignatures(signatures.size())
-                                                          .progress(SignatureHandler.Progress.builder().value(offset + 1).max(progressMax)
-                                                                                             .build())
-                                                          .build();
-    }
-
-    public SignatureHandler.SignatureDataMessage getNextSignatureDataMessage() {
+    public SignatureDataMessage getNextSignatureDataMessage() {
         int last = Math.min(offset + CHUNK_SIZE, signatures.size());
 
-        SignatureHandler.SignatureDataMessage.SignatureDataMessageBuilder builder = SignatureHandler.SignatureDataMessage
+        SignatureDataMessage.SignatureDataMessageBuilder builder = SignatureDataMessage
                 .builder()
-                .progress(SignatureHandler.Progress.builder().value(offset + 1).max(progressMax).build());
+                .progress(Progress.builder().value(offset).max(progressMax).build());
 
-        List<SignatureHandler.Signature> sig = new ArrayList<>();
+        List<Signature> sig = new ArrayList<>();
         for (SignatureEntry entry : signatures.subList(offset, last)) {
 
-            sig.add(SignatureHandler.Signature.builder()
-                                              .name(entry.getSignature())
-                                              .invokedAtMillis(entry.getInvokedAtMillis())
-                                              .invokedAtString(DateUtils.formatDate(entry.getInvokedAtMillis()))
-                                              .build());
+            sig.add(Signature.builder()
+                             .name(entry.getSignature())
+                             .invokedAtMillis(entry.getInvokedAtMillis())
+                             .invokedAtString(DateUtils.formatDate(entry.getInvokedAtMillis()))
+                             .build());
         }
         builder.signatures(sig);
 
@@ -74,5 +75,39 @@ public class WebSocketSessionState {
         }
         builder.more(more);
         return builder.build();
+    }
+
+    // --- JSON objects -----------------------------------------------------------------------------------
+
+    @Value
+    @Builder
+    static class SignaturesAvailableMessage {
+        int pendingSignatures;
+        Progress progress;
+    }
+
+    @Value
+    @Builder
+    static class Progress {
+        String message;
+        int value;
+        int max;
+    }
+
+    @Value
+    @Builder
+    static class Signature {
+        String name;
+        long invokedAtMillis;
+        String invokedAtString;
+    }
+
+    @Value
+    @Builder
+    static class SignatureDataMessage {
+        boolean more;
+        Progress progress;
+        @Singular
+        List<Signature> signatures;
     }
 }
