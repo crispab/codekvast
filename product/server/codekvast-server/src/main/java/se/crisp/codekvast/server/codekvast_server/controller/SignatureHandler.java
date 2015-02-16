@@ -5,10 +5,10 @@ import com.google.common.eventbus.Subscribe;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.annotation.SendToUser;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
 import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorDataEvent;
 import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorDataEvent.CollectorEntry;
 import se.crisp.codekvast.server.codekvast_server.event.internal.InvocationDataUpdatedEvent;
@@ -27,20 +27,17 @@ import java.util.List;
  *
  * @author olle.hallin@crisp.se
  */
-@Controller
+@RestController
 @Slf4j
 public class SignatureHandler extends AbstractMessageHandler {
     private final UserService userService;
     private final UserHandler userHandler;
-    private final WebSocketSessionState sessionState;
 
     @Inject
-    public SignatureHandler(EventBus eventBus, SimpMessagingTemplate messagingTemplate, UserService userService, UserHandler userHandler,
-                            WebSocketSessionState sessionState) {
+    public SignatureHandler(EventBus eventBus, SimpMessagingTemplate messagingTemplate, UserService userService, UserHandler userHandler) {
         super(eventBus, messagingTemplate);
         this.userService = userService;
         this.userHandler = userHandler;
-        this.sessionState = sessionState;
     }
 
     @Subscribe
@@ -61,26 +58,31 @@ public class SignatureHandler extends AbstractMessageHandler {
     }
 
     /**
-     * A web socket client announces it's presence.
+     * A REST endpoint for doing the initial get of signatures.
      *
      * @param principal The identity of the authenticated user.
-     * @return A SignaturesAvailableMessage that kicks off pulling all available signatures for that user.
+     * @return A SignatureDataMessage containing all signatures the principal has rights to view.
      */
-    @MessageMapping("/hello")
-    @SendToUser("/queue/signature/available")
-    public WebSocketSessionState.SignaturesAvailableMessage hello(String greeting, Principal principal) throws CodekvastException {
+    @RequestMapping("/api/signatures")
+    public SignatureDataMessage getSignatures(Principal principal) throws CodekvastException {
         String username = principal.getName();
-        log.debug("'{}' says '{}'", username, greeting);
+        log.debug("'{}' requests all signatures", username);
 
-        return sessionState.setSignatures(userService.getSignatures(username));
+        CollectorDataEvent collectorDataEvent = userService.getCollectorDataEvent(username);
+        Collection<SignatureEntry> signatures = userService.getSignatures(username);
+        return getSignatureDataMessage(collectorDataEvent.getCollectors(), signatures);
     }
 
-    @MessageMapping("/signature/next")
-    @SendToUser("/queue/signature/data")
-    public WebSocketSessionState.SignatureDataMessage getNextSignatures(Principal principal, int chunkSize) {
-        log.debug("'{}' requests {} signatures", principal.getName(), chunkSize);
-
-        return sessionState.getNextSignatureDataMessage(chunkSize);
+    private SignatureDataMessage getSignatureDataMessage(Collection<CollectorEntry> collectors, Collection<SignatureEntry> signatures) {
+        List<Signature> sig = new ArrayList<>();
+        for (SignatureEntry entry : signatures) {
+            sig.add(Signature.builder()
+                             .name(entry.getSignature())
+                             .invokedAtMillis(entry.getInvokedAtMillis())
+                             .invokedAtString(DateUtils.formatDate(entry.getInvokedAtMillis()))
+                             .build());
+        }
+        return SignatureDataMessage.builder().collectorStatus(toCollectorStatusMessage(collectors)).signatures(sig).build();
     }
 
     private CollectorStatusMessage toCollectorStatusMessage(Collection<CollectorEntry> collectors) {
@@ -138,4 +140,18 @@ public class SignatureHandler extends AbstractMessageHandler {
         String updateReceivedAt;
     }
 
+    @Value
+    @Builder
+    static class Signature {
+        String name;
+        long invokedAtMillis;
+        String invokedAtString;
+    }
+
+    @Value
+    @Builder
+    static class SignatureDataMessage {
+        CollectorStatusMessage collectorStatus;
+        List<Signature> signatures;
+    }
 }
