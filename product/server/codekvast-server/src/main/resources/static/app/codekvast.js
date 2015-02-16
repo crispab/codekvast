@@ -47,7 +47,9 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
     })
 
     .factory('StompService', ['$rootScope', function ($rootScope) {
-        var receptionInProgress = false,
+        var chunkSize = 1000,
+            receptionInProgress = false,
+            firstReception = true,
             socket = {client: null, stomp: null};
 
         var onCollectorStatusMessage = function (data) {
@@ -61,18 +63,22 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
                     $rootScope.$broadcast('signatureReceptionInProgress', signaturesAvailableMessage.progress);
                 }
                 receptionInProgress = true;
-                socket.stomp.send("/app/signature/next", {}, "next chunk, please!")
+                socket.stomp.send("/app/signature/next", {}, chunkSize)
             }
         };
 
         var onSignatureDataMessage = function (message) {
             var signatureDataMessage = JSON.parse(message.body);
-            $rootScope.$broadcast('signatureReceptionInProgress', signatureDataMessage.progress);
-            $rootScope.$broadcast('signatures', signatureDataMessage.signatures);
+            $rootScope.$broadcast('signatures', {
+                first: firstReception,
+                signatures: signatureDataMessage.signatures
+            });
             if (signatureDataMessage.more) {
-                socket.stomp.send("/app/signature/next", {}, "next chunk, please!")
+                socket.stomp.send("/app/signature/next", {}, chunkSize)
             } else {
                 receptionInProgress = false;
+                firstReception = false;
+                $rootScope.$broadcast('signatureReceptionInProgress', null);
             }
             // message.ack();
         };
@@ -119,7 +125,7 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
         $scope.statusPanelOpen = true;
 
         $scope.showSignatures = function () {
-            return $scope.collectorStatus && $scope.signatures.length > 0;
+            return $scope.signatures.length > 0;
         };
 
         $scope.orderByInvokedAt = function () {
@@ -151,31 +157,25 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
 
         updateAgeInterval = $interval(updateAges, 500, false);
 
-        $scope.$on('signatures', function (event, signatureMessage) {
+        $scope.$on('signatures', function (event, message) {
 
-            if (signatureMessage.collectorStatus) {
-                $scope.jumbotronMessage = undefined;
-                $scope.collectorStatus = signatureMessage.collectorStatus;
-            }
+            var signatures = message.signatures, updateLen = message.signatures.length;
 
-            $scope.$apply(function () {
-                $scope.progress = signatureMessage.progress;
-            });
-
-            var updateLen = signatureMessage.signatures.length;
             for (var i = 0; i < updateLen; i++) {
-                var newSig = signatureMessage.signatures[i];
+                var newSig = signatures[i];
                 var found = false;
 
-                for (var j = 0, len2 = $scope.signatures.length; j < len2; j++) {
-                    var oldSig = $scope.signatures[j];
-                    if (oldSig.name === newSig.name) {
-                        found = true;
-                        if (oldSig.invokedAtMillis < newSig.invokedAtMillis) {
-                            oldSig.invokedAtMillis = newSig.invokedAtMillis;
-                            oldSig.invokedAtString = newSig.invokedAtString;
+                if (!message.first) {
+                    for (var j = 0, len2 = $scope.signatures.length; j < len2; j++) {
+                        var oldSig = $scope.signatures[j];
+                        if (oldSig.name === newSig.name) {
+                            found = true;
+                            if (oldSig.invokedAtMillis < newSig.invokedAtMillis) {
+                                oldSig.invokedAtMillis = newSig.invokedAtMillis;
+                                oldSig.invokedAtString = newSig.invokedAtString;
+                            }
+                            break;
                         }
-                        break;
                     }
                 }
 
@@ -184,6 +184,11 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
                 }
 
             }
+        });
+
+        $scope.$on('signatureReceptionInProgress', function (event, data) {
+            $scope.jumbotronMessage = undefined;
+            $scope.progress = data;
             $scope.$apply();
         });
 

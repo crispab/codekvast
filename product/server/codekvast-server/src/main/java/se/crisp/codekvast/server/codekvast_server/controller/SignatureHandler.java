@@ -64,12 +64,11 @@ public class SignatureHandler extends AbstractMessageHandler {
      * A web socket client announces it's presence.
      *
      * @param principal The identity of the authenticated user.
-     * @return A SignaturesAvailableMessage that kicks off pulling all signatures for that user.
+     * @return A SignaturesAvailableMessage that kicks off pulling all available signatures for that user.
      */
     @MessageMapping("/hello")
     @SendToUser("/queue/signature/available")
-    public WebSocketSessionState.SignaturesAvailableMessage subscribeSignatures(String greeting, Principal principal)
-            throws CodekvastException {
+    public WebSocketSessionState.SignaturesAvailableMessage hello(String greeting, Principal principal) throws CodekvastException {
         String username = principal.getName();
         log.debug("'{}' says '{}'", username, greeting);
 
@@ -78,10 +77,10 @@ public class SignatureHandler extends AbstractMessageHandler {
 
     @MessageMapping("/signature/next")
     @SendToUser("/queue/signature/data")
-    public WebSocketSessionState.SignatureDataMessage getNextSignatures(Principal principal) {
-        log.debug("'{}' requests signatures", principal.getName());
+    public WebSocketSessionState.SignatureDataMessage getNextSignatures(Principal principal, int chunkSize) {
+        log.debug("'{}' requests {} signatures", principal.getName(), chunkSize);
 
-        return sessionState.getNextSignatureDataMessage();
+        return sessionState.getNextSignatureDataMessage(chunkSize);
     }
 
     private CollectorStatusMessage toCollectorStatusMessage(Collection<CollectorEntry> collectors) {

@@ -23,7 +23,6 @@ import java.util.List;
 @Scope(value = "websocket", proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Slf4j
 public class WebSocketSessionState {
-    private static final int CHUNK_SIZE = 100;
     private List<SignatureEntry> signatures = new ArrayList<>();
     private int offset;
     private int progressMax;
@@ -50,8 +49,8 @@ public class WebSocketSessionState {
         return result;
     }
 
-    public SignatureDataMessage getNextSignatureDataMessage() {
-        int last = Math.min(offset + CHUNK_SIZE, signatures.size());
+    public SignatureDataMessage getNextSignatureDataMessage(int chunkSize) {
+        int last = Math.min(offset + chunkSize, signatures.size());
 
         SignatureDataMessage.SignatureDataMessageBuilder builder = SignatureDataMessage
                 .builder()
@@ -68,7 +67,7 @@ public class WebSocketSessionState {
         }
         builder.signatures(sig);
 
-        offset += last;
+        offset += chunkSize;
         boolean more = offset < signatures.size();
         if (!more) {
             signatures.clear();
