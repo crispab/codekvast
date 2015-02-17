@@ -17,11 +17,6 @@ public class InvocationDataUpdatedEvent {
 
     @Override
     public String toString() {
-        return "InvocationDataUpdatedEvent(appId='" + appId + '\'' + ", invocationEntries.size=" + invocationEntries
-                .size() + ")";
-    }
-
-    public String toLongString() {
-        return "InvocationDataUpdatedEvent(appId='" + appId + '\'' + ", invocationEntries=" + invocationEntries + ")";
+        return getClass().getSimpleName() + "(appId='" + appId + '\'' + ", invocationEntries.size()=" + invocationEntries.size() + ")";
     }
 }

@@ -92,7 +92,7 @@ public class AgentApiImpl implements AgentApi {
 
         List<SignatureEntry> signatureEntries = new ArrayList<>(signatures.size());
         for (String s : signatures) {
-            signatureEntries.add(new SignatureEntry(s, 0L, null));
+            signatureEntries.add(new SignatureEntry(s, 0L, 0L, null));
         }
 
         uploadInvocationData(jvmData, signatureEntries);

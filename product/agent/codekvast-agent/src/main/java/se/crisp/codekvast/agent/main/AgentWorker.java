@@ -303,7 +303,10 @@ public class AgentWorker {
             }
 
             if (normalizedSignature != null) {
-                jvmState.getInvocationsCollector().put(normalizedSignature, invocation.getInvokedAtMillis(), confidence);
+                jvmState.getInvocationsCollector().put(normalizedSignature,
+                                                       invocation.getInvokedAtMillis(),
+                                                       invocation.getInvokedAtMillis() - jvmState.getJvm().getStartedAtMillis(),
+                                                       confidence);
             }
         }
 

@@ -14,7 +14,6 @@ import se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedUserException;
-import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import se.crisp.codekvast.server.codekvast_server.model.Organisation;
 import se.crisp.codekvast.server.codekvast_server.model.Role;
 
@@ -51,24 +50,6 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
                                                        "AND u.username = ?", Long.class, username);
         } catch (EmptyResultDataAccessException ignored) {
             throw new UndefinedUserException("No such user: '" + username + "'");
-        }
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    @Cacheable("user")
-    public AppId getAppIdByJvmUuid(String jvmUuid) {
-        log.debug("Looking up AppId for JVM {}...", jvmUuid);
-        try {
-            AppId result = jdbcTemplate
-                    .queryForObject("SELECT id, organisation_id, application_id FROM jvm_info WHERE jvm_uuid = ?",
-                                    new AppIdRowMapper(),
-                                    jvmUuid);
-            log.debug("Result = {}", result);
-            return result;
-        } catch (EmptyResultDataAccessException e) {
-            log.info("No AppId found for JVM {}, probably an agent that uploaded stale data", jvmUuid);
-            return null;
         }
     }
 
@@ -118,11 +99,11 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
     @Transactional(readOnly = true)
     public Set<SignatureEntry> getSignatures(long organisationId) {
 
-        // The database contains several rows for the same signature, with different invoked_at values.
-        // We only want to return the entries with highest (latest) invoked_at for each signature.
+        // The database contains several rows for the same signature, with different invoked_at_millis values.
+        // We only want to return the entries with highest (latest) invoked_at_millis for each signature.
         //
         // The algorithm below relies on the fact that a java.util.Set.add() will not replace an already present element.
-        // By ordering by invoked_at DESC, the first returned row (i.e., the latest invoked_at) will win.
+        // By ordering by invoked_at_millis DESC, the first returned row (i.e., the latest invoked_at_millis) will win.
         //
         // It is possible to do this as a one-liner because SignatureEntry.hashCode() and equals() uses SignatureEntry.signature only.
         //
@@ -130,7 +111,8 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
 
         long startedAt = System.currentTimeMillis();
         Set<SignatureEntry> result = new HashSet<>(jdbcTemplate.query(
-                "SELECT signature, invoked_at, confidence FROM signatures WHERE organisation_id = ? ORDER BY signature, invoked_at DESC",
+                "SELECT signature, invoked_at_millis, millis_since_jvm_start, confidence FROM signatures WHERE organisation_id = ? " +
+                        "ORDER BY signature, invoked_at_millis DESC ",
                 new SignatureEntryRowMapper(), organisationId));
         log.debug("getSignatures({}) took {} ms", organisationId, System.currentTimeMillis() - startedAt);
         return result;
@@ -143,22 +125,11 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
         return organisationId;
     }
 
-    private static class AppIdRowMapper implements RowMapper<AppId> {
-        @Override
-        public AppId mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return AppId.builder()
-                        .jvmId(rs.getLong("ID"))
-                        .organisationId(rs.getLong("ORGANISATION_ID"))
-                        .appId(rs.getLong("APPLICATION_ID"))
-                        .build();
-        }
-    }
-
     private static class SignatureEntryRowMapper implements RowMapper<SignatureEntry> {
         @Override
         public SignatureEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
-            // SIGNATURE, INVOKED_AT, CONFIDENCE
-            return new SignatureEntry(rs.getString(1), rs.getLong(2), SignatureConfidence.fromOrdinal(rs.getInt(3)));
+            // signature, invoked_at_millis, millis_since_jvm_start, confidence
+            return new SignatureEntry(rs.getString(1), rs.getLong(2), rs.getLong(3), SignatureConfidence.fromOrdinal(rs.getInt(4)));
         }
     }
 

@@ -7,6 +7,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
@@ -15,7 +16,6 @@ import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
 import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorDataEvent;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
-import se.crisp.codekvast.server.codekvast_server.model.Application;
 
 import javax.inject.Inject;
 import java.sql.ResultSet;
@@ -61,9 +61,32 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         doInsertRow("INSERT INTO application_settings(application_id, truly_dead_after_hours) VALUES(?, ?)", appId,
                     codekvastSettings.getTrulyDeadAfterHours());
 
-        Application app = new Application(AppId.builder().organisationId(organisationId).appId(appId).build(), appName);
-        log.info("Created {} {}", app, appVersion);
+        log.info("Created application {}: '{} {}'", appId, appName, appVersion);
         return appId;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public AppId getAppIdByJvmUuid(String jvmUuid) {
+        log.debug("Looking up AppId for JVM {}...", jvmUuid);
+        try {
+            AppId result = jdbcTemplate
+                    .queryForObject("SELECT id, organisation_id, application_id FROM jvm_info WHERE jvm_uuid = ?",
+                                    new AppIdRowMapper(),
+                                    jvmUuid);
+            log.debug("Result = {}", result);
+            return result;
+        } catch (EmptyResultDataAccessException e) {
+            log.info("No AppId found for JVM {}, probably an agent that uploaded stale data", jvmUuid);
+            return null;
+        }
+    }
+
+    private static class AppIdRowMapper implements RowMapper<AppId> {
+        @Override
+        public AppId mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return AppId.builder().jvmId(rs.getLong(1)).organisationId(rs.getLong(2)).appId(rs.getLong(3)).build();
+        }
     }
 
 
@@ -77,6 +100,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                     appId.getOrganisationId(),
                     entry.getSignature(),
                     entry.getInvokedAtMillis(),
+                    entry.getMillisSinceJvmStart(),
                     appId.getAppId(),
                     appId.getJvmId(),
                     entry.getConfidence() == null ? null : entry.getConfidence().ordinal()
@@ -84,8 +108,9 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         }
 
         int[] inserted = jdbcTemplate.batchUpdate(
-                "INSERT INTO signatures(organisation_id, signature, invoked_at, application_id, jvm_id, confidence) " +
-                        "VALUES(?, ?, ?, ?, ?, ?)", args);
+                "INSERT INTO signatures(organisation_id, signature, invoked_at_millis, millis_since_jvm_start, application_id, jvm_id, " +
+                        "confidence) " +
+                        "VALUES(?, ?, ?, ?, ?, ?, ?)", args);
 
         // Now check what really made it into the table...
         List<SignatureEntry> result = new ArrayList<>();

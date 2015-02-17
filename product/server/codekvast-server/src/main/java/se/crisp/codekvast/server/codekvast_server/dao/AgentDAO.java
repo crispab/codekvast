@@ -20,6 +20,11 @@ public interface AgentDAO {
     long getAppId(long organisationId, String appName, String appVersion) throws UndefinedApplicationException;
 
     /**
+     * Retrieve an application ID by JVM id.
+     */
+    AppId getAppIdByJvmUuid(String jvmUuid);
+
+    /**
      * Stores invocation data in the database.
      *
      *

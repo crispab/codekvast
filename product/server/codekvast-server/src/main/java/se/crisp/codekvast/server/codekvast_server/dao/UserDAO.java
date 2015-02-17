@@ -3,7 +3,6 @@ package se.crisp.codekvast.server.codekvast_server.dao;
 import org.springframework.dao.DataAccessException;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedUserException;
-import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import se.crisp.codekvast.server.codekvast_server.model.Role;
 
 import java.util.Collection;
@@ -24,8 +23,6 @@ public interface UserDAO {
     long getOrganisationIdForUsername(String username) throws UndefinedUserException;
 
     Collection<String> getInteractiveUsernamesInOrganisation(long organisationId);
-
-    AppId getAppIdByJvmUuid(String jvmUuid);
 
     int countUsersByUsername(String username);
 

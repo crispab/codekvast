@@ -19,30 +19,30 @@ public class InvocationsCollectorTest {
     @Test
     public void testPutSignatureOnce() {
         assertThat(invocationsCollector.getNotUploadedInvocations(), hasSize(0));
-        invocationsCollector.put("sig", now, EXACT_MATCH);
+        invocationsCollector.put("sig", now, 100L, EXACT_MATCH);
         assertThat(invocationsCollector.getNotUploadedInvocations(), hasSize(1));
     }
 
     @Test
     public void testPutTwoSignaturesOnce() {
         assertThat(invocationsCollector.getNotUploadedInvocations(), hasSize(0));
-        invocationsCollector.put("sig1", now, EXACT_MATCH);
-        invocationsCollector.put("sig2", now, EXACT_MATCH);
+        invocationsCollector.put("sig1", now, 100L, EXACT_MATCH);
+        invocationsCollector.put("sig2", now, 100L, EXACT_MATCH);
         assertThat(invocationsCollector.getNotUploadedInvocations(), hasSize(2));
     }
 
     @Test
     public void testPutSignatureTwice() {
-        invocationsCollector.put("sig", now, EXACT_MATCH);
-        invocationsCollector.put("sig", now, EXACT_MATCH);
+        invocationsCollector.put("sig", now, 100L, EXACT_MATCH);
+        invocationsCollector.put("sig", now, 100L, EXACT_MATCH);
         assertThat(invocationsCollector.getNotUploadedInvocations(), hasSize(1));
     }
 
     @Test
     public void testPutSignatureTriceWithDifferentTimestamps() {
-        invocationsCollector.put("sig", now - 1, EXACT_MATCH);
-        invocationsCollector.put("sig", now, EXACT_MATCH);
-        invocationsCollector.put("sig", now - 2, EXACT_MATCH);
+        invocationsCollector.put("sig", now - 1, 100L, EXACT_MATCH);
+        invocationsCollector.put("sig", now, 100L, EXACT_MATCH);
+        invocationsCollector.put("sig", now - 2, 100L, EXACT_MATCH);
         Set<SignatureEntry> signatures = invocationsCollector.getNotUploadedInvocations();
         assertThat(signatures, hasSize(1));
         assertThat(signatures.iterator().next().getInvokedAtMillis(), is(now));
@@ -50,8 +50,8 @@ public class InvocationsCollectorTest {
 
     @Test
     public void testPutSignatureTwiceWithDifferentConfidence() {
-        invocationsCollector.put("sig", now, EXACT_MATCH);
-        invocationsCollector.put("sig", now, FOUND_IN_PARENT_CLASS);
+        invocationsCollector.put("sig", now, 100L, EXACT_MATCH);
+        invocationsCollector.put("sig", now, 100L, FOUND_IN_PARENT_CLASS);
         Set<SignatureEntry> signatures = invocationsCollector.getNotUploadedInvocations();
         assertThat(signatures, hasSize(1));
         assertThat(signatures.iterator().next().getConfidence(), is(FOUND_IN_PARENT_CLASS));
@@ -59,7 +59,7 @@ public class InvocationsCollectorTest {
 
     @Test
     public void testClearNotUploadedSignatures() {
-        invocationsCollector.put("sig", now, EXACT_MATCH);
+        invocationsCollector.put("sig", now, 100L, EXACT_MATCH);
         assertThat(invocationsCollector.getNotUploadedInvocations(), hasSize(1));
         invocationsCollector.clearNotUploadedSignatures();
         assertThat(invocationsCollector.getNotUploadedInvocations(), hasSize(0));
@@ -67,17 +67,17 @@ public class InvocationsCollectorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testPutNullSignature() throws Exception {
-        invocationsCollector.put(null, 100L, null);
+        invocationsCollector.put(null, 100L, 100L, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testPutNegativeSignature() throws Exception {
-        invocationsCollector.put("sig", -1L, null);
+        invocationsCollector.put("sig", -1L, 100L, null);
     }
 
     @Test
     public void testPutZeroSignature() throws Exception {
-        invocationsCollector.put("sig", 0L, null);
+        invocationsCollector.put("sig", 0L, 100L, null);
         assertThat(invocationsCollector.getNotUploadedInvocations(), hasSize(1));
     }
 }

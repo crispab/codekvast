@@ -95,9 +95,9 @@ public class AgentApiTest {
 
         // given
         long now = System.currentTimeMillis();
-        List<SignatureEntry> invocationEntries = asList(new SignatureEntry(signatures.get(1), now, EXACT_MATCH),
-                                                               new SignatureEntry(signatures.get(2), now, EXACT_MATCH),
-                                                               new SignatureEntry(signatures.get(2), now + 1000L, EXACT_MATCH));
+        List<SignatureEntry> invocationEntries = asList(new SignatureEntry(signatures.get(1), now, 100L, EXACT_MATCH),
+                                                        new SignatureEntry(signatures.get(2), now, 100L, EXACT_MATCH),
+                                                        new SignatureEntry(signatures.get(2), now + 1000L, 1100L, EXACT_MATCH));
         // when
         agentApi.uploadInvocationData(jvmData, invocationEntries);
 

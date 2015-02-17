@@ -23,7 +23,7 @@ class InvocationsCollector {
     private final Set<SignatureEntry> notUploadedInvocations = new HashSet<>();
     private final Map<String, Long> ages = new HashMap<>();
 
-    void put(String signature, long invokedAtMillis, SignatureConfidence confidence) {
+    void put(String signature, long invokedAtMillis, long millisSinceJvmStart, SignatureConfidence confidence) {
         if (signature == null) {
             throw new IllegalArgumentException("signature is null");
         }
@@ -34,7 +34,7 @@ class InvocationsCollector {
 
         Long age = ages.get(signature);
         if (age == null || age <= invokedAtMillis) {
-            SignatureEntry signatureEntry = new SignatureEntry(signature, invokedAtMillis, confidence);
+            SignatureEntry signatureEntry = new SignatureEntry(signature, invokedAtMillis, millisSinceJvmStart, confidence);
             // Replace it. Must remove first or, else the add is a no-op.
             notUploadedInvocations.remove(signatureEntry);
             notUploadedInvocations.add(signatureEntry);

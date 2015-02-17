@@ -27,5 +27,9 @@ public class SignatureEntry {
     @Min(0)
     private Long invokedAtMillis;
 
+    @NonNull
+    @Min(0)
+    private Long millisSinceJvmStart;
+
     private SignatureConfidence confidence;
 }

@@ -56,7 +56,7 @@ public class AgentServiceImpl implements AgentService {
             log.debug("Storing {}", data);
         }
 
-        AppId appId = userDAO.getAppIdByJvmUuid(data.getJvmUuid());
+        AppId appId = agentDAO.getAppIdByJvmUuid(data.getJvmUuid());
         if (appId == null) {
             log.info("Ignoring invocation data for JVM {}", data.getJvmUuid());
             return;

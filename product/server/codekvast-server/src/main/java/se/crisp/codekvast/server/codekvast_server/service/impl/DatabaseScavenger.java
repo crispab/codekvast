@@ -84,7 +84,7 @@ public class DatabaseScavenger {
 
         // Place a table lock on signatures...
         List<TmpSignature> allSignatures = jdbcTemplate.query(
-                "SELECT id, organisation_id, signature, invoked_at FROM signatures ORDER BY invoked_at DESC FOR UPDATE ",
+                "SELECT id, organisation_id, signature, invoked_at_millis FROM signatures ORDER BY invoked_at_millis DESC FOR UPDATE ",
                 new TmpSignatureRowMapper());
 
         Set<TmpSignature> newestSignatures = new HashSet<>();
@@ -93,7 +93,7 @@ public class DatabaseScavenger {
                 rowsToKeep += 1;
             } else {
                 // There was already an equal object in newestSignatures, i.e., with same organisation_id and signature.
-                // The ORDER BY clause guarantees that this first one has the highest invoked_at value.
+                // The ORDER BY clause guarantees that this first one has the highest invoked_at_millis value.
                 log.trace("Found garbage row {}", sig);
                 rowsToDelete.add(sig.getId());
             }

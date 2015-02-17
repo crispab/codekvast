@@ -98,9 +98,9 @@ public class AgentServiceImplTest extends AbstractServiceTest {
         events.clear();
 
         List<SignatureEntry> signatures = new ArrayList<>();
-        signatures.add(new SignatureEntry("sig1", 0L, null));
-        signatures.add(new SignatureEntry("sig2", 100L, SignatureConfidence.EXACT_MATCH));
-        signatures.add(new SignatureEntry("sig1", 200L, SignatureConfidence.EXACT_MATCH));
+        signatures.add(new SignatureEntry("sig1", 0L, 0L, null));
+        signatures.add(new SignatureEntry("sig2", 100L, 100L, SignatureConfidence.EXACT_MATCH));
+        signatures.add(new SignatureEntry("sig1", 200L, 200L, SignatureConfidence.EXACT_MATCH));
 
         SignatureData data = SignatureData.builder()
                                           .jvmUuid(JVM_UUID)

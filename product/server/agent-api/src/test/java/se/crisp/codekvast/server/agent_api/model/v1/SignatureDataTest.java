@@ -19,8 +19,8 @@ public class SignatureDataTest {
         SignatureData data1 = SignatureData.builder()
                                            .jvmUuid("jvmUuid")
                                            .signatures(asList(
-                                                   new SignatureEntry("sig1", 0L, null),
-                                                   new SignatureEntry("sig2", 0L, null)))
+                                                   new SignatureEntry("sig1", 0L, 0L, null),
+                                                   new SignatureEntry("sig2", 0L, 0L, null)))
                                              .build();
 
         // when
@@ -38,8 +38,8 @@ public class SignatureDataTest {
         SignatureData data1 = SignatureData.builder()
                                            .jvmUuid("jvmUuid")
                                            .signatures(asList(
-                                                   new SignatureEntry("sig1", 10000L, SignatureConfidence.EXACT_MATCH),
-                                                   new SignatureEntry("sig2", 20000L, SignatureConfidence.FOUND_IN_PARENT_CLASS)))
+                                                   new SignatureEntry("sig1", 10000L, 100L, SignatureConfidence.EXACT_MATCH),
+                                                   new SignatureEntry("sig2", 20000L, 200L, SignatureConfidence.FOUND_IN_PARENT_CLASS)))
                                              .build();
 
         // when
