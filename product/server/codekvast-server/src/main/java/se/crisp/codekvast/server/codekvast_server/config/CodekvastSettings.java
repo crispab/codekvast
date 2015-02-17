@@ -13,5 +13,5 @@ import org.springframework.stereotype.Component;
 @Data
 public class CodekvastSettings {
     private boolean multiTenant = false;
-    private int trulyDeadAfterHours = 30 * 24;
+    private int defaultTrulyDeadAfterSeconds = 30 * 24 * 60 * 60;
 }

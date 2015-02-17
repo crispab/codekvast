@@ -86,6 +86,7 @@ public class SignatureHandler extends AbstractMessageHandler {
                              .name(entry.getSignature())
                              .invokedAtMillis(entry.getInvokedAtMillis())
                              .invokedAtString(DateUtils.formatDate(entry.getInvokedAtMillis()))
+                             .millisSinceJvmStart(entry.getMillisSinceJvmStart())
                              .build());
         }
         return SignatureDataMessage.builder()
@@ -95,35 +96,21 @@ public class SignatureHandler extends AbstractMessageHandler {
     }
 
     private CollectorStatusMessage toCollectorStatusMessage(Collection<CollectorEntry> collectors) {
-        long startedAt = Long.MAX_VALUE;
-        long updatedAt = Long.MIN_VALUE;
         List<Collector> displayCollectors = new ArrayList<>();
-        boolean isEmpty = true;
         for (CollectorEntry entry : collectors) {
-            startedAt = Math.min(startedAt, entry.getStartedAtMillis());
-            updatedAt = Math.max(updatedAt, entry.getDumpedAtMillis());
             displayCollectors.add(
                     Collector.builder()
                              .name(entry.getName())
                              .version(entry.getVersion())
                              .collectorStartedAtMillis(entry.getStartedAtMillis())
                              .collectorStartedAt(DateUtils.formatDate(entry.getStartedAtMillis()))
+                             .trulyDeadAfterSeconds(entry.getTrulyDeadAfterSeconds())
                              .updateReceivedAtMillis(entry.getDumpedAtMillis())
                              .updateReceivedAt(DateUtils.formatDate(entry.getDumpedAtMillis()))
                              .build());
-            isEmpty = false;
         }
 
-        CollectorStatusMessage.CollectorStatusMessageBuilder builder = CollectorStatusMessage.builder().collectors(displayCollectors);
-        if (isEmpty) {
-            builder.collectionStartedAt("Waiting for collectors to start");
-        } else {
-            builder.collectionStartedAtMillis(startedAt)
-                   .collectionStartedAt(DateUtils.formatDate(startedAt))
-                   .updateReceivedAtMillis(updatedAt)
-                   .updateReceivedAt(DateUtils.formatDate(updatedAt));
-        }
-        return builder.build();
+        return CollectorStatusMessage.builder().collectors(displayCollectors).build();
     }
 
     // --- JSON objects -----------------------------------------------------------------------------------
@@ -131,10 +118,6 @@ public class SignatureHandler extends AbstractMessageHandler {
     @Value
     @Builder
     static class CollectorStatusMessage {
-        long collectionStartedAtMillis;
-        String collectionStartedAt;
-        long updateReceivedAtMillis;
-        String updateReceivedAt;
         Collection<Collector> collectors;
     }
 
@@ -144,6 +127,7 @@ public class SignatureHandler extends AbstractMessageHandler {
         String name;
         String version;
         long collectorStartedAtMillis;
+        int trulyDeadAfterSeconds;
         String collectorStartedAt;
         long updateReceivedAtMillis;
         String updateReceivedAt;
@@ -155,6 +139,7 @@ public class SignatureHandler extends AbstractMessageHandler {
         String name;
         long invokedAtMillis;
         String invokedAtString;
+        long millisSinceJvmStart;
     }
 
     @Value

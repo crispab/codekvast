@@ -58,8 +58,8 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         }
 
         long appId = doInsertRow("INSERT INTO applications(organisation_id, name) VALUES(?, ?)", organisationId, appName);
-        doInsertRow("INSERT INTO application_settings(application_id, truly_dead_after_hours) VALUES(?, ?)", appId,
-                    codekvastSettings.getTrulyDeadAfterHours());
+        doInsertRow("INSERT INTO application_settings(application_id, truly_dead_after_seconds) VALUES(?, ?)", appId,
+                    codekvastSettings.getDefaultTrulyDeadAfterSeconds());
 
         log.info("Created application {}: '{} {}'", appId, appName, appVersion);
         return appId;
@@ -162,13 +162,13 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         Collection<CollectorDataEvent.CollectorEntry> collectors =
                 jdbcTemplate.query("SELECT " +
                                            "a.name, " +
-                                           "ase.truly_dead_after_hours, " +
+                                           "ase.truly_dead_after_seconds, " +
                                            "jvm.application_version, MIN(jvm.started_at_millis), MAX(jvm.dumped_at_millis) " +
                                            "FROM applications a, application_settings ase, jvm_info jvm " +
                                            "WHERE a.id = ase.application_id " +
                                            "AND a.id = jvm.application_id " +
                                            "AND a.organisation_id = ? " +
-                                           "GROUP BY a.name, ase.truly_dead_after_hours, jvm.application_version ",
+                                           "GROUP BY a.name, ase.truly_dead_after_seconds, jvm.application_version ",
                                    new CollectorEntryRowMapper(), organisationId);
         return new CollectorDataEvent(collectors, usernames);
     }
@@ -179,7 +179,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
             // name, version, started_at_millis, dumped_at_millis
             return CollectorDataEvent.CollectorEntry.builder()
                                                     .name(rs.getString(1))
-                                                    .signatureDeadAfterHours(rs.getInt(2))
+                                                    .trulyDeadAfterSeconds(rs.getInt(2))
                                                     .version(rs.getString(3))
                                                     .startedAtMillis(rs.getLong(4))
                                                     .dumpedAtMillis(rs.getLong(5))

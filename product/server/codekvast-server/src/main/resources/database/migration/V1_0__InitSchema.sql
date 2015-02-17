@@ -57,15 +57,15 @@ CREATE TABLE applications (
 CREATE UNIQUE INDEX ix_applications ON applications (organisation_id, name);
 
 CREATE TABLE application_settings (
-  id                     BIGINT                              NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  application_id         BIGINT                              NOT NULL REFERENCES applications (id),
-  truly_dead_after_hours INTEGER DEFAULT 720                 NOT NULL,
-  notes                  VARCHAR(2000),
-  created_at             TIMESTAMP DEFAULT current_timestamp NOT NULL,
-  modified_at            TIMESTAMP AS NOW()
+  id                       BIGINT                              NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  application_id           BIGINT                              NOT NULL REFERENCES applications (id),
+  truly_dead_after_seconds INTEGER DEFAULT 720                 NOT NULL,
+  notes                    VARCHAR(2000),
+  created_at               TIMESTAMP DEFAULT current_timestamp NOT NULL,
+  modified_at              TIMESTAMP AS NOW()
 );
 COMMENT ON TABLE application_settings IS 'Settings for one application, maintained by a user at a user interface';
-COMMENT ON COLUMN application_settings.truly_dead_after_hours IS 'After how long can a unused signature be considered dead';
+COMMENT ON COLUMN application_settings.truly_dead_after_seconds IS 'After how long can a unused signature be considered dead';
 COMMENT ON COLUMN application_settings.notes IS 'Notes about an application';
 
 -- JVM info -------------------------------------------------------------------------------------------------
