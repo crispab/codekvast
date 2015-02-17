@@ -9,10 +9,6 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
 
     .service('DateService', function () {
         this.getAgeSince = function (now, timestamp) {
-            if (timestamp === 0) {
-                return "";
-            }
-
             var age = now - timestamp;
             var second = 1000;
             var minute = second * 60;
@@ -136,11 +132,11 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
 
         $scope.updateAges = function () {
             if ($scope.collectorStatus) {
-                $scope.collectorStatus.collectionAge = DateService.getAge($scope.collectorStatus.collectionStartedAtMillis);
-                $scope.collectorStatus.updateAge = DateService.getAge($scope.collectorStatus.updateReceivedAtMillis);
                 for (var i = 0, len = $scope.collectorStatus.collectors.length; i < len; i++) {
                     var c = $scope.collectorStatus.collectors[i];
+                    c.trulyDeadAfter = DateService.getAgeSince(c.trulyDeadAfterSeconds * 1000, 0);
                     c.collectorAge = DateService.getAge(c.collectorStartedAtMillis);
+                    c.canReportIn = DateService.getAgeSince(c.collectorStartedAtMillis + c.trulyDeadAfterSeconds * 1000, Date.now());
                     c.updateAge = DateService.getAge(c.updateReceivedAtMillis);
                 }
             }

@@ -37,10 +37,11 @@
                     <tr>
                         <th class="col-lg-2">Application</th>
                         <th class="col-lg-1">Version</th>
-                        <th class="col-lg-1">Collection started at</th>
-                        <th class="col-lg-1"/>
-                        <th class="col-lg-1">Data received at</th>
-                        <th class="col-lg-1"/>
+                        <th class="col-lg-1">Collection Started At</th>
+                        <th class="col-lg-1" title="Time since collector started">Collector Age</th>
+                        <th class="col-lg-1" title="Time left until you can identify Truly Dead Code">Count Down</th>
+                        <th class="col-lg-1" title="Time point when the collector uploaded data">Data Received At</th>
+                        <th class="col-lg-1">Data Age</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -48,7 +49,9 @@
                         <td class="col-lg-2">{{c.name}}</td>
                         <td class="col-lg-1">{{c.version}}</td>
                         <td class="col-lg-1">{{c.collectorStartedAt}}</td>
-                        <td class="col-lg-1 collector-age">{{c.collectorAge}}</td>
+                        <td class="col-lg-1">{{c.collectorAge}}</td>
+                        <td class="col-lg-1 collector-age" title="The usage cycle of {{c.name}} is {{c.trulyDeadAfter}}">{{c.canReportIn}}
+                        </td>
                         <td class="col-lg-1">{{c.updateReceivedAt}}</td>
                         <td class="col-lg-1 collector-age">{{c.updateAge}}</td>
                     </tr>
@@ -70,17 +73,17 @@
 
             <table class="table table-striped table-hover table-condensed">
                 <thead>
-                <tr>
-                    <th class="signature-name"><a href="" ng-click="orderByName(); reverse = !reverse">Name</a></th>
-                    <th class="signature-invoked-at"><a href="" ng-click="orderByInvokedAt(); reverse = !reverse">Invoked&nbsp;At</a>
-                    </th>
+                <tr class="row">
+                    <th class="col-lg-9 signature-name"><a href="" ng-click="orderByName(); reverse = !reverse">Name</a></th>
+                    <th class="col-lg-2 signature-invoked-at"><a href=""
+                                                                 ng-click="orderByInvokedAt(); reverse = !reverse">Invoked&nbsp;At</a></th>
                 </tr>
                 </thead>
 
                 <tbody>
-                <tr ng-repeat="s in signatures | filter: filter | orderBy:sortField:reverse | limitTo:maxRows">
-                    <td class="signature-name">{{::s.name}}</td>
-                    <td class="signature-invoked-at">{{::s.invokedAtString}}</td>
+                <tr class="row" ng-repeat="s in signatures | filter: filter | orderBy:sortField:reverse | limitTo:maxRows">
+                    <td class="col-lg-9 signature-name">{{::s.name}}</td>
+                    <td class="col-lg-2 signature-invoked-at">{{::s.invokedAtString}}</td>
                 </tr>
                 </tbody>
             </table>
