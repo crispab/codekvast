@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
-import se.crisp.codekvast.server.codekvast_server.config.CodekvastProperties;
+import se.crisp.codekvast.server.codekvast_server.config.CodekvastSettings;
 import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
 import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorDataEvent;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
@@ -33,12 +33,12 @@ import java.util.List;
 @Slf4j
 public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
 
-    private final CodekvastProperties codekvastProperties;
+    private final CodekvastSettings codekvastSettings;
 
     @Inject
-    public AgentDAOImpl(EventBus eventBus, JdbcTemplate jdbcTemplate, CodekvastProperties codekvastProperties) {
+    public AgentDAOImpl(EventBus eventBus, JdbcTemplate jdbcTemplate, CodekvastSettings codekvastSettings) {
         super(eventBus, jdbcTemplate);
-        this.codekvastProperties = codekvastProperties;
+        this.codekvastSettings = codekvastSettings;
     }
 
     @Override
@@ -59,7 +59,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
 
         long appId = doInsertRow("INSERT INTO applications(organisation_id, name) VALUES(?, ?)", organisationId, appName);
         doInsertRow("INSERT INTO application_settings(application_id, truly_dead_after_hours) VALUES(?, ?)", appId,
-                    codekvastProperties.getTrulyDeadAfterHours());
+                    codekvastSettings.getTrulyDeadAfterHours());
 
         Application app = new Application(AppId.builder().organisationId(organisationId).appId(appId).build(), appName);
         log.info("Created {} {}", app, appVersion);

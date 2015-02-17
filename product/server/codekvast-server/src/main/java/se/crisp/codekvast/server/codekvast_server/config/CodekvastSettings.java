@@ -5,12 +5,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 /**
+ * Wrapper for environment properties codekvast.*
  * @author olle.hallin@crisp.se
  */
-@Data
 @Component
 @ConfigurationProperties(prefix = "codekvast")
-public class CodekvastProperties {
+@Data
+public class CodekvastSettings {
     private boolean multiTenant = false;
     private int trulyDeadAfterHours = 30 * 24;
 }
