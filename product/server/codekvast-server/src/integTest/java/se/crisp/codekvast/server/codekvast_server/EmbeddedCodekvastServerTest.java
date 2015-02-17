@@ -20,6 +20,7 @@ import java.lang.annotation.*;
                   "management.port=0",
                   "spring.thymeleaf.cache=true",
                   "spring.datasource.url=jdbc:h2:mem:integrationTest",
+                  "codekvast.multi-tenant=false",
 })
 public @interface EmbeddedCodekvastServerTest {
 }
