@@ -67,9 +67,11 @@ task installJenkinsInTomcat7 {
 task generateCodekvastConfig {
     group "Build"
     description "Generates a codekvast.conf for test"
+    dependsOn ":product:agent:collector:assemble"
 
     ext.configFile = file("$buildDir/codekvast.conf")
 
+    inputs.file file("$rootDir/product/build.gradle")
     inputs.file file("build.gradle")
     outputs.file configFile
 
