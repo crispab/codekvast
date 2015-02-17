@@ -1,5 +1,14 @@
 # Codekvast Agent Release Notes
 
+## 0.8.9
+
+- Added column SIGNATURE.MILLIS_SINCE_JVM_START. Breaks compatibility to 0.8.8.
+- Added table APPLICATION_SETTINGS
+
+## 0.8.8
+
+- Improved API between server and client: now uses a mix of HTTP requests and WebSocket messages
+
 ## 0.8.4
 
 - Added columns JVM_INFO.COLLECTOR_RESOLUTION_SECONDS and JVM_INFO.METHOD_EXECUTION_POINTCUT. Breaks compatibility to 0.8.3
