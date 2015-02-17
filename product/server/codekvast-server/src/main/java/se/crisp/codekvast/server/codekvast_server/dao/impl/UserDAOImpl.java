@@ -15,7 +15,6 @@ import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedUserException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
-import se.crisp.codekvast.server.codekvast_server.model.Application;
 import se.crisp.codekvast.server.codekvast_server.model.Organisation;
 import se.crisp.codekvast.server.codekvast_server.model.Role;
 
@@ -163,12 +162,4 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
         }
     }
 
-    private class ApplicationRowMapper implements RowMapper<Application> {
-        @Override
-        public Application mapRow(ResultSet rs, int rowNum) throws SQLException {
-            // ID, ORGANISATION_ID, NAME
-            return new Application(AppId.builder().appId(rs.getLong("ID")).organisationId(rs.getLong("ORGANISATION_ID")).build(),
-                                   rs.getString("NAME"));
-        }
-    }
 }

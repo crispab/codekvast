@@ -66,7 +66,7 @@ public class AgentServiceImplTest extends AbstractServiceTest {
         agentService.storeJvmData("agent", createJvmData(dumpedAtMillis + 1000L));
 
         // then
-        assertThat(countRows("jvm_info WHERE jvm_uuid = ? AND started_at = ? AND dumped_at = ? ", JVM_UUID, startedAtMillis,
+        assertThat(countRows("jvm_info WHERE jvm_uuid = ? AND started_at_millis = ? AND dumped_at_millis = ? ", JVM_UUID, startedAtMillis,
                              dumpedAtMillis + 1000L), is(1));
 
         assertEventsWithinMillis(2, 1000L);

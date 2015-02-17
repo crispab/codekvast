@@ -21,6 +21,7 @@ import java.lang.annotation.*;
                   "spring.thymeleaf.cache=true",
                   "spring.datasource.url=jdbc:h2:mem:integrationTest",
                   "codekvast.multi-tenant=false",
+                  "codekvast.signature-dead-after-hours=720"
 })
 public @interface EmbeddedCodekvastServerTest {
 }

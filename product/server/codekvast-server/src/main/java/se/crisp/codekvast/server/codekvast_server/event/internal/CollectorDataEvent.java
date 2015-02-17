@@ -20,6 +20,7 @@ public class CollectorDataEvent {
     public static class CollectorEntry {
         private final String name;
         private final String version;
+        private final int signatureDeadAfterHours;
         private final long startedAtMillis;
         private final long dumpedAtMillis;
     }

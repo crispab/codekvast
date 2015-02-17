@@ -2,6 +2,7 @@ package se.crisp.codekvast.server.codekvast_server.dao.impl;
 
 import com.google.common.eventbus.EventBus;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,7 +12,6 @@ import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
 import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
-import se.crisp.codekvast.server.codekvast_server.event.internal.ApplicationCreatedEvent;
 import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorDataEvent;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
@@ -33,9 +33,13 @@ import java.util.List;
 @Slf4j
 public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
 
+    private final int deadAfterHours;
+
     @Inject
-    public AgentDAOImpl(EventBus eventBus, JdbcTemplate jdbcTemplate) {
+    public AgentDAOImpl(EventBus eventBus, JdbcTemplate jdbcTemplate,
+                        @Value("${codekvast.signature-dead-after-hours}") Integer deadAfterHours) {
         super(eventBus, jdbcTemplate);
+        this.deadAfterHours = deadAfterHours;
     }
 
     @Override
@@ -55,9 +59,9 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         }
 
         long appId = doInsertRow("INSERT INTO applications(organisation_id, name) VALUES(?, ?)", organisationId, appName);
+        doInsertRow("INSERT INTO application_settings(application_id, truly_dead_after_hours) VALUES(?, ?)", appId, deadAfterHours);
 
         Application app = new Application(AppId.builder().organisationId(organisationId).appId(appId).build(), appName);
-        eventBus.post(new ApplicationCreatedEvent(app, appVersion, getInteractiveUsernamesInOrganisation(organisationId)));
         log.info("Created {} {}", app, appVersion);
         return appId;
     }
@@ -111,7 +115,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                 "collector_resolution_seconds, method_execution_pointcut, " +
                                 "collector_computer_id, collector_host_name, agent_computer_id, agent_host_name, " +
                                 "agent_upload_interval_seconds, " +
-                                "codekvast_version, codekvast_vcs_id, started_at, dumped_at)" +
+                                "codekvast_version, codekvast_vcs_id, started_at_millis, dumped_at_millis)" +
                                 " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                         organisationId, appId, data.getAppVersion(), data.getJvmUuid(),
                         data.getCollectorResolutionSeconds(), data.getMethodExecutionPointcut(),
@@ -132,11 +136,14 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
 
         Collection<CollectorDataEvent.CollectorEntry> collectors =
                 jdbcTemplate.query("SELECT " +
-                                           "a.name, jvm.application_version, MIN(jvm.started_at), MAX(jvm.dumped_at) " +
-                                           "FROM applications a, jvm_info jvm " +
-                                           "WHERE a.id = jvm.application_id " +
+                                           "a.name, " +
+                                           "ase.truly_dead_after_hours, " +
+                                           "jvm.application_version, MIN(jvm.started_at_millis), MAX(jvm.dumped_at_millis) " +
+                                           "FROM applications a, application_settings ase, jvm_info jvm " +
+                                           "WHERE a.id = ase.application_id " +
+                                           "AND a.id = jvm.application_id " +
                                            "AND a.organisation_id = ? " +
-                                           "GROUP BY a.name, jvm.application_version ",
+                                           "GROUP BY a.name, ase.truly_dead_after_hours, jvm.application_version ",
                                    new CollectorEntryRowMapper(), organisationId);
         return new CollectorDataEvent(collectors, usernames);
     }
@@ -144,12 +151,13 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     private static class CollectorEntryRowMapper implements RowMapper<CollectorDataEvent.CollectorEntry> {
         @Override
         public CollectorDataEvent.CollectorEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
-            // name, version, started_at, dumped_at
+            // name, version, started_at_millis, dumped_at_millis
             return CollectorDataEvent.CollectorEntry.builder()
                                                     .name(rs.getString(1))
-                                                    .version(rs.getString(2))
-                                                    .startedAtMillis(rs.getLong(3))
-                                                    .dumpedAtMillis(rs.getLong(4))
+                                                    .signatureDeadAfterHours(rs.getInt(2))
+                                                    .version(rs.getString(3))
+                                                    .startedAtMillis(rs.getLong(4))
+                                                    .dumpedAtMillis(rs.getLong(5))
                                                     .build();
         }
     }
