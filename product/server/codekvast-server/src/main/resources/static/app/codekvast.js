@@ -159,6 +159,7 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
                 return;
             }
 
+            var startedAt = Date.now();
             var signatures = message.signatures, updateLen = message.signatures.length;
 
             for (var i = 0; i < updateLen; i++) {
@@ -182,6 +183,8 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
                 }
 
             }
+            var elapsed = Date.now() - startedAt;
+            console.log("Updated " + updateLen + " signatures in " + elapsed + " ms");
         });
 
         $scope.$on('collectorStatus', function (event, data) {

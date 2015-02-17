@@ -11,6 +11,7 @@ import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
+import se.crisp.codekvast.server.codekvast_server.config.CodekvastProperties;
 import se.crisp.codekvast.server.codekvast_server.config.DatabaseConfig;
 import se.crisp.codekvast.server.codekvast_server.config.EventBusConfig;
 import se.crisp.codekvast.server.codekvast_server.dao.impl.AgentDAOImpl;
@@ -34,8 +35,8 @@ import static org.junit.Assert.assertThat;
 @SuppressWarnings("CastToConcreteClass")
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {DataSourceAutoConfiguration.class, DatabaseConfig.class, EventBusConfig.class,
-                                 AgentDAOImpl.class, UserDAOImpl.class, AgentServiceImpl
-        .class})
+                                 AgentDAOImpl.class, UserDAOImpl.class, CodekvastProperties.class,
+                                 AgentServiceImpl.class})
 @IntegrationTest({
         "spring.datasource.url=jdbc:h2:mem:serviceTest",
 })

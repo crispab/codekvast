@@ -2,7 +2,6 @@ package se.crisp.codekvast.server.codekvast_server.dao.impl;
 
 import com.google.common.eventbus.EventBus;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
+import se.crisp.codekvast.server.codekvast_server.config.CodekvastProperties;
 import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
 import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorDataEvent;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
@@ -33,13 +33,12 @@ import java.util.List;
 @Slf4j
 public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
 
-    private final int deadAfterHours;
+    private final CodekvastProperties codekvastProperties;
 
     @Inject
-    public AgentDAOImpl(EventBus eventBus, JdbcTemplate jdbcTemplate,
-                        @Value("${codekvast.signature-dead-after-hours}") Integer deadAfterHours) {
+    public AgentDAOImpl(EventBus eventBus, JdbcTemplate jdbcTemplate, CodekvastProperties codekvastProperties) {
         super(eventBus, jdbcTemplate);
-        this.deadAfterHours = deadAfterHours;
+        this.codekvastProperties = codekvastProperties;
     }
 
     @Override
@@ -59,7 +58,8 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         }
 
         long appId = doInsertRow("INSERT INTO applications(organisation_id, name) VALUES(?, ?)", organisationId, appName);
-        doInsertRow("INSERT INTO application_settings(application_id, truly_dead_after_hours) VALUES(?, ?)", appId, deadAfterHours);
+        doInsertRow("INSERT INTO application_settings(application_id, truly_dead_after_hours) VALUES(?, ?)", appId,
+                    codekvastProperties.getTrulyDeadAfterHours());
 
         Application app = new Application(AppId.builder().organisationId(organisationId).appId(appId).build(), appName);
         log.info("Created {} {}", app, appVersion);
@@ -103,7 +103,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     public void storeJvmData(long organisationId, long appId, JvmData data) {
         int updated =
                 jdbcTemplate
-                        .update("UPDATE jvm_info SET dumped_at = ? WHERE application_id = ? AND jvm_uuid = ?",
+                        .update("UPDATE jvm_info SET dumped_at_millis= ? WHERE application_id = ? AND jvm_uuid = ?",
                                 data.getDumpedAtMillis(), appId, data.getJvmUuid());
         if (updated > 0) {
             log.debug("Updated JVM info for {} {}", data.getAppName(), data.getAppVersion());

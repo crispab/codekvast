@@ -80,7 +80,7 @@
                 <tbody>
                 <tr ng-repeat="s in signatures | filter: filter | orderBy:sortField:reverse | limitTo:maxRows">
                     <td class="signature-name">{{::s.name}}</td>
-                    <td class="signature-invoked-at">{{s.invokedAtString}}</td>
+                    <td class="signature-invoked-at">{{::s.invokedAtString}}</td>
                 </tr>
                 </tbody>
             </table>

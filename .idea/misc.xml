@@ -5,16 +5,17 @@
   </component>
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
-    <list size="9">
+    <list size="10">
       <item index="0" class="java.lang.String" itemvalue="com.google.common.annotations.VisibleForTesting" />
       <item index="1" class="java.lang.String" itemvalue="com.google.common.eventbus.Subscribe" />
-      <item index="2" class="java.lang.String" itemvalue="org.springframework.context.annotation.Configuration" />
-      <item index="3" class="java.lang.String" itemvalue="org.springframework.messaging.handler.annotation.MessageMapping" />
-      <item index="4" class="java.lang.String" itemvalue="org.springframework.messaging.simp.annotation.SubscribeMapping" />
-      <item index="5" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.ExceptionHandler" />
-      <item index="6" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.InitBinder" />
-      <item index="7" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.ModelAttribute" />
-      <item index="8" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.RequestMapping" />
+      <item index="2" class="java.lang.String" itemvalue="org.springframework.boot.context.properties.ConfigurationProperties" />
+      <item index="3" class="java.lang.String" itemvalue="org.springframework.context.annotation.Configuration" />
+      <item index="4" class="java.lang.String" itemvalue="org.springframework.messaging.handler.annotation.MessageMapping" />
+      <item index="5" class="java.lang.String" itemvalue="org.springframework.messaging.simp.annotation.SubscribeMapping" />
+      <item index="6" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.ExceptionHandler" />
+      <item index="7" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.InitBinder" />
+      <item index="8" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.ModelAttribute" />
+      <item index="9" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.RequestMapping" />
     </list>
   </component>
   <component name="FrameworkDetectionExcludesConfiguration">
