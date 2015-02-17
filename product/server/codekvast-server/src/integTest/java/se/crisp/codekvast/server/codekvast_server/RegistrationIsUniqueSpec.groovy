@@ -46,6 +46,7 @@ public class RegistrationIsUniqueSpec extends Specification {
         'emailaddress'     | 'user@demo.com ' | false
         'emailaddress'     | 'user@demo.comx' | true
         'organisationName' | "demo"           | false
+        'organisationName' | "Demo" | false
         'organisAtionname' | "demo"           | false
         'organisationName' | "demoX"          | true
 

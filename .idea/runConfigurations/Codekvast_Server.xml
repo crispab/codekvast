@@ -25,6 +25,7 @@
     <option name="PASS_PARENT_ENVS" value="true" />
     <module name="codekvast-server" />
     <envs />
+    <RunnerSettings RunnerId="Cover" />
     <RunnerSettings RunnerId="Debug">
       <option name="DEBUG_PORT" value="" />
       <option name="TRANSPORT" value="0" />
@@ -37,6 +38,7 @@
     </RunnerSettings>
     <RunnerSettings RunnerId="JRebel Executor" />
     <RunnerSettings RunnerId="Run" />
+    <ConfigurationWrapper RunnerId="Cover" />
     <ConfigurationWrapper RunnerId="Debug" />
     <ConfigurationWrapper RunnerId="JRebel Debug" />
     <ConfigurationWrapper RunnerId="JRebel Executor" />
