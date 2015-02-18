@@ -12,7 +12,7 @@ import javax.validation.constraints.Size;
  */
 @Data
 @Builder
-@Setter(AccessLevel.PRIVATE)
+@Setter(AccessLevel.NONE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Ping {

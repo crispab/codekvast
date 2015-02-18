@@ -14,7 +14,7 @@ import javax.validation.constraints.Size;
  * @author olle.hallin@crisp.se
  */
 @Data
-@Setter(AccessLevel.PRIVATE)
+@Setter(AccessLevel.NONE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder

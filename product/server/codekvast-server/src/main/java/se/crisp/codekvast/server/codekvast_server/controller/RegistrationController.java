@@ -105,7 +105,7 @@ public class RegistrationController extends AbstractThymeleafController {
      * @author olle.hallin@crisp.se
      */
     @Data
-    @Setter(AccessLevel.PRIVATE)
+    @Setter(AccessLevel.NONE)
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @Builder
@@ -123,7 +123,7 @@ public class RegistrationController extends AbstractThymeleafController {
      * @author olle.hallin@crisp.se
      */
     @Data
-    @Setter(AccessLevel.PRIVATE)
+    @Setter(AccessLevel.NONE)
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @Builder
@@ -137,7 +137,7 @@ public class RegistrationController extends AbstractThymeleafController {
      * @author olle.hallin@crisp.se
      */
     @Data
-    @Setter(AccessLevel.PRIVATE)
+    @Setter(AccessLevel.NONE)
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @Builder
@@ -169,7 +169,7 @@ public class RegistrationController extends AbstractThymeleafController {
      * @author olle.hallin@crisp.se
      */
     @Data
-    @Setter(AccessLevel.PRIVATE)
+    @Setter(AccessLevel.NONE)
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @Builder
