@@ -6,7 +6,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
- * This class locates the file to feed into {@link CollectorConfig#parseCollectorConfig(java.net.URI, String...)} .
+ * This class locates the file to feed into {@link CollectorConfig#parseCollectorConfig(URI, String)} .
  * <p/>
  * It does this by checking a number of locations, stopping as soon as a file with the correct name is found.
  *

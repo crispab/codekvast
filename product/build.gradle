@@ -29,7 +29,7 @@ distributions {
     agent {
         baseName = 'codekvast-agent'
         contents {
-            from tasks.getByPath(":product:agent:codekvast-agent:installApp")
+            from tasks.getByPath(":product:agent:codekvast-agent:installDist")
             from tasks.getByPath(":product:agent:collector:javaagents"), { into "javaagents" }
             from tasks.getByPath(":product:agent:collector:javadocJar"), { into "src" }
             from tasks.getByPath(":product:agent:collector:sourcesJar"), { into "src" }
@@ -43,14 +43,14 @@ distributions {
     server {
         baseName = 'codekvast-server'
         contents {
-            from tasks.getByPath(":product:server:codekvast-server:installApp")
+            from tasks.getByPath(":product:server:codekvast-server:installDist")
         }
     }
 
     web {
         baseName = 'codekvast-web'
         contents {
-            from tasks.getByPath(":product:web:installApp")
+            from tasks.getByPath(":product:web:installDist")
         }
     }
 }
