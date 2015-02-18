@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
  * @author olle.hallin@crisp.se
  */
 @Data
-@Setter(AccessLevel.NONE)
+@Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class RegistrationRequest {

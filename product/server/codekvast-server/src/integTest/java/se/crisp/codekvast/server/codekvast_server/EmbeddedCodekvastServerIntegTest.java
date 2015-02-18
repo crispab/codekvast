@@ -21,5 +21,5 @@ import java.lang.annotation.*;
                   "spring.thymeleaf.cache=true",
                   "spring.datasource.url=jdbc:h2:mem:integrationTest",
 })
-public @interface EmbeddedCodekvastServerTest {
+public @interface EmbeddedCodekvastServerIntegTest {
 }

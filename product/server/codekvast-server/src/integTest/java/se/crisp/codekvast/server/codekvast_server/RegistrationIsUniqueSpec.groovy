@@ -14,7 +14,7 @@ import static se.crisp.codekvast.server.codekvast_server.controller.Registration
 /**
  * @author olle.hallin@crisp.se
  */
-@EmbeddedCodekvastServerTest
+@EmbeddedCodekvastServerIntegTest
 @ContextConfiguration(loader = SpringApplicationContextLoader.class, classes = CodekvastServerApplication.class)
 public class RegistrationIsUniqueSpec extends Specification {
 
@@ -44,9 +44,10 @@ public class RegistrationIsUniqueSpec extends Specification {
         'emailAddress'     | 'user@demo.com'  | false
         'emailaddress'     | 'user@demo.com'  | false
         'emailaddress'     | 'user@demo.com ' | false
+        'emailaddress'     | ' user@demo.com' | false
         'emailaddress'     | 'user@demo.comx' | true
         'organisationName' | "demo"           | false
-        'organisationName' | "Demo" | false
+        'organisationName' | "Demo"           | false
         'organisAtionname' | "demo"           | false
         'organisationName' | "demoX"          | true
 

@@ -83,7 +83,9 @@ public class RegistrationController extends AbstractThymeleafController {
     @RequestMapping(value = IS_UNIQUE_PATH, method = RequestMethod.POST)
     @ResponseBody
     public IsNameUniqueResponse isUnique(@RequestBody @Valid IsNameUniqueRequest request) {
-        return IsNameUniqueResponse.builder().isUnique(registrationService.isUnique(toKind(request.getKind()), request.getName())).build();
+        IsNameUniqueResponse response =
+                IsNameUniqueResponse.builder().isUnique(registrationService.isUnique(toKind(request.getKind()), request.getName())).build();
+        return response;
     }
 
     private RegistrationService.UniqueKind toKind(String kind) {
@@ -105,7 +107,7 @@ public class RegistrationController extends AbstractThymeleafController {
      * @author olle.hallin@crisp.se
      */
     @Data
-    @Setter(AccessLevel.NONE)
+    @Setter(AccessLevel.PRIVATE)
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @Builder
@@ -123,7 +125,7 @@ public class RegistrationController extends AbstractThymeleafController {
      * @author olle.hallin@crisp.se
      */
     @Data
-    @Setter(AccessLevel.NONE)
+    @Setter(AccessLevel.PRIVATE)
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @Builder
@@ -137,7 +139,7 @@ public class RegistrationController extends AbstractThymeleafController {
      * @author olle.hallin@crisp.se
      */
     @Data
-    @Setter(AccessLevel.NONE)
+    @Setter(AccessLevel.PRIVATE)
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @Builder
@@ -169,7 +171,7 @@ public class RegistrationController extends AbstractThymeleafController {
      * @author olle.hallin@crisp.se
      */
     @Data
-    @Setter(AccessLevel.NONE)
+    @Setter(AccessLevel.PRIVATE)
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @Builder

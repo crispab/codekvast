@@ -15,7 +15,7 @@ import java.util.Properties;
  */
 @Data
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Setter(AccessLevel.NONE)
+@Setter(AccessLevel.PRIVATE)
 @Builder
 public class Jvm {
     @NonNull

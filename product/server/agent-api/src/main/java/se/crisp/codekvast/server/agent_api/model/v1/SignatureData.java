@@ -14,7 +14,7 @@ import java.util.List;
  */
 @Data
 @Builder
-@Setter(AccessLevel.NONE)
+@Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class SignatureData {

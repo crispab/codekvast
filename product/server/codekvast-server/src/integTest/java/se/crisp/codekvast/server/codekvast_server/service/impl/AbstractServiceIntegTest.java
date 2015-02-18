@@ -12,7 +12,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * @author olle.hallin@crisp.se
  */
-public abstract class AbstractServiceTest extends AbstractTransactionalJUnit4SpringContextTests {
+public abstract class AbstractServiceIntegTest extends AbstractTransactionalJUnit4SpringContextTests {
     protected final long startedAtMillis = System.currentTimeMillis() - 3600_000L;
     protected final long now = System.currentTimeMillis();
 

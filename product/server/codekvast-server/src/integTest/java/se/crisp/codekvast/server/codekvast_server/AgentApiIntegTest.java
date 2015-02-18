@@ -28,8 +28,8 @@ import static org.junit.Assert.fail;
 import static se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence.EXACT_MATCH;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@EmbeddedCodekvastServerTest
-public class AgentApiTest {
+@EmbeddedCodekvastServerIntegTest
+public class AgentApiIntegTest {
 
     private static final int SIGNATURES_SIZE = 1300;
 

@@ -17,8 +17,8 @@ import static se.crisp.codekvast.server.agent_api.model.v1.Constraints.*;
 import static se.crisp.codekvast.server.codekvast_server.controller.RegistrationController.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@EmbeddedCodekvastServerTest
-public class RegistrationControllerTest {
+@EmbeddedCodekvastServerIntegTest
+public class RegistrationControllerIntegTest {
 
     @Value("${local.server.port}")
     private int port;

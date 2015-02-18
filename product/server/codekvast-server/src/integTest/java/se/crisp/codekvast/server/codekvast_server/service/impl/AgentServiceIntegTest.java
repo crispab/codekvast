@@ -40,7 +40,7 @@ import static org.junit.Assert.assertThat;
 @IntegrationTest({
         "spring.datasource.url=jdbc:h2:mem:serviceTest",
 })
-public class AgentServiceImplTest extends AbstractServiceTest {
+public class AgentServiceIntegTest extends AbstractServiceIntegTest {
 
     private static final String JVM_UUID = "uuid";
 
