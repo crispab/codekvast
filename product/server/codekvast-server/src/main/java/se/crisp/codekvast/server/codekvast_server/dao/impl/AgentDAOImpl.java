@@ -51,15 +51,13 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     private Long doGetOrCreateApp(long organisationId, String appName, String appVersion)
             throws UndefinedApplicationException {
         try {
-            return jdbcTemplate.queryForObject("SELECT id FROM applications " +
-                                                       "WHERE organisation_id = ? AND name = ? ",
+            return jdbcTemplate.queryForObject("SELECT id FROM applications WHERE organisation_id = ? AND name = ? ",
                                                Long.class, organisationId, appName);
         } catch (EmptyResultDataAccessException ignored) {
         }
 
-        long appId = doInsertRow("INSERT INTO applications(organisation_id, name) VALUES(?, ?)", organisationId, appName);
-        doInsertRow("INSERT INTO application_settings(application_id, truly_dead_after_seconds) VALUES(?, ?)", appId,
-                    codekvastSettings.getDefaultTrulyDeadAfterSeconds());
+        long appId = doInsertRow("INSERT INTO applications(organisation_id, name, truly_dead_after_seconds) VALUES(?, ?, ?)",
+                                 organisationId, appName, codekvastSettings.getDefaultTrulyDeadAfterSeconds());
 
         log.info("Created application {}: '{} {}'", appId, appName, appVersion);
         return appId;
@@ -98,18 +96,18 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         for (SignatureEntry entry : signatureData.getSignatures()) {
             args.add(new Object[]{
                     appId.getOrganisationId(),
+                    appId.getAppId(),
+                    appId.getJvmId(),
                     entry.getSignature(),
                     entry.getInvokedAtMillis(),
                     entry.getMillisSinceJvmStart(),
-                    appId.getAppId(),
-                    appId.getJvmId(),
                     entry.getConfidence() == null ? null : entry.getConfidence().ordinal()
             });
         }
 
         int[] inserted = jdbcTemplate.batchUpdate(
-                "INSERT INTO signatures(organisation_id, signature, invoked_at_millis, millis_since_jvm_start, application_id, jvm_id, " +
-                        "confidence) " +
+                "INSERT INTO signatures" +
+                        "(organisation_id, application_id, jvm_id, signature, invoked_at_millis, millis_since_jvm_start, confidence) " +
                         "VALUES(?, ?, ?, ?, ?, ?, ?)", args);
 
         // Now check what really made it into the table...
@@ -162,13 +160,12 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         Collection<CollectorDataEvent.CollectorEntry> collectors =
                 jdbcTemplate.query("SELECT " +
                                            "a.name, " +
-                                           "ase.truly_dead_after_seconds, " +
+                                           "a.truly_dead_after_seconds, " +
                                            "jvm.application_version, MIN(jvm.started_at_millis), MAX(jvm.dumped_at_millis) " +
-                                           "FROM applications a, application_settings ase, jvm_info jvm " +
-                                           "WHERE a.id = ase.application_id " +
-                                           "AND a.id = jvm.application_id " +
+                                           "FROM applications a, jvm_info jvm " +
+                                           "WHERE a.id = jvm.application_id " +
                                            "AND a.organisation_id = ? " +
-                                           "GROUP BY a.name, ase.truly_dead_after_seconds, jvm.application_version ",
+                                           "GROUP BY a.name, a.truly_dead_after_seconds, jvm.application_version ",
                                    new CollectorEntryRowMapper(), organisationId);
         return new CollectorDataEvent(collectors, usernames);
     }

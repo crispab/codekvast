@@ -14,7 +14,6 @@ describe('DateService', function () {
     }));
 
     it('should calculate age since timestamp', function () {
-        expect(DateService.getAgeSince(now, 0)).toBe("");
         expect(DateService.getAgeSince(now, now)).toBe("");
         expect(DateService.getAgeSince(now, now - 999)).toBe("");
         expect(DateService.getAgeSince(now, now - 1000)).toBe("1s");
