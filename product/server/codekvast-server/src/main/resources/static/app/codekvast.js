@@ -156,7 +156,7 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
                     c.trulyDeadAfter = DateService.getAgeSince(c.trulyDeadAfterSeconds * 1000, 0);
                     c.collectorAge = DateService.getAge(c.startedAtMillis);
                     c.countDown = DateService.getAgeSince(c.startedAtMillis + c.trulyDeadAfterSeconds * 1000, Date.now());
-                    c.updateAge = DateService.getAge(c.dumpedAtMillis);
+                    c.updateAge = DateService.getAge(c.dataReceivedAtMillis);
                 }
             }
         };
@@ -220,6 +220,15 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
         $scope.$on('stompDisconnected', function (event, message) {
             $scope.signatures = undefined;
         });
+    }])
+
+    .filter('invokedAtDate', ['dateFilter', function (dateFilter) {
+        return function (input, format) {
+            if (!input || input === 0) {
+                return "";
+            }
+            return dateFilter(input, format);
+        }
     }])
 
     .run(['StompService', function (StompService) {
