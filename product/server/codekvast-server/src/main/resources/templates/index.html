@@ -7,23 +7,25 @@
 </head>
 
 <body>
-<div class="container-fluid" ng-controller="MainController">
-    <div class="ng-cloak">
-        <div class="row">
-            <div class="col-lg-offset-4 col-lg-6"><h1>Codekvast Invocation Data</h1></div>
-            <div class="col-lg-2">
-                <form class="form-aaa" role="form" th:action="@{/logout}" method="post">
-                    <div class="form-group">
-                        <p class="form-control-static" th:text="${'Logged in as ' + #httpServletRequest.remoteUser}">sample_user</p>
+<div class="container-fluid ng-cloak">
+    <div class="row">
+        <div class="col-lg-offset-4 col-lg-6"><h1>Codekvast Invocation Data</h1></div>
+        <div class="col-lg-2">
+            <form class="form-aaa" role="form" th:action="@{/logout}" method="post">
+                <div class="form-group">
+                    <p class="form-control-static" th:text="${'Logged in as ' + #httpServletRequest.remoteUser}">sample_user</p>
 
-                        <input class="btn btn-default" type="submit" value="Log out"/>
-                    </div>
-                </form>
-            </div>
+                    <input class="btn btn-default" type="submit" value="Log out"/>
+                </div>
+            </form>
         </div>
+    </div>
 
+    <div ng-controller="MainController">
         <div class="jumbotron" ng-show="jumbotronMessage"><h2>{{jumbotronMessage}}</h2></div>
+    </div>
 
+    <div ng-controller="CollectorController">
         <div class="panel panel-info" ng-show="collectorStatus">
             <div class="panel-heading" ng-click="statusPanelOpen = !statusPanelOpen">Collector status <i class="pull-right glyphicon"
                                                                                                          ng-class="{'glyphicon-chevron-down': statusPanelOpen, 'glyphicon-chevron-right': !statusPanelOpen}"></i>
@@ -59,7 +61,9 @@
                 </table>
             </div>
         </div>
+    </div>
 
+    <div ng-controller="SignatureController">
         <div class="panel panel-info" ng-show="signatures">
             <div class="panel-heading">Signatures</div>
 

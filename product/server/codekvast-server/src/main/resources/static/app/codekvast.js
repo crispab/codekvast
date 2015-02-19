@@ -54,9 +54,12 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
         };
 
         var broadcastSignatures = function (collectorStatus, signatures) {
+            if (collectorStatus) {
+                broadcast('collectorStatus', collectorStatus);
+            }
+
             broadcast('signatures', {
                 first: collectorStatus != null,
-                collectorStatus: collectorStatus,
                 signatures: signatures
             });
         };
@@ -109,26 +112,40 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
         }
     }])
 
-    .controller('MainController', ['$scope', '$window', '$interval', 'DateService', function ($scope, $window, $interval, DateService) {
+    .controller('MainController', ['$scope', '$window', function ($scope, $window) {
         $scope.jumbotronMessage = 'Disconnected from server';
 
-        $scope.signatures = undefined;
+        $scope.$on('stompStatus', function (event, message) {
+            $scope.jumbotronMessage = message;
+        });
+
+        $scope.$on('stompConnected', function () {
+            $scope.jumbotronMessage = "Connected";
+        });
+
+        $scope.$on('stompDisconnected', function (event, message) {
+            $scope.jumbotronMessage = message || "Disconnected";
+
+            // Cannot use $location here, since /login is outside the Angular app
+            $window.location.href = "/login?logout";
+        });
+
+    }])
+
+    .controller('CollectorController', ['$scope', '$interval', 'DateService', function ($scope, $interval, DateService) {
         $scope.collectorStatus = undefined;
         $scope.statusPanelOpen = true;
 
-        $scope.orderByInvokedAt = function () {
-            $scope.sortField = ['invokedAtMillis', 'name'];
-        };
+        $scope.$on('collectorStatus', function (event, data) {
+            $scope.collectorStatus = data;
+            $scope.updateAges();
+        });
 
-        $scope.orderByName = function () {
-            $scope.sortField = ['name', 'invokedAtMillis'];
-        };
+        $scope.$on('stompDisconnected', function (event, message) {
+            $scope.collectorStatus = undefined;
 
-        $scope.orderByInvokedAt();
-
-        $scope.maxRows = 100;
-
-        $scope.reverse = false;
+            $interval.cancel($scope.updateAgeInterval);
+        });
 
         $scope.updateAges = function () {
             if ($scope.collectorStatus) {
@@ -144,14 +161,29 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
 
         $scope.updateAgeInterval = $interval($scope.updateAges, 500, false);
 
+    }])
+
+    .controller('SignatureController', ['$scope', function ($scope) {
+        $scope.signatures = undefined;
+
+        $scope.orderByInvokedAt = function () {
+            $scope.sortField = ['invokedAtMillis', 'name'];
+        };
+
+        $scope.orderByName = function () {
+            $scope.sortField = ['name', 'invokedAtMillis'];
+        };
+
+        $scope.orderByInvokedAt();
+
+        $scope.maxRows = 100;
+
+        $scope.reverse = false;
+
         $scope.$on('signatures', function (event, message) {
 
-            $scope.jumbotronMessage = undefined;
-
             if (message.first) {
-                $scope.collectorStatus = message.collectorStatus;
                 $scope.signatures = message.signatures;
-                $scope.updateAges();
                 return;
             }
 
@@ -183,29 +215,8 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
             console.log("Updated " + updateLen + " signatures in " + elapsed + " ms");
         });
 
-        $scope.$on('collectorStatus', function (event, data) {
-            $scope.jumbotronMessage = undefined;
-            $scope.collectorStatus = data;
-            $scope.updateAges();
-        });
-
-        $scope.$on('stompStatus', function (event, message) {
-            $scope.jumbotronMessage = message;
-        });
-
-        $scope.$on('stompConnected', function () {
-            $scope.jumbotronMessage = "Connected";
-        });
-
         $scope.$on('stompDisconnected', function (event, message) {
-            $scope.jumbotronMessage = message || "Disconnected";
-            $scope.signatures = [];
-            $scope.collectorStatus = undefined;
-
-            $interval.cancel($scope.updateAgeInterval);
-
-            // Cannot use $location here, since /login is outside the Angular app
-            $window.location.href = "/login?logout";
+            $scope.signatures = undefined;
         });
     }])
 
