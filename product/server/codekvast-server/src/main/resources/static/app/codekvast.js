@@ -136,6 +136,7 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
     .controller('CollectorController', ['$scope', '$interval', 'DateService', function ($scope, $interval, DateService) {
         $scope.collectorStatus = undefined;
         $scope.statusPanelOpen = true;
+        $scope.dateFormat = 'short';
 
         $scope.$on('collectorStatus', function (event, data) {
             $scope.collectorStatus = data;
@@ -153,9 +154,9 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
                 for (var i = 0, len = $scope.collectorStatus.collectors.length; i < len; i++) {
                     var c = $scope.collectorStatus.collectors[i];
                     c.trulyDeadAfter = DateService.getAgeSince(c.trulyDeadAfterSeconds * 1000, 0);
-                    c.collectorAge = DateService.getAge(c.collectorStartedAtMillis);
-                    c.canReportIn = DateService.getAgeSince(c.collectorStartedAtMillis + c.trulyDeadAfterSeconds * 1000, Date.now());
-                    c.updateAge = DateService.getAge(c.updateReceivedAtMillis);
+                    c.collectorAge = DateService.getAge(c.startedAtMillis);
+                    c.countDown = DateService.getAgeSince(c.startedAtMillis + c.trulyDeadAfterSeconds * 1000, Date.now());
+                    c.updateAge = DateService.getAge(c.dumpedAtMillis);
                 }
             }
         };

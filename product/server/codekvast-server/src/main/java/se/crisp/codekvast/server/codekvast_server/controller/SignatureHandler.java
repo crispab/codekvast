@@ -96,22 +96,7 @@ public class SignatureHandler extends AbstractMessageHandler {
     }
 
     private CollectorStatusMessage toCollectorStatusMessage(Collection<CollectorEntry> collectors) {
-        List<DisplayCollector> displayCollectors = new ArrayList<>();
-        for (CollectorEntry entry : collectors) {
-            displayCollectors.add(
-                    DisplayCollector.builder()
-                                    .name(entry.getName())
-                                    .version(entry.getVersion())
-                                    .hostname(entry.getHostname())
-                                    .collectorStartedAtMillis(entry.getStartedAtMillis())
-                                    .collectorStartedAt(DateUtils.formatDate(entry.getStartedAtMillis()))
-                                    .trulyDeadAfterSeconds(entry.getTrulyDeadAfterSeconds())
-                                    .updateReceivedAtMillis(entry.getDumpedAtMillis())
-                                    .updateReceivedAt(DateUtils.formatDate(entry.getDumpedAtMillis()))
-                                    .build());
-        }
-
-        return CollectorStatusMessage.builder().collectors(displayCollectors).build();
+        return CollectorStatusMessage.builder().collectors(collectors).build();
     }
 
     // --- JSON objects -----------------------------------------------------------------------------------
@@ -119,20 +104,7 @@ public class SignatureHandler extends AbstractMessageHandler {
     @Value
     @Builder
     static class CollectorStatusMessage {
-        Collection<DisplayCollector> collectors;
-    }
-
-    @Value
-    @Builder
-    static class DisplayCollector {
-        String name;
-        String version;
-        String hostname;
-        long collectorStartedAtMillis;
-        int trulyDeadAfterSeconds;
-        String collectorStartedAt;
-        long updateReceivedAtMillis;
-        String updateReceivedAt;
+        Collection<CollectorEntry> collectors;
     }
 
     @Value

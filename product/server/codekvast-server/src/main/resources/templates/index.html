@@ -41,8 +41,9 @@
                         <th class="col-lg-1">Version</th>
                         <th class="col-lg-1">Host</th>
                         <th class="col-lg-1">Collection Started At</th>
+                        <th class="col-lg-1">Usage Cycle</th>
                         <th class="col-lg-1" title="Time since collector started">Collector Age</th>
-                        <th class="col-lg-1" title="Time left until you can identify Truly Dead Code">Count Down</th>
+                        <th class="col-lg-1" title="Time left until you can identify Truly Dead Code">Time to Full Usage Cycle</th>
                         <th class="col-lg-1" title="Time point when the collector uploaded data">Data Received At</th>
                         <th class="col-lg-1">Data Age</th>
                     </tr>
@@ -52,11 +53,11 @@
                         <td class="col-lg-1">{{c.name}}</td>
                         <td class="col-lg-1">{{c.version}}</td>
                         <td class="col-lg-1">{{c.hostname}}</td>
-                        <td class="col-lg-1">{{c.collectorStartedAt}}</td>
+                        <td class="col-lg-1">{{c.startedAtMillis|date:dateFormat}}</td>
+                        <td class="col-lg-1">{{c.trulyDeadAfter}}</td>
                         <td class="col-lg-1">{{c.collectorAge}}</td>
-                        <td class="col-lg-1 collector-age" title="The usage cycle of {{c.name}} is {{c.trulyDeadAfter}}">{{c.canReportIn}}
-                        </td>
-                        <td class="col-lg-1">{{c.updateReceivedAt}}</td>
+                        <td class="col-lg-1 collector-age">{{c.countDown}}</td>
+                        <td class="col-lg-1">{{c.dumpedAtMillis|date:dateFormat}}</td>
                         <td class="col-lg-1 collector-age">{{c.updateAge}}</td>
                     </tr>
                     </tbody>
