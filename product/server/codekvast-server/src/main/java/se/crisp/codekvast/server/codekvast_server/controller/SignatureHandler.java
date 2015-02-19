@@ -96,18 +96,19 @@ public class SignatureHandler extends AbstractMessageHandler {
     }
 
     private CollectorStatusMessage toCollectorStatusMessage(Collection<CollectorEntry> collectors) {
-        List<Collector> displayCollectors = new ArrayList<>();
+        List<DisplayCollector> displayCollectors = new ArrayList<>();
         for (CollectorEntry entry : collectors) {
             displayCollectors.add(
-                    Collector.builder()
-                             .name(entry.getName())
-                             .version(entry.getVersion())
-                             .collectorStartedAtMillis(entry.getStartedAtMillis())
-                             .collectorStartedAt(DateUtils.formatDate(entry.getStartedAtMillis()))
-                             .trulyDeadAfterSeconds(entry.getTrulyDeadAfterSeconds())
-                             .updateReceivedAtMillis(entry.getDumpedAtMillis())
-                             .updateReceivedAt(DateUtils.formatDate(entry.getDumpedAtMillis()))
-                             .build());
+                    DisplayCollector.builder()
+                                    .name(entry.getName())
+                                    .version(entry.getVersion())
+                                    .hostname(entry.getHostname())
+                                    .collectorStartedAtMillis(entry.getStartedAtMillis())
+                                    .collectorStartedAt(DateUtils.formatDate(entry.getStartedAtMillis()))
+                                    .trulyDeadAfterSeconds(entry.getTrulyDeadAfterSeconds())
+                                    .updateReceivedAtMillis(entry.getDumpedAtMillis())
+                                    .updateReceivedAt(DateUtils.formatDate(entry.getDumpedAtMillis()))
+                                    .build());
         }
 
         return CollectorStatusMessage.builder().collectors(displayCollectors).build();
@@ -118,14 +119,15 @@ public class SignatureHandler extends AbstractMessageHandler {
     @Value
     @Builder
     static class CollectorStatusMessage {
-        Collection<Collector> collectors;
+        Collection<DisplayCollector> collectors;
     }
 
     @Value
     @Builder
-    static class Collector {
+    static class DisplayCollector {
         String name;
         String version;
+        String hostname;
         long collectorStartedAtMillis;
         int trulyDeadAfterSeconds;
         String collectorStartedAt;

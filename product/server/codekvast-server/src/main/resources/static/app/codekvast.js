@@ -94,6 +94,7 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
                 socket.stomp.subscribe("/user/queue/signature/data", onSignatureDataMessage);
                 $http.get('/api/signatures')
                     .success(function (data) {
+                        broadcast('stompStatus', null);
                         broadcastSignatures(data.collectorStatus, data.signatures);
                     })
                     .error(function (data) {

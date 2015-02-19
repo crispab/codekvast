@@ -160,12 +160,14 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         Collection<CollectorDataEvent.CollectorEntry> collectors =
                 jdbcTemplate.query("SELECT " +
                                            "a.name, " +
+                                           "jvm.application_version, " +
+                                           "jvm.collector_host_name, " +
                                            "a.truly_dead_after_seconds, " +
-                                           "jvm.application_version, MIN(jvm.started_at_millis), MAX(jvm.dumped_at_millis) " +
+                                           "MIN(jvm.started_at_millis), MAX(jvm.dumped_at_millis) " +
                                            "FROM applications a, jvm_info jvm " +
                                            "WHERE a.id = jvm.application_id " +
                                            "AND a.organisation_id = ? " +
-                                           "GROUP BY a.name, a.truly_dead_after_seconds, jvm.application_version ",
+                                           "GROUP BY a.name, jvm.application_version, jvm.collector_host_name, a.truly_dead_after_seconds ",
                                    new CollectorEntryRowMapper(), organisationId);
         return new CollectorDataEvent(collectors, usernames);
     }
@@ -176,10 +178,11 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
             // name, version, started_at_millis, dumped_at_millis
             return CollectorDataEvent.CollectorEntry.builder()
                                                     .name(rs.getString(1))
-                                                    .trulyDeadAfterSeconds(rs.getInt(2))
-                                                    .version(rs.getString(3))
-                                                    .startedAtMillis(rs.getLong(4))
-                                                    .dumpedAtMillis(rs.getLong(5))
+                                                    .version(rs.getString(2))
+                                                    .hostname(rs.getString(3))
+                                                    .trulyDeadAfterSeconds(rs.getInt(4))
+                                                    .startedAtMillis(rs.getLong(5))
+                                                    .dumpedAtMillis(rs.getLong(6))
                                                     .build();
         }
     }
