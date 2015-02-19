@@ -11,7 +11,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import se.crisp.codekvast.server.codekvast_server.event.internal.InvocationDataReceivedEvent;
+import se.crisp.codekvast.server.codekvast_server.model.event.internal.InvocationDataReceivedEvent;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;

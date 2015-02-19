@@ -12,6 +12,7 @@ import se.crisp.codekvast.server.agent_api.impl.AgentApiImpl;
 import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
+import se.crisp.codekvast.server.codekvast_server.model.event.display.SignatureDisplay;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
 
 import javax.inject.Inject;
@@ -102,16 +103,16 @@ public class AgentApiIntegTest {
         agentApi.uploadInvocationData(jvmData, invocationEntries);
 
         // then
-        Collection<SignatureEntry> actual = userService.getSignatures("user");
+        Collection<SignatureDisplay> actual = userService.getSignatures("user");
         assertThat(actual, hasSize(SIGNATURES_SIZE));
-        for (SignatureEntry entry : actual) {
-            if (entry.getSignature().equals(signatures.get(0))) {
+        for (SignatureDisplay entry : actual) {
+            if (entry.getName().equals(signatures.get(0))) {
                 assertThat(entry.getInvokedAtMillis(), is(0L));
             }
-            if (entry.getSignature().equals(signatures.get(1))) {
+            if (entry.getName().equals(signatures.get(1))) {
                 assertThat(entry.getInvokedAtMillis(), is(now));
             }
-            if (entry.getSignature().equals(signatures.get(2))) {
+            if (entry.getName().equals(signatures.get(2))) {
                 assertThat(entry.getInvokedAtMillis(), is(now + 1000L));
             }
         }

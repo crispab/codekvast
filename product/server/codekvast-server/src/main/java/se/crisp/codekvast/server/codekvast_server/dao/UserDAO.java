@@ -1,9 +1,9 @@
 package se.crisp.codekvast.server.codekvast_server.dao;
 
 import org.springframework.dao.DataAccessException;
-import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedUserException;
 import se.crisp.codekvast.server.codekvast_server.model.Role;
+import se.crisp.codekvast.server.codekvast_server.model.event.display.SignatureDisplay;
 
 import java.util.Collection;
 import java.util.Set;
@@ -38,5 +38,5 @@ public interface UserDAO {
     /**
      * Retrieve all signatures for a certain organisation
      */
-    Set<SignatureEntry> getSignatures(long organisationId);
+    Set<SignatureDisplay> getSignatures(long organisationId);
 }

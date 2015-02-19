@@ -2,25 +2,20 @@ package se.crisp.codekvast.server.codekvast_server.controller;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import lombok.Builder;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
-import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorDataEvent;
-import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorDataEvent.CollectorEntry;
-import se.crisp.codekvast.server.codekvast_server.event.internal.InvocationDataUpdatedEvent;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
+import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorDisplay;
+import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorStatusMessage;
+import se.crisp.codekvast.server.codekvast_server.model.event.display.SignatureDataMessage;
+import se.crisp.codekvast.server.codekvast_server.model.event.display.SignatureDisplay;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
-import se.crisp.codekvast.server.codekvast_server.util.DateUtils;
 
 import javax.inject.Inject;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Responsible for sending signatures to the correct users.
@@ -41,10 +36,8 @@ public class SignatureHandler extends AbstractMessageHandler {
     }
 
     @Subscribe
-    public void onCollectorDataEvent(CollectorDataEvent event) {
-        CollectorStatusMessage message = toCollectorStatusMessage(event.getCollectors());
-
-        for (String username : event.getUsernames()) {
+    public void onCollectorStatusMessage(CollectorStatusMessage message) {
+        for (String username : message.getUsernames()) {
             if (userHandler.isPresent(username)) {
                 log.debug("Sending {} to '{}'", message, username);
                 messagingTemplate.convertAndSendToUser(username, "/queue/collector/status", message);
@@ -53,9 +46,8 @@ public class SignatureHandler extends AbstractMessageHandler {
     }
 
     @Subscribe
-    public void onInvocationDataUpdatedEvent(InvocationDataUpdatedEvent event) throws CodekvastException {
-        SignatureDataMessage message = toSignatureDataMessage(null, event.getInvocationEntries());
-        for (String username : event.getUsernames()) {
+    public void onSignatureDataMessage(SignatureDataMessage message) throws CodekvastException {
+        for (String username : message.getUsernames()) {
             if (userHandler.isPresent(username)) {
                 log.debug("Sending {} to '{}'", message, username);
                 messagingTemplate.convertAndSendToUser(username, "/queue/signature/data", message);
@@ -70,56 +62,23 @@ public class SignatureHandler extends AbstractMessageHandler {
      * @return A SignatureDataMessage containing all signatures the principal has rights to view.
      */
     @RequestMapping("/api/signatures")
-    public SignatureDataMessage getSignatures(Principal principal) throws CodekvastException {
+    public SignatureDataMessage getSignatureData(Principal principal) throws CodekvastException {
         String username = principal.getName();
         log.debug("'{}' requests all signatures", username);
 
-        CollectorDataEvent collectorDataEvent = userService.getCollectorDataEvent(username);
-        Collection<SignatureEntry> signatures = userService.getSignatures(username);
-        return toSignatureDataMessage(collectorDataEvent.getCollectors(), signatures);
+        CollectorStatusMessage collectorStatusMessage = userService.getCollectorStatusMessage(username);
+        Collection<SignatureDisplay> signatures = userService.getSignatures(username);
+        return toSignatureDataMessage(collectorStatusMessage.getCollectors(), signatures);
     }
 
-    private SignatureDataMessage toSignatureDataMessage(Collection<CollectorEntry> collectors, Collection<SignatureEntry> signatures) {
-        List<Signature> sig = new ArrayList<>();
-        for (SignatureEntry entry : signatures) {
-            sig.add(Signature.builder()
-                             .name(entry.getSignature())
-                             .invokedAtMillis(entry.getInvokedAtMillis())
-                             .invokedAtString(DateUtils.formatDate(entry.getInvokedAtMillis()))
-                             .millisSinceJvmStart(entry.getMillisSinceJvmStart())
-                             .build());
-        }
+    private SignatureDataMessage toSignatureDataMessage(Collection<CollectorDisplay> collectors, Collection<SignatureDisplay> signatures) {
         return SignatureDataMessage.builder()
                                    .collectorStatus(collectors == null ? null : toCollectorStatusMessage(collectors))
-                                   .signatures(sig)
+                                   .signatures(signatures)
                                    .build();
     }
 
-    private CollectorStatusMessage toCollectorStatusMessage(Collection<CollectorEntry> collectors) {
+    private CollectorStatusMessage toCollectorStatusMessage(Collection<CollectorDisplay> collectors) {
         return CollectorStatusMessage.builder().collectors(collectors).build();
-    }
-
-    // --- JSON objects -----------------------------------------------------------------------------------
-
-    @Value
-    @Builder
-    static class CollectorStatusMessage {
-        Collection<CollectorEntry> collectors;
-    }
-
-    @Value
-    @Builder
-    static class Signature {
-        String name;
-        long invokedAtMillis;
-        String invokedAtString;
-        long millisSinceJvmStart;
-    }
-
-    @Value
-    @Builder
-    static class SignatureDataMessage {
-        CollectorStatusMessage collectorStatus;
-        List<Signature> signatures;
     }
 }

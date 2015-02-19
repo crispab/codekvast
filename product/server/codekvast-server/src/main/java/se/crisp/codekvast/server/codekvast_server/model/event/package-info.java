@@ -3,4 +3,4 @@
  *
  * @author olle.hallin@crisp.se
  */
-package se.crisp.codekvast.server.codekvast_server.event;
+package se.crisp.codekvast.server.codekvast_server.model.event;

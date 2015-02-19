@@ -16,10 +16,10 @@ import se.crisp.codekvast.server.codekvast_server.config.DatabaseConfig;
 import se.crisp.codekvast.server.codekvast_server.config.EventBusConfig;
 import se.crisp.codekvast.server.codekvast_server.dao.impl.AgentDAOImpl;
 import se.crisp.codekvast.server.codekvast_server.dao.impl.UserDAOImpl;
-import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorDataEvent;
-import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorDataEvent.CollectorEntry;
-import se.crisp.codekvast.server.codekvast_server.event.internal.InvocationDataReceivedEvent;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedUserException;
+import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorDisplay;
+import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorStatusMessage;
+import se.crisp.codekvast.server.codekvast_server.model.event.internal.InvocationDataReceivedEvent;
 import se.crisp.codekvast.server.codekvast_server.service.AgentService;
 
 import javax.inject.Inject;
@@ -48,12 +48,12 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
     private AgentService agentService;
 
     @Subscribe
-    public void onCollectorUptimeEvent(CollectorDataEvent event) {
-        events.add(event);
+    public void onCollectorStatusMessage(CollectorStatusMessage message) {
+        events.add(message);
     }
 
     @Subscribe
-    public void onInvocationDataUpdatedEvent(InvocationDataReceivedEvent event) {
+    public void onInvocationDataReceivedEvent(InvocationDataReceivedEvent event) {
         events.add(event);
     }
 
@@ -73,17 +73,17 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
         assertEventsWithinMillis(2, 1000L);
 
         assertThat(events, hasSize(2));
-        assertThat(events.get(0), is(instanceOf(CollectorDataEvent.class)));
-        assertThat(events.get(1), is(instanceOf(CollectorDataEvent.class)));
+        assertThat(events.get(0), is(instanceOf(CollectorStatusMessage.class)));
+        assertThat(events.get(1), is(instanceOf(CollectorStatusMessage.class)));
 
-        CollectorDataEvent event = (CollectorDataEvent) events.get(0);
-        CollectorEntry collector = event.getCollectors().iterator().next();
+        CollectorStatusMessage message = (CollectorStatusMessage) events.get(0);
+        CollectorDisplay collector = message.getCollectors().iterator().next();
         assertThat(collector.getStartedAtMillis(), is(startedAtMillis));
-        assertThat(collector.getDumpedAtMillis(), is(dumpedAtMillis));
+        assertThat(collector.getDataReceivedAtMillis(), is(dumpedAtMillis));
 
-        event = (CollectorDataEvent) events.get(1);
-        collector = event.getCollectors().iterator().next();
-        assertThat(collector.getDumpedAtMillis(), is(dumpedAtMillis + 1000L));
+        message = (CollectorStatusMessage) events.get(1);
+        collector = message.getCollectors().iterator().next();
+        assertThat(collector.getDataReceivedAtMillis(), is(dumpedAtMillis + 1000L));
     }
 
     @Test(expected = UndefinedUserException.class)

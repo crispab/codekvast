@@ -2,9 +2,9 @@ package se.crisp.codekvast.server.codekvast_server.dao;
 
 import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureData;
-import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorDataEvent;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
+import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorStatusMessage;
 
 /**
  * A data access object for things related to the agent API.
@@ -44,10 +44,10 @@ public interface AgentDAO {
     void storeJvmData(long organisationId, long appId, JvmData data);
 
     /**
-     * Create a uptime event for a certain organisation
+     * Create a collector status message for a certain organisation
      *
      * @param organisationId The organisation
      * @return An event to post on the EventBus
      */
-    CollectorDataEvent createCollectorDataEvent(long organisationId);
+    CollectorStatusMessage createCollectorStatusMessage(long organisationId);
 }

@@ -10,12 +10,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence;
-import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedUserException;
-import se.crisp.codekvast.server.codekvast_server.model.Organisation;
 import se.crisp.codekvast.server.codekvast_server.model.Role;
+import se.crisp.codekvast.server.codekvast_server.model.event.display.SignatureDisplay;
 
 import javax.inject.Inject;
 import java.sql.ResultSet;
@@ -95,9 +93,15 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
                             true);
     }
 
+    private long doCreateOrganisation(String organisationName) {
+        long organisationId = doInsertRow("INSERT INTO organisations(name) VALUES(?)", organisationName);
+        log.info("Created organisation {}: '{}'", organisationId, organisationName);
+        return organisationId;
+    }
+
     @Override
     @Transactional(readOnly = true)
-    public Set<SignatureEntry> getSignatures(long organisationId) {
+    public Set<SignatureDisplay> getSignatures(long organisationId) {
 
         // The database contains several rows for the same signature, with different invoked_at_millis values.
         // We only want to return the entries with highest (latest) invoked_at_millis for each signature.
@@ -105,31 +109,27 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserDAO {
         // The algorithm below relies on the fact that a java.util.Set.add() will not replace an already present element.
         // By ordering by invoked_at_millis DESC, the first returned row (i.e., the latest invoked_at_millis) will win.
         //
-        // It is possible to do this as a one-liner because SignatureEntry.hashCode() and equals() uses SignatureEntry.signature only.
+        // It is possible to do this as a one-liner because SignatureDisplay.hashCode() and equals() uses SignatureDisplay.name only.
         //
         // PS. Doing the filtering in Java is magnitudes faster than trying to to the same in pure SQL.
 
         long startedAt = System.currentTimeMillis();
-        Set<SignatureEntry> result = new HashSet<>(jdbcTemplate.query(
-                "SELECT signature, invoked_at_millis, millis_since_jvm_start, confidence FROM signatures WHERE organisation_id = ? " +
+        Set<SignatureDisplay> result = new HashSet<>(jdbcTemplate.query(
+                "SELECT signature, invoked_at_millis, millis_since_jvm_start FROM signatures WHERE organisation_id = ? " +
                         "ORDER BY signature, invoked_at_millis DESC ",
-                new SignatureEntryRowMapper(), organisationId));
+                new SignatureDisplayRowMapper(), organisationId));
         log.debug("getSignatures({}) took {} ms", organisationId, System.currentTimeMillis() - startedAt);
         return result;
     }
 
-    private long doCreateOrganisation(String organisationName) {
-        long organisationId = doInsertRow("INSERT INTO organisations(name) VALUES(?)", organisationName);
-        Organisation organisation = new Organisation(organisationId, organisationName);
-        log.info("Created {}", organisation);
-        return organisationId;
-    }
-
-    private static class SignatureEntryRowMapper implements RowMapper<SignatureEntry> {
+    private static class SignatureDisplayRowMapper implements RowMapper<SignatureDisplay> {
         @Override
-        public SignatureEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
-            // signature, invoked_at_millis, millis_since_jvm_start, confidence
-            return new SignatureEntry(rs.getString(1), rs.getLong(2), rs.getLong(3), SignatureConfidence.fromOrdinal(rs.getInt(4)));
+        public SignatureDisplay mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return SignatureDisplay.builder()
+                                   .name(rs.getString(1))
+                                   .invokedAtMillis(rs.getLong(2))
+                                   .millisSinceJvmStart(rs.getLong(3))
+                                   .build();
         }
     }
 

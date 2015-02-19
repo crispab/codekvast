@@ -13,9 +13,10 @@ import se.crisp.codekvast.server.agent_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
 import se.crisp.codekvast.server.codekvast_server.config.CodekvastSettings;
 import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
-import se.crisp.codekvast.server.codekvast_server.event.internal.CollectorDataEvent;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
+import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorDisplay;
+import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorStatusMessage;
 
 import javax.inject.Inject;
 import java.sql.ResultSet;
@@ -154,10 +155,10 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     }
 
     @Override
-    public CollectorDataEvent createCollectorDataEvent(long organisationId) {
+    public CollectorStatusMessage createCollectorStatusMessage(long organisationId) {
         Collection<String> usernames = getInteractiveUsernamesInOrganisation(organisationId);
 
-        Collection<CollectorDataEvent.CollectorEntry> collectors =
+        Collection<CollectorDisplay> collectors =
                 jdbcTemplate.query("SELECT " +
                                            "a.name, " +
                                            "jvm.application_version, " +
@@ -168,22 +169,22 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                            "WHERE a.id = jvm.application_id " +
                                            "AND a.organisation_id = ? " +
                                            "GROUP BY a.name, jvm.application_version, jvm.collector_host_name, a.truly_dead_after_seconds ",
-                                   new CollectorEntryRowMapper(), organisationId);
-        return new CollectorDataEvent(collectors, usernames);
+                                   new CollectorDisplayRowMapper(), organisationId);
+
+        return CollectorStatusMessage.builder().collectors(collectors).usernames(usernames).build();
     }
 
-    private static class CollectorEntryRowMapper implements RowMapper<CollectorDataEvent.CollectorEntry> {
+    private static class CollectorDisplayRowMapper implements RowMapper<CollectorDisplay> {
         @Override
-        public CollectorDataEvent.CollectorEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
-            // name, version, started_at_millis, dumped_at_millis
-            return CollectorDataEvent.CollectorEntry.builder()
-                                                    .name(rs.getString(1))
-                                                    .version(rs.getString(2))
-                                                    .hostname(rs.getString(3))
-                                                    .trulyDeadAfterSeconds(rs.getInt(4))
-                                                    .startedAtMillis(rs.getLong(5))
-                                                    .dumpedAtMillis(rs.getLong(6))
-                                                    .build();
+        public CollectorDisplay mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return CollectorDisplay.builder()
+                                   .name(rs.getString(1))
+                                   .version(rs.getString(2))
+                                   .hostname(rs.getString(3))
+                                   .trulyDeadAfterSeconds(rs.getInt(4))
+                                   .startedAtMillis(rs.getLong(5))
+                                   .dataReceivedAtMillis(rs.getLong(6))
+                                   .build();
         }
     }
 }
