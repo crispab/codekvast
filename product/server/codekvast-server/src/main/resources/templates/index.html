@@ -67,7 +67,7 @@
     </div>
 
     <div ng-controller="SignatureController">
-        <div class="panel panel-info" ng-show="signatures">
+        <div class="panel panel-info" ng-show="allSignatures">
             <div class="panel-heading">Signatures</div>
 
             <div class="panel-body">
@@ -75,27 +75,27 @@
                 <form class="form form-inline">
                     <div class="input-group">
                         <span class="input-group-addon">Minimum age</span>
-                        <input class="form-control" type="number" step="60" ng-model="minimumAge.value"/>
+                        <input class="form-control" type="number" step="{{minimumAge.step}}" ng-model="minimumAge.value"/>
                         <div class="input-group-btn">
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{minimumAge.unit}} <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                                <li><a href="#" ng-click="minimumAge.unit = 'minutes'">minutes</a></li>
-                                <li><a href="#" ng-click="minimumAge.unit = 'hours'">hours</a></li>
-                                <li><a href="#" ng-click="minimumAge.unit = 'days'">days</a></li>
+                                <li><a href="#" ng-click="minimumAge.unit = 'minutes'; minimumAge.step = 15">minutes</a></li>
+                                <li><a href="#" ng-click="minimumAge.unit = 'hours'; minimumAge.step = 6">hours</a></li>
+                                <li><a href="#" ng-click="minimumAge.unit = 'days'; minimumAge.step = 1">days</a></li>
                             </ul>
                         </div>
                     </div>
 
                     <div class="input-group">
                         <span class="input-group-addon">Filter</span>
-                        <input class="form-control" type="text" placeholder="filter" ng-model="filter" size="50"/>
+                        <input class="form-control" type="text" placeholder="free text filter" ng-model="filter" size="50"/>
                     </div>
 
                     <div class="input-group">
                         <span class="input-group-addon">Max rows</span>
                         <input class="form-control" type="number" step="10" ng-model="maxRows"/>
-                        <span class="input-group-addon">of {{signatures.length}}</span>
+                        <span class="input-group-addon">of {{allSignatures.length}}</span>
                     </div>
                 </form>
 
@@ -111,7 +111,7 @@
                 </thead>
 
                 <tbody>
-                <tr class="row" ng-repeat="s in signatures | filter: filter | orderBy:sortField:reverse | limitTo:maxRows">
+                <tr class="row" ng-repeat="s in filteredSignatures | filter: filter | orderBy:sortField:reverse | limitTo:maxRows">
                     <td class="col-lg-9 signature-name">{{::s.name}}</td>
                     <td class="col-lg-2 signature-invoked-at">{{::s.invokedAtMillis | invokedAtDate:'short'}}</td>
                 </tr>

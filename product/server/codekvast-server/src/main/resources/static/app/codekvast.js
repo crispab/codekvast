@@ -166,9 +166,10 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
     }])
 
     .controller('SignatureController', ['$scope', function ($scope) {
-        $scope.minimumAge = { value: 30, unit: "days" };
+        $scope.minimumAge = { value: 30, unit: "days", step: 1 };
 
-        $scope.signatures = undefined;
+        $scope.allSignatures = undefined;
+        $scope.filteredSignatures = undefined;
 
         $scope.orderByInvokedAt = function () {
             $scope.sortField = ['invokedAtMillis', 'name'];
@@ -184,10 +185,18 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
 
         $scope.reverse = false;
 
+        // TODO: set a watch on $scope.minimumAge, sortField, maxRows and revers and update filteredSignatures
+
+        $scope.setFilteredSignatures = function() {
+            // TODO: implement filtering on age, free text, and max rows
+            $scope.filteredSignatures = $scope.allSignatures;
+        };
+
         $scope.$on('signatures', function (event, message) {
 
             if (message.first) {
-                $scope.signatures = message.signatures;
+                $scope.allSignatures = message.signatures;
+                $scope.setFilteredSignatures();
                 return;
             }
 
@@ -198,8 +207,8 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
                 var newSig = signatures[i];
                 var found = false;
 
-                for (var j = 0, len2 = $scope.signatures.length; j < len2; j++) {
-                    var oldSig = $scope.signatures[j];
+                for (var j = 0, len2 = $scope.allSignatures.length; j < len2; j++) {
+                    var oldSig = $scope.allSignatures[j];
                     if (oldSig.name === newSig.name) {
                         found = true;
                         if (oldSig.invokedAtMillis < newSig.invokedAtMillis) {
@@ -210,10 +219,11 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
                 }
 
                 if (!found) {
-                    $scope.signatures[$scope.signatures.length] = newSig;
+                    $scope.allSignatures[$scope.allSignatures.length] = newSig;
                 }
 
             }
+            $scope.setFilteredSignatures();
             var elapsed = Date.now() - startedAt;
             console.log("Updated " + updateLen + " signatures in " + elapsed + " ms");
         });
