@@ -166,11 +166,10 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
     }])
 
     .controller('SignatureController', ['$scope', function ($scope) {
-        $scope.minimumAge = { value: 30, unit: "days", step: 1 };
-
         $scope.allSignatures = undefined;
         $scope.filteredSignatures = undefined;
 
+        // Sorting
         $scope.orderByInvokedAt = function () {
             $scope.sortField = ['invokedAtMillis', 'name'];
         };
@@ -178,14 +177,18 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
         $scope.orderByName = function () {
             $scope.sortField = ['name', 'invokedAtMillis'];
         };
+        $scope.reverse = false;
 
         $scope.orderByInvokedAt();
 
+        // Filter fields
+        $scope.minimumAge = { value: 30, unit: "days", step: 1 };
+
+        $scope.signatureFilter = undefined;
+
         $scope.maxRows = 100;
 
-        $scope.reverse = false;
-
-        // TODO: set a watch on $scope.minimumAge, sortField, maxRows and revers and update filteredSignatures
+        // TODO: set a watch on sortField, minimumAge, signatureFilter, maxRows and revers and update filteredSignatures
 
         $scope.setFilteredSignatures = function() {
             // TODO: implement filtering on age, free text, and max rows
