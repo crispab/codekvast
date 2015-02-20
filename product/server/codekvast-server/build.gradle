@@ -292,6 +292,8 @@ task startH2Server {
         process.err.close()
     }
 }
+run.dependsOn startH2Server
+bootRun.dependsOn startH2Server
 
 task stopH2Server {
     description "Stops the H2 server"
