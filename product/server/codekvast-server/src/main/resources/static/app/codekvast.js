@@ -64,8 +64,8 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
             });
         };
 
-        var onCollectorStatusMessage = function (data) {
-            broadcast('collectorStatus', JSON.parse(data.body));
+        var onCollectorStatusMessage = function (message) {
+            broadcast('collectorStatus', JSON.parse(message.body));
         };
 
         var onSignatureDataMessage = function (message) {
@@ -76,7 +76,7 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
         var onConnected = function () {
             console.log("Connected");
             broadcast('stompConnected');
-            broadcast('stompStatus', 'Waiting for data...');
+            broadcast('jumbotronMessage', 'Waiting for data...');
         };
 
         var onDisconnect = function (message) {
@@ -94,7 +94,7 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
                 socket.stomp.subscribe("/user/queue/signature/data", onSignatureDataMessage);
                 $http.get('/api/signatures')
                     .success(function (data) {
-                        broadcast('stompStatus', null);
+                        broadcast('jumbotronMessage', null);
                         broadcastSignatures(data.collectorStatus, data.signatures);
                     })
                     .error(function (data) {
@@ -116,7 +116,7 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
     .controller('MainController', ['$scope', '$window', function ($scope, $window) {
         $scope.jumbotronMessage = 'Disconnected from server';
 
-        $scope.$on('stompStatus', function (event, message) {
+        $scope.$on('jumbotronMessage', function (event, message) {
             $scope.jumbotronMessage = message;
         });
 
@@ -165,35 +165,51 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
 
     }])
 
-    .controller('SignatureController', ['$scope', function ($scope) {
-        $scope.allSignatures = undefined;
+    .controller('SignatureController', ['$scope', '$filter', function ($scope, $filter) {
+        $scope.allSignatures = [];
         $scope.filteredSignatures = undefined;
 
-        // Sorting
-        $scope.orderByInvokedAt = function () {
-            $scope.sortField = ['invokedAtMillis', 'name'];
+        $scope.filter = {
+            minAgeValue: 30,
+            signature: undefined,
+            maxRows: 100
         };
 
-        $scope.orderByName = function () {
-            $scope.sortField = ['name', 'invokedAtMillis'];
+        $scope.setAgeUnit = function (code) {
+            switch (code) {
+                case 0:
+                    $scope.filter.ageUnit = 'minutes';
+                    $scope.filter.ageStep = 15;
+                    $scope.filter.ageMultiplier = 60 * 1000;
+                    break;
+                case 1:
+                    $scope.filter.ageUnit = 'hours';
+                    $scope.filter.ageStep = 6;
+                    $scope.filter.ageMultiplier = 60 * 60 * 1000;
+                    break;
+                case 2:
+                    $scope.filter.ageUnit = 'days';
+                    $scope.filter.ageStep = 1;
+                    $scope.filter.ageMultiplier = 24 * 60 * 60 * 1000;
+                    break;
+            }
         };
-        $scope.reverse = false;
 
-        $scope.orderByInvokedAt();
-
-        // Filter fields
-        $scope.minimumAge = { value: 30, unit: "days", step: 1 };
-
-        $scope.signatureFilter = undefined;
-
-        $scope.maxRows = 100;
-
-        // TODO: set a watch on sortField, minimumAge, signatureFilter, maxRows and revers and update filteredSignatures
+        $scope.setAgeUnit(0);
 
         $scope.setFilteredSignatures = function() {
-            // TODO: implement filtering on age, free text, and max rows
-            $scope.filteredSignatures = $scope.allSignatures;
+            var minAgeMillis = Date.now() - $scope.filter.minAgeValue * $scope.filter.ageMultiplier;
+            var result = $scope.allSignatures;
+            result = $filter('filter')(result, $scope.filter.signature);
+            result = $filter('filter')(result, function (s) {
+                return s.invokedAtMillis < minAgeMillis;
+            });
+            result = $filter('orderBy')(result, 'invokedAtMillis');
+            result = $filter('limitTo')(result, $scope.filter.maxRows);
+            $scope.filteredSignatures = result;
         };
+
+        $scope.$watchCollection('filter', $scope.setFilteredSignatures);
 
         $scope.$on('signatures', function (event, message) {
 
@@ -226,7 +242,9 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
                 }
 
             }
+
             $scope.setFilteredSignatures();
+
             var elapsed = Date.now() - startedAt;
             console.log("Updated " + updateLen + " signatures in " + elapsed + " ms");
         });
