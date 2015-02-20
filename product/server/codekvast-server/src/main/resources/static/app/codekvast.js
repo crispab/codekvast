@@ -166,6 +166,8 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
     }])
 
     .controller('SignatureController', ['$scope', function ($scope) {
+        $scope.minimumAge = { value: 30, unit: "days" };
+
         $scope.signatures = undefined;
 
         $scope.orderByInvokedAt = function () {
@@ -202,7 +204,6 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
                         found = true;
                         if (oldSig.invokedAtMillis < newSig.invokedAtMillis) {
                             oldSig.invokedAtMillis = newSig.invokedAtMillis;
-                            oldSig.invokedAtString = newSig.invokedAtString;
                         }
                         break;
                     }
