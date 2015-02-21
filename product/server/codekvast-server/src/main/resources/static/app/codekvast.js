@@ -135,7 +135,7 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
 
     .controller('CollectorController', ['$scope', '$interval', 'DateService', function ($scope, $interval, DateService) {
         $scope.collectorStatus = undefined;
-        $scope.statusPanelOpen = true;
+        $scope.collectorStatusOpen = false;
         $scope.dateFormat = 'short';
 
         $scope.$on('collectorStatus', function (event, data) {
@@ -167,7 +167,10 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
 
     .controller('SignatureController', ['$scope', '$filter', function ($scope, $filter) {
         $scope.allSignatures = [];
-        $scope.filteredSignatures = undefined;
+        $scope.newestSignatures = undefined;
+        $scope.newestSignaturesOpen = false;
+        $scope.trulyDeadSignatures = undefined;
+        $scope.trulyDeadSignaturesOpen = false;
 
         $scope.filter = {
             minAgeValue: 30,
@@ -199,14 +202,19 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
 
         $scope.setFilteredSignatures = function() {
             var minAgeMillis = Date.now() - $scope.filter.minAgeValue * $scope.filter.ageMultiplier;
-            var result = $scope.allSignatures;
-            result = $filter('filter')(result, $scope.filter.signature);
-            result = $filter('filter')(result, function (s) {
+            var filtered = $scope.allSignatures;
+            filtered = $filter('filter')(filtered, $scope.filter.signature);
+            filtered = $filter('filter')(filtered, function (s) {
                 return s.invokedAtMillis < minAgeMillis;
             });
-            result = $filter('orderBy')(result, 'invokedAtMillis');
-            result = $filter('limitTo')(result, $scope.filter.maxRows);
-            $scope.filteredSignatures = result;
+            filtered = $filter('orderBy')(filtered, 'invokedAtMillis');
+            filtered = $filter('limitTo')(filtered, $scope.filter.maxRows);
+            $scope.trulyDeadSignatures = filtered;
+
+            filtered = $scope.allSignatures;
+            filtered = $filter('orderBy')(filtered, 'invokedAtMillis', true);
+            filtered = $filter('limitTo')(filtered, 10);
+            $scope.newestSignatures = filtered;
         };
 
         $scope.$watchCollection('filter', $scope.setFilteredSignatures);
