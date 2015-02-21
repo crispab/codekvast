@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Wrapper for environment properties codekvast.*
+ *
  * @author olle.hallin@crisp.se
  */
 @Component

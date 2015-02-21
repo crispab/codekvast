@@ -15,6 +15,9 @@ import java.util.concurrent.Executors;
 @Configuration
 public class EventBusConfig {
 
+    /**
+     * Creates an asynchronous event bus.
+     */
     @Bean
     public EventBus eventBus() {
         return new AsyncEventBus(Executors.newFixedThreadPool(10));

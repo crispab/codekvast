@@ -1,6 +1,5 @@
 package se.crisp.codekvast.server.codekvast_server.dao.impl;
 
-import com.google.common.eventbus.EventBus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import se.crisp.codekvast.server.codekvast_server.model.Role;
 
@@ -16,11 +15,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 public abstract class AbstractDAOImpl {
 
     protected final JdbcTemplate jdbcTemplate;
-    protected final EventBus eventBus;
 
-    public AbstractDAOImpl(EventBus eventBus,
-                           JdbcTemplate jdbcTemplate) {
-        this.eventBus = eventBus;
+    public AbstractDAOImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

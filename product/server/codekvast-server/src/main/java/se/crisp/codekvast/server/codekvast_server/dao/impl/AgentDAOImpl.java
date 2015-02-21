@@ -1,6 +1,5 @@
 package se.crisp.codekvast.server.codekvast_server.dao.impl;
 
-import com.google.common.eventbus.EventBus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -26,7 +25,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * DAO for signature data.
+ * DAO for agent stuff.
  *
  * @author olle.hallin@crisp.se
  */
@@ -37,8 +36,8 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     private final CodekvastSettings codekvastSettings;
 
     @Inject
-    public AgentDAOImpl(EventBus eventBus, JdbcTemplate jdbcTemplate, CodekvastSettings codekvastSettings) {
-        super(eventBus, jdbcTemplate);
+    public AgentDAOImpl(JdbcTemplate jdbcTemplate, CodekvastSettings codekvastSettings) {
+        super(jdbcTemplate);
         this.codekvastSettings = codekvastSettings;
     }
 

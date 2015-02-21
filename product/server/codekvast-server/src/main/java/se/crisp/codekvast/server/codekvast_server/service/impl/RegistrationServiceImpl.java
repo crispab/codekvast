@@ -7,7 +7,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.server.codekvast_server.controller.RegistrationController;
-import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
+import se.crisp.codekvast.server.codekvast_server.dao.RegistrationDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.exception.DuplicateNameException;
 import se.crisp.codekvast.server.codekvast_server.model.Role;
@@ -23,11 +23,11 @@ import java.util.Locale;
 @Slf4j
 public class RegistrationServiceImpl implements RegistrationService {
 
-    private final UserDAO userDAO;
+    private final RegistrationDAO registrationDAO;
 
     @Inject
-    public RegistrationServiceImpl(@NonNull UserDAO userDAO) {
-        this.userDAO = userDAO;
+    public RegistrationServiceImpl(@NonNull RegistrationDAO registrationDAO) {
+        this.registrationDAO = registrationDAO;
     }
 
     private String normalizeName(@NonNull String name) {
@@ -41,13 +41,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 
         switch (kind) {
         case USERNAME:
-            count = userDAO.countUsersByUsername(normalizedName);
+            count = registrationDAO.countUsersByUsername(normalizedName);
             break;
         case EMAIL_ADDRESS:
-            count = userDAO.countUsersByEmailAddress(normalizedName);
+            count = registrationDAO.countUsersByEmailAddress(normalizedName);
             break;
         case ORGANISATION_NAME:
-            count = userDAO.countOrganisationsByNameLc(normalizedName);
+            count = registrationDAO.countOrganisationsByNameLc(normalizedName);
             break;
         default:
             throw new IllegalArgumentException("Unknown kind: " + kind);
@@ -62,10 +62,11 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Transactional(rollbackFor = Exception.class)
     public long registerUserAndOrganisation(@NonNull RegistrationController.RegistrationRequest data) throws CodekvastException {
         try {
-            long userId = userDAO.createUser(data.getFullName(), normalizeName(data.getUsername()), normalizeName(data.getEmailAddress()),
+            long userId =
+                    registrationDAO.createUser(data.getFullName(), normalizeName(data.getUsername()), normalizeName(data.getEmailAddress()),
                                              data.getPassword(), Role.ADMIN, Role.USER);
             // TODO: create Role.AGENT
-            userDAO.createOrganisationWithPrimaryContact(data.getOrganisationName(), userId);
+            registrationDAO.createOrganisationWithPrimaryContact(data.getOrganisationName(), userId);
             return userId;
         } catch (DuplicateKeyException e) {
             throw new DuplicateNameException("Cannot register " + data);

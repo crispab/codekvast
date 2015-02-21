@@ -14,6 +14,8 @@ import javax.inject.Inject;
 import javax.sql.DataSource;
 
 /**
+ * Configures web security.
+ *
  * @author olle.hallin@crisp.se
  */
 @Configuration
@@ -36,8 +38,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .usersByUsernameQuery("SELECT username, encoded_password, enabled FROM users WHERE username = ?")
 
             .authoritiesByUsernameQuery("SELECT users.username, user_roles.role FROM users, user_roles " +
-                                        "WHERE users.id = user_roles.user_id " +
-                                            "AND users.username = ?")
+                                        "WHERE users.id = user_roles.user_id AND users.username = ?")
             .rolePrefix(Role.ANNOTATION_PREFIX)
             .passwordEncoder(passwordEncoder);
         // @formatter:on
@@ -55,9 +56,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/agent/**").hasRole(Role.AGENT.name())
                 .antMatchers("/**").hasRole(Role.USER.name())
                 .and()
+            // an interactive user uses form login
             .formLogin()
                 .loginPage("/login").permitAll()
                 .and()
+            // The agent uses BASIC authentication
             .httpBasic()
                 .realmName("Codekvast")
                 .and()

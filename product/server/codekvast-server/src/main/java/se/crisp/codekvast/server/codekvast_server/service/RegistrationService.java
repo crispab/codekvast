@@ -4,6 +4,8 @@ import se.crisp.codekvast.server.codekvast_server.controller.RegistrationControl
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 
 /**
+ * Registration stuff.
+ *
  * @author olle.hallin@crisp.se
  */
 public interface RegistrationService {

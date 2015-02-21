@@ -7,6 +7,8 @@ import se.crisp.codekvast.server.codekvast_server.model.event.display.SignatureD
 import java.util.Collection;
 
 /**
+ * Responsible for user-facing services.
+ *
  * @author olle.hallin@crisp.se
  */
 public interface UserService {

@@ -11,7 +11,7 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
 
 /**
- * Configures the STOMP and WebSocket eventhandler.
+ * Configures the STOMP and WebSocket event handler.
  *
  * @author olle.hallin@crisp.se
  */

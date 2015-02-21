@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 /**
+ * Configures an in-JVM Redis server to use for HTTP session storage.
+ *
  * @author olle.hallin@crisp.se
  */
 @Import(RedisAutoConfiguration.class)

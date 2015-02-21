@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Responsible for maintaining a collection of currently connected web socket usernames.
+ * Maintains a collection of currently connected web socket usernames.
  *
  * It translates Spring's SessionConnectedEvent and SessionDisconnected events to UserConnectedEvent and UserDisconnected events.
  *
@@ -102,6 +102,9 @@ public class UserHandler extends AbstractMessageHandler {
         }
     }
 
+    /**
+     * Is a certain username present?
+     */
     public boolean isPresent(String username) {
         synchronized (lock) {
             return presentUsers.contains(username);

@@ -22,7 +22,7 @@ import javax.validation.constraints.Size;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * A Spring MVC Controller that handles registration.
+ * A Spring MVC Controller that handles user registration.
  *
  * @author olle.hallin@crisp.se
  */

@@ -8,6 +8,8 @@ import se.crisp.codekvast.server.codekvast_server.config.CodekvastSettings;
 import javax.inject.Inject;
 
 /**
+ * An MVC controller for all pages except the registration page.
+ *
  * @author olle.hallin@crisp.se
  */
 @Controller
@@ -21,6 +23,9 @@ public class WebController extends AbstractThymeleafController {
         return "index";
     }
 
+    /**
+     * If running in single-tenant (demo) mode, preload the guest  username and password.
+     */
     @RequestMapping({"/login"})
     public String login(Model model) {
         model.addAttribute("multiTenant", codekvastSettings.isMultiTenant());

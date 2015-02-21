@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
+ * Enables use of @Cacheable.
+ *
  * @author olle.hallin@crisp.se
  */
 @Configuration
