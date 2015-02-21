@@ -5,6 +5,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 /**
+ * A display object for one signature.
+ *
+ * NOTE: equals() and hashCode() does only use the name. This is by intention!
  * @author olle.hallin@crisp.se
  */
 @Value

@@ -7,12 +7,20 @@ import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import java.util.Collection;
 
 /**
+ * An EventBus event broadcast when invocation data has been received from an agent.
  * @author olle.hallin@crisp.se
  */
 @Value
 public class InvocationDataReceivedEvent {
-    private final AppId appId;
-    private final Collection<SignatureEntry> invocationEntries;
+    /**
+     * The application from which data has been received.
+     */
+    AppId appId;
+
+    /**
+     * The raw signature data received from the agent.
+     */
+    Collection<SignatureEntry> invocationEntries;
 
     @Override
     public String toString() {

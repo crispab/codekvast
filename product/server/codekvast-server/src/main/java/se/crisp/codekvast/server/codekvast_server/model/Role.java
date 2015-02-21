@@ -1,6 +1,8 @@
 package se.crisp.codekvast.server.codekvast_server.model;
 
 /**
+ * The different roles in the authorization system.
+ *
  * @author olle.hallin@crisp.se
  */
 public enum Role {
