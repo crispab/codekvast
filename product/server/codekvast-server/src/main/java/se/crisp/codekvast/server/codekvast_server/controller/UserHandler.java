@@ -3,13 +3,14 @@ package se.crisp.codekvast.server.codekvast_server.controller;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
+import se.crisp.codekvast.server.codekvast_server.model.event.internal.UserConnectedEvent;
+import se.crisp.codekvast.server.codekvast_server.model.event.internal.UserDisconnectedEvent;
 
 import javax.inject.Inject;
 import java.security.Principal;
@@ -105,16 +106,6 @@ public class UserHandler extends AbstractMessageHandler {
         synchronized (lock) {
             return presentUsers.contains(username);
         }
-    }
-
-    @Value
-    public static class UserConnectedEvent {
-        private final String username;
-    }
-
-    @Value
-    public static class UserDisconnectedEvent {
-        private final String username;
     }
 
 }
