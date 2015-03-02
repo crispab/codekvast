@@ -1,5 +1,7 @@
 package se.crisp.codekvast.web.service.impl;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -8,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.TimeZone;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -16,9 +19,21 @@ public class DatabaseMaintenanceImplTest {
 
     private static final String SUFFIX = ".h2.zip";
     private final Date T1 = new Date(1416570848627L);
+    private TimeZone savedTimeZone;
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
+
+    @Before
+    public void beforeTest() throws Exception {
+        savedTimeZone = TimeZone.getDefault();
+        TimeZone.setDefault(TimeZone.getTimeZone("Europe/Stockholm"));
+    }
+
+    @After
+    public void afterTest() throws Exception {
+        TimeZone.setDefault(savedTimeZone);
+    }
 
     @Test
     public void testGetDumpFile() throws Exception {
