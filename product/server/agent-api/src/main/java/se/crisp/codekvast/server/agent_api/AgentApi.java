@@ -16,6 +16,7 @@ public interface AgentApi {
     /**
      * Uploads data about a JVM run to the server.
      *
+     * @param jvmData Data about the JVM
      * @throws AgentApiException For all problems.
      */
     void uploadJvmData(JvmData jvmData) throws AgentApiException;
