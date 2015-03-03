@@ -17,6 +17,7 @@ public class CollectorConfigLocator {
     public static final String ENVVAR_CONFIG = "CODEKVAST_CONFIG";
     public static final String ENVVAR_HOME = "CODEKVAST_HOME";
     public static final String SYSPROP_CONFIG = "codekvast.configuration";
+    public static final String SYSPROP_OPTS = "codekvast.options";
     public static final String SYSPROP_HOME = "codekvast.home";
     private static final String SYSPROP_CATALINA_HOME = "catalina.home";
 

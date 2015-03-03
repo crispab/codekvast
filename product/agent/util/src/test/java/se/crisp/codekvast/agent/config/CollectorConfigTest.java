@@ -1,5 +1,6 @@
 package se.crisp.codekvast.agent.config;
 
+import org.junit.After;
 import org.junit.Test;
 
 import java.io.File;
@@ -12,10 +13,16 @@ import static org.junit.Assert.*;
 
 public class CollectorConfigTest {
 
+    @After
+    public void afterTest() throws Exception {
+        System.clearProperty(CollectorConfigLocator.SYSPROP_OPTS);
+    }
+
     @Test
     public void testSaveSampleConfigToFile() throws IOException {
         CollectorConfig config1 = CollectorConfig.createSampleCollectorConfig();
-        File file = new File(System.getProperty("sampleCollectorConfigFile.path", "build/codekvast-collector.conf.sample"));
+        File file = File.createTempFile("codekvast", ".conf");
+        file.deleteOnExit();
         config1.saveTo(file);
 
         CollectorConfig config2 = CollectorConfig.parseCollectorConfig(file.toURI(), null);
@@ -25,7 +32,8 @@ public class CollectorConfigTest {
     @Test
     public void testParseConfigFileURIWithOverride() throws IOException, URISyntaxException {
         CollectorConfig config1 = CollectorConfig.createSampleCollectorConfig();
-        File file = new File(System.getProperty("sampleCollectorConfigFile.path", "build/codekvast.conf.sample"));
+        File file = File.createTempFile("codekvast", ".conf");
+        file.deleteOnExit();
         config1.saveTo(file);
 
         CollectorConfig config2 = CollectorConfig.parseCollectorConfig(file.toURI(), "verbose=true");
@@ -35,11 +43,15 @@ public class CollectorConfigTest {
     }
 
     @Test
-    public void testParseConfigFilePathWithOverride() throws IOException, URISyntaxException {
+    public void testParseConfigFilePathWithSyspropAndCmdLineOverride() throws IOException, URISyntaxException {
+        System.setProperty(CollectorConfigLocator.SYSPROP_OPTS, "verbose=true;clobberAopXml=false;codeBase=/path/to/$appName");
         CollectorConfig config = CollectorConfig.parseCollectorConfig(new URI("classpath:/incomplete-collector-config.conf"),
                                                                       "appName=kaka;appVersion=version;");
         assertThat(config.getAppName(), is("kaka"));
         assertThat(config.getAppVersion(), is("version"));
+        assertThat(config.isVerbose(), is(true));
+        assertThat(config.isClobberAopXml(), is(false));
+        assertThat(config.getCodeBase(), is("/path/to/kaka"));
     }
 
 }

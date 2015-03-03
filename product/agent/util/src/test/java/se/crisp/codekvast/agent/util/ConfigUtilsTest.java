@@ -5,6 +5,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import java.net.URISyntaxException;
+import java.util.Properties;
 import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.hasItems;
@@ -15,6 +16,7 @@ public class ConfigUtilsTest {
 
     private static final String MY_PROP1 = ConfigUtilsTest.class.getName() + ".prop1";
     private static final String MY_PROP2 = ConfigUtilsTest.class.getName() + ".prop2";
+    private static final String MY_PROP3 = ConfigUtilsTest.class.getName() + ".prop3";
 
     @After
     public void afterTest() {
@@ -73,8 +75,12 @@ public class ConfigUtilsTest {
         } else {
              userVariableName = "$USER";
         }
-        assertThat(ConfigUtils.expandVariables(userVariableName + " ${" + MY_PROP1 + "} foo ${" + MY_PROP2 + "} bar"),
-                   is(System.getProperty("user.name") + " XXX foo YYY bar"));
+        Properties props = new Properties();
+        props.setProperty(MY_PROP1, "XXX_from_props");
+        props.setProperty(MY_PROP3, "ZZZ");
+        assertThat(ConfigUtils.expandVariables(props, userVariableName + " ${" + MY_PROP1 + "} foo ${" + MY_PROP2 + "} bar ${" + MY_PROP3
+                           + "}"),
+                   is(System.getProperty("user.name") + " XXX foo YYY bar ZZZ"));
 
     }
 
@@ -82,7 +88,7 @@ public class ConfigUtilsTest {
     public void testExpandMissingVariable() {
         String nonExistingEnvVar = "MYVAR_" + UUID.randomUUID().toString().replaceAll("[-_]", "").toUpperCase();
 
-        assertThat(ConfigUtils.expandVariables("$" + nonExistingEnvVar + " ${missing.prop1} foo ${missing.prop2} bar"),
+        assertThat(ConfigUtils.expandVariables(new Properties(), "$" + nonExistingEnvVar + " ${missing.prop1} foo ${missing.prop2} bar"),
                    is("$" + nonExistingEnvVar + " ${missing.prop1} foo ${missing.prop2} bar"));
     }
 }

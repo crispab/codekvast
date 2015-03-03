@@ -93,21 +93,26 @@ public class CollectorConfig implements CodekvastConfig {
         FileUtils.writePropertiesTo(file, this, "Codekvast CollectorConfig");
     }
 
-    public static CollectorConfig parseCollectorConfig(URI uri, String args) {
+    public static CollectorConfig parseCollectorConfig(URI uri, String cmdLineArgs) {
         try {
             Properties props = FileUtils.readPropertiesFrom(uri);
 
-            if (args != null) {
-                String overrides[] = args.split(";");
-                for (String override : overrides) {
-                    String parts[] = override.split("=");
-                    props.setProperty(parts[0], parts[1]);
-                }
-            }
+            parseOverrides(props, System.getProperty(CollectorConfigLocator.SYSPROP_OPTS));
+            parseOverrides(props, cmdLineArgs);
 
             return buildCollectorConfig(props);
         } catch (Exception e) {
             throw new IllegalArgumentException("Cannot parse " + uri, e);
+        }
+    }
+
+    static void parseOverrides(Properties props, String args) {
+        if (args != null) {
+            String overrides[] = args.split(";");
+            for (String override : overrides) {
+                String parts[] = override.split("=");
+                props.setProperty(parts[0], parts[1]);
+            }
         }
     }
 

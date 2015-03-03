@@ -1,5 +1,9 @@
 # Codekvast Agent Release Notes
 
+## 0.8.10
+
+- Added possibility to configure collector with -Dcodekvast.options=key=value;key=value;... in addition to the values in codekvast.conf
+
 ## 0.8.9
 
 - Added column SIGNATURE.MILLIS_SINCE_JVM_START. Breaks compatibility to 0.8.8.

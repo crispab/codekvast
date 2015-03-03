@@ -43,10 +43,10 @@ public final class ConfigUtils {
     }
 
     public static String getOptionalStringValue(Properties props, String key, String defaultValue) {
-        return expandVariables(props.getProperty(key, defaultValue));
+        return expandVariables(props, props.getProperty(key, defaultValue));
     }
 
-    public static String expandVariables(String value) {
+    public static String expandVariables(Properties props, String value) {
         if (value == null) {
             return null;
         }
@@ -60,6 +60,9 @@ public final class ConfigUtils {
             String replacement = System.getProperty(key);
             if (replacement == null) {
                 replacement = System.getenv(key);
+            }
+            if (replacement == null) {
+                replacement = props.getProperty(key);
             }
             if (replacement == null) {
                 String prefix = key1 != null ? "\\$\\{" : "\\$";
@@ -79,7 +82,7 @@ public final class ConfigUtils {
     }
 
     public static int getOptionalIntValue(Properties props, String key, int defaultValue) {
-        String value = expandVariables(props.getProperty(key));
+        String value = expandVariables(props, props.getProperty(key));
         if (value != null) {
             try {
                 return Integer.parseInt(value);
@@ -91,7 +94,7 @@ public final class ConfigUtils {
     }
 
     public static String getMandatoryStringValue(Properties props, String key) {
-        String value = expandVariables(props.getProperty(key));
+        String value = expandVariables(props, props.getProperty(key));
         if (value == null || value.trim().length() == 0) {
             throw new IllegalArgumentException("Missing or empty property: " + key);
         }
