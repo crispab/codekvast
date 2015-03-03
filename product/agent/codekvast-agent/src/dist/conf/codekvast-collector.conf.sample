@@ -107,7 +107,7 @@
 #--------------------------------------------------------------------------------------------------------
 # What packages should be tracked?
 #
-# A comma-separated list of package prefixes. All methods in classes with a package name starting with any of the prefixes will
+# A comma-separated list of package prefixes. Public methods in classes with a package name starting with any of the prefixes will
 # be tracked.
 #
 # Mandatory.

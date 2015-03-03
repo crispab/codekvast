@@ -1,9 +1,7 @@
 #!/bin/sh
 cd $(dirname $0)/..
 CODEKVAST_HOME=$PWD
-JAVAAGENTS=${CODEKVAST_HOME}/javaagents
-COLLECTOR=$(find ${JAVAAGENTS} -name '*collector*.jar')
-ASPECTJWEAVER=$(find ${JAVAAGENTS} -name '*aspectjweaver*.jar')
-CONFIG=${CODEKVAST_HOME}/conf/codekvast.conf
-echo export CODEKVAST_CONFIG=${CONFIG}
-echo -javaagent:${COLLECTOR} -javaagent:${ASPECTJWEAVER}
+COLLECTOR=$(find ${CODEKVAST_HOME}/javaagents -name '*collector*.jar')
+ASPECTJWEAVER=$(find ${CODEKVAST_HOME}/javaagents -name '*aspectjweaver*.jar')
+
+echo export JVM_OPTS="-Dcodekvast.home=$CODEKVAST_HOME -javaagent:$CODEKVAST_HOME/javaagents/$(basename $COLLECTOR) -javaagent:$CODEKVAST_HOME/javaagents/$(basename $ASPECTJWEAVER)"
