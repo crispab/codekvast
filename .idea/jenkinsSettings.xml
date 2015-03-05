@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Jenkins.Application.Settings">
+    <option name="serverUrl" value="http://jenkins.crisp.se" />
+    <option name="jobRefreshPeriod" value="1" />
+    <option name="rssSettings">
+      <RssSettings />
+    </option>
+  </component>
+</project>
