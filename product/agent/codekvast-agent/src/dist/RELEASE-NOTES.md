@@ -1,5 +1,9 @@
 # Codekvast Agent Release Notes
 
+## 0.8.12
+
+- codekvast-collector.jar will remain passive (a no-op) when no codekvast.conf is found.
+ 
 ## 0.8.11
 
 - codekvast.conf is found automactically if placed in /etc/codekvast or /etc.
