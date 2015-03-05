@@ -25,6 +25,12 @@ public class CollectorConfigLocator {
     private CollectorConfigLocator() {
     }
 
+    /**
+     * Attempts to find a codekvast-collector.conf or codekvast.conf in a number of locations.
+     *
+     * @param out Print stream used for logging
+     * @return null if no config file could be found.
+     */
     public static URI locateConfig(PrintStream out) {
         File file = tryLocation(out, System.getProperty(SYSPROP_CONFIG));
         if (file != null) {
@@ -70,7 +76,8 @@ public class CollectorConfigLocator {
         if (file != null) {
             return file.toURI();
         }
-        throw new IllegalArgumentException("Cannot find codekvast.conf");
+        out.println("Cannot find codekvast-collector.conf nor codekvast.conf, codekvast will be disabled");
+        return null;
     }
 
     private static String constructLocation(String home, String subdirectory) {

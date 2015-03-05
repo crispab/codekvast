@@ -23,10 +23,10 @@ public class CollectorConfigLocatorTest {
         assertThat(CollectorConfigLocator.locateConfig(System.out), not(nullValue()));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void invalid_file() throws Exception {
         System.setProperty(SYSPROP_CONFIG, "src/test/resources/codekvast1.conf-FOOBAR");
-        CollectorConfigLocator.locateConfig(System.out);
+        assertThat(CollectorConfigLocator.locateConfig(System.out), nullValue());
     }
 
     @Test
@@ -41,9 +41,9 @@ public class CollectorConfigLocatorTest {
         assertThat(CollectorConfigLocator.locateConfig(System.out), not(nullValue()));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void no_hints() throws Exception {
-        assertThat(CollectorConfigLocator.locateConfig(System.out), not(nullValue()));
+        assertThat(CollectorConfigLocator.locateConfig(System.out), nullValue());
     }
 
 

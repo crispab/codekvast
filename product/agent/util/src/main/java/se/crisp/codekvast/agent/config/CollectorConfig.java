@@ -94,6 +94,10 @@ public class CollectorConfig implements CodekvastConfig {
     }
 
     public static CollectorConfig parseCollectorConfig(URI uri, String cmdLineArgs) {
+        if (uri == null) {
+            return null;
+        }
+
         try {
             Properties props = FileUtils.readPropertiesFrom(uri);
 

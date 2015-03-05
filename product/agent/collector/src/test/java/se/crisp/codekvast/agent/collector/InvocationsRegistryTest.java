@@ -1,5 +1,6 @@
 package se.crisp.codekvast.agent.collector;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -47,6 +48,11 @@ public class InvocationsRegistryTest {
         InvocationRegistry.initialize(config);
     }
 
+    @After
+    public void afterTest() throws Exception {
+        InvocationRegistry.initialize(null);
+    }
+
     @Test
     public void testRegisterJspPageExecutionAndDumpToDisk() throws IOException {
         InvocationRegistry.instance.registerJspPageExecution("page1");
@@ -69,4 +75,9 @@ public class InvocationsRegistryTest {
         assertThat(jvm.getCollectorConfig().getCodeBase(), is(codeBase));
     }
 
+    @Test
+    public void testRegisterBeforeInitialize() throws Exception {
+        InvocationRegistry.initialize(null);
+        InvocationRegistry.instance.registerJspPageExecution("page1");
+    }
 }

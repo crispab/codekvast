@@ -27,7 +27,7 @@ public class InvocationRegistry {
 
     public static final boolean SHOULD_STRIP_MODIFIERS_AND_RETURN_TYPE_NOW = false;
 
-    public static InvocationRegistry instance;
+    public static InvocationRegistry instance = new NoopInvocationRegistry();
 
     private final CollectorConfig config;
     private final Jvm jvm;
@@ -41,7 +41,7 @@ public class InvocationRegistry {
     public InvocationRegistry(CollectorConfig config, Jvm jvm) {
         this.config = config;
         this.jvm = jvm;
-        this.jvmFile = config.getJvmFile();
+        this.jvmFile = config == null ? null : config.getJvmFile();
 
         for (int i = 0; i < invocations.length; i++) {
             this.invocations[i] = new ConcurrentSkipListSet<String>();
@@ -49,18 +49,23 @@ public class InvocationRegistry {
     }
 
     /**
-     * Must be called before handing over to the AspectJ load-time weaver.
-     * @param config The collector configuration.
+     * Should be called before handing over to the AspectJ load-time weaver, or else nothing will be registered.
+     *
+     * @param config The collector configuration. Specifying null will disable the invocation registry.
      */
     public static void initialize(CollectorConfig config) {
-        InvocationRegistry.instance = new InvocationRegistry(config,
-                                                             Jvm.builder()
-                                                                .collectorConfig(config)
-                                                                .computerId(ComputerID.compute().toString())
-                                                                .hostName(getHostName())
-                                                                .jvmUuid(UUID.randomUUID().toString())
-                                                                .startedAtMillis(System.currentTimeMillis())
-                                                                .build());
+        if (config == null) {
+            InvocationRegistry.instance = new NoopInvocationRegistry();
+        } else {
+            InvocationRegistry.instance = new InvocationRegistry(config,
+                                                                 Jvm.builder()
+                                                                    .collectorConfig(config)
+                                                                    .computerId(ComputerID.compute().toString())
+                                                                    .hostName(getHostName())
+                                                                    .jvmUuid(UUID.randomUUID().toString())
+                                                                    .startedAtMillis(System.currentTimeMillis())
+                                                                    .build());
+        }
     }
 
     private static String getHostName() {
@@ -128,10 +133,6 @@ public class InvocationRegistry {
         currentInvocationIndex = currentInvocationIndex == 0 ? 1 : 0;
     }
 
-    public CollectorConfig getConfig() {
-        return config;
-    }
-
     /**
      * Dumps data about this JVM run to a disk file.
      */
@@ -148,4 +149,22 @@ public class InvocationRegistry {
         }
     }
 
+    /**
+     * A no-op invocation registry that does nothing.
+     */
+    private static class NoopInvocationRegistry extends InvocationRegistry {
+        public NoopInvocationRegistry() {
+            super(null, null);
+        }
+
+        @Override
+        public void registerMethodInvocation(Signature signature) {
+            // no-op
+        }
+
+        @Override
+        public void registerJspPageExecution(String pageName) {
+            // no-op
+        }
+    }
 }

@@ -47,11 +47,14 @@ public class CodekvastCollector {
      * @param args The string after the equals sign in -javaagent:codekvast-collector.jar=args. Is used as overrides to the collector
      *             configuration file.
      * @param inst The standard instrumentation hook.
-     *             @throws URISyntaxException if args is not a valid URL
      */
     @SuppressWarnings("UseOfSystemOutOrSystemErr")
     public static void premain(String args, Instrumentation inst) throws URISyntaxException {
         CollectorConfig config = CollectorConfig.parseCollectorConfig(CollectorConfigLocator.locateConfig(System.out), args);
+        if (config == null) {
+            System.out.printf("%s will not start%n", NAME);
+            return;
+        }
 
         CodekvastCollector.out = config.isVerbose() ? System.err : new PrintStream(new NullOutputStream());
 
