@@ -16,6 +16,7 @@ public class CollectorConfigLocator {
 
     public static final String ENVVAR_CONFIG = "CODEKVAST_CONFIG";
     public static final String ENVVAR_HOME = "CODEKVAST_HOME";
+    public static final String ENVVAR_CATALINA_HOME = "CATALINA_HOME";
     public static final String SYSPROP_CONFIG = "codekvast.configuration";
     public static final String SYSPROP_OPTS = "codekvast.options";
     public static final String SYSPROP_HOME = "codekvast.home";
@@ -25,17 +26,12 @@ public class CollectorConfigLocator {
     }
 
     public static URI locateConfig(PrintStream out) {
-        File file = tryLocation(out, System.getenv(ENVVAR_CONFIG));
+        File file = tryLocation(out, System.getProperty(SYSPROP_CONFIG));
         if (file != null) {
             return file.toURI();
         }
 
-        file = tryLocation(out, System.getProperty(SYSPROP_CONFIG));
-        if (file != null) {
-            return file.toURI();
-        }
-
-        file = tryLocation(out, constructLocation(System.getenv(ENVVAR_HOME), "conf"));
+        file = tryLocation(out, System.getenv(ENVVAR_CONFIG));
         if (file != null) {
             return file.toURI();
         }
@@ -45,12 +41,32 @@ public class CollectorConfigLocator {
             return file.toURI();
         }
 
+        file = tryLocation(out, constructLocation(System.getenv(ENVVAR_HOME), "conf"));
+        if (file != null) {
+            return file.toURI();
+        }
+
         file = tryLocation(out, constructLocation(System.getProperty(SYSPROP_CATALINA_HOME), "conf"));
         if (file != null) {
             return file.toURI();
         }
 
+        file = tryLocation(out, constructLocation(System.getenv(ENVVAR_CATALINA_HOME), "conf"));
+        if (file != null) {
+            return file.toURI();
+        }
+
         file = tryLocation(out, constructLocation(getCollectorHome(), "conf"));
+        if (file != null) {
+            return file.toURI();
+        }
+
+        file = tryLocation(out, "/etc/codekvast");
+        if (file != null) {
+            return file.toURI();
+        }
+
+        file = tryLocation(out, "/etc");
         if (file != null) {
             return file.toURI();
         }

@@ -1,8 +1,12 @@
 # Codekvast Agent Release Notes
 
+## 0.8.11
+
+- codekvast.conf is found automactically if placed in /etc/codekvast or /etc.
+
 ## 0.8.10
 
-- Added possibility to configure collector with -Dcodekvast.options=key=value;key=value;... in addition to the values in codekvast.conf
+- Added possibility to configure collector with -Dcodekvast.options=key=value;key=value;... to override values in codekvast.conf
 
 ## 0.8.9
 
