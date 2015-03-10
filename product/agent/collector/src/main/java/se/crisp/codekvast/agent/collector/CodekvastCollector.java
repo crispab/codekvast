@@ -52,7 +52,7 @@ public class CodekvastCollector {
     public static void premain(String args, Instrumentation inst) throws URISyntaxException {
         CollectorConfig config = CollectorConfig.parseCollectorConfig(CollectorConfigLocator.locateConfig(System.out), args);
         if (config == null) {
-            System.out.printf("%s will not start%n", NAME);
+            System.out.printf("%s is not configured and will remain passive.%n", NAME);
             return;
         }
 

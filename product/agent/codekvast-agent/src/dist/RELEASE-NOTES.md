@@ -1,5 +1,9 @@
 # Codekvast Agent Release Notes
 
+## 0.8.13
+
+- codekvast-collector.jar is less verbose on System.out
+
 ## 0.8.12
 
 - codekvast-collector.jar will remain passive (a no-op) when no codekvast.conf is found.

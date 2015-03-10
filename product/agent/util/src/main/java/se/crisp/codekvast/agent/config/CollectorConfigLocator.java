@@ -76,7 +76,6 @@ public class CollectorConfigLocator {
         if (file != null) {
             return file.toURI();
         }
-        out.println("Cannot find codekvast-collector.conf nor codekvast.conf, codekvast will be disabled");
         return null;
     }
 
@@ -107,7 +106,6 @@ public class CollectorConfigLocator {
             return file;
         }
 
-        out.println("No codekvast.conf in " + location);
         return null;
     }
 
