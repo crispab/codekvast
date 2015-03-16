@@ -15,15 +15,13 @@ import java.util.Collection;
 @Builder
 public class SignatureDataMessage {
     /**
-     * Which users should be broadcast this message (if logged in)?
+     * Optional: Which users should be broadcast this message (if logged in)?
      */
-    @NonNull
     Collection<String> usernames;
 
     /**
-     * To which app do the signatures belong?
+     * Optional: To which app do the signatures belong?
      */
-    @NonNull
     AppId appId;
 
     /**
