@@ -9,6 +9,8 @@ import java.util.Collection;
 
 /**
  * A display object posted every time signature data is received from an agent.
+ * It is also returned by a HTTP GET request when a user logs in.
+ *
  * @author olle.hallin@crisp.se
  */
 @Value
