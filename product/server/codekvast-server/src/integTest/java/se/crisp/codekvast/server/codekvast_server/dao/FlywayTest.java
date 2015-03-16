@@ -7,6 +7,7 @@ import org.springframework.boot.test.IntegrationTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import se.crisp.codekvast.server.codekvast_server.config.CodekvastSettings;
 import se.crisp.codekvast.server.codekvast_server.config.DatabaseConfig;
 
 import javax.inject.Inject;
@@ -19,7 +20,7 @@ import static org.junit.Assert.assertThat;
  * @author olle.hallin@crisp.se
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {DataSourceAutoConfiguration.class, DatabaseConfig.class})
+@ContextConfiguration(classes = {DataSourceAutoConfiguration.class, DatabaseConfig.class, CodekvastSettings.class})
 @IntegrationTest("spring.datasource.url=jdbc:h2:mem:flywayTest")
 public class FlywayTest {
 

@@ -4,6 +4,8 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+
 /**
  * Wrapper for environment properties codekvast.*
  *
@@ -15,4 +17,5 @@ import org.springframework.stereotype.Component;
 public class CodekvastSettings {
     private boolean multiTenant = false;
     private int defaultTrulyDeadAfterSeconds = 30 * 24 * 60 * 60;
+    private File backupPath = new File("/var/backups/codekvast");
 }
