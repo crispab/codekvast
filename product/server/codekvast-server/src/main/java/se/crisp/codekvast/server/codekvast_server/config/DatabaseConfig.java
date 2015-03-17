@@ -11,15 +11,14 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import se.crisp.codekvast.server.codekvast_server.migration.V1_1__DummyJavaMigration;
+import se.crisp.codekvast.server.codekvast_server.util.DatabaseUtils;
 
 import javax.sql.DataSource;
-import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Locale;
+import java.util.Date;
 
 /**
  * Initializes the database.
@@ -46,7 +45,7 @@ public class DatabaseConfig {
         flyway.setDataSource(dataSource);
         flyway.setLocations(SQL_MIGRATION_LOCATION, JAVA_MIGRATION_LOCATION);
 
-        backupDatabaseIfNeeded(dataSource, codekvastSettings, flyway.info().pending());
+        backupDatabaseBeforeMigration(dataSource, codekvastSettings, flyway.info().pending());
 
         flyway.migrate();
 
@@ -55,23 +54,25 @@ public class DatabaseConfig {
         return flyway;
     }
 
-    private void backupDatabaseIfNeeded(DataSource dataSource, CodekvastSettings codekvastSettings, MigrationInfo[] pendingMigrations)
+    private void backupDatabaseBeforeMigration(DataSource dataSource, CodekvastSettings codekvastSettings,
+                                               MigrationInfo[] pendingMigrations)
             throws SQLException {
-        org.apache.tomcat.jdbc.pool.DataSource ds = (org.apache.tomcat.jdbc.pool.DataSource) dataSource;
-        if (!ds.getUrl().contains(":mem") && pendingMigrations != null && pendingMigrations.length > 0) {
-            String firstPendingMigration = pendingMigrations[0].getVersion().toString();
-            if (!firstPendingMigration.equals("1.0")) {
+
+        if (pendingMigrations != null && pendingMigrations.length > 0) {
+
+            String firstPendingVersion = pendingMigrations[0].getVersion().toString();
+
+            if (!DatabaseUtils.isMemoryDatabase(dataSource) && !firstPendingVersion.equals("1.0")) {
                 long startedAt = System.currentTimeMillis();
-                log.debug("Backing up database before migration to V{}", firstPendingMigration);
 
-                String backupFile = getBackupFile(firstPendingMigration, codekvastSettings.getBackupPath(),
-                                                  new File("/tmp/codekvast/.backup"));
-                PreparedStatement statement = dataSource.getConnection().prepareStatement("BACKUP TO ?");
-                statement.setString(1, backupFile);
-                statement.executeUpdate();
+                String firstPendingScript = pendingMigrations[0].getScript().replace(".sql", "").replace(".java", "");
+                log.info("Backing up database before executing {}", firstPendingScript);
 
-                long elapsedMillis = System.currentTimeMillis() - startedAt;
-                log.info("Backed up database to {} in {} ms", backupFile, elapsedMillis);
+                String backupFile = DatabaseUtils.getBackupFile(codekvastSettings, new Date(), "before_" + firstPendingScript);
+
+                DatabaseUtils.backupDatabase(dataSource, backupFile);
+
+                log.info("Backed up database to {} in {} ms", backupFile, System.currentTimeMillis() - startedAt);
             }
         }
     }
@@ -80,10 +81,8 @@ public class DatabaseConfig {
         log.debug("Replacing plaintext passwords...");
 
         try (
-                ResultSet resultSet = connection.createStatement()
-                                                .executeQuery(
-                                                        "SELECT username, plaintext_password FROM users WHERE plaintext_password IS NOT " +
-                                                                "NULL");
+                ResultSet resultSet = connection.createStatement().executeQuery(
+                        "SELECT username, plaintext_password FROM users WHERE plaintext_password IS NOT NULL");
                 PreparedStatement update = connection
                         .prepareStatement("UPDATE users SET encoded_password = ?, plaintext_password = NULL WHERE username = ?")) {
 
@@ -124,17 +123,6 @@ public class DatabaseConfig {
     public NamedParameterJdbcTemplate namedParameterJdbcTemplate(DataSource dataSource) {
         log.debug("Creates a NamedParameterJdbcTemplate");
         return new NamedParameterJdbcTemplate(dataSource);
-    }
-
-    static String getBackupFile(String version, File... backupPaths) {
-        for (File path : backupPaths) {
-            path.mkdirs();
-            if (path.canWrite()) {
-                return new File(path, String.format(Locale.ENGLISH, "codekvast_before_upgrade_to_%s.zip", version).replaceAll("[-:]", ""))
-                        .getAbsolutePath();
-            }
-        }
-        throw new IllegalArgumentException(new IOException("Cannot create backup file in any of " + backupPaths));
     }
 
 
