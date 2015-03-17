@@ -1,5 +1,9 @@
 # Codekvast Agent Release Notes
 
+## 0.8.14
+
+- codekvast-collector.jar is now completely silent unless -Dcodekvast.options=verbose=true
+
 ## 0.8.13
 
 - codekvast-collector.jar is less verbose on System.out

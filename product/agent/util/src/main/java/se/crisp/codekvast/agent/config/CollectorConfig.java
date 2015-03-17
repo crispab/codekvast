@@ -110,6 +110,16 @@ public class CollectorConfig implements CodekvastConfig {
         }
     }
 
+    /**
+     * @return true if the system property {@code codekvast.options} or the environment variable {@code CODEKVAST_OPTIONS} contains
+     * "verbose=true"
+     */
+    public static boolean isSyspropVerbose() {
+        Properties props = new Properties();
+        parseOverrides(props, System.getProperty(CollectorConfigLocator.SYSPROP_OPTS, System.getenv(CollectorConfigLocator.ENVVAR_OPTS)));
+        return getVerboseValue(props);
+    }
+
     static void parseOverrides(Properties props, String args) {
         if (args != null) {
             String overrides[] = args.split(";");
@@ -134,8 +144,12 @@ public class CollectorConfig implements CodekvastConfig {
                                                                                           DEFAULT_METHOD_EXECUTION_POINTCUT))
                               .packagePrefixes(ConfigUtils.getMandatoryStringValue(props, "packagePrefixes"))
                               .tags(ConfigUtils.getOptionalStringValue(props, "tags", ""))
-                              .verbose(ConfigUtils.getOptionalBooleanValue(props, "verbose", DEFAULT_VERBOSE))
+                              .verbose(getVerboseValue(props))
                               .build();
+    }
+
+    private static boolean getVerboseValue(Properties props) {
+        return ConfigUtils.getOptionalBooleanValue(props, "verbose", DEFAULT_VERBOSE);
     }
 
     public static CollectorConfig createSampleCollectorConfig() {

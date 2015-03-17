@@ -1,13 +1,13 @@
 package se.crisp.codekvast.agent.config;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static se.crisp.codekvast.agent.config.CollectorConfigLocator.SYSPROP_CONFIG;
-import static se.crisp.codekvast.agent.config.CollectorConfigLocator.SYSPROP_HOME;
+import static se.crisp.codekvast.agent.config.CollectorConfigLocator.*;
 
 public class CollectorConfigLocatorTest {
 
@@ -15,6 +15,12 @@ public class CollectorConfigLocatorTest {
     public void beforeTest() throws Exception {
         System.clearProperty(SYSPROP_CONFIG);
         System.clearProperty(SYSPROP_HOME);
+        System.setProperty(SYSPROP_OPTS, "verbose=true");
+    }
+
+    @After
+    public void afterTest() throws Exception {
+        System.clearProperty(SYSPROP_OPTS);
     }
 
     @Test

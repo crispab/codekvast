@@ -14,13 +14,14 @@ import java.net.URISyntaxException;
  */
 public class CollectorConfigLocator {
 
+    public static final String ENVVAR_CATALINA_HOME = "CATALINA_HOME";
     public static final String ENVVAR_CONFIG = "CODEKVAST_CONFIG";
     public static final String ENVVAR_HOME = "CODEKVAST_HOME";
-    public static final String ENVVAR_CATALINA_HOME = "CATALINA_HOME";
+    public static final String ENVVAR_OPTS = "CODEKVAST_OPTIONS";
+    public static final String SYSPROP_CATALINA_HOME = "catalina.home";
     public static final String SYSPROP_CONFIG = "codekvast.configuration";
-    public static final String SYSPROP_OPTS = "codekvast.options";
     public static final String SYSPROP_HOME = "codekvast.home";
-    private static final String SYSPROP_CATALINA_HOME = "catalina.home";
+    public static final String SYSPROP_OPTS = "codekvast.options";
 
     private CollectorConfigLocator() {
     }
@@ -32,77 +33,94 @@ public class CollectorConfigLocator {
      * @return null if no config file could be found.
      */
     public static URI locateConfig(PrintStream out) {
-        File file = tryLocation(out, System.getProperty(SYSPROP_CONFIG));
+        boolean verbose = CollectorConfig.isSyspropVerbose();
+        File file = tryLocation(out, verbose, System.getProperty(SYSPROP_CONFIG));
         if (file != null) {
+            printMessage(out, verbose, "Found " + file);
             return file.toURI();
         }
 
-        file = tryLocation(out, System.getenv(ENVVAR_CONFIG));
+        file = tryLocation(out, verbose, System.getenv(ENVVAR_CONFIG));
         if (file != null) {
+            printMessage(out, verbose, "Found " + file);
             return file.toURI();
         }
 
-        file = tryLocation(out, constructLocation(System.getProperty(SYSPROP_HOME), "conf"));
+        file = tryLocation(out, verbose, constructLocation(System.getProperty(SYSPROP_HOME), "conf"));
         if (file != null) {
+            printMessage(out, verbose, "Found " + file);
             return file.toURI();
         }
 
-        file = tryLocation(out, constructLocation(System.getenv(ENVVAR_HOME), "conf"));
+        file = tryLocation(out, verbose, constructLocation(System.getenv(ENVVAR_HOME), "conf"));
         if (file != null) {
+            printMessage(out, verbose, "Found " + file);
             return file.toURI();
         }
 
-        file = tryLocation(out, constructLocation(System.getProperty(SYSPROP_CATALINA_HOME), "conf"));
+        file = tryLocation(out, verbose, constructLocation(System.getProperty(SYSPROP_CATALINA_HOME), "conf"));
         if (file != null) {
+            printMessage(out, verbose, "Found " + file);
             return file.toURI();
         }
 
-        file = tryLocation(out, constructLocation(System.getenv(ENVVAR_CATALINA_HOME), "conf"));
+        file = tryLocation(out, verbose, constructLocation(System.getenv(ENVVAR_CATALINA_HOME), "conf"));
         if (file != null) {
+            printMessage(out, verbose, "Found " + file);
             return file.toURI();
         }
 
-        file = tryLocation(out, constructLocation(getCollectorHome(), "conf"));
+        file = tryLocation(out, verbose, constructLocation(getCollectorHome(), "conf"));
         if (file != null) {
+            printMessage(out, verbose, "Found " + file);
             return file.toURI();
         }
 
-        file = tryLocation(out, "/etc/codekvast");
+        file = tryLocation(out, verbose, "/etc/codekvast");
         if (file != null) {
+            printMessage(out, verbose, "Found " + file);
             return file.toURI();
         }
 
-        file = tryLocation(out, "/etc");
+        file = tryLocation(out, verbose, "/etc");
         if (file != null) {
+            printMessage(out, verbose, "Found " + file);
             return file.toURI();
         }
+        printMessage(out, verbose, "No configuration file found, Codekvast will not start.");
         return null;
+    }
+
+    private static void printMessage(PrintStream out, boolean verbose, String message) {
+        if (verbose) {
+            out.println("Codekvast: " + message);
+        }
     }
 
     private static String constructLocation(String home, String subdirectory) {
         return home == null ? null : new File(home, subdirectory).getAbsolutePath();
     }
 
-    private static File tryLocation(PrintStream out, String location) {
+    private static File tryLocation(PrintStream out, boolean verbose, String location) {
         if (location == null) {
             return null;
         }
 
         File file = new File(location);
+        printMessage(out, verbose, "Examining " + file);
         if (file.isFile()) {
-            out.println("Found " + file);
             return file;
         }
 
         file = new File(location, "codekvast-collector.conf");
+        printMessage(out, verbose, "Looking for " + file);
         if (file.canRead()) {
-            out.println("Found " + file);
             return file;
         }
 
         file = new File(location, "codekvast.conf");
+        printMessage(out, verbose, "Looking for " + file);
         if (file.canRead()) {
-            out.println("Found " + file);
             return file;
         }
 

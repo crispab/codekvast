@@ -54,4 +54,15 @@ public class CollectorConfigTest {
         assertThat(config.getCodeBase(), is("/path/to/kaka"));
     }
 
+    @Test
+    public void testIsSyspropVerbose() {
+        assertThat(CollectorConfig.isSyspropVerbose(), is(false));
+
+        System.setProperty(CollectorConfigLocator.SYSPROP_OPTS, "verbose=true;clobberAopXml=false;codeBase=/path/to/$appName");
+        assertThat(CollectorConfig.isSyspropVerbose(), is(true));
+
+        System.setProperty(CollectorConfigLocator.SYSPROP_OPTS, "verbose=false;clobberAopXml=false;codeBase=/path/to/$appName");
+        assertThat(CollectorConfig.isSyspropVerbose(), is(false));
+    }
+
 }
