@@ -1,13 +1,13 @@
 package se.crisp.codekvast.server.codekvast_server.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import se.crisp.codekvast.server.codekvast_server.config.CodekvastSettings;
 import se.crisp.codekvast.server.codekvast_server.util.DatabaseUtils;
 
 import javax.inject.Inject;
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Date;
 
@@ -20,28 +20,29 @@ import java.util.Date;
 @Slf4j
 public class DatabaseBackupScheduler {
 
-    private final DataSource dataSource;
+    private static final String FILENAME_SUFFIX = "scheduled.zip";
+    private final JdbcTemplate jdbcTemplate;
     private final CodekvastSettings settings;
 
     @Inject
-    public DatabaseBackupScheduler(DataSource dataSource, CodekvastSettings settings) {
-        this.dataSource = dataSource;
+    public DatabaseBackupScheduler(JdbcTemplate jdbcTemplate, CodekvastSettings settings) {
+        this.jdbcTemplate = jdbcTemplate;
         this.settings = settings;
     }
 
     @Scheduled(cron = "${codekvast.backupSchedule}")
     public void createBackup() throws SQLException {
-        if (DatabaseUtils.isMemoryDatabase(dataSource)) {
+        if (DatabaseUtils.isMemoryDatabase(jdbcTemplate.getDataSource())) {
             log.debug("Not backing up a memory database");
         } else {
             long startedAt = System.currentTimeMillis();
 
-            String backupFile = DatabaseUtils.getBackupFile(settings, new Date(), "scheduled");
+            String backupFile = DatabaseUtils.getBackupFile(settings, new Date(), FILENAME_SUFFIX);
             log.debug("Backing up database to {}", backupFile);
-
-            DatabaseUtils.backupDatabase(dataSource, backupFile);
-
+            DatabaseUtils.backupDatabase(jdbcTemplate, backupFile);
             log.info("Database backed up to {} in {} ms", backupFile, System.currentTimeMillis() - startedAt);
+
+            DatabaseUtils.removeOldBackups(settings, FILENAME_SUFFIX);
         }
     }
 }
