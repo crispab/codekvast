@@ -20,7 +20,7 @@ import java.util.Date;
 @Slf4j
 public class DatabaseBackupScheduler {
 
-    private static final String FILENAME_SUFFIX = "scheduled.zip";
+    private static final String FILENAME_SUFFIX = "scheduled";
     private final JdbcTemplate jdbcTemplate;
     private final CodekvastSettings settings;
 
@@ -32,7 +32,7 @@ public class DatabaseBackupScheduler {
 
     @Scheduled(cron = "${codekvast.backupSchedule}")
     public void createBackup() throws SQLException {
-        if (DatabaseUtils.isMemoryDatabase(jdbcTemplate.getDataSource())) {
+        if (DatabaseUtils.isMemoryDatabase(jdbcTemplate)) {
             log.debug("Not backing up a memory database");
         } else {
             long startedAt = System.currentTimeMillis();

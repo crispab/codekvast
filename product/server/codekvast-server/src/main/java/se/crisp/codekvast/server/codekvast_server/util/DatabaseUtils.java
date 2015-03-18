@@ -2,10 +2,10 @@ package se.crisp.codekvast.server.codekvast_server.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.jdbc.pool.PoolConfiguration;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import se.crisp.codekvast.server.codekvast_server.config.CodekvastSettings;
 
-import javax.sql.DataSource;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -22,21 +22,75 @@ import java.util.Locale;
 @Slf4j
 public class DatabaseUtils {
 
-    public static boolean isMemoryDatabase(DataSource dataSource) {
-        return ((PoolConfiguration) dataSource).getUrl().contains(":mem:");
+    private static final String CHARSET = "UTF-8";
+    private static final String COMPRESSION = "ZIP";
+
+    /**
+     * If found in ${codekvast.backupPath}, it will be used for restoring the database.
+     */
+    public static final String RESTORE_ME_FILE = "restore-me." + COMPRESSION.toLowerCase();
+
+    /**
+     * Looks for {@link #RESTORE_ME_FILE} in {@link CodekvastSettings#getBackupPaths()}. If found, it is used for restoring the database.
+     * The file is renamed afterwards to prevent it from being restored again.
+     */
+    public static void restoreDatabaseIfRestoreMeFileWasFound(JdbcTemplate jdbcTemplate, CodekvastSettings settings) {
+        for (File path : settings.getBackupPaths()) {
+            File file = new File(path, RESTORE_ME_FILE);
+            if (file.isFile() && file.canRead()) {
+
+                File renameTo;
+                String timestamp = formatTimestamp(new Date());
+                try {
+                    log.debug("Restoring database from {} ...", file);
+
+                    String sql = String.format("RUNSCRIPT FROM '%s' COMPRESSION %s CHARSET '%s' ", file, COMPRESSION, CHARSET);
+                    jdbcTemplate.execute(sql);
+                    renameTo = new File(file.getPath() + ".restored_" + timestamp);
+                    log.info("Restored database from {}", file);
+                } catch (DataAccessException e) {
+                    log.error("Could not restore database from " + file, e);
+                    renameTo = new File(file.getPath() + ".failed_" + timestamp);
+                }
+
+                boolean renamed = file.renameTo(renameTo);
+                if (renamed) {
+                    log.debug("Renamed {} to {}", file, renameTo);
+                } else {
+                    log.warn("\n----------------------------------------------------------------------\n" +
+                                     "Could not rename {} to {}\n" +
+                                     "Rename or delete it manually before restarting the server,\n" +
+                                     "or else it will be restored from once again!\n" +
+                                     "----------------------------------------------------------------------",
+                             file, renameTo);
+                }
+
+                return;
+            }
+        }
+    }
+
+    private static String formatTimestamp(Date date) {
+        return new SimpleDateFormat("yyyyMMdd_HHmmss").format(date);
+    }
+
+    public static boolean isMemoryDatabase(JdbcTemplate jdbcTemplate) {
+        return ((PoolConfiguration) jdbcTemplate.getDataSource()).getUrl().contains(":mem:");
     }
 
     public static void backupDatabase(JdbcTemplate jdbcTemplate, String backupFile) throws SQLException {
-        String sql = String.format("SCRIPT NOPASSWORDS DROP TO '%s' COMPRESSION ZIP CHARSET 'UTF-8' ", backupFile);
+        String sql = String.format("SCRIPT NOPASSWORDS DROP TO '%s' COMPRESSION %s CHARSET '%s' ", backupFile, COMPRESSION, CHARSET);
         jdbcTemplate.execute(sql);
     }
 
-    public static void removeOldBackups(CodekvastSettings settings, final String suffix) {
+    public static void removeOldBackups(CodekvastSettings settings, String suffix) {
+        final String endsWith = suffix + "." + COMPRESSION.toLowerCase();
         for (File path : settings.getBackupPaths()) {
+
             File[] files = path.listFiles(new FilenameFilter() {
                 @Override
                 public boolean accept(File file, String s) {
-                    return s.endsWith(suffix);
+                    return s.endsWith(endsWith);
                 }
             });
 
@@ -62,8 +116,8 @@ public class DatabaseUtils {
         for (File path : settings.getBackupPaths()) {
             path.mkdirs();
             if (path.canWrite()) {
-                String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(date);
-                String name = String.format(Locale.ENGLISH, "%s_%s", timestamp, suffix);
+                String timestamp = formatTimestamp(date);
+                String name = String.format(Locale.ENGLISH, "%s_%s.%s", timestamp, suffix, COMPRESSION.toLowerCase());
                 File file = new File(path, name);
                 try {
                     return file.getCanonicalPath();

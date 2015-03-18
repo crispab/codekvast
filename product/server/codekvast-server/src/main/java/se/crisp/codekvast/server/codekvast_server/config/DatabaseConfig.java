@@ -40,14 +40,20 @@ public class DatabaseConfig {
 
     @Bean
     public Flyway flyway(DataSource dataSource, CodekvastSettings codekvastSettings) throws SQLException {
+        // Cannot use the jdbcTemplate bean, since it has not yet been constructed.
+        // The method {@code @Bean jdbcTemplate(DataSource)} depends on the currently executing method.
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+
+        if (!DatabaseUtils.isMemoryDatabase(jdbcTemplate)) {
+            DatabaseUtils.restoreDatabaseIfRestoreMeFileWasFound(jdbcTemplate, codekvastSettings);
+        }
+
         log.info("Migrating database at {}", dataSource.getConnection().getMetaData().getURL());
         Flyway flyway = new Flyway();
         flyway.setDataSource(dataSource);
         flyway.setLocations(SQL_MIGRATION_LOCATION, JAVA_MIGRATION_LOCATION);
 
-        // Cannot use the jdbcTemplate bean, since it has not yet been constructed.
-        // The method {@code @Bean jdbcTemplate(DataSource)} depends on the currently executing method.
-        backupDatabaseBeforeMigration(new JdbcTemplate(dataSource), codekvastSettings, flyway.info().pending());
+        backupDatabaseBeforeMigration(jdbcTemplate, codekvastSettings, flyway.info().pending());
 
         flyway.migrate();
 
@@ -64,13 +70,13 @@ public class DatabaseConfig {
 
             String firstPendingVersion = pendingMigrations[0].getVersion().toString();
 
-            if (!DatabaseUtils.isMemoryDatabase(jdbcTemplate.getDataSource()) && !firstPendingVersion.equals("1.0")) {
+            if (!DatabaseUtils.isMemoryDatabase(jdbcTemplate) && !firstPendingVersion.equals("1.0")) {
                 long startedAt = System.currentTimeMillis();
 
                 String firstPendingScript = pendingMigrations[0].getScript().replace(".sql", "").replace(".java", "");
                 log.info("Backing up database before executing {}", firstPendingScript);
 
-                String backupFile = DatabaseUtils.getBackupFile(codekvastSettings, new Date(), "before_" + firstPendingScript + ".zip");
+                String backupFile = DatabaseUtils.getBackupFile(codekvastSettings, new Date(), "before_" + firstPendingScript);
                 DatabaseUtils.backupDatabase(jdbcTemplate, backupFile);
 
                 log.info("Backed up database to {} in {} ms", backupFile, System.currentTimeMillis() - startedAt);
