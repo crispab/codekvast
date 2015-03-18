@@ -21,6 +21,7 @@ import java.lang.annotation.*;
                   "spring.thymeleaf.cache=true",
                   "spring.datasource.url=jdbc:h2:mem:integrationTest",
                   "codekvast.backupPath=build/backup",
+                  "codekvast.backupSchedule=0 0 4 * * *"
 })
 public @interface EmbeddedCodekvastServerIntegTest {
 }

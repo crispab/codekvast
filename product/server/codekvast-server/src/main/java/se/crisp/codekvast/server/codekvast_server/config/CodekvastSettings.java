@@ -18,4 +18,9 @@ public class CodekvastSettings {
     private boolean multiTenant = false;
     private int defaultTrulyDeadAfterSeconds = 30 * 24 * 60 * 60;
     private File backupPath = new File("/var/backups/codekvast");
+
+    public File[] getBackupPaths() {
+        File fallbackPath = new File(System.getProperty("java.io.tmpdir"), "codekvast/.backup");
+        return new File[]{backupPath, fallbackPath};
+    }
 }

@@ -8,6 +8,7 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
@@ -19,7 +20,7 @@ import java.util.Locale;
 public class DatabaseUtils {
 
     public static boolean isMemoryDatabase(DataSource dataSource) {
-        return ((PoolConfiguration) dataSource).getUrl().contains(":mem");
+        return ((PoolConfiguration) dataSource).getUrl().contains(":mem:");
     }
 
     public static void backupDatabase(DataSource dataSource, String backupFile) throws SQLException {
@@ -28,16 +29,20 @@ public class DatabaseUtils {
     }
 
     public static String getBackupFile(CodekvastSettings settings, Date date, String suffix) {
-        File[] backupPaths = {settings.getBackupPath(), new File("/tmp/codekvast/.backup")};
-
-        for (File path : backupPaths) {
+        for (File path : settings.getBackupPaths()) {
             path.mkdirs();
             if (path.canWrite()) {
-                return new File(path, String.format(Locale.ENGLISH, "%1$tF_%1$tT_%2$s.zip", date, suffix)
-                                            .replaceAll("[-:]", ""))
-                        .getAbsolutePath();
+                String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(date);
+                String name = String.format(Locale.ENGLISH, "%s_%s.zip", timestamp, suffix);
+                File file = new File(path, name);
+                try {
+                    return file.getCanonicalPath();
+                } catch (IOException e) {
+                    return file.getAbsolutePath();
+                }
             }
         }
-        throw new IllegalArgumentException(new IOException("Cannot create backup file in any of " + Arrays.toString(backupPaths)));
+        throw new IllegalArgumentException(
+                new IOException("Cannot create backup file in any of " + Arrays.toString(settings.getBackupPaths())));
     }
 }
