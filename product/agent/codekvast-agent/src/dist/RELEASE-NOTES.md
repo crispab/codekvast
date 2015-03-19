@@ -1,5 +1,9 @@
 # Codekvast Agent Release Notes
 
+## 0.8.15
+
+- Implemented backup and restore in codekvast-server.
+
 ## 0.8.14
 
 - codekvast-collector.jar is now completely silent unless -Dcodekvast.options=verbose=true
