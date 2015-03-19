@@ -30,6 +30,11 @@ public class DatabaseUtils {
      */
     public static final String RESTORE_ME_FILE = "restore-me." + COMPRESSION.toLowerCase();
 
+    public static void backupDatabase(JdbcTemplate jdbcTemplate, String backupFile) throws SQLException {
+        String sql = String.format("SCRIPT NOPASSWORDS DROP TO '%s' COMPRESSION %s CHARSET '%s' ", backupFile, COMPRESSION, CHARSET);
+        jdbcTemplate.execute(sql);
+    }
+
     /**
      * Looks for {@link #RESTORE_ME_FILE} in {@link CodekvastSettings#getBackupPaths()}. If found, it is used for restoring the database.
      * The file is renamed afterwards to prevent it from being restored again.
@@ -58,9 +63,9 @@ public class DatabaseUtils {
                     log.debug("Renamed {} to {}", file, renameTo);
                 } else {
                     log.warn("\n----------------------------------------------------------------------\n" +
-                                     "Could not rename {} to {}\n" +
-                                     "Rename or delete it manually before restarting the server,\n" +
-                                     "or else it will be restored from once again!\n" +
+                                     "  Could not rename {} to {}\n" +
+                                     "  Rename or delete the file manually before restarting the server,\n" +
+                                     "  or else it will be restored from once again!\n" +
                                      "----------------------------------------------------------------------",
                              file, renameTo);
                 }
@@ -76,11 +81,6 @@ public class DatabaseUtils {
 
     public static boolean isMemoryDatabase(JdbcTemplate jdbcTemplate) {
         return ((PoolConfiguration) jdbcTemplate.getDataSource()).getUrl().contains(":mem:");
-    }
-
-    public static void backupDatabase(JdbcTemplate jdbcTemplate, String backupFile) throws SQLException {
-        String sql = String.format("SCRIPT NOPASSWORDS DROP TO '%s' COMPRESSION %s CHARSET '%s' ", backupFile, COMPRESSION, CHARSET);
-        jdbcTemplate.execute(sql);
     }
 
     public static void removeOldBackups(CodekvastSettings settings, String suffix) {
