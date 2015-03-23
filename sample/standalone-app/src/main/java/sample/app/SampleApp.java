@@ -86,7 +86,7 @@ public class SampleApp {
         sum = 0;
         TrackedClass tracked = new TrackedClass();
         for (int i = 0; i < count; i++) {
-            sum += tracked.foo();
+            sum += tracked.publicMethod();
         }
         log.debug("Make sure the entire loop is not bypassed by the JIT compiler... {}", sum);
         return System.currentTimeMillis() - startedAt;

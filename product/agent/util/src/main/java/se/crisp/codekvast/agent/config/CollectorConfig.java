@@ -26,7 +26,7 @@ public class CollectorConfig implements CodekvastConfig {
 
     public static final boolean DEFAULT_CLOBBER_AOP_XML = true;
     public static final String DEFAULT_ASPECTJ_OPTIONS = "";
-    public static final String DEFAULT_METHOD_EXECUTION_POINTCUT = "public * *..*(..)";
+    public static final String DEFAULT_METHOD_EXECUTION_POINTCUT = "execution(public * *..*(..))";
     public static final int DEFAULT_COLLECTOR_RESOLUTION_SECONDS = 600;
     public static final boolean DEFAULT_VERBOSE = false;
     public static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";

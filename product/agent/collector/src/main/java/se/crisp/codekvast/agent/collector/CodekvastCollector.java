@@ -123,7 +123,7 @@ public class CodekvastCollector {
                         + "    <concrete-aspect name='se.crisp.codekvast.agent.collector.aspects.MethodExecutionAspect'\n"
                         + "                     extends='%2$s'>\n"
                         + "      <pointcut name='withinScope' expression='(%3$s)'/>\n"
-                        + "      <pointcut name='methodExecution' expression='execution(%4$s)'/>\n"
+                        + "      <pointcut name='methodExecution' expression='%4$s'/>\n"
                         + "    </concrete-aspect>\n"
                         + "  </aspects>\n"
                         + "  <weaver options='%5$s'>\n"
