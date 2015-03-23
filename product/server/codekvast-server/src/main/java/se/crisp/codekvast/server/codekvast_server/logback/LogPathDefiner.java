@@ -3,6 +3,7 @@ package se.crisp.codekvast.server.codekvast_server.logback;
 import ch.qos.logback.core.PropertyDefinerBase;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Finds out where the app is located and calculates an absolute path for the Logback log files. See logback.xml
@@ -14,7 +15,7 @@ public class LogPathDefiner extends PropertyDefinerBase {
     @Override
     public String getPropertyValue() {
         String path = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-        String result = System.getProperty("logging.path");
+        String result = System.getProperty("codekvast.logPath");
         boolean makeResultWritable = false;
         if (result != null) {
             // use it as it is
@@ -40,16 +41,24 @@ public class LogPathDefiner extends PropertyDefinerBase {
         }
 
         File resultDir = new File(result);
+        if (makeResultWritable) {
+            resultDir.mkdirs();
+        }
+
         if (!resultDir.isDirectory() || !resultDir.canWrite()) {
-            if (makeResultWritable) {
-                resultDir.mkdirs();
-            } else {
-                //noinspection UseOfSystemOutOrSystemErr
-                System.err.println(resultDir.getAbsoluteFile() + " is not writable, will log to working directory");
-                result = ".";
-            }
+            result = System.getProperty("user.dir");
+            System.err.println(getCanonicalPath(resultDir) + " is not writable, will log to working directory, which is " +
+                                       getCanonicalPath(new File(result)));
         }
 
         return result;
+    }
+
+    private String getCanonicalPath(File file) {
+        try {
+            return file.getCanonicalPath();
+        } catch (IOException e) {
+            return file.getAbsolutePath();
+        }
     }
 }
