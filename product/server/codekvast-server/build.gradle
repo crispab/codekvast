@@ -92,9 +92,7 @@ dependencies {
     h2server 'com.h2database:h2'
 }
 
-import org.apache.tools.ant.filters.LineContainsRegExp
 import org.apache.tools.ant.filters.ReplaceTokens
-import org.apache.tools.ant.types.RegularExpression
 
 processResources {
     from(sourceSets.main.resources.srcDirs) {
@@ -110,14 +108,9 @@ applicationDistribution.from("src/main/resources") {
     into "conf"
     include "logback.xml", "default.properties"
     rename {
-        def name = it == "default.properties" ? "application.properties" : it
-        "${name}.default"
+        def name = it == "default.properties" ? "codekvast-server.properties" : it
+        "${name}.sample.${version}"
     }
-
-    // Suppress lines starting with info.build.
-    def regexp = new RegularExpression()
-    regexp.pattern = /^info\.build\./
-    filter(LineContainsRegExp, negate: true, regexps: [regexp])
 }
 
 startScripts {
@@ -137,6 +130,7 @@ ext.databasePath = file("build/database/codekvast")
 
 run {
     jvmArgs = ['-ea']
+    args = ["--codekvast.databasePath=tcp://localhost/$buildDir/database"]
 }
 
 bootRun {
@@ -147,6 +141,7 @@ bootRun {
             '-Dspring.thymeleaf.cache=false',
             '-Dspring.messages.cacheSeconds=1'
     ]
+    args = ["--codekvast.databasePath=tcp://localhost/$buildDir/database"]
 }
 
 jacoco {
