@@ -1,5 +1,9 @@
 # Codekvast Agent Release Notes
 
+## 0.8.16
+
+- Simplified installation of codekvast-server.
+
 ## 0.8.15
 
 - Implemented backup and restore in codekvast-server.
