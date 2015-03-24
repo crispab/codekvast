@@ -116,6 +116,19 @@
 # packagePrefixes = com.acme, foo.bar
 
 #--------------------------------------------------------------------------------------------------------
+# Which methods should be tracked?
+# One of the keywords "public", "protected", "package-private" or "private".
+#
+# public means track public methods only. This is the default.
+# protected means track public and protected methods.
+# package-private means track public, protected and package-private methods. Synonym: !private
+# private means track all methods. Synonyms: all and *
+#
+# Optional. Defaults to public.
+#--------------------------------------------------------------------------------------------------------
+# methodVisibility = public
+
+#--------------------------------------------------------------------------------------------------------
 # What collector resolution is needed?
 #
 # Controls how often invocation data is exported from the Codekvast collector.
