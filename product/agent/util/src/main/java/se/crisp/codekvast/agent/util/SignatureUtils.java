@@ -3,9 +3,9 @@ package se.crisp.codekvast.agent.util;
 import lombok.experimental.UtilityClass;
 import org.aspectj.lang.Signature;
 import org.aspectj.runtime.reflect.Factory;
+import se.crisp.codekvast.agent.config.MethodVisibilityFilter;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 
 /**
  * Utility class for dealing with signatures.
@@ -49,9 +49,9 @@ public class SignatureUtils {
      * @return The same signature object as an AspectJ execution pointcut will provide in JoinPoint.getSignature(). Returns null unless the
      * method is public.
      */
-    public static Signature makeSignature(Class clazz, Method method) {
+    public static Signature makeSignature(MethodVisibilityFilter methodVisibilityFilter, Class clazz, Method method) {
 
-        if (clazz == null || !Modifier.isPublic(method.getModifiers())) {
+        if (clazz == null || !methodVisibilityFilter.shouldInclude(method.getModifiers())) {
             return null;
         }
 
@@ -67,13 +67,14 @@ public class SignatureUtils {
     /**
      * Convenience method.
      *
+     * @param methodVisibilityFilter The method visibility filter
      * @param clazz  The class containing the method
      * @param method The method to make a signature of
-     * @see #makeSignature(Class, java.lang.reflect.Method)
+     * @see #makeSignature(MethodVisibilityFilter, Class, java.lang.reflect.Method)
      * @see #signatureToString(org.aspectj.lang.Signature, boolean)
      * @return A String representation of the signature.
      */
-    public static String makeSignatureString(Class<?> clazz, Method method) {
-        return signatureToString(makeSignature(clazz, method), true);
+    public static String makeSignatureString(MethodVisibilityFilter methodVisibilityFilter, Class<?> clazz, Method method) {
+        return signatureToString(makeSignature(methodVisibilityFilter, clazz, method), true);
     }
 }

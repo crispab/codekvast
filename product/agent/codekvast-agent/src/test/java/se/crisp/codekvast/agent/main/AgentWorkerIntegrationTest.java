@@ -88,7 +88,7 @@ public class AgentWorkerIntegrationTest {
                                             .codeBase("src/test/resources/agentWorkerTest/" + codebase)
                                             .dataPath(temporaryFolder.getRoot())
                                             .packagePrefixes("org, sample")
-                                            .methodExecutionPointcut("methodExecutionPointcut")
+                                            .methodVisibility("methodVisibility")
                                             .tags("tags")
                                             .build();
 

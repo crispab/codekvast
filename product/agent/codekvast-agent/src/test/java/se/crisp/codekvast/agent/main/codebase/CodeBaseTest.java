@@ -43,7 +43,7 @@ public class CodeBaseTest {
                                            .tags("tag1, tag2")
                                            .collectorResolutionSeconds(1)
                                            .aspectjOptions("")
-                                           .methodExecutionPointcut(CollectorConfig.DEFAULT_METHOD_EXECUTION_POINTCUT)
+                                           .methodVisibility(CollectorConfig.DEFAULT_METHOD_VISIBILITY)
                                            .build());
     }
 

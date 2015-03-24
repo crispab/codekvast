@@ -82,7 +82,7 @@ public class JvmDataTest {
                       .collectorResolutionSeconds(600)
                       .dumpedAtMillis(2000L)
                       .jvmUuid(UUID.randomUUID().toString())
-                      .methodExecutionPointcut("methodExecutionPointcut")
+                      .methodVisibility("methodVisibility")
                       .startedAtMillis(1000L)
                       .tags(tags)
                       .build();

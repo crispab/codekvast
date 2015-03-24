@@ -128,7 +128,7 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
                       .collectorResolutionSeconds(600)
                       .dumpedAtMillis(dumpedAtMillis)
                       .jvmUuid(JVM_UUID)
-                      .methodExecutionPointcut("methodExecutionPointcut")
+                      .methodVisibility("methodVisibility")
                       .startedAtMillis(startedAtMillis)
                       .tags("")
                       .build();

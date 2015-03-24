@@ -26,7 +26,7 @@ public class CollectorConfig implements CodekvastConfig {
 
     public static final boolean DEFAULT_CLOBBER_AOP_XML = true;
     public static final String DEFAULT_ASPECTJ_OPTIONS = "";
-    public static final String DEFAULT_METHOD_EXECUTION_POINTCUT = "execution(public * *..*(..))";
+    public static final String DEFAULT_METHOD_VISIBILITY = "public";
     public static final int DEFAULT_COLLECTOR_RESOLUTION_SECONDS = 600;
     public static final boolean DEFAULT_VERBOSE = false;
     public static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
@@ -41,7 +41,7 @@ public class CollectorConfig implements CodekvastConfig {
     private final File dataPath;
     private final String aspectjOptions;
     @NonNull
-    private final String methodExecutionPointcut;
+    private final String methodVisibility;
     private final int collectorResolutionSeconds;
     private final boolean clobberAopXml;
     private final boolean verbose;
@@ -93,6 +93,10 @@ public class CollectorConfig implements CodekvastConfig {
         FileUtils.writePropertiesTo(file, this, "Codekvast CollectorConfig");
     }
 
+    public MethodVisibilityFilter toMethodVisibility() {
+        return new MethodVisibilityFilter(this.methodVisibility);
+    }
+
     public static CollectorConfig parseCollectorConfig(URI uri, String cmdLineArgs) {
         if (uri == null) {
             return null;
@@ -140,8 +144,8 @@ public class CollectorConfig implements CodekvastConfig {
                               .collectorResolutionSeconds(ConfigUtils.getOptionalIntValue(props, "collectorResolutionSeconds",
                                                                                           DEFAULT_COLLECTOR_RESOLUTION_SECONDS))
                               .dataPath(ConfigUtils.getDataPath(props))
-                              .methodExecutionPointcut(ConfigUtils.getOptionalStringValue(props, "methodExecutionPointcut",
-                                                                                          DEFAULT_METHOD_EXECUTION_POINTCUT))
+                              .methodVisibility(ConfigUtils.getOptionalStringValue(props, "methodVisibility",
+                                                                                   DEFAULT_METHOD_VISIBILITY))
                               .packagePrefixes(ConfigUtils.getMandatoryStringValue(props, "packagePrefixes"))
                               .tags(ConfigUtils.getOptionalStringValue(props, "tags", ""))
                               .verbose(getVerboseValue(props))
@@ -161,7 +165,7 @@ public class CollectorConfig implements CodekvastConfig {
                               .codeBase(SAMPLE_CODEBASE_URI1 + " , " + SAMPLE_CODEBASE_URI2)
                               .collectorResolutionSeconds(DEFAULT_COLLECTOR_RESOLUTION_SECONDS)
                               .dataPath(SAMPLE_DATA_PATH)
-                              .methodExecutionPointcut(DEFAULT_METHOD_EXECUTION_POINTCUT)
+                              .methodVisibility(DEFAULT_METHOD_VISIBILITY)
                               .packagePrefixes("com.acme. , foo.bar.")
                               .tags(SAMPLE_TAGS)
                               .verbose(DEFAULT_VERBOSE)

@@ -21,7 +21,7 @@ public class TrackedClass {
         return count++;
     }
 
-    int moduleMethod() {
+    int packagePrivateMethod() {
         return count++;
     }
 }

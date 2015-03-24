@@ -153,7 +153,7 @@ public class AgentApiIntegTest {
                       .collectorResolutionSeconds(600)
                       .dumpedAtMillis(System.currentTimeMillis())
                       .jvmUuid(jvmUuid)
-                      .methodExecutionPointcut("methodExecutionPointcut")
+                      .methodVisibility("methodVisibility")
                       .startedAtMillis(System.currentTimeMillis())
                       .tags("tags")
                       .build();

@@ -42,7 +42,7 @@ public class InvocationsRegistryTest {
                                 .tags("")
                                 .collectorResolutionSeconds(1)
                                 .aspectjOptions("")
-                                .methodExecutionPointcut(CollectorConfig.DEFAULT_METHOD_EXECUTION_POINTCUT)
+                                .methodVisibility(CollectorConfig.DEFAULT_METHOD_VISIBILITY)
                                 .build();
         //@formatter:on
         InvocationRegistry.initialize(config);

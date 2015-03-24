@@ -4,10 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.springframework.stereotype.Component;
+import se.crisp.codekvast.agent.config.MethodVisibilityFilter;
 import se.crisp.codekvast.agent.util.SignatureUtils;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.net.URLClassLoader;
 import java.util.Set;
 import java.util.TreeSet;
@@ -77,21 +77,23 @@ public class CodeBaseScanner {
 
     int findPublicMethods(CodeBase codeBase, Set<String> packagePrefixes, Class<?> clazz) {
         log.debug("Analyzing {}", clazz);
+        MethodVisibilityFilter methodVisibilityFilter = codeBase.getConfig().toMethodVisibility();
         int result = 1;
         try {
             Method[] methods = clazz.getMethods();
 
             for (Method method : methods) {
-                if (Modifier.isPublic(method.getModifiers())) {
+                if (methodVisibilityFilter.shouldInclude(method.getModifiers())) {
 
                     // Some AOP frameworks (e.g., Guice) push methods from a base class down to the subclasses created in runtime.
                     // We need to map those back to the original declaring signature, or else the original,
                     // declared method will look unused.
 
-                    String thisSignature = SignatureUtils.makeSignatureString(clazz, method);
+                    String thisSignature = SignatureUtils.makeSignatureString(methodVisibilityFilter, clazz, method);
                     String declaringSignature =
-                            SignatureUtils.makeSignatureString(findDeclaringClass(method.getDeclaringClass(), method, packagePrefixes),
-                                                               method);
+                            SignatureUtils.makeSignatureString(
+                                    methodVisibilityFilter, findDeclaringClass(method.getDeclaringClass(), method, packagePrefixes),
+                                    method);
 
                     codeBase.addSignature(thisSignature, declaringSignature);
                 }

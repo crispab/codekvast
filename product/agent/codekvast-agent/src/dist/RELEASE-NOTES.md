@@ -3,6 +3,7 @@
 ## 0.8.16
 
 - Simplified installation of codekvast-server.
+- Renamed CollectorConfig.methodExecutionPointcut to CollectorConfig.methodVisibility. Same for JvmData. Breaks compatibility to 0.8.15.
 
 ## 0.8.15
 

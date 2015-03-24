@@ -5,6 +5,7 @@ import se.crisp.codekvast.agent.collector.aspects.AbstractMethodExecutionAspect;
 import se.crisp.codekvast.agent.collector.aspects.JasperExecutionAspect;
 import se.crisp.codekvast.agent.config.CollectorConfig;
 import se.crisp.codekvast.agent.config.CollectorConfigLocator;
+import se.crisp.codekvast.agent.config.MethodVisibilityFilter;
 import se.crisp.codekvast.agent.util.FileUtils;
 
 import java.io.File;
@@ -134,7 +135,7 @@ public class CodekvastCollector {
                 JasperExecutionAspect.class.getName(),
                 AbstractMethodExecutionAspect.class.getName(),
                 executionWithin.toString(),
-                config.getMethodExecutionPointcut(),
+                toMethodExecutionPointcut(config.toMethodVisibility()),
                 aspectjOptions,
                 includeWithin.toString(),
                 JasperExecutionAspect.JASPER_BASE_PACKAGE
@@ -145,6 +146,19 @@ public class CodekvastCollector {
             FileUtils.writeToFile(xml, file);
         }
         return "file:" + file.getAbsolutePath();
+    }
+
+    private static String toMethodExecutionPointcut(MethodVisibilityFilter filter) {
+        if (filter.selectsPrivateMethods()) {
+            return "execution(* *..*(..))";
+        }
+        if (filter.selectsPackagePrivateMethods()) {
+            return "execution(!private * *..*(..))";
+        }
+        if (filter.selectsProtectedMethods()) {
+            return "execution(public * *..*(..)) || execution(protected * *..*(..))";
+        }
+        return "execution(public * *..*(..))";
     }
 
     private static class InvocationDumpingTimerTask extends TimerTask {

@@ -83,7 +83,7 @@ CREATE TABLE jvm_info (
   collector_host_name           VARCHAR(255) NOT NULL
   COMMENT 'The hostname of the machine in which Codekvast Collector executes',
   collector_resolution_seconds  INTEGER      NOT NULL,
-  method_execution_pointcut     VARCHAR(255) NOT NULL,
+  method_visibility VARCHAR(50) NOT NULL,
   started_at_millis             BIGINT       NOT NULL
   COMMENT 'The value of System.currentTimeMillis() when Codekvast Collector instance was started',
   dumped_at_millis              BIGINT       NOT NULL

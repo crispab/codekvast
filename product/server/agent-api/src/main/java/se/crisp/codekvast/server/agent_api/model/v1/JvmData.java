@@ -53,8 +53,8 @@ public class JvmData {
 
     @NonNull
     @NotBlank
-    @Size(max = Constraints.MAX_METHOD_EXECUTION_POINTCUT_LENGTH)
-    private String methodExecutionPointcut;
+    @Size(max = Constraints.MAX_METHOD_VISIBILITY_LENGTH)
+    private String methodVisibility;
 
     @NonNull
     @NotBlank
