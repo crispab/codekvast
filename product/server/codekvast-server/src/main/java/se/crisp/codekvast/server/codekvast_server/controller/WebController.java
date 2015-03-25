@@ -18,7 +18,7 @@ public class WebController extends AbstractThymeleafController {
     @Inject
     private CodekvastSettings codekvastSettings;
 
-    @RequestMapping({"/", "/index"})
+    @RequestMapping({"/", "/index", "/page/**"})
     public String index() {
         return "index";
     }

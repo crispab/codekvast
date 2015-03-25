@@ -1,9 +1,23 @@
 //noinspection JSUnusedGlobalSymbols
 'use strict';
 
-var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
+var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
-    .config(['$locationProvider', function ($locationProvider) {
+    .config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
+        $routeProvider
+            .when('/page/:page*', {
+                templateUrl: function (routeParams) {
+                    return "partials/" + routeParams.page + '.html'
+                },
+                controller: 'PageController'
+            })
+
+            .otherwise({
+                templateUrl: 'partials/welcome.html',
+                controller: 'PageController'
+            });
+
+
         $locationProvider.html5Mode(true);
     }])
 
@@ -113,7 +127,11 @@ var codekvastApp = angular.module('codekvastApp', ['ui.bootstrap'])
         }
     }])
 
-    .controller('MainController', ['$scope', '$window', function ($scope, $window) {
+    .controller('PageController', ['$scope', '$window', function ($scope, $window) {
+
+    }])
+
+    .controller('JumbotronController', ['$scope', '$window', function ($scope, $window) {
         $scope.jumbotronMessage = 'Disconnected from server';
 
         $scope.$on('jumbotronMessage', function (event, message) {

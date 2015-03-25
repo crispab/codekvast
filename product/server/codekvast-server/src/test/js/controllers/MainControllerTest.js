@@ -1,11 +1,11 @@
 'use strict';
 
-describe('MainController', function () {
+describe('JumbotronController', function () {
 
     // load the controller's module
     beforeEach(module('codekvastApp'));
 
-    var MainController,
+    var JumbotronController,
         StompService,
         scope,
         now = Date.now();
@@ -14,7 +14,7 @@ describe('MainController', function () {
     beforeEach(inject(function ($controller, $rootScope, _StompService_) {
         scope = $rootScope.$new();
         StompService = _StompService_;
-        MainController = $controller('MainController', {
+        JumbotronController = $controller('JumbotronController', {
             $scope: scope
         });
     }));
