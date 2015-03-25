@@ -8,13 +8,11 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             .when('/page/:page*', {
                 templateUrl: function (routeParams) {
                     return "partials/" + routeParams.page + '.html'
-                },
-                controller: 'PageController'
+                }
             })
 
             .otherwise({
-                templateUrl: 'partials/welcome.html',
-                controller: 'PageController'
+                templateUrl: 'partials/welcome.html'
             });
 
 
@@ -60,22 +58,50 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
     .factory('StompService', ['$rootScope', '$http', '$timeout', function ($rootScope, $http, $timeout) {
         var socket = {client: null, stomp: null};
+        var lastMessages = {};
+        var allSignatures = [];
 
         var broadcast = function (event, message) {
+            lastMessages[event] = message;
+
             $timeout(function () {
                 $rootScope.$broadcast(event, message);
             }, 0);
         };
 
-        var broadcastSignatures = function (collectorStatus, signatures) {
-            if (collectorStatus) {
-                broadcast('collectorStatus', collectorStatus);
-            }
+        var getLastEvent = function (event) {
+            return lastMessages[event];
+        };
 
-            broadcast('signatures', {
-                first: collectorStatus != null,
-                signatures: signatures
-            });
+        var getAllSignatures = function () {
+            return allSignatures;
+        };
+
+        var updateSignatures = function (signatures) {
+            var startedAt = Date.now();
+            var updateLen = signatures.length;
+
+            for (var i = 0; i < updateLen; i++) {
+                var newSig = signatures[i];
+                var found = false;
+
+                for (var j = 0, len2 = allSignatures.length; j < len2; j++) {
+                    var oldSig = allSignatures[j];
+                    if (oldSig.name === newSig.name) {
+                        found = true;
+                        if (oldSig.invokedAtMillis < newSig.invokedAtMillis) {
+                            oldSig.invokedAtMillis = newSig.invokedAtMillis;
+                        }
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    allSignatures[allSignatures.length] = newSig;
+                }
+            }
+            var elapsed = Date.now() - startedAt;
+            console.log("Updated " + updateLen + " signatures in " + elapsed + " ms");
         };
 
         var onCollectorStatusMessage = function (message) {
@@ -84,7 +110,8 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
         var onSignatureDataMessage = function (message) {
             var signatureDataMessage = JSON.parse(message.body);
-            broadcastSignatures(null, signatureDataMessage.signatures);
+            updateSignatures(signatureDataMessage.signatures);
+            broadcast('signatures');
         };
 
         var onConnected = function () {
@@ -109,7 +136,9 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                 $http.get('/api/signatures')
                     .success(function (data) {
                         broadcast('jumbotronMessage', null);
-                        broadcastSignatures(data.collectorStatus, data.signatures);
+                        broadcast('collectorStatus', data.collectorStatus);
+                        allSignatures = data.signatures;
+                        broadcast('signatures');
                     })
                     .error(function (data) {
                         console.log("Cannot get signatures %o", data);
@@ -123,16 +152,14 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         };
 
         return {
-            initSocket: initSocket
+            getLastEvent: getLastEvent,
+            initSocket: initSocket,
+            getAllSignatures: getAllSignatures
         }
     }])
 
-    .controller('PageController', ['$scope', '$window', function ($scope, $window) {
-
-    }])
-
-    .controller('JumbotronController', ['$scope', '$window', function ($scope, $window) {
-        $scope.jumbotronMessage = 'Disconnected from server';
+    .controller('JumbotronController', ['$scope', '$window', 'StompService', function ($scope, $window, StompService) {
+        $scope.jumbotronMessage = StompService.getLastEvent('jumbotronMessage');
 
         $scope.$on('jumbotronMessage', function (event, message) {
             $scope.jumbotronMessage = message;
@@ -151,8 +178,8 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
     }])
 
-    .controller('CollectorController', ['$scope', '$interval', 'DateService', function ($scope, $interval, DateService) {
-        $scope.collectorStatus = undefined;
+    .controller('CollectorController', ['$scope', '$interval', 'DateService', 'StompService', function ($scope, $interval, DateService, StompService) {
+        $scope.collectorStatus = StompService.getLastEvent('collectorStatus');
         $scope.collectorStatusOpen = false;
         $scope.dateFormat = 'short';
 
@@ -183,8 +210,8 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
     }])
 
-    .controller('SignatureController', ['$scope', '$filter', function ($scope, $filter) {
-        $scope.allSignatures = [];
+    .controller('SignatureController', ['$scope', '$filter', 'StompService', function ($scope, $filter, StompService) {
+
         $scope.newestSignatures = undefined;
         $scope.newestSignaturesOpen = false;
         $scope.trulyDeadSignatures = undefined;
@@ -237,42 +264,12 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
         $scope.$watchCollection('filter', $scope.setFilteredSignatures);
 
-        $scope.$on('signatures', function (event, message) {
+        $scope.allSignatures = StompService.getAllSignatures();
+        $scope.setFilteredSignatures();
 
-            if (message.first) {
-                $scope.allSignatures = message.signatures;
-                $scope.setFilteredSignatures();
-                return;
-            }
-
-            var startedAt = Date.now();
-            var signatures = message.signatures, updateLen = message.signatures.length;
-
-            for (var i = 0; i < updateLen; i++) {
-                var newSig = signatures[i];
-                var found = false;
-
-                for (var j = 0, len2 = $scope.allSignatures.length; j < len2; j++) {
-                    var oldSig = $scope.allSignatures[j];
-                    if (oldSig.name === newSig.name) {
-                        found = true;
-                        if (oldSig.invokedAtMillis < newSig.invokedAtMillis) {
-                            oldSig.invokedAtMillis = newSig.invokedAtMillis;
-                        }
-                        break;
-                    }
-                }
-
-                if (!found) {
-                    $scope.allSignatures[$scope.allSignatures.length] = newSig;
-                }
-
-            }
-
+        $scope.$on('signatures', function (event) {
+            $scope.allSignatures = StompService.getAllSignatures();
             $scope.setFilteredSignatures();
-
-            var elapsed = Date.now() - startedAt;
-            console.log("Updated " + updateLen + " signatures in " + elapsed + " ms");
         });
 
         $scope.$on('stompDisconnected', function (event, message) {
