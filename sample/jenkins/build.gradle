@@ -6,10 +6,6 @@ sourceSets {
     javaagent
 }
 
-dependencies {
-
-}
-
 ext.tomcatVersion = "7.0.59"
 ext.tomcatDownloadUrl = "http://apache.mirrors.spacedump.net/tomcat/tomcat-7/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}.zip"
 ext.tomcatDir = file("$buildDir/tomcat")
@@ -84,6 +80,7 @@ appVersion = manifest jenkins-cli.*\\\\.jar Jenkins-CLI-Version
 tags = development, sample
 codeBase = $catalinaBase/webapps/jenkins, file:${System.properties['user.home']}/.jenkins/plugins
 packagePrefixes = hudson, jenkins
+methodVisibility = private
 serverUri = http://localhost:8090
 collectorResolutionSeconds = 5
 #aspectjOptions = -verbose -showWeaveInfo
@@ -96,12 +93,21 @@ verbose = true
 
 processResources.dependsOn generateCodekvastConfig
 
+task installJavaagentsIntoEndorsedDir(type: Sync) {
+    description = 'Installs the Java agents into $catalinaBase/endorsed'
+    group = "build"
+    dependsOn = ["installJenkinsInTomcat7", ":product:agent:collector:javaagents"]
+
+    from tasks.getByPath(":product:agent:collector:javaagents").outputs
+    into "$catalinaBase/endorsed"
+}
+
 task generateTomcatRunHook {
     description = "Generates a setenv.sh in \$CATALINA_HOME/bin that hooks up Codekvast"
     group = "build"
-    dependsOn = [":product:agent:collector:javaagents", "installJenkinsInTomcat7", "generateCodekvastConfig"]
-    def codekvastCollector = tasks.getByPath(":product:agent:collector:shadowJar").outputs.files.singleFile
-    def aspectjWeaver = findProject(":product:agent:collector").configurations.aspectjweaver.files.path.join('')
+    dependsOn = ["installJavaagentsIntoEndorsedDir", "generateCodekvastConfig"]
+    def codekvastCollector = file("$catalinaBase/endorsed").listFiles().find { it.name.contains("codekvast") }
+    def aspectjWeaver = file("$catalinaBase/endorsed").listFiles().find { it.name.contains("aspectj") }
     def setenvFile = file("$catalinaBase/bin/setenv.sh")
 
     inputs.file file("build.gradle")
@@ -109,8 +115,8 @@ task generateTomcatRunHook {
 
     doLast {
         println """---------------------------
-codekvastCollector = ${codekvastCollector}
-aspectjWeaver = $aspectjWeaver
+codekvastCollector = .${codekvastCollector.absolutePath - projectDir.absolutePath}
+aspectjWeaver = .${aspectjWeaver.absolutePath - projectDir.absolutePath}
 -------------------------"""
         setenvFile.text = """
 CATALINA_OPTS=\"-Dcodekvast.configuration=$generateCodekvastConfig.configFile -javaagent:$codekvastCollector -javaagent:$aspectjWeaver\"
