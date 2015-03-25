@@ -2,7 +2,6 @@ package se.crisp.codekvast.agent.collector;
 
 import org.aspectj.bridge.Constants;
 import se.crisp.codekvast.agent.collector.aspects.AbstractMethodExecutionAspect;
-import se.crisp.codekvast.agent.collector.aspects.JasperExecutionAspect;
 import se.crisp.codekvast.agent.config.CollectorConfig;
 import se.crisp.codekvast.agent.config.CollectorConfigLocator;
 import se.crisp.codekvast.agent.config.MethodVisibilityFilter;
@@ -120,25 +119,21 @@ public class CodekvastCollector {
         String xml = String.format(
                 "<aspectj>\n"
                         + "  <aspects>\n"
-                        + "    <!-- Work-in-progress: aspect name='%1$s'/ -->\n"
                         + "    <concrete-aspect name='se.crisp.codekvast.agent.collector.aspects.MethodExecutionAspect'\n"
-                        + "                     extends='%2$s'>\n"
-                        + "      <pointcut name='withinScope' expression='(%3$s)'/>\n"
-                        + "      <pointcut name='methodExecution' expression='%4$s'/>\n"
+                        + "                     extends='%1$s'>\n"
+                        + "      <pointcut name='withinScope' expression='(%2$s)'/>\n"
+                        + "      <pointcut name='methodExecution' expression='%3$s'/>\n"
                         + "    </concrete-aspect>\n"
                         + "  </aspects>\n"
-                        + "  <weaver options='%5$s'>\n"
-                        + "%6$s"
-                        + "    <include within='%7$s..*'/>\n"
+                        + "  <weaver options='%4$s'>\n"
+                        + "%5$s"
                         + "  </weaver>\n"
                         + "</aspectj>\n",
-                JasperExecutionAspect.class.getName(),
                 AbstractMethodExecutionAspect.class.getName(),
                 executionWithin.toString(),
                 toMethodExecutionPointcut(config.getMethodVisibility()),
                 aspectjOptions,
-                includeWithin.toString(),
-                JasperExecutionAspect.JASPER_BASE_PACKAGE
+                includeWithin.toString()
         );
 
         File file = config.getAspectFile();

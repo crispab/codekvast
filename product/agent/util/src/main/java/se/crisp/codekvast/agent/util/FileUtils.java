@@ -88,8 +88,7 @@ public final class FileUtils {
         return result;
     }
 
-    public static void writeInvocationDataTo(File file, int dumpCount, long recordingStartedAtMillis, Set<String> signatures,
-                                             boolean stripModifiersAndReturnType) {
+    public static void writeInvocationDataTo(File file, int dumpCount, long recordingStartedAtMillis, Set<String> signatures) {
         if (!signatures.isEmpty()) {
             long startedAt = System.currentTimeMillis();
 
@@ -107,7 +106,7 @@ public final class FileUtils {
                 out.println(recordingStartedAtMillis);
                 int count = 0;
                 for (String sig : signatures) {
-                    out.println(stripModifiersAndReturnType ? SignatureUtils.stripModifiersAndReturnType(sig) : sig);
+                    out.println(SignatureUtils.stripModifiersAndReturnType(sig));
                     count += 1;
                 }
 

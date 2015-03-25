@@ -55,8 +55,8 @@ public class FileUtilsTest {
 
         long t1 = System.currentTimeMillis() - 60000;
         long t2 = System.currentTimeMillis() - 30000;
-        FileUtils.writeInvocationDataTo(invocationsFile, 1, t1, setOf("sig1.1", "sig1.2", "sig1.3"), true);
-        FileUtils.writeInvocationDataTo(invocationsFile, 2, t2, setOf("sig2.1", "sig2.2"), true);
+        FileUtils.writeInvocationDataTo(invocationsFile, 1, t1, setOf("public sig1.1()", "public sig1.2()", "public sig1.3()"));
+        FileUtils.writeInvocationDataTo(invocationsFile, 2, t2, setOf("public sig2.1()", "public sig2.2()"));
 
         File[] files = temporaryFolder.getRoot().listFiles();
         assertThat(files.length, is(4));

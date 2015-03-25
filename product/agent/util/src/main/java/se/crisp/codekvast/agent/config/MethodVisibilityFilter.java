@@ -1,6 +1,7 @@
 package se.crisp.codekvast.agent.config;
 
 import lombok.EqualsAndHashCode;
+import se.crisp.codekvast.agent.util.SignatureUtils;
 
 import java.lang.reflect.Modifier;
 
@@ -28,25 +29,25 @@ public class MethodVisibilityFilter {
         boolean _packagePrivate = false;
         boolean recognized = false;
 
-        String value = visibility == null ? "public" : visibility.trim().toLowerCase();
-        if (value.equals("public")) {
+        String value = visibility == null ? SignatureUtils.PUBLIC : visibility.trim().toLowerCase();
+        if (value.equals(SignatureUtils.PUBLIC)) {
             recognized = true;
             _public = true;
         }
-        if (value.equals("protected")) {
+        if (value.equals(SignatureUtils.PROTECTED)) {
             recognized = true;
             _public = true;
             _protected = true;
         }
 
-        if (value.equals("package-private") || value.equals("!private")) {
+        if (value.equals(SignatureUtils.PACKAGE_PRIVATE) || value.equals("!private")) {
             recognized = true;
             _public = true;
             _protected = true;
             _packagePrivate = true;
         }
 
-        if (value.equals("private") || value.equals("all") || value.equals("*")) {
+        if (value.equals(SignatureUtils.PRIVATE) || value.equals("all")) {
             recognized = true;
             _public = true;
             _protected = true;
@@ -111,14 +112,14 @@ public class MethodVisibilityFilter {
     @Override
     public String toString() {
         if (selectsPrivateMethods()) {
-            return "private";
+            return SignatureUtils.PRIVATE;
         }
         if (selectsPackagePrivateMethods()) {
-            return "package-private";
+            return SignatureUtils.PACKAGE_PRIVATE;
         }
         if (selectsProtectedMethods()) {
-            return "protected";
+            return SignatureUtils.PROTECTED;
         }
-        return "public";
+        return SignatureUtils.PUBLIC;
     }
 }

@@ -15,6 +15,12 @@ import java.lang.reflect.Method;
 @UtilityClass
 public class SignatureUtils {
 
+    public static final String PUBLIC = "public";
+    public static final String PROTECTED = "protected";
+    public static final String PACKAGE_PRIVATE = "package-private";
+    public static final String PRIVATE = "private";
+    public static final String[] VISIBILITY_KEYWORDS = {PUBLIC, PROTECTED, PRIVATE};
+
     /**
      * Converts a (method) signature to a string containing the bare minimum to uniquely identify the method, namely: <ul> <li>The declaring
      * class name</li> <li>The method name</li> <li>The full parameter types</li> </ul>
@@ -37,7 +43,17 @@ public class SignatureUtils {
         while (pos >= 0 && signature.charAt(pos) != ' ') {
             pos -= 1;
         }
-        return signature.substring(pos + 1);
+        String modifiers = signature.substring(0, pos);
+        return getVisibility(modifiers) + signature.substring(pos);
+    }
+
+    private static String getVisibility(String modifiers) {
+        for (String v : VISIBILITY_KEYWORDS) {
+            if (modifiers.contains(v)) {
+                return v;
+            }
+        }
+        return PACKAGE_PRIVATE;
     }
 
 
@@ -47,7 +63,7 @@ public class SignatureUtils {
      * @param clazz  The class containing the method
      * @param method The method to make a signature of
      * @return The same signature object as an AspectJ execution pointcut will provide in JoinPoint.getSignature(). Returns null unless the
-     * method is public.
+     * method passes the methodVisibilityFilter.
      */
     public static Signature makeSignature(MethodVisibilityFilter methodVisibilityFilter, Class clazz, Method method) {
 

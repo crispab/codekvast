@@ -29,17 +29,17 @@ public class InvocationsTest {
     public void testWriteReadInvocationsFile() throws Exception {
         // given
         File invocationsFile = new File(temporaryFolder.getRoot(), "invocations.dat");
-        Set<String> signatures = new TreeSet<String>(Arrays.asList("sig2", "sig0", "sig1"));
+        Set<String> signatures = new TreeSet<String>(Arrays.asList("public sig2()", "public sig0()", "public sig1()"));
 
         // when
-        FileUtils.writeInvocationDataTo(invocationsFile, 1, 1000L, signatures, true);
+        FileUtils.writeInvocationDataTo(invocationsFile, 1, 1000L, signatures);
         List<Invocation> result = FileUtils.readInvocationDataFrom(new File(temporaryFolder.getRoot(), "invocations.dat.00000"));
 
         // then
         assertThat(result.size(), is(3));
         for (int i = 0; i < signatures.size(); i++) {
             assertThat(result.get(i).getInvokedAtMillis(), is(1000L));
-            assertThat(result.get(i).getSignature(), is("sig" + i));
+            assertThat(result.get(i).getSignature(), is("public sig" + i + "()"));
         }
     }
 }

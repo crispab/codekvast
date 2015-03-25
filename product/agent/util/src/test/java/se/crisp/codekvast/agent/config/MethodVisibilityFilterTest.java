@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
+import se.crisp.codekvast.agent.util.SignatureUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -29,21 +30,20 @@ public class MethodVisibilityFilterTest {
     public static Object[][] data() {
         //@formatter:off
         return new Object[][]{
-                {null,              true, false, false, false, false, "public"},
-                {"   ",             true, false, false, false, false, "public"},
-                {" foobar ",        true, false, false, false, true, "public"},
-                {"   ",             true, false, false, false, false, "public"},
-                {"public",          true, false, false, false, false, "public"},
-                {"PuBlIc",          true, false, false, false, false, "public"},
-                {" public ",        true, false, false, false, false, "public"},
-                {"protected",       true, true,  false, false, false, "protected"},
-                {" protected ",     true, true,  false, false, false, "protected"},
-                {" PROTECTED ",     true, true,  false, false, false, "protected"},
-                {"package-private", true, true,  true,  false, false, "package-private"},
-                {"!private",        true, true,  true,  false, false, "package-private"},
-                {"private",         true, true,  true,  true, false, "private"},
-                {"all",             true, true,  true,  true, false, "private"},
-                {"*",               true, true,  true,  true, false, "private"},
+                {null,              true, false, false, false, false, SignatureUtils.PUBLIC},
+                {"   ",             true, false, false, false, false, SignatureUtils.PUBLIC},
+                {" foobar ",        true, false, false, false, true, SignatureUtils.PUBLIC},
+                {"   ",             true, false, false, false, false, SignatureUtils.PUBLIC},
+                {"public",          true, false, false, false, false, SignatureUtils.PUBLIC},
+                {"PuBlIc",          true, false, false, false, false, SignatureUtils.PUBLIC},
+                {" public ",        true, false, false, false, false, SignatureUtils.PUBLIC},
+                {"protected",       true, true,  false, false, false, SignatureUtils.PROTECTED},
+                {" protected ",     true, true,  false, false, false, SignatureUtils.PROTECTED},
+                {" PROTECTED ",     true, true,  false, false, false, SignatureUtils.PROTECTED},
+                {"package-private", true, true,  true,  false, false, SignatureUtils.PACKAGE_PRIVATE},
+                {"!private",        true, true,  true,  false, false, SignatureUtils.PACKAGE_PRIVATE},
+                {"private",         true, true,  true,  true, false, SignatureUtils.PRIVATE},
+                {"all",             true, true,  true,  true, false, SignatureUtils.PRIVATE},
         };
         //@formatter:on
     }

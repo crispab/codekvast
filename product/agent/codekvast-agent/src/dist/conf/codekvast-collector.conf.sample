@@ -122,7 +122,7 @@
 # public means track public methods only. This is the default.
 # protected means track public and protected methods.
 # package-private means track public, protected and package-private methods. Synonym: !private
-# private means track all methods. Synonyms: all and *
+# private means track all methods. Synonym: all
 #
 # Optional. Defaults to public.
 #--------------------------------------------------------------------------------------------------------

@@ -25,8 +25,6 @@ import java.util.concurrent.ConcurrentSkipListSet;
 @SuppressWarnings("Singleton")
 public class InvocationRegistry {
 
-    public static final boolean SHOULD_STRIP_MODIFIERS_AND_RETURN_TYPE_NOW = false;
-
     public static InvocationRegistry instance = new NoopInvocationRegistry();
 
     private final CollectorConfig config;
@@ -85,19 +83,7 @@ public class InvocationRegistry {
      */
     public void registerMethodInvocation(Signature signature) {
         //noinspection unchecked
-        invocations[currentInvocationIndex].add(SignatureUtils.signatureToString(signature, SHOULD_STRIP_MODIFIERS_AND_RETURN_TYPE_NOW));
-    }
-
-    /**
-     * Record that this JPS p was invoked at current recording interval.
-     *
-     * Thread-safe.
-     *
-     * @param pageName The name of the invoked JSP p.
-     */
-    public void registerJspPageExecution(String pageName) {
-        //noinspection unchecked
-        invocations[currentInvocationIndex].add(pageName);
+        invocations[currentInvocationIndex].add(SignatureUtils.signatureToString(signature, false));
     }
 
     /**
@@ -122,7 +108,7 @@ public class InvocationRegistry {
 
             //noinspection unchecked
             FileUtils.writeInvocationDataTo(config.getInvocationsFile(), dumpCount, oldRecordingIntervalStartedAtMillis,
-                                            invocations[oldIndex], true);
+                                            invocations[oldIndex]);
 
             invocations[oldIndex].clear();
         }
@@ -159,11 +145,6 @@ public class InvocationRegistry {
 
         @Override
         public void registerMethodInvocation(Signature signature) {
-            // no-op
-        }
-
-        @Override
-        public void registerJspPageExecution(String pageName) {
             // no-op
         }
     }

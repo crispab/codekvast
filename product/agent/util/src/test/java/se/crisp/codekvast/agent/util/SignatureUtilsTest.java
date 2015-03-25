@@ -4,6 +4,7 @@ import org.junit.Test;
 import se.crisp.codekvast.agent.config.MethodVisibilityFilter;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
 
@@ -14,50 +15,70 @@ import static se.crisp.codekvast.agent.util.SignatureUtils.signatureToString;
 
 public class SignatureUtilsTest {
 
-    private final MethodVisibilityFilter methodVisibilityFilter = new MethodVisibilityFilter("public");
+    private final MethodVisibilityFilter methodVisibilityFilter = new MethodVisibilityFilter("all");
 
-    @Test
-    public void testGetSignatureM1() throws IOException, NoSuchMethodException {
-        String s = signatureToString(
-                makeSignature(methodVisibilityFilter, TestClass.class, TestClass.class.getMethod("m1", String.class, Collection.class)),
-                true);
-        assertThat(s, is("se.crisp.codekvast.agent.util.SignatureUtilsTest.TestClass.m1(java.lang.String, java.util.Collection)"));
+    private final Method testMethods[] = TestClass.class.getDeclaredMethods();
+
+    private Method findTestMethod(String name) {
+        for (Method method : testMethods) {
+            if (method.getName().equals(name)) {
+                return method;
+            }
+        }
+        throw new IllegalArgumentException("Unknown test method: " + name);
     }
 
     @Test
-    public void testGetSignatureM2() throws IOException, NoSuchMethodException {
-        String s = signatureToString(makeSignature(methodVisibilityFilter, TestClass.class, TestClass.class.getMethod("m2")), true);
-        assertThat(s, is("se.crisp.codekvast.agent.util.SignatureUtilsTest.TestClass.m2()"));
+    public void testGetSignaturePublicStaticMethod() throws IOException, NoSuchMethodException {
+        String s = signatureToString(makeSignature(methodVisibilityFilter, TestClass.class, findTestMethod("publicStaticMethod1")), true);
+        assertThat(s, is("public se.crisp.codekvast.agent.util.SignatureUtilsTest.TestClass.publicStaticMethod1(java.lang.String, java" +
+                                 ".util.Collection)"));
     }
 
     @Test
-    public void testGetSignatureM3() throws IOException, NoSuchMethodException {
+    public void testGetSignatureProtectedMethod2() throws IOException, NoSuchMethodException {
+        String s = signatureToString(makeSignature(methodVisibilityFilter, TestClass.class, findTestMethod("protectedMethod2")), true);
+        assertThat(s, is("protected se.crisp.codekvast.agent.util.SignatureUtilsTest.TestClass.protectedMethod2()"));
+    }
+
+    @Test
+    public void testGetSignaturePrivateMethod3() throws IOException, NoSuchMethodException {
         String s = signatureToString(
-                makeSignature(methodVisibilityFilter, TestClass.class, TestClass.class.getMethod("m3", int.class, String[].class)), true);
-        assertThat(s, is("se.crisp.codekvast.agent.util.SignatureUtilsTest.TestClass.m3(int, java.lang.String[])"));
+                makeSignature(methodVisibilityFilter, TestClass.class, findTestMethod("privateMethod3")), true);
+        assertThat(s, is("private se.crisp.codekvast.agent.util.SignatureUtilsTest.TestClass.privateMethod3(int, java.lang.String[])"));
+    }
+
+    @Test
+    public void testGetSignaturePackagePrivateMethod4() throws IOException, NoSuchMethodException {
+        String s = signatureToString(
+                makeSignature(methodVisibilityFilter, TestClass.class, findTestMethod("packagePrivateMethod4")), true);
+        assertThat(s, is("package-private se.crisp.codekvast.agent.util.SignatureUtilsTest.TestClass.packagePrivateMethod4(int)"));
     }
 
     @Test
     public void testMinimizeAlreadyMinimizedSignature() throws NoSuchMethodException {
         String s = signatureToString(
-                makeSignature(methodVisibilityFilter, TestClass.class, TestClass.class.getMethod("m3", int.class, String[].class)), true);
-        assertThat(s, is("se.crisp.codekvast.agent.util.SignatureUtilsTest.TestClass.m3(int, java.lang.String[])"));
+                makeSignature(methodVisibilityFilter, TestClass.class, findTestMethod("privateMethod3")), true);
+        assertThat(s, is("private se.crisp.codekvast.agent.util.SignatureUtilsTest.TestClass.privateMethod3(int, java.lang.String[])"));
         String s2 = SignatureUtils.stripModifiersAndReturnType(s);
         assertThat(s2, is(s));
     }
 
-    @SuppressWarnings("EmptyMethod")
+    @SuppressWarnings({"EmptyMethod", "unused"})
     public static class TestClass {
-        public static Collection<List<String>> m1(String p1, Collection<Integer> p2) {
+        public static Collection<List<String>> publicStaticMethod1(String p1, Collection<Integer> p2) {
             return null;
         }
 
-        public void m2() {
-
+        protected void protectedMethod2() {
         }
 
-        public String m3(int p1, String... args) {
+        private String privateMethod3(int p1, String... args) {
             return null;
+        }
+
+        int packagePrivateMethod4(int p1) {
+            return 0;
         }
     }
 }

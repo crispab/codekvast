@@ -1,12 +1,15 @@
 package se.crisp.codekvast.agent.collector;
 
+import org.aspectj.lang.Signature;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import se.crisp.codekvast.agent.config.CollectorConfig;
+import se.crisp.codekvast.agent.config.MethodVisibilityFilter;
 import se.crisp.codekvast.agent.model.Jvm;
+import se.crisp.codekvast.agent.util.SignatureUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,9 +28,10 @@ public class InvocationsRegistryTest {
 
     private CollectorConfig config;
     private String codeBase;
+    private Signature signature;
 
     @Before
-    public void beforeTest() throws IOException {
+    public void beforeTest() throws IOException, NoSuchMethodException {
         codeBase =
                 temporaryFolder.newFolder("codebase1").getAbsolutePath() + ", " + temporaryFolder.newFolder("codebase2").getAbsolutePath();
         File dataPath = temporaryFolder.newFolder("collector");
@@ -46,6 +50,7 @@ public class InvocationsRegistryTest {
                                 .build();
         //@formatter:on
         InvocationRegistry.initialize(config);
+        signature = SignatureUtils.makeSignature(new MethodVisibilityFilter("public"), TestClass.class, TestClass.class.getMethod("m1"));
     }
 
     @After
@@ -54,8 +59,8 @@ public class InvocationsRegistryTest {
     }
 
     @Test
-    public void testRegisterJspPageExecutionAndDumpToDisk() throws IOException {
-        InvocationRegistry.instance.registerJspPageExecution("page1");
+    public void testRegisterMethodInvocationAndDumpToDisk() throws IOException {
+        InvocationRegistry.instance.registerMethodInvocation(signature);
 
         InvocationRegistry.instance.dumpDataToDisk(1);
 
@@ -78,6 +83,13 @@ public class InvocationsRegistryTest {
     @Test
     public void testRegisterBeforeInitialize() throws Exception {
         InvocationRegistry.initialize(null);
-        InvocationRegistry.instance.registerJspPageExecution("page1");
+        InvocationRegistry.instance.registerMethodInvocation(signature);
+    }
+
+    @SuppressWarnings("unused")
+    public static class TestClass {
+        public void m1() {
+
+        }
     }
 }

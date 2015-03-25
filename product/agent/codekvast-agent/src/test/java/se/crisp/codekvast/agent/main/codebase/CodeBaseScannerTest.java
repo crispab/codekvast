@@ -57,8 +57,8 @@ public class CodeBaseScannerTest {
 
         assertThat(codeBase.getSignatures().size(), is(1));
         assertThat(codeBase.getOverriddenSignatures().size(), is(1));
-        assertThat(codeBase.getOverriddenSignatures().get("se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest2.m1()"),
-                   is("se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest1.m1()"));
+        assertThat(codeBase.getOverriddenSignatures().get("public se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest2.m1()"),
+                   is("public se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest1.m1()"));
     }
 
     @Test
@@ -69,10 +69,10 @@ public class CodeBaseScannerTest {
 
         assertThat(codeBase.getSignatures().size(), is(1));
         assertThat(codeBase.getOverriddenSignatures().size(), is(2));
-        assertThat(codeBase.getOverriddenSignatures().get("se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest3.m1()"),
-                   is("se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest1.m1()"));
-        assertThat(codeBase.getOverriddenSignatures().get("se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest3.m2()"),
-                   is("se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest2.m2()"));
+        assertThat(codeBase.getOverriddenSignatures().get("public se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest3.m1()"),
+                   is("public se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest1.m1()"));
+        assertThat(codeBase.getOverriddenSignatures().get("public se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest3.m2()"),
+                   is("public se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest2.m2()"));
     }
 
     @Test

@@ -52,7 +52,7 @@ CREATE TABLE applications (
   name                     VARCHAR(100)  NOT NULL,
   truly_dead_after_seconds INTEGER       NOT NULL
   COMMENT 'After how long can a unused signature in this application be considered dead?',
-  notes VARCHAR(3000) NULL
+  notes                    VARCHAR(3000) NULL
   COMMENT 'Free text notes about the application',
   created_at               TIMESTAMP DEFAULT current_timestamp NOT NULL,
   modified_at              TIMESTAMP AS NOW()
