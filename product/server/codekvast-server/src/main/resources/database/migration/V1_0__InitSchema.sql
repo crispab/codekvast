@@ -52,7 +52,7 @@ CREATE TABLE applications (
   name                     VARCHAR(100)  NOT NULL,
   truly_dead_after_seconds INTEGER       NOT NULL
   COMMENT 'After how long can a unused signature in this application be considered dead?',
-  notes                    VARCHAR(2000) NULL
+  notes VARCHAR(3000) NULL
   COMMENT 'Free text notes about the application',
   created_at               TIMESTAMP DEFAULT current_timestamp NOT NULL,
   modified_at              TIMESTAMP AS NOW()
@@ -99,7 +99,7 @@ CREATE TABLE signatures (
   organisation_id        BIGINT        NOT NULL REFERENCES organisations (id),
   application_id         BIGINT        NOT NULL REFERENCES applications (id),
   jvm_id                 BIGINT        NOT NULL REFERENCES jvm_info (id),
-  signature              VARCHAR(2000) NOT NULL
+  signature VARCHAR(4000) NOT NULL
   COMMENT 'The method signature in human readable format',
   invoked_at_millis      BIGINT        NOT NULL
   COMMENT 'The value of System.currentTimeMillis() the method was invoked (rounded to nearest collection interval). 0 means not yet invoked',

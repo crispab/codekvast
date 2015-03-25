@@ -16,7 +16,7 @@ public interface Constraints {
     int MAX_FULL_NAME_LENGTH = 255;
     int MAX_HOST_NAME_LENGTH = 255;
     int MAX_METHOD_VISIBILITY_LENGTH = 50;
-    int MAX_SIGNATURE_LENGTH = 2000;
+    int MAX_SIGNATURE_LENGTH = 4000;
     int MAX_TAGS_LENGTH = 1000;
     int MAX_USER_NAME_LENGTH = 100;
     int MIN_JVM_UUID_LENGTH = 30;
