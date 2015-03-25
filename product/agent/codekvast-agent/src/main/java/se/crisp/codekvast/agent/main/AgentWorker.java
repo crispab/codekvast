@@ -172,7 +172,7 @@ public class AgentWorker {
                       .collectorResolutionSeconds(jvm.getCollectorConfig().getCollectorResolutionSeconds())
                       .dumpedAtMillis(jvm.getDumpedAtMillis())
                       .jvmUuid(jvm.getJvmUuid())
-                      .methodVisibility(jvm.getCollectorConfig().getMethodVisibility())
+                      .methodVisibility(jvm.getCollectorConfig().getMethodVisibility().toString())
                       .startedAtMillis(jvm.getStartedAtMillis())
                       .tags(jvm.getCollectorConfig().getTags())
                       .build();

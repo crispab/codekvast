@@ -77,7 +77,7 @@ public class CodeBaseScanner {
 
     int findPublicMethods(CodeBase codeBase, Set<String> packagePrefixes, Class<?> clazz) {
         log.debug("Analyzing {}", clazz);
-        MethodVisibilityFilter methodVisibilityFilter = codeBase.getConfig().toMethodVisibility();
+        MethodVisibilityFilter methodVisibilityFilter = codeBase.getConfig().getMethodVisibility();
         int result = 1;
         try {
             Method[] methods = clazz.getMethods();

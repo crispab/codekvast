@@ -1,10 +1,13 @@
 package se.crisp.codekvast.agent.config;
 
+import lombok.EqualsAndHashCode;
+
 import java.lang.reflect.Modifier;
 
 /**
  * @author olle.hallin@crisp.se
  */
+@EqualsAndHashCode
 public class MethodVisibilityFilter {
 
     private static final int VISIBILITY_MODIFIERS = Modifier.PUBLIC | Modifier.PROTECTED | Modifier.PRIVATE;
@@ -103,5 +106,19 @@ public class MethodVisibilityFilter {
         }
         // At least one of the visibility bits match
         return (modifiers & mask) != 0;
+    }
+
+    @Override
+    public String toString() {
+        if (selectsPrivateMethods()) {
+            return "private";
+        }
+        if (selectsPackagePrivateMethods()) {
+            return "package-private";
+        }
+        if (selectsProtectedMethods()) {
+            return "protected";
+        }
+        return "public";
     }
 }

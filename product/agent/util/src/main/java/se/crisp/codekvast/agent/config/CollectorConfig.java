@@ -32,7 +32,7 @@ public class CollectorConfig implements CodekvastConfig {
     public static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
     public static final String SAMPLE_CODEBASE_URI1 = "/path/to/codebase1/";
     public static final String SAMPLE_CODEBASE_URI2 = "/path/to/codebase2/";
-    private static final File SAMPLE_DATA_PATH = new File("/tmp)");
+    public static final File SAMPLE_DATA_PATH = new File("/tmp)");
     public static final String SAMPLE_TAGS = "production, frontend-web";
     public static final String OVERRIDE_SEPARATOR = ";";
     public static final String UNSPECIFIED_VERSION = "unspecified";
@@ -93,7 +93,7 @@ public class CollectorConfig implements CodekvastConfig {
         FileUtils.writePropertiesTo(file, this, "Codekvast CollectorConfig");
     }
 
-    public MethodVisibilityFilter toMethodVisibility() {
+    public MethodVisibilityFilter getMethodVisibility() {
         return new MethodVisibilityFilter(this.methodVisibility);
     }
 

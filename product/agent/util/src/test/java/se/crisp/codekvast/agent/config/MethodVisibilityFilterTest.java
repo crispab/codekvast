@@ -29,21 +29,21 @@ public class MethodVisibilityFilterTest {
     public static Object[][] data() {
         //@formatter:off
         return new Object[][]{
-                {null,              true, false, false, false, false},
-                {"   ",             true, false, false, false, false},
-                {" foobar ",        true, false, false, false, true},
-                {"   ",             true, false, false, false, false},
-                {"public",          true, false, false, false, false},
-                {"PuBlIc",          true, false, false, false, false},
-                {" public ",        true, false, false, false, false},
-                {"protected",       true, true,  false, false, false},
-                {" protected ",     true, true,  false, false, false},
-                {" PROTECTED ",     true, true,  false, false, false},
-                {"package-private", true, true,  true,  false, false},
-                {"!private",        true, true,  true,  false, false},
-                {"private",         true, true,  true,  true, false},
-                {"all",             true, true,  true,  true, false},
-                {"*",               true, true,  true,  true, false},
+                {null,              true, false, false, false, false, "public"},
+                {"   ",             true, false, false, false, false, "public"},
+                {" foobar ",        true, false, false, false, true, "public"},
+                {"   ",             true, false, false, false, false, "public"},
+                {"public",          true, false, false, false, false, "public"},
+                {"PuBlIc",          true, false, false, false, false, "public"},
+                {" public ",        true, false, false, false, false, "public"},
+                {"protected",       true, true,  false, false, false, "protected"},
+                {" protected ",     true, true,  false, false, false, "protected"},
+                {" PROTECTED ",     true, true,  false, false, false, "protected"},
+                {"package-private", true, true,  true,  false, false, "package-private"},
+                {"!private",        true, true,  true,  false, false, "package-private"},
+                {"private",         true, true,  true,  true, false, "private"},
+                {"all",             true, true,  true,  true, false, "private"},
+                {"*",               true, true,  true,  true, false, "private"},
         };
         //@formatter:on
     }
@@ -65,6 +65,9 @@ public class MethodVisibilityFilterTest {
 
     @Parameter(5)
     public boolean expectsSystemErr;
+
+    @Parameter(6)
+    public String expectedToString;
 
     private PrintStream savedSystemErr;
     private ByteArrayOutputStream capturedSystemErr = new ByteArrayOutputStream();
@@ -108,5 +111,7 @@ public class MethodVisibilityFilterTest {
         assertThat("Should include package private", mv.shouldInclude(Modifier.SYNCHRONIZED | 0), is(selectsPackagePrivate));
         assertThat("Should include static package private", mv.shouldInclude(Modifier.STATIC | 0), is(selectsPackagePrivate));
         assertThat("Should include private", mv.shouldInclude(Modifier.SYNCHRONIZED | Modifier.PRIVATE), is(selectsPrivate));
+
+        assertThat("Should normalize toString()", mv.toString(), is(expectedToString));
     }
 }

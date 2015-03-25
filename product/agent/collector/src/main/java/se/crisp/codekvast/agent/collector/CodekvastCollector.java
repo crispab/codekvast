@@ -135,7 +135,7 @@ public class CodekvastCollector {
                 JasperExecutionAspect.class.getName(),
                 AbstractMethodExecutionAspect.class.getName(),
                 executionWithin.toString(),
-                toMethodExecutionPointcut(config.toMethodVisibility()),
+                toMethodExecutionPointcut(config.getMethodVisibility()),
                 aspectjOptions,
                 includeWithin.toString(),
                 JasperExecutionAspect.JASPER_BASE_PACKAGE
