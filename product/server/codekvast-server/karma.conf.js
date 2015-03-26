@@ -21,6 +21,7 @@ module.exports = function (config) {
             'build/webjarJs/jquery.js',
             'build/webjarJs/bootstrap.js',
             'build/webjarJs/angular.js',
+            'build/webjarJs/angular-route.js',
             'build/webjarJs/angular-locale_sv.js',
             'build/webjarJs/ui-bootstrap.js',
             'build/webjarJs/angular-mocks.js',
