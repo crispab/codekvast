@@ -3,6 +3,7 @@
 <head>
     <th:block th:include="fragments :: #head-boilerplate"/>
     <th:block th:include="fragments :: #head-disable-caching"/>
+    <th:block th:include="fragments :: #head-stylesheets"/>
     <title>Codekvast</title>
 </head>
 <body>
@@ -24,7 +25,6 @@
 
     <div ng-view="true"></div>
 </div>
-<th:block th:include="fragments :: #scripts-twitter-bootstrap"/>
 <th:block th:include="fragments :: #scripts-angularjs"/>
 <th:block th:include="fragments :: #scripts-sockjs"/>
 <script th:src="@{/app/codekvast.js}"></script>

@@ -3,12 +3,15 @@
 </div>
 
 <div ng-controller="CollectorController">
-    <div class="panel panel-info" ng-show="collectorStatus">
-        <div class="panel-heading" ng-click="collectorStatusOpen = !collectorStatusOpen">
-            Collector status <i class="pull-right glyphicon"
-                                ng-class="{'glyphicon-chevron-down': collectorStatusOpen, 'glyphicon-chevron-right': !collectorStatusOpen}"></i>
+    <div ng-show="collectorStatus" class="panel panel-info" ng-model="collectorStatusCollapsed" bs-collapse="true">
+        <div class="panel-heading" bs-collapse-toggle="0">
+            <h4 class="panel-title">
+                <a>Collector status <i class="pull-right glyphicon"
+                                       ng-class="{'glyphicon-chevron-down': !collectorStatusCollapsed, 'glyphicon-chevron-right':   collectorStatusCollapsed}"></i>
+                </a>
+            </h4>
         </div>
-        <div collapse="!collectorStatusOpen">
+        <div class="panel-collapse" bs-collapse-target="true">
             <div class="panel-body">
                 <p>The status of all collectors that deliver data to this server.</p>
             </div>
@@ -45,18 +48,21 @@
 </div>
 
 <div ng-controller="SignatureController">
-
-    <div class="panel panel-info" ng-show="allSignatures">
-        <div class="panel-heading" ng-click="trulyDeadSignaturesOpen = !trulyDeadSignaturesOpen">
-            Truly Dead Signatures <i class="pull-right glyphicon"
-                                     ng-class="{'glyphicon-chevron-down': trulyDeadSignaturesOpen, 'glyphicon-chevron-right': !trulyDeadSignaturesOpen}"> </i>
+    <div ng-show="allSignatures" class="panel panel-info" ng-model="trulyDeadSignaturesCollapsed" bs-collapse="true">
+        <div class="panel-heading" bs-collapse-toggle="0">
+            <a>Truly Dead Signatures <i class="pull-right glyphicon"
+                                        ng-class="{'glyphicon-chevron-down': !trulyDeadSignaturesCollapsed, 'glyphicon-chevron-right': trulyDeadSignaturesCollapsed}"> </i>
+            </a>
         </div>
 
-        <div collapse="!trulyDeadSignaturesOpen">
+        <div class="panel-collapse" bs-collapse-target="true">
             <div class="panel-body">
 
                 <form class="form form-inline">
-                    <div class="input-group">
+                    <fieldset>
+                        <legend class="smaller">Filter</legend>
+
+                        <div class="input-group">
                         <span class="input-group-addon">Invoked before</span>
                         <input class="form-control col-lg-1" type="number" min="0" step="{{filter.ageStep}}" ng-model="filter.minAgeValue"/>
                         <div class="input-group-btn">
@@ -84,39 +90,43 @@
                     <div class="input-group">
                         Result: {{trulyDeadSignatures.length}} signatures
                     </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend class="smaller">Result</legend>
+                        <table class="table table-striped table-hover table-condensed">
+                            <thead>
+                            <tr class="row">
+                                <th class="col-lg-9 signature-name">Name</th>
+                                <th class="col-lg-2 signature-invoked-at">Invoked&nbsp;At</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            <tr class="row" ng-repeat="s in trulyDeadSignatures">
+                                <td class="col-lg-9 signature-name">{{::s.name}}</td>
+                                <td class="col-lg-2 signature-invoked-at">{{::s.invokedAtMillis | invokedAtDate:'short'}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </fieldset>
                 </form>
             </div>
-            <!-- panel-body -->
-            <hr/>
-            <table class="table table-striped table-hover table-condensed">
-                <thead>
-                <tr class="row">
-                    <th class="col-lg-9 signature-name">Name</th>
-                    <th class="col-lg-2 signature-invoked-at">Invoked&nbsp;At</th>
-                </tr>
-                </thead>
-
-                <tbody>
-                <tr class="row" ng-repeat="s in trulyDeadSignatures">
-                    <td class="col-lg-9 signature-name">{{::s.name}}</td>
-                    <td class="col-lg-2 signature-invoked-at">{{::s.invokedAtMillis | invokedAtDate:'short'}}</td>
-                </tr>
-                </tbody>
-            </table>
         </div>
     </div>
 
-    <div class="panel panel-info" ng-show="newestSignatures">
-        <div class="panel-heading" ng-click="newestSignaturesOpen = !newestSignaturesOpen">
-            Newest Signatures <i class="pull-right glyphicon"
-                                 ng-class="{'glyphicon-chevron-down': newestSignaturesOpen, 'glyphicon-chevron-right': !newestSignaturesOpen}"></i>
+    <div ng-show="newestSignatures" class="panel panel-info" ng-model="newestSignaturesCollapsed" bs-collapse="true">
+        <div class="panel-heading" bs-collapse-toggle="0">
+            <a>Newest Signatures <i class="pull-right glyphicon"
+                                    ng-class="{'glyphicon-chevron-down': !newestSignaturesCollapsed, 'glyphicon-chevron-right': newestSignaturesCollapsed}"></i>
+            </a>
         </div>
-        <div collapse="!newestSignaturesOpen">
+        <div class="panel-collapse" bs-collapse-target="true">
             <table class="table table-striped table-hover table-condensed">
                 <thead>
                 <tr class="row">
                     <th class="col-lg-9 signature-name">Name</th>
                     <th class="col-lg-2 signature-invoked-at">Invoked&nbsp;At</th>
+                    <th class="col-lg-2 signature-age">Age</th>
                 </tr>
                 </thead>
 
@@ -124,6 +134,7 @@
                 <tr class="row" ng-repeat="s in newestSignatures">
                     <td class="col-lg-9 signature-name">{{::s.name}}</td>
                     <td class="col-lg-2 signature-invoked-at">{{::s.invokedAtMillis | invokedAtDate:'short'}}</td>
+                    <td class="col-lg-2 signature-age">{{s.invocationAge}}</td>
                 </tr>
                 </tbody>
             </table>

@@ -1,7 +1,7 @@
 //noinspection JSUnusedGlobalSymbols
 'use strict';
 
-var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
+var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'mgcrea.ngStrap', 'mgcrea.ngStrap.collapse'])
 
     .config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
         $routeProvider
@@ -180,7 +180,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
     .controller('CollectorController', ['$scope', '$interval', 'DateService', 'StompService', function ($scope, $interval, DateService, StompService) {
         $scope.collectorStatus = StompService.getLastEvent('collectorStatus');
-        $scope.collectorStatusOpen = false;
+        $scope.collectorStatusCollapsed = true;
         $scope.dateFormat = 'short';
 
         $scope.$on('collectorStatus', function (event, data) {
@@ -210,12 +210,12 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
     }])
 
-    .controller('SignatureController', ['$scope', '$filter', 'StompService', function ($scope, $filter, StompService) {
+    .controller('SignatureController', ['$scope', '$interval', '$filter', 'DateService', 'StompService', function ($scope, $interval, $filter, DateService, StompService) {
 
-        $scope.newestSignatures = undefined;
-        $scope.newestSignaturesOpen = false;
         $scope.trulyDeadSignatures = undefined;
-        $scope.trulyDeadSignaturesOpen = false;
+        $scope.trulyDeadSignaturesCollapsed = true;
+        $scope.newestSignatures = undefined;
+        $scope.newestSignaturesCollapsed = true;
 
         $scope.filter = {
             minAgeValue: 30,
@@ -245,6 +245,17 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
         $scope.setAgeUnit(0);
 
+        $scope.updateAges = function () {
+            if ($scope.newestSignatures) {
+                for (var i = 0, len = $scope.newestSignatures.length; i < len; i++) {
+                    var s = $scope.newestSignatures[i];
+                    s.invocationAge = DateService.getAge(s.invokedAtMillis);
+                }
+            }
+        };
+
+        $scope.updateAgeInterval = $interval($scope.updateAges, 500, false);
+
         $scope.setFilteredSignatures = function() {
             var minAgeMillis = Date.now() - $scope.filter.minAgeValue * $scope.filter.ageMultiplier;
             var filtered = $scope.allSignatures;
@@ -260,6 +271,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             filtered = $filter('orderBy')(filtered, 'invokedAtMillis', true);
             filtered = $filter('limitTo')(filtered, 10);
             $scope.newestSignatures = filtered;
+            $scope.updateAges();
         };
 
         $scope.$watchCollection('filter', $scope.setFilteredSignatures);
@@ -274,7 +286,9 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
         $scope.$on('stompDisconnected', function (event, message) {
             $scope.signatures = undefined;
+            $interval.cancel($scope.updateAgeInterval);
         });
+
     }])
 
     .filter('invokedAtDate', ['dateFilter', function (dateFilter) {

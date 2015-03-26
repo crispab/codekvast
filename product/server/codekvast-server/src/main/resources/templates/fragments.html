@@ -11,10 +11,6 @@
 
     <!-- Base -->
     <base th:href="@{/}"/>
-
-    <!-- Stylesheets -->
-    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap__${dotCss}__}"/>
-    <link rel="stylesheet" th:href="@{/app/codekvast.css}"/>
 </div>
 
 <!--==================================================================================================-->
@@ -24,6 +20,12 @@
     <meta http-equiv="expires" content="0"/>
     <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT"/>
     <meta http-equiv="pragma" content="no-cache"/>
+</div>
+
+<!--==================================================================================================-->
+<div id="head-stylesheets"><!-- Stylesheets -->
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap__${dotCss}__}"/>
+    <link rel="stylesheet" th:href="@{/app/codekvast.css}"/>
 </div>
 
 <!--==================================================================================================-->
@@ -37,7 +39,9 @@
     <script th:src="@{/webjars/angularjs/angular__${dotJs}__}"></script>
     <script th:src="@{/webjars/angularjs/angular-route__${dotJs}__}"></script>
     <script th:src="@{/webjars/angularjs/i18n/angular-locale_sv__${dotJs}__}"></script>
-    <script th:src="@{/webjars/angular-ui-bootstrap/ui-bootstrap-tpls__${dotJs}__}"></script>
+    <script th:src="@{/webjars/angular-strap/angular-strap__${dotJs}__}"></script>
+    <script th:src="@{/webjars/angular-strap/angular-strap.tpl__${dotJs}__}"></script>
+    <script th:src="@{/webjars/angular-strap/modules/angular-collapse__${dotJs}__}"></script>
 </div>
 
 <!--==================================================================================================-->
