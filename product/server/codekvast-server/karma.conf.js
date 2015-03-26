@@ -18,10 +18,12 @@ module.exports = function (config) {
 
         // list of files / patterns to load in the browser
         files: [
+            'build/webjarJs/jquery.js',
+            'build/webjarJs/bootstrap.js',
             'build/webjarJs/angular.js',
             'build/webjarJs/angular-route.js',
             'build/webjarJs/angular-locale_sv.js',
-            'build/webjarJs/angular-strap.js',
+            'build/webjarJs/ui-bootstrap.js',
             'build/webjarJs/angular-mocks.js',
             'build/webjarJs/sockjs.js',
             'build/webjarJs/stomp.js',
