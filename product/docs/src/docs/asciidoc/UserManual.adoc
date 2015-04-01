@@ -1,0 +1,34 @@
+= Codekvast User Manual
+Olle Hallin <olle.hallin@crisp.se>
+{document-date}
+:revnumber: {document-version}
+:description: Codekvast is a tool that detects Truly Dead Code in your Java app.
+:imagesdir: images
+:numbered:
+
+Codekvast User Manual covers installation and usage of Codekvast, a tool for detecting Truly Dead Code in JVM-based applications.
+
+== Ditaa
+
+// Sample diagram from Asciidoctor Diagram website
+// http://asciidoctor.org/docs/asciidoctor-diagram/
+
+[ditaa, "asciidoctor-diagram-process"]
+....
+                   +-------------+
+                   | Asciidoctor |-------+
+                   |   diagram   |       |
+                   +-------------+       | PNG out
+                       ^                 |
+                       | ditaa in        |
+                       |                 v
+ +--------+   +--------+----+    /---------------\
+ |        |---+ Asciidoctor +--->|               |
+ |  Text  |   +-------------+    |   Beautiful   |
+ |Document|   |   !magic!   |    |    Output     |
+ |     {d}|   |             |    |               |
+ +---+----+   +-------------+    \---------------/
+     :                                   ^
+     |          Lots of work             |
+     +-----------------------------------+
+....

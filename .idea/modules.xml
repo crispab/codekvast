@@ -8,6 +8,7 @@
       <module fileurl="file://$PROJECT_DIR$/product/agent/codekvast-agent/codekvast-agent.iml" filepath="$PROJECT_DIR$/product/agent/codekvast-agent/codekvast-agent.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/server/codekvast-server/codekvast-server.iml" filepath="$PROJECT_DIR$/product/server/codekvast-server/codekvast-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/agent/collector/collector.iml" filepath="$PROJECT_DIR$/product/agent/collector/collector.iml" />
+      <module fileurl="file://$PROJECT_DIR$/product/docs/docs.iml" filepath="$PROJECT_DIR$/product/docs/docs.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/jenkins/jenkins.iml" filepath="$PROJECT_DIR$/sample/jenkins/jenkins.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/product.iml" filepath="$PROJECT_DIR$/product/product.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/sample.iml" filepath="$PROJECT_DIR$/sample/sample.iml" />
@@ -21,4 +22,3 @@
     </modules>
   </component>
 </project>
-
