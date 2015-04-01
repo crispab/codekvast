@@ -37,6 +37,7 @@ Codekvast Server:: Receives inventory and invocation data from the agent(s), sto
 in a web
 interface. There is only one server.
 
+---
 
 include::fragments/architecture-diagram.adoc[Architecture Diagram]
 
