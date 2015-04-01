@@ -1,0 +1,47 @@
+[[truly-dead-code]]
+Truly Dead Code:: By Truly Dead Code we mean code that is _deployed in production, is available to users but has not been used for a certain
+                                                       period of time_ (a <<usage-cycle, usage cycle>>).
++
+Modern IDE:s like JetBrains IDEA can detect _statically_ dead code, but will never suggest removal of any public methods.
+ The IDE cannot know who the clients to the public code are.
++
+Statically dead code is code that the IDE can prove that no-one ever can invoke. The proof is done by analysing the source
+   code.
++
+By collecting runtime invocation data, Codekvast kan help identify truly dead code _without access to the source code_.
++
+_Why is Truly Dead Code harmful?_
++
+It is not harmful per se, since no-one is using it.
++
+Nevertheless, it _is_ harmful in a more subtle sense:
++
+
+* It is most likely the oldest code that is truly dead. The oldest code was probably written by less experienced developers,
+    and probably is more http://williamdurand.fr/2013/07/30/from-stupid-to-solid-code[STUPID, role="external", window="_blank"]
+    than http://www.codeproject.com/Articles/60845/The-S-O-L-I-D-Object-Oriented-Programming-OOP-Prin[SOLID, role="external", window="_blank"].
+
+* Old code might contain undetected security vulnerabilities, since the code was written when the knowledge about e.g.,
+https://www.owasp.org/index.php/Top_10_2013-Top_10[OWASP Top 10, role="external", window="_blank"] was not widespread.
+
+* More code makes the code base harder to navigate and understand.
+* More code slows down the development cycle. All code should be tested!
+* Old code might hinder tool, libraries and framework upgrades. It is often the oldest code that use deprecated library
+    features.
+
+[[usage-cycle]]
+Usage Cycle:: The period of time after one can assume that all features of an application has been used.
++
+For some applications, the usage cycle could be a number of days.
++
+For other applications, the usage cycle could be weeks, months or even years.
++
+Only you can tell what the usage cycle is for your application. Usage cycle is not a fixed value. Once Codekvast has been running for a
+while, you can experiment with different values of usage cycle.
++
+Different applications that are parts of the same solution probably have different usage cycles. Example: front-end web, mobile API,
+back-office web, data warehouse.
+
+[[application-binaries]]
+Application Binaries:: The WAR file, EAR file or set of JAR files that make up your application. Codekvast Agent needs these in order to
+make an inventory of the available methods in your application.

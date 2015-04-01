@@ -5,30 +5,47 @@ Olle Hallin <olle.hallin@crisp.se>
 :description: Codekvast is a tool that detects Truly Dead Code in your Java app.
 :imagesdir: images
 :numbered:
+:linkattrs:
 
 Codekvast User Manual covers installation and usage of Codekvast, a tool for detecting Truly Dead Code in JVM-based applications.
 
-== Ditaa
+== Overview
 
-// Sample diagram from Asciidoctor Diagram website
-// http://asciidoctor.org/docs/asciidoctor-diagram/
+Codekvast is a tool for detecting <<truly-dead-code, Truly Dead Code>>, that is, code that is in production but not used by any real users
+for a <<usage-cycle, usage cycle>>.
 
-[ditaa, "asciidoctor-diagram-process"]
-....
-                   +-------------+
-                   | Asciidoctor |-------+
-                   |   diagram   |       |
-                   +-------------+       | PNG out
-                       ^                 |
-                       | ditaa in        |
-                       |                 v
- +--------+   +--------+----+    /---------------\
- |        |---+ Asciidoctor +--->|               |
- |  Text  |   +-------------+    |   Beautiful   |
- |Document|   |   !magic!   |    |    Output     |
- |     {d}|   |             |    |               |
- +---+----+   +-------------+    \---------------/
-     :                                   ^
-     |          Lots of work             |
-     +-----------------------------------+
-....
+Codekvast works for Java and other languages that execute in a JVM.
+
+=== Architecture
+Codekvast consists of three parts: the *Collector*, the *Agent* and the *Server*.
+
+.Responsibilities
+Codekvast Collector:: The collector is attached to the JVM that runs your application. It records the invocations of the methods of
+interest. At the end of each recording interval, the *invocation data* is written to a text file, and a new recording interval is started.
+There is exactly one collector per JVM. The collector uses http://en.wikipedia.org/wiki/AspectJ[AspectJ, role="external", window="_new"]
+for hooking into
+your
+application.
+
+Codekvast Agent:: Analyses the application's <<application-binaries, binaries>> to produce an *inventory* of the application. The inventory
+consists
+of all the method signatures that the collector potentially can record. The agent combines the method inventory with the invocation data
+ from the collector(s) and uploads it to the server. There is one agent per server host. One agent can collect invocation data from
+ several JVMs that are executing in the same host.
+
+Codekvast Server:: Receives inventory and invocation data from the agent(s), stores it in a database and makes it available for browsing
+in a web
+interface. There is only one server.
+
+
+include::fragments/architecture-diagram.adoc[Architecture Diagram]
+
+== Installation
+=== Collector
+=== Agent
+=== Server
+
+== Glossary
+
+include::fragments/glossary.adoc[]
+

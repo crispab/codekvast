@@ -19,7 +19,12 @@ asciidoctor {
     dependsOn jrubyPrepareGems
     requires = ['asciidoctor-diagram']
     gemPath = jrubyPrepareGems.outputDir
-    backends = ["html5", "pdf"]
+    // backends = ["html5", "pdf"]
+    backends = ["html5"]
+    sources {
+        exclude 'fragments/**'
+        exclude 'images/**'
+    }
     attributes = [
             'document-version': version.toString(),
             'document-date': project.parent.gitVersionTokens['git.time']
