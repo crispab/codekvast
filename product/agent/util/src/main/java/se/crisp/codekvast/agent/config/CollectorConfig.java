@@ -116,8 +116,8 @@ public class CollectorConfig implements CodekvastConfig {
     }
 
     /**
-     * @return true if the system property {@code codekvast.options} or the environment variable {@code CODEKVAST_OPTIONS} contains
-     * "verbose=true"
+     * @return true if the system property {@code codekvast.options} contains "verbose=true" or the environment variable {@code
+     * CODEKVAST_VERBOSE} is defined,
      */
     public static boolean isSyspropVerbose() {
         Properties props = new Properties();
