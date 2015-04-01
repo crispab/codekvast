@@ -14,10 +14,12 @@ import java.net.URISyntaxException;
  */
 public class CollectorConfigLocator {
 
+    public static final String ENVVAR_CATALINA_BASE = "CATALINA_BASE";
     public static final String ENVVAR_CATALINA_HOME = "CATALINA_HOME";
     public static final String ENVVAR_CONFIG = "CODEKVAST_CONFIG";
     public static final String ENVVAR_HOME = "CODEKVAST_HOME";
-    public static final String ENVVAR_OPTS = "CODEKVAST_OPTIONS";
+    public static final String ENVVAR_VERBOSE = "CODEKVAST_VERBOSE";
+    public static final String SYSPROP_CATALINA_BASE = "catalina.base";
     public static final String SYSPROP_CATALINA_HOME = "catalina.home";
     public static final String SYSPROP_CONFIG = "codekvast.configuration";
     public static final String SYSPROP_HOME = "codekvast.home";
@@ -65,6 +67,18 @@ public class CollectorConfigLocator {
         }
 
         file = tryLocation(out, verbose, constructLocation(System.getenv(ENVVAR_CATALINA_HOME), "conf"));
+        if (file != null) {
+            printMessage(out, verbose, "Found " + file);
+            return file.toURI();
+        }
+
+        file = tryLocation(out, verbose, constructLocation(System.getProperty(SYSPROP_CATALINA_BASE), "conf"));
+        if (file != null) {
+            printMessage(out, verbose, "Found " + file);
+            return file.toURI();
+        }
+
+        file = tryLocation(out, verbose, constructLocation(System.getenv(ENVVAR_CATALINA_BASE), "conf"));
         if (file != null) {
             printMessage(out, verbose, "Found " + file);
             return file.toURI();
@@ -132,6 +146,8 @@ public class CollectorConfigLocator {
             File myJar = new File(CollectorConfigLocator.class.getProtectionDomain().getCodeSource().getLocation().toURI());
             File home = myJar.getParentFile();
             if (home.getName().endsWith("/lib")) {
+                home = home.getParentFile();
+            } else if (home.getName().endsWith("/endorsed")) {
                 home = home.getParentFile();
             }
             return home.getAbsolutePath();

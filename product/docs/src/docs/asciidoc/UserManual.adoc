@@ -1,18 +1,20 @@
 = Codekvast User Manual
 Olle Hallin <olle.hallin@crisp.se>
 {document-date}
-:revnumber: {document-version}
+:revnumber: {codekvast-version}
 :description: Codekvast is a tool that detects Truly Dead Code in your Java app.
 :imagesdir: images
 :numbered:
 :linkattrs:
+:toc:
+:icons: font
 
 Codekvast User Manual covers installation and usage of Codekvast, a tool for detecting Truly Dead Code in JVM-based applications.
 
 == Overview
 
-Codekvast is a tool for detecting <<truly-dead-code, Truly Dead Code>>, that is, code that is in production but not used by any real users
-for a <<usage-cycle, usage cycle>>.
+Codekvast is a tool for detecting <<truly-dead-code, Truly Dead Code>>, that is, code that is in <<use-in-production,production>> but not
+used by any real users for a <<usage-cycle, usage cycle>>.
 
 Codekvast works for Java and other languages that execute in a JVM.
 
@@ -39,14 +41,342 @@ interface. There is only one server.
 
 ---
 
-include::fragments/architecture-diagram.adoc[Architecture Diagram]
+[ditaa, "architecture-diagram"]
+.Architecture Diagram
+....
++------------------------------------------------------------------------------+         +-------------------------+
+| Host_1                                                                       |         | Host_n                  |
+|                                                                              |         |                         |
+|   +-------------------------+            +-------------------------+         |         |  +-=-----------------+  |
+|   | JVM 1                   |            | JVM m                   |         |         |  | One or more JVMs  |  |
+|   | +---------------------+ |            | +---------------------+ |         |         |  |                   |  |
+|   | | Your app_1          | |            | | Your app_m          | |         |         |  |                   |  |
+|   | |                     | |            | |                     | |         |         |  |                   |  |
+|   | +---------------------+ |            | +---------------------+ |         |         |  |                   |  |
+|   |            |            |            |            |            |         |         |  |                   |  |
+|   |            v            |            |            V            |         |         |  |                   |  |
+|   | +---------------------+ |            | +---------------------+ |         |         |  |                   |  |
+|   | | aspectjweaver       | | -=-------- | | aspectjweaver       | |         |         |  |                   |  |
+|   | +---------------------+ |            | +---------------------+ |         |         |  |                   |  |
+|   |            |            |            |            |            |         |         |  |                   |  |
+|   |            V            |            |            V            |         |  -=---- |  |                   |  |
+|   | +---------------------+ |            | +---------------------+ |         |         |  |                   |  |
+|   | | Codekvast collector | |            | | Codekvast collector | |         |         |  |                   |  |
+|   | +----------+----------+ |            | +----------+----------+ |         |         |  |                   |  |
+|   |            |            |            |            |            |         |         |  |                   |  |
+|   +------------|------------+            +------------|------------+         |         |  +-------------------+  |
+|                | file I/O                             |                      |         |                         |
+|                V                                      V                      |         |                         |
+|     +----------------------+               +----------------------+          |         |                         |
+|     | /tmp/codekvast/app_1/|               | /tmp/codekvast/app_m/|          |         |                         |
+|     | invocations.dat      | -=----------- | invocations.dat      |          |         |                         |
+|     |                      |               |                      |          |         |                         |
+|     | {d}                  |               | {d}                  |          |         |                         |
+|     +----------------------+               +----------------------+          |         |                         |
+|                | file I/O                             |                      |         |                         |
+|                \------------\       /-----------------/                      |         |                         |
+|                             |       |                                        |         |                         |
+|                             v       v               /-=-custom classloader   |         |                         |
+|                     +----------------------------+  |  /------------\        |         |  +--------------------+ |
+|                     | Codekvast agent 1          |  v  |app_1       |--\     |         |  | Codekvast agent n  | |
+|                     |                            |<----|            |_m|     |         |  |                    | |
+|                     |                            |     |binaries    |  |     |         |  |                    | |
+|                     |                            |     \------------/  |     |         |  |                    | |
+|                     +-------------+--------------+        -------------/     |         |  +-------+------------+ |
++-----------------------------------|------------------------------------------+         +----------|--------------+
+                                    | HTTP POST/JSON                                                |
+                                    \------------\             /------------------------------------/
+                                                 |             |
+                                                 v             v
+                                      +--------------------------------+
+                                      | Codekvast Server               |
+                                      | +----------------------------+ |    +----------+
+                                      | | Data warehouse             | |<-->| Embedded |
+                                      | +----------------------------+ |    | database |
+                                      |                                |    | {s}      |
+                                      | +----------------------------+ |    |          |
+                                      | | Visualisation layer (web)  | |    +----------+
+                                      | +----------------------------+ |
+                                      +--------------------------------+
+                                                      |
+                                                      v
+                                                 /---------\
+                                                 | HTML5   |
+                                                 | browser |
+                                                 \---------/
+
+....
+
 
 == Installation
-=== Collector
-=== Agent
+=== Collector and Agent
+==== For each host, download and configure Codekvast Agent
+
+. Download https://bintray.com/artifact/download/crisp/foobar/agent/foobar-agent-{codekvast-version}.zip[codekvast-agent.zip] to any
+directory
+
+. Unpack the zip file to any location in the file system
+
+. `cd path/to/codekvast-agent-{codekvast-version}/conf` (substitute `path/to` with the actual path were codekvast-agent is installed).
+
+. `cp codekvast-agent.conf.sample codekvast-agent.conf`
+
+. Edit `codekvast-agent.conf` to suit your needs.
+
+==== For each application, modify the application's start script
+
+[[install-collector-tomcat-linux]]
+===== Tomcat (Linux)
+
+. `export CODEKVAST_HOME=path/to/codekvast-agent-{codekvast-version}` (substitute `path/to` with the actual path were Codekvast is
+installed)
+. `cd path/to/tomcat` (substitute `path/to` with the actual path were Tomcat is installed).
+. `cp $CODEKVAST_HOME/conf/codekvast-collector.conf.sample conf/codekvast.conf`
+. `cp $CODEKVAST_HOME/tomcat/setenv.sh bin/`
+. Edit `bin/setenv.sh` so that CODEKVAST_HOME matches the path were codekvast-agent-{codekvast-version} is installed.
+. Edit `conf/codekvast.conf` to suit your needs. See <<configuring-codekvast-collector, Configuring Codekvast Collector>>.
+
+===== Tomcat (Windows)
+
+. `set CODEKVAST_HOME="path\to\codekvast-agent-{codekvast-version}"` (substitute `path\to` with the actual path were Codekvast is
+installed)
+. `cd path\to\tomcat` (substitute `path\to` with the actual path were Tomcat is installed).
+. `mkdir endorsed`
+. `copy %CODEKVAST_HOME%\javaagents\* endorsed`
+. `copy %CODEKVAST_HOME%\tomcat\setenv.bat bin`
+. `copy %CODEKVAST_HOME%\conf\codekvast-collector.conf.sample conf\codekvast.conf`
+. Edit `bin\setenv.sh` so that CODEKVAST_HOME matches the path were codekvast-agent-{codekvast-version} is installed.
+. Edit `conf\codekvast.conf` to suit your needs. See <<configuring-codekvast-collector, Configuring Codekvast Collector>>.
+
+===== Other applications
+
+Use <<install-collector-tomcat-linux, the installation guide for Tomcat>> as a basis.
+
+The goal is to make
+
+`-javaagent:/path/to/codekvast-collector-{codekvast-version}.jar -javaagent:/path/to/aspectjweaver-{aspectj-version}.jar`
+
+appear as the first arguments to the `java` command and `codekvast-collector.conf` or `codekvast.conf` appear in any of the locations that
+Codekvast Collector expects it. See <<codekvast-collector-config-file-location, Configuring Codekvast Collector>>.
+
+====== Trouble shooting
+
+If you get `LinkageError` on some aspectj-related type::
+. Move `aspectjweaver-{aspectj-version}.jar` to a separate directory (called `/path/to/endorsed` below).
+. Add `-Djava.endorsed.dir=/path/to/endorsed/` to the `java` command.
+
+No data in /tmp/codekvast::
+. `export CODEKVAST_OPTIONS=verbose=true`
+. restart your application
+
 === Server
+
+== Configuration
+
+[[configuring-codekvast-collector]]
+=== Codekvast Collector
+
+[[codekvast-collector-config-file-location]]
+==== Configuration File Name and Location
+
+The collector reads it's config from a file named either `codekvast-collector.conf` or `codekvast.conf` in any of these places (the first
+found file will win:)
+
+. The Java system property `-Dcodekvast.configuration=path/to/configfile`.
+. The environment variable `CODEKVAST_CONFIG=path/to/configfile`.
+. The file `${codekvast.home}/conf/codekvast-collector.conf` or `${codekvast.home}/conf/codekvast.conf` (codekvast.home is a
+Java system property)
+. The file `${CODEKVAST_HOME}/conf/codekvast-collector.conf` or `${CODEKVAST_HOME}/conf/codekvast.conf` (CODEKVAST_HOME is an
+environment variable)
+. In a similar way it looks for
+.. catalina.home
+.. CATALINA_HOME
+.. catalina.base
+.. CATALINA_BASE
+. It looks for the config file in the `conf/` sibling directory to where codekvast-collector-{codekvast-version}.jar is located.
+. It looks for the config file in `/etc/codekvast`.
+. It looks for the config file in `/etc`.
+
+==== Config file override mechanism
+It is possible to override one or more parameters that were specified in the config file by defining the Java system property
+`codekvast.options`. The value should be a semicolon-separated list of name=value pairs.
+
+The override mechanism comes in handy when you have more than one app in the same host, with mostly identical configuration. Probably
+just the application name is different.
+
+[TIP]
+====
+To aid in troubleshooting config file location problems one can do `export CODEKVAST_VERBOSE=true` before starting the application.
+
+This is handy since it can be done without editing any start scripts.
+====
+
+==== Codekvast Collector configuration file
+
+The format of the file is a standard Java Properties file, that is, `key: value` or `key = value`. Long lines can be continued by ending the
+line with a backslash ('\') and indenting the continuation line with at least one space.
+
+The right-hand side may contain references to environment variables and Java system properties. Example:
+....
+dataDir = ${user.home}/codekvast
+dataDir = $HOME/codekvast
+....
+
+.Codekvast Collector parameters (mandatory parameters in *bold face*)
+[cols="1,2,2,5,1", options="header"]
+|===
+|Parameter
+|Description
+|Format
+|Example
+|Default
+
+|*codeBase*
+|Where are my application binaries?
+|A comma-separated list of file system paths.footnote:[
+--
+For a WAR (e.g., jenkins.war) deployed in Tomcat, specify `/path/to/apache-tomcat-x.x.x/webapps/jenkins`
+without the .war suffix. Tomcat will automatically explode the war into a folder without the .war suffix.
+
+Some applications (e.g., Jenkins) will download plugins on the fly and store them in some well-known location on disk.
+In the case of Jenkins this path is `${user.home}/.jenkins/plugins`.
+
+Spaces in a path must be escaped, i.e., preceded with a baskslash ('\') character.
+
+When running on Windows, the colon after the drive letter must be escaped, i.e., preceded with a backslash '\'.
+--
+]
+|codeBase = \ +
+{nbsp}{nbsp}${catalina.home}/webapps/jenkins,\ +
+{nbsp}{nbsp}${user.home}/.jenkins/plugins
+|
+
+|*appName*
+|What is my application's name?
+|A string
+|Jenkins
+|
+
+|appVersion
+|What is my applications version?
+
+Used for tracking dead code evolution.
+|A string.
+
+See <<app-version-strategy>>
+|filename jenkins-core-(.*).jar
+|unspecified
+
+|===
+
+[[app-version-strategy]]
+==== About specifying appVersion
+Codekvast has some strategies for automatically finding the deployed application's version:
+
+.Application version strategies
+[cols="1,5,7"]
+|===
+|Strategy |Description |Examples
+
+|*manifest*
+|Locates a certain jar file with a well-known name and extracts the version from the jar file's META-INF/MANIFEST.MF
+|appVersion = manifest myapp.jar +
+appVersion = manifest myapp.jar Implementation-Version +
+appVersion = manifest myapp.jar My-Custom-Version-Attribute +
++
+Example 1 and 2 yields the same result.
+
+|*filename*
+|Locates a jar file with a name that matches a regular expression and extracts the version from the file name.
+|TBC
+
+|*literal*
+|The value in the configuration file is used as-is.
+|`literal 3.14`
+|===
+
+[[configuring-codekvast-agent]]
+=== Codekvast Agent
+The agent reads it config from $CODEKVAST_HOME/conf/codekvast-agent.conf. The sample configuration file in that directory is self
+documenting.
+
+== Usage hints
+[[use-in-production]]
+Use Codekvast In Production:: Your _real users use your software in your production environment_. Period.
++
+Therefore, you must collect usage data _where your real users use your software, i.e., in production!_
++
+It is only in production you can get reliable data.
++
+Of course you can use Codekvast during training or test, but you will probably find less <<truly-dead-code, truly dead code>>
+than if you use Codekvast in production!
++
+[NOTE]
+====
+The Codekvast Collector is extremely efficient. It adds roughly 30 nanoseconds to each tracked method call.
+
+The memory consumption is low. For a fairly large server application (0.5 million lines of code), the complete set of tracked
+method names occupy less than 10 MB of heap space.
+
+The collected data is written to a plain text file in the local file system at the end of each collection interval. This is also
+very efficient.
+====
+
+[[always-on]]
+Codekvast Should Be Always On:: To get reliable results, _Codekvast should be running all the time, on all the servers in your server farm._
++
+If you break this rule, you will get misleading results, since individual servers in a cluster will have slightly different
+work-load.
++
+The results will be misleading in the sense that Codekvast might report perfectly healthy code as <<truly-dead-code,truly dead>>.
 
 == Glossary
 
-include::fragments/glossary.adoc[]
+[[truly-dead-code]]
+Truly Dead Code:: By Truly Dead Code we mean code that is _deployed in production, is available to users but has not been used for a certain
+period of time_ (a <<usage-cycle, usage cycle>>).
++
+Modern IDE:s like JetBrains IDEA can detect _statically_ dead code, but will never suggest removal of any public methods.
+ The IDE cannot know who the clients to the public code are.
++
+Statically dead code is code that the IDE can prove that no-one ever can invoke. The proof is done by analysing the source
+   code.
++
+By collecting runtime invocation data, Codekvast kan help identify truly dead code _without access to the source code_.
++
+_Why is Truly Dead Code harmful?_
++
+It is not harmful per se, since no-one is using it.
++
+Nevertheless, it _is_ harmful in a more subtle sense:
++
 
+* It is most likely the oldest code that is truly dead. The oldest code was probably written by less experienced developers,
+    and probably is more http://williamdurand.fr/2013/07/30/from-stupid-to-solid-code[STUPID, role="external", window="_blank"]
+    than http://www.codeproject.com/Articles/60845/The-S-O-L-I-D-Object-Oriented-Programming-OOP-Prin[SOLID, role="external", window="_blank"].
+
+* Old code might contain undetected security vulnerabilities, since the code was written when the knowledge about e.g.,
+https://www.owasp.org/index.php/Top_10_2013-Top_10[OWASP Top 10, role="external", window="_blank"] was not widespread.
+
+* More code makes the code base harder to navigate and understand.
+* More code slows down the development cycle. All code should be tested!
+* Old code might hinder tool, libraries and framework upgrades. It is often the oldest code that use deprecated library
+    features.
+
+[[usage-cycle]]
+Usage Cycle:: The period of time after one can assume that all features of an application has been used.
++
+For some applications, the usage cycle could be a number of days.
++
+For other applications, the usage cycle could be weeks, months or even years.
++
+Only you can tell what the usage cycle is for your application. Usage cycle is not a fixed value. Once Codekvast has been running for a
+while, you can experiment with different values of usage cycle.
++
+Different applications that are parts of the same solution probably have different usage cycles. Example: front-end web, mobile API,
+back-office web, data warehouse.
+
+[[application-binaries]]
+Application Binaries::
+The WAR file, EAR file or set of JAR files that make up your application. Codekvast Agent needs these in order to
+make an inventory of the available methods in your application.

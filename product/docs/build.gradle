@@ -8,6 +8,7 @@ buildscript {
 
 apply plugin: "org.asciidoctor.convert"
 apply plugin: 'com.github.jruby-gradle.base'
+apply from: "$rootDir/gradle/libs.gradle"
 
 dependencies {
     gems 'rubygems:asciidoctor-diagram:1.2.0'
@@ -19,14 +20,14 @@ asciidoctor {
     dependsOn jrubyPrepareGems
     requires = ['asciidoctor-diagram']
     gemPath = jrubyPrepareGems.outputDir
-    // backends = ["html5", "pdf"]
-    backends = ["html5"]
+    backends "html5"
+    // backends = "pdf"
     sources {
-        exclude 'fragments/**'
-        exclude 'images/**'
+        include '**/*.adoc'
     }
     attributes = [
-            'document-version': version.toString(),
+            'codekvast-version': version,
+            'aspectj-version': aspectjVersion,
             'document-date': project.parent.gitVersionTokens['git.time']
     ]
 }

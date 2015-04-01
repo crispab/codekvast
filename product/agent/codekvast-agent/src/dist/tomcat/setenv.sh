@@ -6,16 +6,16 @@
 ##########################################################################
 
 # Modify this to match your actual installation path
-CODEKVAST_HOME=/path/to/codekvast-agent-@CODEKVAST_VERSION@
+CODEKVAST_HOME=${CODEKVAST_HOME:-/path/to/codekvast-agent-@CODEKVAST_VERSION@}
 
 # Don't touch these unless you know what you are doing!
-
-COLLECTOR=$(find $CODEKVAST_HOME/javaagents -name codekvast-collector*.jar )
-WEAVER=$(find $CATALINA_HOME/endorsed -name aspectjweaver*.jar )
-if [ "$WEAVER" = "" ]; then
-    mkdir $CATALINA_HOME/endorsed
-    ln -s $(find $CODEKVAST_HOME/javaagents -name aspectjweaver*.jar ) $CATALINA_HOME/endorsed
-    WEAVER=$(find $CATALINA_HOME/endorsed -name aspectjweaver*.jar )
+COLLECTOR=$(find $CATALINA_BASE/endorsed -name codekvast-collector*.jar)
+if [ "$COLLECTOR" = "" ]; then
+    mkdir -p $CATALINA_BASE/endorsed
+    ln -s $(find $CODEKVAST_HOME/javaagents -name codekvast-collector*.jar ) $CATALINA_BASE/endorsed
+    ln -s $(find $CODEKVAST_HOME/javaagents -name aspectjweaver*.jar ) $CATALINA_BASE/endorsed
 fi
+WEAVER=$(find $CATALINA_BASE/endorsed -name aspectjweaver*.jar )
+COLLECTOR=$(find $CATALINA_BASE/endorsed -name codekvast-collector*.jar)
 
 CATALINA_OPTS="-javaagent:$COLLECTOR -javaagent:$WEAVER"
