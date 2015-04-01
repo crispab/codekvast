@@ -121,8 +121,13 @@ public class CollectorConfig implements CodekvastConfig {
      */
     public static boolean isSyspropVerbose() {
         Properties props = new Properties();
-        String verbose = System.getenv(CollectorConfigLocator.ENVVAR_VERBOSE) != null ? "verbose=true" : "";
-        parseOverrides(props, System.getProperty(CollectorConfigLocator.SYSPROP_OPTS, verbose));
+        String overrides = System.getProperty(CollectorConfigLocator.SYSPROP_OPTS);
+
+        String verbose = System.getenv(CollectorConfigLocator.ENVVAR_VERBOSE) != null ? "verbose=true" : null;
+        if (verbose != null) {
+            overrides = overrides == null ? verbose : overrides + ";" + verbose;
+        }
+        parseOverrides(props, overrides);
         return getVerboseValue(props);
     }
 

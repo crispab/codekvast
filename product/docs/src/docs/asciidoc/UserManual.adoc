@@ -274,25 +274,30 @@ See <<app-version-strategy>>
 Codekvast has some strategies for automatically finding the deployed application's version:
 
 .Application version strategies
-[cols="1,5,7"]
+[cols="1,4,9,1"]
 |===
-|Strategy |Description |Examples
+|Strategy |Description |Examples |Result
 
 |*manifest*
-|Locates a certain jar file with a well-known name and extracts the version from the jar file's META-INF/MANIFEST.MF
+|Locates a certain jar file within the codeBase with a well-known name and extracts the version from the jar file's META-INF/MANIFEST.MF
 |appVersion = manifest myapp.jar +
 appVersion = manifest myapp.jar Implementation-Version +
 appVersion = manifest myapp.jar My-Custom-Version-Attribute +
-+
+
 Example 1 and 2 yields the same result.
+| The value of the manifest attribute
 
 |*filename*
-|Locates a jar file with a name that matches a regular expression and extracts the version from the file name.
-|TBC
+|Locates a jar file within the codeBase with a name that matches a regular expression and extracts the version within the parenthesis from
+the file name.
+|`appVersion = filename myapp-(.*).jar`
+|The part within parenthesis.
 
 |*literal*
 |The value in the configuration file is used as-is.
 |`literal 3.14`
+|3.14
+
 |===
 
 [[configuring-codekvast-agent]]
