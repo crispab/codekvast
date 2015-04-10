@@ -35,6 +35,14 @@ distributions {
             from tasks.getByPath(":product:agent:collector:sourcesJar"), { into "src" }
             from tasks.getByPath(":product:agent:util:javadocJar"), { into "src" }
             from tasks.getByPath(":product:agent:util:sourcesJar"), { into "src" }
+            from tasks.getByPath(":product:agent:docs:asciidoctor"), {
+                exclude "html5/**"
+                into "doc"
+            }
+            from "$rootDir/product/agent/docs/src/docs/asciidoc", {
+                include "**.adoc"
+                into "doc"
+            }
             // from tasks.getByPath(":product:agent:codekvast-agent:javadocJar"), { into "src" }
             // from tasks.getByPath(":product:agent:codekvast-agent:sourcesJar"), { into "src" }
         }

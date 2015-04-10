@@ -5,6 +5,7 @@
 - Simplified installation of codekvast-server.
 - Renamed CollectorConfig.methodExecutionPointcut to CollectorConfig.methodVisibility. Same for JvmData. Breaks compatibility to 0.8.15.
 - Made it possible to track not only public methods.
+- Added UserManual.adoc and doc/UserManual.html
 
 ## 0.8.15
 

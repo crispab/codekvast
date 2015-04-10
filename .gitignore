@@ -2,6 +2,7 @@
 **/*.bak
 **/*.log.*.zip
 **/*.iml
+**/*.png.cache
 .gradle
 !**/.idea/codeStyleSettings.xml
 !**/.idea/compiler.xml

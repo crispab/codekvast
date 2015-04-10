@@ -21,10 +21,12 @@ asciidoctor {
     requires = ['asciidoctor-diagram']
     gemPath = jrubyPrepareGems.outputDir
     backends "html5"
-    // backends = "pdf"
+    // backends "pdf"
+
     sources {
         include '**/*.adoc'
     }
+
     attributes = [
             'codekvast-version': version,
             'aspectj-version': aspectjVersion,

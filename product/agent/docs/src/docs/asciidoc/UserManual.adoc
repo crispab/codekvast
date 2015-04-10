@@ -121,7 +121,7 @@ interface. There is only one server.
 ....
 == Installation
 === Collector and Agent
-==== For each host, download and configure Codekvast Agent
+==== For each host: download and configure Codekvast Agent
 
 . Download https://bintray.com/artifact/download/crisp/foobar/agent/foobar-agent-{codekvast-version}.zip[codekvast-agent.zip] to any
 directory
@@ -134,7 +134,7 @@ directory
 
 . Edit `codekvast-agent.conf` to suit your needs.
 
-==== For each application, modify the application's start script
+==== For each application: modify the application's start script
 
 [[install-collector-tomcat-linux]]
 ===== Tomcat (Linux)
@@ -143,7 +143,7 @@ directory
 installed)
 . `cd path/to/tomcat` (substitute `path/to` with the actual path were Tomcat is installed).
 . `cp $CODEKVAST_HOME/conf/codekvast-collector.conf.sample conf/codekvast.conf`
-. `cp $CODEKVAST_HOME/tomcat/setenv.sh bin/`
+. `cp $CODEKVAST_HOME/bin/tomcat/setenv.sh bin/`
 . Edit `bin/setenv.sh` so that CODEKVAST_HOME matches the path were codekvast-agent-{codekvast-version} is installed.
 . Edit `conf/codekvast.conf` to suit your needs. See <<configuring-codekvast-collector, Configuring Codekvast Collector>>.
 
@@ -154,7 +154,7 @@ installed)
 . `cd path\to\tomcat` (substitute `path\to` with the actual path were Tomcat is installed).
 . `mkdir endorsed`
 . `copy %CODEKVAST_HOME%\javaagents\* endorsed`
-. `copy %CODEKVAST_HOME%\tomcat\setenv.bat bin`
+. `copy %CODEKVAST_HOME%\bin\tomcat\setenv.bat bin`
 . `copy %CODEKVAST_HOME%\conf\codekvast-collector.conf.sample conf\codekvast.conf`
 . Edit `bin\setenv.sh` so that CODEKVAST_HOME matches the path were codekvast-agent-{codekvast-version} is installed.
 . Edit `conf\codekvast.conf` to suit your needs. See <<configuring-codekvast-collector, Configuring Codekvast Collector>>.
@@ -162,6 +162,12 @@ installed)
 ===== Other applications
 
 Use <<install-collector-tomcat-linux, the installation guide for Tomcat>> as a basis.
+
+[TIP]
+====
+There is a helper script called `bin/showJvmParams.sh` that when invoked produces a valid JVM_OPTS that can be pasted into your
+application's start script.
+====
 
 The goal is to make
 
@@ -244,19 +250,7 @@ dataDir = $HOME/codekvast
 
 |*codeBase*
 |Where are my application binaries?
-|A comma-separated list of file system paths.footnote:[
---
-For a WAR (e.g., jenkins.war) deployed in Tomcat, specify `/path/to/apache-tomcat-x.x.x/webapps/jenkins`
-without the .war suffix. Tomcat will automatically explode the war into a folder without the .war suffix.
-
-Some applications (e.g., Jenkins) will download plugins on the fly and store them in some well-known location on disk.
-In the case of Jenkins this path is `${user.home}/.jenkins/plugins`.
-
-Spaces in a path must be escaped, i.e., preceded with a baskslash ('\') character.
-
-When running on Windows, the colon after the drive letter must be escaped, i.e., preceded with a backslash '\'.
---
-]
+|A comma-separated list of file system paths. See <<about-specifying-code-base>>.
 |codeBase = \ +
 {nbsp}{nbsp}${catalina.home}/webapps/jenkins,\ +
 {nbsp}{nbsp}${user.home}/.jenkins/plugins
@@ -279,6 +273,18 @@ See <<app-version-strategy>>
 |unspecified
 
 |===
+
+[[about-specifying-code-base]]
+==== About specifying codeBase
+For a WAR (e.g., jenkins.war) deployed in Tomcat, specify `/path/to/apache-tomcat-x.x.x/webapps/jenkins`
+without the .war suffix. Tomcat will automatically explode the war into a folder without the .war suffix.
+
+Some applications (e.g., Jenkins) will download plugins on the fly and store them in some well-known location on disk.
+In the case of Jenkins this path is `${user.home}/.jenkins/plugins`.
+
+Spaces in a path must be escaped, i.e., preceded with a baskslash ('\') character.
+
+When running on Windows, the colon after the drive letter must be escaped, i.e., preceded with a backslash '\'.
 
 [[app-version-strategy]]
 ==== About specifying appVersion

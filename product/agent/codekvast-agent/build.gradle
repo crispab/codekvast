@@ -63,6 +63,14 @@ applicationDistribution.from("src/main/resources") {
     }
 }
 
+applicationDistribution.from("src/main/resources") {
+    into "conf"
+    include "codekvast-collector.conf.sample"
+    rename {
+        "${it}.${version}"
+    }
+}
+
 applicationDistribution.from("src/dist") {
     into "/"
     filter { it.replace("@CODEKVAST_VERSION@", project.version).replace("@ASPECTJ_VERSION@", aspectjVersion) }

@@ -49,7 +49,7 @@ public class CodekvastCollector {
      * @param inst The standard instrumentation hook.
      */
     @SuppressWarnings("UseOfSystemOutOrSystemErr")
-    public static void premain(String args, Instrumentation inst) throws URISyntaxException {
+    public static void premain(String args, Instrumentation inst) {
         CollectorConfig config = CollectorConfig.parseCollectorConfig(CollectorConfigLocator.locateConfig(System.out), args);
         if (config == null) {
             return;

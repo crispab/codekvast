@@ -2,7 +2,7 @@
   <configuration default="false" name="Build UserManual" type="GradleRunConfiguration" factoryName="Gradle">
     <ExternalSystemSettings>
       <option name="executionName" />
-      <option name="externalProjectPath" value="$PROJECT_DIR$/product/docs" />
+      <option name="externalProjectPath" value="$PROJECT_DIR$/product/agent/docs" />
       <option name="externalSystemIdString" value="GRADLE" />
       <option name="scriptParameters" value="" />
       <option name="taskDescriptions">

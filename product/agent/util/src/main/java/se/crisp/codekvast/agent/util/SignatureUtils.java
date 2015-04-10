@@ -60,6 +60,7 @@ public class SignatureUtils {
     /**
      * Uses AspectJ for creating the same signature as AbstractCodekvastAspect.
      *
+     * @param methodVisibilityFilter A filter for which methods should be included
      * @param clazz  The class containing the method
      * @param method The method to make a signature of
      * @return The same signature object as an AspectJ execution pointcut will provide in JoinPoint.getSignature(). Returns null unless the
