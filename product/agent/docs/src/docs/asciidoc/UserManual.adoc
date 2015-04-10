@@ -120,19 +120,31 @@ interface. There is only one server.
             +---------------------+   +----------------------+    +--------------------+
 ....
 == Installation
-=== Collector and Agent
+=== Codekvast Collector and Codekvast Agent
 ==== For each host: download and configure Codekvast Agent
 
 . Download https://bintray.com/artifact/download/crisp/foobar/agent/foobar-agent-{codekvast-version}.zip[codekvast-agent.zip] to any
 directory
 
-. Unpack the zip file to any location in the file system
+. Unpack the zip file to `/opt`
 
-. `cd path/to/codekvast-agent-{codekvast-version}/conf` (substitute `path/to` with the actual path were codekvast-agent is installed).
+. `cd /opt`
 
-. `cp codekvast-agent.conf.sample codekvast-agent.conf`
+. `ln -s codekvast-agent-${codekvast-version} codekvast-agent`
 
-. Edit `codekvast-agent.conf` to suit your needs.
+. `cd /opt/codekvast-agent/conf`
+
+. `cp codekvast-agent.properties.sample.${codekvast-version} codekvast-agent.properties`
+
+. Edit `codekvast-agent.properties` to suit your needs.
+
+. `cd /etc/init.d`
+
+. `cp /opt/codekvast-agent/etc/init.d/codekvast-agent .`
+
+. `chkconfig --add codekvast-agent`
+
+. `./codekvast-agent start`
 
 ==== For each application: modify the application's start script
 
@@ -186,7 +198,30 @@ No data in /tmp/codekvast::
 . `export CODEKVAST_OPTIONS=verbose=true`
 . restart your application
 
-=== Server
+=== Codekvast Server
+
+. Download https://bintray.com/artifact/download/crisp/foobar/agent/foobar-server-{codekvast-version}.zip[codekvast-server.zip] to any
+directory
+
+. Unpack the zip file to `/opt`
+
+. `cd /opt`
+
+. `ln -s codekvast-server-${codekvast-version} codekvast-server`
+
+. `cd /opt/codekvast-server/conf`
+
+. `cp codekvast-server.properties.sample.${codekvast-version} codekvast-server.properties`
+
+. Edit `codekvast-server.properties` to suit your needs.
+
+. `cd /etc/init.d`
+
+. `cp /opt/codekvast-server/etc/init.d/codekvast-server .`
+
+. `chkconfig --add codekvast-server`
+
+. `./codekvast-server start`
 
 == Configuration
 

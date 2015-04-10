@@ -1,5 +1,10 @@
 # Codekvast Agent Release Notes
 
+## 0.8.17
+
+- Added /etc/init.d scripts for agent and server.
+- Documented installation of agent and server (work in progress).
+
 ## 0.8.16
 
 - Simplified installation of codekvast-server.
