@@ -14,6 +14,7 @@ import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorS
 import se.crisp.codekvast.server.codekvast_server.model.event.display.SignatureDataMessage;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.SignatureDisplay;
 import se.crisp.codekvast.server.codekvast_server.model.event.internal.InvocationDataReceivedEvent;
+import se.crisp.codekvast.server.codekvast_server.model.event.rest.CollectorSettings;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
 
 import javax.annotation.PostConstruct;
@@ -108,6 +109,17 @@ public class UserServiceImpl implements UserService {
     public CollectorStatusMessage getCollectorStatusMessage(String username) throws CodekvastException {
         long organisationId = userDAO.getOrganisationIdForUsername(username);
         return agentDAO.createCollectorStatusMessage(organisationId);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveCollectorSettings(String username, CollectorSettings collectorSettings) throws CodekvastException {
+        long organisationId = userDAO.getOrganisationIdForUsername(username);
+
+        agentDAO.saveCollectorSettings(organisationId, collectorSettings);
+
+        CollectorStatusMessage message = agentDAO.createCollectorStatusMessage(organisationId);
+        eventBus.post(message);
     }
 
     private void fillSignatureCache(long organisationId, Set<SignatureDisplay> signatures) {

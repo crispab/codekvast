@@ -151,10 +151,31 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             socket.client.onclose = onDisconnect;
         };
 
+        var persistCollectorSettings = function (collectorStatus) {
+            var data = {collectorSettings: []};
+            for (var i = 0, len = collectorStatus.collectors.length; i < len; i++) {
+                var c = collectorStatus.collectors[i];
+                data.collectorSettings.push({
+                    name: c.name,
+                    trulyDeadAfterDays: c.trulyDeadAfterDays
+                })
+            }
+
+            $http.post('/api/collectorSettings', data)
+                .success(function () {
+                    console.log("Saved collector settings %o", data);
+                })
+                .error(function (rsp) {
+                    console.log("Cannot save collector settings %o", rsp);
+                })
+
+        };
+
         return {
             getLastEvent: getLastEvent,
             initSocket: initSocket,
-            getAllSignatures: getAllSignatures
+            getAllSignatures: getAllSignatures,
+            persistCollectorSettings: persistCollectorSettings
         }
     }])
 
@@ -222,10 +243,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
         $scope.save = function () {
             if ($scope.collectorStatus) {
-                for (var i = 0, len = $scope.collectorStatus.collectors.length; i < len; i++) {
-                    var c = $scope.collectorStatus.collectors[i];
-                    c.trulyDeadAfterSeconds = c.trulyDeadAfterDays * 60 * 60 * 24;
-                }
+                StompService.persistCollectorSettings($scope.collectorStatus);
             }
 
             $modalInstance.close();

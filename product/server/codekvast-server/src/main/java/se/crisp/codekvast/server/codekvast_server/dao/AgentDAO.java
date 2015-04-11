@@ -5,6 +5,7 @@ import se.crisp.codekvast.server.agent_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorStatusMessage;
+import se.crisp.codekvast.server.codekvast_server.model.event.rest.CollectorSettings;
 
 /**
  * A data access object for things related to the agent API.
@@ -50,4 +51,12 @@ public interface AgentDAO {
      * @return An event to post on the EventBus
      */
     CollectorStatusMessage createCollectorStatusMessage(long organisationId);
+
+    /**
+     * Save updated collector settings
+     *
+     * @param organisationId    The organisation
+     * @param collectorSettings The new settings
+     */
+    void saveCollectorSettings(long organisationId, CollectorSettings collectorSettings);
 }

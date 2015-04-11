@@ -16,6 +16,8 @@ import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplication
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorDisplay;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorStatusMessage;
+import se.crisp.codekvast.server.codekvast_server.model.event.rest.CollectorSettings;
+import se.crisp.codekvast.server.codekvast_server.model.event.rest.CollectorSettingsEntry;
 
 import javax.inject.Inject;
 import java.sql.ResultSet;
@@ -171,6 +173,37 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                    new CollectorDisplayRowMapper(), organisationId);
 
         return CollectorStatusMessage.builder().collectors(collectors).usernames(usernames).build();
+    }
+
+    @Override
+    public void saveCollectorSettings(long organisationId, CollectorSettings collectorSettings) {
+
+        List<Object[]> args = new ArrayList<>();
+
+        for (CollectorSettingsEntry entry : collectorSettings.getCollectorSettings()) {
+            args.add(new Object[]{
+                    entry.getTrulyDeadAfterDays() * 60 * 60 * 24,
+                    organisationId,
+                    entry.getName()
+            });
+        }
+
+        int[] updated = jdbcTemplate.batchUpdate("UPDATE applications SET truly_dead_after_seconds = ? " +
+                                                         "WHERE organisation_id = ? AND name = ?", args);
+
+        boolean success = true;
+        for (int count : updated) {
+            if (count != 1) {
+                success = false;
+            }
+        }
+
+        if (success) {
+            log.info("Saved collector settings");
+        } else {
+            log.warn("Failed to save collector settings {}", collectorSettings);
+        }
+
     }
 
     private static class CollectorDisplayRowMapper implements RowMapper<CollectorDisplay> {
