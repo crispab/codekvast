@@ -158,6 +158,12 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         }
     }])
 
+    .controller('NavigationController', ['$scope', '$location', function($scope, $location) {
+        $scope.isActive = function (viewLocation) {
+            return viewLocation === $location.path();
+        };
+    }])
+
     .controller('JumbotronController', ['$scope', '$window', 'StompService', function ($scope, $window, StompService) {
         $scope.jumbotronMessage = StompService.getLastEvent('jumbotronMessage');
 
