@@ -12,7 +12,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             })
 
             .otherwise({
-                templateUrl: 'partials/welcome.html'
+                templateUrl: 'partials/dashboard.html'
             });
 
 
@@ -158,10 +158,32 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         }
     }])
 
-    .controller('NavigationController', ['$scope', '$location', function($scope, $location) {
+    .controller('NavigationController', ['$scope', '$location', '$modal', function($scope, $location, $modal) {
+        $scope.menuItems = [
+            {
+                name: 'Dashboard',
+                url: '/page/dashboard',
+                title: 'Show the status of the collectors',
+                icon: 'glyphicon-dashboard'
+            },
+            {
+                name: 'Truly Dead Code',
+                url: '/page/live-report',
+                title: 'Show truly dead code',
+                icon: 'glyphicon-th-list'
+            }
+        ];
+
         $scope.isActive = function (viewLocation) {
             return viewLocation === $location.path();
         };
+
+        $scope.openSettings = function () {
+            var modalInstance = $modal.open({
+                templateUrl: 'partials/settings.html',
+                controller: 'SettingsController'
+            });
+        }
     }])
 
     .controller('JumbotronController', ['$scope', '$window', 'StompService', function ($scope, $window, StompService) {
@@ -184,9 +206,40 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
     }])
 
+    .controller('SettingsController', ['$scope', '$modalInstance', 'StompService', function ($scope, $modalInstance, StompService) {
+        $scope.collectorStatus = StompService.getLastEvent('collectorStatus');
+
+        if ($scope.collectorStatus) {
+            for (var i = 0, len = $scope.collectorStatus.collectors.length; i < len; i++) {
+                var c = $scope.collectorStatus.collectors[i];
+                c.trulyDeadAfterDays = c.trulyDeadAfterSeconds / 60 / 60 / 24;
+            }
+        }
+
+        $scope.$on('stompDisconnected', function (event, message) {
+            $scope.collectorStatus = undefined;
+        });
+
+        $scope.save = function () {
+            if ($scope.collectorStatus) {
+                for (var i = 0, len = $scope.collectorStatus.collectors.length; i < len; i++) {
+                    var c = $scope.collectorStatus.collectors[i];
+                    c.trulyDeadAfterSeconds = c.trulyDeadAfterDays * 60 * 60 * 24;
+                }
+            }
+
+            $modalInstance.close();
+        };
+
+        $scope.cancel = function () {
+            $modalInstance.dismiss('cancel');
+        };
+
+    }])
+
     .controller('CollectorController', ['$scope', '$interval', 'DateService', 'StompService', function ($scope, $interval, DateService, StompService) {
         $scope.collectorStatus = StompService.getLastEvent('collectorStatus');
-        $scope.collectorStatusOpen = false;
+        $scope.collectorStatusOpen = true;
         $scope.dateFormat = 'short';
 
         $scope.$on('collectorStatus', function (event, data) {
@@ -295,4 +348,3 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
     .run(['StompService', function (StompService) {
         StompService.initSocket();
     }]);
-

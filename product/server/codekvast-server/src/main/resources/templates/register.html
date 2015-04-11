@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <th:block th:include="fragments :: #head-boilerplate"/>
+    <th:block th:include="fragments :: #head_boilerplate"/>
     <title th:text="#{registration.page-title}">Codekvast - registration</title>
     <link rel="stylesheet" th:href="@{/app/register.css}"/>
 </head>
@@ -118,8 +118,8 @@
     </form>
 </div>
 
-<th:block th:include="fragments :: #scripts-twitter-bootstrap"/>
-<th:block th:include="fragments :: #scripts-angularjs"/>
+<th:block th:include="fragments :: #scripts_twitter_bootstrap"/>
+<th:block th:include="fragments :: #scripts_angularjs"/>
 <script th:src="@{/app/register.js}"></script>
 </body>
 </html>

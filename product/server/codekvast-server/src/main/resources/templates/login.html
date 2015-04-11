@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <th:block th:include="fragments :: #head-boilerplate"/>
+    <th:block th:include="fragments :: #head_boilerplate"/>
     <title th:text="#{login.page-title}">Codekvast - login</title>
 </head>
 <body>
@@ -10,16 +10,18 @@
         <fieldset>
             <legend th:text="#{login.page-title}">Codekvast - login</legend>
 
-            <div th:if="${param.error}" class="col-md-offset-1 col-md-11 alert alert-danger">
-            Invalid username and password.
-            </div>
-            <div th:if="${param.logout}" class="col-md-offset-1 col-md-11 alert alert-info">
-            You have been logged out.
+            <div class="form-group">
+                <div th:if="${param.error}" class="col-md-6 alert alert-danger">
+                    Invalid username and password.
+                </div>
+                <div th:if="${param.logout}" class="col-md-6 alert alert-info">
+                    You have been logged out.
+                </div>
             </div>
             <div class="form-group">
                 <label class="col-md-1 control-label" for="username">Username</label>
 
-                <div class="col-md-11">
+                <div class="col-md-5">
                     <input class="form-control"
                            type="text"
                            id="username"
@@ -31,7 +33,7 @@
             <div class="form-group">
                 <label class="col-md-1 control-label" for="password">Password</label>
 
-                <div class="col-md-11">
+                <div class="col-md-5">
                     <input class="form-control"
                            type="password"
                            id="password"
@@ -42,7 +44,7 @@
             </div>
 
             <div class="form-group">
-                <div class="col-md-offset-1 col-md-11">
+                <div class="col-md-offset-1 col-md-4">
                 <button type="submit" class="btn btn-primary">Sign in</button>
                     <span th:if="${multiTenant}">&nbsp;or&nbsp;<a href="register.html" th:href="@{/register}">Create new
                                                                                                               account...</a></span>
@@ -51,6 +53,6 @@
         </fieldset>
     </form>
 </div>
-<th:block th:include="fragments :: #scripts-twitter-bootstrap"/>
+<th:block th:include="fragments :: #scripts_twitter_bootstrap"/>
 </body>
 </html>

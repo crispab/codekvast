@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" ng-app="codekvastApp" ng-strict-di="true">
 <head>
-    <th:block th:include="fragments :: #head-boilerplate"/>
-    <th:block th:include="fragments :: #head-disable-caching"/>
+    <th:block th:include="fragments :: #head_boilerplate"/>
+    <th:block th:include="fragments :: #head_disable_caching"/>
     <title>Codekvast</title>
 </head>
 <body class="ng-cloak">
@@ -10,24 +10,22 @@
 <nav class="navbar navbar-default">
     <div class="container-fluid" role="navigation" ng-controller="NavigationController">
         <div class="navbar-header">
-            <a class="navbar-brand" href="/page/welcome">Codekvast Server</a>
+            <!--suppress HtmlUnknownTarget -->
+            <a class="navbar-brand" href="/page/dashboard">Codekvast Server</a>
         </div>
 
         <ul class="nav navbar-nav">
-            <li ng-class="{ active: isActive('/page/welcome')}"><a href="/page/welcome">
-                <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
-                Home </a></li>
-            <li ng-class="{ active: isActive('/page/status')}"><a href="/page/status">
-                <span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span>
-                Dashboard</a></li>
-            <li ng-class="{ active: isActive('/page/statistics')}"><a href="/page/statistics">
-                <span class="glyphicon glyphicon-stats" aria-hidden="true"></span>
-                Statistics</a></li>
+
+            <li ng-repeat="menuItem in menuItems" ng-class="{ active: isActive(menuItem.url)}">
+                <!--suppress HtmlUnknownTarget -->
+                <a href="{{menuItem.url}}" title="{{menuItem.title}}">
+                <span class="glyphicon {{menuItem.icon}}" aria-hidden="true"></span>
+                {{menuItem.name}} </a></li>
         </ul>
         <form class="navbar-form navbar-right" th:action="@{/logout}" method="post">
             <span th:text="${'Logged in as ' + #httpServletRequest.remoteUser}">sample_user</span>
             &nbsp;
-            <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#settingsModal">
+            <button type="button" class="btn btn-default btn-sm" ng-click="openSettings()">
                 <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
                 Settings
             </button>
@@ -41,33 +39,16 @@
 </nav>
 
 <div class="container-fluid">
+    <div ng-controller="JumbotronController">
+        <div class="jumbotron" ng-show="jumbotronMessage"><h2>{{jumbotronMessage}}</h2></div>
+    </div>
+
     <div ng-view="true"></div>
 </div>
 
-<!-- settings modal -->
-<div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="settingsLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                <h4 class="modal-title" id="settingsLabel">Settings</h4>
-            </div>
-            <div class="modal-body">
-                ...
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal">Save changes</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<th:block th:include="fragments :: #scripts-twitter-bootstrap"/>
-<th:block th:include="fragments :: #scripts-angularjs"/>
-<th:block th:include="fragments :: #scripts-sockjs"/>
+<th:block th:include="fragments :: #scripts_twitter_bootstrap"/>
+<th:block th:include="fragments :: #scripts_angularjs"/>
+<th:block th:include="fragments :: #scripts_sockjs"/>
 <script th:src="@{/app/codekvast.js}"></script>
 </body>
 </html>

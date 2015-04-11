@@ -1,0 +1,27 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h4 class="modal-title" id="settingsLabel">Settings</h4>
+    </div>
+    <form class="form">
+        <div class="modal-body">
+            <table class="table collector-status">
+                <thead>
+                <tr>
+                    <th class="col-lg-1">Application</th>
+                    <th class="col-lg-1">Usage Cycle (days)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="c in collectorStatus.collectors">
+                    <td class="col-lg-1">{{c.name}}</td>
+                    <td class="col-lg-1"><input type="number" ng-model="c.trulyDeadAfterDays"/></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" ng-click="cancel()">Cancel</button>
+            <button type="button" class="btn btn-primary" ng-click="save()">Save changes</button>
+        </div>
+    </form>
+</div>

@@ -1,5 +1,10 @@
 # Codekvast Agent Release Notes
 
+## 0.8.18
+
+- Improved the server web interface.
+- codekvast-agent now uses a private H2 database for storing not yet uploaded data.
+
 ## 0.8.17
 
 - Added /etc/init.d scripts for agent and server.
