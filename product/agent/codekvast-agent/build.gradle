@@ -16,12 +16,16 @@ targetCompatibility = 1.7
 mainClassName = "se.crisp.codekvast.agent.main.CodekvastAgentApplication"
 
 dependencies {
-    compile "ch.qos.logback:logback-classic"
-    compile "org.reflections:reflections:0.9.9"
-    compile "org.springframework.boot:spring-boot-starter"
     compile lombok
-    compile project(":product:agent:util")
-    compile project(":product:server:agent-api")
+    compile project(':product:agent:util')
+    compile project(':product:server:agent-api')
+    compile 'ch.qos.logback:logback-classic'
+    compile 'org.reflections:reflections:0.9.9'
+    compile 'org.springframework.boot:spring-boot-starter'
+    compile 'org.springframework.boot:spring-boot-starter-jdbc'
+    compile 'com.h2database:h2'
+
+    runtime 'org.flywaydb:flyway-core'
 
     testCompile junit
     testCompile mockito
@@ -44,7 +48,10 @@ jar {
 
 run {
     jvmArgs = ['-ea']
-    args = ["--codekvast.serverUploadIntervalSeconds=5"]
+    args = [
+            "--codekvast.serverUploadIntervalSeconds=5",
+            "--codekvast.databasePath=$buildDir/database"
+    ]
 }
 
 bootRun {
