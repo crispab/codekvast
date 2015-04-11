@@ -6,7 +6,8 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import se.crisp.codekvast.agent.config.CollectorConfig;
 import se.crisp.codekvast.agent.main.appversion.AppVersionStrategy;
 import se.crisp.codekvast.agent.main.codebase.CodeBaseScanner;
@@ -15,6 +16,7 @@ import se.crisp.codekvast.server.agent_api.AgentApi;
 import se.crisp.codekvast.server.agent_api.AgentApiException;
 import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -24,7 +26,8 @@ import java.util.UUID;
 
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
+@EmbeddedCodekvastAgentIntegTest
 public class AgentWorkerIntegrationTest {
 
     @Rule
@@ -35,19 +38,27 @@ public class AgentWorkerIntegrationTest {
     private long jvmStartedAtMillis = System.currentTimeMillis() - 60_000L;
     private long now = System.currentTimeMillis();
 
+    @Inject
+    public InvocationsCollector invocationsCollector;
+
     @Mock
     private AgentApi agentApi;
+
+    @Mock
+    private AgentWorker.TransactionHelper transactionHelper;
 
     private AgentWorker worker;
 
     @Before
     public void before() throws Exception {
+        MockitoAnnotations.initMocks(this);
+
         when(agentApi.getServerUri()).thenReturn(new URI("http://server"));
 
         List<AppVersionStrategy> appVersionStrategies = new ArrayList<>();
         AgentConfig agentConfig = createAgentConfig();
 
-        worker = new AgentWorker(agentApi, agentConfig, scanner, appVersionStrategies);
+        worker = new AgentWorker(agentApi, agentConfig, scanner, appVersionStrategies, invocationsCollector, transactionHelper);
     }
 
     @Test

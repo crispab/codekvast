@@ -1,10 +1,10 @@
 package se.crisp.codekvast.agent.main;
 
-import com.google.common.collect.Lists;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.agent.config.CollectorConfig;
 import se.crisp.codekvast.agent.main.appversion.AppVersionStrategy;
 import se.crisp.codekvast.agent.main.codebase.CodeBase;
@@ -40,9 +40,11 @@ public class AgentWorker {
     private final CodeBaseScanner codeBaseScanner;
     private final AgentApi agentApi;
     private final Collection<AppVersionStrategy> appVersionStrategies = new ArrayList<>();
+    private final InvocationsCollector invocationsCollector;
+    private final TransactionHelper transactionHelper;
+
     private final String agentComputerId = ComputerID.compute().toString();
     private final String agentHostName = getHostName();
-
     private final Map<String, JvmState> jvmStates = new HashMap<>();
     private long now;
 
@@ -50,10 +52,14 @@ public class AgentWorker {
     public AgentWorker(AgentApi agentApi,
                        AgentConfig config,
                        CodeBaseScanner codeBaseScanner,
-                       Collection<AppVersionStrategy> appVersionStrategies) {
+                       Collection<AppVersionStrategy> appVersionStrategies,
+                       InvocationsCollector invocationsCollector,
+                       TransactionHelper transactionHelper) {
         this.agentApi = agentApi;
         this.config = config;
         this.codeBaseScanner = codeBaseScanner;
+        this.invocationsCollector = invocationsCollector;
+        this.transactionHelper = transactionHelper;
         this.appVersionStrategies.addAll(appVersionStrategies);
 
         log.info("{} {} started", getClass().getSimpleName(), config.getDisplayVersion());
@@ -92,7 +98,7 @@ public class AgentWorker {
 
         for (JvmState jvmState : jvmStates.values()) {
             if (jvmState.getInvocationDataUploadedAt() == 0L) {
-                // The agent might have crashed between consuming invocation data files and uploading them to the server.
+                // The agent might have crashed between consuming invocation data files and storing them in the local database.
                 // Make sure that invocation data is not lost...
                 FileUtils.resetAllConsumedInvocationDataFiles(jvmState.getInvocationsFile());
             }
@@ -248,7 +254,7 @@ public class AgentWorker {
     private void processInvocationsDataIfNeeded(JvmState jvmState) {
         List<Invocation> invocations = FileUtils.consumeAllInvocationDataFiles(jvmState.getInvocationsFile());
         if (jvmState.getCodeBase() != null && !invocations.isEmpty()) {
-            storeNormalizedInvocations(jvmState, invocations);
+            transactionHelper.storeNormalizedInvocations(jvmState, invocations);
             uploadUsedSignatures(jvmState);
         }
     }
@@ -256,65 +262,10 @@ public class AgentWorker {
     private void uploadUsedSignatures(JvmState jvmState) {
         try {
             agentApi.uploadInvocationData(getJvmData(jvmState),
-                                          Lists.newArrayList(jvmState.getInvocationsCollector().getNotUploadedInvocations()));
-            jvmState.getInvocationsCollector().clearNotUploadedSignatures();
-            FileUtils.deleteAllConsumedInvocationDataFiles(jvmState.getInvocationsFile());
+                                          invocationsCollector.getNotUploadedInvocations(jvmState.getJvm().getJvmUuid()));
+            invocationsCollector.clearNotUploadedSignatures(jvmState.getJvm().getJvmUuid());
         } catch (AgentApiException e) {
             logException("Cannot upload invocation data to " + agentApi.getServerUri(), e);
-            // Don't reset consumed invocation files, the data is still in the InvocationsCollector
-        }
-    }
-
-    void storeNormalizedInvocations(JvmState jvmState, List<Invocation> invocations) {
-        CodeBase codeBase = jvmState.getCodeBase();
-
-        int recognized = 0;
-        int unrecognized = 0;
-        int ignored = 0;
-        int overridden = 0;
-
-        for (Invocation invocation : invocations) {
-            String rawSignature = invocation.getSignature();
-            String normalizedSignature = codeBase.normalizeSignature(rawSignature);
-
-            SignatureConfidence confidence = null;
-            if (normalizedSignature == null) {
-                ignored += 1;
-            } else if (codeBase.hasSignature(normalizedSignature)) {
-                recognized += 1;
-                confidence = SignatureConfidence.EXACT_MATCH;
-            } else {
-                String baseSignature = codeBase.getBaseSignature(normalizedSignature);
-                if (baseSignature != null) {
-                    log.debug("{} replaced by {}", normalizedSignature, baseSignature);
-
-                    overridden += 1;
-                    confidence = SignatureConfidence.FOUND_IN_PARENT_CLASS;
-                    normalizedSignature = baseSignature;
-                } else if (normalizedSignature.equals(rawSignature)) {
-                    unrecognized += 1;
-                    confidence = SignatureConfidence.NOT_FOUND_IN_CODE_BASE;
-                    log.debug("Unrecognized signature: {}", normalizedSignature);
-                } else {
-                    unrecognized += 1;
-                    confidence = SignatureConfidence.NOT_FOUND_IN_CODE_BASE;
-                    log.debug("Unrecognized signature: {} (was {})", normalizedSignature, rawSignature);
-                }
-            }
-
-            if (normalizedSignature != null) {
-                jvmState.getInvocationsCollector().put(normalizedSignature,
-                                                       invocation.getInvokedAtMillis(),
-                                                       invocation.getInvokedAtMillis() - jvmState.getJvm().getStartedAtMillis(),
-                                                       confidence);
-            }
-        }
-
-        if (unrecognized > 0) {
-            log.warn("{} recognized, {} overridden, {} unrecognized and {} ignored method invocations applied", recognized, overridden,
-                     unrecognized, ignored);
-        } else {
-            log.debug("{} signature invocations applied ({} overridden, {} ignored)", recognized, overridden, ignored);
         }
     }
 
@@ -324,8 +275,6 @@ public class AgentWorker {
 
     @Data
     private static class JvmState {
-        private final InvocationsCollector invocationsCollector = new InvocationsCollector();
-
         private Jvm jvm;
         private File invocationsFile;
         private CodeBase codeBase;
@@ -333,5 +282,77 @@ public class AgentWorker {
         private long jvmDataUploadedAt;
         private long codebaseUploadedAt;
         private long invocationDataUploadedAt;
+    }
+
+    /**
+     * Helper class for moving invocation data from several files into the local database inside one big transaction.
+     */
+    @Component
+    public static class TransactionHelper {
+
+        private final InvocationsCollector invocationsCollector;
+
+        @Inject
+        public TransactionHelper(InvocationsCollector invocationsCollector) {
+            this.invocationsCollector = invocationsCollector;
+        }
+
+        @Transactional
+        public void storeNormalizedInvocations(JvmState jvmState, List<Invocation> invocations) {
+            CodeBase codeBase = jvmState.getCodeBase();
+
+            int recognized = 0;
+            int unrecognized = 0;
+            int ignored = 0;
+            int overridden = 0;
+
+            for (Invocation invocation : invocations) {
+                String rawSignature = invocation.getSignature();
+                String normalizedSignature = codeBase.normalizeSignature(rawSignature);
+
+                SignatureConfidence confidence = null;
+                if (normalizedSignature == null) {
+                    ignored += 1;
+                } else if (codeBase.hasSignature(normalizedSignature)) {
+                    recognized += 1;
+                    confidence = SignatureConfidence.EXACT_MATCH;
+                } else {
+                    String baseSignature = codeBase.getBaseSignature(normalizedSignature);
+                    if (baseSignature != null) {
+                        log.debug("{} replaced by {}", normalizedSignature, baseSignature);
+
+                        overridden += 1;
+                        confidence = SignatureConfidence.FOUND_IN_PARENT_CLASS;
+                        normalizedSignature = baseSignature;
+                    } else if (normalizedSignature.equals(rawSignature)) {
+                        unrecognized += 1;
+                        confidence = SignatureConfidence.NOT_FOUND_IN_CODE_BASE;
+                        log.debug("Unrecognized signature: {}", normalizedSignature);
+                    } else {
+                        unrecognized += 1;
+                        confidence = SignatureConfidence.NOT_FOUND_IN_CODE_BASE;
+                        log.debug("Unrecognized signature: {} (was {})", normalizedSignature, rawSignature);
+                    }
+                }
+
+                if (normalizedSignature != null) {
+                    invocationsCollector.put(jvmState.getJvm().getJvmUuid(),
+                                             normalizedSignature,
+                                             invocation.getInvokedAtMillis(),
+                                             invocation.getInvokedAtMillis() - jvmState.getJvm().getStartedAtMillis(),
+                                             confidence);
+                }
+            }
+
+            FileUtils.deleteAllConsumedInvocationDataFiles(jvmState.getInvocationsFile());
+
+            if (unrecognized > 0) {
+                log.warn("{} recognized, {} overridden, {} unrecognized and {} ignored method invocations applied", recognized, overridden,
+                         unrecognized, ignored);
+            } else {
+                log.debug("{} signature invocations applied ({} overridden, {} ignored)", recognized, overridden, ignored);
+            }
+        }
+
     }
 }

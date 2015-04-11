@@ -1,49 +1,20 @@
 package se.crisp.codekvast.agent.main;
 
-import lombok.Getter;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
 
-import javax.annotation.concurrent.NotThreadSafe;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.List;
 
 /**
- * InvocationsCollector keeps track of which invocations have not yet been uploaded to the codekvast-server.
- * It also makes sure that an older invocation is not uploaded after a younger invocation.
+ * InvocationsCollector keeps track of which invocations have not yet been uploaded to the codekvast-server. It also makes sure that an
+ * older invocation is not uploaded after a younger invocation.
  *
  * @author olle.hallin@crisp.se
  */
-@NotThreadSafe
-class InvocationsCollector {
+public interface InvocationsCollector {
+    List<SignatureEntry> getNotUploadedInvocations(String jvmUuid);
 
-    @Getter
-    private final Set<SignatureEntry> notUploadedInvocations = new HashSet<>();
-    private final Map<String, Long> ages = new HashMap<>();
+    void put(String jvmUuid, String signature, long invokedAtMillis, long millisSinceJvmStart, SignatureConfidence confidence);
 
-    void put(String signature, long invokedAtMillis, long millisSinceJvmStart, SignatureConfidence confidence) {
-        if (signature == null) {
-            throw new IllegalArgumentException("signature is null");
-        }
-
-        if (invokedAtMillis < 0L) {
-            throw new IllegalArgumentException("invokedAtMillis cannot be negative");
-        }
-
-        Long age = ages.get(signature);
-        if (age == null || age <= invokedAtMillis) {
-            SignatureEntry signatureEntry = new SignatureEntry(signature, invokedAtMillis, millisSinceJvmStart, confidence);
-            // Replace it. Must remove first or, else the add is a no-op.
-            notUploadedInvocations.remove(signatureEntry);
-            notUploadedInvocations.add(signatureEntry);
-            ages.put(signature, invokedAtMillis);
-        }
-    }
-
-    void clearNotUploadedSignatures() {
-        notUploadedInvocations.clear();
-        ages.clear();
-    }
+    void clearNotUploadedSignatures(String jvmUuid);
 }
