@@ -97,10 +97,11 @@ public class AgentWorker {
         findJvmStates();
 
         for (JvmState jvmState : jvmStates.values()) {
-            if (jvmState.getInvocationDataUploadedAt() == 0L) {
+            if (jvmState.isFirstRun()) {
                 // The agent might have crashed between consuming invocation data files and storing them in the local database.
                 // Make sure that invocation data is not lost...
                 FileUtils.resetAllConsumedInvocationDataFiles(jvmState.getInvocationsFile());
+                jvmState.setFirstRun(false);
             }
             uploadJvmData(jvmState);
             analyzeAndUploadCodeBaseIfNeeded(jvmState, new CodeBase(jvmState.getJvm().getCollectorConfig()));
@@ -222,10 +223,10 @@ public class AgentWorker {
             }
 
             codeBaseScanner.scanSignatures(newCodeBase);
+            jvmState.setCodeBase(newCodeBase);
 
             try {
                 agentApi.uploadSignatureData(getJvmData(jvmState), newCodeBase.getSignatures());
-                jvmState.setCodeBase(newCodeBase);
                 jvmState.setCodebaseUploadedAt(now);
             } catch (AgentApiException e) {
                 logException("Cannot upload signature data to " + agentApi.getServerUri(), e);
@@ -282,6 +283,7 @@ public class AgentWorker {
         private long jvmDataUploadedAt;
         private long codebaseUploadedAt;
         private long invocationDataUploadedAt;
+        private boolean firstRun = true;
     }
 
     /**
