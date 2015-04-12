@@ -6,15 +6,17 @@ Olle Hallin <olle.hallin@crisp.se>
 :imagesdir: images
 :numbered:
 :linkattrs:
-:toc:
+:toc: left
+:toclevels: 3
 :icons: font
+:source-highlighter: highlightjs
 
 Codekvast User Manual covers installation and usage of Codekvast, a tool for detecting Truly Dead Code in JVM-based applications.
 
 == Overview
 
-Codekvast is a tool for detecting <<truly-dead-code, Truly Dead Code>>, that is, code that is in <<use-in-production,production>> but not
-used by any real users for a <<usage-cycle, usage cycle>>.
+Codekvast is a tool for detecting <<truly-dead-code, Truly Dead Code>>. By that we mean code that is in <<use-in-production,
+production>> but not used by any real users for a <<usage-cycle, usage cycle>>.
 
 Codekvast works for Java and other languages that execute in a JVM.
 
@@ -23,17 +25,16 @@ Codekvast consists of three parts: the *Collector*, the *Agent* and the *Server*
 
 .Responsibilities
 Codekvast Collector:: The collector is attached to the JVM that runs your application. It records the invocations of the methods of
-interest. At the end of each recording interval, the *invocation data* is written to a text file, and a new recording interval is started.
+interest. At the end of each recording interval, the <<invocation-data, invocation data>> is written to a text file, and a new recording
+interval is started.
 There is exactly one collector per JVM. The collector uses http://en.wikipedia.org/wiki/AspectJ[AspectJ, role="external", window="_new"]
-for hooking into
-your
-application.
+for hooking into your application. *The collector requires Java 6 or higher.*
 
-Codekvast Agent:: Analyses the application's <<application-binaries, binaries>> to produce an *inventory* of the application. The inventory
-consists
-of all the method signatures that the collector potentially can record. The agent combines the method inventory with the invocation data
+Codekvast Agent:: Analyses the application's <<application-binaries, binaries>> to produce an <<method-inventory, inventory>> of the
+application. The
+inventory consists of all the method signatures that the collector potentially can record. The agent combines the method inventory with the invocation data
  from the collector(s) and uploads it to the server. There is one agent per server host. One agent can collect invocation data from
- several JVMs that are executing in the same host.
+ several JVMs that are executing in the same host. *The agent requires Java 6 or higher.*
 
 Codekvast Server:: Receives inventory and invocation data from the agent(s), stores it in a database and makes it available for browsing
 in a web
@@ -41,6 +42,7 @@ interface. There is only one server.
 
 ---
 
+[[architecture-diagram]]
 [ditaa, "architecture-diagram"]
 .Architecture Diagram
 ....
@@ -120,58 +122,68 @@ interface. There is only one server.
             +---------------------+   +----------------------+    +--------------------+
 ....
 == Installation
-=== Codekvast Collector and Codekvast Agent
-==== For each host: download and configure Codekvast Agent
+=== Codekvast Agent
 
-. Download https://bintray.com/artifact/download/crisp/foobar/agent/foobar-agent-{codekvast-version}.zip[codekvast-agent.zip] to any
-directory
+The Codekvast agent must be installed in each host that runs an application that shall be tracked by Codekvast.
 
-. Unpack the zip file to `/opt`
+. Download https://bintray.com/artifact/download/crisp/foobar/agent/foobar-agent-{codekvast-version}
+.zip[codekvast-agent-{codekvast-version}.zip] to any directory
 
-. `cd /opt`
+. Execute the following commands in a shell:
 
-. `ln -s codekvast-agent-${codekvast-version} codekvast-agent`
+[source,bash,subs="attributes,verbatim"]
+----
+sudo -s
+unzip path/to/codekvast-agent-{codekvast-version}.zip -d /opt <1>
+cd /opt
+ln -s codekvast-agent-{codekvast-version} codekvast-agent
+cd /opt/codekvast-agent/conf
+cp codekvast-agent.properties.sample.{codekvast-version} codekvast-agent.properties # <2>
+cd /etc/init.d
+cp /opt/codekvast-agent/etc/init.d/codekvast-agent .
+chkconfig --add codekvast-agent # <3>
+----
+<1> Substitute `path/to` with the actual path to the downloaded zip file.
+<2> Edit codekvast-agent.properties to suit your needs.
+<3> This works for Redhat-based Linux distros. For Debian-based distros, use `update-rc.d codekvast-agent defaults` instead.
 
-. `cd /opt/codekvast-agent/conf`
+Once you have finished editing codekvast-agent.properties, execute
 
-. `cp codekvast-agent.properties.sample.${codekvast-version} codekvast-agent.properties`
+----
+/etc/init.d/codekvast-agent start
+----
 
-. Edit `codekvast-agent.properties` to suit your needs.
-
-. `cd /etc/init.d`
-
-. `cp /opt/codekvast-agent/etc/init.d/codekvast-agent .`
-
-. `chkconfig --add codekvast-agent`
-
-. `./codekvast-agent start`
-
-==== For each application: modify the application's start script
+=== Modify all applications' start scripts
 
 [[install-collector-tomcat-linux]]
-===== Tomcat (Linux)
+==== Tomcat (Linux)
 
-. `export CODEKVAST_HOME=path/to/codekvast-agent-{codekvast-version}` (substitute `path/to` with the actual path were Codekvast is
-installed)
-. `cd path/to/tomcat` (substitute `path/to` with the actual path were Tomcat is installed).
-. `cp $CODEKVAST_HOME/conf/codekvast-collector.conf.sample conf/codekvast.conf`
-. `cp $CODEKVAST_HOME/bin/tomcat/setenv.sh bin/`
-. Edit `bin/setenv.sh` so that CODEKVAST_HOME matches the path were codekvast-agent-{codekvast-version} is installed.
-. Edit `conf/codekvast.conf` to suit your needs. See <<configuring-codekvast-collector, Configuring Codekvast Collector>>.
+[source,bash,subs="attributes,verbatim"]
+----
+cd path/to/tomcat # <1>
+cp /opt/codekvast-agent/conf/codekvast-collector.conf.sample.{codekvast-version} conf/codekvast.conf # <2>
+cp /opt/codekvast-agent/bin/tomcat/setenv.sh bin/
+----
+<1> Substitute `path/to` with the actual path were Tomcat is installed.
+<2> Edit `conf/codekvast.conf` to suit your needs. See <<configuring-codekvast-collector, Configuring Codekvast Collector>>.
 
-===== Tomcat (Windows)
+==== Tomcat (Windows)
 
-. `set CODEKVAST_HOME="path\to\codekvast-agent-{codekvast-version}"` (substitute `path\to` with the actual path were Codekvast is
-installed)
-. `cd path\to\tomcat` (substitute `path\to` with the actual path were Tomcat is installed).
-. `mkdir endorsed`
-. `copy %CODEKVAST_HOME%\javaagents\* endorsed`
-. `copy %CODEKVAST_HOME%\bin\tomcat\setenv.bat bin`
-. `copy %CODEKVAST_HOME%\conf\codekvast-collector.conf.sample conf\codekvast.conf`
-. Edit `bin\setenv.sh` so that CODEKVAST_HOME matches the path were codekvast-agent-{codekvast-version} is installed.
-. Edit `conf\codekvast.conf` to suit your needs. See <<configuring-codekvast-collector, Configuring Codekvast Collector>>.
+[source,cmd,subs="attributes,verbatim"]
+----
+set CODEKVAST_HOME="path\to\codekvast-agent-{codekvast-version}" # <1>
+cd path\to\tomcat # <2>
+mkdir endorsed
+copy %CODEKVAST_HOME%\javaagents\* endorsed
+copy %CODEKVAST_HOME%\bin\tomcat\setenv.bat bin # <3>
+copy %CODEKVAST_HOME%\conf\codekvast-collector.conf.sample.{codekvast-version} conf\codekvast.conf # <4>
+----
+<1> Ssubstitute `path\to` with the actual path were Codekvast is installed.
+<2> Substitute `path\to` with the actual path were Tomcat is installed.
+<3> Edit `bin\setenv.sh` so that CODEKVAST_HOME matches the path were codekvast-agent-{codekvast-version} is installed.
+<4> Edit `conf\codekvast.conf` to suit your needs. See <<configuring-codekvast-collector, Configuring Codekvast Collector>>.
 
-===== Other applications
+==== Other applications
 
 Use <<install-collector-tomcat-linux, the installation guide for Tomcat>> as a basis.
 
@@ -188,7 +200,7 @@ The goal is to make
 appear as the first arguments to the `java` command and `codekvast-collector.conf` or `codekvast.conf` appear in any of the locations that
 Codekvast Collector expects it. See <<codekvast-collector-config-file-location, Configuring Codekvast Collector>>.
 
-====== Trouble shooting
+===== Trouble shooting
 
 If you get `LinkageError` on some aspectj-related type::
 . Move `aspectjweaver-{aspectj-version}.jar` to a separate directory (called `/path/to/endorsed` below).
@@ -200,28 +212,31 @@ No data in /tmp/codekvast::
 
 === Codekvast Server
 
-. Download https://bintray.com/artifact/download/crisp/foobar/agent/foobar-server-{codekvast-version}.zip[codekvast-server.zip] to any
+Download https://bintray.com/artifact/download/crisp/foobar/agent/foobar-server-{codekvast-version}.zip[codekvast-server.zip] to any
 directory
 
-. Unpack the zip file to `/opt`
+[source,bash,subs="attributes,verbatim"]
+----
+sudo -s
+unzip path/to/codekvast-server-{codekvast-version}.zip -d /opt # <1>
+cd /opt
+ln -s codekvast-server-{codekvast-version} codekvast-server
+cd /opt/codekvast-server/conf
+cp codekvast-server.properties.sample.{codekvast-version} codekvast-server.properties <2>
+cd /etc/init.d
+cp /opt/codekvast-server/etc/init.d/codekvast-server .
+chkconfig --add codekvast-server <3>
+----
+<1> Substitute `path/to` with the actual path to the downloaded zip file.
+<2> Edit codekvast-server.properties to suit your needs.
+<3> This works for Redhad-based Linux distros. For Debian-based distros, use `update-rc.d codekvast-server defaults` instead.
 
-. `cd /opt`
 
-. `ln -s codekvast-server-${codekvast-version} codekvast-server`
+Once you have finished editing codekvast-server.properties, execute
 
-. `cd /opt/codekvast-server/conf`
-
-. `cp codekvast-server.properties.sample.${codekvast-version} codekvast-server.properties`
-
-. Edit `codekvast-server.properties` to suit your needs.
-
-. `cd /etc/init.d`
-
-. `cp /opt/codekvast-server/etc/init.d/codekvast-server .`
-
-. `chkconfig --add codekvast-server`
-
-. `./codekvast-server start`
+----
+/etc/init.d/codekvast-server start
+----
 
 == Configuration
 
@@ -354,7 +369,7 @@ the file name.
 
 [[configuring-codekvast-agent]]
 === Codekvast Agent
-The agent reads it config from $CODEKVAST_HOME/conf/codekvast-agent.conf. The sample configuration file in that directory is self
+The agent reads it config from /opt/codekvast-agent/conf/codekvast-agent.conf. The sample configuration file in that directory is self
 documenting.
 
 == Usage hints
@@ -433,7 +448,14 @@ while, you can experiment with different values of usage cycle.
 Different applications that are parts of the same solution probably have different usage cycles. Example: front-end web, mobile API,
 back-office web, data warehouse.
 
+[[invocation-data]]
+Invocation Data:: The set of methods that have been invoked during a collection interval. It contains the fully qualified names of the
+methods and the fully qualified types of the methods' parameters.
+
 [[application-binaries]]
 Application Binaries::
 The WAR file, EAR file or set of JAR files that make up your application. Codekvast Agent needs these in order to
 make an inventory of the available methods in your application.
+
+[[method-inventory]]
+Method Inventory:: All methods which belong to any of the packages of interest.

@@ -35,7 +35,7 @@ public class AgentWorkerIntegrationTest {
 
     private final CodeBaseScanner scanner = new CodeBaseScanner();
     private final String JVM_UUID = UUID.randomUUID().toString();
-    private long jvmStartedAtMillis = System.currentTimeMillis() - 60_000L;
+    private long jvmStartedAtMillis = System.currentTimeMillis() - 60000L;
     private long now = System.currentTimeMillis();
 
     @Inject
@@ -55,7 +55,7 @@ public class AgentWorkerIntegrationTest {
 
         when(agentApi.getServerUri()).thenReturn(new URI("http://server"));
 
-        List<AppVersionStrategy> appVersionStrategies = new ArrayList<>();
+        List<AppVersionStrategy> appVersionStrategies = new ArrayList<AppVersionStrategy>();
         AgentConfig agentConfig = createAgentConfig();
 
         worker = new AgentWorker(agentApi, agentConfig, scanner, appVersionStrategies, invocationsCollector, transactionHelper);

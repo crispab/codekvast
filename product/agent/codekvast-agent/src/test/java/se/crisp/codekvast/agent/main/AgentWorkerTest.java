@@ -16,7 +16,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(MockitoJUnitRunner.class)
 public class AgentWorkerTest {
 
-    private final Collection<AppVersionStrategy> appVersionStrategies = new ArrayList<>();
+    private final Collection<AppVersionStrategy> appVersionStrategies = new ArrayList<AppVersionStrategy>();
 
     @Before
     public void before() throws Exception {

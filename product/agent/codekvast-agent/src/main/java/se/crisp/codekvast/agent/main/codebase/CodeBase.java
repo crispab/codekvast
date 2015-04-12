@@ -38,10 +38,10 @@ public class CodeBase {
     private final CollectorConfig config;
 
     @Getter
-    private final Set<String> signatures = new TreeSet<>();
+    private final Set<String> signatures = new TreeSet<String>();
 
     @Getter
-    private final Map<String, String> overriddenSignatures = new HashMap<>();
+    private final Map<String, String> overriddenSignatures = new HashMap<String, String>();
 
     private final CodeBaseFingerprint fingerprint;
 
@@ -64,7 +64,7 @@ public class CodeBase {
     private CodeBaseFingerprint initUrls() {
         long startedAt = System.currentTimeMillis();
 
-        urls = new ArrayList<>();
+        urls = new ArrayList<URL>();
         CodeBaseFingerprint.Builder builder = CodeBaseFingerprint.builder();
         for (File codeBaseFile : codeBaseFiles) {
             if (codeBaseFile.isDirectory()) {

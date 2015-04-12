@@ -1,5 +1,9 @@
 # Codekvast Agent Release Notes
 
+## 0.9.0
+
+- codekvast-agent now runs on Java 6
+
 ## 0.8.18
 
 - Improved the server web interface.

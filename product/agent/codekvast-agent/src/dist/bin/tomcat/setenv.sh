@@ -6,7 +6,7 @@
 ##########################################################################
 
 # Modify this to match your actual installation path
-CODEKVAST_HOME=${CODEKVAST_HOME:-/path/to/codekvast-agent-@CODEKVAST_VERSION@}
+CODEKVAST_HOME=${CODEKVAST_HOME:-/opt/codekvast-agent}
 
 # Don't touch these unless you know what you are doing!
 COLLECTOR=$(find $CATALINA_BASE/endorsed -name codekvast-collector*.jar)

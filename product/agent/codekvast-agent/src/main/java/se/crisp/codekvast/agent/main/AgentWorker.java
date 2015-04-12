@@ -39,13 +39,13 @@ public class AgentWorker {
     private final AgentConfig config;
     private final CodeBaseScanner codeBaseScanner;
     private final AgentApi agentApi;
-    private final Collection<AppVersionStrategy> appVersionStrategies = new ArrayList<>();
+    private final Collection<AppVersionStrategy> appVersionStrategies = new ArrayList<AppVersionStrategy>();
     private final InvocationsCollector invocationsCollector;
     private final TransactionHelper transactionHelper;
 
     private final String agentComputerId = ComputerID.compute().toString();
     private final String agentHostName = getHostName();
-    private final Map<String, JvmState> jvmStates = new HashMap<>();
+    private final Map<String, JvmState> jvmStates = new HashMap<String, JvmState>();
     private long now;
 
     @Inject

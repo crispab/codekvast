@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
  */
 class RecordingClassFileFilter implements Predicate<String> {
     private final Pattern pattern;
-    private final Set<String> matches = new HashSet<>();
+    private final Set<String> matches = new HashSet<String>();
 
     RecordingClassFileFilter(Set<String> packagePrefixes) {
         this.pattern = buildPattern(packagePrefixes);
@@ -34,7 +34,7 @@ class RecordingClassFileFilter implements Predicate<String> {
     }
 
     public Set<String> getMatchedClassNames() {
-        return new HashSet<>(matches);
+        return new HashSet<String>(matches);
     }
 
     private Pattern buildPattern(Set<String> prefixes) {

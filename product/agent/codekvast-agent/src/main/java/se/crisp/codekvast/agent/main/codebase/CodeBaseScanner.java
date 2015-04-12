@@ -36,7 +36,7 @@ public class CodeBaseScanner {
         log.debug("Scanning code base {}", codeBase);
 
         URLClassLoader appClassLoader = new URLClassLoader(codeBase.getUrls(), System.class.getClassLoader());
-        Set<String> prefixes = new TreeSet<>(codeBase.getConfig().getNormalizedPackagePrefixes());
+        Set<String> prefixes = new TreeSet<String>(codeBase.getConfig().getNormalizedPackagePrefixes());
 
         Set<String> recognizedTypes = getRecognizedTypes(prefixes, appClassLoader);
 
@@ -44,7 +44,9 @@ public class CodeBaseScanner {
             try {
                 Class<?> clazz = Class.forName(type, false, appClassLoader);
                 result += findPublicMethods(codeBase, prefixes, clazz);
-            } catch (ClassNotFoundException | NoClassDefFoundError e) {
+            } catch (ClassNotFoundException e) {
+                log.warn("Cannot analyze " + type + ": " + e);
+            } catch (NoClassDefFoundError e) {
                 log.warn("Cannot analyze " + type + ": " + e);
             }
         }
