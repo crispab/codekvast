@@ -82,6 +82,10 @@ bintray {
     filesSpec {
         from tasks.getByPath(":product:agentDistZip")
         from tasks.getByPath(":product:serverDistZip")
+        from tasks.getByPath(":product:docs:asciidoctor"), {
+            include "CodekvastUserManual.html"
+            rename { "CodekvastUserManual-${version}.html" }
+        }
         from file("src/dist/RELEASE-NOTES.md")
         into "."
     }

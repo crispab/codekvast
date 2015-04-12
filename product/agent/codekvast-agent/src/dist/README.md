@@ -1,3 +1,3 @@
-# Codekvast Agent
+# README for Codekvast Agent
 
-See doc/UserManual.html or doc/UserManual.adoc
+See doc/CodekvastUserManual.html or doc/CodekvastUserManual.adoc

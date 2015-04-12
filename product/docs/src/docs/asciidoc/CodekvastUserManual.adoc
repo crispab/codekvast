@@ -1,9 +1,10 @@
 = Codekvast User Manual
 Olle Hallin <olle.hallin@crisp.se>
 {document-date}
-:revnumber: {codekvast-version}
 :description: Codekvast is a tool that detects Truly Dead Code in your Java app.
+:revnumber: {codekvast-version}
 :imagesdir: images
+:data-uri:
 :numbered:
 :linkattrs:
 :toc: left
