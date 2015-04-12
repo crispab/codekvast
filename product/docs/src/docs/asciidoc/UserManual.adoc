@@ -139,6 +139,7 @@ sudo ln -s codekvast-agent-{codekvast-version} codekvast-agent
 cd /opt/codekvast-agent/conf
 sudo cp codekvast-agent.properties.sample.{codekvast-version} codekvast-agent.properties # <1>
 sudo ln -s /opt/codekvast-agent/etc/init.d/codekvast-agent /etc/init.d
+sudo mkdir -p /var/log/codekvast
 sudo chkconfig --add /etc/init.d/codekvast-agent # <2>
 ----
 <1> Edit codekvast-agent.properties to suit your needs. See <<configuring-codekvast-agent, Configuring Codekvast Agent>>.
@@ -225,6 +226,8 @@ sudo ln -s codekvast-server-{codekvast-version} codekvast-server
 cd /opt/codekvast-server/conf
 sudo cp codekvast-server.properties.sample.{codekvast-version} codekvast-server.properties # <1>
 sudo ln -s /opt/codekvast-server/etc/init.d/codekvast-server /etc/init.d
+sudo mkdir -p /var/log/codekvast
+sudo mkdir -p /var/backups/codekvast
 sudo chkconfig --add /etc/init.d/codekvast-server # <2>
 ----
 <1> Edit codekvast-server.properties to suit your needs. See <<configuring-codekvast-server, Configuring Codekvast Server>>.

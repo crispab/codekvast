@@ -16,9 +16,18 @@ public class LogPathDefiner extends PropertyDefinerBase {
     public String getPropertyValue() {
         String path = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
         String result = System.getProperty("codekvast.logPath");
+        if (result == null) {
+            result = System.getenv("CODEKVAST_LOGPATH");
+        }
+        File varLogCodekvast = new File("/var/log/codekvast");
+        File optCodekvastServerLog = new File("/opt/codekvast-server/log");
         boolean makeResultWritable = false;
         if (result != null) {
             // use it as it is
+        } else if (varLogCodekvast.isDirectory()) {
+            result = getCanonicalPath(varLogCodekvast);
+        } else if (optCodekvastServerLog.isDirectory()) {
+            result = getCanonicalPath(optCodekvastServerLog);
         } else if (path.endsWith(".jar")) {
             // Running from application start script
             result = path.substring(0, path.lastIndexOf("/")).replace("/lib", "/log");
@@ -27,9 +36,6 @@ public class LogPathDefiner extends PropertyDefinerBase {
             // Running from Gradle workspace with java -jar build/libs/xxx.jar
             int p = path.lastIndexOf("/build/libs");
             result = path.substring(0, p) + "/build";
-        } else if (path.endsWith(".jar!/")) {
-            // Running from java -jar outside the Gradle workspace
-            result = "/var/log/codekvast";
         } else if (path.endsWith("/build/classes/main/")) {
             // Running from gradle run
             result = path.replace("/build/classes/main/", "/build");
@@ -45,7 +51,7 @@ public class LogPathDefiner extends PropertyDefinerBase {
             resultDir.mkdirs();
         }
 
-        if (!resultDir.isDirectory() || !resultDir.canWrite()) {
+        if (!resultDir.isDirectory()) {
             result = System.getProperty("user.dir");
             System.err.println(getCanonicalPath(resultDir) + " is not writable, will log to working directory, which is " +
                                        getCanonicalPath(new File(result)));

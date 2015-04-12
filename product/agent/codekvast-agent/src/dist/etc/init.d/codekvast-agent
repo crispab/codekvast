@@ -1,92 +1,82 @@
-#!/bin/sh
-#
-# codekvast-agent    Start and stop the Codekvast Agent
-#
-# chkconfig:   345 90 10
-# description: Codekvast Agent
-
+#! /bin/sh
 ### BEGIN INIT INFO
-# Provides: codekvast-agent
-# Required-Start: $local_fs $remote_fs $network $named $syslog $time
-# Required-Stop: $local_fs $remote_fs $network $named $syslog $time
-# Default-Start: 2 3 4 5
-# Default-Stop: 0 1 6
-# Short-Description: Start and stop the Codekvast Agent
-# Description:       The Codekvast Agent uploads invokation data delivered by codekvast-collector to a codekvast-server.
+# Provides:          codekvast-agent
+# Required-Start:
+# Required-Stop:
+# Should-Start:      $network
+# Should-Stop:       $network
+# X-Start-Before:
+# X-Stop-After:
+# Default-Start:     3 4 5
+# Default-Stop:      1 2
+# Short-Description: Codekvast Agent
+# Description:       The agent part of Codekvast
 ### END INIT INFO
 
-# Source function library.
-. /etc/rc.d/init.d/functions
+# Author: olle.hallin@crisp.se
 
-installDir="/opt/codekvast-agent"
-service="codekvast-agent"
-exec="${installDir}/bin/codekvast-agent"
-logDir="${installDir}/log"
+APP=/opt/codekvast-agent/bin/codekvast-agent
+LOGPATH=/var/log/codekvast
+NAME=CodekvastAgent
+DESC="Codekvast Agent"
+SCRIPTNAME=/etc/init.d/codekvast-agent
+USER=root
 
-lockfile=/var/lock/subsys/$service
+# Exit if the package is not installed
+test -x $APP || exit 0
 
-start_server() {
-    app="$1"
-    pidfile="/var/run/$service.pid"
-    exec="${installDir}/bin/$service"
-    logfile="${logDir}/$service.out"
-    echo -n "$service "
-    nohup $exec $args < /dev/null > $logfile 2>&1 &
-    echo $! >> $pidfile
+# Define LSB log_* functions.
+# Depend on lsb-base (>= 3.2-14) to ensure that this file is present
+# and status_of_proc is working.
+. /lib/lsb/init-functions
+
+# Get the timezone set.
+if [ -z "$TZ" -a -e /etc/timezone ]; then
+    TZ=`cat /etc/timezone`
+    export TZ
+fi
+
+doStart() {
+    mkdir -p $LOGPATH
+    chown $USER:$USER $LOGPATH
+    su $USER -c "exec $APP" > $LOGPATH/codekvast-agent.out 2>&1 &
+    chown -R $USER:$USER $LOGPATH
 }
 
-start() {
-    [ -x $exec ] || exit 5
-    echo -n "Starting $service: "
-    start_server $service
-    retval=$?
-    [ $retval -eq 0 ] && touch $lockfile
-    echo
-    return $retval
+doStop() {
+    jps | grep $NAME | awk '{print $1}' | xargs kill
 }
-
-stop() {
-    echo -n $"Stopping $service: "
-    # stop it here, often "killproc $service"
-    killproc $service
-    retval=$?
-    echo
-    [ $retval -eq 0 ] && rm -f $lockfile
-    return $retval
-}
-
-restart() {
-    stop
-    start
-}
-
-rh_status() {
-    # run checks to determine if the service is running or use generic status
-    status $service
-}
-
-rh_status_q() {
-    rh_status >/dev/null 2>&1
-}
-
 
 case "$1" in
-    start)
-        rh_status_q && exit 0
-        $1
-        ;;
-    stop)
-        rh_status_q || exit 0
-        $1
-        ;;
-    restart)
-        $1
-        ;;
-    status)
-        rh_status
-        ;;
-    *)
-        echo $"Usage: $0 {start|stop|status|restart}"
-        exit 2
+  start)
+	log_daemon_msg "Starting $DESC" "$NAME"
+    doStart
+	status=$?
+	log_end_msg $status
+	;;
+
+  stop)
+	log_daemon_msg "Stopping $DESC" "$NAME"
+	doStop
+	status=$?
+	log_end_msg $status
+	;;
+
+  restart)
+	log_daemon_msg "Restarting $DESC" "$NAME"
+	doStop
+	doStart
+	status=$?
+	log_end_msg $status
+	;;
+
+  status)
+	jps | grep $NAME
+	;;
+  *)
+	echo "Usage: $SCRIPTNAME {start|stop|restart|status}" >&2
+	exit 3
+	;;
 esac
-exit $?
+
+exit 0

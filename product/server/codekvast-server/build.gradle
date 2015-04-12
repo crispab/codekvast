@@ -113,8 +113,6 @@ applicationDistribution.from("src/main/resources") {
     }
 }
 
-applicationDefaultJvmArgs = ['-Dcodekvast.logPath=/var/log/codekvast']
-
 startScripts {
     doLast {
         outputs.files.each { script ->

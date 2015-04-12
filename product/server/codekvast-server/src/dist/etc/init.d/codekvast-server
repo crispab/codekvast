@@ -16,9 +16,10 @@
 # Author: olle.hallin@crisp.se
 
 APP=/opt/codekvast-server/bin/codekvast-server
-NAME=CodekvastServerApplication
+LOGPATH=/var/log/codekvast
+NAME=CodekvastServer
 DESC="Codekvast Server"
-SCRIPTNAME=/etc/init.d/codekvast-server.sh
+SCRIPTNAME=/etc/init.d/codekvast-server
 USER=root
 
 # Exit if the package is not installed
@@ -36,11 +37,10 @@ if [ -z "$TZ" -a -e /etc/timezone ]; then
 fi
 
 doStart() {
-    cd $(dirname $APP)/..
-    mkdir -p log
-    chown $USER:$USER log
-    su $USER -c "exec $APP" > log/codekvast-server.out 2>&1 &
-    chown -R $USER:$USER log
+    mkdir -p $LOGPATH
+    chown $USER:$USER $LOGPATH
+    su $USER -c "exec $APP" > $LOGPATH/codekvast-server.out 2>&1 &
+    chown -R $USER:$USER $LOGPATH
 }
 
 doStop() {

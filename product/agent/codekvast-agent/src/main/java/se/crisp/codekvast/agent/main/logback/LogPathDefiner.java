@@ -3,41 +3,68 @@ package se.crisp.codekvast.agent.main.logback;
 import ch.qos.logback.core.PropertyDefinerBase;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
- * Finds out where the codekvast-agent is installed and calculates an absolute path for the Logback log file. See logback.xml
+ * Finds out where the app is located and calculates an absolute path for the Logback log files. See logback.xml
  *
  * @author olle.hallin@crisp.se
  */
 public class LogPathDefiner extends PropertyDefinerBase {
 
-    public static final String LOG_PATH_PROPERTY = "codekvast.agentLogPath";
-
     @Override
     public String getPropertyValue() {
-        String path = System.getProperty(LOG_PATH_PROPERTY);
-        if (path == null) {
-            // Not started with an explicit log file, compute the logical location for the log file...
-
-            path = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-
-            if (path.endsWith(".jar")) {
-                // Running from start script
-                path = path.substring(0, path.lastIndexOf("/")).replace("/lib", "/log");
-            }
-
-            if (path.endsWith("/build/classes/main/")) {
-                // Running from gradle run
-                path = path.replace("/build/classes/main/", "/build");
-            }
-
-            if (path.endsWith("/build/classes/production/codekvast-agent/")) {
-                // Running from IDEA at $MODULE_DIR
-                path = path.replace("/build/classes/production/codekvast-agent/", "/codekvast-agent/build");
-            }
+        String path = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+        String result = System.getProperty("codekvast.logPath");
+        if (result == null) {
+            result = System.getenv("CODEKVAST_LOGPATH");
         }
-        File result = new File(path);
-        result.mkdirs();
-        return result.getAbsolutePath();
+        File varLogCodekvast = new File("/var/log/codekvast");
+        File optCodekvastAgentLog = new File("/opt/codekvast-agent/log");
+        boolean makeResultWritable = false;
+        if (result != null) {
+            // use it as it is
+        } else if (varLogCodekvast.isDirectory()) {
+            result = getCanonicalPath(varLogCodekvast);
+        } else if (optCodekvastAgentLog.isDirectory()) {
+            result = getCanonicalPath(optCodekvastAgentLog);
+        } else if (path.endsWith(".jar")) {
+            // Running from application start script
+            result = path.substring(0, path.lastIndexOf("/")).replace("/lib", "/log");
+            makeResultWritable = true;
+        } else if (path.contains("/build/libs/") && path.endsWith(".jar!/")) {
+            // Running from Gradle workspace with java -jar build/libs/xxx.jar
+            int p = path.lastIndexOf("/build/libs");
+            result = path.substring(0, p) + "/build";
+        } else if (path.endsWith("/build/classes/main/")) {
+            // Running from gradle run
+            result = path.replace("/build/classes/main/", "/build");
+        } else if (path.endsWith("/build/classes/production/codekvast-server/")) {
+            // Running from IDEA at $MODULE_DIR
+            result = path.replace("/build/classes/production/codekvast-server/", "/server/codekvast-server/build");
+        } else {
+            result = ".";
+        }
+
+        File resultDir = new File(result);
+        if (makeResultWritable) {
+            resultDir.mkdirs();
+        }
+
+        if (!resultDir.isDirectory()) {
+            result = System.getProperty("user.dir");
+            System.err.println(getCanonicalPath(resultDir) + " is not writable, will log to working directory, which is " +
+                                       getCanonicalPath(new File(result)));
+        }
+
+        return result;
+    }
+
+    private String getCanonicalPath(File file) {
+        try {
+            return file.getCanonicalPath();
+        } catch (IOException e) {
+            return file.getAbsolutePath();
+        }
     }
 }
