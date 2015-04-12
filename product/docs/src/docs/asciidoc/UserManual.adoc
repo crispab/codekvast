@@ -9,7 +9,8 @@ Olle Hallin <olle.hallin@crisp.se>
 :toc: left
 :toclevels: 3
 :icons: font
-:source-highlighter: highlightjs
+:source-highlighter: prettify
+:aspectj-ltw-configuration: https://eclipse.org/aspectj/doc/next/devguide/ltw-configuration.html
 
 Codekvast User Manual covers installation and usage of Codekvast, a tool for detecting Truly Dead Code in JVM-based applications.
 
@@ -38,7 +39,7 @@ inventory consists of all the method signatures that the collector potentially c
 
 Codekvast Server:: Receives inventory and invocation data from the agent(s), stores it in a database and makes it available for browsing
 in a web
-interface. There is only one server.
+interface. There is only one server. *The server requires Java 7 or higher.*
 
 ---
 
@@ -58,7 +59,8 @@ interface. There is only one server.
 |   |   ^              |           |        |                         |        |         |  |                   |    |
 |   |   |<-=weaves     |<-=invokes |        |                         |        |         |  |                   |    |
 |   | +--------------+ |           |        | +---------------------+ |        |         |  |                   |    |
-|   | | aspectj c999 | |           |-=----  | | aspectj c999        | |        |         |  |                   |    |
+|   | | aspectjweaver| |           |        | | aspectjweaver       | |        |         |  |                   |    |
+|   | | c999         | |           |-=----  | | c999                | |        |         |  |                   |    |
 |   | +--------------+ |           |        | +---------------------+ |        |         |  |                   |    |
 |   |   ^              |           |        |                         |        |         |  |                   |    |
 |   |   |<-=instructs  v           |        |                         |        |  -=---- |  |                   |    |
@@ -122,13 +124,13 @@ interface. There is only one server.
             +---------------------+   +----------------------+    +--------------------+
 ....
 == Installation
-=== Codekvast Agent
+=== Install Codekvast Agent
 
 The Codekvast agent must be installed in each host that runs an application that shall be tracked by Codekvast.
 
-. Download https://bintray.com/artifact/download/crisp/foobar/agent/foobar-agent-{codekvast-version}
-.zip[codekvast-agent-{codekvast-version}.zip] to any directory
-
+. Download
+https://bintray.com/artifact/download/crisp/foobar/agent/foobar-agent-{codekvast-version}.zip[codekvast-agent-{codekvast-version}.zip]
+to any directory
 . Execute the following commands in a shell:
 
 [source,bash,subs="attributes,verbatim"]
@@ -139,13 +141,12 @@ cd /opt
 ln -s codekvast-agent-{codekvast-version} codekvast-agent
 cd /opt/codekvast-agent/conf
 cp codekvast-agent.properties.sample.{codekvast-version} codekvast-agent.properties # <2>
-cd /etc/init.d
-cp /opt/codekvast-agent/etc/init.d/codekvast-agent .
-chkconfig --add codekvast-agent # <3>
+ln -s /opt/codekvast-agent/etc/init.d/codekvast-agent /etc/init.d
+chkconfig --add /etc/init.d/codekvast-agent # <3>
 ----
 <1> Substitute `path/to` with the actual path to the downloaded zip file.
-<2> Edit codekvast-agent.properties to suit your needs.
-<3> This works for Redhat-based Linux distros. For Debian-based distros, use `update-rc.d codekvast-agent defaults` instead.
+<2> Edit codekvast-agent.properties to suit your needs. See <<configuring-codekvast-agent, Configuring Codekvast Agent>>.
+<3> This works for Redhat-based Linux distros. For Debian-based distros, use `update-rc.d /etc/init.d/codekvast-agent defaults` instead.
 
 Once you have finished editing codekvast-agent.properties, execute
 
@@ -180,18 +181,12 @@ copy %CODEKVAST_HOME%\conf\codekvast-collector.conf.sample.{codekvast-version} c
 ----
 <1> Ssubstitute `path\to` with the actual path were Codekvast is installed.
 <2> Substitute `path\to` with the actual path were Tomcat is installed.
-<3> Edit `bin\setenv.sh` so that CODEKVAST_HOME matches the path were codekvast-agent-{codekvast-version} is installed.
+<3> Edit `bin\setenv.bat` so that CODEKVAST_HOME matches the path were codekvast-agent-{codekvast-version} is installed.
 <4> Edit `conf\codekvast.conf` to suit your needs. See <<configuring-codekvast-collector, Configuring Codekvast Collector>>.
 
 ==== Other applications
 
 Use <<install-collector-tomcat-linux, the installation guide for Tomcat>> as a basis.
-
-[TIP]
-====
-There is a helper script called `bin/showJvmParams.sh` that when invoked produces a valid JVM_OPTS that can be pasted into your
-application's start script.
-====
 
 The goal is to make
 
@@ -200,7 +195,14 @@ The goal is to make
 appear as the first arguments to the `java` command and `codekvast-collector.conf` or `codekvast.conf` appear in any of the locations that
 Codekvast Collector expects it. See <<codekvast-collector-config-file-location, Configuring Codekvast Collector>>.
 
-===== Trouble shooting
+[TIP]
+====
+There is a helper script called `/opt/codekvast-agent/bin/showJvmParams.sh` that when invoked produces a valid JVM_OPTS that can be pasted
+into your
+application's start script.
+====
+
+==== Trouble shooting
 
 If you get `LinkageError` on some aspectj-related type::
 . Move `aspectjweaver-{aspectj-version}.jar` to a separate directory (called `/path/to/endorsed` below).
@@ -208,12 +210,15 @@ If you get `LinkageError` on some aspectj-related type::
 
 No data in /tmp/codekvast::
 . `export CODEKVAST_OPTIONS=verbose=true`
+. set `aspectjOptions=-verbose -showWeaveInfo` in codekvast-collector.conf
 . restart your application
+. Use the logging on standard output and standard error for determining the problem
 
-=== Codekvast Server
+=== Install Codekvast Server
 
-Download https://bintray.com/artifact/download/crisp/foobar/agent/foobar-server-{codekvast-version}.zip[codekvast-server.zip] to any
-directory
+. Make sure Java 7 or higher is installed.
+. Download https://bintray.com/artifact/download/crisp/foobar/agent/foobar-server-{codekvast-version}.zip[codekvast-server.zip] to any directory
+. Execute the following commands in a shell:
 
 [source,bash,subs="attributes,verbatim"]
 ----
@@ -223,14 +228,12 @@ cd /opt
 ln -s codekvast-server-{codekvast-version} codekvast-server
 cd /opt/codekvast-server/conf
 cp codekvast-server.properties.sample.{codekvast-version} codekvast-server.properties <2>
-cd /etc/init.d
-cp /opt/codekvast-server/etc/init.d/codekvast-server .
-chkconfig --add codekvast-server <3>
+ln -s /opt/codekvast-server/etc/init.d/codekvast-server /etc/init.d
+chkconfig --add /etc/init.d/codekvast-server <3>
 ----
 <1> Substitute `path/to` with the actual path to the downloaded zip file.
-<2> Edit codekvast-server.properties to suit your needs.
-<3> This works for Redhad-based Linux distros. For Debian-based distros, use `update-rc.d codekvast-server defaults` instead.
-
+<2> Edit codekvast-server.properties to suit your needs. See <<configuring-codekvast-server, Configuring Codekvast Server>>.
+<3> This works for Redhad-based Linux distros. For Debian-based distros, use `update-rc.d /etc/init.d/codekvast-server defaults` instead.
 
 Once you have finished editing codekvast-server.properties, execute
 
@@ -246,7 +249,8 @@ Once you have finished editing codekvast-server.properties, execute
 [[codekvast-collector-config-file-location]]
 ==== Configuration File Name and Location
 
-The collector reads it's config from a file named either `codekvast-collector.conf` or `codekvast.conf` in any of these places (the first
+The collector reads it's configuration from a file named either `codekvast-collector.conf` or `codekvast.conf` in any of these places (the
+first
 found file will win:)
 
 . The Java system property `-Dcodekvast.configuration=path/to/configfile`.
@@ -260,23 +264,28 @@ environment variable)
 .. CATALINA_HOME
 .. catalina.base
 .. CATALINA_BASE
-. It looks for the config file in the `conf/` sibling directory to where codekvast-collector-{codekvast-version}.jar is located.
-. It looks for the config file in `/etc/codekvast`.
-. It looks for the config file in `/etc`.
-
-==== Config file override mechanism
-It is possible to override one or more parameters that were specified in the config file by defining the Java system property
-`codekvast.options`. The value should be a semicolon-separated list of name=value pairs.
-
-The override mechanism comes in handy when you have more than one app in the same host, with mostly identical configuration. Probably
-just the application name is different.
+. It looks for the configuration file in the `conf/` sibling directory to where codekvast-collector-{codekvast-version}.jar is located.
+. It looks for the configuration file in `/etc/codekvast`.
+. It looks for the configuration file in `/etc`.
 
 [TIP]
 ====
-To aid in troubleshooting config file location problems one can do `export CODEKVAST_VERBOSE=true` before starting the application.
+To aid in troubleshooting configuration file location problems one can do `export CODEKVAST_VERBOSE=true` before starting the application.
 
 This is handy since it can be done without editing any start scripts.
 ====
+
+==== Config file override mechanism
+It is possible to override one or more parameters that were specified in the configuration file by defining the Java system property
+`codekvast.options`. The value should be a semicolon-separated list of name=value pairs.
+
+.Example
+----
+-Dcodekvast.options=appName=myApp;collectorIntervalSeconds=600
+----
+
+The override mechanism comes in handy when you have more than one app in the same host, with mostly identical configuration. Probably
+just the application name is different.
 
 ==== Codekvast Collector configuration file
 
@@ -290,7 +299,7 @@ dataDir = $HOME/codekvast
 ....
 
 .Codekvast Collector parameters (mandatory parameters in *bold face*)
-[cols="1,2,2,5,1", options="header"]
+[cols="1,2,3,5,1", options="header"]
 |===
 |Parameter
 |Description
@@ -321,6 +330,55 @@ Used for tracking dead code evolution.
 See <<app-version-strategy>>
 |filename jenkins-core-(.*).jar
 |unspecified
+
+|*packagePrefixes*
+|What packages shall be tracked?
+|A comma-separated list of strings
+|packagePrefixes = com.acme, foo.bar
+|
+
+|methodVisibility
+|Which methods should be tracked?
+|One of the keywords *public*, *protected*, *package-private* or *private*.
+See <<about-specifying-method-visibility>>.
+|methodVisibility=protected
+|public
+
+|collectorResolutionSeconds
+|Controls how often invocation data is exported from the Codekvast collector.
+A higher value means less CPU overhead but higher memory demand.
+A higher value also means less precision
+| A positive integer
+| collectorResolutionSeconds=3600
+| 600
+
+|dataPath
+|Which part of the file system shall Codekvast Collector dump the invocation data to?
+|A file system path
+|dataPath=/var/lib/codekvast
+|/tmp/codekvast
+
+|verbose
+|Should Codekvast Collector say something on standard output upon start? Useful for trouble shooting.
+|*true* or *false*
+|verbose=true
+|false
+
+|aspectjOptions
+|Should Codekvast Collector configure logging for Aspectj Weaver?
+Useful for trouble shooting.
+See also {aspectj-ltw-configuration}.
+|A string
+|aspectjOptions = \ +
+{nbsp}{nbsp}-verbose -showWeaveInfo
+|
+
+|clobberAopXml
+|Should $dataPath/$appName/aop.xml be overwritten when collector is restarted?
+See <<about-clobberAopXml>>
+|*true* or *false*
+|
+|false
 
 |===
 
@@ -367,9 +425,58 @@ the file name.
 
 |===
 
+[[about-specifying-method-visibility]]
+==== About specifying methodVisibility
+
+[NOTE]
+====
+There is a certain overhead associated with tracking method calls, both in terms of CPU cycles and memory consumption.
+====
+
+.Method visibilities
+[cols="1,9,1,1"]
+|===
+|Visibility |Result |Synonyms |Overhead
+
+|*public* |Track public methods only. This is the default. | |Lowest
+|*protected* |Track public and protected methods. | |Lower
+|*package-private* |Track public, protected and package-private (default) methods. |*!private* |Higher
+|*private* |Track all methods. |*all* |Highest
+
+|===
+
+[[about-clobberAopXml]]
+==== About clobberAopXml
+Normally, codekvast-collector uses the information in codekvast-collector.conf for producing a tailored aop.xml that then is fed to
+aspectjweaver. This is done every time the instrumented application starts.
+
+If you have special needs, you can disable this behaviour by setting `clobberAopXml = false`.
+
+This gives you a chance to fine-tune how the AspectJ weaver shall work. You can for instance exclude certain performance-critical packages
+from weaving.
+
+See also {aspectj-ltw-configuration}.
+
+[WARNING]
+====
+Excluding packages from AspectJ weaving will give misleading results! Excluded code that is perfectly healthy will be reported as Truly
+Dead.
+
+Use at your own risk.
+====
+
 [[configuring-codekvast-agent]]
 === Codekvast Agent
-The agent reads it config from /opt/codekvast-agent/conf/codekvast-agent.conf. The sample configuration file in that directory is self
+The agent reads it configuration from /opt/codekvast-agent/conf/codekvast-agent.properties.
+
+The sample configuration file /opt/codekvast-agent/conf/codekvast-agent.properties.sample.{codekvast-version} is self
+documenting.
+
+[[configuring-codekvast-server]]
+=== Codekvast Server
+The server reads it configuration from /opt/codekvast-server/conf/codekvast-server.properties.
+
+The sample configuration file /opt/codekvast-server/conf/codekvast-server.properties.sample.{codekvast-version} is self
 documenting.
 
 == Usage hints
