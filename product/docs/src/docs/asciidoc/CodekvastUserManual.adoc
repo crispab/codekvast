@@ -1,8 +1,9 @@
 = Codekvast User Manual
-Olle Hallin <olle.hallin@crisp.se>
-{document-date}
-:description: Codekvast is a tool that detects Truly Dead Code in your Java app.
+:author: Olle Hallin
+:email: olle.hallin@crisp.se
 :revnumber: {codekvast-version}
+:revdate: {git-time}
+:revremark: {git-id}
 :imagesdir: images
 :data-uri:
 :numbered:
@@ -11,18 +12,20 @@ Olle Hallin <olle.hallin@crisp.se>
 :toclevels: 3
 :icons: font
 :source-highlighter: prettify
-:aspectj-ltw-configuration: https://eclipse.org/aspectj/doc/next/devguide/ltw-configuration.html
+:attribute-missing: warn
+:description: Codekvast is a tool that detects Truly Dead Code in your Java app.
 
 Codekvast User Manual covers installation and usage of Codekvast, a tool for detecting Truly Dead Code in JVM-based applications.
 
-== Overview
+[abstract]
+== Abstract
 
 Codekvast is a tool for detecting <<truly-dead-code, Truly Dead Code>>. By that we mean code that is in <<use-in-production,
 production>> but not used by any real users for a <<usage-cycle, usage cycle>>.
 
 Codekvast works for Java and other languages that execute in a JVM.
 
-=== Architecture
+== Architecture
 Codekvast consists of three parts: the *Collector*, the *Agent* and the *Server*.
 
 .Responsibilities
@@ -76,7 +79,7 @@ interface. There is only one server. *The server requires Java 7 or higher.*
 |          | <-=--produces       |<-=-reads-=->|             |                 |         |            |              |
 |          V                     v             v             V                 |         |            V              |
 |       +------------------+   +-----------------+   +------------------+      |         |    +-=---------------+    |
-|       | Invocaction data |   | codekvast.conf  |   | Invocaction data |      |         |    | Invocation data |    |
+|       | Invocation data  |   | codekvast.conf  |   | Invocation data  |      |         |    | Invocation data |    |
 |       | files            |   | cYEL            |   | files            |      |         |    | files           |    |
 |       |                  |   |                 |   |                  |      |         |    |                 |    |
 |       | {d}              |   | {d}             |   | {d}              |      |         |    | {d}             |    |
@@ -152,7 +155,7 @@ Once you have finished editing codekvast-agent.properties, execute
 sudo /etc/init.d/codekvast-agent start
 ----
 
-=== Modify all applications' start scripts
+=== Modify all applications`' start scripts
 
 [[install-collector-tomcat-linux]]
 ==== Tomcat (Linux)
@@ -177,7 +180,7 @@ copy %CODEKVAST_HOME%\javaagents\* endorsed
 copy %CODEKVAST_HOME%\bin\tomcat\setenv.bat bin # <3>
 copy %CODEKVAST_HOME%\conf\codekvast-collector.conf.sample.{codekvast-version} conf\codekvast.conf # <4>
 ----
-<1> Ssubstitute `path\to` with the actual path were Codekvast is installed.
+<1> Substitute `path\to` with the actual path were Codekvast is installed.
 <2> Substitute `path\to` with the actual path were Tomcat is installed.
 <3> Edit `bin\setenv.bat` so that CODEKVAST_HOME matches the path were codekvast-agent-{codekvast-version} is installed.
 <4> Edit `conf\codekvast.conf` to suit your needs. See <<configuring-codekvast-collector, Configuring Codekvast Collector>>.
@@ -195,9 +198,8 @@ Codekvast Collector expects it. See <<codekvast-collector-config-file-location, 
 
 [TIP]
 ====
-There is a helper script called `/opt/codekvast-agent/bin/showJvmParams.sh` that when invoked produces a valid JVM_OPTS that can be pasted
-into your
-application's start script.
+There is a helper script called `/opt/codekvast-agent/bin/showJvmParams.sh` which produces a valid JVM_OPTS that can be pasted
+into your application's start script.
 ====
 
 ==== Trouble shooting
@@ -232,7 +234,7 @@ sudo mkdir -p /var/backups/codekvast
 sudo chkconfig --add /etc/init.d/codekvast-server # <2>
 ----
 <1> Edit codekvast-server.properties to suit your needs. See <<configuring-codekvast-server, Configuring Codekvast Server>>.
-<2> This works for Redhad-based Linux distros. For Debian-based distros, use `sudo update-rc.d codekvast-server defaults` instead.
+<2> This works for Redhat-based Linux distros. For Debian-based distros, use `sudo update-rc.d codekvast-server defaults` instead.
 
 Once you have finished editing codekvast-server.properties, execute
 
@@ -256,7 +258,7 @@ found file will win:)
 . The environment variable `CODEKVAST_CONFIG=path/to/configfile`.
 . The file `${codekvast.home}/conf/codekvast-collector.conf` or `${codekvast.home}/conf/codekvast.conf` (codekvast.home is a
 Java system property)
-. The file `${CODEKVAST_HOME}/conf/codekvast-collector.conf` or `${CODEKVAST_HOME}/conf/codekvast.conf` (CODEKVAST_HOME is an
+. The file `$\{CODEKVAST_HOME}/conf/codekvast-collector.conf` or `$\{CODEKVAST_HOME}/conf/codekvast.conf` (CODEKVAST_HOME is an
 environment variable)
 . In a similar way it looks for
 .. catalina.home
@@ -297,6 +299,8 @@ dataDir = ${user.home}/codekvast
 dataDir = $HOME/codekvast
 ....
 
+{set:aspectj-ltw-configuration: https://eclipse.org/aspectj/doc/next/devguide/ltw-configuration.html}
+
 .Codekvast Collector parameters (mandatory parameters in *bold face*)
 [cols="1,2,3,5,1", options="header"]
 |===
@@ -326,7 +330,7 @@ dataDir = $HOME/codekvast
 Used for tracking dead code evolution.
 |A string.
 
-See <<app-version-strategy>>
+See <<about-app-version-strategy>>
 |filename jenkins-core-(.*).jar
 |unspecified
 
@@ -389,11 +393,11 @@ without the .war suffix. Tomcat will automatically explode the war into a folder
 Some applications (e.g., Jenkins) will download plugins on the fly and store them in some well-known location on disk.
 In the case of Jenkins this path is `${user.home}/.jenkins/plugins`.
 
-Spaces in a path must be escaped, i.e., preceded with a baskslash ('\') character.
+Spaces in a path must be escaped, i.e., preceded with a backslash ('\') character.
 
 When running on Windows, the colon after the drive letter must be escaped, i.e., preceded with a backslash '\'.
 
-[[app-version-strategy]]
+[[about-app-version-strategy]]
 ==== About specifying appVersion
 Codekvast has some strategies for automatically finding the deployed application's version:
 
@@ -556,7 +560,7 @@ back-office web, data warehouse.
 
 [[invocation-data]]
 Invocation Data:: The set of methods that have been invoked during a collection interval. It contains the fully qualified names of the
-methods and the fully qualified types of the methods' parameters.
+methods and the fully qualified types of the methods`' parameters.
 
 [[application-binaries]]
 Application Binaries::
