@@ -132,24 +132,22 @@ Execute the following commands in a shell:
 
 [source,bash,subs="attributes,verbatim"]
 ----
-sudo -s
-cd
 wget {bintrayDownloadPrefix}/codekvast-agent-{codekvast-version}.zip
-unzip codekvast-agent-{codekvast-version}.zip -d /opt
+sudo unzip codekvast-agent-{codekvast-version}.zip -d /opt
 cd /opt
-ln -s codekvast-agent-{codekvast-version} codekvast-agent
+sudo ln -s codekvast-agent-{codekvast-version} codekvast-agent
 cd /opt/codekvast-agent/conf
-cp codekvast-agent.properties.sample.{codekvast-version} codekvast-agent.properties # <1>
-ln -s /opt/codekvast-agent/etc/init.d/codekvast-agent /etc/init.d
-chkconfig --add /etc/init.d/codekvast-agent # <2>
+sudo cp codekvast-agent.properties.sample.{codekvast-version} codekvast-agent.properties # <1>
+sudo ln -s /opt/codekvast-agent/etc/init.d/codekvast-agent /etc/init.d
+sudo chkconfig --add /etc/init.d/codekvast-agent # <2>
 ----
 <1> Edit codekvast-agent.properties to suit your needs. See <<configuring-codekvast-agent, Configuring Codekvast Agent>>.
-<2> This works for Redhat-based Linux distros. For Debian-based distros, use `update-rc.d codekvast-agent defaults` instead.
+<2> This works for Redhat-based Linux distros. For Debian-based distros, use `sudo update-rc.d codekvast-agent defaults` instead.
 
 Once you have finished editing codekvast-agent.properties, execute
 
 ----
-/etc/init.d/codekvast-agent start
+sudo /etc/init.d/codekvast-agent start
 ----
 
 === Modify all applications' start scripts
@@ -220,24 +218,22 @@ No data in /tmp/codekvast::
 
 [source,bash,subs="attributes,verbatim"]
 ----
-sudo -s
-cd
 wget {bintrayDownloadPrefix}/codekvast-server-{codekvast-version}.zip
-unzip codekvast-server-{codekvast-version}.zip -d /opt
+sudo unzip codekvast-server-{codekvast-version}.zip -d /opt
 cd /opt
-ln -s codekvast-server-{codekvast-version} codekvast-server
+sudo ln -s codekvast-server-{codekvast-version} codekvast-server
 cd /opt/codekvast-server/conf
-cp codekvast-server.properties.sample.{codekvast-version} codekvast-server.properties # <1>
-ln -s /opt/codekvast-server/etc/init.d/codekvast-server /etc/init.d
-chkconfig --add /etc/init.d/codekvast-server # <2>
+sudo cp codekvast-server.properties.sample.{codekvast-version} codekvast-server.properties # <1>
+sudo ln -s /opt/codekvast-server/etc/init.d/codekvast-server /etc/init.d
+sudo chkconfig --add /etc/init.d/codekvast-server # <2>
 ----
 <1> Edit codekvast-server.properties to suit your needs. See <<configuring-codekvast-server, Configuring Codekvast Server>>.
-<2> This works for Redhad-based Linux distros. For Debian-based distros, use `update-rc.d codekvast-server defaults` instead.
+<2> This works for Redhad-based Linux distros. For Debian-based distros, use `sudo update-rc.d codekvast-server defaults` instead.
 
 Once you have finished editing codekvast-server.properties, execute
 
 ----
-/etc/init.d/codekvast-server start
+sudo /etc/init.d/codekvast-server start
 ----
 
 == Configuration
