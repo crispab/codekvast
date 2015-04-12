@@ -3,6 +3,7 @@
 ## 0.9.0
 
 - codekvast-agent now runs on Java 6
+- Improved UserManual
 
 ## 0.8.18
 

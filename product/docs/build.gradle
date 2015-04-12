@@ -30,6 +30,7 @@ asciidoctor {
     attributes = [
             'codekvast-version': version,
             'aspectj-version': aspectjVersion,
-            'document-date': project.parent.gitVersionTokens['git.time']
+            'document-date'        : project.parent.gitVersionTokens['git.time'],
+            'bintrayDownloadPrefix': project.parent.bintrayDownloadPrefix
     ]
 }

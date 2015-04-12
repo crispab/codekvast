@@ -24,6 +24,9 @@ ext.gitVersionTokens = [
         'git.shortMessage': "$gitCommit.shortMessage".toString(),
         'git.time'        : "${new SimpleDateFormat('yyyy-MM-dd HH:mm:ss').format(new Date(gitCommit.time * 1000L))}".toString(),
 ]
+ext.bintrayUserOrg = 'crisp'
+ext.bintrayRepo = 'codekvast'
+ext.bintrayDownloadPrefix = "https://dl.bintray.com/$bintrayUserOrg/$bintrayRepo"
 
 distributions {
     agent {
@@ -78,22 +81,23 @@ bintray {
 
     filesSpec {
         from tasks.getByPath(":product:agentDistZip")
-        into "agent"
-        rename { "foobar-agent-${version}.zip" }
+        from tasks.getByPath(":product:serverDistZip")
+        from file("src/dist/RELEASE-NOTES.md")
+        into "."
     }
 
     dryRun = false
     publish = true
 
     pkg {
-        repo = 'foobar'
-        userOrg = 'crisp'
-        name = 'agent'
-        desc = "Description of foobar"
-        // desc = 'Codekvast is a Runtime Intelligence tool used for identifying Truly Dead Code, i.e., code that no-one has accessed in a certain period of time'
-        websiteUrl = 'http://foobar.acme.com'
+        userOrg = bintrayUserOrg
+        repo = bintrayRepo
+        name = 'distributions'
+        desc = 'Codekvast is a Runtime Intelligence tool used for identifying Truly Dead Code, i.e., code that no-one has accessed in a certain period of time'
+        websiteUrl = 'https://codekvast.crisp.se'
+        vcsUrl = 'https://github.com/crispab/duck.git'
         licenses = ['MIT']
-        // labels = ['runtime-intelligence', 'dead-code', 'dead-code-detector', 'truly-dead-code', 'YANIA', 'java', 'java-6', 'jvm']
+        labels = ['runtime-intelligence', 'dead-code', 'dead-code-detector', 'truly-dead-code', 'YANIA', 'java', 'java-6', 'jvm']
 
         publicDownloadNumbers = false
     }
