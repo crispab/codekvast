@@ -86,7 +86,6 @@ bintray {
             include "CodekvastUserManual.html"
             rename { "CodekvastUserManual-${version}.html" }
         }
-        from file("src/dist/RELEASE-NOTES.md")
         into "."
     }
 
