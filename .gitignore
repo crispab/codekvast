@@ -2,7 +2,7 @@
 **/*.bak
 **/*.log.*.zip
 **/*.iml
-**/*.png.cache
+**/src/docs/asciidoc/images/architecture-diagram.*
 .gradle
 !**/.idea/codeStyleSettings.xml
 !**/.idea/compiler.xml
