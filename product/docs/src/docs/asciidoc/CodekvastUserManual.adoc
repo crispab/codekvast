@@ -328,7 +328,7 @@ dataDir = $HOME/codekvast
 |
 
 |appVersion
-|What is my applications version?
+|What is my application's version?
 
 Used for tracking dead code evolution.
 |A string.

@@ -18,7 +18,7 @@ import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class InvocationsRegistryTest {
+public class InvocationRegistryTest {
 
     private static final String APP_NAME = "Invocations Registry Test";
     private static final String APP_VERSION = "1.2.3-rc-2";
