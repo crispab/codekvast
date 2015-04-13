@@ -139,10 +139,11 @@ Execute the following commands in a shell:
 sudo -s
 wget {bintrayDownloadPrefix}/codekvast-agent-{codekvast-version}.zip
 unzip codekvast-agent-{codekvast-version}.zip -d /opt
-cd /opt
-ln -s codekvast-agent-{codekvast-version} codekvast-agent
+rm /opt/codekvast-agent
+ln -s /opt/codekvast-agent-{codekvast-version} /opt/codekvast-agent
 cd /opt/codekvast-agent/conf
 cp codekvast-agent.properties.sample.{codekvast-version} codekvast-agent.properties # <1>
+rm /etc/init.d/codekvast-agent
 ln -s /opt/codekvast-agent/etc/startscript/debian/codekvast-agent /etc/init.d
 mkdir -p /var/log/codekvast
 update-rc.d codekvast-agent defaults # <2>
@@ -225,13 +226,13 @@ No data in /tmp/codekvast::
 sudo -s
 wget {bintrayDownloadPrefix}/codekvast-server-{codekvast-version}.zip
 unzip codekvast-server-{codekvast-version}.zip -d /opt
-cd /opt
-rm -f codekvast-server
-ln -s codekvast-server-{codekvast-version} codekvast-server
+rm /opt/codekvast-server
+ln -s /opt/codekvast-server-{codekvast-version} /opt/codekvast-server
 cd /opt/codekvast-server/conf
 cp codekvast-server.properties.sample.{codekvast-version} codekvast-server.properties # <1>
 mkdir -p /var/log/codekvast
 mkdir -p /var/backups/codekvast
+rm /etc/init.d/codekvast-server
 ln -s /opt/codekvast-server/etc/startscript/debian/codekvast-server /etc/init.d <2>
 update-rc.d codekvast-server defaults # <2>
 ----
