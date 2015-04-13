@@ -1,5 +1,9 @@
 # Codekvast Agent Release Notes
 
+## 0.9.1
+
+1. Added a Gentoo start script for codekvast-server and codekvast-agent
+
 ## 0.9.0
 
 1. Improved the installation procedures in CodekvastUserManual.
