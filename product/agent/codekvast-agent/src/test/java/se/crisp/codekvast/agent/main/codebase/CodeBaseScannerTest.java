@@ -46,7 +46,7 @@ public class CodeBaseScannerTest {
         int numClasses = scanner.scanSignatures(codeBase);
         assertThat(codeBase.getSignatures(), notNullValue());
         assertThat(numClasses, is(8));
-        assertThat(codeBase.getSignatures().size(), is(9));
+        assertThat(codeBase.getSignatures().size(), is(8));
     }
 
     @Test
@@ -81,7 +81,7 @@ public class CodeBaseScannerTest {
 
         scanner.findPublicMethods(codeBase, of("se."), ScannerTest4.class);
 
-        assertThat(codeBase.getSignatures().size(), is(6));
+        assertThat(codeBase.getSignatures().size(), is(5));
     }
 
 }

@@ -1,5 +1,9 @@
 # Codekvast Agent Release Notes
 
+## 0.9.2
+
+1. Now excludes trivial methods from tracking (equals(), hashCode(), toString(), compareTo(), getters, setters)
+
 ## 0.9.1
 
 1. Added a Gentoo start script for codekvast-server and codekvast-agent
