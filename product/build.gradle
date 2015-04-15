@@ -5,7 +5,7 @@ buildscript {
 }
 plugins {
     id 'distribution'
-    id 'com.jfrog.bintray' version '0.6'
+    id 'com.jfrog.bintray' version '1.1'
     id 'com.bmuschko.vagrant' version '2.0'
     id 'org.hidetake.ssh' version '0.4.5'
     id "org.ajoberstar.grgit-release" version "0.10.0"

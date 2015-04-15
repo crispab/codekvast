@@ -5,11 +5,13 @@ buildscript {
     }
 }
 plugins {
-    id "com.github.johnrengelman.shadow" version "1.2.0"
+    id "com.github.johnrengelman.shadow" version "1.2.1"
 }
 apply from: "$rootDir/gradle/java-6.gradle"
 apply plugin: 'aspectj'
 apply from: "$rootDir/gradle/sources-javadoc.gradle"
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven-publish'
 
 description = "The javaagent part of Codekvast agent"
 archivesBaseName = "codekvast-agent-collector"
@@ -43,8 +45,60 @@ shadowJar {
     }
 }
 
+artifacts {
+    archives file("build/libs/codekvast-collector-${version}.jar")
+}
+
 task javaagents(type: Sync) {
     from configurations.aspectjweaver
     from tasks.shadowJar
     into "$buildDir/javaagents"
 }
+
+publishing {
+    publications {
+        collector(MavenPublication) {
+            groupId 'se.crisp.codekvast'
+            artifactId 'codekvast-collector'
+
+            from components.shadow
+            artifact sourcesJar { classifier "sources" }
+            artifact javadocJar { classifier "javadoc" }
+        }
+    }
+}
+
+bintray {
+    // These are supposed to be defined in $HOME/.gradle/gradle.properties
+    user = project.hasProperty('bintrayUser') ? bintrayUser : "undefined"
+    key = project.hasProperty('bintrayKey') ? bintrayKey : "undefined"
+
+    publications = ['collector']
+
+    dryRun = false
+    publish = true
+
+    pkg {
+        userOrg = bintrayUserOrg
+        repo = 'maven-repo'
+        name = 'codekvast-collector'
+        desc = 'Just the javaagent part of Codekvast'
+        vcsUrl = 'https://github.com/crispab/duck.git'
+        licenses = ['MIT']
+
+        publicDownloadNumbers = false
+    }
+}
+
+bintrayUpload {
+    doFirst {
+        def gradleProperties = new File(System.properties['user.home'], ".gradle/gradle.properties")
+        if (!project.hasProperty('bintrayUser')) {
+            throw new IllegalArgumentException("You must define bintrayUser in $gradleProperties before trying to upload to Bintray")
+        }
+        if (!project.hasProperty('bintrayKey')) {
+            throw new IllegalArgumentException("You must define bintrayKey in $gradleProperties before trying to upload to Bintray")
+        }
+    }
+}
+
