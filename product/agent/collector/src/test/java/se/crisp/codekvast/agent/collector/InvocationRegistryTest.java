@@ -7,7 +7,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import se.crisp.codekvast.agent.config.CollectorConfig;
-import se.crisp.codekvast.agent.config.MethodVisibilityFilter;
+import se.crisp.codekvast.agent.config.MethodFilter;
 import se.crisp.codekvast.agent.model.Jvm;
 import se.crisp.codekvast.agent.util.SignatureUtils;
 
@@ -50,7 +50,7 @@ public class InvocationRegistryTest {
                                 .build();
         //@formatter:on
         InvocationRegistry.initialize(config);
-        signature = SignatureUtils.makeSignature(new MethodVisibilityFilter("public"), TestClass.class, TestClass.class.getMethod("m1"));
+        signature = SignatureUtils.makeSignature(new MethodFilter("public"), TestClass.class, TestClass.class.getMethod("m1"));
     }
 
     @After

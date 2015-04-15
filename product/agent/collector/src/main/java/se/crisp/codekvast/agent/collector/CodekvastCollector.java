@@ -4,13 +4,12 @@ import org.aspectj.bridge.Constants;
 import se.crisp.codekvast.agent.collector.aspects.AbstractMethodExecutionAspect;
 import se.crisp.codekvast.agent.config.CollectorConfig;
 import se.crisp.codekvast.agent.config.CollectorConfigLocator;
-import se.crisp.codekvast.agent.config.MethodVisibilityFilter;
+import se.crisp.codekvast.agent.config.MethodFilter;
 import se.crisp.codekvast.agent.util.FileUtils;
 
 import java.io.File;
 import java.io.PrintStream;
 import java.lang.instrument.Instrumentation;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -143,7 +142,7 @@ public class CodekvastCollector {
         return "file:" + file.getAbsolutePath();
     }
 
-    private static String toMethodExecutionPointcut(MethodVisibilityFilter filter) {
+    private static String toMethodExecutionPointcut(MethodFilter filter) {
         if (filter.selectsPrivateMethods()) {
             return "execution(* *..*(..))";
         }

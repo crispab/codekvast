@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.springframework.stereotype.Component;
-import se.crisp.codekvast.agent.config.MethodVisibilityFilter;
+import se.crisp.codekvast.agent.config.MethodFilter;
 import se.crisp.codekvast.agent.util.SignatureUtils;
 
 import java.lang.reflect.Method;
@@ -79,22 +79,22 @@ public class CodeBaseScanner {
 
     int findPublicMethods(CodeBase codeBase, Set<String> packagePrefixes, Class<?> clazz) {
         log.debug("Analyzing {}", clazz);
-        MethodVisibilityFilter methodVisibilityFilter = codeBase.getConfig().getMethodVisibility();
+        MethodFilter methodFilter = codeBase.getConfig().getMethodVisibility();
         int result = 1;
         try {
             Method[] methods = clazz.getMethods();
 
             for (Method method : methods) {
-                if (methodVisibilityFilter.shouldInclude(method.getModifiers())) {
+                if (methodFilter.shouldInclude(method)) {
 
                     // Some AOP frameworks (e.g., Guice) push methods from a base class down to the subclasses created in runtime.
                     // We need to map those back to the original declaring signature, or else the original,
                     // declared method will look unused.
 
-                    String thisSignature = SignatureUtils.makeSignatureString(methodVisibilityFilter, clazz, method);
+                    String thisSignature = SignatureUtils.makeSignatureString(methodFilter, clazz, method);
                     String declaringSignature =
                             SignatureUtils.makeSignatureString(
-                                    methodVisibilityFilter, findDeclaringClass(method.getDeclaringClass(), method, packagePrefixes),
+                                    methodFilter, findDeclaringClass(method.getDeclaringClass(), method, packagePrefixes),
                                     method);
 
                     codeBase.addSignature(thisSignature, declaringSignature);

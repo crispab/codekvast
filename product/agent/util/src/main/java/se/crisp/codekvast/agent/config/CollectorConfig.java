@@ -94,8 +94,8 @@ public class CollectorConfig implements CodekvastConfig {
         FileUtils.writePropertiesTo(file, this, "Codekvast CollectorConfig");
     }
 
-    public MethodVisibilityFilter getMethodVisibility() {
-        return new MethodVisibilityFilter(this.methodVisibility);
+    public MethodFilter getMethodVisibility() {
+        return new MethodFilter(this.methodVisibility);
     }
 
     public static CollectorConfig parseCollectorConfig(URI uri, String cmdLineArgs) {

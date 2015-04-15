@@ -3,13 +3,14 @@ package se.crisp.codekvast.agent.config;
 import lombok.EqualsAndHashCode;
 import se.crisp.codekvast.agent.util.SignatureUtils;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 /**
  * @author olle.hallin@crisp.se
  */
 @EqualsAndHashCode
-public class MethodVisibilityFilter {
+public class MethodFilter {
 
     private static final int VISIBILITY_MODIFIERS = Modifier.PUBLIC | Modifier.PROTECTED | Modifier.PRIVATE;
 
@@ -17,8 +18,11 @@ public class MethodVisibilityFilter {
     private static final int PACKAGE_PRIVATE = 0x08;
 
     private final int mask;
+    private final boolean includeGetters = false;
+    private final boolean includeSetters = false;
+    private final boolean includeEqualsAndHashcode = false;
 
-    public MethodVisibilityFilter(String visibility) {
+    public MethodFilter(String visibility) {
         mask = parseVisibility(visibility);
     }
 
@@ -100,13 +104,52 @@ public class MethodVisibilityFilter {
      * @param modifiers Returned from {@link java.lang.reflect.Method#getModifiers()}
      * @return True if any of the visibility bits in modifiers matches this object.
      */
-    public boolean shouldInclude(int modifiers) {
+    boolean shouldIncludeByModifiers(int modifiers) {
         // Package private is an anomaly, since it is the lack of any visibility modifier.
         if (selectsPackagePrivateMethods() && (modifiers & VISIBILITY_MODIFIERS) == 0) {
             return true;
         }
         // At least one of the visibility bits match
         return (modifiers & mask) != 0;
+    }
+
+    public boolean shouldInclude(Method method) {
+        return shouldIncludeByModifiers(method.getModifiers())
+                && !isGetter(method)
+                && !isSetter(method)
+                && !isEquals(method)
+                && !isHashCode(method);
+    }
+
+    boolean isEquals(Method method) {
+        return !isStatic(method)
+                && method.getName().equals("equals")
+                && method.getParameterTypes().length == 1
+                && method.getReturnType().equals(Boolean.TYPE);
+    }
+
+    boolean isHashCode(Method method) {
+        return !isStatic(method)
+                && method.getName().equals("hashCode")
+                && method.getParameterTypes().length == 0
+                && method.getReturnType().equals(Integer.TYPE);
+    }
+
+    private boolean isStatic(Method method) {
+        return Modifier.isStatic(method.getModifiers());
+    }
+
+    boolean isSetter(Method method) {
+        return !isStatic(method)
+                && method.getName().startsWith("set")
+                && method.getParameterTypes().length == 1;
+    }
+
+    boolean isGetter(Method method) {
+        return !isStatic(method)
+                && method.getName().startsWith("get")
+                && method.getParameterTypes().length == 0
+                && !method.getReturnType().equals(Void.TYPE);
     }
 
     @Override
