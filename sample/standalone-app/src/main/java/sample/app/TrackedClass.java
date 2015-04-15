@@ -5,7 +5,7 @@ package sample.app;
  *
  * @author olle.hallin@crisp.se
  */
-public class TrackedClass {
+public class TrackedClass implements Comparable<TrackedClass> {
     private int count;
 
     public int getCount() {
@@ -52,4 +52,9 @@ public class TrackedClass {
         return count;
     }
 
+    @Override
+    public int compareTo(TrackedClass that) {
+
+        return that.count - this.count;
+    }
 }

@@ -28,19 +28,13 @@ public abstract aspect AbstractMethodExecutionAspect extends AbstractCodekvastAs
      */
     public abstract pointcut methodExecution();
 
-    pointcut compareToExecution(): execution(int *..compareTo(Object));
-    pointcut equalsExecution(): execution(boolean *..equals(Object));
-    pointcut getterExecution(): execution(* *..get*());
-    pointcut hashCodeExecution(): execution(int *..hashCode());
-    pointcut setterExecution(): execution(* *..set*(*));
-    pointcut toStringExecution(): execution(java.lang.String *..*.toString());
-
-    pointcut trivialMethodExecution(): compareToExecution()
-            || equalsExecution()
-            || getterExecution()
-            || hashCodeExecution()
-            || setterExecution()
-            || toStringExecution();
+    pointcut trivialMethodExecution():
+            execution(int *..compareTo(Object))
+                    || execution(boolean *..equals(Object))
+                    || execution(* *..get*())
+                    || execution(int *..hashCode())
+                    || execution(* *..set*(*))
+                    || execution(java.lang.String *..*.toString());
 
     /**
      * Register that this method has been invoked.
