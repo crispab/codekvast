@@ -135,8 +135,18 @@ public class MethodFilter {
                 && method.getReturnType().equals(Integer.TYPE);
     }
 
-    private boolean isStatic(Method method) {
-        return Modifier.isStatic(method.getModifiers());
+    boolean isCompareTo(Method m) {
+        return !isStatic(m)
+                && m.getName().equals("compareTo")
+                && m.getParameterTypes().length == 1
+                && m.getReturnType().equals(Integer.TYPE);
+    }
+
+    boolean isToString(Method method) {
+        return !isStatic(method)
+                && method.getName().equals("toString")
+                && method.getParameterTypes().length == 0
+                && method.getReturnType().equals(String.class);
     }
 
     boolean isSetter(Method method) {
@@ -152,6 +162,10 @@ public class MethodFilter {
                 && !method.getReturnType().equals(Void.TYPE);
     }
 
+    private boolean isStatic(Method method) {
+        return Modifier.isStatic(method.getModifiers());
+    }
+
     @Override
     public String toString() {
         if (selectsPrivateMethods()) {
@@ -165,4 +179,5 @@ public class MethodFilter {
         }
         return SignatureUtils.PUBLIC;
     }
+
 }
