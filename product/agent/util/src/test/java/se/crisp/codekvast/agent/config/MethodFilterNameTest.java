@@ -27,6 +27,10 @@ public class MethodFilterNameTest {
             // no-op
         }
 
+        public TestClass setFoo2(int x) {
+            return this;
+        }
+
         public void getFoo2() {
         }
 
@@ -68,6 +72,7 @@ public class MethodFilterNameTest {
                 {"getFoo2", "()", new Class[]{}, false, false, false, false, false, false},
                 {"getFoo3", "(int)", new Class[]{int.class}, false, false, false, false, false, false},
                 {"setFoo", "(int)", new Class[]{int.class}, false, true, false, false, false, false},
+                {"setFoo2", "(int)", new Class[]{int.class}, false, false, false, false, false, false},
                 {"setFoo", "(int, int)", new Class[]{int.class, int.class}, false, false, false, false, false, false},
                 {"equals", "(Object)", new Class[]{Object.class}, false, false, true, false, false, false},
                 {"equals", "(int)", new Class[]{int.class}, false, false, true, false, false, false},

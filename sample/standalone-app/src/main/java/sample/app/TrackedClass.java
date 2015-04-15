@@ -16,6 +16,10 @@ public class TrackedClass implements Comparable<TrackedClass> {
         this.count = count;
     }
 
+    public void setCount2(int count, int p2) {
+        this.count = count;
+    }
+
     public int publicMethod() {
         return count++;
     }
@@ -54,7 +58,11 @@ public class TrackedClass implements Comparable<TrackedClass> {
 
     @Override
     public int compareTo(TrackedClass that) {
-
         return that.count - this.count;
+    }
+
+    @Override
+    public String toString() {
+        return "TrackedClass{count=" + count + '}';
     }
 }

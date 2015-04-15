@@ -152,7 +152,8 @@ public class MethodFilter {
     boolean isSetter(Method method) {
         return !isStatic(method)
                 && method.getName().startsWith("set")
-                && method.getParameterTypes().length == 1;
+                && method.getParameterTypes().length == 1
+                && method.getReturnType().equals(Void.TYPE);
     }
 
     boolean isGetter(Method method) {
