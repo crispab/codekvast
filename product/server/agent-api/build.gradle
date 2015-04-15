@@ -4,12 +4,11 @@ plugins {
     id 'com.ofg.uptodate' version "1.1.0"
 }
 apply plugin: 'spring-boot'
+apply from: "$rootDir/gradle/java-6.gradle"
 
 description = "The agent-side business delegate of the Codekvast server"
 archivesBaseName = "codekvast-agent-api"
 version = project.parent.parent.version
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
 
 dependencies {
     compile lombok

@@ -4,11 +4,11 @@ plugins {
     id 'com.ofg.uptodate' version "1.1.0"
 }
 apply plugin: 'spring-boot'
+apply from: "$rootDir/gradle/java-7.gradle"
 
 description = "The Codekvast Promotion Web"
 archivesBaseName = "codekvast-web"
 version = project.parent.version
-sourceCompatibility = 1.7
 mainClassName = "se.crisp.codekvast.web.CodekvastPromoWebApplication"
 
 configurations {

@@ -7,14 +7,13 @@ buildscript {
 plugins {
     id "com.github.johnrengelman.shadow" version "1.2.0"
 }
-
+apply from: "$rootDir/gradle/java-6.gradle"
 apply plugin: 'aspectj'
 apply from: "$rootDir/gradle/sources-javadoc.gradle"
 
 description = "The javaagent part of Codekvast agent"
 archivesBaseName = "codekvast-agent-collector"
 version = project.parent.parent.version
-sourceCompatibility = 1.6
 
 configurations {
     aspectjweaver

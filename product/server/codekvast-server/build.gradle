@@ -14,11 +14,11 @@ plugins {
 }
 apply plugin: 'spring-boot'
 apply plugin: 'flyway'
+apply from: "$rootDir/gradle/java-7.gradle"
 
 description = "The main Codekvast server"
 archivesBaseName = "codekvast-server"
 version = project.parent.parent.version
-sourceCompatibility = 1.7
 mainClassName = "se.crisp.codekvast.server.codekvast_server.CodekvastServerApplication"
 
 configurations {

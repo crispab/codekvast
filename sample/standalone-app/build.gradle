@@ -3,11 +3,10 @@ plugins {
     id 'application'
     id 'com.ofg.uptodate' version "1.1.0"
 }
+apply from: "$rootDir/gradle/java-6.gradle"
 
 mainClassName = "sample.app.SampleApp"
 archivesBaseName = "standalone-app"
-
-sourceCompatibility = 1.6
 
 dependencies {
     compile "org.projectlombok:lombok:1.16.2"

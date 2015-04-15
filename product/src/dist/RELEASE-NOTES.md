@@ -1,5 +1,9 @@
 # Codekvast Agent Release Notes
 
+## 0.9.3
+
+1. Java compiler for 1.6 & 1.7 uses correct bootclasspath
+
 ## 0.9.2
 
 1. Now excludes trivial methods from tracking (equals(), hashCode(), toString(), compareTo(), getters, setters)
