@@ -45,10 +45,6 @@ shadowJar {
     }
 }
 
-artifacts {
-    archives file("build/libs/codekvast-collector-${version}.jar")
-}
-
 task javaagents(type: Sync) {
     from configurations.aspectjweaver
     from tasks.shadowJar
@@ -57,7 +53,7 @@ task javaagents(type: Sync) {
 
 publishing {
     publications {
-        collector(MavenPublication) {
+        shadowJar(MavenPublication) {
             groupId 'se.crisp.codekvast'
             artifactId 'codekvast-collector'
 
@@ -73,7 +69,7 @@ bintray {
     user = project.hasProperty('bintrayUser') ? bintrayUser : "undefined"
     key = project.hasProperty('bintrayKey') ? bintrayKey : "undefined"
 
-    publications = ['collector']
+    publications = ['shadowJar']
 
     dryRun = false
     publish = true
