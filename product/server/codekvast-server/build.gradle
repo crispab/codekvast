@@ -14,7 +14,7 @@ plugins {
 }
 apply plugin: 'spring-boot'
 apply plugin: 'flyway'
-apply from: "$rootDir/gradle/java-7.gradle"
+apply from: "$rootDir/gradle/java-8.gradle"
 
 description = "The main Codekvast server"
 archivesBaseName = "codekvast-server"

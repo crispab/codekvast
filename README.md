@@ -10,6 +10,10 @@ Development tools live under `tools/`.
 
 ## Development environment
 
+### JDK
+
+Java 8 is required. OpenJDK is recommended.
+
 ### Build tool
 
 Codekvast uses **Gradle** as build tool. It uses the Gradle Wrapper, `gradlew`, which is checked in at the root of the workspace.
@@ -22,6 +26,8 @@ The agent part of Codekvast is published to Bintray. To be able to upload to Bin
 
     bintrayUser=my-bintray-user
     bintrayKey=my-bintray-key
+
+You also need to be member of the Crisp organisation in Bintray.
 
 ### IDE
 
@@ -75,3 +81,12 @@ Terminate with `Ctrl-C`.
 
 Log in with `user` / `0000`
 
+## User Manual
+
+A User Manual located in product/docs/src/asciidoc.
+
+The source is in AsciiDoctor format.
+
+It is built by doing `gradle product:docs:build`.
+
+The result is a self-contained HTML5 file located at [file:product/docs/build/asciidoc/html5/CodekvastUserManual.html]()
