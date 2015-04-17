@@ -21,7 +21,7 @@ public class SignatureDataTest {
                                            .signatures(asList(
                                                    new SignatureEntry("sig1", 0L, 0L, null),
                                                    new SignatureEntry("sig2", 0L, 0L, null)))
-                                             .build();
+                                           .build();
 
         // when
         String json = objectMapper.writeValueAsString(data1);
@@ -40,7 +40,7 @@ public class SignatureDataTest {
                                            .signatures(asList(
                                                    new SignatureEntry("sig1", 10000L, 100L, SignatureConfidence.EXACT_MATCH),
                                                    new SignatureEntry("sig2", 20000L, 200L, SignatureConfidence.FOUND_IN_PARENT_CLASS)))
-                                             .build();
+                                           .build();
 
         // when
         String json = objectMapper.writeValueAsString(data1);

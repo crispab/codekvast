@@ -24,19 +24,33 @@ class InvocationsCollectorImpl implements InvocationsCollector {
 
     @Override
     @Transactional
-    public void put(String jvmUuid, String signature, long invokedAtMillis, long millisSinceJvmStart, SignatureConfidence confidence) {
+    public void put(String jvmUuid, long jvmStartedAtMillis, String signature, long invokedAtMillis,
+                    SignatureConfidence confidence) {
+        if (jvmUuid == null) {
+            throw new IllegalArgumentException("jvmUuid is null");
+        }
+
+        if (jvmStartedAtMillis <= 0) {
+            throw new IllegalArgumentException("jvmStartedAtMillis must be positive");
+        }
+
         if (signature == null) {
             throw new IllegalArgumentException("signature is null");
         }
 
-        if (invokedAtMillis < 0L) {
+        if (invokedAtMillis < 0) {
             throw new IllegalArgumentException("invokedAtMillis cannot be negative");
+        }
+
+        if (invokedAtMillis > 0 && invokedAtMillis < jvmStartedAtMillis) {
+            throw new IllegalArgumentException("invokedAtMillis cannot be before jvmStartedAtMillis");
         }
 
         int count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM signatures WHERE jvm_uuid = ? AND signature = ? AND " +
                                                         "invoked_at_millis > ?", Integer.class, jvmUuid, signature, invokedAtMillis);
 
         if (count == 0) {
+            long millisSinceJvmStart = invokedAtMillis == 0L ? 0L : invokedAtMillis - jvmStartedAtMillis;
             jdbcTemplate.update("MERGE INTO signatures (jvm_uuid, signature, invoked_at_millis, millis_since_jvm_start, confidence) " +
                                         "VALUES(?, ?, ?, ?, ?)",
                                 jvmUuid, signature, invokedAtMillis, millisSinceJvmStart, confidence == null ? -1 : confidence.ordinal());

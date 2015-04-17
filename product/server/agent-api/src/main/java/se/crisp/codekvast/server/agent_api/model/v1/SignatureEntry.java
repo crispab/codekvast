@@ -3,6 +3,8 @@ package se.crisp.codekvast.server.agent_api.model.v1;
 import lombok.*;
 import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
@@ -29,7 +31,19 @@ public class SignatureEntry {
 
     @NonNull
     @Min(0)
+    @Max(10 * 365 * 24 * 60 * 60 * 1000L) // ten years uptime is mighty unusal!
     private Long millisSinceJvmStart;
+
+    @AssertTrue
+    public boolean assertValid() {
+        if (invokedAtMillis == 0L && millisSinceJvmStart == 0L) {
+            return true;
+        }
+        if (invokedAtMillis > 0L && millisSinceJvmStart > 0L) {
+            return true;
+        }
+        return false;
+    }
 
     private SignatureConfidence confidence;
 }

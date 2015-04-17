@@ -51,7 +51,7 @@ CREATE TABLE applications (
   organisation_id          BIGINT        NOT NULL REFERENCES organisations (id),
   name                     VARCHAR(100)  NOT NULL,
   truly_dead_after_seconds INTEGER       NOT NULL
-  COMMENT 'After how long can a unused signature in this application be considered dead?',
+  COMMENT 'After how long can an unused signature in this application be considered dead?',
   notes                    VARCHAR(3000) NULL
   COMMENT 'Free text notes about the application',
   created_at               TIMESTAMP DEFAULT current_timestamp NOT NULL,

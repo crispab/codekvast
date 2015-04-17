@@ -90,6 +90,7 @@ dependencies {
     webjar webjars
 
     h2server 'com.h2database:h2'
+    h2server 'ch.qos.logback:logback-classic'
 }
 
 import org.apache.tools.ant.filters.ReplaceTokens
@@ -144,7 +145,7 @@ bootRun {
             '-Dspring.thymeleaf.cache=false',
             '-Dspring.messages.cacheSeconds=1'
     ]
-    args = ["--codekvast.databasePath=tcp://localhost/$buildDir/database"]
+    args = ["--codekvast.databasePath=tcp://localhost$buildDir/database"]
 }
 
 jacoco {

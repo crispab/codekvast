@@ -14,7 +14,8 @@ import java.util.List;
 public interface InvocationsCollector {
     List<SignatureEntry> getNotUploadedInvocations(String jvmUuid);
 
-    void put(String jvmUuid, String signature, long invokedAtMillis, long millisSinceJvmStart, SignatureConfidence confidence);
+    void put(String jvmUuid, long jvmStartedAtMillis, String signature, long invokedAtMillis, SignatureConfidence
+            confidence);
 
     void clearNotUploadedSignatures(String jvmUuid);
 }

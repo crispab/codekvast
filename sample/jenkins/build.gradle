@@ -6,7 +6,7 @@ sourceSets {
     javaagent
 }
 
-ext.tomcatVersion = "7.0.59"
+ext.tomcatVersion = "7.0.61"
 ext.tomcatDownloadUrl = "http://apache.mirrors.spacedump.net/tomcat/tomcat-7/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}.zip"
 ext.tomcatDir = file("$buildDir/tomcat")
 ext.catalinaBase = file("$tomcatDir/apache-tomcat-${tomcatVersion}")

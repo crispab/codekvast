@@ -339,9 +339,9 @@ public class AgentWorker {
 
                 if (normalizedSignature != null) {
                     invocationsCollector.put(jvmState.getJvm().getJvmUuid(),
+                                             jvmState.getJvm().getStartedAtMillis(),
                                              normalizedSignature,
                                              invocation.getInvokedAtMillis(),
-                                             invocation.getInvokedAtMillis() - jvmState.getJvm().getStartedAtMillis(),
                                              confidence);
                 }
             }

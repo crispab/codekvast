@@ -1,5 +1,13 @@
 # Codekvast Agent Release Notes
 
+## 0.9.5
+
+1. Bug fix in codekvast-agent: Signature.millisSinceJvmStart was not correct
+
+## 0.9.4
+
+1. codekvast-server now requires JDK 8
+
 ## 0.9.3
 
 1. Java compiler for 1.6 & 1.7 uses correct bootclasspath
