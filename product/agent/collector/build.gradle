@@ -11,7 +11,9 @@ apply from: "$rootDir/gradle/java-6.gradle"
 apply plugin: 'aspectj'
 apply from: "$rootDir/gradle/sources-javadoc.gradle"
 apply plugin: 'com.jfrog.bintray'
-apply plugin: 'maven-publish'
+// This build script is prepared for publishing the shadow jar to bintray for linking to jcenter.
+// It is however currently disabled, since bintray won't allow linking it to jcenter because the GitHub repo is not public.
+// All bintray-related code is commented out with the marker JCENTER
 
 description = "The javaagent part of Codekvast agent"
 archivesBaseName = "codekvast-agent-collector"
@@ -50,6 +52,10 @@ task javaagents(type: Sync) {
     from tasks.shadowJar
     into "$buildDir/javaagents"
 }
+
+/*
+--- JCENTER begin ---------------------
+apply plugin: 'maven-publish'
 
 publishing {
     publications {
@@ -97,4 +103,5 @@ bintrayUpload {
         }
     }
 }
-
+--- JCENTER end ---------------------
+ */
