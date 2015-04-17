@@ -69,7 +69,7 @@ class InvocationsCollectorImpl implements InvocationsCollector {
                                           return new SignatureEntry(
                                                   rs.getString(1),
                                                   rs.getLong(2),
-                                                  rs.getLong(2),
+                                                  rs.getLong(3),
                                                   confidence == -1 ? null : SignatureConfidence.fromOrdinal(confidence));
                                       }
                                   },

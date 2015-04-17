@@ -36,13 +36,7 @@ public class SignatureEntry {
 
     @AssertTrue
     public boolean assertValid() {
-        if (invokedAtMillis == 0L && millisSinceJvmStart == 0L) {
-            return true;
-        }
-        if (invokedAtMillis > 0L && millisSinceJvmStart > 0L) {
-            return true;
-        }
-        return false;
+        return ((invokedAtMillis == 0L) && (millisSinceJvmStart == 0L)) || ((invokedAtMillis > 0L) && (millisSinceJvmStart > 0L));
     }
 
     private SignatureConfidence confidence;
