@@ -71,7 +71,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         log.debug("Looking up AppId for JVM {}...", jvmUuid);
         try {
             AppId result = jdbcTemplate
-                    .queryForObject("SELECT id, organisation_id, application_id FROM jvm_info WHERE jvm_uuid = ?",
+                    .queryForObject("SELECT id, organisation_id, application_id, application_version FROM jvm_info WHERE jvm_uuid = ?",
                                     new AppIdRowMapper(),
                                     jvmUuid);
             log.debug("Result = {}", result);
@@ -85,7 +85,8 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     private static class AppIdRowMapper implements RowMapper<AppId> {
         @Override
         public AppId mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return AppId.builder().jvmId(rs.getLong(1)).organisationId(rs.getLong(2)).appId(rs.getLong(3)).build();
+            return AppId.builder().jvmId(rs.getLong(1)).organisationId(rs.getLong(2)).appId(rs.getLong(3))
+                        .appVersion(rs.getString(4)).build();
         }
     }
 

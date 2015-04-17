@@ -27,4 +27,9 @@ public class AppId {
      * What is the primary key of the jvm_info row?
      */
     long jvmId;
+
+    /**
+     * What version of the app is running in this JVM?
+     */
+    String appVersion;
 }

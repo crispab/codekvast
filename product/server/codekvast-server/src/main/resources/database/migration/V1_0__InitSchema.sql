@@ -60,6 +60,23 @@ CREATE TABLE applications (
 
 CREATE UNIQUE INDEX ix_applications ON applications (organisation_id, name);
 
+CREATE TABLE application_stats (
+  application_id                BIGINT       NOT NULL REFERENCES applications (id),
+  application_version           VARCHAR(100) NOT NULL,
+  num_signatures                INTEGER      NOT NULL
+  COMMENT 'The total number of signatures in this application, invoked or not',
+  num_invoked_signatures        INTEGER      NOT NULL
+  COMMENT 'The number of invoked signatures in this application',
+  num_startup_signatures        INTEGER      NOT NULL
+  COMMENT 'The number of signatures that are only invoked within a short time after the application starts',
+  num_truly_dead_signatures     INTEGER      NOT NULL
+  COMMENT 'The number of truly dead signatures in the application',
+  first_data_receivet_at_millis BIGINT       NOT NULL
+  COMMENT 'The first time invocation data for this application/version was received',
+  last_data_received_at_millis  BIGINT       NOT NULL
+  COMMENT 'The last time invocation data for this application/version was received'
+);
+
 -- JVM info -------------------------------------------------------------------------------------------------
 CREATE TABLE jvm_info (
   id                            BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -108,6 +125,9 @@ CREATE TABLE signatures (
   confidence             TINYINT       NULL
   COMMENT 'The ordinal for se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence. NULL for not yet invoked.'
 );
+
+CREATE INDEX signatures_invoked_at_ix
+ON signatures (invoked_at_millis);
 
 -- System data ----------------------------------------------------------------------------------------------
 INSERT INTO roles (name) VALUES ('SUPERUSER');
