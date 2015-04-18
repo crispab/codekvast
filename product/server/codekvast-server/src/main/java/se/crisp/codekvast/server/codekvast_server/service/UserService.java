@@ -1,6 +1,7 @@
 package se.crisp.codekvast.server.codekvast_server.service;
 
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
+import se.crisp.codekvast.server.codekvast_server.model.event.display.ApplicationStatisticsMessage;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorStatusMessage;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.SignatureDisplay;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.CollectorSettings;
@@ -29,10 +30,19 @@ public interface UserService {
     CollectorStatusMessage getCollectorStatusMessage(String username) throws CodekvastException;
 
     /**
+     * Retrieve application statistics message for the organisation the user belongs to.
+     *
+     * @param username The logged in user's username
+     * @return The same type of event that is broadcast each time application statistics is recalculated.
+     */
+    ApplicationStatisticsMessage getApplicationStatisticsMessage(String username) throws CodekvastException;
+
+    /**
      * Saves collector settings.
      *
      * @param username          The username who made the request.
      * @param collectorSettings The new settings.
      */
     void saveCollectorSettings(String username, CollectorSettings collectorSettings) throws CodekvastException;
+
 }

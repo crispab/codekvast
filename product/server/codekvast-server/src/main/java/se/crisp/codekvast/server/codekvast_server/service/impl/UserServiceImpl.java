@@ -10,6 +10,7 @@ import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
 import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
+import se.crisp.codekvast.server.codekvast_server.model.event.display.ApplicationStatisticsMessage;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorStatusMessage;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.SignatureDataMessage;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.SignatureDisplay;
@@ -112,14 +113,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public ApplicationStatisticsMessage getApplicationStatisticsMessage(String username) throws CodekvastException {
+        long organisationId = userDAO.getOrganisationIdForUsername(username);
+        return agentDAO.createApplicationStatisticsMessage(organisationId);
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveCollectorSettings(String username, CollectorSettings collectorSettings) throws CodekvastException {
         long organisationId = userDAO.getOrganisationIdForUsername(username);
 
         agentDAO.saveCollectorSettings(organisationId, collectorSettings);
+        agentDAO.recalculateApplicationStatistics(organisationId);
 
-        CollectorStatusMessage message = agentDAO.createCollectorStatusMessage(organisationId);
-        eventBus.post(message);
+        eventBus.post(agentDAO.createApplicationStatisticsMessage(organisationId));
+        eventBus.post(agentDAO.createCollectorStatusMessage(organisationId));
     }
 
     private void fillSignatureCache(long organisationId, Set<SignatureDisplay> signatures) {

@@ -14,7 +14,9 @@
                 <tbody>
                 <tr ng-repeat="c in collectorStatus.collectors">
                     <td class="col-lg-1">{{c.name}}</td>
-                    <td class="col-lg-1"><input type="number" ng-model="c.trulyDeadAfterDays"/></td>
+                    <td class="col-lg-1">
+                        <input type="number" ng-model="c.usageCycleDays"/>
+                    </td>
                 </tr>
                 </tbody>
             </table>

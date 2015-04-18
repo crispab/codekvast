@@ -11,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
+import se.crisp.codekvast.server.codekvast_server.model.event.display.ApplicationStatisticsMessage;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorStatusMessage;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.SignatureDataMessage;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.SignatureDisplay;
@@ -82,6 +83,19 @@ public class SignatureHandler extends AbstractMessageHandler {
      * Send the message to the currently logged in users that are affected by the message.
      */
     @Subscribe
+    public void onApplicationStatisticsMessage(ApplicationStatisticsMessage message) {
+        for (String username : message.getUsernames()) {
+            if (userHandler.isPresent(username)) {
+                log.debug("Sending {} to '{}'", message, username);
+                messagingTemplate.convertAndSendToUser(username, "/queue/application/statistics", message);
+            }
+        }
+    }
+
+    /**
+     * Send the message to the currently logged in users that are affected by the message.
+     */
+    @Subscribe
     public void onSignatureDataMessage(SignatureDataMessage message) throws CodekvastException {
         for (String username : message.getUsernames()) {
             if (userHandler.isPresent(username)) {
@@ -103,10 +117,15 @@ public class SignatureHandler extends AbstractMessageHandler {
         String username = principal.getName();
         log.debug("'{}' requests all signatures", username);
 
+        ApplicationStatisticsMessage appStats = userService.getApplicationStatisticsMessage(username);
         CollectorStatusMessage collectorStatus = userService.getCollectorStatusMessage(username);
         Collection<SignatureDisplay> signatures = userService.getSignatures(username);
 
-        return SignatureDataMessage.builder().collectorStatus(collectorStatus).signatures(signatures).build();
+        return SignatureDataMessage.builder()
+                                   .applicationStatistics(appStats)
+                                   .collectorStatus(collectorStatus)
+                                   .signatures(signatures)
+                                   .build();
     }
 
     @RequestMapping(value = "/api/collectorSettings", method = RequestMethod.POST)

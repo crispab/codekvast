@@ -35,6 +35,14 @@ public class SignatureDataMessage {
     CollectorStatusMessage collectorStatus;
 
     /**
+     * Optional applicationStatistics.
+     * <p>
+     * It is non-null when this object is created by a database query when a user logs in. When this object is broadcast as a result of an
+     * agent delivering data, applicationStatistics is null.
+     */
+    ApplicationStatisticsMessage applicationStatistics;
+
+    /**
      * The actual signature data.
      */
     @NonNull

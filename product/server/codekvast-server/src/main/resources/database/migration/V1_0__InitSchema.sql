@@ -47,34 +47,31 @@ CREATE UNIQUE INDEX ix_organisation_members ON organisation_members (organisatio
 
 -- Applications ---------------------------------------------------------------------------------------------
 CREATE TABLE applications (
-  id                       BIGINT                              NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  organisation_id          BIGINT        NOT NULL REFERENCES organisations (id),
-  name                     VARCHAR(100)  NOT NULL,
-  truly_dead_after_seconds INTEGER       NOT NULL
+  id                  BIGINT                              NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  organisation_id     BIGINT                              NOT NULL REFERENCES organisations (id),
+  name                VARCHAR(100)                        NOT NULL,
+  usage_cycle_seconds INTEGER                             NOT NULL
   COMMENT 'After how long can an unused signature in this application be considered dead?',
-  notes                    VARCHAR(3000) NULL
+  notes               VARCHAR(3000)                       NULL
   COMMENT 'Free text notes about the application',
-  created_at               TIMESTAMP DEFAULT current_timestamp NOT NULL,
-  modified_at              TIMESTAMP AS NOW()
+  created_at          TIMESTAMP DEFAULT current_timestamp NOT NULL,
+  modified_at         TIMESTAMP AS NOW()
 );
 
 CREATE UNIQUE INDEX ix_applications ON applications (organisation_id, name);
 
-CREATE TABLE application_stats (
-  application_id                BIGINT       NOT NULL REFERENCES applications (id),
-  application_version           VARCHAR(100) NOT NULL,
-  num_signatures                INTEGER      NOT NULL
+CREATE TABLE application_statistics (
+  application_id            BIGINT       NOT NULL REFERENCES applications (id),
+  application_version       VARCHAR(100) NOT NULL,
+  num_signatures            INTEGER      NOT NULL
   COMMENT 'The total number of signatures in this application, invoked or not',
-  num_invoked_signatures        INTEGER      NOT NULL
+  num_invoked_signatures    INTEGER      NOT NULL
   COMMENT 'The number of invoked signatures in this application',
-  num_startup_signatures        INTEGER      NOT NULL
+  num_startup_signatures    INTEGER      NOT NULL
   COMMENT 'The number of signatures that are only invoked within a short time after the application starts',
-  num_truly_dead_signatures     INTEGER      NOT NULL
-  COMMENT 'The number of truly dead signatures in the application',
-  first_data_receivet_at_millis BIGINT       NOT NULL
-  COMMENT 'The first time invocation data for this application/version was received',
-  last_data_received_at_millis  BIGINT       NOT NULL
-  COMMENT 'The last time invocation data for this application/version was received'
+  num_truly_dead_signatures INTEGER      NOT NULL
+  COMMENT 'The number of truly dead signatures in the application, i.e., never invoked at all or only invoked before the latest
+   full usage cycle'
 );
 
 -- JVM info -------------------------------------------------------------------------------------------------

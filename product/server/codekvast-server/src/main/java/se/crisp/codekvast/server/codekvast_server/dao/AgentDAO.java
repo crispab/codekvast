@@ -4,6 +4,7 @@ import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
+import se.crisp.codekvast.server.codekvast_server.model.event.display.ApplicationStatisticsMessage;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorStatusMessage;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.CollectorSettings;
 
@@ -59,4 +60,27 @@ public interface AgentDAO {
      * @param collectorSettings The new settings
      */
     void saveCollectorSettings(long organisationId, CollectorSettings collectorSettings);
+
+    /**
+     * Recalculate the statistics for a certain app.
+     *
+     * @param appId The identity of the application
+     */
+    void recalculateApplicationStatistics(AppId appId);
+
+    /**
+     * Recalculate the statistics for all apps in an organisation..
+     *
+     * @param organisationId The identity of the organisation
+     */
+    void recalculateApplicationStatistics(long organisationId);
+
+    /**
+     * Create an application statistics message for a certain organisation without recalculating statistics.
+     *
+     * @param organisationId The organisation
+     * @return An event to post on the EventBus
+     */
+    ApplicationStatisticsMessage createApplicationStatisticsMessage(long organisationId);
+
 }

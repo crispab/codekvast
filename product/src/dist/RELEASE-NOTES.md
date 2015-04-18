@@ -3,6 +3,7 @@
 ## 0.9.5
 
 1. Bug fix in codekvast-agent: Signature.millisSinceJvmStart was not correct
+1. Implemented server-side support for application statistics
 
 ## 0.9.4
 

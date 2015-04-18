@@ -104,6 +104,10 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             console.log("Updated " + updateLen + " signatures in " + elapsed + " ms");
         };
 
+        var onApplicationStatisticsMessage = function (message) {
+            broadcast('applicationStatistics', JSON.parse(message.body));
+        }
+
         var onCollectorStatusMessage = function (message) {
             broadcast('collectorStatus', JSON.parse(message.body));
         };
@@ -131,6 +135,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
             socket.stomp.connect({}, function () {
                 onConnected();
+                socket.stomp.subscribe("/user/queue/application/statistics", onApplicationStatisticsMessage);
                 socket.stomp.subscribe("/user/queue/collector/status", onCollectorStatusMessage);
                 socket.stomp.subscribe("/user/queue/signature/data", onSignatureDataMessage);
                 $http.get('/api/signatures')
@@ -157,7 +162,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                 var c = collectorStatus.collectors[i];
                 data.collectorSettings.push({
                     name: c.name,
-                    trulyDeadAfterDays: c.trulyDeadAfterDays
+                    usageCycleDays: c.usageCycleDays
                 })
             }
 
@@ -233,7 +238,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         if ($scope.collectorStatus) {
             for (var i = 0, len = $scope.collectorStatus.collectors.length; i < len; i++) {
                 var c = $scope.collectorStatus.collectors[i];
-                c.trulyDeadAfterDays = c.trulyDeadAfterSeconds / 60 / 60 / 24;
+                c.usageCycleDays = c.trulyDeadAfterSeconds / 60 / 60 / 24;
             }
         }
 

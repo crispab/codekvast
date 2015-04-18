@@ -145,7 +145,7 @@ bootRun {
             '-Dspring.thymeleaf.cache=false',
             '-Dspring.messages.cacheSeconds=1'
     ]
-    args = ["--codekvast.databasePath=tcp://localhost$buildDir/database"]
+    args = ["--codekvast.databasePath=tcp://localhost/$buildDir/database"]
 }
 
 jacoco {

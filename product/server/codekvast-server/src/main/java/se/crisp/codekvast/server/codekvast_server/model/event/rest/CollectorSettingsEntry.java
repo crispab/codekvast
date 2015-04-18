@@ -17,5 +17,5 @@ public class CollectorSettingsEntry {
     private String name;
 
     @Min(1)
-    int trulyDeadAfterDays;
+    int usageCycleDays;
 }

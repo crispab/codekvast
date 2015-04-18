@@ -10,7 +10,6 @@ import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
-import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorStatusMessage;
 import se.crisp.codekvast.server.codekvast_server.model.event.internal.InvocationDataReceivedEvent;
 import se.crisp.codekvast.server.codekvast_server.service.AgentService;
 
@@ -43,8 +42,11 @@ public class AgentServiceImpl implements AgentService {
         long appId = agentDAO.getAppId(organisationId, data.getAppName(), data.getAppVersion());
 
         agentDAO.storeJvmData(organisationId, appId, data);
-        CollectorStatusMessage message = agentDAO.createCollectorStatusMessage(organisationId);
-        eventBus.post(message);
+
+        agentDAO.recalculateApplicationStatistics(agentDAO.getAppIdByJvmUuid(data.getJvmUuid()));
+
+        eventBus.post(agentDAO.createApplicationStatisticsMessage(organisationId));
+        eventBus.post(agentDAO.createCollectorStatusMessage(organisationId));
     }
 
     @Override
@@ -62,8 +64,10 @@ public class AgentServiceImpl implements AgentService {
             return;
         }
         SignatureData storedData = agentDAO.storeInvocationData(appId, data);
-        InvocationDataReceivedEvent event = new InvocationDataReceivedEvent(appId, storedData.getSignatures());
-        eventBus.post(event);
+
+        agentDAO.recalculateApplicationStatistics(appId);
+        eventBus.post(new InvocationDataReceivedEvent(appId, storedData.getSignatures()));
+        eventBus.post(agentDAO.createApplicationStatisticsMessage(appId.getOrganisationId()));
     }
 
 }

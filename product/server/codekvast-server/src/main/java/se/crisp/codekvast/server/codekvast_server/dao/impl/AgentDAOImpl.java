@@ -1,6 +1,7 @@
 package se.crisp.codekvast.server.codekvast_server.dao.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,6 +15,8 @@ import se.crisp.codekvast.server.codekvast_server.config.CodekvastSettings;
 import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
+import se.crisp.codekvast.server.codekvast_server.model.event.display.ApplicationStatisticsDisplay;
+import se.crisp.codekvast.server.codekvast_server.model.event.display.ApplicationStatisticsMessage;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorDisplay;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorStatusMessage;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.CollectorSettings;
@@ -25,6 +28,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * DAO for agent stuff.
@@ -58,7 +62,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         } catch (EmptyResultDataAccessException ignored) {
         }
 
-        long appId = doInsertRow("INSERT INTO applications(organisation_id, name, truly_dead_after_seconds) VALUES(?, ?, ?)",
+        long appId = doInsertRow("INSERT INTO applications(organisation_id, name, usage_cycle_seconds) VALUES(?, ?, ?)",
                                  organisationId, appName, codekvastSettings.getDefaultTrulyDeadAfterSeconds());
 
         log.info("Created application {}: '{} {}'", appId, appName, appVersion);
@@ -165,12 +169,12 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                            "a.name, " +
                                            "jvm.application_version, " +
                                            "jvm.collector_host_name, " +
-                                           "a.truly_dead_after_seconds, " +
+                                           "a.usage_cycle_seconds, " +
                                            "MIN(jvm.started_at_millis), MAX(jvm.dumped_at_millis) " +
                                            "FROM applications a, jvm_info jvm " +
                                            "WHERE a.id = jvm.application_id " +
                                            "AND a.organisation_id = ? " +
-                                           "GROUP BY a.name, jvm.application_version, jvm.collector_host_name, a.truly_dead_after_seconds ",
+                                           "GROUP BY a.name, jvm.application_version, jvm.collector_host_name, a.usage_cycle_seconds ",
                                    new CollectorDisplayRowMapper(), organisationId);
 
         return CollectorStatusMessage.builder().collectors(collectors).usernames(usernames).build();
@@ -183,13 +187,13 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
 
         for (CollectorSettingsEntry entry : collectorSettings.getCollectorSettings()) {
             args.add(new Object[]{
-                    entry.getTrulyDeadAfterDays() * 60 * 60 * 24,
+                    entry.getUsageCycleDays() * 60 * 60 * 24,
                     organisationId,
                     entry.getName()
             });
         }
 
-        int[] updated = jdbcTemplate.batchUpdate("UPDATE applications SET truly_dead_after_seconds = ? " +
+        int[] updated = jdbcTemplate.batchUpdate("UPDATE applications SET usage_cycle_seconds = ? " +
                                                          "WHERE organisation_id = ? AND name = ?", args);
 
         boolean success = true;
@@ -205,6 +209,139 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
             log.warn("Failed to save collector settings {}", collectorSettings);
         }
 
+    }
+
+    @Override
+    @CacheEvict("appStats")
+    public void recalculateApplicationStatistics(long organisationId) {
+        List<AppId> appIds = jdbcTemplate.query("SELECT id, organisation_id, application_id, application_version FROM jvm_info WHERE " +
+                                                        "organisation_id = ?",
+                                                new AppIdRowMapper(), organisationId);
+        for (AppId appId : appIds) {
+            recalculateApplicationStatistics(appId);
+        }
+    }
+
+    @Override
+    @CacheEvict("appStats")
+    public void recalculateApplicationStatistics(AppId appId) {
+        long startedAt = System.currentTimeMillis();
+
+        long now = System.currentTimeMillis();
+        Map<String, Object> data = jdbcTemplate.queryForMap("SELECT a.name k1, " +
+                                                                    "MAX(jvm.started_at_millis) k2, " +
+                                                                    "a.usage_cycle_seconds k3 " +
+                                                                    "FROM jvm_info jvm, applications a " +
+                                                                    "WHERE jvm.application_id = a.id " +
+                                                                    "AND jvm.application_id = ? " +
+                                                                    "AND jvm.application_version = ? " +
+                                                                    "GROUP BY jvm.application_id, jvm.application_version ",
+                                                            appId.getAppId(), appId.getAppVersion());
+
+        String appName = (String) data.get("K1");
+        long versionLastStartedAtMillis = (long) data.get("K2");
+        int usageCycleSeconds = (int) data.get("K3");
+        long startupRelatedIfInvokedBeforeMillis = versionLastStartedAtMillis + 60000L;
+
+        long trulyDeadIfInvokedBeforeMillis = now - (usageCycleSeconds * 1000L);
+
+        int numSignatures = jdbcTemplate.queryForObject("SELECT count(1) FROM signatures s, jvm_info jvm " +
+                                                                "WHERE s.jvm_id = jvm.id " +
+                                                                "AND jvm.application_id = ? " +
+                                                                "AND jvm.application_version = ? ",
+                                                        Integer.class,
+                                                        appId.getAppId(), appId.getAppVersion());
+
+        int numInvokedSignatures = jdbcTemplate.queryForObject("SELECT count(1) FROM signatures s, jvm_info jvm " +
+                                                                       "WHERE s.jvm_id = jvm.id " +
+                                                                       "AND s.invoked_at_millis > 0 " +
+                                                                       "AND jvm.application_id = ? " +
+                                                                       "AND jvm.application_version = ? ",
+                                                               Integer.class,
+                                                               appId.getAppId(), appId.getAppVersion());
+
+        int numStartupSignatures = jdbcTemplate.queryForObject("SELECT count(1) FROM signatures s, jvm_info jvm " +
+                                                                       "WHERE s.jvm_id = jvm.id " +
+                                                                       "AND jvm.application_id = ? " +
+                                                                       "AND jvm.application_version = ? " +
+                                                                       "AND s.invoked_at_millis >= ? " +
+                                                                       "AND s.invoked_at_millis < ? ",
+                                                               Integer.class,
+                                                               appId.getAppId(), appId.getAppVersion(),
+                                                               versionLastStartedAtMillis,
+                                                               startupRelatedIfInvokedBeforeMillis);
+
+        int numTrulyDeadSignatures = jdbcTemplate.queryForObject("SELECT count(1) FROM signatures s, jvm_info jvm " +
+                                                                         "WHERE s.jvm_id = jvm.id " +
+                                                                         "AND jvm.application_id = ? " +
+                                                                         "AND jvm.application_version = ? " +
+                                                                         "AND s.invoked_at_millis >= ? " +
+                                                                         "AND s.invoked_at_millis < ? ",
+                                                                 Integer.class,
+                                                                 appId.getAppId(), appId.getAppVersion(),
+                                                                 startupRelatedIfInvokedBeforeMillis, trulyDeadIfInvokedBeforeMillis);
+
+        int updated = jdbcTemplate.update("MERGE INTO application_statistics(application_id, application_version, " +
+                                                  "num_signatures, num_invoked_signatures, num_startup_signatures, " +
+                                                  "num_truly_dead_signatures) " +
+                                                  "KEY(application_id, application_version) VALUES(?, ?, ?, ?, ?, ?)",
+                                          appId.getAppId(), appId.getAppVersion(),
+                                          numSignatures, numInvokedSignatures, numStartupSignatures, numTrulyDeadSignatures);
+
+        long elapsed = System.currentTimeMillis() - startedAt;
+        log.debug("Statistics for {} {} calculated in {} ms", appName, appId.getAppVersion(), elapsed);
+    }
+
+    @Override
+    @Cacheable("appStats")
+    public ApplicationStatisticsMessage createApplicationStatisticsMessage(long organisationId) {
+        Collection<String> usernames = getInteractiveUsernamesInOrganisation(organisationId);
+
+        Collection<ApplicationStatisticsDisplay> appStats =
+                jdbcTemplate.query("SELECT " +
+                                           "a.name, " +
+                                           "a.usage_cycle_seconds, " +
+                                           "stat.application_version, " +
+                                           "stat.num_signatures, " +
+                                           "stat.num_invoked_signatures, " +
+                                           "stat.num_startup_signatures, " +
+                                           "stat.num_truly_dead_signatures, " +
+                                           "MIN(jvm.started_at_millis), " +
+                                           "MAX(jvm.dumped_at_millis) " +
+                                           "FROM applications a, application_statistics stat, jvm_info jvm " +
+                                           "WHERE stat.application_id = a.id " +
+                                           "AND jvm.application_id = a.id " +
+                                           "AND jvm.application_version = stat.application_version " +
+                                           "AND a.organisation_id = ? " +
+                                           "GROUP BY a.id ",
+                                   new ApplicationStatisticsDisplayRowMapper(), organisationId);
+
+        return ApplicationStatisticsMessage.builder()
+                                           .usernames(usernames)
+                                           .applicationStats(appStats)
+                                           .build();
+    }
+
+    private static class ApplicationStatisticsDisplayRowMapper implements RowMapper<ApplicationStatisticsDisplay> {
+        @Override
+        public ApplicationStatisticsDisplay mapRow(ResultSet rs, int rowNum) throws SQLException {
+            int usageCycleSeconds = rs.getInt(2);
+            long firstDataReceivedAtMillis = rs.getLong(8);
+            long fullUsageCycleEndsAtMillis = firstDataReceivedAtMillis + usageCycleSeconds * 1000L;
+
+            return ApplicationStatisticsDisplay.builder()
+                                               .name(rs.getString(1))
+                                               .usageCycleSeconds(usageCycleSeconds)
+                                               .version(rs.getString(3))
+                                               .numSignatures(rs.getInt(4))
+                                               .numInvokedSignatures(rs.getInt(5))
+                                               .numStartupSignatures(rs.getInt(6))
+                                               .numTrulyDeadSignatures(rs.getInt(7))
+                                               .firstDataReceivedAtMillis(firstDataReceivedAtMillis)
+                                               .lastDataReceivedAtMillis(rs.getLong(9))
+                                               .fullUsageCycleEndsAtMillis(fullUsageCycleEndsAtMillis)
+                                               .build();
+        }
     }
 
     private static class CollectorDisplayRowMapper implements RowMapper<CollectorDisplay> {
