@@ -76,6 +76,8 @@ CREATE TABLE application_statistics (
    full usage cycle'
 );
 
+CREATE PRIMARY KEY ON application_statistics (application_id, application_version);
+
 -- JVM info -------------------------------------------------------------------------------------------------
 CREATE TABLE jvm_info (
   id                            BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -111,7 +113,6 @@ CREATE UNIQUE INDEX ix_jvm_info ON jvm_info (organisation_id, application_id, jv
 
 -- Signatures -----------------------------------------------------------------------------------------------
 CREATE TABLE signatures (
-  id                     BIGINT        NOT NULL AUTO_INCREMENT PRIMARY KEY,
   organisation_id        BIGINT        NOT NULL REFERENCES organisations (id),
   application_id         BIGINT        NOT NULL REFERENCES applications (id),
   jvm_id                 BIGINT        NOT NULL REFERENCES jvm_info (id),
@@ -125,8 +126,8 @@ CREATE TABLE signatures (
   COMMENT 'The ordinal for se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence. NULL for not yet invoked.'
 );
 
-CREATE INDEX signatures_invoked_at_ix
-ON signatures (invoked_at_millis);
+CREATE PRIMARY KEY ON signatures (organisation_id, application_id, jvm_id, signature);
+CREATE INDEX signatures_invoked_at_ix ON signatures (invoked_at_millis);
 
 -- System data ----------------------------------------------------------------------------------------------
 INSERT INTO roles (name) VALUES ('SUPERUSER');

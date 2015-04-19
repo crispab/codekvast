@@ -111,16 +111,16 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
             });
         }
 
-        int[] inserted = jdbcTemplate.batchUpdate(
-                "INSERT INTO signatures" +
-                        "(organisation_id, application_id, jvm_id, signature, invoked_at_millis, millis_since_jvm_start, confidence) " +
+        int[] updated = jdbcTemplate.batchUpdate(
+                "MERGE INTO signatures(organisation_id, application_id, jvm_id, signature, invoked_at_millis, millis_since_jvm_start, " +
+                        "confidence) " +
                         "VALUES(?, ?, ?, ?, ?, ?, ?)", args);
 
         // Now check what really made it into the table...
         List<SignatureEntry> result = new ArrayList<>();
         int i = 0;
         for (SignatureEntry entry : signatureData.getSignatures()) {
-            if (inserted[i] > 0) {
+            if (updated[i] > 0) {
                 result.add(entry);
             }
             i += 1;
@@ -285,7 +285,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                                   "num_signatures, num_not_invoked_signatures, num_invoked_signatures, " +
                                                   "num_startup_signatures, " +
                                                   "num_truly_dead_signatures) " +
-                                                  "KEY(application_id, application_version) VALUES(?, ?, ?, ?, ?, ?, ?)",
+                                                  "VALUES(?, ?, ?, ?, ?, ?, ?)",
                                           appId.getAppId(), appId.getAppVersion(),
                                           numSignatures, numNeverInvokedSignatures, numInvokedSignatures, numStartupSignatures,
                                           numTrulyDeadSignatures);
