@@ -43,7 +43,8 @@ class InvocationsCollectorImpl implements InvocationsCollector {
         }
 
         if (invokedAtMillis > 0 && invokedAtMillis < jvmStartedAtMillis) {
-            throw new IllegalArgumentException("invokedAtMillis cannot be before jvmStartedAtMillis");
+            throw new IllegalArgumentException(String.format("invokedAtMillis (%d) cannot be before jvmStartedAtMillis (%d)",
+                                                             invokedAtMillis, jvmStartedAtMillis));
         }
 
         int count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM signatures WHERE jvm_uuid = ? AND signature = ? AND " +

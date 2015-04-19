@@ -24,6 +24,6 @@ public class ApplicationStatisticsMessage {
      * The application stats to display.
      */
     @NonNull
-    Collection<ApplicationStatisticsDisplay> applicationStats;
+    Collection<ApplicationStatisticsDisplay> applications;
 
 }

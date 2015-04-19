@@ -1,7 +1,6 @@
 package se.crisp.codekvast.server.codekvast_server.dao.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -212,7 +211,6 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     }
 
     @Override
-    @CacheEvict("appStats")
     public void recalculateApplicationStatistics(long organisationId) {
         List<AppId> appIds = jdbcTemplate.query("SELECT id, organisation_id, application_id, application_version FROM jvm_info WHERE " +
                                                         "organisation_id = ?",
@@ -223,14 +221,13 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     }
 
     @Override
-    @CacheEvict("appStats")
     public void recalculateApplicationStatistics(AppId appId) {
         long startedAt = System.currentTimeMillis();
 
         long now = System.currentTimeMillis();
-        Map<String, Object> data = jdbcTemplate.queryForMap("SELECT a.name k1, " +
-                                                                    "MAX(jvm.started_at_millis) k2, " +
-                                                                    "a.usage_cycle_seconds k3 " +
+        Map<String, Object> data = jdbcTemplate.queryForMap("SELECT a.name as D1, " +
+                                                                    "MAX(jvm.started_at_millis) as D2, " +
+                                                                    "a.usage_cycle_seconds as D3 " +
                                                                     "FROM jvm_info jvm, applications a " +
                                                                     "WHERE jvm.application_id = a.id " +
                                                                     "AND jvm.application_id = ? " +
@@ -238,9 +235,10 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                                                     "GROUP BY jvm.application_id, jvm.application_version ",
                                                             appId.getAppId(), appId.getAppVersion());
 
-        String appName = (String) data.get("K1");
-        long versionLastStartedAtMillis = (long) data.get("K2");
-        int usageCycleSeconds = (int) data.get("K3");
+        String appName = (String) data.get("D1");
+        long versionLastStartedAtMillis = (long) data.get("D2");
+        int usageCycleSeconds = (int) data.get("D3");
+
         long startupRelatedIfInvokedBeforeMillis = versionLastStartedAtMillis + 60000L;
 
         long trulyDeadIfInvokedBeforeMillis = now - (usageCycleSeconds * 1000L);
@@ -254,9 +252,9 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
 
         int numInvokedSignatures = jdbcTemplate.queryForObject("SELECT count(1) FROM signatures s, jvm_info jvm " +
                                                                        "WHERE s.jvm_id = jvm.id " +
-                                                                       "AND s.invoked_at_millis > 0 " +
                                                                        "AND jvm.application_id = ? " +
-                                                                       "AND jvm.application_version = ? ",
+                                                                       "AND jvm.application_version = ? " +
+                                                                       "AND s.invoked_at_millis > 0 ",
                                                                Integer.class,
                                                                appId.getAppId(), appId.getAppVersion());
 
@@ -268,10 +266,9 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                                                        "AND s.invoked_at_millis < ? ",
                                                                Integer.class,
                                                                appId.getAppId(), appId.getAppVersion(),
-                                                               versionLastStartedAtMillis,
-                                                               startupRelatedIfInvokedBeforeMillis);
+                                                               versionLastStartedAtMillis, startupRelatedIfInvokedBeforeMillis);
 
-        int numTrulyDeadSignatures = jdbcTemplate.queryForObject("SELECT count(1) FROM signatures s, jvm_info jvm " +
+        int numSignaturesInvokedBeforeUsageCycle = jdbcTemplate.queryForObject("SELECT count(1) FROM signatures s, jvm_info jvm " +
                                                                          "WHERE s.jvm_id = jvm.id " +
                                                                          "AND jvm.application_id = ? " +
                                                                          "AND jvm.application_version = ? " +
@@ -281,19 +278,23 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                                                  appId.getAppId(), appId.getAppVersion(),
                                                                  startupRelatedIfInvokedBeforeMillis, trulyDeadIfInvokedBeforeMillis);
 
+        int numNeverInvokedSignatures = numSignatures - numInvokedSignatures;
+        int numTrulyDeadSignatures = numNeverInvokedSignatures + numSignaturesInvokedBeforeUsageCycle;
+
         int updated = jdbcTemplate.update("MERGE INTO application_statistics(application_id, application_version, " +
-                                                  "num_signatures, num_invoked_signatures, num_startup_signatures, " +
+                                                  "num_signatures, num_not_invoked_signatures, num_invoked_signatures, " +
+                                                  "num_startup_signatures, " +
                                                   "num_truly_dead_signatures) " +
-                                                  "KEY(application_id, application_version) VALUES(?, ?, ?, ?, ?, ?)",
+                                                  "KEY(application_id, application_version) VALUES(?, ?, ?, ?, ?, ?, ?)",
                                           appId.getAppId(), appId.getAppVersion(),
-                                          numSignatures, numInvokedSignatures, numStartupSignatures, numTrulyDeadSignatures);
+                                          numSignatures, numNeverInvokedSignatures, numInvokedSignatures, numStartupSignatures,
+                                          numTrulyDeadSignatures);
 
         long elapsed = System.currentTimeMillis() - startedAt;
         log.debug("Statistics for {} {} calculated in {} ms", appName, appId.getAppVersion(), elapsed);
     }
 
     @Override
-    @Cacheable("appStats")
     public ApplicationStatisticsMessage createApplicationStatisticsMessage(long organisationId) {
         Collection<String> usernames = getInteractiveUsernamesInOrganisation(organisationId);
 
@@ -303,6 +304,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                            "a.usage_cycle_seconds, " +
                                            "stat.application_version, " +
                                            "stat.num_signatures, " +
+                                           "stat.num_not_invoked_signatures, " +
                                            "stat.num_invoked_signatures, " +
                                            "stat.num_startup_signatures, " +
                                            "stat.num_truly_dead_signatures, " +
@@ -318,7 +320,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
 
         return ApplicationStatisticsMessage.builder()
                                            .usernames(usernames)
-                                           .applicationStats(appStats)
+                                           .applications(appStats)
                                            .build();
     }
 
@@ -326,20 +328,35 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         @Override
         public ApplicationStatisticsDisplay mapRow(ResultSet rs, int rowNum) throws SQLException {
             int usageCycleSeconds = rs.getInt(2);
-            long firstDataReceivedAtMillis = rs.getLong(8);
+            long firstDataReceivedAtMillis = rs.getLong(9);
             long fullUsageCycleEndsAtMillis = firstDataReceivedAtMillis + usageCycleSeconds * 1000L;
+            int numSignatures = rs.getInt(4);
+            int numInvokedSignatures = rs.getInt(6);
+            Integer numTrulyDead = rs.getInt(8);
+            Integer percentDeadSignatures = numSignatures == 0 ? null : Math.round(numTrulyDead * 100f / numSignatures);
+            Integer percentInvokedSignatures = numSignatures == 0 ? null : Math.round(numInvokedSignatures * 100f / numSignatures);
+            Integer percentNeverInvokedSignatures = percentInvokedSignatures == null ? null : 100 - percentInvokedSignatures;
+
+            if (fullUsageCycleEndsAtMillis > System.currentTimeMillis()) {
+                numTrulyDead = null;
+                percentDeadSignatures = null;
+            }
 
             return ApplicationStatisticsDisplay.builder()
                                                .name(rs.getString(1))
                                                .usageCycleSeconds(usageCycleSeconds)
                                                .version(rs.getString(3))
-                                               .numSignatures(rs.getInt(4))
-                                               .numInvokedSignatures(rs.getInt(5))
-                                               .numStartupSignatures(rs.getInt(6))
-                                               .numTrulyDeadSignatures(rs.getInt(7))
+                                               .numSignatures(numSignatures)
+                                               .numNeverInvokedSignatures(rs.getInt(5))
+                                               .percentNeverInvokedSignatures(percentNeverInvokedSignatures)
+                                               .numInvokedSignatures(numInvokedSignatures)
+                                               .percentInvokedSignatures(percentInvokedSignatures)
+                                               .numStartupSignatures(rs.getInt(7))
+                                               .numTrulyDeadSignatures(numTrulyDead)
                                                .firstDataReceivedAtMillis(firstDataReceivedAtMillis)
-                                               .lastDataReceivedAtMillis(rs.getLong(9))
+                                               .lastDataReceivedAtMillis(rs.getLong(10))
                                                .fullUsageCycleEndsAtMillis(fullUsageCycleEndsAtMillis)
+                                               .percentTrulyDeadSignatures(percentDeadSignatures)
                                                .build();
         }
     }
@@ -351,7 +368,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                    .name(rs.getString(1))
                                    .version(rs.getString(2))
                                    .hostname(rs.getString(3))
-                                   .trulyDeadAfterSeconds(rs.getInt(4))
+                                   .usageCycleSeconds(rs.getInt(4))
                                    .startedAtMillis(rs.getLong(5))
                                    .dataReceivedAtMillis(rs.getLong(6))
                                    .build();

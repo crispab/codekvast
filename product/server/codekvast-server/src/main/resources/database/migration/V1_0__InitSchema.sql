@@ -65,6 +65,8 @@ CREATE TABLE application_statistics (
   application_version       VARCHAR(100) NOT NULL,
   num_signatures            INTEGER      NOT NULL
   COMMENT 'The total number of signatures in this application, invoked or not',
+  num_not_invoked_signatures INTEGER NOT NULL
+  COMMENT 'The number of signatures that never has been invoked',
   num_invoked_signatures    INTEGER      NOT NULL
   COMMENT 'The number of invoked signatures in this application',
   num_startup_signatures    INTEGER      NOT NULL

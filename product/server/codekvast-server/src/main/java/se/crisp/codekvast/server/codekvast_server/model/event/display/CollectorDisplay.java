@@ -33,7 +33,7 @@ public class CollectorDisplay {
     /**
      * The length of the usage cycle for the app. After this many seconds, code that has not been used could be considered truly dead.
      */
-    int trulyDeadAfterSeconds;
+    int usageCycleSeconds;
 
     /**
      * When did this collector start?

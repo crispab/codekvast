@@ -12,7 +12,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             })
 
             .otherwise({
-                templateUrl: 'partials/dashboard.html'
+                templateUrl: 'partials/statistics.html'
             });
 
 
@@ -187,8 +187,14 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
     .controller('NavigationController', ['$scope', '$location', '$modal', function($scope, $location, $modal) {
         $scope.menuItems = [
             {
-                name: 'Dashboard',
-                url: '/page/dashboard',
+                name: 'Statistics',
+                url: '/page/statistics',
+                title: 'Show collection statistics',
+                icon: 'glyphicon-stats'
+            },
+            {
+                name: 'Collectors',
+                url: '/page/collectors',
                 title: 'Show the status of the collectors',
                 icon: 'glyphicon-dashboard'
             },
@@ -238,7 +244,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         if ($scope.collectorStatus) {
             for (var i = 0, len = $scope.collectorStatus.collectors.length; i < len; i++) {
                 var c = $scope.collectorStatus.collectors[i];
-                c.usageCycleDays = c.trulyDeadAfterSeconds / 60 / 60 / 24;
+                c.usageCycleDays = c.usageCycleSeconds / 60 / 60 / 24;
             }
         }
 
@@ -258,6 +264,34 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             $modalInstance.dismiss('cancel');
         };
 
+    }])
+
+    .controller('StatisticsController', ['$scope', '$interval', 'DateService', 'StompService', function ($scope, $interval, DateService, StompService) {
+        $scope.applicationStatistics = StompService.getLastEvent('applicationStatistics');
+        $scope.dateFormat = 'short';
+
+        $scope.$on('applicationStatistics', function (event, data) {
+            $scope.applicationStatistics = data;
+            $scope.updateAges();
+        });
+
+        $scope.updateAges = function () {
+            if ($scope.applicationStatistics) {
+                for (var i = 0, len = $scope.applicationStatistics.applications.length; i < len; i++) {
+                    var a = $scope.applicationStatistics.applications[i];
+                    a.usageCycleDays = a.usageCycleSeconds / 60 / 60 / 24;
+                    a.updateAge = DateService.getAge(a.lastDataReceivedAtMillis);
+                }
+            }
+        }
+
+        $scope.$on('stompDisconnected', function (event, message) {
+            $scope.applicationStatistics = undefined;
+
+            $interval.cancel($scope.updateAgeInterval);
+        });
+
+        $scope.updateAgeInterval = $interval($scope.updateAges, 500, false);
     }])
 
     .controller('CollectorController', ['$scope', '$interval', 'DateService', 'StompService', function ($scope, $interval, DateService, StompService) {
@@ -280,9 +314,9 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             if ($scope.collectorStatus) {
                 for (var i = 0, len = $scope.collectorStatus.collectors.length; i < len; i++) {
                     var c = $scope.collectorStatus.collectors[i];
-                    c.trulyDeadAfter = DateService.getAgeSince(c.trulyDeadAfterSeconds * 1000, 0);
+                    c.trulyDeadAfter = DateService.getAgeSince(c.usageCycleSeconds * 1000, 0);
                     c.collectorAge = DateService.getAge(c.startedAtMillis);
-                    c.countDown = DateService.getAgeSince(c.startedAtMillis + c.trulyDeadAfterSeconds * 1000, Date.now());
+                    c.countDown = DateService.getAgeSince(c.startedAtMillis + c.usageCycleSeconds * 1000, Date.now());
                     c.updateAge = DateService.getAge(c.dataReceivedAtMillis);
                 }
             }

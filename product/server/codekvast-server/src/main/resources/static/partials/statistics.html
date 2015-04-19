@@ -1,0 +1,55 @@
+<div ng-controller="StatisticsController">
+    <div class="panel panel-info" ng-show="applicationStatistics">
+        <div class="panel-heading">
+            Application Statistics
+        </div>
+        <div>
+            <div class="panel-body">
+                <p>Statistics for all applications monitored by Codekvast</p>
+            </div>
+            <table class="table application-statistics">
+                <thead>
+                <tr>
+                    <th class="col-lg-1">Application</th>
+                    <th class="col-lg-1">Version</th>
+                    <th class="col-lg-1" title="The date this version of the application was started for the first time">First Started At
+                    </th>
+                    <th class="col-lg-1" title="After this many days code that has not been invoked can be considered truly dead">Usage
+                                                                                                                                  Cycle Days
+                    </th>
+                    <th class="col-lg-1" title="After this date one can start identifying truly dead code">Usage Cycle Ends At</th>
+                    <th class="col-lg-1" title="The total number of signatures"># Signatures</th>
+                    <th class="col-lg-1" title="Number of signatures that never have been invoked"># Never Invoked Signatures</th>
+                    <th class="col-lg-1" title="Percent of signatures that never have been invoked">% Never Invoked</th>
+                    <th class="col-lg-1" title="Number of signatures that were invoked only shortly after start of the application">#
+                                                                                                                                    Startup
+                                                                                                                                    Signatures
+                    </th>
+                    <th class="col-lg-1" title="Number of methods that were never invoked, or only before the last usage cycle"># Truly Dead
+                    </th>
+                    <th class="col-lg-1" title="Percentage of all methods that are truly dead">% Truly Dead</th>
+                    <th class="col-lg-1" title="The age of the data">Data age</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="a in applicationStatistics.applications">
+                    <td class="col-lg-1">{{a.name}}</td>
+                    <td class="col-lg-1">{{a.version}}</td>
+                    <td class="col-lg-1">{{a.firstDataReceivedAtMillis|date:dateFormat}}</td>
+                    <td class="col-lg-1">{{a.usageCycleDays}}</td>
+                    <td class="col-lg-1">{{a.fullUsageCycleEndsAtMillis|date:dateFormat}}</td>
+                    <td class="col-lg-1">{{a.numSignatures}}</td>
+                    <td class="col-lg-1">{{a.numNeverInvokedSignatures}}</td>
+                    <td class="col-lg-1">{{a.percentNeverInvokedSignatures}}</td>
+                    <td class="col-lg-1">{{a.numStartupSignatures}}</td>
+                    <td class="col-lg-1">{{a.numTrulyDeadSignatures}}</td>
+                    <td class="col-lg-1">{{a.percentTrulyDeadSignatures}}</td>
+                    <td class="col-lg-1 collector-age">{{a.updateAge}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</div>
