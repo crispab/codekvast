@@ -4,22 +4,23 @@
     </div>
     <form class="form">
         <div class="modal-body">
-            <table class="table collector-status">
-                <thead>
-                <tr>
-                    <th class="col-lg-1">Application</th>
-                    <th class="col-lg-1">Usage Cycle (days)</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr ng-repeat="c in collectorStatus.collectors">
-                    <td class="col-lg-1">{{c.name}}</td>
-                    <td class="col-lg-1">
-                        <input type="number" ng-model="c.usageCycleDays"/>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+            <form class="form form-inline">
+                <div class="input-group" ng-repeat="c in collectorStatus.collectors">
+                    <span class="input-group-addon">Usage Cycle for {{c.name}}</span>
+                    <input class="form-control col-lg-1" type="number" min="0" step="{{c.usageCycleStep}}" ng-model="c.usageCycleValue"/>
+                    <div class="input-group-btn">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{c.usageCycleUnit}}
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                            <li><a href="#" ng-click="setUsageCycleUnit(c, 0)">seconds</a></li>
+                            <li><a href="#" ng-click="setUsageCycleUnit(c, 1)">minutes</a></li>
+                            <li><a href="#" ng-click="setUsageCycleUnit(c, 2)">hours</a></li>
+                            <li><a href="#" ng-click="setUsageCycleUnit(c, 3)">days</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </form>
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-default" ng-click="cancel()">Cancel</button>

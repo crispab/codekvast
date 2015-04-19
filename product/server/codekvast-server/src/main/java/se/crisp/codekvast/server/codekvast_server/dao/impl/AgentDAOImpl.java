@@ -186,7 +186,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
 
         for (CollectorSettingsEntry entry : collectorSettings.getCollectorSettings()) {
             args.add(new Object[]{
-                    entry.getUsageCycleDays() * 60 * 60 * 24,
+                    entry.getUsageCycleSeconds(),
                     organisationId,
                     entry.getName()
             });

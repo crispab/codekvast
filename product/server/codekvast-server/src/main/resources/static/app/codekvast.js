@@ -141,6 +141,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                 $http.get('/api/signatures')
                     .success(function (data) {
                         broadcast('jumbotronMessage', null);
+                        broadcast('applicationStatistics', data.applicationStatistics);
                         broadcast('collectorStatus', data.collectorStatus);
                         allSignatures = data.signatures;
                         broadcast('signatures');
@@ -162,7 +163,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                 var c = collectorStatus.collectors[i];
                 data.collectorSettings.push({
                     name: c.name,
-                    usageCycleDays: c.usageCycleDays
+                    usageCycleSeconds: c.usageCycleValue * c.usageCycleMultiplier
                 })
             }
 
@@ -238,13 +239,55 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
     }])
 
-    .controller('SettingsController', ['$scope', '$modalInstance', 'StompService', function ($scope, $modalInstance, StompService) {
+    .controller('SettingsController', ['$scope', '$modalInstance', 'StompService', 'DateService', function ($scope, $modalInstance, StompService, DateService) {
         $scope.collectorStatus = StompService.getLastEvent('collectorStatus');
+
+        $scope.setUsageCycleUnit = function (c, code) {
+            if (!c.usageCycleValue) {
+                c.usageCycleValue = c.usageCycleSeconds;
+                c.usageCycleMultiplier = 1;
+            }
+            switch (code) {
+                case 0:
+                    c.usageCycleValue = c.usageCycleValue * c.usageCycleMultiplier;
+                    c.usageCycleUnit = 'seconds';
+                    c.usageCycleMultiplier = 6;
+                    c.usageCycleStep = 15;
+                    break;
+                case 1:
+                    c.usageCycleValue = c.usageCycleValue * c.usageCycleMultiplier / 60;
+                    c.usageCycleUnit = 'minutes';
+                    c.usageCycleMultiplier = 60;
+                    c.usageCycleStep = 10;
+                    break;
+                case 2:
+                    c.usageCycleValue = c.usageCycleValue * c.usageCycleMultiplier / 60 / 60;
+                    c.usageCycleUnit = 'hours';
+                    c.usageCycleMultiplier = 60 * 60;
+                    c.usageCycleStep = 1;
+                    break;
+                case 3:
+                    c.usageCycleValue = c.usageCycleValue * c.usageCycleMultiplier / 60 / 60 / 24;
+                    c.usageCycleUnit = 'days';
+                    c.usageCycleMultiplier = 60 * 60 * 24;
+                    c.usageCycleStep = 1;
+                    break;
+            }
+        };
 
         if ($scope.collectorStatus) {
             for (var i = 0, len = $scope.collectorStatus.collectors.length; i < len; i++) {
                 var c = $scope.collectorStatus.collectors[i];
-                c.usageCycleDays = c.usageCycleSeconds / 60 / 60 / 24;
+                var v = DateService.getAgeSince(c.usageCycleSeconds * 1000, 0);
+                if (v.endsWith('d')) {
+                    $scope.setUsageCycleUnit(c, 3);
+                } else if (v.endsWith('h')) {
+                    $scope.setUsageCycleUnit(c, 2);
+                } else if (v.endsWith('m')) {
+                    $scope.setUsageCycleUnit(c, 1);
+                } else {
+                    $scope.setUsageCycleUnit(c, 0);
+                }
             }
         }
 
@@ -279,8 +322,8 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             if ($scope.applicationStatistics) {
                 for (var i = 0, len = $scope.applicationStatistics.applications.length; i < len; i++) {
                     var a = $scope.applicationStatistics.applications[i];
-                    a.usageCycleDays = a.usageCycleSeconds / 60 / 60 / 24;
-                    a.updateAge = DateService.getAge(a.lastDataReceivedAtMillis);
+                    a.usageCycle = DateService.getAgeSince(a.usageCycleSeconds * 1000, 0);
+                    a.timeToFullUsageCycle = DateService.getAgeSince(a.firstDataReceivedAtMillis + a.usageCycleSeconds * 1000, Date.now());
                 }
             }
         }
