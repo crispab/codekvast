@@ -108,14 +108,15 @@ task generateTomcatRunHook {
     description = "Generates a setenv.sh in \$CATALINA_HOME/bin that hooks up Codekvast"
     group = "build"
     dependsOn = ["installJavaagentsIntoEndorsedDir", "generateCodekvastConfig"]
-    def codekvastCollector = file("$catalinaBase/endorsed").listFiles().find { it.name.contains("codekvast") }
-    def aspectjWeaver = file("$catalinaBase/endorsed").listFiles().find { it.name.contains("aspectj") }
     def setenvFile = file("$catalinaBase/bin/setenv.sh")
 
     inputs.file file("build.gradle")
     outputs.file setenvFile
 
     doLast {
+        def codekvastCollector = file("$catalinaBase/endorsed").listFiles().find { it.name.contains("codekvast") }
+        def aspectjWeaver = file("$catalinaBase/endorsed").listFiles().find { it.name.contains("aspectj") }
+
         println """---------------------------
 codekvastCollector = .${codekvastCollector.absolutePath - projectDir.absolutePath}
 aspectjWeaver = .${aspectjWeaver.absolutePath - projectDir.absolutePath}
