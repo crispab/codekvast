@@ -1,5 +1,6 @@
 package se.crisp.codekvast.agent.main;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -13,6 +14,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Repository
+@Slf4j
 class InvocationsCollectorImpl implements InvocationsCollector {
 
     private final JdbcTemplate jdbcTemplate;
@@ -43,8 +45,8 @@ class InvocationsCollectorImpl implements InvocationsCollector {
         }
 
         if (invokedAtMillis > 0 && invokedAtMillis < jvmStartedAtMillis) {
-            throw new IllegalArgumentException(String.format("invokedAtMillis (%d) cannot be before jvmStartedAtMillis (%d)",
-                                                             invokedAtMillis, jvmStartedAtMillis));
+            log.debug("Ignoring invocation with invokedAtMillis {} before jvmStartedAtMillis {}", invokedAtMillis, jvmStartedAtMillis);
+            return;
         }
 
         int count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM signatures WHERE jvm_uuid = ? AND signature = ? AND " +

@@ -14,10 +14,7 @@ import se.crisp.codekvast.server.codekvast_server.config.CodekvastSettings;
 import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
-import se.crisp.codekvast.server.codekvast_server.model.event.display.ApplicationStatisticsDisplay;
-import se.crisp.codekvast.server.codekvast_server.model.event.display.ApplicationStatisticsMessage;
-import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorDisplay;
-import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorStatusMessage;
+import se.crisp.codekvast.server.codekvast_server.model.event.display.*;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.CollectorSettings;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.CollectorSettingsEntry;
 
@@ -163,6 +160,14 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     public CollectorStatusMessage createCollectorStatusMessage(long organisationId) {
         Collection<String> usernames = getInteractiveUsernamesInOrganisation(organisationId);
 
+        Collection<ApplicationDisplay> applications =
+                jdbcTemplate.query("SELECT " +
+                                           "a.name, " +
+                                           "a.usage_cycle_seconds " +
+                                           "FROM applications a " +
+                                           "WHERE a.organisation_id = ? ",
+                                   new ApplicationDisplayRowMapper(), organisationId);
+
         Collection<CollectorDisplay> collectors =
                 jdbcTemplate.query("SELECT " +
                                            "a.name, " +
@@ -176,7 +181,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                            "GROUP BY a.name, jvm.application_version, jvm.collector_host_name, a.usage_cycle_seconds ",
                                    new CollectorDisplayRowMapper(), organisationId);
 
-        return CollectorStatusMessage.builder().collectors(collectors).usernames(usernames).build();
+        return CollectorStatusMessage.builder().applications(applications).collectors(collectors).usernames(usernames).build();
     }
 
     @Override
@@ -315,7 +320,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                            "AND jvm.application_id = a.id " +
                                            "AND jvm.application_version = stat.application_version " +
                                            "AND a.organisation_id = ? " +
-                                           "GROUP BY a.id ",
+                                           "GROUP BY a.id, stat.application_version ",
                                    new ApplicationStatisticsDisplayRowMapper(), organisationId);
 
         return ApplicationStatisticsMessage.builder()
@@ -358,6 +363,16 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                                .fullUsageCycleEndsAtMillis(fullUsageCycleEndsAtMillis)
                                                .percentTrulyDeadSignatures(percentDeadSignatures)
                                                .build();
+        }
+    }
+
+    private static class ApplicationDisplayRowMapper implements RowMapper<ApplicationDisplay> {
+        @Override
+        public ApplicationDisplay mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return ApplicationDisplay.builder()
+                                   .name(rs.getString(1))
+                                     .usageCycleSeconds(rs.getInt(2))
+                                   .build();
         }
     }
 

@@ -12,6 +12,7 @@ include ':product:web'
 
 include ':tools'
 
-include ':sample:jenkins'
+include ':sample:jenkins1'
+include ':sample:jenkins2'
 include ':sample:standalone-app'
 

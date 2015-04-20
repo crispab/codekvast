@@ -157,13 +157,13 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             socket.client.onclose = onDisconnect;
         };
 
-        var persistCollectorSettings = function (collectorStatus) {
+        var persistsApplicationSettings = function (collectorStatus) {
             var data = {collectorSettings: []};
-            for (var i = 0, len = collectorStatus.collectors.length; i < len; i++) {
-                var c = collectorStatus.collectors[i];
+            for (var i = 0, len = collectorStatus.applications.length; i < len; i++) {
+                var a = collectorStatus.applications[i];
                 data.collectorSettings.push({
-                    name: c.name,
-                    usageCycleSeconds: c.usageCycleValue * c.usageCycleMultiplier
+                    name: a.name,
+                    usageCycleSeconds: a.usageCycleValue * a.usageCycleMultiplier
                 })
             }
 
@@ -181,7 +181,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             getLastEvent: getLastEvent,
             initSocket: initSocket,
             getAllSignatures: getAllSignatures,
-            persistCollectorSettings: persistCollectorSettings
+            persistsApplicationSettings: persistsApplicationSettings
         }
     }])
 
@@ -242,51 +242,51 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
     .controller('SettingsController', ['$scope', '$modalInstance', 'StompService', 'DateService', function ($scope, $modalInstance, StompService, DateService) {
         $scope.collectorStatus = StompService.getLastEvent('collectorStatus');
 
-        $scope.setUsageCycleUnit = function (c, code) {
-            if (!c.usageCycleValue) {
-                c.usageCycleValue = c.usageCycleSeconds;
-                c.usageCycleMultiplier = 1;
+        $scope.setUsageCycleUnit = function (a, code) {
+            if (!a.usageCycleValue) {
+                a.usageCycleValue = a.usageCycleSeconds;
+                a.usageCycleMultiplier = 1;
             }
             switch (code) {
                 case 0:
-                    c.usageCycleValue = c.usageCycleValue * c.usageCycleMultiplier;
-                    c.usageCycleUnit = 'seconds';
-                    c.usageCycleMultiplier = 6;
-                    c.usageCycleStep = 15;
+                    a.usageCycleValue = a.usageCycleValue * a.usageCycleMultiplier;
+                    a.usageCycleUnit = 'seconds';
+                    a.usageCycleMultiplier = 6;
+                    a.usageCycleStep = 15;
                     break;
                 case 1:
-                    c.usageCycleValue = c.usageCycleValue * c.usageCycleMultiplier / 60;
-                    c.usageCycleUnit = 'minutes';
-                    c.usageCycleMultiplier = 60;
-                    c.usageCycleStep = 10;
+                    a.usageCycleValue = a.usageCycleValue * a.usageCycleMultiplier / 60;
+                    a.usageCycleUnit = 'minutes';
+                    a.usageCycleMultiplier = 60;
+                    a.usageCycleStep = 10;
                     break;
                 case 2:
-                    c.usageCycleValue = c.usageCycleValue * c.usageCycleMultiplier / 60 / 60;
-                    c.usageCycleUnit = 'hours';
-                    c.usageCycleMultiplier = 60 * 60;
-                    c.usageCycleStep = 1;
+                    a.usageCycleValue = a.usageCycleValue * a.usageCycleMultiplier / 60 / 60;
+                    a.usageCycleUnit = 'hours';
+                    a.usageCycleMultiplier = 60 * 60;
+                    a.usageCycleStep = 1;
                     break;
                 case 3:
-                    c.usageCycleValue = c.usageCycleValue * c.usageCycleMultiplier / 60 / 60 / 24;
-                    c.usageCycleUnit = 'days';
-                    c.usageCycleMultiplier = 60 * 60 * 24;
-                    c.usageCycleStep = 1;
+                    a.usageCycleValue = a.usageCycleValue * a.usageCycleMultiplier / 60 / 60 / 24;
+                    a.usageCycleUnit = 'days';
+                    a.usageCycleMultiplier = 60 * 60 * 24;
+                    a.usageCycleStep = 1;
                     break;
             }
         };
 
         if ($scope.collectorStatus) {
-            for (var i = 0, len = $scope.collectorStatus.collectors.length; i < len; i++) {
-                var c = $scope.collectorStatus.collectors[i];
-                var v = DateService.getAgeSince(c.usageCycleSeconds * 1000, 0);
+            for (var i = 0, len = $scope.collectorStatus.applications.length; i < len; i++) {
+                var a = $scope.collectorStatus.applications[i];
+                var v = DateService.getAgeSince(a.usageCycleSeconds * 1000, 0);
                 if (v.endsWith('d')) {
-                    $scope.setUsageCycleUnit(c, 3);
+                    $scope.setUsageCycleUnit(a, 3);
                 } else if (v.endsWith('h')) {
-                    $scope.setUsageCycleUnit(c, 2);
+                    $scope.setUsageCycleUnit(a, 2);
                 } else if (v.endsWith('m')) {
-                    $scope.setUsageCycleUnit(c, 1);
+                    $scope.setUsageCycleUnit(a, 1);
                 } else {
-                    $scope.setUsageCycleUnit(c, 0);
+                    $scope.setUsageCycleUnit(a, 0);
                 }
             }
         }
@@ -297,7 +297,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
         $scope.save = function () {
             if ($scope.collectorStatus) {
-                StompService.persistCollectorSettings($scope.collectorStatus);
+                StompService.persistsApplicationSettings($scope.collectorStatus);
             }
 
             $modalInstance.close();

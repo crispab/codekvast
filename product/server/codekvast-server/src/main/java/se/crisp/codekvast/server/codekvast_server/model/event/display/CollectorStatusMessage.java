@@ -25,4 +25,7 @@ public class CollectorStatusMessage {
      */
     @NonNull
     Collection<CollectorDisplay> collectors;
+
+    @NonNull
+    Collection<ApplicationDisplay> applications;
 }

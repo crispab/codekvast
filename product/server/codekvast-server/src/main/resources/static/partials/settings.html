@@ -2,29 +2,30 @@
     <div class="modal-header">
         <h4 class="modal-title" id="settingsLabel">Settings</h4>
     </div>
-    <form class="form">
-        <div class="modal-body">
-            <form class="form form-inline">
-                <div class="input-group" ng-repeat="c in collectorStatus.collectors">
-                    <span class="input-group-addon">Usage Cycle for {{c.name}}</span>
-                    <input class="form-control col-lg-1" type="number" min="0" step="{{c.usageCycleStep}}" ng-model="c.usageCycleValue"/>
+    <div class="modal-body">
+        <form class="form form-inline">
+            <fieldset>
+                <legend class="smaller">Application Settings</legend>
+                <div class="input-group" ng-repeat="a in collectorStatus.applications">
+                    <span class="input-group-addon">Usage Cycle for {{a.name}}</span>
+                    <input class="form-control col-sm-1" type="number" min="0" step="{{a.usageCycleStep}}" ng-model="a.usageCycleValue"/>
                     <div class="input-group-btn">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{c.usageCycleUnit}}
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{a.usageCycleUnit}}
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                            <li><a href="#" ng-click="setUsageCycleUnit(c, 0)">seconds</a></li>
-                            <li><a href="#" ng-click="setUsageCycleUnit(c, 1)">minutes</a></li>
-                            <li><a href="#" ng-click="setUsageCycleUnit(c, 2)">hours</a></li>
-                            <li><a href="#" ng-click="setUsageCycleUnit(c, 3)">days</a></li>
+                            <li><a href="#" ng-click="setUsageCycleUnit(a, 0)">seconds</a></li>
+                            <li><a href="#" ng-click="setUsageCycleUnit(a, 1)">minutes</a></li>
+                            <li><a href="#" ng-click="setUsageCycleUnit(a, 2)">hours</a></li>
+                            <li><a href="#" ng-click="setUsageCycleUnit(a, 3)">days</a></li>
                         </ul>
                     </div>
                 </div>
-            </form>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-default" ng-click="cancel()">Cancel</button>
-            <button type="button" class="btn btn-primary" ng-click="save()">Save changes</button>
-        </div>
-    </form>
+            </fieldset>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="cancel()">Cancel</button>
+        <button type="button" class="btn btn-primary" ng-click="save()">Save changes</button>
+    </div>
 </div>

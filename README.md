@@ -53,16 +53,28 @@ The rest of this README assumes you use the convenience script.
 
 ## How to test with Tomcat+Jenkins
 
-### Start Jenkins in terminal 1
+### Start Jenkins 1 in terminal 1
 
-    gradle :sample:jenkins:run
+    gradle :sample:jenkins1:run
 
-This will download Tomcat 7 and then download and deploy Jenkins into Tomcat. Finally, Tomcat is started with Codekvast Collector attached.
+This will download Tomcat 7 and then download and deploy one version of Jenkins into Tomcat. Finally, Tomcat is started on port 8081 with 
+Codekvast Collector attached.
 Terminate with `Ctrl-C`.
 
-You can access Jenkins at [http://localhost:8080/jenkins](http://localhost:8080/jenkins)
+You can access Jenkins at [http://localhost:8081/jenkins](http://localhost:8081/jenkins)
 
-### Start codekvast-agent in terminal 2
+### Start Jenkins 2 in terminal 2
+
+    gradle :sample:jenkins2:run
+
+This will download Tomcat 7 and then download and deploy another version of Jenkins into Tomcat. Finally, Tomcat is started on port 8082 
+with 
+Codekvast Collector attached.
+Terminate with `Ctrl-C`.
+
+You can access Jenkins at [http://localhost:8082/jenkins](http://localhost:8082/jenkins)
+
+### Start codekvast-agent in terminal 3
 
     gradle :product:agent:codekvast-agent:run
 
@@ -70,7 +82,7 @@ This will launch **codekvast-agent**, that will process output from all collecto
 data to **http://localhost:8090**, which is the default URL for the **codekvast-server**.
 Terminate with `Ctrl-C`.
 
-### Start codekvast-server in terminal 3
+### Start codekvast-server in terminal 4
 
     gradle :product:server:codekvast-server:run
 

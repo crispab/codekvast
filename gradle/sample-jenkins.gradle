@@ -1,17 +1,15 @@
-plugins {
-    id 'java'
-}
+apply plugin: 'java'
 
 sourceSets {
     javaagent
 }
 
-ext.tomcatVersion = "7.0.61"
+defaultTasks 'run'
+
 ext.tomcatDownloadUrl = "http://apache.mirrors.spacedump.net/tomcat/tomcat-7/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}.zip"
 ext.tomcatDir = file("$buildDir/tomcat")
 ext.catalinaBase = file("$tomcatDir/apache-tomcat-${tomcatVersion}")
 
-ext.jenkinsVersion = "1.598"
 ext.jenkinsDownloadUrl = "http://mirrors.jenkins-ci.org/war/${jenkinsVersion}/jenkins.war"
 
 task installJenkinsInTomcat7 {
@@ -44,6 +42,10 @@ task installJenkinsInTomcat7 {
             into tomcatDir
         }
         exec { commandLine "chmod", "+x", "$catalinaBase/bin/catalina.sh" }
+
+        logger.lifecycle "Setting HTTP port $tomcatPort..."
+        def serverXml = file("$catalinaBase/conf/server.xml")
+        serverXml.text = serverXml.text.replace("8080", tomcatPort).replace("8005", "0").replace("8009", "0")
 
         logger.lifecycle "Downloading $jenkinsDownloadUrl into $webappsDir ..."
         ant.get(
@@ -130,3 +132,4 @@ task run(type: Exec) {
     dependsOn generateTomcatRunHook
     commandLine "$catalinaBase/bin/catalina.sh", "run"
 }
+

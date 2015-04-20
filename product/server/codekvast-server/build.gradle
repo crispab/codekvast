@@ -284,7 +284,7 @@ task startH2Server {
     doLast {
         logger.lifecycle "Starting an H2 server..."
         def process = ["java", "-cp", configurations.h2server.asPath, "-Duser.dir=${buildDir.absolutePath}",
-                       'org.h2.tools.Server', "-tcp", "-web"].execute()
+                       'org.h2.tools.Server', "-tcp"].execute()
         process.in.close()
         process.out.close()
         process.err.close()
