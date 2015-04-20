@@ -324,6 +324,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                     var a = $scope.applicationStatistics.applications[i];
                     a.usageCycle = DateService.getAgeSince(a.usageCycleSeconds * 1000, 0);
                     a.timeToFullUsageCycle = DateService.getAgeSince(a.firstDataReceivedAtMillis + a.usageCycleSeconds * 1000, Date.now());
+                    a.dataAge = DateService.getAge(a.lastDataReceivedAtMillis);
                 }
             }
         }
@@ -360,7 +361,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                     c.trulyDeadAfter = DateService.getAgeSince(c.usageCycleSeconds * 1000, 0);
                     c.collectorAge = DateService.getAge(c.startedAtMillis);
                     c.countDown = DateService.getAgeSince(c.startedAtMillis + c.usageCycleSeconds * 1000, Date.now());
-                    c.updateAge = DateService.getAge(c.dataReceivedAtMillis);
+                    c.dataAge = DateService.getAge(c.dataReceivedAtMillis);
                 }
             }
         };

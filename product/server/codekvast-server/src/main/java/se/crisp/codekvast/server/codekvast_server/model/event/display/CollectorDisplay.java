@@ -12,39 +12,21 @@ import lombok.Value;
 @Value
 @Builder
 public class CollectorDisplay {
-    /**
-     * The name of the app that this collector is attached to.
-     */
     @NonNull
-    String name;
-
-    /**
-     * The version of the app that this collector is attached to.
-     */
+    String appName;
     @NonNull
-    String version;
-
-    /**
-     * The host in which the collected app executes.
-     */
+    String appVersion;
     @NonNull
-    String hostname;
-
-    /**
-     * The length of the usage cycle for the app. After this many seconds, code that has not been used could be considered truly dead.
-     */
-    int usageCycleSeconds;
-
-    /**
-     * When did this collector start?
-     * @see System#currentTimeMillis()
-     */
-    long startedAtMillis;
-
-    /**
-     * When did this collector deliver data to the Codekvast server?
-     *
-     * @see System#currentTimeMillis()
-     */
-    long dataReceivedAtMillis;
+    String agentHostname;
+    @NonNull
+    String agentVersion;
+    int agentUploadIntervalSeconds;
+    @NonNull
+    String collectorHostname;
+    @NonNull
+    String collectorVersion;
+    long collectorStartedAtMillis;
+    int collectorResolutionSeconds;
+    @NonNull
+    String methodVisibility;
 }

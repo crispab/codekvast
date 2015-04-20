@@ -41,7 +41,12 @@ dependencies {
 shadowJar {
     baseName = "codekvast-collector"
     classifier = ''
-    manifest { attributes("Premain-Class": "se.crisp.codekvast.agent.collector.CodekvastCollector") }
+    manifest {
+        attributes(
+                "Premain-Class": "se.crisp.codekvast.agent.collector.CodekvastCollector",
+                "Implementation-Version": "${version}-${gitVersionTokens['git.id']}"
+        )
+    }
     dependencies {
         exclude(dependency('org.aspectj:aspectjweaver'))
     }

@@ -17,6 +17,8 @@ import se.crisp.codekvast.server.codekvast_server.config.EventBusConfig;
 import se.crisp.codekvast.server.codekvast_server.dao.impl.AgentDAOImpl;
 import se.crisp.codekvast.server.codekvast_server.dao.impl.UserDAOImpl;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedUserException;
+import se.crisp.codekvast.server.codekvast_server.model.event.display.ApplicationStatisticsDisplay;
+import se.crisp.codekvast.server.codekvast_server.model.event.display.ApplicationStatisticsMessage;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorDisplay;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorStatusMessage;
 import se.crisp.codekvast.server.codekvast_server.model.event.internal.InvocationDataReceivedEvent;
@@ -53,6 +55,11 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
     }
 
     @Subscribe
+    public void onApplicationStatisticsMessage(ApplicationStatisticsMessage message) {
+        events.add(message);
+    }
+
+    @Subscribe
     public void onInvocationDataReceivedEvent(InvocationDataReceivedEvent event) {
         events.add(event);
     }
@@ -60,30 +67,37 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
     @Test
     public void testStoreJvmData_fromValidAgent() throws Exception {
         // given
-        long dumpedAtMillis = now - 1000L;
+        long dumpedAtMillis = now;
 
         // when
         agentService.storeJvmData("agent", createJvmData(dumpedAtMillis));
         agentService.storeJvmData("agent", createJvmData(dumpedAtMillis + 1000L));
 
         // then
-        assertThat(countRows("jvm_info WHERE jvm_uuid = ? AND started_at_millis = ? AND dumped_at_millis = ? ", JVM_UUID, startedAtMillis,
+        assertThat(countRows("jvm_info WHERE jvm_uuid = ? AND started_at_millis = ? AND reported_at_millis = ? ", JVM_UUID, startedAtMillis,
                              dumpedAtMillis + 1000L), is(1));
 
-        assertEventsWithinMillis(2, 1000L);
+        assertEventsWithinMillis(4, 1000L);
 
-        assertThat(events, hasSize(2));
-        assertThat(events.get(0), is(instanceOf(CollectorStatusMessage.class)));
+        assertThat(events, hasSize(4));
+        assertThat(events.get(0), is(instanceOf(ApplicationStatisticsMessage.class)));
         assertThat(events.get(1), is(instanceOf(CollectorStatusMessage.class)));
+        assertThat(events.get(2), is(instanceOf(ApplicationStatisticsMessage.class)));
+        assertThat(events.get(3), is(instanceOf(CollectorStatusMessage.class)));
 
-        CollectorStatusMessage message = (CollectorStatusMessage) events.get(0);
-        CollectorDisplay collector = message.getCollectors().iterator().next();
-        assertThat(collector.getStartedAtMillis(), is(startedAtMillis));
-        assertThat(collector.getDataReceivedAtMillis(), is(dumpedAtMillis));
+        ApplicationStatisticsMessage statsMessage = (ApplicationStatisticsMessage) events.get(0);
+        ApplicationStatisticsDisplay stats = statsMessage.getApplications().iterator().next();
+        assertThat(stats.getFirstDataReceivedAtMillis(), is(startedAtMillis));
+        assertThat(stats.getLastDataReceivedAtMillis(), is(dumpedAtMillis));
 
-        message = (CollectorStatusMessage) events.get(1);
-        collector = message.getCollectors().iterator().next();
-        assertThat(collector.getDataReceivedAtMillis(), is(dumpedAtMillis + 1000L));
+        CollectorStatusMessage csm = (CollectorStatusMessage) events.get(1);
+        CollectorDisplay collector = csm.getCollectors().iterator().next();
+        assertThat(collector.getCollectorStartedAtMillis(), is(startedAtMillis));
+
+        statsMessage = (ApplicationStatisticsMessage) events.get(2);
+        stats = statsMessage.getApplications().iterator().next();
+        assertThat(stats.getFirstDataReceivedAtMillis(), is(startedAtMillis));
+        assertThat(stats.getLastDataReceivedAtMillis(), is(dumpedAtMillis + 1000L));
     }
 
     @Test(expected = UndefinedUserException.class)
@@ -108,9 +122,10 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
 
         agentService.storeSignatureData(data);
 
-        assertEventsWithinMillis(1, 1000L);
-        assertThat(events, hasSize(1));
+        assertEventsWithinMillis(2, 1000L);
+        assertThat(events, hasSize(2));
         assertThat(events.get(0), is(instanceOf(InvocationDataReceivedEvent.class)));
+        assertThat(events.get(1), is(instanceOf(ApplicationStatisticsMessage.class)));
     }
 
     private JvmData createJvmData(long dumpedAtMillis) {
@@ -121,8 +136,10 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
                       .agentUploadIntervalSeconds(300)
                       .appName(getClass().getName())
                       .appVersion("appVersion")
-                      .codekvastVcsId("vcsId")
-                      .codekvastVersion("codekvastVersion")
+                      .agentVcsId("agentVcsId")
+                      .agentVersion("agentVersion")
+                      .collectorVcsId("collectorVcsId")
+                      .collectorVersion("collectorVersion")
                       .collectorComputerId("collectorComputerId")
                       .collectorHostName("collectorHostName")
                       .collectorResolutionSeconds(600)

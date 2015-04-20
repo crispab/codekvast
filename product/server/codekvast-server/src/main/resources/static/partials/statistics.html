@@ -16,9 +16,11 @@
 
                 <thead ng-show="applicationStatistics">
                 <tr>
-                    <th class="col-lg-1">Application</th>
-                    <th class="col-lg-1">Version</th>
-                    <th class="col-lg-1" title="The date this version of the application was started for the first time">First Started At
+                    <th class="col-lg-1" title="The name of the application, as reported by the collector">Application</th>
+                    <th class="col-lg-1" title="The version of the application">Version</th>
+                    <th class="col-lg-1"
+                        title="When this version of the application was started for the first time with Codekvast attached">
+                        Collection Started
                     </th>
                     <th class="col-lg-1" title="After this many days code that has not been invoked can be considered truly dead">Usage
                                                                                                                                   Cycle
@@ -26,12 +28,13 @@
                     <th class="col-lg-1" title="The time to wait before one can start identifying truly dead code">Time to full Usage
                                                                                                                    Cycle
                     </th>
-                    <th class="col-lg-1" title="The total number of signatures"># Signatures</th>
+                    <th class="col-lg-1" title="The total number of signatures in this version"># Signatures</th>
                     <th class="col-lg-1" title="Number of signatures that have never been invoked"># Never Invoked Signatures</th>
                     <th class="col-lg-1" title="Percent of signatures that have never been invoked">% Never Invoked</th>
                     <th class="col-lg-1" title="Number of methods that were never invoked, or only before the last usage cycle"># Truly Dead
                     </th>
                     <th class="col-lg-1" title="Percentage of all methods that are truly dead">% Truly Dead</th>
+                    <th class="col-lg-1" title="How fresh is this data?">Data Age</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -46,6 +49,7 @@
                     <td class="col-lg-1">{{a.percentNeverInvokedSignatures}}</td>
                     <td class="col-lg-1">{{a.numTrulyDeadSignatures}}</td>
                     <td class="col-lg-1">{{a.percentTrulyDeadSignatures}}</td>
+                    <td class="col-lg-1">{{a.dataAge}}</td>
                 </tr>
                 </tbody>
             </table>

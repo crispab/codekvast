@@ -27,6 +27,10 @@ public class Jvm {
     @NonNull
     private final String hostName;
     private final long startedAtMillis;
+    @NonNull
+    private final String collectorVcsId;
+    @NonNull
+    private final String collectorVersion;
 
     private long dumpedAtMillis;
 
@@ -41,11 +45,13 @@ public class Jvm {
         try {
             return Jvm.builder()
                       .collectorConfig(CollectorConfig.buildCollectorConfig(props))
+                      .collectorVcsId(props.getProperty("collectorVcsId"))
+                      .collectorVersion(props.getProperty("collectorVersion"))
                       .computerId(props.getProperty("computerId"))
+                      .dumpedAtMillis(Long.parseLong(props.getProperty("dumpedAtMillis")))
                       .hostName(props.getProperty("hostName"))
                       .jvmUuid(props.getProperty("jvmUuid"))
                       .startedAtMillis(Long.parseLong(props.getProperty("startedAtMillis")))
-                      .dumpedAtMillis(Long.parseLong(props.getProperty("dumpedAtMillis")))
                       .build();
         } catch (Exception e) {
             throw new IOException("Cannot parse " + file, e);

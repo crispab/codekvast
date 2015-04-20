@@ -18,6 +18,8 @@ public class JvmTest {
         file.deleteOnExit();
         Jvm sr1 = Jvm.builder()
                      .collectorConfig(CollectorConfig.createSampleCollectorConfig())
+                     .collectorVcsId("collectorVcsId")
+                     .collectorVersion("collectorVersion")
                      .computerId("computerId")
                      .hostName("hostName")
                      .jvmUuid(UUID.randomUUID().toString())

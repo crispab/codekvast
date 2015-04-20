@@ -105,6 +105,8 @@ public class AgentWorkerIntegrationTest {
 
         Jvm jvm = Jvm.builder()
                      .collectorConfig(cc)
+                     .collectorVcsId("collectorVcsId")
+                     .collectorVersion("collectorVersion")
                      .computerId("computerId")
                      .dumpedAtMillis(dumpedAtMillis)
                      .hostName("hostName")

@@ -129,7 +129,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     public void storeJvmData(long organisationId, long appId, JvmData data) {
         int updated =
                 jdbcTemplate
-                        .update("UPDATE jvm_info SET dumped_at_millis= ? WHERE application_id = ? AND jvm_uuid = ?",
+                        .update("UPDATE jvm_info SET reported_at_millis= ? WHERE application_id = ? AND jvm_uuid = ?",
                                 data.getDumpedAtMillis(), appId, data.getJvmUuid());
         if (updated > 0) {
             log.debug("Updated JVM info for {} {}", data.getAppName(), data.getAppVersion());
@@ -138,16 +138,14 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
 
         updated = jdbcTemplate
                 .update("INSERT INTO jvm_info(organisation_id, application_id, application_version, jvm_uuid, " +
-                                "collector_resolution_seconds, method_visibility, " +
-                                "collector_computer_id, collector_host_name, agent_computer_id, agent_host_name, " +
-                                "agent_upload_interval_seconds, " +
-                                "codekvast_version, codekvast_vcs_id, started_at_millis, dumped_at_millis)" +
-                                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                        organisationId, appId, data.getAppVersion(), data.getJvmUuid(),
-                        data.getCollectorResolutionSeconds(), data.getMethodVisibility(),
-                        data.getCollectorComputerId(), data.getCollectorHostName(),
-                        data.getAgentComputerId(), data.getAgentHostName(), data.getAgentUploadIntervalSeconds(),
-                        data.getCodekvastVersion(), data.getCodekvastVcsId(), data.getStartedAtMillis(), data.getDumpedAtMillis());
+                                "agent_computer_id, agent_host_name, agent_upload_interval_seconds, agent_vcs_id, agent_version, " +
+                                "collector_computer_id, collector_host_name, collector_resolution_seconds, collector_vcs_id, " +
+                                "collector_version, method_visibility, started_at_millis, reported_at_millis)" +
+                                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        organisationId, appId, data.getAppVersion(), data.getJvmUuid(), data.getAgentComputerId(), data.getAgentHostName(),
+                        data.getAgentUploadIntervalSeconds(), data.getAgentVcsId(), data.getAgentVersion(), data.getCollectorComputerId(),
+                        data.getCollectorHostName(), data.getCollectorResolutionSeconds(), data.getCollectorVcsId(),
+                        data.getCollectorVersion(), data.getMethodVisibility(), data.getStartedAtMillis(), data.getDumpedAtMillis());
 
         if (updated == 1) {
             log.debug("Stored JVM info for {} {}", data.getAppName(), data.getAppVersion());
@@ -172,13 +170,20 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                 jdbcTemplate.query("SELECT " +
                                            "a.name, " +
                                            "jvm.application_version, " +
+                                           "jvm.agent_host_name, " +
+                                           "jvm.agent_version, " +
+                                           "jvm.agent_vcs_id, " +
+                                           "jvm.agent_upload_interval_seconds, " +
                                            "jvm.collector_host_name, " +
-                                           "a.usage_cycle_seconds, " +
-                                           "MIN(jvm.started_at_millis), MAX(jvm.dumped_at_millis) " +
+                                           "jvm.collector_version, " +
+                                           "jvm.collector_vcs_id, " +
+                                           "MIN(jvm.started_at_millis), " +
+                                           "jvm.collector_resolution_seconds, " +
+                                           "jvm.method_visibility " +
                                            "FROM applications a, jvm_info jvm " +
                                            "WHERE a.id = jvm.application_id " +
                                            "AND a.organisation_id = ? " +
-                                           "GROUP BY a.name, jvm.application_version, jvm.collector_host_name, a.usage_cycle_seconds ",
+                                           "GROUP BY a.name, jvm.application_version ",
                                    new CollectorDisplayRowMapper(), organisationId);
 
         return CollectorStatusMessage.builder().applications(applications).collectors(collectors).usernames(usernames).build();
@@ -314,13 +319,13 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                            "stat.num_startup_signatures, " +
                                            "stat.num_truly_dead_signatures, " +
                                            "MIN(jvm.started_at_millis), " +
-                                           "MAX(jvm.dumped_at_millis) " +
+                                           "MAX(jvm.reported_at_millis) " +
                                            "FROM applications a, application_statistics stat, jvm_info jvm " +
                                            "WHERE stat.application_id = a.id " +
                                            "AND jvm.application_id = a.id " +
                                            "AND jvm.application_version = stat.application_version " +
                                            "AND a.organisation_id = ? " +
-                                           "GROUP BY a.id, stat.application_version ",
+                                           "GROUP BY a.id, stat.application_version, jvm.application_version ",
                                    new ApplicationStatisticsDisplayRowMapper(), organisationId);
 
         return ApplicationStatisticsMessage.builder()
@@ -370,9 +375,9 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         @Override
         public ApplicationDisplay mapRow(ResultSet rs, int rowNum) throws SQLException {
             return ApplicationDisplay.builder()
-                                   .name(rs.getString(1))
+                                     .name(rs.getString(1))
                                      .usageCycleSeconds(rs.getInt(2))
-                                   .build();
+                                     .build();
         }
     }
 
@@ -380,12 +385,16 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         @Override
         public CollectorDisplay mapRow(ResultSet rs, int rowNum) throws SQLException {
             return CollectorDisplay.builder()
-                                   .name(rs.getString(1))
-                                   .version(rs.getString(2))
-                                   .hostname(rs.getString(3))
-                                   .usageCycleSeconds(rs.getInt(4))
-                                   .startedAtMillis(rs.getLong(5))
-                                   .dataReceivedAtMillis(rs.getLong(6))
+                                   .appName(rs.getString(1))
+                                   .appVersion(rs.getString(2))
+                                   .agentHostname(rs.getString(3))
+                                   .agentVersion(String.format("%s.%s", rs.getString(4), rs.getString(5)))
+                                   .agentUploadIntervalSeconds(rs.getInt(6))
+                                   .collectorHostname(rs.getString(7))
+                                   .collectorVersion(String.format("%s.%s", rs.getString(8), rs.getString(9)))
+                                   .collectorStartedAtMillis(rs.getLong(10))
+                                   .collectorResolutionSeconds(rs.getInt(11))
+                                   .methodVisibility(rs.getString(12))
                                    .build();
         }
     }

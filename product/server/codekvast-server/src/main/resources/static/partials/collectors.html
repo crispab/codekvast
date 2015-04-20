@@ -11,28 +11,28 @@
             <table class="table collector-status">
                 <thead>
                 <tr>
-                    <th class="col-lg-1">Application</th>
-                    <th class="col-lg-1">Version</th>
-                    <th class="col-lg-1">Host</th>
-                    <th class="col-lg-1">Collection Started At</th>
-                    <th class="col-lg-1">Usage Cycle</th>
-                    <th class="col-lg-1" title="Time since collector started">Collector Age</th>
-                    <th class="col-lg-1" title="Time left until you can identify Truly Dead Code">Time to Full Usage Cycle</th>
-                    <th class="col-lg-1" title="Time point when the collector uploaded data">Data Received At</th>
-                    <th class="col-lg-1">Data Age</th>
+                    <th class="col-lg-1" title="Which application?">Application</th>
+                    <th class="col-lg-1" title="Which version of the application?">Version</th>
+                    <th class="col-lg-1" title="Since when have Codekvast been attached to the application?">Collector Started At</th>
+                    <th class="col-lg-1" title="In which host is the application executing?">Collector Host</th>
+                    <th class="col-lg-1" title="Which version of the collector is used?">Collector Version</th>
+                    <th class="col-lg-1" title="What is the resolution of the collector?">Collector Resolution Seconds</th>
+                    <th class="col-lg-1" title="In which host is the agent executing?">Agent Host</th>
+                    <th class="col-lg-1" title="Which version of the agent is used?">Agent Version</th>
+                    <th class="col-lg-1" title="How often is the agent uploading collected data?">Agent Upload Interval Seconds</th>
+                    <th class="col-lg-1" title="Which methods are tracked?">Method Visibility</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr ng-repeat="c in collectorStatus.collectors">
-                    <td class="col-lg-1">{{c.name}}</td>
-                    <td class="col-lg-1">{{c.version}}</td>
-                    <td class="col-lg-1">{{c.hostname}}</td>
-                    <td class="col-lg-1">{{c.startedAtMillis|date:dateFormat}}</td>
-                    <td class="col-lg-1">{{c.trulyDeadAfter}}</td>
-                    <td class="col-lg-1">{{c.collectorAge}}</td>
-                    <td class="col-lg-1 collector-age">{{c.countDown}}</td>
-                    <td class="col-lg-1">{{c.dataReceivedAtMillis|date:dateFormat}}</td>
-                    <td class="col-lg-1 collector-age">{{c.updateAge}}</td>
+                    <td class="col-lg-1">{{c.appName}}</td>
+                    <td class="col-lg-1">{{c.appVersion}}</td>
+                    <td class="col-lg-1">{{c.collectorStartedAtMillis|date:dateFormat}}</td>
+                    <td class="col-lg-1">{{c.collectorHostname}}</td>
+                    <td class="col-lg-1">{{c.collectorVersion}}</td>
+                    <td class="col-lg-1">{{c.collectorResolutionSeconds}}</td>
+                    <td class="col-lg-1">{{c.agentHostname}}</td>
+                    <td class="col-lg-1">{{c.agentVersion}}</td>
                 </tr>
                 </tbody>
             </table>

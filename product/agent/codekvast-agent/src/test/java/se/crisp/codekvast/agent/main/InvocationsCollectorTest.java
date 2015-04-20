@@ -95,7 +95,7 @@ public class InvocationsCollectorTest {
         invocationsCollector.put(jvmUuid1, now, "sig", -1L, null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testPutBeforeJvmStarted() throws Exception {
         invocationsCollector.put(jvmUuid1, now, "sig", now - 1L, null);
     }

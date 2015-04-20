@@ -55,8 +55,19 @@ public class InvocationRegistry {
         if (config == null) {
             InvocationRegistry.instance = new NoopInvocationRegistry();
         } else {
+            String version = InvocationRegistry.class.getPackage().getImplementationVersion();
+            if (version == null || version.trim().isEmpty()) {
+                version = "dev-vcsId";
+            }
+
+            int dash = version.lastIndexOf("-");
+            String collectorVersion = version.substring(0, dash);
+            String collectorVcsId = version.substring(dash + 1);
+
             InvocationRegistry.instance = new InvocationRegistry(config,
                                                                  Jvm.builder()
+                                                                    .collectorVersion(collectorVersion)
+                                                                    .collectorVcsId(collectorVcsId)
                                                                     .collectorConfig(config)
                                                                     .computerId(ComputerID.compute().toString())
                                                                     .hostName(getHostName())

@@ -71,12 +71,20 @@ public class JvmData {
 
     @NonNull
     @Size(max = Constraints.MAX_CODEKVAST_VERSION_LENGTH)
-    private String codekvastVersion;
+    private String agentVersion;
+
+    @NonNull
+    @Size(max = Constraints.MAX_CODEKVAST_VCS_ID_LENGTH)
+    private String agentVcsId;
+
+    @NonNull
+    @Size(max = Constraints.MAX_CODEKVAST_VERSION_LENGTH)
+    private String collectorVersion;
 
 
     @NonNull
     @Size(max = Constraints.MAX_CODEKVAST_VCS_ID_LENGTH)
-    private String codekvastVcsId;
+    private String collectorVcsId;
 
     private long startedAtMillis;
     private long dumpedAtMillis;

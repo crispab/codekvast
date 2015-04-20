@@ -1,5 +1,9 @@
 # Codekvast Agent Release Notes
 
+## 0.10.0
+
+1. Changed format of JvmData. Breaks compatibility between collector, agent and server.
+
 ## 0.9.5
 
 1. Bug fix in codekvast-agent: Signature.millisSinceJvmStart was not correct
