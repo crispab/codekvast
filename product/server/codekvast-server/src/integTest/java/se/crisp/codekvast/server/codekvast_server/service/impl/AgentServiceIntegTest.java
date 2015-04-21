@@ -109,7 +109,6 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
     public void testStoreInvocationData() throws Exception {
         agentService.storeJvmData("agent", createJvmData(now));
         assertEventsWithinMillis(1, 1000L);
-        events.clear();
 
         List<SignatureEntry> signatures = new ArrayList<>();
         signatures.add(new SignatureEntry("sig1", 0L, 0L, null));
@@ -120,13 +119,13 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
                                           .jvmUuid(JVM_UUID)
                                           .signatures(signatures).build();
 
+        events.clear();
         agentService.storeSignatureData(data);
 
-        assertEventsWithinMillis(3, 1000L);
-        assertThat(events, hasSize(3));
-        assertThat(events.get(0), is(instanceOf(CollectorStatusMessage.class)));
-        assertThat(events.get(1), is(instanceOf(InvocationDataReceivedEvent.class)));
-        assertThat(events.get(2), is(instanceOf(ApplicationStatisticsMessage.class)));
+        assertEventsWithinMillis(2, 1000L);
+        assertThat(events, hasSize(2));
+        assertThat(events.get(0), is(instanceOf(InvocationDataReceivedEvent.class)));
+        assertThat(events.get(1), is(instanceOf(ApplicationStatisticsMessage.class)));
     }
 
     private JvmData createJvmData(long dumpedAtMillis) {
