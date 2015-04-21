@@ -140,18 +140,24 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                 .update("INSERT INTO jvm_info(organisation_id, application_id, application_version, jvm_uuid, " +
                                 "agent_computer_id, agent_host_name, agent_upload_interval_seconds, agent_vcs_id, agent_version, " +
                                 "collector_computer_id, collector_host_name, collector_resolution_seconds, collector_vcs_id, " +
-                                "collector_version, method_visibility, started_at_millis, reported_at_millis)" +
-                                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                                "collector_version, method_visibility, started_at_millis, reported_at_millis, tags)" +
+                                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                         organisationId, appId, data.getAppVersion(), data.getJvmUuid(), data.getAgentComputerId(), data.getAgentHostName(),
                         data.getAgentUploadIntervalSeconds(), data.getAgentVcsId(), data.getAgentVersion(), data.getCollectorComputerId(),
                         data.getCollectorHostName(), data.getCollectorResolutionSeconds(), data.getCollectorVcsId(),
-                        data.getCollectorVersion(), data.getMethodVisibility(), data.getStartedAtMillis(), data.getDumpedAtMillis());
+                        data.getCollectorVersion(), data.getMethodVisibility(), data.getStartedAtMillis(), data.getDumpedAtMillis(),
+                        normalizeTags(data.getTags()));
 
         if (updated == 1) {
             log.debug("Stored JVM info for {} {}", data.getAppName(), data.getAppVersion());
         } else {
             log.warn("Cannot store JVM info {}", data);
         }
+    }
+
+    String normalizeTags(String tags) {
+        String normalizedTags = tags == null ? null : tags.trim();
+        return normalizedTags == null || normalizedTags.isEmpty() ? null : normalizedTags;
     }
 
     @Override

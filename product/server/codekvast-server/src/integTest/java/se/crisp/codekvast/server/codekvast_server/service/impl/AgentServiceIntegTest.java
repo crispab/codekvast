@@ -147,7 +147,7 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
                       .jvmUuid(JVM_UUID)
                       .methodVisibility("methodVisibility")
                       .startedAtMillis(startedAtMillis)
-                      .tags("")
+                      .tags("  ")
                       .build();
     }
 }
