@@ -77,7 +77,7 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
         assertThat(countRows("jvm_info WHERE jvm_uuid = ? AND started_at_millis = ? AND reported_at_millis = ? ", JVM_UUID, startedAtMillis,
                              dumpedAtMillis + 1000L), is(1));
 
-        assertEventsWithinMillis(4, 1000L);
+        assertEventsWithinMillis(4, 2000L);
 
         assertThat(events, hasSize(4));
         assertThat(events.get(0), is(instanceOf(ApplicationStatisticsMessage.class)));
@@ -108,7 +108,7 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
     @Test
     public void testStoreInvocationData() throws Exception {
         agentService.storeJvmData("agent", createJvmData(now));
-        assertEventsWithinMillis(1, 1000L);
+        assertEventsWithinMillis(1, 2000L);
 
         List<SignatureEntry> signatures = new ArrayList<>();
         signatures.add(new SignatureEntry("sig1", 0L, 0L, null));
@@ -122,7 +122,7 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
         events.clear();
         agentService.storeSignatureData(data);
 
-        assertEventsWithinMillis(2, 1000L);
+        assertEventsWithinMillis(2, 2000L);
         assertThat(events, hasSize(2));
         assertThat(events.get(0), is(instanceOf(InvocationDataReceivedEvent.class)));
         assertThat(events.get(1), is(instanceOf(ApplicationStatisticsMessage.class)));
