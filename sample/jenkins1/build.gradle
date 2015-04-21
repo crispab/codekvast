@@ -1,0 +1,7 @@
+ext.tomcatVersion = "7.0.61"
+ext.tomcatPort = "8081"
+ext.jenkinsVersion = "1.598"
+
+apply from: "$rootDir/gradle/sample-jenkins.gradle"
+
+
