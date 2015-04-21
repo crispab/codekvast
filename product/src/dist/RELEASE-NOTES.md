@@ -1,5 +1,9 @@
 # Codekvast Agent Release Notes
 
+## 0.10.1
+
+1. Added Redhat 6 startscript for codekvast-agent
+
 ## 0.10.0
 
 1. Changed format of JvmData. Breaks compatibility between collector, agent and server.
