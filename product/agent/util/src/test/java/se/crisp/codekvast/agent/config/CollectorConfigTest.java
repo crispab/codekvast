@@ -1,6 +1,7 @@
 package se.crisp.codekvast.agent.config;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
@@ -13,6 +14,17 @@ import static org.junit.Assert.*;
 
 public class CollectorConfigTest {
 
+    private CollectorConfig config1;
+    private File file1;
+
+    @Before
+    public void beforeTest() throws Exception {
+        config1 = CollectorConfig.createSampleCollectorConfig();
+        file1 = File.createTempFile("codekvast", ".conf");
+        file1.deleteOnExit();
+        config1.saveTo(file1);
+    }
+
     @After
     public void afterTest() throws Exception {
         System.clearProperty(CollectorConfigLocator.SYSPROP_OPTS);
@@ -20,26 +32,21 @@ public class CollectorConfigTest {
 
     @Test
     public void testSaveSampleConfigToFile() throws IOException {
-        CollectorConfig config1 = CollectorConfig.createSampleCollectorConfig();
-        File file = File.createTempFile("codekvast", ".conf");
-        file.deleteOnExit();
-        config1.saveTo(file);
-
-        CollectorConfig config2 = CollectorConfig.parseCollectorConfig(file.toURI(), null);
+        CollectorConfig config2 = CollectorConfig.parseCollectorConfig(file1.toURI(), null);
         assertEquals(config1, config2);
     }
 
     @Test
-    public void testParseConfigFileURIWithOverride() throws IOException, URISyntaxException {
-        CollectorConfig config1 = CollectorConfig.createSampleCollectorConfig();
-        File file = File.createTempFile("codekvast", ".conf");
-        file.deleteOnExit();
-        config1.saveTo(file);
-
-        CollectorConfig config2 = CollectorConfig.parseCollectorConfig(file.toURI(), "verbose=true");
+    public void testParseConfigFileWithOverride() throws IOException, URISyntaxException {
+        CollectorConfig config2 = CollectorConfig.parseCollectorConfig(file1.toURI(), "verbose=true");
         assertNotEquals(config1, config2);
         assertThat(config1.isVerbose(), is(false));
         assertThat(config2.isVerbose(), is(true));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseConfigFileWithIllegalAppNameOverride() throws IOException, URISyntaxException {
+        CollectorConfig.parseCollectorConfig(file1.toURI(), "appName=.illegalAppName");
     }
 
     @Test

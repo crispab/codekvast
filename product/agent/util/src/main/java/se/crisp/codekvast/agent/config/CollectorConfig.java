@@ -143,7 +143,7 @@ public class CollectorConfig implements CodekvastConfig {
 
     public static CollectorConfig buildCollectorConfig(Properties props) {
         return CollectorConfig.builder()
-                              .appName(ConfigUtils.getMandatoryStringValue(props, "appName"))
+                              .appName(validateAppName(ConfigUtils.getMandatoryStringValue(props, "appName")))
                               .appVersion(ConfigUtils.getOptionalStringValue(props, "appVersion", UNSPECIFIED_VERSION))
                               .aspectjOptions(ConfigUtils.getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
                               .clobberAopXml(ConfigUtils.getOptionalBooleanValue(props, "clobberAopXml", DEFAULT_CLOBBER_AOP_XML))
@@ -157,6 +157,13 @@ public class CollectorConfig implements CodekvastConfig {
                               .tags(ConfigUtils.getOptionalStringValue(props, "tags", ""))
                               .verbose(getVerboseValue(props))
                               .build();
+    }
+
+    private static String validateAppName(String appName) {
+        if (appName.startsWith(".")) {
+            throw new IllegalArgumentException("appName must not start with '.': " + appName);
+        }
+        return appName;
     }
 
     private static boolean getVerboseValue(Properties props) {
