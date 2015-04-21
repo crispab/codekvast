@@ -24,7 +24,8 @@ public class ApplicationStatisticsDisplay {
     long firstDataReceivedAtMillis;
     long lastDataReceivedAtMillis;
     long fullUsageCycleEndsAtMillis;
-    Integer numTrulyDeadSignatures;
+    boolean fullUsageCycleElapsed;
+    int numTrulyDeadSignatures;
     Integer percentTrulyDeadSignatures;
     Integer percentNeverInvokedSignatures;
     Integer percentInvokedSignatures;

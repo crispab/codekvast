@@ -3,22 +3,35 @@
         <h4 class="modal-title" id="settingsLabel">Settings</h4>
     </div>
     <div class="modal-body">
-        <form class="form form-inline">
+        <form class="form-horizontal">
             <fieldset>
-                <legend class="smaller">Application Settings</legend>
-                <div class="input-group" ng-repeat="a in collectorStatus.applications">
-                    <span class="input-group-addon">Usage Cycle for {{a.name}}</span>
-                    <input class="form-control col-sm-1" type="number" min="0" step="{{a.usageCycleStep}}" ng-model="a.usageCycleValue"/>
-                    <div class="input-group-btn">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{a.usageCycleUnit}}
-                            <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                            <li><a href="#" ng-click="setUsageCycleUnit(a, 0)">seconds</a></li>
-                            <li><a href="#" ng-click="setUsageCycleUnit(a, 1)">minutes</a></li>
-                            <li><a href="#" ng-click="setUsageCycleUnit(a, 2)">hours</a></li>
-                            <li><a href="#" ng-click="setUsageCycleUnit(a, 3)">days</a></li>
-                        </ul>
+                <legend>Application Usage Cycles</legend>
+                <div class="form-group" ng-repeat="a in collectorStatus.applications">
+                    <label for="app-{{$index}}" class="col-sm-4 control-label">{{a.name}}</label>
+
+                    <div class="col-sm-5">
+                        <div class="input-group">
+                            <input id="app-{{$index}}"
+                                   class="form-control"
+                                   type="number"
+                                   min="1"
+                                   step="{{a.usageCycleStep}}"
+                                   ng-model="a.usageCycleValue"/>
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                    {{a.usageCycleUnit}}
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                    <li><a href="#" ng-click="setUnit(a, 'seconds')">seconds</a></li>
+                                    <li><a href="#" ng-click="setUnit(a, 'minutes')">minutes</a></li>
+                                    <li><a href="#" ng-click="setUnit(a, 'hours')">hours</a></li>
+                                    <li><a href="#" ng-click="setUnit(a, 'days')">days</a></li>
+                                    <li><a href="#" ng-click="setUnit(a, 'months')">months</a></li>
+                                    <li><a href="#" ng-click="setUnit(a, 'years')">years</a></li>
+                                </ul>
+                            </span>
+                        </div>
                     </div>
                 </div>
             </fieldset>

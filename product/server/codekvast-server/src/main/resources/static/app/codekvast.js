@@ -242,34 +242,41 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
     .controller('SettingsController', ['$scope', '$modalInstance', 'StompService', 'DateService', function ($scope, $modalInstance, StompService, DateService) {
         $scope.collectorStatus = StompService.getLastEvent('collectorStatus');
 
-        $scope.setUsageCycleUnit = function (a, code) {
+        $scope.setUnit = function (a, code) {
             if (!a.usageCycleValue) {
                 a.usageCycleValue = a.usageCycleSeconds;
                 a.usageCycleMultiplier = 1;
             }
+            a.usageCycleUnit = code;
             switch (code) {
-                case 0:
-                    a.usageCycleValue = a.usageCycleValue * a.usageCycleMultiplier;
-                    a.usageCycleUnit = 'seconds';
-                    a.usageCycleMultiplier = 6;
+                case 'seconds':
+                    a.usageCycleValue = Math.max(1, Math.floor(a.usageCycleValue * a.usageCycleMultiplier));
+                    a.usageCycleMultiplier = 1;
                     a.usageCycleStep = 15;
                     break;
-                case 1:
-                    a.usageCycleValue = a.usageCycleValue * a.usageCycleMultiplier / 60;
-                    a.usageCycleUnit = 'minutes';
+                case 'minutes':
+                    a.usageCycleValue = Math.max(1, Math.floor(a.usageCycleValue * a.usageCycleMultiplier / 60));
                     a.usageCycleMultiplier = 60;
                     a.usageCycleStep = 10;
                     break;
-                case 2:
-                    a.usageCycleValue = a.usageCycleValue * a.usageCycleMultiplier / 60 / 60;
-                    a.usageCycleUnit = 'hours';
+                case 'hours':
+                    a.usageCycleValue = Math.max(1, Math.floor(a.usageCycleValue * a.usageCycleMultiplier / 60 / 60));
                     a.usageCycleMultiplier = 60 * 60;
                     a.usageCycleStep = 1;
                     break;
-                case 3:
-                    a.usageCycleValue = a.usageCycleValue * a.usageCycleMultiplier / 60 / 60 / 24;
-                    a.usageCycleUnit = 'days';
+                case 'days':
+                    a.usageCycleValue = Math.max(1, Math.floor(a.usageCycleValue * a.usageCycleMultiplier / 60 / 60 / 24));
                     a.usageCycleMultiplier = 60 * 60 * 24;
+                    a.usageCycleStep = 1;
+                    break;
+                case 'months':
+                    a.usageCycleValue = Math.max(1, Math.floor(a.usageCycleValue * a.usageCycleMultiplier / 60 / 60 / 24 / 30));
+                    a.usageCycleMultiplier = 60 * 60 * 24 * 30;
+                    a.usageCycleStep = 1;
+                    break;
+                case 'years':
+                    a.usageCycleValue = Math.max(1, Math.floor(a.usageCycleValue * a.usageCycleMultiplier / 60 / 60 / 24 / 365));
+                    a.usageCycleMultiplier = 60 * 60 * 24 * 365;
                     a.usageCycleStep = 1;
                     break;
             }
@@ -280,13 +287,13 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                 var a = $scope.collectorStatus.applications[i];
                 var v = DateService.getAgeSince(a.usageCycleSeconds * 1000, 0);
                 if (v.endsWith('d')) {
-                    $scope.setUsageCycleUnit(a, 3);
+                    $scope.setUnit(a, 'days');
                 } else if (v.endsWith('h')) {
-                    $scope.setUsageCycleUnit(a, 2);
+                    $scope.setUnit(a, 'hours');
                 } else if (v.endsWith('m')) {
-                    $scope.setUsageCycleUnit(a, 1);
+                    $scope.setUnit(a, 'minutes');
                 } else {
-                    $scope.setUsageCycleUnit(a, 0);
+                    $scope.setUnit(a, 'seconds');
                 }
             }
         }

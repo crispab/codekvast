@@ -348,15 +348,10 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
             long fullUsageCycleEndsAtMillis = firstDataReceivedAtMillis + usageCycleSeconds * 1000L;
             int numSignatures = rs.getInt(4);
             int numInvokedSignatures = rs.getInt(6);
-            Integer numTrulyDead = rs.getInt(8);
+            int numTrulyDead = rs.getInt(8);
             Integer percentDeadSignatures = numSignatures == 0 ? null : Math.round(numTrulyDead * 100f / numSignatures);
             Integer percentInvokedSignatures = numSignatures == 0 ? null : Math.round(numInvokedSignatures * 100f / numSignatures);
             Integer percentNeverInvokedSignatures = percentInvokedSignatures == null ? null : 100 - percentInvokedSignatures;
-
-            if (fullUsageCycleEndsAtMillis > System.currentTimeMillis()) {
-                numTrulyDead = null;
-                percentDeadSignatures = null;
-            }
 
             return ApplicationStatisticsDisplay.builder()
                                                .name(rs.getString(1))
@@ -373,6 +368,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                                .lastDataReceivedAtMillis(rs.getLong(10))
                                                .fullUsageCycleEndsAtMillis(fullUsageCycleEndsAtMillis)
                                                .percentTrulyDeadSignatures(percentDeadSignatures)
+                                               .fullUsageCycleElapsed(fullUsageCycleEndsAtMillis > System.currentTimeMillis())
                                                .build();
         }
     }
