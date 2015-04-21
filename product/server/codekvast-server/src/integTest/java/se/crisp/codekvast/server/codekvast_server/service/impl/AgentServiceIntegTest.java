@@ -122,10 +122,11 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
 
         agentService.storeSignatureData(data);
 
-        assertEventsWithinMillis(2, 1000L);
-        assertThat(events, hasSize(2));
-        assertThat(events.get(0), is(instanceOf(InvocationDataReceivedEvent.class)));
-        assertThat(events.get(1), is(instanceOf(ApplicationStatisticsMessage.class)));
+        assertEventsWithinMillis(3, 1000L);
+        assertThat(events, hasSize(3));
+        assertThat(events.get(0), is(instanceOf(CollectorStatusMessage.class)));
+        assertThat(events.get(1), is(instanceOf(InvocationDataReceivedEvent.class)));
+        assertThat(events.get(2), is(instanceOf(ApplicationStatisticsMessage.class)));
     }
 
     private JvmData createJvmData(long dumpedAtMillis) {
