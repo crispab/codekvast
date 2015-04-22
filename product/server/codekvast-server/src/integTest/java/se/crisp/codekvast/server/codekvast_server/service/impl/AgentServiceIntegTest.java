@@ -34,7 +34,7 @@ import static org.junit.Assert.assertThat;
 /**
  * @author olle.hallin@crisp.se
  */
-@SuppressWarnings("CastToConcreteClass")
+@SuppressWarnings({"CastToConcreteClass", "OverlyCoupledClass"})
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {DataSourceAutoConfiguration.class, DatabaseConfig.class, EventBusConfig.class,
                                  AgentDAOImpl.class, UserDAOImpl.class, CodekvastSettings.class,
