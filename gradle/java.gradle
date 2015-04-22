@@ -1,0 +1,9 @@
+apply plugin: 'java'
+jar {
+    manifest {
+        attributes(
+                "Implementation-Title": archivesBaseName,
+                "Implementation-Version": codekvastDisplayVersion
+        )
+    }
+}

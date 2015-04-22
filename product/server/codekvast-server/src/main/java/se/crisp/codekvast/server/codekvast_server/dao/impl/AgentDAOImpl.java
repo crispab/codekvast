@@ -184,6 +184,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                            "jvm.collector_version, " +
                                            "jvm.collector_vcs_id, " +
                                            "MIN(jvm.started_at_millis), " +
+                                           "MAX(jvm.reported_at_millis), " +
                                            "jvm.collector_resolution_seconds, " +
                                            "jvm.method_visibility " +
                                            "FROM applications a, jvm_info jvm " +
@@ -395,8 +396,9 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                    .collectorHostname(rs.getString(7))
                                    .collectorVersion(String.format("%s.%s", rs.getString(8), rs.getString(9)))
                                    .collectorStartedAtMillis(rs.getLong(10))
-                                   .collectorResolutionSeconds(rs.getInt(11))
-                                   .methodVisibility(rs.getString(12))
+                                   .dataReceivedAtMillis(rs.getLong(11))
+                                   .collectorResolutionSeconds(rs.getInt(12))
+                                   .methodVisibility(rs.getString(13))
                                    .build();
         }
     }

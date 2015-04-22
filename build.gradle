@@ -1,3 +1,11 @@
+buildscript {
+    repositories { jcenter() }
+    dependencies {
+        classpath 'org.ajoberstar:grgit:1.1.0'
+    }
+}
+import org.ajoberstar.grgit.Grgit
+
 task wrapper(type: Wrapper) {
     gradleVersion "2.2.1"
 }
@@ -9,6 +17,17 @@ subprojects {
         repositories { jcenter() }
     }
     apply from: "$rootDir/gradle/libs.gradle"
+
+    ext.gitHead = Grgit.open("$rootDir").head()
+
+    ext.gitVersionTokens = [
+            'git.id'          : "$gitHead.id"[0..6].toString(),
+            'git.committer'   : "$gitHead.committer.name <$gitHead.committer.email>".toString(),
+            'git.shortMessage': "$gitHead.shortMessage".toString(),
+            'git.time'        : new Date(gitHead.time * 1000L).format('yyyy-MM-dd HH:mm:ss'),
+    ]
+    ext.gitId = "$gitHead.id"[0..6].toString()
+    ext.codekvastDisplayVersion = "${codekvastVersion}-${gitId}".toString()
 
     repositories { jcenter() }
 

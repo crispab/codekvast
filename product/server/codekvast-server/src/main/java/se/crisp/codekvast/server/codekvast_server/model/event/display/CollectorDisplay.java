@@ -29,4 +29,5 @@ public class CollectorDisplay {
     int collectorResolutionSeconds;
     @NonNull
     String methodVisibility;
+    long dataReceivedAtMillis;
 }

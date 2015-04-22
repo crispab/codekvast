@@ -2,10 +2,11 @@ package se.crisp.codekvast.server.codekvast_server.controller;
 
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
+
+import javax.inject.Inject;
 
 /**
  * A base class for traditional HTTP controllers which render Thymeleaf views.
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 @Slf4j
 public abstract class AbstractThymeleafController {
 
-    @Autowired
+    @Inject
     @NonNull
     @Value("${spring.thymeleaf.cache}")
     private Boolean thymeleafCache;

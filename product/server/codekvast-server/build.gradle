@@ -97,10 +97,11 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 processResources {
     from(sourceSets.main.resources.srcDirs) {
-        include '**/default.properties'
-        filter(ReplaceTokens, tokens: gitVersionTokens + ['gradle.name'       : project.name,
+        include '**/application.properties'
+        filter(ReplaceTokens, tokens: gitVersionTokens + ['gradle.name'          : archivesBaseName,
                                                           'gradle.description': project.description,
-                                                          'gradle.version'    : project.version]
+                                                          'gradle.version'       : project.version,
+                                                          'gradle.displayVersion': codekvastDisplayVersion]
         )
     }
 }

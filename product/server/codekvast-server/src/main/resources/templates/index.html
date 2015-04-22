@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" ng-app="codekvastApp" ng-strict-di="true">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:inline="text" ng-app="codekvastApp" ng-strict-di="true">
 <head>
     <th:block th:include="fragments :: #head_boilerplate"/>
     <th:block th:include="fragments :: #head_disable_caching"/>
@@ -45,6 +45,12 @@
 
     <div ng-view="true"></div>
 </div>
+
+<nav class="navbar navbar-default navbar-fixed-bottom">
+    <p class="text-right">
+        <small>Codekvast Server v[[${@codekvastSettings.getDisplayVersion()}]] ([[${@codekvastSettings.getCommitDate()}]])</small>
+    </p>
+</nav>
 
 <th:block th:include="fragments :: #scripts_twitter_bootstrap"/>
 <th:block th:include="fragments :: #scripts_angularjs"/>

@@ -318,7 +318,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
     .controller('StatisticsController', ['$scope', '$interval', 'DateService', 'StompService', function ($scope, $interval, DateService, StompService) {
         $scope.applicationStatistics = StompService.getLastEvent('applicationStatistics');
-        $scope.dateFormat = 'short';
+        $scope.dateFormat = 'yyyy-MM-dd HH:mm:ss';
 
         $scope.$on('applicationStatistics', function (event, data) {
             $scope.applicationStatistics = data;
@@ -348,7 +348,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
     .controller('CollectorController', ['$scope', '$interval', 'DateService', 'StompService', function ($scope, $interval, DateService, StompService) {
         $scope.collectorStatus = StompService.getLastEvent('collectorStatus');
         $scope.collectorStatusOpen = true;
-        $scope.dateFormat = 'short';
+        $scope.dateFormat = 'yyyy-MM-dd HH:mm:ss';
 
         $scope.$on('collectorStatus', function (event, data) {
             $scope.collectorStatus = data;
@@ -366,6 +366,8 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                 for (var i = 0, len = $scope.collectorStatus.collectors.length; i < len; i++) {
                     var c = $scope.collectorStatus.collectors[i];
                     c.trulyDeadAfter = DateService.getAgeSince(c.usageCycleSeconds * 1000, 0);
+                    c.collectorResolution = DateService.getAgeSince(c.collectorResolutionSeconds * 1000, 0);
+                    c.agentUploadInterval = DateService.getAgeSince(c.agentUploadIntervalSeconds * 1000, 0);
                     c.collectorAge = DateService.getAge(c.startedAtMillis);
                     c.countDown = DateService.getAgeSince(c.startedAtMillis + c.usageCycleSeconds * 1000, Date.now());
                     c.dataAge = DateService.getAge(c.dataReceivedAtMillis);
@@ -383,6 +385,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         $scope.newestSignaturesOpen = false;
         $scope.trulyDeadSignatures = undefined;
         $scope.trulyDeadSignaturesOpen = false;
+        $scope.dateFormat = 'yyyy-MM-dd HH:mm:ss';
 
         $scope.filter = {
             minAgeValue: 30,

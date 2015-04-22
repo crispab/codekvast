@@ -1,6 +1,8 @@
-apply plugin: 'java'
+apply from: "$rootDir/gradle/java.gradle"
+
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
+
 tasks.withType(JavaCompile) {
     options.bootClasspath = "$rootDir/tools/java-6-openjdk-amd64/jre/lib/rt.jar"
 }

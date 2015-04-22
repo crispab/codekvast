@@ -34,7 +34,7 @@ dependencies {
 processResources {
     from(sourceSets.main.resources.srcDirs) {
         include '**/application.properties'
-        filter(ReplaceTokens, tokens: gitVersionTokens + ['gradle.name'       : project.name,
+        filter(ReplaceTokens, tokens: gitVersionTokens + ['gradle.name': archivesBaseName,
                                                           'gradle.description': project.description,
                                                           'gradle.version'    : project.version]
         )

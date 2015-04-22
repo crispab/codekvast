@@ -44,7 +44,8 @@ shadowJar {
     manifest {
         attributes(
                 "Premain-Class": "se.crisp.codekvast.agent.collector.CodekvastCollector",
-                "Implementation-Version": "${version}-${gitVersionTokens['git.id']}"
+                "Implementation-Title": archivesBaseName,
+                "Implementation-Version": codekvastDisplayVersion
         )
     }
     dependencies {

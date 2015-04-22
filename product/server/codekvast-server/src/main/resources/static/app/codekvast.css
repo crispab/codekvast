@@ -8,14 +8,6 @@
     cursor: pointer;
 }
 
-.collector-age {
-    text-align: left;
-}
-
-.signature-invoked-at {
-    text-align: center;
-}
-
-.status-panel td {
-    padding-left: 1em;
+body {
+    padding-bottom: 70px;
 }

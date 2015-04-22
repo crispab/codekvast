@@ -13,28 +13,30 @@
                 <tr>
                     <th class="col-lg-1" title="Which application?">Application</th>
                     <th class="col-lg-1" title="Which version of the application?">Version</th>
-                    <th class="col-lg-1" title="Since when have Codekvast been attached to the application?">Collector Started At</th>
+                    <th class="col-lg-2" title="Since when have Codekvast been attached to the application?">Collector Started</th>
                     <th class="col-lg-1" title="In which host is the application executing?">Collector Host</th>
                     <th class="col-lg-1" title="Which version of the collector is used?">Collector Version</th>
-                    <th class="col-lg-1" title="What is the resolution of the collector?">Collector Resolution Seconds</th>
+                    <th class="col-lg-1" title="What is the resolution of the collector?">Collector Resolution</th>
                     <th class="col-lg-1" title="In which host is the agent executing?">Agent Host</th>
                     <th class="col-lg-1" title="Which version of the agent is used?">Agent Version</th>
-                    <th class="col-lg-1" title="How often is the agent uploading collected data?">Agent Upload Interval Seconds</th>
+                    <th class="col-lg-1" title="How often is the agent uploading collected data?">Agent Upload Interval</th>
                     <th class="col-lg-1" title="Which methods are tracked?">Method Visibility</th>
+                    <th class="col-lg-1" title="How old is the data?">Data Age</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr ng-repeat="c in collectorStatus.collectors">
                     <td class="col-lg-1">{{c.appName}}</td>
                     <td class="col-lg-1">{{c.appVersion}}</td>
-                    <td class="col-lg-1">{{c.collectorStartedAtMillis|date:dateFormat}}</td>
+                    <td class="col-lg-2">{{c.collectorStartedAtMillis|date:dateFormat}}</td>
                     <td class="col-lg-1">{{c.collectorHostname}}</td>
                     <td class="col-lg-1">{{c.collectorVersion}}</td>
-                    <td class="col-lg-1">{{c.collectorResolutionSeconds}}</td>
+                    <td class="col-lg-1">{{c.collectorResolution}}</td>
                     <td class="col-lg-1">{{c.agentHostname}}</td>
                     <td class="col-lg-1">{{c.agentVersion}}</td>
-                    <td class="col-lg-1">{{c.agentUploadIntervalSeconds}}</td>
+                    <td class="col-lg-1">{{c.agentUploadInterval}}</td>
                     <td class="col-lg-1">{{c.methodVisibility}}</td>
+                    <td class="col-lg-1">{{c.dataAge}}</td>
                 </tr>
                 </tbody>
             </table>
@@ -53,15 +55,15 @@
             <table class="table table-striped table-hover table-condensed">
                 <thead>
                 <tr class="row">
-                    <th class="col-lg-9 signature-name">Name</th>
-                    <th class="col-lg-2 signature-invoked-at">Invoked&nbsp;At</th>
+                    <th class="col-lg-9">Name</th>
+                    <th class="col-lg-2">Collected In Interval</th>
                 </tr>
                 </thead>
 
                 <tbody>
                 <tr class="row" ng-repeat="s in newestSignatures">
-                    <td class="col-lg-9 signature-name">{{::s.name}}</td>
-                    <td class="col-lg-2 signature-invoked-at">{{::s.invokedAtMillis | invokedAtDate:'short'}}</td>
+                    <td class="col-lg-9">{{::s.name}}</td>
+                    <td class="col-lg-2">{{::s.invokedAtMillis | invokedAtDate:dateFormat}}</td>
                 </tr>
                 </tbody>
             </table>

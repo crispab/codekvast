@@ -8,22 +8,10 @@ plugins {
     id 'com.jfrog.bintray' version '1.1'
     id 'com.bmuschko.vagrant' version '2.0'
     id 'org.hidetake.ssh' version '0.4.5'
-    id "org.ajoberstar.grgit-release" version "0.10.0"
 }
 
-import org.ajoberstar.grgit.Grgit
+version = codekvastVersion
 
-import java.text.SimpleDateFormat
-
-version = "0.10.1"
-
-ext.gitCommit = Grgit.open("$rootDir").log(maxCommits: 1)[0]
-ext.gitVersionTokens = [
-        'git.id': "$gitCommit.id"[0..6].toString(),
-        'git.committer'   : "$gitCommit.committer.name <$gitCommit.committer.email>".toString(),
-        'git.shortMessage': "$gitCommit.shortMessage".toString(),
-        'git.time'        : "${new SimpleDateFormat('yyyy-MM-dd HH:mm:ss').format(new Date(gitCommit.time * 1000L))}".toString(),
-]
 ext.bintrayUserOrg = 'crisp'
 ext.bintrayRepo = 'codekvast'
 ext.bintrayDownloadPrefix = "https://dl.bintray.com/$bintrayUserOrg/$bintrayRepo"
