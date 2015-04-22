@@ -4,6 +4,7 @@
 
 1. Added Data Age to collectors.html
 1. Added version info to codekvast-server web page footer
+1. Added progress bar to statistics Usage Cycle column
 
 ## 0.10.1
 

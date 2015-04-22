@@ -331,6 +331,10 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                     var a = $scope.applicationStatistics.applications[i];
                     a.usageCycle = DateService.getAgeSince(a.usageCycleSeconds * 1000, 0);
                     a.timeToFullUsageCycle = DateService.getAgeSince(a.firstDataReceivedAtMillis + a.usageCycleSeconds * 1000, Date.now());
+                    a.inUseSeconds = (Date.now() - a.firstDataReceivedAtMillis) / 1000;
+                    a.inUse = DateService.getAgeSince(a.inUseSeconds * 1000, 0);
+                    a.percentOfUsageCycle = Math.floor(a.inUseSeconds * 100 / a.usageCycleSeconds);
+                    a.usageCycleProgressType = a.percentOfUsageCycle < 10 ? 'danger' : 'warning';
                     a.dataAge = DateService.getAge(a.lastDataReceivedAtMillis);
                 }
             }

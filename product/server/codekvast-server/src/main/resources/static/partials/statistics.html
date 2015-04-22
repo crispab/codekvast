@@ -18,15 +18,14 @@
                 <tr>
                     <th class="col-lg-1" title="The name of the application, as reported by the collector">Application</th>
                     <th class="col-lg-1" title="The version of the application">Version</th>
-                    <th class="col-lg-1"
+                    <th class="col-lg-2"
                         title="When this version of the application was started for the first time with Codekvast attached">
                         Collection Started
                     </th>
                     <th class="col-lg-1" title="After this many days code that has not been invoked can be considered truly dead">Usage
                                                                                                                                   Cycle
                     </th>
-                    <th class="col-lg-1" title="The time to wait before one can start identifying truly dead code">Time to full Usage
-                                                                                                                   Cycle
+                    <th class="col-lg-1" title="The time to wait before one can start identifying truly dead code">Usage Progress
                     </th>
                     <th class="col-lg-1" title="The total number of signatures in this version"># Signatures</th>
                     <th class="col-lg-1" title="Number of signatures that have never been invoked"># Never Invoked Signatures</th>
@@ -41,9 +40,22 @@
                 <tr ng-repeat="a in applicationStatistics.applications">
                     <td class="col-lg-1">{{a.name}}</td>
                     <td class="col-lg-1">{{a.version}}</td>
-                    <td class="col-lg-1">{{a.firstDataReceivedAtMillis|date:dateFormat}}</td>
+                    <td class="col-lg-2">{{a.firstDataReceivedAtMillis|date:dateFormat}}</td>
                     <td class="col-lg-1">{{a.usageCycle}}</td>
-                    <td class="col-lg-1">{{a.timeToFullUsageCycle}}</td>
+                    <td class="col-lg-1">
+                        <progressbar ng-hide="a.fullUsageCycleElapsed"
+                                     tooltip="{{a.timeToFullUsageCycle}} to full usage cycle"
+                                     value="a.percentOfUsageCycle"
+                                     type="{{a.usageCycleProgressType}}">
+                            <i style="color: black" ng-show="a.percentOfUsageCycle >= 10">{{a.percentOfUsageCycle}}%</i></progressbar>
+                        <progress ng-show="a.fullUsageCycleElapsed" max="a.inUseSeconds">
+                            <bar tooltip="This is the time before the full usage cycle {{a.usageCycle}}"
+                                 type="warning"
+                                 value="a.usageCycleSeconds"></bar>
+                            <bar tooltip="In use for {{a.inUse}}" type="success" value="a.inUseSeconds - a.usageCycleSeconds">
+                                <i ng-show="a.percentOfUsageCycle > 120">{{a.percentOfUsageCycle}}%</i></bar>
+                        </progress>
+                    </td>
                     <td class="col-lg-1">{{a.numSignatures}}</td>
                     <td class="col-lg-1">{{a.numNeverInvokedSignatures}}</td>
                     <td class="col-lg-1">{{a.percentNeverInvokedSignatures}}</td>

@@ -369,7 +369,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                                .lastDataReceivedAtMillis(rs.getLong(10))
                                                .fullUsageCycleEndsAtMillis(fullUsageCycleEndsAtMillis)
                                                .percentTrulyDeadSignatures(percentDeadSignatures)
-                                               .fullUsageCycleElapsed(fullUsageCycleEndsAtMillis > System.currentTimeMillis())
+                                               .fullUsageCycleElapsed(fullUsageCycleEndsAtMillis < System.currentTimeMillis())
                                                .build();
         }
     }
