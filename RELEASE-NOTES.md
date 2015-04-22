@@ -1,4 +1,9 @@
-# Codekvast Agent Release Notes
+# Codekvast Release Notes
+
+## 0.10.2
+
+1. Added Data Age to collectors.html
+1. Added version info to codekvast-server web page footer
 
 ## 0.10.1
 

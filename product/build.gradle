@@ -34,7 +34,7 @@ distributions {
                 include "**.adoc"
                 into "doc"
             }
-            from file("src/dist/RELEASE-NOTES.md")
+            from file("$rootDir/RELEASE-NOTES.md")
 
             // from tasks.getByPath(":product:agent:codekvast-agent:javadocJar"), { into "src" }
             // from tasks.getByPath(":product:agent:codekvast-agent:sourcesJar"), { into "src" }
@@ -45,7 +45,7 @@ distributions {
         baseName = 'codekvast-server'
         contents {
             from tasks.getByPath(":product:server:codekvast-server:installDist")
-            from file("src/dist/RELEASE-NOTES.md")
+            from file("$rootDir/RELEASE-NOTES.md")
         }
     }
 
