@@ -11,3 +11,7 @@
 body {
     padding-bottom: 70px;
 }
+
+.codekvast-footer {
+    min-height: 0px;
+}

@@ -17,13 +17,13 @@
         </triggeringPolicy>
 
         <encoder>
-            <pattern>%date %level %logger.%method\(\) [%line] %msg%n</pattern>
+            <pattern>%date %level %logger.%method\(\) [%line] %m%n%rootException</pattern>
         </encoder>
     </appender>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%date %level %logger.%method\(\) [%line] %msg%n</pattern>
+            <pattern>%date %level %logger.%method\(\) [%line] %m%n%rootException</pattern>
         </encoder>
     </appender>
 
