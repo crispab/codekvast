@@ -16,8 +16,8 @@ dependencies {
     testCompile junit
     testCompile mockito
 
-    testRuntime "org.webjars:sockjs-client:0.3.4"
-    testRuntime "org.webjars:d3js:3.5.3"
+    testRuntime "org.webjars:sockjs-client:0.3.4-1"
+    testRuntime "org.webjars:d3js:3.5.5"
 }
 
 bootRepackage {
