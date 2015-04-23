@@ -15,13 +15,12 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                 templateUrl: 'partials/statistics.html'
             });
 
-
         $locationProvider.html5Mode(true);
     }])
 
     .service('DateService', function () {
-        this.getAgeSince = function (now, timestamp) {
-            var age = now - timestamp;
+        var getDurationBetween = function (now, past) {
+            var age = Math.abs(now - past);
             var second = 1000;
             var minute = second * 60;
             var hour = minute * 60;
@@ -51,8 +50,12 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             return result.trim();
         };
 
-        this.getAge = function (timestamp) {
-            return this.getAgeSince(Date.now(), timestamp);
+        this.prettyAge = function (timestampMillis) {
+            return getDurationBetween(timestampMillis, Date.now());
+        };
+
+        this.prettyDuration = function(timestampMillis) {
+            return getDurationBetween(timestampMillis, 0);
         }
     })
 
@@ -138,6 +141,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                 socket.stomp.subscribe("/user/queue/application/statistics", onApplicationStatisticsMessage);
                 socket.stomp.subscribe("/user/queue/collector/status", onCollectorStatusMessage);
                 socket.stomp.subscribe("/user/queue/signature/data", onSignatureDataMessage);
+
                 $http.get('/api/signatures')
                     .success(function (data) {
                         broadcast('jumbotronMessage', null);
@@ -285,7 +289,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         if ($scope.collectorStatus) {
             for (var i = 0, len = $scope.collectorStatus.applications.length; i < len; i++) {
                 var a = $scope.collectorStatus.applications[i];
-                var v = DateService.getAgeSince(a.usageCycleSeconds * 1000, 0);
+                var v = DateService.prettyDuration(a.usageCycleSeconds * 1000);
                 if (v.endsWith('d')) {
                     $scope.setUnit(a, 'days');
                 } else if (v.endsWith('h')) {
@@ -322,31 +326,39 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
         $scope.$on('applicationStatistics', function (event, data) {
             $scope.applicationStatistics = data;
-            $scope.updateAges();
+            $scope.updateModel();
         });
 
-        $scope.updateAges = function () {
+        $scope.updateModel = function () {
             if ($scope.applicationStatistics) {
                 for (var i = 0, len = $scope.applicationStatistics.applications.length; i < len; i++) {
                     var a = $scope.applicationStatistics.applications[i];
-                    a.usageCycle = DateService.getAgeSince(a.usageCycleSeconds * 1000, 0);
-                    a.timeToFullUsageCycle = DateService.getAgeSince(a.firstDataReceivedAtMillis + a.usageCycleSeconds * 1000, Date.now());
-                    a.inUseSeconds = (Date.now() - a.firstDataReceivedAtMillis) / 1000;
-                    a.inUse = DateService.getAgeSince(a.inUseSeconds * 1000, 0);
+                    a.usageCycle = DateService.prettyDuration(a.usageCycleSeconds * 1000);
+                    a.timeToFullUsageCycle = DateService.prettyAge(a.firstDataReceivedAtMillis + a.usageCycleSeconds * 1000);
+                    a.collectorAge = DateService.prettyAge(a.firstDataReceivedAtMillis);
+                    a.inUseSeconds = Math.round((Date.now() - a.firstDataReceivedAtMillis) / 1000);
+                    a.inUse = DateService.prettyDuration(a.inUseSeconds * 1000);
                     a.percentOfUsageCycle = Math.floor(a.inUseSeconds * 100 / a.usageCycleSeconds);
                     a.usageCycleProgressType = a.percentOfUsageCycle < 10 ? 'danger' : 'warning';
-                    a.dataAge = DateService.getAge(a.lastDataReceivedAtMillis);
+                    if (a.fullUsageCycleElapsed) {
+                        a.overuseSeconds = a.inUseSeconds - a.usageCycleSeconds;
+                        a.trulyDeadTooltip = "This is truly dead code";
+                    } else {
+                        a.numTrulyDeadSignatures = "n/a"
+                        a.percentTrulyDeadSignatures = "n/a"
+                        a.trulyDeadTooltip = "Be patient for another " + a.timeToFullUsageCycle + " ...";
+                    }
+                    a.dataAge = DateService.prettyAge(a.lastDataReceivedAtMillis);
                 }
             }
         }
 
         $scope.$on('stompDisconnected', function (event, message) {
             $scope.applicationStatistics = undefined;
-
-            $interval.cancel($scope.updateAgeInterval);
+            $interval.cancel($scope.updateModelInterval);
         });
 
-        $scope.updateAgeInterval = $interval($scope.updateAges, 500, false);
+        $scope.updateModelInterval = $interval($scope.updateModel, 500, false);
     }])
 
     .controller('CollectorController', ['$scope', '$interval', 'DateService', 'StompService', function ($scope, $interval, DateService, StompService) {
@@ -356,30 +368,28 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
         $scope.$on('collectorStatus', function (event, data) {
             $scope.collectorStatus = data;
-            $scope.updateAges();
+            $scope.updateModel();
         });
 
         $scope.$on('stompDisconnected', function (event, message) {
             $scope.collectorStatus = undefined;
 
-            $interval.cancel($scope.updateAgeInterval);
+            $interval.cancel($scope.updateModelInterval);
         });
 
-        $scope.updateAges = function () {
+        $scope.updateModel = function () {
             if ($scope.collectorStatus) {
                 for (var i = 0, len = $scope.collectorStatus.collectors.length; i < len; i++) {
                     var c = $scope.collectorStatus.collectors[i];
-                    c.trulyDeadAfter = DateService.getAgeSince(c.usageCycleSeconds * 1000, 0);
-                    c.collectorResolution = DateService.getAgeSince(c.collectorResolutionSeconds * 1000, 0);
-                    c.agentUploadInterval = DateService.getAgeSince(c.agentUploadIntervalSeconds * 1000, 0);
-                    c.collectorAge = DateService.getAge(c.startedAtMillis);
-                    c.countDown = DateService.getAgeSince(c.startedAtMillis + c.usageCycleSeconds * 1000, Date.now());
-                    c.dataAge = DateService.getAge(c.dataReceivedAtMillis);
+                    c.collectorResolution = DateService.prettyDuration(c.collectorResolutionSeconds * 1000);
+                    c.agentUploadInterval = DateService.prettyDuration(c.agentUploadIntervalSeconds * 1000);
+                    c.collectorAge = DateService.prettyAge(c.startedAtMillis);
+                    c.dataAge = DateService.prettyAge(c.dataReceivedAtMillis);
                 }
             }
         };
 
-        $scope.updateAgeInterval = $interval($scope.updateAges, 500, false);
+        $scope.updateModelInterval = $interval($scope.updateModel, 500, false);
 
     }])
 
