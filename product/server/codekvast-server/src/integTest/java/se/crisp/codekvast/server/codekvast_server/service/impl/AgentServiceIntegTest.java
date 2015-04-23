@@ -108,7 +108,7 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
     @Test
     public void testStoreInvocationData() throws Exception {
         agentService.storeJvmData("agent", createJvmData(now));
-        assertEventsWithinMillis(1, 2000L);
+        assertEventsWithinMillis(2, 2000L);
 
         List<SignatureEntry> signatures = new ArrayList<>();
         signatures.add(new SignatureEntry("sig1", 0L, 0L, null));

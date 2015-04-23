@@ -24,6 +24,7 @@ public abstract class AbstractServiceIntegTest extends AbstractTransactionalJUni
     @Before
     public void before() throws Exception {
         eventBus.register(this);
+        events.clear();
     }
 
     /*
