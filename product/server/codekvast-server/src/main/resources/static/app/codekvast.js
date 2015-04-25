@@ -3,7 +3,9 @@
 
 var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
-    .config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
+    .constant('Defaults', { defaultRoute: 'statistics'} )
+
+    .config(['$routeProvider', '$locationProvider', 'Defaults', function ($routeProvider, $locationProvider, Defaults) {
         $routeProvider
             .when('/page/:page*', {
                 templateUrl: function (routeParams) {
@@ -12,7 +14,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             })
 
             .otherwise({
-                templateUrl: 'partials/statistics.html'
+                templateUrl: 'partials/' + Defaults.defaultRoute + '.html'
             });
 
         $locationProvider.html5Mode(true);
@@ -189,7 +191,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         }
     }])
 
-    .controller('NavigationController', ['$scope', '$location', '$modal', function($scope, $location, $modal) {
+    .controller('NavigationController', ['$scope', '$location', '$modal', 'Defaults', function($scope, $location, $modal, Defaults) {
         $scope.menuItems = [
             {
                 name: 'Statistics',
@@ -212,7 +214,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         ];
 
         $scope.isActive = function (viewLocation) {
-            return viewLocation === $location.path() || (viewLocation === "/page/statistics" && $location.path() === "/");
+            return viewLocation === $location.path() || (viewLocation === "/page/" + Defaults.defaultRoute && $location.path() === "/");
         };
 
         $scope.openSettings = function () {
@@ -349,6 +351,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                         a.trulyDeadTooltip = "Be patient for another " + a.timeToFullUsageCycle + " ...";
                     }
                     a.dataAge = DateService.prettyAge(a.lastDataReceivedAtMillis);
+                    a.collectorsWorkingType = a.collectorsWorking === "all" ? "success" : a.collectorsWorking === "some" ? 'warning' : 'danger';
                 }
             }
         }

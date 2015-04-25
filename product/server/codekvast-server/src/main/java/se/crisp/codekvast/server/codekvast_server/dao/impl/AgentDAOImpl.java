@@ -190,7 +190,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                            "FROM applications a, jvm_info jvm " +
                                            "WHERE a.id = jvm.application_id " +
                                            "AND a.organisation_id = ? " +
-                                           "GROUP BY a.name, jvm.application_version, jvm.codekvast_vcs_id ",
+                                           "GROUP BY a.name, jvm.application_version, jvm.collector_vcs_id ",
                                    new CollectorDisplayRowMapper(), organisationId);
 
         return CollectorStatusMessage.builder().applications(applications).collectors(collectors).usernames(usernames).build();
@@ -326,7 +326,9 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                            "stat.num_startup_signatures, " +
                                            "stat.num_truly_dead_signatures, " +
                                            "MIN(jvm.started_at_millis), " +
-                                           "MAX(jvm.reported_at_millis) " +
+                                           "MAX(jvm.reported_at_millis), " +
+                                           "MIN(jvm.agent_upload_interval_seconds + jvm.collector_resolution_seconds), " +
+                                           "MAX(jvm.agent_upload_interval_seconds + jvm.collector_resolution_seconds) " +
                                            "FROM applications a, application_statistics stat, jvm_info jvm " +
                                            "WHERE stat.application_id = a.id " +
                                            "AND jvm.application_id = a.id " +
@@ -350,9 +352,24 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
             int numSignatures = rs.getInt(4);
             int numInvokedSignatures = rs.getInt(6);
             int numTrulyDead = rs.getInt(8);
+            long lastDataReceivedAtMillis = rs.getLong(10);
+            int dataAgeSeconds = (int)(System.currentTimeMillis() - lastDataReceivedAtMillis)/1000;
+            int minIntervalSeconds = rs.getInt(11);
+            int maxIntervalSeconds = rs.getInt(12);
+
+            dataAgeSeconds -= 60; // give some margin
+            final String collectorsWorking;
+            if (dataAgeSeconds > maxIntervalSeconds) {
+                collectorsWorking = "none";
+            } else if (dataAgeSeconds > minIntervalSeconds && dataAgeSeconds <= maxIntervalSeconds) {
+                collectorsWorking = "some";
+            } else {
+                collectorsWorking = "all";
+            }
             Integer percentDeadSignatures = numSignatures == 0 ? null : Math.round(numTrulyDead * 100f / numSignatures);
             Integer percentInvokedSignatures = numSignatures == 0 ? null : Math.round(numInvokedSignatures * 100f / numSignatures);
             Integer percentNeverInvokedSignatures = percentInvokedSignatures == null ? null : 100 - percentInvokedSignatures;
+
 
             return ApplicationStatisticsDisplay.builder()
                                                .name(rs.getString(1))
@@ -366,7 +383,8 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                                .numStartupSignatures(rs.getInt(7))
                                                .numTrulyDeadSignatures(numTrulyDead)
                                                .firstDataReceivedAtMillis(firstDataReceivedAtMillis)
-                                               .lastDataReceivedAtMillis(rs.getLong(10))
+                                               .lastDataReceivedAtMillis(lastDataReceivedAtMillis)
+                                               .collectorsWorking(collectorsWorking)
                                                .fullUsageCycleEndsAtMillis(fullUsageCycleEndsAtMillis)
                                                .percentTrulyDeadSignatures(percentDeadSignatures)
                                                .fullUsageCycleElapsed(fullUsageCycleEndsAtMillis < System.currentTimeMillis())
