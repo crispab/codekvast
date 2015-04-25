@@ -258,32 +258,26 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                 case 'seconds':
                     a.usageCycleValue = Math.max(1, Math.floor(a.usageCycleValue * a.usageCycleMultiplier));
                     a.usageCycleMultiplier = 1;
-                    a.usageCycleStep = 15;
                     break;
                 case 'minutes':
                     a.usageCycleValue = Math.max(1, Math.floor(a.usageCycleValue * a.usageCycleMultiplier / 60));
                     a.usageCycleMultiplier = 60;
-                    a.usageCycleStep = 10;
                     break;
                 case 'hours':
                     a.usageCycleValue = Math.max(1, Math.floor(a.usageCycleValue * a.usageCycleMultiplier / 60 / 60));
                     a.usageCycleMultiplier = 60 * 60;
-                    a.usageCycleStep = 1;
                     break;
                 case 'days':
                     a.usageCycleValue = Math.max(1, Math.floor(a.usageCycleValue * a.usageCycleMultiplier / 60 / 60 / 24));
                     a.usageCycleMultiplier = 60 * 60 * 24;
-                    a.usageCycleStep = 1;
                     break;
                 case 'months':
                     a.usageCycleValue = Math.max(1, Math.floor(a.usageCycleValue * a.usageCycleMultiplier / 60 / 60 / 24 / 30));
                     a.usageCycleMultiplier = 60 * 60 * 24 * 30;
-                    a.usageCycleStep = 1;
                     break;
                 case 'years':
                     a.usageCycleValue = Math.max(1, Math.floor(a.usageCycleValue * a.usageCycleMultiplier / 60 / 60 / 24 / 365));
                     a.usageCycleMultiplier = 60 * 60 * 24 * 365;
-                    a.usageCycleStep = 1;
                     break;
             }
         };
