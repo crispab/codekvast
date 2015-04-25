@@ -212,7 +212,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         ];
 
         $scope.isActive = function (viewLocation) {
-            return viewLocation === $location.path();
+            return viewLocation === $location.path() || (viewLocation === "/page/statistics" && $location.path() === "/");
         };
 
         $scope.openSettings = function () {

@@ -49,11 +49,11 @@
                                      type="{{a.usageCycleProgressType}}">
                             <i style="color: black" ng-show="a.percentOfUsageCycle >= 10">{{a.percentOfUsageCycle}}%</i></progressbar>
                         <progress ng-show="a.fullUsageCycleElapsed" max="a.inUseSeconds">
-                            <bar tooltip="This is the time before the full usage cycle"
+                            <bar tooltip="Usage cycle: {{a.usageCycle}}"
                                  type="warning"
-                                 value="a.usageCycleSeconds"></bar>
-                            <bar tooltip="This is the time after the full usage cycle" type="success" value="a.overuseSeconds">
-                                <i>{{a.percentOfUsageCycle}}%</i></bar>
+                                 value="a.usageCycleSeconds">100%</bar>
+                            <bar tooltip="Total time: {{a.inUse}}" type="success" value="a.overuseSeconds">
+                                <i>{{a.percentOfUsageCycle - 100}}%</i></bar>
                         </progress>
                     </td>
                     <td class="col-lg-1">{{a.numSignatures}}</td>
