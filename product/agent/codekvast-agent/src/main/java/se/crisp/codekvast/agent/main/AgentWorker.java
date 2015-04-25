@@ -323,10 +323,9 @@ public class AgentWorker {
                 } else {
                     String baseSignature = codeBase.getBaseSignature(normalizedSignature);
                     if (baseSignature != null) {
-                        log.debug("{} replaced by {}", normalizedSignature, baseSignature);
-
                         overridden += 1;
                         confidence = SignatureConfidence.FOUND_IN_PARENT_CLASS;
+                        log.debug("{} replaced by {}", normalizedSignature, baseSignature);
                         normalizedSignature = baseSignature;
                     } else if (normalizedSignature.equals(rawSignature)) {
                         unrecognized += 1;

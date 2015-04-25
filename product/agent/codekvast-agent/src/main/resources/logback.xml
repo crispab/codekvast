@@ -13,7 +13,7 @@
         </rollingPolicy>
 
         <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-            <maxFileSize>5MB</maxFileSize>
+            <maxFileSize>50MB</maxFileSize>
         </triggeringPolicy>
 
         <encoder>
@@ -25,6 +25,9 @@
         <encoder>
             <pattern>%date %level %logger.%method\(\) [%line] %m%n%rootException</pattern>
         </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
     </appender>
 
     <logger name="se.crisp.codekvast" level="INFO"/>

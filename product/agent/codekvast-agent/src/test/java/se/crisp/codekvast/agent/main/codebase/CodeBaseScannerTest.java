@@ -1,5 +1,6 @@
 package se.crisp.codekvast.agent.main.codebase;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -25,8 +26,14 @@ public class CodeBaseScannerTest {
     public static final String TEST_CLASSES_DIR = "build/classes/test";
 
     private final CodeBaseScanner scanner = new CodeBaseScanner();
+    private CodeBase codeBase;
 
-    private CodeBase getCodeBase(String codeBase) throws URISyntaxException {
+    @Before
+    public void before() throws Exception {
+        codeBase = getCodeBase(TEST_CLASSES_DIR);
+    }
+
+    private CodeBase getCodeBase(String codeBase) {
         return new CodeBase(CollectorConfig.builder()
                                            .dataPath(temporaryFolder.getRoot())
                                            .codeBase(new File(codeBase).getAbsolutePath())
@@ -36,24 +43,21 @@ public class CodeBaseScannerTest {
                                            .tags("tags")
                                            .collectorResolutionSeconds(1)
                                            .aspectjOptions("")
-                                           .methodVisibility(CollectorConfig.DEFAULT_METHOD_VISIBILITY)
+                                           .methodVisibility("private")
                                            .build());
     }
 
     @Test
     public void testScanCodeBaseForDirectoryWithMyClassFiles() throws URISyntaxException {
-        CodeBase codeBase = getCodeBase(TEST_CLASSES_DIR);
         int numClasses = scanner.scanSignatures(codeBase);
         assertThat(codeBase.getSignatures(), notNullValue());
-        assertThat(numClasses, is(8));
-        assertThat(codeBase.getSignatures().size(), is(8));
+        assertThat(numClasses, is(9));
+        assertThat(codeBase.getSignatures().size(), is(10));
     }
 
     @Test
     public void testFindBaseMethodForScannerTest2() throws URISyntaxException {
-        CodeBase codeBase = getCodeBase(TEST_CLASSES_DIR);
-
-        scanner.findPublicMethods(codeBase, of("se."), ScannerTest2.class);
+        scanner.findTrackedMethods(codeBase, of("se."), ScannerTest2.class);
 
         assertThat(codeBase.getSignatures().size(), is(1));
         assertThat(codeBase.getOverriddenSignatures().size(), is(1));
@@ -63,9 +67,7 @@ public class CodeBaseScannerTest {
 
     @Test
     public void testFindBaseMethodForScannerTest3() throws URISyntaxException {
-        CodeBase codeBase = getCodeBase(TEST_CLASSES_DIR);
-
-        scanner.findPublicMethods(codeBase, of("se."), ScannerTest3.class);
+        scanner.findTrackedMethods(codeBase, of("se."), ScannerTest3.class);
 
         assertThat(codeBase.getSignatures().size(), is(1));
         assertThat(codeBase.getOverriddenSignatures().size(), is(2));
@@ -77,10 +79,7 @@ public class CodeBaseScannerTest {
 
     @Test
     public void testFindBaseMethodForScannerTest4() throws URISyntaxException {
-        CodeBase codeBase = getCodeBase(TEST_CLASSES_DIR);
-
-        scanner.findPublicMethods(codeBase, of("se."), ScannerTest4.class);
-
+        scanner.findTrackedMethods(codeBase, of("se."), ScannerTest4.class);
         assertThat(codeBase.getSignatures().size(), is(5));
     }
 

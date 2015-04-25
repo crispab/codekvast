@@ -190,7 +190,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                            "FROM applications a, jvm_info jvm " +
                                            "WHERE a.id = jvm.application_id " +
                                            "AND a.organisation_id = ? " +
-                                           "GROUP BY a.name, jvm.application_version, jvm.collector_vcs_id ",
+                                           "GROUP BY a.name, jvm.application_version ",
                                    new CollectorDisplayRowMapper(), organisationId);
 
         return CollectorStatusMessage.builder().applications(applications).collectors(collectors).usernames(usernames).build();
@@ -334,7 +334,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                            "AND jvm.application_id = a.id " +
                                            "AND jvm.application_version = stat.application_version " +
                                            "AND a.organisation_id = ? " +
-                                           "GROUP BY a.id, stat.application_version, jvm.application_version ",
+                                           "GROUP BY jvm.application_id, jvm.application_version ",
                                    new ApplicationStatisticsDisplayRowMapper(), organisationId);
 
         return ApplicationStatisticsMessage.builder()

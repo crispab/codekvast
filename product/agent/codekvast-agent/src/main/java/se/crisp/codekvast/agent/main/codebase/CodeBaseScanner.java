@@ -43,7 +43,7 @@ public class CodeBaseScanner {
         for (String type : recognizedTypes) {
             try {
                 Class<?> clazz = Class.forName(type, false, appClassLoader);
-                result += findPublicMethods(codeBase, prefixes, clazz);
+                result += findTrackedMethods(codeBase, prefixes, clazz);
             } catch (ClassNotFoundException e) {
                 log.warn("Cannot analyze " + type + ": " + e);
             } catch (NoClassDefFoundError e) {
@@ -77,14 +77,23 @@ public class CodeBaseScanner {
         return recordingClassNameFilter.getMatchedClassNames();
     }
 
-    int findPublicMethods(CodeBase codeBase, Set<String> packagePrefixes, Class<?> clazz) {
+    int findTrackedMethods(CodeBase codeBase, Set<String> packagePrefixes, Class<?> clazz) {
+        if (clazz.isInterface()) {
+            log.debug("Ignoring interface {}", clazz);
+            return 0;
+        }
+
         log.debug("Analyzing {}", clazz);
         MethodFilter methodFilter = codeBase.getConfig().getMethodVisibility();
         int result = 1;
         try {
+            Method[] declaredMethods = clazz.getDeclaredMethods();
             Method[] methods = clazz.getMethods();
+            Method[] allMethods = new Method[declaredMethods.length + methods.length];
+            System.arraycopy(declaredMethods, 0, allMethods, 0, declaredMethods.length);
+            System.arraycopy(methods, 0, allMethods, declaredMethods.length, methods.length);
 
-            for (Method method : methods) {
+            for (Method method : allMethods) {
                 if (methodFilter.shouldInclude(method)) {
 
                     // Some AOP frameworks (e.g., Guice) push methods from a base class down to the subclasses created in runtime.
@@ -102,7 +111,7 @@ public class CodeBaseScanner {
             }
 
             for (Class<?> innerClass : clazz.getDeclaredClasses()) {
-                result += findPublicMethods(codeBase, packagePrefixes, innerClass);
+                result += findTrackedMethods(codeBase, packagePrefixes, innerClass);
             }
         } catch (NoClassDefFoundError e) {
             log.warn("Cannot analyze {}: {}", clazz, e.toString());

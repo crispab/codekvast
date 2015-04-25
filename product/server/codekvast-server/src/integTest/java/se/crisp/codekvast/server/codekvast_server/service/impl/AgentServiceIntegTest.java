@@ -38,13 +38,11 @@ import static org.junit.Assert.assertThat;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {DataSourceAutoConfiguration.class, DatabaseConfig.class, EventBusConfig.class,
                                  AgentDAOImpl.class, UserDAOImpl.class, CodekvastSettings.class,
-                                 AgentServiceImpl.class})
+                                 AgentServiceImpl.class, UserServiceImpl.class})
 @IntegrationTest({
         "spring.datasource.url=jdbc:h2:mem:serviceTest",
 })
 public class AgentServiceIntegTest extends AbstractServiceIntegTest {
-
-    private static final String JVM_UUID = "uuid";
 
     @Inject
     private AgentService agentService;
@@ -70,11 +68,11 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
         long dumpedAtMillis = now;
 
         // when
-        agentService.storeJvmData("agent", createJvmData(dumpedAtMillis));
-        agentService.storeJvmData("agent", createJvmData(dumpedAtMillis + 1000L));
+        agentService.storeJvmData("agent", createJvmData(dumpedAtMillis, "app1", "uuid1", startedAtMillis));
+        agentService.storeJvmData("agent", createJvmData(dumpedAtMillis + 1000L, "app1", "uuid1", startedAtMillis));
 
         // then
-        assertThat(countRows("jvm_info WHERE jvm_uuid = ? AND started_at_millis = ? AND reported_at_millis = ? ", JVM_UUID, startedAtMillis,
+        assertThat(countRows("jvm_info WHERE jvm_uuid = ? AND started_at_millis = ? AND reported_at_millis = ? ", "uuid1", startedAtMillis,
                              dumpedAtMillis + 1000L), is(1));
 
         assertEventsWithinMillis(4, 2000L);
@@ -102,40 +100,50 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
 
     @Test(expected = UndefinedUserException.class)
     public void testStoreJvmData_fromUnknownAgent() throws Exception {
-        agentService.storeJvmData("foobar", createJvmData(now));
+        agentService.storeJvmData("foobar", createJvmData(now, "app2", "uuid1", startedAtMillis));
     }
 
     @Test
     public void testStoreInvocationData() throws Exception {
-        agentService.storeJvmData("agent", createJvmData(now));
-        assertEventsWithinMillis(2, 2000L);
+        agentService.storeJvmData("agent", createJvmData(now, "app1", "uuid1.1", startedAtMillis));
+        agentService.storeJvmData("agent", createJvmData(now, "app1", "uuid1.2", startedAtMillis + 100L));
+        agentService.storeJvmData("agent", createJvmData(now, "app2", "uuid2.1", startedAtMillis - 100L));
+        agentService.storeJvmData("agent", createJvmData(now, "app2", "uuid2.2", startedAtMillis));
+
+        assertEventsWithinMillis(8, 2000L);
 
         List<SignatureEntry> signatures = new ArrayList<>();
         signatures.add(new SignatureEntry("sig1", 0L, 0L, null));
         signatures.add(new SignatureEntry("sig2", 100L, 100L, SignatureConfidence.EXACT_MATCH));
         signatures.add(new SignatureEntry("sig1", 200L, 200L, SignatureConfidence.EXACT_MATCH));
 
-        SignatureData data = SignatureData.builder()
-                                          .jvmUuid(JVM_UUID)
-                                          .signatures(signatures).build();
+        SignatureData data1 = SignatureData.builder().jvmUuid("uuid1.1").signatures(signatures).build();
+        SignatureData data2 = SignatureData.builder().jvmUuid("uuid1.2").signatures(signatures).build();
+        SignatureData data3 = SignatureData.builder().jvmUuid("uuid2.1").signatures(signatures).build();
+        SignatureData data4 = SignatureData.builder().jvmUuid("uuid2.2").signatures(signatures).build();
 
         events.clear();
-        agentService.storeSignatureData(data);
+        agentService.storeSignatureData(data1);
+        agentService.storeSignatureData(data2);
+        agentService.storeSignatureData(data3);
+        agentService.storeSignatureData(data4);
 
-        assertEventsWithinMillis(2, 2000L);
-        assertThat(events, hasSize(2));
+        assertEventsWithinMillis(8, 2000L);
+        assertThat(events, hasSize(8));
         assertThat(events.get(0), is(instanceOf(InvocationDataReceivedEvent.class)));
         assertThat(events.get(1), is(instanceOf(ApplicationStatisticsMessage.class)));
+        assertThat(events.get(2), is(instanceOf(InvocationDataReceivedEvent.class)));
+        assertThat(events.get(3), is(instanceOf(ApplicationStatisticsMessage.class)));
     }
 
-    private JvmData createJvmData(long dumpedAtMillis) {
+    private JvmData createJvmData(long dumpedAtMillis, String appName, String jvmUuid, long startedAtMillis) {
         return JvmData.builder()
                       .agentComputerId("agentComputerId")
                       .agentHostName("agentHostName")
                       .agentUploadIntervalSeconds(300)
                       .agentVcsId("agentVcsId")
                       .agentVersion("agentVersion")
-                      .appName(getClass().getName())
+                      .appName(appName)
                       .appVersion("appVersion")
                       .collectorComputerId("collectorComputerId")
                       .collectorHostName("collectorHostName")
@@ -143,7 +151,7 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
                       .collectorVcsId("collectorVcsId")
                       .collectorVersion("collectorVersion")
                       .dumpedAtMillis(dumpedAtMillis)
-                      .jvmUuid(JVM_UUID)
+                      .jvmUuid(jvmUuid)
                       .methodVisibility("methodVisibility")
                       .startedAtMillis(startedAtMillis)
                       .tags("  ")
