@@ -190,8 +190,19 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                            "FROM applications a, jvm_info jvm " +
                                            "WHERE a.id = jvm.application_id " +
                                            "AND a.organisation_id = ? " +
-                                           "GROUP BY a.name, jvm.application_version ",
-                                   new CollectorDisplayRowMapper(), organisationId);
+                                           "GROUP BY " +
+                                           "a.name, " +
+                                           "jvm.application_version, " +
+                                           "jvm.agent_host_name, " +
+                                           "jvm.agent_version, " +
+                                           "jvm.agent_vcs_id, " +
+                                           "jvm.agent_upload_interval_seconds, " +
+                                           "jvm.collector_host_name, " +
+                                           "jvm.collector_version, " +
+                                           "jvm.collector_vcs_id, " +
+                                           "jvm.collector_resolution_seconds, " +
+                                           "jvm.method_visibility ",
+                                           new CollectorDisplayRowMapper(), organisationId);
 
         return CollectorStatusMessage.builder().applications(applications).collectors(collectors).usernames(usernames).build();
     }
@@ -249,7 +260,9 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                                                     "WHERE jvm.application_id = a.id " +
                                                                     "AND jvm.application_id = ? " +
                                                                     "AND jvm.application_version = ? " +
-                                                                    "GROUP BY jvm.application_id, jvm.application_version ",
+                                                                    "GROUP BY " +
+                                                                    "jvm.application_id, " +
+                                                                    "jvm.application_version ",
                                                             appId.getAppId(), appId.getAppVersion());
 
         String appName = (String) data.get("D1");
@@ -334,7 +347,9 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                            "AND jvm.application_id = a.id " +
                                            "AND jvm.application_version = stat.application_version " +
                                            "AND a.organisation_id = ? " +
-                                           "GROUP BY jvm.application_id, jvm.application_version ",
+                                           "GROUP BY " +
+                                           "jvm.application_id, " +
+                                           "jvm.application_version ",
                                    new ApplicationStatisticsDisplayRowMapper(), organisationId);
 
         return ApplicationStatisticsMessage.builder()

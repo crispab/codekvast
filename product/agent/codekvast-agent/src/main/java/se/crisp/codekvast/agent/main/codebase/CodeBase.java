@@ -165,7 +165,7 @@ public class CodeBase {
     }
 
     public String getBaseSignature(String signature) {
-        return overriddenSignatures.get(signature);
+        return signature == null ? null : overriddenSignatures.get(signature);
     }
 
     public String normalizeSignature(String signature) {

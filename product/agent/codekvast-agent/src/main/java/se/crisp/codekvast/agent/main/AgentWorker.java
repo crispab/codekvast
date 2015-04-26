@@ -313,6 +313,7 @@ public class AgentWorker {
             for (Invocation invocation : invocations) {
                 String rawSignature = invocation.getSignature();
                 String normalizedSignature = codeBase.normalizeSignature(rawSignature);
+                String baseSignature = codeBase.getBaseSignature(normalizedSignature);
 
                 SignatureConfidence confidence = null;
                 if (normalizedSignature == null) {
@@ -320,22 +321,19 @@ public class AgentWorker {
                 } else if (codeBase.hasSignature(normalizedSignature)) {
                     recognized += 1;
                     confidence = SignatureConfidence.EXACT_MATCH;
+                } else if (baseSignature != null) {
+                    overridden += 1;
+                    confidence = SignatureConfidence.FOUND_IN_PARENT_CLASS;
+                    log.debug("{} replaced by {}", normalizedSignature, baseSignature);
+                    normalizedSignature = baseSignature;
+                } else if (normalizedSignature.equals(rawSignature)) {
+                    unrecognized += 1;
+                    confidence = SignatureConfidence.NOT_FOUND_IN_CODE_BASE;
+                    log.debug("Unrecognized signature: {}", normalizedSignature);
                 } else {
-                    String baseSignature = codeBase.getBaseSignature(normalizedSignature);
-                    if (baseSignature != null) {
-                        overridden += 1;
-                        confidence = SignatureConfidence.FOUND_IN_PARENT_CLASS;
-                        log.debug("{} replaced by {}", normalizedSignature, baseSignature);
-                        normalizedSignature = baseSignature;
-                    } else if (normalizedSignature.equals(rawSignature)) {
-                        unrecognized += 1;
-                        confidence = SignatureConfidence.NOT_FOUND_IN_CODE_BASE;
-                        log.debug("Unrecognized signature: {}", normalizedSignature);
-                    } else {
-                        unrecognized += 1;
-                        confidence = SignatureConfidence.NOT_FOUND_IN_CODE_BASE;
-                        log.debug("Unrecognized signature: {} (was {})", normalizedSignature, rawSignature);
-                    }
+                    unrecognized += 1;
+                    confidence = SignatureConfidence.NOT_FOUND_IN_CODE_BASE;
+                    log.debug("Unrecognized signature: {} (was {})", normalizedSignature, rawSignature);
                 }
 
                 if (normalizedSignature != null) {
