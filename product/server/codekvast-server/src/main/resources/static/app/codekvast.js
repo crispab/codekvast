@@ -332,16 +332,21 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                     a.usageCycle = DateService.prettyDuration(a.usageCycleSeconds * 1000);
                     a.timeToFullUsageCycle = DateService.prettyAge(a.firstDataReceivedAtMillis + a.usageCycleSeconds * 1000);
                     a.collectorAge = DateService.prettyAge(a.firstDataReceivedAtMillis);
-                    a.inUseSeconds = Math.round((Date.now() - a.firstDataReceivedAtMillis) / 1000);
+                    a.inUseSeconds = Math.floor((Date.now() - a.firstDataReceivedAtMillis) / 1000);
                     a.inUse = DateService.prettyDuration(a.inUseSeconds * 1000);
                     a.percentOfUsageCycle = Math.floor(a.inUseSeconds * 100 / a.usageCycleSeconds);
                     a.usageCycleProgressType = a.percentOfUsageCycle < 10 ? 'danger' : 'warning';
+                    a.leftCompletedBarWidth = Math.floor(a.usageCycleSeconds * 100 / a.inUseSeconds);
+                    a.rightCompletedBarWidth = 100 - a.leftCompletedBarWidth;
+                    a.usageCycleMultiple = Math.round(a.inUseSeconds / a.usageCycleSeconds * 10) / 10;
+                    if (a.usageCycleMultiple >= 10) {
+                        a.usageCycleMultiple = Math.round(a.inUseSeconds / a.usageCycleSeconds);
+                    }
                     if (a.fullUsageCycleElapsed) {
-                        a.overuseSeconds = a.inUseSeconds - a.usageCycleSeconds;
                         a.trulyDeadTooltip = "This is truly dead code";
                     } else {
-                        a.numTrulyDeadSignatures = "n/a"
-                        a.percentTrulyDeadSignatures = "n/a"
+                        a.numTrulyDeadSignatures = "?"
+                        a.percentTrulyDeadSignatures = "?"
                         a.trulyDeadTooltip = "Be patient for another " + a.timeToFullUsageCycle + " ...";
                     }
                     a.dataAge = DateService.prettyAge(a.lastDataReceivedAtMillis);
