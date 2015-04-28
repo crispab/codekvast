@@ -3,8 +3,6 @@
 
 var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
-    .constant('Defaults', { defaultRoute: 'statistics'} )
-
     .config(['$routeProvider', '$locationProvider', 'Defaults', function ($routeProvider, $locationProvider, Defaults) {
         $routeProvider
             .when('/page/:page*', {
@@ -191,25 +189,31 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         }
     }])
 
+    .constant('Defaults', {defaultRoute: 'application-statistics'})
+
+
     .controller('NavigationController', ['$scope', '$location', '$modal', 'Defaults', function($scope, $location, $modal, Defaults) {
         $scope.menuItems = [
             {
-                name: 'Statistics',
-                url: '/page/statistics',
-                title: 'Show collection statistics',
+                name: 'Application Statistics',
+                url: '/page/application-statistics',
+                title: 'Show collection status',
                 icon: 'glyphicon-stats'
             },
             {
-                name: 'Collectors',
-                url: '/page/collectors',
-                title: 'Show the status of the collectors',
-                icon: 'glyphicon-dashboard'
-            },
-            {
-                name: 'Truly Dead Code',
-                url: '/page/live-report',
-                title: 'Show truly dead code',
+                name: 'Reports',
+                url: '/page/reports',
+                title: 'Generate reports of truly dead code',
                 icon: 'glyphicon-th-list'
+            }
+        ];
+
+        $scope.rightMenuItems = [
+            {
+                name: 'Collection Details',
+                url: '/page/collectors',
+                title: 'Shows detailed low-level status of the collectors',
+                icon: 'glyphicon-dashboard'
             }
         ];
 

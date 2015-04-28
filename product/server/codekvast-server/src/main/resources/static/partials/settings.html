@@ -5,7 +5,8 @@
     <div class="modal-body">
         <form class="form-horizontal">
             <fieldset>
-                <legend>Application Usage Cycles</legend>
+                <legend>Application Usage Cycle<br/>
+                    <small>The shortest time an application must be in use before one can identify truly dead code.</small> </legend>
                 <div class="form-group" ng-repeat="a in collectorStatus.applications">
                     <label for="app-{{$index}}" class="col-sm-4 control-label">{{a.name}}</label>
 

@@ -22,6 +22,7 @@
                 <span class="glyphicon {{menuItem.icon}}" aria-hidden="true"></span>
                 {{menuItem.name}} </a></li>
         </ul>
+
         <form class="navbar-form navbar-right" th:action="@{/logout}" method="post">
             <span th:text="${'Logged in as ' + #httpServletRequest.remoteUser}">sample_user</span>
             &nbsp;
@@ -35,15 +36,25 @@
                 Log out
             </button>
         </form>
+
+        <ul class="nav navbar-nav navbar-right">
+            <li ng-repeat="menuItem in rightMenuItems" ng-class="{ active: isActive(menuItem.url)}">
+                <!--suppress HtmlUnknownTarget -->
+                <a href="{{menuItem.url}}" title="{{menuItem.title}}">
+                    <span class="glyphicon {{menuItem.icon}}" aria-hidden="true"></span>
+                    {{menuItem.name}} </a></li>
+        </ul>
+
     </div>
 </nav>
 
 <div class="container-fluid">
     <div ng-controller="JumbotronController">
         <div class="jumbotron" ng-show="jumbotronMessage"><h2>{{jumbotronMessage}}</h2></div>
+
+        <div ng-show="!jumbotronMessage" ng-view="true"></div>
     </div>
 
-    <div ng-view="true"></div>
 </div>
 
 <nav class="navbar navbar-default navbar-fixed-bottom codekvast-footer">
