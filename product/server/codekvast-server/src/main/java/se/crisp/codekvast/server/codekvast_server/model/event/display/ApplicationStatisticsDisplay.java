@@ -21,9 +21,10 @@ public class ApplicationStatisticsDisplay {
     int numInvokedSignatures;
     int numStartupSignatures;
     int usageCycleSeconds;
+    long upTimeSeconds;
+    String upTimePercent;
     long firstDataReceivedAtMillis;
     long lastDataReceivedAtMillis;
-    long fullUsageCycleEndsAtMillis;
     boolean fullUsageCycleElapsed;
     String collectorsWorking; // "all", "some", "none"
     int numTrulyDeadSignatures;

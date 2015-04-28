@@ -73,7 +73,11 @@ CREATE TABLE application_statistics (
   COMMENT 'The number of signatures that are only invoked within a short time after the application starts',
   num_truly_dead_signatures  INTEGER      NOT NULL
   COMMENT 'The number of truly dead signatures in the application, i.e., never invoked at all or only invoked before the latest
-   full usage cycle'
+   full usage cycle',
+  up_time_seconds            BIGINT       NOT NULL
+  COMMENT 'How many seconds has this application version been running in total?',
+  up_time_percent            DECIMAL(32, 4) NOT NULL
+  COMMENT 'How many percent of the time since the first start has the application version been running?'
 );
 
 CREATE PRIMARY KEY ON application_statistics (application_id, application_version);
