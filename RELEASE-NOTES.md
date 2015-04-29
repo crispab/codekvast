@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.10.3
+
+1. Server now tracks uptime
+
 ## 0.10.2
 
 1. Added Data Age to collectors.html

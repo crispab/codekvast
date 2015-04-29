@@ -20,8 +20,6 @@ import se.crisp.codekvast.server.codekvast_server.model.event.rest.CollectorSett
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -276,14 +274,8 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         long minStartedAtMillis = (long) data.get("minStartedAtMillis");
         long maxStartedAtMillis = (long) data.get("maxStartedAtMillis");
         long maxReportedAtMillis = (long) data.get("maxReportedAtMillis");
-        BigDecimal upTimeMillis = (BigDecimal) data.get("upTime");
-
-        BigDecimal elapsedMillis = BigDecimal.valueOf(maxReportedAtMillis - minStartedAtMillis);
-        BigDecimal upTimePercent = upTimeMillis.multiply(BigDecimal.valueOf(100l).divide(elapsedMillis, MathContext.DECIMAL32))
-                                               .setScale(4, RoundingMode.CEILING);
-
+        long upTimeMillis = ((BigDecimal) data.get("upTime")).longValue();
         long startupRelatedIfInvokedBeforeMillis = maxStartedAtMillis + 60000L;
-
         long trulyDeadIfInvokedBeforeMillis = now - (usageCycleSeconds * 1000L);
 
         int numSignatures = jdbcTemplate.queryForObject("SELECT count(1) FROM signatures s, jvm_info jvm " +
@@ -327,12 +319,12 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         int updated = jdbcTemplate.update("MERGE INTO application_statistics(application_id, application_version, " +
                                                   "num_signatures, num_not_invoked_signatures, num_invoked_signatures, " +
                                                   "num_startup_signatures, num_truly_dead_signatures, " +
-                                                  "up_time_seconds, up_time_percent) " +
-                                                  "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                                                  "first_started_at_millis, last_reported_at_millis, " +
+                                                  "up_time_millis) " +
+                                                  "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                                           appId.getAppId(), appId.getAppVersion(),
                                           numSignatures, numNeverInvokedSignatures, numInvokedSignatures, numStartupSignatures,
-                                          numTrulyDeadSignatures,
-                                          upTimeMillis.divide(BigDecimal.valueOf(1000), BigDecimal.ROUND_CEILING), upTimePercent);
+                                          numTrulyDeadSignatures, minStartedAtMillis, maxReportedAtMillis, upTimeMillis);
 
         long elapsed = System.currentTimeMillis() - startedAt;
         log.debug("Statistics for {} {} calculated in {} ms", appName, appId.getAppVersion(), elapsed);
@@ -346,15 +338,15 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                 jdbcTemplate.query("SELECT " +
                                            "a.name, " +
                                            "a.usage_cycle_seconds, " +
-
                                            "stat.application_version, " +
                                            "stat.num_signatures, " +
                                            "stat.num_not_invoked_signatures, " +
                                            "stat.num_invoked_signatures, " +
                                            "stat.num_startup_signatures, " +
                                            "stat.num_truly_dead_signatures, " +
-                                           "MIN(jvm.started_at_millis), " +
-                                           "MAX(jvm.reported_at_millis), " +
+                                           "stat.first_started_at_millis, " +
+                                           "stat.last_reported_at_millis, " +
+                                           "stat.up_time_millis, " +
                                            "MIN(jvm.agent_upload_interval_seconds + jvm.collector_resolution_seconds), " +
                                            "MAX(jvm.agent_upload_interval_seconds + jvm.collector_resolution_seconds) " +
                                            "FROM applications a, application_statistics stat, jvm_info jvm " +
@@ -377,15 +369,15 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         @Override
         public ApplicationStatisticsDisplay mapRow(ResultSet rs, int rowNum) throws SQLException {
             int usageCycleSeconds = rs.getInt(2);
-            long firstDataReceivedAtMillis = rs.getLong(9);
-            long fullUsageCycleEndsAtMillis = firstDataReceivedAtMillis + usageCycleSeconds * 1000L;
+            long firstStartedAtMillis = rs.getLong(9);
             int numSignatures = rs.getInt(4);
             int numInvokedSignatures = rs.getInt(6);
             int numTrulyDead = rs.getInt(8);
             long lastDataReceivedAtMillis = rs.getLong(10);
             int dataAgeSeconds = (int)(System.currentTimeMillis() - lastDataReceivedAtMillis)/1000;
-            int minIntervalSeconds = rs.getInt(11);
-            int maxIntervalSeconds = rs.getInt(12);
+            long upTimeMillis = rs.getLong(11);
+            int minIntervalSeconds = rs.getInt(12);
+            int maxIntervalSeconds = rs.getInt(13);
 
             dataAgeSeconds -= 60; // give some margin
             final String collectorsWorking;
@@ -400,6 +392,18 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
             Integer percentInvokedSignatures = numSignatures == 0 ? null : Math.round(numInvokedSignatures * 100f / numSignatures);
             Integer percentNeverInvokedSignatures = percentInvokedSignatures == null ? null : 100 - percentInvokedSignatures;
 
+            long upTimeSeconds = upTimeMillis / 1000L;
+
+            BigDecimal maxUpTimeMillis = BigDecimal.valueOf(System.currentTimeMillis() - firstStartedAtMillis);
+            BigDecimal upTimePercent = BigDecimal.valueOf(upTimeMillis).multiply(BigDecimal.valueOf(100))
+                                                 .divide(maxUpTimeMillis, BigDecimal.ROUND_DOWN);
+            int upTimePercentScale = 2;
+            if (upTimePercent.compareTo(new BigDecimal("99.9")) > 0) {
+                upTimePercentScale = 4;
+            }
+            if (upTimePercent.compareTo(new BigDecimal("99.999")) > 0) {
+                upTimePercentScale = 0;
+            }
 
             return ApplicationStatisticsDisplay.builder()
                                                .name(rs.getString(1))
@@ -412,11 +416,14 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                                .percentInvokedSignatures(percentInvokedSignatures)
                                                .numStartupSignatures(rs.getInt(7))
                                                .numTrulyDeadSignatures(numTrulyDead)
-                                               .firstDataReceivedAtMillis(firstDataReceivedAtMillis)
+                                               .firstDataReceivedAtMillis(firstStartedAtMillis)
                                                .lastDataReceivedAtMillis(lastDataReceivedAtMillis)
                                                .collectorsWorking(collectorsWorking)
+                                               .upTimeSeconds(upTimeSeconds)
+                                               .upTimePercent(
+                                                       upTimePercent.setScale(upTimePercentScale, BigDecimal.ROUND_DOWN).toPlainString())
                                                .percentTrulyDeadSignatures(percentDeadSignatures)
-                                               .fullUsageCycleElapsed(fullUsageCycleEndsAtMillis < System.currentTimeMillis())
+                                               .fullUsageCycleElapsed(upTimeSeconds >= usageCycleSeconds)
                                                .build();
         }
     }

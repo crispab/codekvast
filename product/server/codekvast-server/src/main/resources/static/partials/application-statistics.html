@@ -24,7 +24,8 @@
                     <th class="col-lg-1" title="After how long can methods that have not been invoked be considered truly dead?">Usage
                                                                                                                                   Cycle
                     </th>
-                    <th class="col-lg-1" title="Can we start identifying truly dead methods yet?">Confidence
+                    <th class="col-lg-1" title="How long has the application been up?">Uptime</th>
+                    <th class="col-lg-1" title="Can we start identifying truly dead methods yet?">Usage Confidence
                     </th>
                     <th class="col-lg-1" title="The number of tracked methods in this version">Number of Methods</th>
                     <th class="col-lg-1" title="How many tracked methods have never been invoked?">Number of Never Invoked Methods</th>
@@ -46,6 +47,7 @@
                         </progressbar>
                     </td>
                     <td class="col-lg-1">{{a.usageCycle}}</td>
+                    <td class="col-lg-1" title="{{a.upTimePercent}}%">{{a.upTime}}</td>
                     <td class="col-lg-1">
                         <progressbar ng-hide="a.fullUsageCycleElapsed"
                                      tooltip="{{a.timeToFullUsageCycle}} to full usage cycle"
@@ -56,7 +58,7 @@
                             <bar tooltip="Usage cycle: {{a.usageCycle}}"
                                  type="warning"
                                  value="a.leftCompletedBarWidth">100%</bar>
-                            <bar tooltip="{{a.usageCycleMultiple}}x{{a.usageCycle}}={{a.inUse}}" type="success"
+                            <bar tooltip="Uptime: {{a.upTime}}" type="success"
                                  value="a.rightCompletedBarWidth">
                                 <i>{{a.usageCycleMultiple}}x</i></bar>
                         </progress>
