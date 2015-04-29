@@ -129,7 +129,8 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     }
 
     private long compensateForClockSkew(Long timestamp, long skewMillis) {
-        return timestamp + skewMillis;
+        // zero means "no timestamp". Don't destroy that...
+        return timestamp == 0L ? timestamp : timestamp + skewMillis;
     }
 
     @Override
@@ -227,6 +228,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                            "jvm.agent_host_name, " +
                                            "jvm.agent_version, " +
                                            "jvm.agent_vcs_id, " +
+                                           "jvm.agent_clock_skew_millis, " +
                                            "jvm.agent_upload_interval_seconds, " +
                                            "jvm.collector_host_name, " +
                                            "jvm.collector_version, " +

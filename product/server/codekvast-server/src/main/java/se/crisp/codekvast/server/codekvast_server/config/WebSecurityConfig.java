@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
+import se.crisp.codekvast.server.agent_api.AgentRestEndpoints;
 import se.crisp.codekvast.server.codekvast_server.model.Role;
 
 import javax.inject.Inject;
@@ -53,7 +54,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/app/**").permitAll()
                 .antMatchers("/register/**").permitAll()
                 .antMatchers("/management/**").hasRole(Role.MONITOR.name())
-                .antMatchers("/agent/**").hasRole(Role.AGENT.name())
+                .antMatchers(AgentRestEndpoints.PREFIX + "**").hasRole(Role.AGENT.name())
                 .antMatchers("/**").hasRole(Role.USER.name())
                 .and()
             // an interactive user uses form login

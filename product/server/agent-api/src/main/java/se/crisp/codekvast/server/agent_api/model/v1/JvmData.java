@@ -86,7 +86,15 @@ public class JvmData {
     @Size(max = Constraints.MAX_CODEKVAST_VCS_ID_LENGTH)
     private String collectorVcsId;
 
-    private long startedAtMillis;
-    private long dumpedAtMillis;
-    private long agentTimeMillis;
+    @NonNull
+    @Min(1)
+    private Long startedAtMillis;
+
+    @NonNull
+    @Min(1)
+    private Long dumpedAtMillis;
+
+    @NonNull
+    @Min(1)
+    private Long agentTimeMillis;
 }

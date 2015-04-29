@@ -75,6 +75,7 @@ public class JvmDataTest {
                       .agentUploadIntervalSeconds(300)
                       .agentVcsId("agentVcsId")
                       .agentVersion("agentVersion")
+                      .agentTimeMillis(System.currentTimeMillis())
                       .appName("appName")
                       .appVersion("appVersion")
                       .collectorComputerId("collectorComputerId")

@@ -72,8 +72,13 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
         agentService.storeJvmData("agent", createJvmData(dumpedAtMillis + 1000L, "app1", "uuid1", startedAtMillis));
 
         // then
-        assertThat(countRows("jvm_info WHERE jvm_uuid = ? AND started_at_millis = ? AND reported_at_millis = ? ", "uuid1", startedAtMillis,
-                             dumpedAtMillis + 1000L), is(1));
+        assertThat(countRows("jvm_info WHERE jvm_uuid = ? " +
+                                     "AND started_at_millis >= ? " +
+                                     "AND started_at_millis < ? " +
+                                     "AND reported_at_millis >= ? " +
+                                     "AND reported_at_millis < ? " +
+                                     " ", "uuid1", startedAtMillis, startedAtMillis + 100L,
+                             dumpedAtMillis + 1000L, dumpedAtMillis + 1000L + 100L), is(1));
 
         assertEventsWithinMillis(4, 2000L);
 
@@ -85,17 +90,17 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
 
         ApplicationStatisticsMessage statsMessage = (ApplicationStatisticsMessage) events.get(0);
         ApplicationStatisticsDisplay stats = statsMessage.getApplications().iterator().next();
-        assertThat(stats.getFirstDataReceivedAtMillis(), is(startedAtMillis));
-        assertThat(stats.getLastDataReceivedAtMillis(), is(dumpedAtMillis));
+        assertThat((double) stats.getFirstDataReceivedAtMillis(), closeTo(startedAtMillis, 25D));
+        assertThat((double) stats.getLastDataReceivedAtMillis(), closeTo(dumpedAtMillis, 25D));
 
         CollectorStatusMessage csm = (CollectorStatusMessage) events.get(1);
         CollectorDisplay collector = csm.getCollectors().iterator().next();
-        assertThat(collector.getCollectorStartedAtMillis(), is(startedAtMillis));
+        assertThat((double) collector.getCollectorStartedAtMillis(), closeTo(startedAtMillis, 25D));
 
         statsMessage = (ApplicationStatisticsMessage) events.get(2);
         stats = statsMessage.getApplications().iterator().next();
-        assertThat(stats.getFirstDataReceivedAtMillis(), is(startedAtMillis));
-        assertThat(stats.getLastDataReceivedAtMillis(), is(dumpedAtMillis + 1000L));
+        assertThat((double) stats.getFirstDataReceivedAtMillis(), closeTo(startedAtMillis, 25D));
+        assertThat((double) stats.getLastDataReceivedAtMillis(), closeTo(dumpedAtMillis + 1000L, 25D));
     }
 
     @Test(expected = UndefinedUserException.class)
@@ -143,6 +148,7 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
                       .agentUploadIntervalSeconds(300)
                       .agentVcsId("agentVcsId")
                       .agentVersion("agentVersion")
+                      .agentTimeMillis(System.currentTimeMillis())
                       .appName(appName)
                       .appVersion("appVersion")
                       .collectorComputerId("collectorComputerId")

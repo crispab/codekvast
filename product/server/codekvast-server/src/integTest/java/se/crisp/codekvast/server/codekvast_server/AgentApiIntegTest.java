@@ -23,8 +23,7 @@ import java.util.*;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
 import static se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence.EXACT_MATCH;
 
@@ -110,10 +109,10 @@ public class AgentApiIntegTest {
                 assertThat(entry.getInvokedAtMillis(), is(0L));
             }
             if (entry.getName().equals(signatures.get(1))) {
-                assertThat(entry.getInvokedAtMillis(), is(now));
+                assertThat((double) entry.getInvokedAtMillis(), closeTo(now, 100D));
             }
             if (entry.getName().equals(signatures.get(2))) {
-                assertThat(entry.getInvokedAtMillis(), is(now + 1000L));
+                assertThat((double) entry.getInvokedAtMillis(), closeTo(now + 1000D, 100D));
             }
         }
 
@@ -146,6 +145,7 @@ public class AgentApiIntegTest {
                       .agentUploadIntervalSeconds(300)
                       .agentVcsId("agentVcsId")
                       .agentVersion("agentVersion")
+                      .agentTimeMillis(System.currentTimeMillis())
                       .appName("appName")
                       .appVersion("appVersion")
                       .collectorComputerId("collectorComputerId")
