@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.11.0
+
+1. Keeps track of agent clock skew. Breaks compatibility of agent-API.
+
 ## 0.10.3
 
 1. Server now tracks uptime

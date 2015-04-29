@@ -95,6 +95,8 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     @Override
     public SignatureData storeInvocationData(AppId appId, SignatureData signatureData) {
 
+        long agentClockSkewMillis = calculateAgentClockSkewMillis(signatureData.getAgentTimeMillis());
+
         List<Object[]> args = new ArrayList<>();
 
         for (SignatureEntry entry : signatureData.getSignatures()) {
@@ -103,7 +105,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                     appId.getAppId(),
                     appId.getJvmId(),
                     entry.getSignature(),
-                    entry.getInvokedAtMillis(),
+                    compensateForClockSkew(entry.getInvokedAtMillis(), agentClockSkewMillis),
                     entry.getMillisSinceJvmStart(),
                     entry.getConfidence() == null ? null : entry.getConfidence().ordinal()
             });
@@ -126,12 +128,32 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         return SignatureData.builder().jvmUuid(signatureData.getJvmUuid()).signatures(result).build();
     }
 
+    private long compensateForClockSkew(Long timestamp, long skewMillis) {
+        return timestamp + skewMillis;
+    }
+
     @Override
     public void storeJvmData(long organisationId, long appId, JvmData data) {
+        // Calculate the agent clock skew. Don't try to compensate for network latency...
+        long agentClockSkewMillis = calculateAgentClockSkewMillis(data.getAgentTimeMillis());
+
+        long startedAtMillis = compensateForClockSkew(data.getStartedAtMillis(), agentClockSkewMillis);
+        long reportedAtMillis = compensateForClockSkew(data.getDumpedAtMillis(), agentClockSkewMillis);
+        long nextReportExpectedBeforeMillis = reportedAtMillis + (data.getCollectorResolutionSeconds() + data
+                .getAgentUploadIntervalSeconds()) * 1000L;
+
+        // Add some tolerance to avoid false negatives...
+        nextReportExpectedBeforeMillis += 60000L;
+
         int updated =
                 jdbcTemplate
-                        .update("UPDATE jvm_info SET reported_at_millis= ? WHERE application_id = ? AND jvm_uuid = ?",
-                                data.getDumpedAtMillis(), appId, data.getJvmUuid());
+                        .update("UPDATE jvm_info SET reported_at_millis = ?," +
+                                        "next_report_expected_before_millis = ?, " +
+                                        "agent_clock_skew_millis = ? " +
+                                        "WHERE application_id = ? AND jvm_uuid = ?",
+                                reportedAtMillis, nextReportExpectedBeforeMillis, agentClockSkewMillis,
+                                appId, data.getJvmUuid
+                                        ());
         if (updated > 0) {
             log.debug("Updated JVM info for {} {}", data.getAppName(), data.getAppVersion());
             return;
@@ -140,20 +162,27 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         updated = jdbcTemplate
                 .update("INSERT INTO jvm_info(organisation_id, application_id, application_version, jvm_uuid, " +
                                 "agent_computer_id, agent_host_name, agent_upload_interval_seconds, agent_vcs_id, agent_version, " +
+                                "agent_clock_skew_millis, " +
                                 "collector_computer_id, collector_host_name, collector_resolution_seconds, collector_vcs_id, " +
-                                "collector_version, method_visibility, started_at_millis, reported_at_millis, tags)" +
-                                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                                "collector_version, method_visibility, started_at_millis, reported_at_millis, " +
+                                "next_report_expected_before_millis, tags)" +
+                                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                         organisationId, appId, data.getAppVersion(), data.getJvmUuid(), data.getAgentComputerId(), data.getAgentHostName(),
-                        data.getAgentUploadIntervalSeconds(), data.getAgentVcsId(), data.getAgentVersion(), data.getCollectorComputerId(),
-                        data.getCollectorHostName(), data.getCollectorResolutionSeconds(), data.getCollectorVcsId(),
-                        data.getCollectorVersion(), data.getMethodVisibility(), data.getStartedAtMillis(), data.getDumpedAtMillis(),
-                        normalizeTags(data.getTags()));
+                        data.getAgentUploadIntervalSeconds(), data.getAgentVcsId(), data.getAgentVersion(), agentClockSkewMillis,
+                        data.getCollectorComputerId(), data.getCollectorHostName(), data.getCollectorResolutionSeconds(),
+                        data.getCollectorVcsId(),
+                        data.getCollectorVersion(), data.getMethodVisibility(), startedAtMillis, reportedAtMillis,
+                        nextReportExpectedBeforeMillis, normalizeTags(data.getTags()));
 
         if (updated == 1) {
             log.debug("Stored JVM info for {} {}", data.getAppName(), data.getAppVersion());
         } else {
             log.warn("Cannot store JVM info {}", data);
         }
+    }
+
+    private long calculateAgentClockSkewMillis(long agentTimeMillis) {
+        return System.currentTimeMillis() - agentTimeMillis;
     }
 
     String normalizeTags(String tags) {
@@ -181,6 +210,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                            "jvm.agent_version, " +
                                            "jvm.agent_vcs_id, " +
                                            "jvm.agent_upload_interval_seconds, " +
+                                           "jvm.agent_clock_skew_millis, " +
                                            "jvm.collector_host_name, " +
                                            "jvm.collector_version, " +
                                            "jvm.collector_vcs_id, " +
@@ -346,17 +376,10 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                            "stat.num_truly_dead_signatures, " +
                                            "stat.first_started_at_millis, " +
                                            "stat.last_reported_at_millis, " +
-                                           "stat.up_time_millis, " +
-                                           "MIN(jvm.agent_upload_interval_seconds + jvm.collector_resolution_seconds), " +
-                                           "MAX(jvm.agent_upload_interval_seconds + jvm.collector_resolution_seconds) " +
-                                           "FROM applications a, application_statistics stat, jvm_info jvm " +
+                                           "stat.up_time_millis " +
+                                           "FROM applications a, application_statistics stat " +
                                            "WHERE stat.application_id = a.id " +
-                                           "AND jvm.application_id = a.id " +
-                                           "AND jvm.application_version = stat.application_version " +
-                                           "AND a.organisation_id = ? " +
-                                           "GROUP BY " +
-                                           "jvm.application_id, " +
-                                           "jvm.application_version ",
+                                           "AND a.organisation_id = ? ",
                                    new ApplicationStatisticsDisplayRowMapper(), organisationId);
 
         return ApplicationStatisticsMessage.builder()
@@ -368,26 +391,18 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     private static class ApplicationStatisticsDisplayRowMapper implements RowMapper<ApplicationStatisticsDisplay> {
         @Override
         public ApplicationStatisticsDisplay mapRow(ResultSet rs, int rowNum) throws SQLException {
+            String appName = rs.getString(1);
             int usageCycleSeconds = rs.getInt(2);
-            long firstStartedAtMillis = rs.getLong(9);
+            String appVersion = rs.getString(3);
             int numSignatures = rs.getInt(4);
+            int numNeverInvokedSignatures = rs.getInt(5);
             int numInvokedSignatures = rs.getInt(6);
+            int numStartupSignatures = rs.getInt(7);
             int numTrulyDead = rs.getInt(8);
+            long firstStartedAtMillis = rs.getLong(9);
             long lastDataReceivedAtMillis = rs.getLong(10);
-            int dataAgeSeconds = (int)(System.currentTimeMillis() - lastDataReceivedAtMillis)/1000;
             long upTimeMillis = rs.getLong(11);
-            int minIntervalSeconds = rs.getInt(12);
-            int maxIntervalSeconds = rs.getInt(13);
 
-            dataAgeSeconds -= 60; // give some margin
-            final String collectorsWorking;
-            if (dataAgeSeconds > maxIntervalSeconds) {
-                collectorsWorking = "none";
-            } else if (dataAgeSeconds > minIntervalSeconds && dataAgeSeconds <= maxIntervalSeconds) {
-                collectorsWorking = "some";
-            } else {
-                collectorsWorking = "all";
-            }
             Integer percentDeadSignatures = numSignatures == 0 ? null : Math.round(numTrulyDead * 100f / numSignatures);
             Integer percentInvokedSignatures = numSignatures == 0 ? null : Math.round(numInvokedSignatures * 100f / numSignatures);
             Integer percentNeverInvokedSignatures = percentInvokedSignatures == null ? null : 100 - percentInvokedSignatures;
@@ -406,19 +421,19 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
             }
 
             return ApplicationStatisticsDisplay.builder()
-                                               .name(rs.getString(1))
+                                               .name(appName)
                                                .usageCycleSeconds(usageCycleSeconds)
-                                               .version(rs.getString(3))
+                                               .version(appVersion)
                                                .numSignatures(numSignatures)
-                                               .numNeverInvokedSignatures(rs.getInt(5))
+                                               .numNeverInvokedSignatures(numNeverInvokedSignatures)
                                                .percentNeverInvokedSignatures(percentNeverInvokedSignatures)
                                                .numInvokedSignatures(numInvokedSignatures)
                                                .percentInvokedSignatures(percentInvokedSignatures)
-                                               .numStartupSignatures(rs.getInt(7))
+                                               .numStartupSignatures(numStartupSignatures)
                                                .numTrulyDeadSignatures(numTrulyDead)
                                                .firstDataReceivedAtMillis(firstStartedAtMillis)
                                                .lastDataReceivedAtMillis(lastDataReceivedAtMillis)
-                                               .collectorsWorking(collectorsWorking)
+                                                       // TODO: .collectorsWorking(collectorsWorking)
                                                .upTimeSeconds(upTimeSeconds)
                                                .upTimePercent(
                                                        upTimePercent.setScale(upTimePercentScale, BigDecimal.ROUND_DOWN).toPlainString())
@@ -447,12 +462,13 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                    .agentHostname(rs.getString(3))
                                    .agentVersion(String.format("%s.%s", rs.getString(4), rs.getString(5)))
                                    .agentUploadIntervalSeconds(rs.getInt(6))
-                                   .collectorHostname(rs.getString(7))
-                                   .collectorVersion(String.format("%s.%s", rs.getString(8), rs.getString(9)))
-                                   .collectorStartedAtMillis(rs.getLong(10))
-                                   .dataReceivedAtMillis(rs.getLong(11))
-                                   .collectorResolutionSeconds(rs.getInt(12))
-                                   .methodVisibility(rs.getString(13))
+                                   .agentClockSkewMillis(rs.getLong(7))
+                                   .collectorHostname(rs.getString(8))
+                                   .collectorVersion(String.format("%s.%s", rs.getString(9), rs.getString(10)))
+                                   .collectorStartedAtMillis(rs.getLong(11))
+                                   .dataReceivedAtMillis(rs.getLong(12))
+                                   .collectorResolutionSeconds(rs.getInt(13))
+                                   .methodVisibility(rs.getString(14))
                                    .build();
         }
     }

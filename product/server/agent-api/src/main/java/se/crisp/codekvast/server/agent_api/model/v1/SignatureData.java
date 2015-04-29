@@ -23,6 +23,8 @@ public class SignatureData {
     @Size(min = Constraints.MIN_JVM_UUID_LENGTH, max = Constraints.MAX_FINGERPRINT_LENGTH)
     private String jvmUuid;
 
+    private long agentTimeMillis;
+
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     @NonNull
     @Valid

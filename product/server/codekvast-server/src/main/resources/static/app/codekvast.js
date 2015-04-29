@@ -334,7 +334,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                 for (var i = 0, len = $scope.applicationStatistics.applications.length; i < len; i++) {
                     var a = $scope.applicationStatistics.applications[i];
                     a.usageCycle = DateService.prettyDuration(a.usageCycleSeconds * 1000);
-                    a.timeToFullUsageCycle = DateService.prettyAge(a.firstDataReceivedAtMillis + a.usageCycleSeconds * 1000);
+                    a.timeToFullUsageCycle = DateService.prettyDuration((a.usageCycleSeconds - a.upTimeSeconds) * 1000);
                     a.collectorAge = DateService.prettyAge(a.firstDataReceivedAtMillis);
                     a.upTime = DateService.prettyDuration(a.upTimeSeconds * 1000);
                     a.percentOfUsageCycle = Math.floor(a.upTimeSeconds * 100 / a.usageCycleSeconds);
@@ -346,10 +346,10 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                         a.usageCycleMultiple = Math.round(a.upTimeSeconds / a.usageCycleSeconds);
                     }
                     if (a.fullUsageCycleElapsed) {
+                        a.percentTrulyDead = a.percentTrulyDeadSignatures + "%"
                         a.trulyDeadTooltip = "This is truly dead code";
                     } else {
-                        a.numTrulyDeadSignatures = "?"
-                        a.percentTrulyDeadSignatures = "?"
+                        a.percentTrulyDead = undefined
                         a.trulyDeadTooltip = "Be patient for another " + a.timeToFullUsageCycle + " ...";
                     }
                     a.dataAge = DateService.prettyAge(a.lastDataReceivedAtMillis);

@@ -131,7 +131,8 @@ public class AgentApiImpl implements AgentApi {
             long startedAt = System.currentTimeMillis();
             log.debug("Uploading chunk #{} of size {}", chunkNumber, chunk.size());
 
-            SignatureData data = SignatureData.builder().jvmUuid(jvmUuid).signatures(chunk).build();
+            SignatureData data =
+                    SignatureData.builder().jvmUuid(jvmUuid).agentTimeMillis(System.currentTimeMillis()).signatures(chunk).build();
             restTemplate.postForEntity(uri, validate(data), Void.class);
 
             log.debug("Uploaded chunk #{} in {} ms", chunkNumber, System.currentTimeMillis() - startedAt);

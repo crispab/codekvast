@@ -152,10 +152,7 @@ public class AgentWorker {
 
         if (jvmState.getJvmDataUploadedAt() < jvm.getDumpedAtMillis()) {
             try {
-                //@formatter:off
-
                 agentApi.uploadJvmData(getJvmData(jvmState));
-                //@formatter:on
                 jvmState.setJvmDataUploadedAt(jvm.getDumpedAtMillis());
             } catch (AgentApiException e) {
                 logException("Cannot upload JVM data to " + agentApi.getServerUri(), e);
@@ -169,16 +166,17 @@ public class AgentWorker {
         return JvmData.builder()
                       .agentComputerId(agentComputerId)
                       .agentHostName(agentHostName)
+                      .agentTimeMillis(System.currentTimeMillis())
                       .agentUploadIntervalSeconds(config.getServerUploadIntervalSeconds())
-                      .appName(jvm.getCollectorConfig().getAppName())
-                      .appVersion(jvmState.getAppVersion())
                       .agentVcsId(config.getAgentVcsId())
                       .agentVersion(config.getAgentVersion())
-                      .collectorVcsId(jvm.getCollectorVcsId())
-                      .collectorVersion(jvm.getCollectorVersion())
+                      .appName(jvm.getCollectorConfig().getAppName())
+                      .appVersion(jvmState.getAppVersion())
                       .collectorComputerId(jvm.getComputerId())
                       .collectorHostName(jvm.getHostName())
                       .collectorResolutionSeconds(jvm.getCollectorConfig().getCollectorResolutionSeconds())
+                      .collectorVcsId(jvm.getCollectorVcsId())
+                      .collectorVersion(jvm.getCollectorVersion())
                       .dumpedAtMillis(jvm.getDumpedAtMillis())
                       .jvmUuid(jvm.getJvmUuid())
                       .methodVisibility(jvm.getCollectorConfig().getMethodVisibility().toString())

@@ -26,7 +26,8 @@ public class ApplicationStatisticsDisplay {
     long firstDataReceivedAtMillis;
     long lastDataReceivedAtMillis;
     boolean fullUsageCycleElapsed;
-    String collectorsWorking; // "all", "some", "none"
+    int numWorkingCollectors;
+    int numCollectors;
     int numTrulyDeadSignatures;
     Integer percentTrulyDeadSignatures;
     Integer percentNeverInvokedSignatures;

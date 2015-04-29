@@ -21,6 +21,7 @@ public class CollectorDisplay {
     @NonNull
     String agentVersion;
     int agentUploadIntervalSeconds;
+    long agentClockSkewMillis;
     @NonNull
     String collectorHostname;
     @NonNull

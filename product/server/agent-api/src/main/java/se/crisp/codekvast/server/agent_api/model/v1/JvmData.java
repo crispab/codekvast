@@ -88,4 +88,5 @@ public class JvmData {
 
     private long startedAtMillis;
     private long dumpedAtMillis;
+    private long agentTimeMillis;
 }
