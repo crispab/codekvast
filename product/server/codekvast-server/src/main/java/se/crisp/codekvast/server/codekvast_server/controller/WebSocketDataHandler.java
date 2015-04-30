@@ -26,25 +26,26 @@ import java.util.Collection;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Responsible for sending collector status and signature data messages to the correct users.
+ * Responsible for sending data messages to the correct users.
  *
  * @author olle.hallin@crisp.se
  */
 @RestController
 @Slf4j
-public class SignatureHandler extends AbstractMessageHandler {
+public class WebSocketDataHandler extends AbstractEventBusSubscriber {
     private final UserService userService;
-    private final UserHandler userHandler;
+    private final WebSocketUserPresenceHandler webSocketUserPresenceHandler;
     @NonNull
     private final Validator validator;
 
 
     @Inject
-    public SignatureHandler(EventBus eventBus, SimpMessagingTemplate messagingTemplate, UserService userService, UserHandler userHandler,
-                            Validator validator) {
+    public WebSocketDataHandler(EventBus eventBus, SimpMessagingTemplate messagingTemplate, UserService userService,
+                                WebSocketUserPresenceHandler webSocketUserPresenceHandler,
+                                Validator validator) {
         super(eventBus, messagingTemplate);
         this.userService = userService;
-        this.userHandler = userHandler;
+        this.webSocketUserPresenceHandler = webSocketUserPresenceHandler;
         this.validator = validator;
     }
 
@@ -65,14 +66,13 @@ public class SignatureHandler extends AbstractMessageHandler {
         log.error("Application exception: " + e);
     }
 
-
     /**
      * Send the message to the currently logged in users that are affected by the message.
      */
     @Subscribe
     public void onCollectorStatusMessage(CollectorStatusMessage message) {
         for (String username : message.getUsernames()) {
-            if (userHandler.isPresent(username)) {
+            if (webSocketUserPresenceHandler.isPresent(username)) {
                 log.debug("Sending {} to '{}'", message, username);
                 messagingTemplate.convertAndSendToUser(username, "/queue/collector/status", message);
             }
@@ -85,7 +85,7 @@ public class SignatureHandler extends AbstractMessageHandler {
     @Subscribe
     public void onApplicationStatisticsMessage(ApplicationStatisticsMessage message) {
         for (String username : message.getUsernames()) {
-            if (userHandler.isPresent(username)) {
+            if (webSocketUserPresenceHandler.isPresent(username)) {
                 log.debug("Sending {} to '{}'", message, username);
                 messagingTemplate.convertAndSendToUser(username, "/queue/application/statistics", message);
             }
@@ -98,7 +98,7 @@ public class SignatureHandler extends AbstractMessageHandler {
     @Subscribe
     public void onSignatureDataMessage(SignatureDataMessage message) throws CodekvastException {
         for (String username : message.getUsernames()) {
-            if (userHandler.isPresent(username)) {
+            if (webSocketUserPresenceHandler.isPresent(username)) {
                 log.debug("Sending {} to '{}'", message, username);
                 messagingTemplate.convertAndSendToUser(username, "/queue/signature/data", message);
             }
@@ -112,7 +112,7 @@ public class SignatureHandler extends AbstractMessageHandler {
      * @return A SignatureDataMessage containing all signatures the user has rights to view as well as an initial
      * CollectorStatusMessage
      */
-    @RequestMapping("/api/signatures")
+    @RequestMapping("/api/web/signatures")
     public SignatureDataMessage getSignatureData(Principal principal) throws CodekvastException {
         String username = principal.getName();
         log.debug("'{}' requests all signatures", username);
@@ -128,7 +128,7 @@ public class SignatureHandler extends AbstractMessageHandler {
                                    .build();
     }
 
-    @RequestMapping(value = "/api/collectorSettings", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/web/collectorSettings", method = RequestMethod.POST)
     public void saveCollectorSettings(@Valid @RequestBody CollectorSettings collectorSettings, Principal principal)
             throws CodekvastException {
         String username = principal.getName();

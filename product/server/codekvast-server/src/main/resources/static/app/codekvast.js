@@ -142,7 +142,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                 socket.stomp.subscribe("/user/queue/collector/status", onCollectorStatusMessage);
                 socket.stomp.subscribe("/user/queue/signature/data", onSignatureDataMessage);
 
-                $http.get('/api/signatures')
+                $http.get('/api/web/signatures')
                     .success(function (data) {
                         broadcast('jumbotronMessage', null);
                         broadcast('applicationStatistics', data.applicationStatistics);
@@ -171,7 +171,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                 })
             }
 
-            $http.post('/api/collectorSettings', data)
+            $http.post('/api/web/collectorSettings', data)
                 .success(function () {
                     console.log("Saved collector settings %o", data);
                 })

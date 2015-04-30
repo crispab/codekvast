@@ -11,16 +11,16 @@ import javax.annotation.PreDestroy;
  *
  * @author olle.hallin@crisp.se
  */
-abstract class AbstractMessageHandler {
+abstract class AbstractEventBusSubscriber {
     protected final EventBus eventBus;
     protected final SimpMessagingTemplate messagingTemplate;
 
-    protected AbstractMessageHandler(EventBus eventBus, SimpMessagingTemplate messagingTemplate) {
+    protected AbstractEventBusSubscriber(EventBus eventBus, SimpMessagingTemplate messagingTemplate) {
         this.eventBus = eventBus;
         this.messagingTemplate = messagingTemplate;
     }
 
-    protected AbstractMessageHandler(EventBus eventBus) {
+    protected AbstractEventBusSubscriber(EventBus eventBus) {
         this(eventBus, null);
     }
 

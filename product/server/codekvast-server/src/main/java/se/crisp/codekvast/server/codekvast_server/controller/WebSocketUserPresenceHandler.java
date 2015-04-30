@@ -28,7 +28,7 @@ import java.util.Set;
  */
 @Service
 @Slf4j
-public class UserHandler extends AbstractMessageHandler {
+public class WebSocketUserPresenceHandler extends AbstractEventBusSubscriber {
 
     private final Map<String, String> sessionIdToUsername = new HashMap<>();
     private final Set<String> presentUsers = new HashSet<>();
@@ -36,7 +36,7 @@ public class UserHandler extends AbstractMessageHandler {
     private final Object lock = new Object();
 
     @Inject
-    public UserHandler(EventBus eventBus) {
+    public WebSocketUserPresenceHandler(EventBus eventBus) {
         super(eventBus);
     }
 
@@ -70,7 +70,7 @@ public class UserHandler extends AbstractMessageHandler {
             sessionIdToUsername.put(sessionId, username);
             presentUsers.add(username);
         }
-        log.info("Added username '{}'", username);
+        log.info("'{}' arrived", username);
         eventBus.post(new UserConnectedEvent(username));
     }
 
@@ -97,7 +97,7 @@ public class UserHandler extends AbstractMessageHandler {
         }
 
         if (username != null) {
-            log.info("Removed username '{}'", username);
+            log.info("'{}' left", username);
             eventBus.post(new UserDisconnectedEvent(username));
         }
     }
