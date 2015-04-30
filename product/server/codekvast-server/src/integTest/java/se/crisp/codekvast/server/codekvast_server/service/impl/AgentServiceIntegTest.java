@@ -30,6 +30,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
+import static se.crisp.codekvast.test.matchers.LongIsInRange.inRange;
 
 /**
  * @author olle.hallin@crisp.se
@@ -90,17 +91,17 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
 
         ApplicationStatisticsMessage statsMessage = (ApplicationStatisticsMessage) events.get(0);
         ApplicationStatisticsDisplay stats = statsMessage.getApplications().iterator().next();
-        assertThat((double) stats.getFirstDataReceivedAtMillis(), closeTo(startedAtMillis, 25D));
-        assertThat((double) stats.getLastDataReceivedAtMillis(), closeTo(dumpedAtMillis, 25D));
+        assertThat(stats.getFirstDataReceivedAtMillis(), inRange(startedAtMillis, startedAtMillis + 100L));
+        assertThat(stats.getLastDataReceivedAtMillis(), inRange(dumpedAtMillis, dumpedAtMillis + 100L));
 
         CollectorStatusMessage csm = (CollectorStatusMessage) events.get(1);
         CollectorDisplay collector = csm.getCollectors().iterator().next();
-        assertThat((double) collector.getCollectorStartedAtMillis(), closeTo(startedAtMillis, 25D));
+        assertThat(collector.getCollectorStartedAtMillis(), inRange(startedAtMillis, startedAtMillis + 100L));
 
         statsMessage = (ApplicationStatisticsMessage) events.get(2);
         stats = statsMessage.getApplications().iterator().next();
-        assertThat((double) stats.getFirstDataReceivedAtMillis(), closeTo(startedAtMillis, 25D));
-        assertThat((double) stats.getLastDataReceivedAtMillis(), closeTo(dumpedAtMillis + 1000L, 25D));
+        assertThat(stats.getFirstDataReceivedAtMillis(), inRange(startedAtMillis, startedAtMillis + 100L));
+        assertThat(stats.getLastDataReceivedAtMillis(), inRange(dumpedAtMillis + 1000L, dumpedAtMillis + 1000L + 100L));
     }
 
     @Test(expected = UndefinedUserException.class)

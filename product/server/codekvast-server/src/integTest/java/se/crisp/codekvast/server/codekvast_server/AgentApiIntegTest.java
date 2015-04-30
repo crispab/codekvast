@@ -23,9 +23,11 @@ import java.util.*;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
 import static se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence.EXACT_MATCH;
+import static se.crisp.codekvast.test.matchers.LongIsInRange.inRange;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @EmbeddedCodekvastServerIntegTest
@@ -109,10 +111,10 @@ public class AgentApiIntegTest {
                 assertThat(entry.getInvokedAtMillis(), is(0L));
             }
             if (entry.getName().equals(signatures.get(1))) {
-                assertThat((double) entry.getInvokedAtMillis(), closeTo(now, 100D));
+                assertThat(entry.getInvokedAtMillis(), inRange(now, now + 100L));
             }
             if (entry.getName().equals(signatures.get(2))) {
-                assertThat((double) entry.getInvokedAtMillis(), closeTo(now + 1000D, 100D));
+                assertThat(entry.getInvokedAtMillis(), inRange(now + 1000L, now + 1000L + 100L));
             }
         }
 
