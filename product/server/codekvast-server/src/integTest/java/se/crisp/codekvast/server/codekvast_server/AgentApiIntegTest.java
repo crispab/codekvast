@@ -27,7 +27,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
 import static se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence.EXACT_MATCH;
-import static se.crisp.codekvast.test.matchers.LongIsInRange.inRange;
+import static se.crisp.codekvast.test.matchers.LongIsInRangeMatcher.inRange;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @EmbeddedCodekvastServerIntegTest

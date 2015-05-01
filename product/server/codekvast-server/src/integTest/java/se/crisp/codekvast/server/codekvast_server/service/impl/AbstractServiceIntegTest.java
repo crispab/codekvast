@@ -1,7 +1,6 @@
 package se.crisp.codekvast.server.codekvast_server.service.impl;
 
 import com.google.common.eventbus.EventBus;
-import junit.framework.AssertionFailedError;
 import org.junit.Before;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
@@ -13,9 +12,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author olle.hallin@crisp.se
  */
 public abstract class AbstractServiceIntegTest extends AbstractTransactionalJUnit4SpringContextTests {
-    protected final long startedAtMillis = System.currentTimeMillis() - 3600_000L;
-    protected final long now = System.currentTimeMillis();
-
     protected final List<Object> events = new CopyOnWriteArrayList<>();
 
     @Inject
@@ -25,29 +21,6 @@ public abstract class AbstractServiceIntegTest extends AbstractTransactionalJUni
     public void before() throws Exception {
         eventBus.register(this);
         events.clear();
-    }
-
-    /*
-         * The eventBus is asynchronous, events are delivered on another thread than the service call.
-         */
-    protected void assertEventsWithinMillis(int expectedEvents, long maxWaitMillis) {
-        long stopWaitAt = System.currentTimeMillis() + maxWaitMillis;
-
-        while (true) {
-            int currentLength = events.size();
-            if (currentLength >= expectedEvents) {
-                return;
-            }
-            try {
-                Thread.sleep(5L);
-            } catch (InterruptedException ignore) {
-            }
-
-            if (System.currentTimeMillis() > stopWaitAt) {
-                throw new AssertionFailedError("Expected " + expectedEvents + " event(s) within " + maxWaitMillis + " ms.");
-            }
-        }
-
     }
 
     protected Integer countRows(String table, Object... args) {

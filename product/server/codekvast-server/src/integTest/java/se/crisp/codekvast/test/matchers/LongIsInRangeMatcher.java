@@ -11,11 +11,11 @@ import org.hamcrest.TypeSafeMatcher;
 /**
  * Is the value a number inside a range?
  */
-public class LongIsInRange extends TypeSafeMatcher<Long> {
+public class LongIsInRangeMatcher extends TypeSafeMatcher<Long> {
     private final Long low;
     private final Long high;
 
-    public LongIsInRange(Long low, Long high) {
+    public LongIsInRangeMatcher(Long low, Long high) {
         this.low = low;
         this.high = high;
     }
@@ -38,6 +38,6 @@ public class LongIsInRange extends TypeSafeMatcher<Long> {
 
     @Factory
     public static Matcher<Long> inRange(Long low, Long high) {
-        return new LongIsInRange(low, high);
+        return new LongIsInRangeMatcher(low, high);
     }
 }
