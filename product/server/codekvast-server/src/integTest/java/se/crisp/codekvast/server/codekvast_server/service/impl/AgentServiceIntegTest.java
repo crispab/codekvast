@@ -47,14 +47,19 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
     @Inject
     private AgentService agentService;
 
+    private ApplicationStatisticsMessage lastApplicationStatisticsMessage;
+    private CollectorStatusMessage lastCollectorStatusMessage;
+
     @Subscribe
     public void onCollectorStatusMessage(CollectorStatusMessage message) {
         events.add(message);
+        lastCollectorStatusMessage = message;
     }
 
     @Subscribe
     public void onApplicationStatisticsMessage(ApplicationStatisticsMessage message) {
         events.add(message);
+        lastApplicationStatisticsMessage = message;
     }
 
     @Subscribe
@@ -65,56 +70,53 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
     @Test
     public void testStoreJvmData_fromValidAgent() throws Exception {
         // given
-        long agentClockSkewMillis = 123456;
         long collectionIntervalMillis = 3600_000L;
         long now = System.currentTimeMillis();
-        long startedAtMillis = now - collectionIntervalMillis;
-        long t1 = now;
-        long t2 = now + collectionIntervalMillis;
+        long t0 = now - 3 * collectionIntervalMillis;
+        long t1 = now - 2 * collectionIntervalMillis;
+        long t2 = now - 1 * collectionIntervalMillis;
+        long t3 = now + 0 * collectionIntervalMillis;
         long clockSkewToleranceMillis = 25L;
 
         // when
-        agentService.storeJvmData("agent", createJvmData(startedAtMillis, t1, agentClockSkewMillis, "app1", "uuid1"));
-        agentService.storeJvmData("agent", createJvmData(startedAtMillis, t2, agentClockSkewMillis, "app1", "uuid1"));
+        agentService.storeJvmData("agent", createJvmData(t0, t1, "app1", "uuid1", "agentHostName1"));
+        agentService.storeJvmData("agent", createJvmData(t0, t3, "app1", "uuid1", "agentHostName1"));
+        agentService.storeJvmData("agent", createJvmData(t1, t3, "app1", "uuid2", "agentHostName2"));
 
         // then
-        assertThat(countRows("jvm_info WHERE jvm_uuid = ? " +
-                                     "AND started_at_millis >= ? " +
+        assertThat(countRows("jvm_info WHERE started_at_millis >= ? " +
                                      "AND started_at_millis < ? " +
                                      "AND reported_at_millis >= ? " +
                                      "AND reported_at_millis < ? ",
-                             "uuid1", startedAtMillis, startedAtMillis + clockSkewToleranceMillis,
-                             t2, t2 + clockSkewToleranceMillis), is(1));
+                             t0, t0 + clockSkewToleranceMillis,
+                             t3, t3 + clockSkewToleranceMillis), is(1));
 
         assertThat(events, contains(
-                isApplicationStatistics(
-                        allOf(
-                                hasProperty("firstDataReceivedAtMillis",
-                                            inRange(startedAtMillis, startedAtMillis + clockSkewToleranceMillis)),
-                                hasProperty("lastDataReceivedAtMillis", inRange(t1, t1 + clockSkewToleranceMillis)),
-                                hasProperty("upTimeSeconds", is(collectionIntervalMillis / 1000))
-                        )
-                ),
+                instanceOf(ApplicationStatisticsMessage.class),
                 instanceOf(CollectorStatusMessage.class),
-                isApplicationStatistics(
-                        allOf(
-                                hasProperty("firstDataReceivedAtMillis",
-                                            inRange(startedAtMillis, startedAtMillis + clockSkewToleranceMillis)),
-                                hasProperty("lastDataReceivedAtMillis", inRange(t2, t2 + clockSkewToleranceMillis)),
-                                hasProperty("upTimeSeconds", is(2 * collectionIntervalMillis / 1000))
-                        )
-                ),
+                instanceOf(ApplicationStatisticsMessage.class),
+                instanceOf(CollectorStatusMessage.class),
+                instanceOf(ApplicationStatisticsMessage.class),
                 instanceOf(CollectorStatusMessage.class)));
 
-        CollectorStatusMessage csm = (CollectorStatusMessage) events.get(1);
+        assertThat(lastApplicationStatisticsMessage, isApplicationStatistics(
+                allOf(
+                        hasProperty("firstDataReceivedAtMillis", inRange(t0, t0 + clockSkewToleranceMillis)),
+                        hasProperty("lastDataReceivedAtMillis", inRange(t3, t3 + clockSkewToleranceMillis)),
+                        hasProperty("upTimeSeconds", is(((t3 - t0) + (t3 - t1)) / 1000))
+                )
+        ));
+
+        CollectorStatusMessage csm = lastCollectorStatusMessage;
         CollectorDisplay collector = csm.getCollectors().iterator().next();
-        assertThat(collector.getCollectorStartedAtMillis(), inRange(startedAtMillis, startedAtMillis + clockSkewToleranceMillis));
+        assertThat(collector.getCollectorStartedAtMillis(), inRange(t1, t1 + clockSkewToleranceMillis));
+        assertThat(collector.getDataReceivedAtMillis(), inRange(t3, t3 + clockSkewToleranceMillis));
     }
 
     @Test(expected = UndefinedUserException.class)
     public void testStoreJvmData_fromUnknownAgent() throws Exception {
         long now = System.currentTimeMillis();
-        agentService.storeJvmData("foobar", createJvmData(now, now, now, "app2", "uuid1"));
+        agentService.storeJvmData("foobar", createJvmData(now, now, "app2", "uuid1", "agentHostName"));
     }
 
     @Test
@@ -122,10 +124,10 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
         long now = System.currentTimeMillis();
         long startedAtMillis = now - 3600_000L;
 
-        agentService.storeJvmData("agent", createJvmData(startedAtMillis, now, now, "app1", "uuid1.1"));
-        agentService.storeJvmData("agent", createJvmData(startedAtMillis + 100L, now, now, "app1", "uuid1.2"));
-        agentService.storeJvmData("agent", createJvmData(startedAtMillis - 100L, now, now, "app2", "uuid2.1"));
-        agentService.storeJvmData("agent", createJvmData(startedAtMillis, now, now, "app2", "uuid2.2"));
+        agentService.storeJvmData("agent", createJvmData(startedAtMillis, now, "app1", "uuid1.1", "agentHostName"));
+        agentService.storeJvmData("agent", createJvmData(startedAtMillis + 100L, now, "app1", "uuid1.2", "agentHostName"));
+        agentService.storeJvmData("agent", createJvmData(startedAtMillis - 100L, now, "app2", "uuid2.1", "agentHostName"));
+        agentService.storeJvmData("agent", createJvmData(startedAtMillis, now, "app2", "uuid2.2", "agentHostName"));
 
         assertThat(events, hasSize(8));
 
@@ -150,11 +152,14 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
                                     instanceOf(ApplicationStatisticsMessage.class)));
     }
 
-    private JvmData createJvmData(long startedAtMillis, long reportedAtMillis, long agentClockSkewMillis, String appName,
-                                  String jvmUuid) {
+    private JvmData createJvmData(long startedAtMillis, long reportedAtMillis, String appName,
+                                  String jvmUuid, String hostName) {
+
+        int agentClockSkewMillis = hostName.hashCode();
+
         return JvmData.builder()
                       .agentComputerId("agentComputerId")
-                      .agentHostName("agentHostName")
+                      .agentHostName(hostName)
                       .agentUploadIntervalSeconds(300)
                       .agentVcsId("agentVcsId")
                       .agentVersion("agentVersion")
