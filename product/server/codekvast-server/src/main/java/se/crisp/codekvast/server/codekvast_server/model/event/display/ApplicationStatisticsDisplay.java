@@ -22,10 +22,9 @@ public class ApplicationStatisticsDisplay {
     int numStartupSignatures;
     int usageCycleSeconds;
     long upTimeSeconds;
-    String upTimePercent;
     long firstDataReceivedAtMillis;
     long lastDataReceivedAtMillis;
-    boolean fullUsageCycleElapsed;
+    boolean fullUsageCycleCompleted;
     int numWorkingCollectors;
     int numCollectors;
     int numTrulyDeadSignatures;

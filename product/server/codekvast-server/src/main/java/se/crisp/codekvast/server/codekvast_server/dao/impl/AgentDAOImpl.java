@@ -19,7 +19,6 @@ import se.crisp.codekvast.server.codekvast_server.model.event.rest.CollectorSett
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.CollectorSettingsEntry;
 
 import javax.inject.Inject;
-import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -235,7 +234,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                            "jvm.collector_vcs_id, " +
                                            "jvm.collector_resolution_seconds, " +
                                            "jvm.method_visibility ",
-                                           new CollectorDisplayRowMapper(), organisationId);
+                                   new CollectorDisplayRowMapper(), organisationId);
 
         return CollectorStatusMessage.builder().applications(applications).collectors(collectors).usernames(usernames).build();
     }
@@ -286,12 +285,14 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         long startedAt = System.currentTimeMillis();
 
         long now = System.currentTimeMillis();
-        Map<String, Object> data = jdbcTemplate.queryForMap("SELECT a.name as appName, " +
-                                                                    "a.usage_cycle_seconds as usageCycleSeconds, " +
-                                                                    "MIN(jvm.started_at_millis) as minStartedAtMillis, " +
-                                                                    "MAX(jvm.started_at_millis) as maxStartedAtMillis, " +
-                                                                    "MAX(jvm.reported_at_millis) as maxReportedAtMillis, " +
-                                                                    "SUM(jvm.reported_at_millis - jvm.started_at_millis) as upTime " +
+        Map<String, Object> data = jdbcTemplate.queryForMap("SELECT a.name AS appname, " +
+                                                                    "a.usage_cycle_seconds AS usagecycleseconds, " +
+                                                                    "MIN(jvm.started_at_millis) AS minstartedatmillis, " +
+                                                                    "MAX(jvm.started_at_millis) AS maxstartedatmillis, " +
+                                                                    "MAX(jvm.reported_at_millis) AS maxreportedatmillis, " +
+                                                                    "AVG(jvm.reported_at_millis - jvm.started_at_millis) AS avguptime, " +
+                                                                    "MIN(jvm.reported_at_millis - jvm.started_at_millis) AS minuptime, " +
+                                                                    "MAX(jvm.reported_at_millis - jvm.started_at_millis) AS maxuptime " +
                                                                     "FROM applications a, jvm_info jvm " +
                                                                     "WHERE jvm.application_id = a.id " +
                                                                     "AND jvm.application_id = ? " +
@@ -306,7 +307,9 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         long minStartedAtMillis = (long) data.get("minStartedAtMillis");
         long maxStartedAtMillis = (long) data.get("maxStartedAtMillis");
         long maxReportedAtMillis = (long) data.get("maxReportedAtMillis");
-        long upTimeMillis = ((BigDecimal) data.get("upTime")).longValue();
+        long avgUpTimeMillis = (long) data.get("avgUpTime");
+        long minUpTimeMillis = (long) data.get("minUpTime");
+        long maxUpTimeMillis = (long) data.get("maxUpTime");
         long startupRelatedIfInvokedBeforeMillis = maxStartedAtMillis + 60000L;
         long trulyDeadIfInvokedBeforeMillis = now - (usageCycleSeconds * 1000L);
 
@@ -336,14 +339,15 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                                                maxStartedAtMillis, startupRelatedIfInvokedBeforeMillis);
 
         int numSignaturesInvokedBeforeUsageCycle = jdbcTemplate.queryForObject("SELECT count(1) FROM signatures s, jvm_info jvm " +
-                                                                         "WHERE s.jvm_id = jvm.id " +
-                                                                         "AND jvm.application_id = ? " +
-                                                                         "AND jvm.application_version = ? " +
-                                                                         "AND s.invoked_at_millis >= ? " +
-                                                                         "AND s.invoked_at_millis < ? ",
-                                                                 Integer.class,
-                                                                 appId.getAppId(), appId.getAppVersion(),
-                                                                 startupRelatedIfInvokedBeforeMillis, trulyDeadIfInvokedBeforeMillis);
+                                                                                       "WHERE s.jvm_id = jvm.id " +
+                                                                                       "AND jvm.application_id = ? " +
+                                                                                       "AND jvm.application_version = ? " +
+                                                                                       "AND s.invoked_at_millis >= ? " +
+                                                                                       "AND s.invoked_at_millis < ? ",
+                                                                               Integer.class,
+                                                                               appId.getAppId(), appId.getAppVersion(),
+                                                                               startupRelatedIfInvokedBeforeMillis,
+                                                                               trulyDeadIfInvokedBeforeMillis);
 
         int numNeverInvokedSignatures = numSignatures - numInvokedSignatures;
         int numTrulyDeadSignatures = numNeverInvokedSignatures + numSignaturesInvokedBeforeUsageCycle;
@@ -352,11 +356,12 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                                   "num_signatures, num_not_invoked_signatures, num_invoked_signatures, " +
                                                   "num_startup_signatures, num_truly_dead_signatures, " +
                                                   "first_started_at_millis, last_reported_at_millis, " +
-                                                  "up_time_millis) " +
-                                                  "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                                                  "avg_up_time_millis, min_up_time_millis, max_up_time_millis) " +
+                                                  "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                                           appId.getAppId(), appId.getAppVersion(),
                                           numSignatures, numNeverInvokedSignatures, numInvokedSignatures, numStartupSignatures,
-                                          numTrulyDeadSignatures, minStartedAtMillis, maxReportedAtMillis, upTimeMillis);
+                                          numTrulyDeadSignatures, minStartedAtMillis, maxReportedAtMillis,
+                                          avgUpTimeMillis, minUpTimeMillis, maxUpTimeMillis);
 
         long elapsed = System.currentTimeMillis() - startedAt;
         log.debug("Statistics for {} {} calculated in {} ms", appName, appId.getAppVersion(), elapsed);
@@ -378,7 +383,9 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                            "stat.num_truly_dead_signatures, " +
                                            "stat.first_started_at_millis, " +
                                            "stat.last_reported_at_millis, " +
-                                           "stat.up_time_millis " +
+                                           "stat.avg_up_time_millis, " +
+                                           "stat.min_up_time_millis, " +
+                                           "stat.max_up_time_millis " +
                                            "FROM applications a, application_statistics stat " +
                                            "WHERE stat.application_id = a.id " +
                                            "AND a.organisation_id = ? ",
@@ -403,24 +410,13 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
             int numTrulyDead = rs.getInt(8);
             long firstStartedAtMillis = rs.getLong(9);
             long lastDataReceivedAtMillis = rs.getLong(10);
-            long upTimeMillis = rs.getLong(11);
+            long avgUpTimeMillis = rs.getLong(11);
 
             Integer percentDeadSignatures = numSignatures == 0 ? null : Math.round(numTrulyDead * 100f / numSignatures);
             Integer percentInvokedSignatures = numSignatures == 0 ? null : Math.round(numInvokedSignatures * 100f / numSignatures);
             Integer percentNeverInvokedSignatures = percentInvokedSignatures == null ? null : 100 - percentInvokedSignatures;
 
-            long upTimeSeconds = Math.round(upTimeMillis / 1000d);
-
-            BigDecimal maxUpTimeMillis = BigDecimal.valueOf(System.currentTimeMillis() - firstStartedAtMillis);
-            BigDecimal upTimePercent = BigDecimal.valueOf(upTimeMillis).multiply(BigDecimal.valueOf(100))
-                                                 .divide(maxUpTimeMillis, BigDecimal.ROUND_UP);
-            int upTimePercentScale = 2;
-            if (upTimePercent.compareTo(new BigDecimal("99.9")) > 0) {
-                upTimePercentScale = 4;
-            }
-            if (upTimePercent.compareTo(new BigDecimal("99.999")) > 0) {
-                upTimePercentScale = 0;
-            }
+            long upTimeSeconds = Math.round(avgUpTimeMillis / 1000d);
 
             return ApplicationStatisticsDisplay.builder()
                                                .name(appName)
@@ -435,12 +431,9 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                                .numTrulyDeadSignatures(numTrulyDead)
                                                .firstDataReceivedAtMillis(firstStartedAtMillis)
                                                .lastDataReceivedAtMillis(lastDataReceivedAtMillis)
-                                                       // TODO: .collectorsWorking(collectorsWorking)
                                                .upTimeSeconds(upTimeSeconds)
-                                               .upTimePercent(
-                                                       upTimePercent.setScale(upTimePercentScale, BigDecimal.ROUND_DOWN).toPlainString())
                                                .percentTrulyDeadSignatures(percentDeadSignatures)
-                                               .fullUsageCycleElapsed(upTimeSeconds >= usageCycleSeconds)
+                                               .fullUsageCycleCompleted(upTimeSeconds >= usageCycleSeconds)
                                                .build();
         }
     }

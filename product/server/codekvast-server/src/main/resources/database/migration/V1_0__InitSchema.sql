@@ -74,8 +74,12 @@ CREATE TABLE application_statistics (
   num_truly_dead_signatures  INTEGER      NOT NULL
   COMMENT 'The number of truly dead signatures in the application, i.e., never invoked at all or only invoked before the latest
    full usage cycle',
-  up_time_millis          BIGINT NOT NULL
-  COMMENT 'How many millis has this application version been running in total?',
+  avg_up_time_millis      BIGINT NOT NULL
+  COMMENT 'How many millis has this application version been running in total (average over all instances)?',
+  min_up_time_millis      BIGINT NOT NULL
+  COMMENT 'How many millis has this application version been running in total (minimum over all instances)?',
+  max_up_time_millis      BIGINT NOT NULL
+  COMMENT 'How many millis has this application version been running in total (maximum over all instances)?',
   first_started_at_millis BIGINT NOT NULL
   COMMENT 'When was this application version first started?',
   last_reported_at_millis BIGINT NOT NULL

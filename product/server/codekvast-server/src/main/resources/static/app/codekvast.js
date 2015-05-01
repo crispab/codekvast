@@ -345,7 +345,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                     if (a.usageCycleMultiple >= 10) {
                         a.usageCycleMultiple = Math.round(a.upTimeSeconds / a.usageCycleSeconds);
                     }
-                    if (a.fullUsageCycleElapsed) {
+                    if (a.fullUsageCycleCompleted) {
                         a.percentTrulyDead = a.percentTrulyDeadSignatures + "%"
                         a.trulyDeadTooltip = "This is truly dead code";
                     } else {

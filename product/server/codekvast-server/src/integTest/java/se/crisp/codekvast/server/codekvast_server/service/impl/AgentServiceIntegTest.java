@@ -30,7 +30,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static se.crisp.codekvast.test.matchers.ApplicationStatisticsMatcher.isApplicationStatistics;
-import static se.crisp.codekvast.test.matchers.LongIsInRangeMatcher.inRange;
+import static se.crisp.codekvast.test.matchers.TimestampIsInRangeMatcher.timestampAfter;
 
 /**
  * @author olle.hallin@crisp.se
@@ -76,20 +76,32 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
         long t1 = now - 2 * collectionIntervalMillis;
         long t2 = now - 1 * collectionIntervalMillis;
         long t3 = now + 0 * collectionIntervalMillis;
-        long clockSkewToleranceMillis = 25L;
+        long networkLatencyToleranceMillis = 25L;
 
         // when
         agentService.storeJvmData("agent", createJvmData(t0, t1, "app1", "uuid1", "agentHostName1"));
-        agentService.storeJvmData("agent", createJvmData(t0, t3, "app1", "uuid1", "agentHostName1"));
+
+        // then
+        assertThat(lastApplicationStatisticsMessage, isApplicationStatistics(
+                allOf(
+                        hasProperty("firstDataReceivedAtMillis", timestampAfter(t0, networkLatencyToleranceMillis)),
+                        hasProperty("lastDataReceivedAtMillis", timestampAfter(t1, networkLatencyToleranceMillis)),
+                        hasProperty("upTimeSeconds", is((t1 - t0) / 1000))
+                )
+        ));
+
+        // when
+        agentService.storeJvmData("agent", createJvmData(t0, t2, "app1", "uuid1", "agentHostName1"));
         agentService.storeJvmData("agent", createJvmData(t1, t3, "app1", "uuid2", "agentHostName2"));
 
         // then
-        assertThat(countRows("jvm_info WHERE started_at_millis >= ? " +
-                                     "AND started_at_millis < ? " +
-                                     "AND reported_at_millis >= ? " +
-                                     "AND reported_at_millis < ? ",
-                             t0, t0 + clockSkewToleranceMillis,
-                             t3, t3 + clockSkewToleranceMillis), is(1));
+        assertThat(countRows(
+                "jvm_info WHERE jvm_uuid= ? AND started_at_millis BETWEEN ? AND ? AND reported_at_millis BETWEEN ? AND ? ",
+                "uuid1", t0, t0 + networkLatencyToleranceMillis, t2, t2 + networkLatencyToleranceMillis), is(1));
+
+        assertThat(countRows(
+                "jvm_info WHERE jvm_uuid= ? AND started_at_millis BETWEEN ? AND ? AND reported_at_millis BETWEEN ? AND ? ",
+                "uuid2", t1, t1 + networkLatencyToleranceMillis, t3, t3 + networkLatencyToleranceMillis), is(1));
 
         assertThat(events, contains(
                 instanceOf(ApplicationStatisticsMessage.class),
@@ -101,16 +113,24 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
 
         assertThat(lastApplicationStatisticsMessage, isApplicationStatistics(
                 allOf(
-                        hasProperty("firstDataReceivedAtMillis", inRange(t0, t0 + clockSkewToleranceMillis)),
-                        hasProperty("lastDataReceivedAtMillis", inRange(t3, t3 + clockSkewToleranceMillis)),
-                        hasProperty("upTimeSeconds", is(((t3 - t0) + (t3 - t1)) / 1000))
+                        hasProperty("firstDataReceivedAtMillis", timestampAfter(t0, networkLatencyToleranceMillis)),
+                        hasProperty("lastDataReceivedAtMillis", timestampAfter(t3, networkLatencyToleranceMillis)),
+                        hasProperty("upTimeSeconds", is(average(t2 - t0, t3 - t1) / 1000))
                 )
         ));
 
         CollectorStatusMessage csm = lastCollectorStatusMessage;
         CollectorDisplay collector = csm.getCollectors().iterator().next();
-        assertThat(collector.getCollectorStartedAtMillis(), inRange(t1, t1 + clockSkewToleranceMillis));
-        assertThat(collector.getDataReceivedAtMillis(), inRange(t3, t3 + clockSkewToleranceMillis));
+        assertThat(collector.getCollectorStartedAtMillis(), timestampAfter(t1, networkLatencyToleranceMillis));
+        assertThat(collector.getDataReceivedAtMillis(), timestampAfter(t3, networkLatencyToleranceMillis));
+    }
+
+    private long average(long... values) {
+        long sum = 0L;
+        for (long value : values) {
+            sum += value;
+        }
+        return sum / values.length;
     }
 
     @Test(expected = UndefinedUserException.class)
