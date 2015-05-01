@@ -65,16 +65,17 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
     @Test
     public void testStoreJvmData_fromValidAgent() throws Exception {
         // given
+        long agentClockSkewMillis = 123456;
+        long collectionIntervalMillis = 3600_000L;
         long now = System.currentTimeMillis();
-        long upTimeMillis = 3600_000L;
-        long startedAtMillis = now - upTimeMillis;
+        long startedAtMillis = now - collectionIntervalMillis;
         long t1 = now;
-        long t2 = now + 1000L;
+        long t2 = now + collectionIntervalMillis;
         long clockSkewToleranceMillis = 25L;
 
         // when
-        agentService.storeJvmData("agent", createJvmData(t1, "app1", "uuid1", startedAtMillis));
-        agentService.storeJvmData("agent", createJvmData(t2, "app1", "uuid1", startedAtMillis));
+        agentService.storeJvmData("agent", createJvmData(startedAtMillis, t1, agentClockSkewMillis, "app1", "uuid1"));
+        agentService.storeJvmData("agent", createJvmData(startedAtMillis, t2, agentClockSkewMillis, "app1", "uuid1"));
 
         // then
         assertThat(countRows("jvm_info WHERE jvm_uuid = ? " +
@@ -86,9 +87,23 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
                              t2, t2 + clockSkewToleranceMillis), is(1));
 
         assertThat(events, contains(
-                isApplicationStatistics(startedAtMillis, t1, clockSkewToleranceMillis),
+                isApplicationStatistics(
+                        allOf(
+                                hasProperty("firstDataReceivedAtMillis",
+                                            inRange(startedAtMillis, startedAtMillis + clockSkewToleranceMillis)),
+                                hasProperty("lastDataReceivedAtMillis", inRange(t1, t1 + clockSkewToleranceMillis)),
+                                hasProperty("upTimeSeconds", is(collectionIntervalMillis / 1000))
+                        )
+                ),
                 instanceOf(CollectorStatusMessage.class),
-                isApplicationStatistics(startedAtMillis, t2, clockSkewToleranceMillis),
+                isApplicationStatistics(
+                        allOf(
+                                hasProperty("firstDataReceivedAtMillis",
+                                            inRange(startedAtMillis, startedAtMillis + clockSkewToleranceMillis)),
+                                hasProperty("lastDataReceivedAtMillis", inRange(t2, t2 + clockSkewToleranceMillis)),
+                                hasProperty("upTimeSeconds", is(2 * collectionIntervalMillis / 1000))
+                        )
+                ),
                 instanceOf(CollectorStatusMessage.class)));
 
         CollectorStatusMessage csm = (CollectorStatusMessage) events.get(1);
@@ -99,7 +114,7 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
     @Test(expected = UndefinedUserException.class)
     public void testStoreJvmData_fromUnknownAgent() throws Exception {
         long now = System.currentTimeMillis();
-        agentService.storeJvmData("foobar", createJvmData(now, "app2", "uuid1", now));
+        agentService.storeJvmData("foobar", createJvmData(now, now, now, "app2", "uuid1"));
     }
 
     @Test
@@ -107,10 +122,10 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
         long now = System.currentTimeMillis();
         long startedAtMillis = now - 3600_000L;
 
-        agentService.storeJvmData("agent", createJvmData(now, "app1", "uuid1.1", startedAtMillis));
-        agentService.storeJvmData("agent", createJvmData(now, "app1", "uuid1.2", startedAtMillis + 100L));
-        agentService.storeJvmData("agent", createJvmData(now, "app2", "uuid2.1", startedAtMillis - 100L));
-        agentService.storeJvmData("agent", createJvmData(now, "app2", "uuid2.2", startedAtMillis));
+        agentService.storeJvmData("agent", createJvmData(startedAtMillis, now, now, "app1", "uuid1.1"));
+        agentService.storeJvmData("agent", createJvmData(startedAtMillis + 100L, now, now, "app1", "uuid1.2"));
+        agentService.storeJvmData("agent", createJvmData(startedAtMillis - 100L, now, now, "app2", "uuid2.1"));
+        agentService.storeJvmData("agent", createJvmData(startedAtMillis, now, now, "app2", "uuid2.2"));
 
         assertThat(events, hasSize(8));
 
@@ -135,14 +150,15 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
                                     instanceOf(ApplicationStatisticsMessage.class)));
     }
 
-    private JvmData createJvmData(long reportedAtMillis, String appName, String jvmUuid, long startedAtMillis) {
+    private JvmData createJvmData(long startedAtMillis, long reportedAtMillis, long agentClockSkewMillis, String appName,
+                                  String jvmUuid) {
         return JvmData.builder()
                       .agentComputerId("agentComputerId")
                       .agentHostName("agentHostName")
                       .agentUploadIntervalSeconds(300)
                       .agentVcsId("agentVcsId")
                       .agentVersion("agentVersion")
-                      .agentTimeMillis(System.currentTimeMillis())
+                      .agentTimeMillis(System.currentTimeMillis() - agentClockSkewMillis)
                       .appName(appName)
                       .appVersion("appVersion")
                       .collectorComputerId("collectorComputerId")
@@ -150,10 +166,10 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
                       .collectorResolutionSeconds(600)
                       .collectorVcsId("collectorVcsId")
                       .collectorVersion("collectorVersion")
-                      .dumpedAtMillis(reportedAtMillis)
+                      .dumpedAtMillis(reportedAtMillis - agentClockSkewMillis)
                       .jvmUuid(jvmUuid)
                       .methodVisibility("methodVisibility")
-                      .startedAtMillis(startedAtMillis)
+                      .startedAtMillis(startedAtMillis - agentClockSkewMillis)
                       .tags("  ")
                       .build();
     }

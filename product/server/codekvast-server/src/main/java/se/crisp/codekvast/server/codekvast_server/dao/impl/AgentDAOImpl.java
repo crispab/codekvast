@@ -409,11 +409,11 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
             Integer percentInvokedSignatures = numSignatures == 0 ? null : Math.round(numInvokedSignatures * 100f / numSignatures);
             Integer percentNeverInvokedSignatures = percentInvokedSignatures == null ? null : 100 - percentInvokedSignatures;
 
-            long upTimeSeconds = upTimeMillis / 1000L;
+            long upTimeSeconds = Math.round(upTimeMillis / 1000d);
 
             BigDecimal maxUpTimeMillis = BigDecimal.valueOf(System.currentTimeMillis() - firstStartedAtMillis);
             BigDecimal upTimePercent = BigDecimal.valueOf(upTimeMillis).multiply(BigDecimal.valueOf(100))
-                                                 .divide(maxUpTimeMillis, BigDecimal.ROUND_DOWN);
+                                                 .divide(maxUpTimeMillis, BigDecimal.ROUND_UP);
             int upTimePercentScale = 2;
             if (upTimePercent.compareTo(new BigDecimal("99.9")) > 0) {
                 upTimePercentScale = 4;
