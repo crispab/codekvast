@@ -1,4 +1,4 @@
-package se.crisp.codekvast.server.codekvast_server.controller;
+package se.crisp.codekvast.server.codekvast_server.messaging;
 
 import com.google.common.eventbus.EventBus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -11,7 +11,7 @@ import javax.annotation.PreDestroy;
  *
  * @author olle.hallin@crisp.se
  */
-abstract class AbstractEventBusSubscriber {
+public abstract class AbstractEventBusSubscriber {
     protected final EventBus eventBus;
     protected final SimpMessagingTemplate messagingTemplate;
 

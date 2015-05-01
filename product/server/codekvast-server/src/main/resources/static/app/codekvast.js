@@ -171,12 +171,12 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                 })
             }
 
-            $http.post('/api/web/collectorSettings', data)
+            $http.post('/api/web/settings', data)
                 .success(function () {
-                    console.log("Saved collector settings %o", data);
+                    console.log("Saved settings %o", data);
                 })
                 .error(function (rsp) {
-                    console.log("Cannot save collector settings %o", rsp);
+                    console.log("Cannot save settings %o", rsp);
                 })
 
         };

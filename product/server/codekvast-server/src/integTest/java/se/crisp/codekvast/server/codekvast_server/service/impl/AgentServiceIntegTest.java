@@ -37,11 +37,12 @@ import static se.crisp.codekvast.test.matchers.LongIsInRange.inRange;
  */
 @SuppressWarnings({"CastToConcreteClass", "OverlyCoupledClass"})
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {DataSourceAutoConfiguration.class, DatabaseConfig.class, EventBusConfig.class,
-                                 AgentDAOImpl.class, UserDAOImpl.class, CodekvastSettings.class,
-                                 AgentServiceImpl.class, UserServiceImpl.class})
+@ContextConfiguration(classes = {DataSourceAutoConfiguration.class, DatabaseConfig.class,
+                                 CodekvastSettings.class, AgentDAOImpl.class, UserDAOImpl.class,
+                                 EventBusConfig.class, AgentServiceImpl.class, UserServiceImpl.class})
 @IntegrationTest({
-        "spring.datasource.url=jdbc:h2:mem:serviceTest",
+        "spring.datasource.url = jdbc:h2:mem:serviceTest",
+        "codekvast.eventBusThreads = 0",
 })
 public class AgentServiceIntegTest extends AbstractServiceIntegTest {
 

@@ -27,6 +27,7 @@ public class CodekvastSettings {
     private String committer;
     private String commitDate;
     private String commitMessage;
+    private int eventBusThreads = 0;
 
     @PostConstruct
     public void logStartup() {

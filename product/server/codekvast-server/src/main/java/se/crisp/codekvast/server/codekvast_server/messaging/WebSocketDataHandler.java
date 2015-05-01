@@ -1,4 +1,4 @@
-package se.crisp.codekvast.server.codekvast_server.controller;
+package se.crisp.codekvast.server.codekvast_server.messaging;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -128,8 +128,8 @@ public class WebSocketDataHandler extends AbstractEventBusSubscriber {
                                    .build();
     }
 
-    @RequestMapping(value = "/api/web/collectorSettings", method = RequestMethod.POST)
-    public void saveCollectorSettings(@Valid @RequestBody CollectorSettings collectorSettings, Principal principal)
+    @RequestMapping(value = "/api/web/settings", method = RequestMethod.POST)
+    public void saveSettings(@Valid @RequestBody CollectorSettings collectorSettings, Principal principal)
             throws CodekvastException {
         String username = principal.getName();
         log.debug("'{}' persists collector settings {}", username, collectorSettings);

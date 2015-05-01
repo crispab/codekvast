@@ -1,7 +1,7 @@
 /**
  * Web controllers.
  *
- * These controllers handle traditional HTTP request-response style interactions as well as STOMP message handling.
+ * These controllers handle traditional HTTP request-response style interactions.
  *
  * @author olle.hallin@crisp.se
  */
