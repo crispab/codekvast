@@ -1,20 +1,16 @@
 package se.crisp.codekvast.server.codekvast_server.service.impl;
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
 import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.ApplicationStatisticsMessage;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorStatusMessage;
-import se.crisp.codekvast.server.codekvast_server.model.event.display.SignatureDataMessage;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.SignatureDisplay;
-import se.crisp.codekvast.server.codekvast_server.model.event.internal.InvocationDataReceivedEvent;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.CollectorSettings;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
 
@@ -22,7 +18,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -54,46 +49,6 @@ public class UserServiceImpl implements UserService {
     @PreDestroy
     public void preDestroy() {
         eventBus.unregister(this);
-    }
-
-    /**
-     * Translates InputDataReceivedEvent to InputDataUpdatedEvent by eliminating rows that are older than what users only see on their
-     * screen.
-     */
-    @Subscribe
-    public void onInvocationDataReceivedEvent(InvocationDataReceivedEvent event) {
-        Set<SignatureDisplay> newSignatures = new HashSet<>();
-
-        Map<String, SignatureDisplay> cache = signatureCache.get(event.getAppId().getOrganisationId());
-        if (cache == null) {
-            // No user has logged in yet...
-            return;
-        }
-
-        for (SignatureEntry entry : event.getInvocationEntries()) {
-            SignatureDisplay oldEntry = cache.get(entry.getSignature());
-            if (oldEntry == null || oldEntry.getInvokedAtMillis() < entry.getInvokedAtMillis()) {
-                // Inform active users that there is a new invocation...
-                SignatureDisplay newEntry = SignatureDisplay.builder()
-                                                            .name(entry.getSignature())
-                                                            .invokedAtMillis(entry.getInvokedAtMillis())
-                                                            .millisSinceJvmStart(entry.getMillisSinceJvmStart())
-                                                            .build();
-                newSignatures.add(newEntry);
-
-                // Keep this new high score...
-                cache.put(newEntry.getName(), newEntry);
-            }
-        }
-
-        if (!newSignatures.isEmpty()) {
-            Collection<String> usernames = userDAO.getInteractiveUsernamesInOrganisation(event.getAppId().getOrganisationId());
-            eventBus.post(SignatureDataMessage.builder()
-                                              .usernames(usernames)
-                                              .appId(event.getAppId())
-                                              .signatures(newSignatures)
-                                              .build());
-        }
     }
 
     @Override

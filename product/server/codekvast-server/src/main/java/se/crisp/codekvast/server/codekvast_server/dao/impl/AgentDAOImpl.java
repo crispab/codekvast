@@ -92,7 +92,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
 
 
     @Override
-    public SignatureData storeInvocationData(AppId appId, SignatureData signatureData) {
+    public void storeInvocationData(AppId appId, SignatureData signatureData) {
 
         long agentClockSkewMillis = calculateAgentClockSkewMillis(signatureData.getAgentTimeMillis());
 
@@ -110,21 +110,11 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
             });
         }
 
-        int[] updated = jdbcTemplate.batchUpdate(
+        jdbcTemplate.batchUpdate(
                 "MERGE INTO signatures(organisation_id, application_id, jvm_id, signature, invoked_at_millis, millis_since_jvm_start, " +
                         "confidence) " +
                         "VALUES(?, ?, ?, ?, ?, ?, ?)", args);
 
-        // Now check what really made it into the table...
-        List<SignatureEntry> result = new ArrayList<>();
-        int i = 0;
-        for (SignatureEntry entry : signatureData.getSignatures()) {
-            if (updated[i] > 0) {
-                result.add(entry);
-            }
-            i += 1;
-        }
-        return SignatureData.builder().jvmUuid(signatureData.getJvmUuid()).signatures(result).build();
     }
 
     private long compensateForClockSkew(Long timestamp, long skewMillis) {

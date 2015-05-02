@@ -13,15 +13,13 @@ import org.springframework.web.bind.annotation.*;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.ApplicationStatisticsMessage;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorStatusMessage;
-import se.crisp.codekvast.server.codekvast_server.model.event.display.SignatureDataMessage;
-import se.crisp.codekvast.server.codekvast_server.model.event.display.SignatureDisplay;
+import se.crisp.codekvast.server.codekvast_server.model.event.display.InitialDataMessage;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.CollectorSettings;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
 import java.security.Principal;
-import java.util.Collection;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -33,7 +31,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @RestController
 @Slf4j
 public class WebSocketDataHandler extends AbstractEventBusSubscriber {
+    @NonNull
     private final UserService userService;
+    @NonNull
     private final WebSocketUserPresenceHandler webSocketUserPresenceHandler;
     @NonNull
     private final Validator validator;
@@ -93,38 +93,22 @@ public class WebSocketDataHandler extends AbstractEventBusSubscriber {
     }
 
     /**
-     * Send the message to the currently logged in users that are affected by the message.
-     */
-    @Subscribe
-    public void onSignatureDataMessage(SignatureDataMessage message) throws CodekvastException {
-        for (String username : message.getUsernames()) {
-            if (webSocketUserPresenceHandler.isPresent(username)) {
-                log.debug("Sending {} to '{}'", message, username);
-                messagingTemplate.convertAndSendToUser(username, "/queue/signature/data", message);
-            }
-        }
-    }
-
-    /**
-     * A REST endpoint for doing the initial get of signatures.
+     * A REST endpoint for getting initial data for the web interface..
      *
      * @param principal The identity of the authenticated user.
-     * @return A SignatureDataMessage containing all signatures the user has rights to view as well as an initial
-     * CollectorStatusMessage
+     * @return An InitialDataMessage containing all data needed to inflate the web interface.
      */
-    @RequestMapping("/api/web/signatures")
-    public SignatureDataMessage getSignatureData(Principal principal) throws CodekvastException {
+    @RequestMapping("/api/web/initialData")
+    public InitialDataMessage getInitialData(Principal principal) throws CodekvastException {
         String username = principal.getName();
-        log.debug("'{}' requests all signatures", username);
+        log.debug("'{}' requests initial data", username);
 
         ApplicationStatisticsMessage appStats = userService.getApplicationStatisticsMessage(username);
         CollectorStatusMessage collectorStatus = userService.getCollectorStatusMessage(username);
-        Collection<SignatureDisplay> signatures = userService.getSignatures(username);
 
-        return SignatureDataMessage.builder()
+        return InitialDataMessage.builder()
                                    .applicationStatistics(appStats)
                                    .collectorStatus(collectorStatus)
-                                   .signatures(signatures)
                                    .build();
     }
 

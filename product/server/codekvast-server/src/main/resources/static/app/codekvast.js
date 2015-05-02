@@ -59,7 +59,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         }
     })
 
-    .factory('StompService', ['$rootScope', '$http', '$timeout', function ($rootScope, $http, $timeout) {
+    .factory('RemoteDataService', ['$rootScope', '$http', '$timeout', function ($rootScope, $http, $timeout) {
         var socket = {client: null, stomp: null};
         var lastMessages = {};
         var allSignatures = [];
@@ -80,45 +80,12 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             return allSignatures;
         };
 
-        var updateSignatures = function (signatures) {
-            var startedAt = Date.now();
-            var updateLen = signatures.length;
-
-            for (var i = 0; i < updateLen; i++) {
-                var newSig = signatures[i];
-                var found = false;
-
-                for (var j = 0, len2 = allSignatures.length; j < len2; j++) {
-                    var oldSig = allSignatures[j];
-                    if (oldSig.name === newSig.name) {
-                        found = true;
-                        if (oldSig.invokedAtMillis < newSig.invokedAtMillis) {
-                            oldSig.invokedAtMillis = newSig.invokedAtMillis;
-                        }
-                        break;
-                    }
-                }
-
-                if (!found) {
-                    allSignatures[allSignatures.length] = newSig;
-                }
-            }
-            var elapsed = Date.now() - startedAt;
-            console.log("Updated " + updateLen + " signatures in " + elapsed + " ms");
-        };
-
         var onApplicationStatisticsMessage = function (message) {
             broadcast('applicationStatistics', JSON.parse(message.body));
         }
 
         var onCollectorStatusMessage = function (message) {
             broadcast('collectorStatus', JSON.parse(message.body));
-        };
-
-        var onSignatureDataMessage = function (message) {
-            var signatureDataMessage = JSON.parse(message.body);
-            updateSignatures(signatureDataMessage.signatures);
-            broadcast('signatures');
         };
 
         var onConnected = function () {
@@ -140,18 +107,15 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                 onConnected();
                 socket.stomp.subscribe("/user/queue/application/statistics", onApplicationStatisticsMessage);
                 socket.stomp.subscribe("/user/queue/collector/status", onCollectorStatusMessage);
-                socket.stomp.subscribe("/user/queue/signature/data", onSignatureDataMessage);
 
-                $http.get('/api/web/signatures')
+                $http.get('/api/web/initialData')
                     .success(function (data) {
                         broadcast('jumbotronMessage', null);
                         broadcast('applicationStatistics', data.applicationStatistics);
                         broadcast('collectorStatus', data.collectorStatus);
-                        allSignatures = data.signatures;
-                        broadcast('signatures');
                     })
                     .error(function (data) {
-                        console.log("Cannot get signatures %o", data);
+                        console.log("Cannot get initial data %o", data);
                         onDisconnect(data.toString());
                     })
             }, function (error) {
@@ -229,8 +193,8 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         }
     }])
 
-    .controller('JumbotronController', ['$scope', '$window', 'StompService', function ($scope, $window, StompService) {
-        $scope.jumbotronMessage = StompService.getLastEvent('jumbotronMessage');
+    .controller('JumbotronController', ['$scope', '$window', 'RemoteDataService', function ($scope, $window, RemoteDataService) {
+        $scope.jumbotronMessage = RemoteDataService.getLastEvent('jumbotronMessage');
 
         $scope.$on('jumbotronMessage', function (event, message) {
             $scope.jumbotronMessage = message;
@@ -249,8 +213,8 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
     }])
 
-    .controller('SettingsController', ['$scope', '$modalInstance', 'StompService', 'DateService', function ($scope, $modalInstance, StompService, DateService) {
-        $scope.collectorStatus = StompService.getLastEvent('collectorStatus');
+    .controller('SettingsController', ['$scope', '$modalInstance', 'RemoteDataService', 'DateService', function ($scope, $modalInstance, RemoteDataService, DateService) {
+        $scope.collectorStatus = RemoteDataService.getLastEvent('collectorStatus');
 
         $scope.setUnit = function (a, code) {
             if (!a.usageCycleValue) {
@@ -308,7 +272,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
         $scope.save = function () {
             if ($scope.collectorStatus) {
-                StompService.persistsApplicationSettings($scope.collectorStatus);
+                RemoteDataService.persistsApplicationSettings($scope.collectorStatus);
             }
 
             $modalInstance.close();
@@ -320,8 +284,8 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
     }])
 
-    .controller('StatisticsController', ['$scope', '$interval', 'DateService', 'StompService', function ($scope, $interval, DateService, StompService) {
-        $scope.applicationStatistics = StompService.getLastEvent('applicationStatistics');
+    .controller('StatisticsController', ['$scope', '$interval', 'DateService', 'RemoteDataService', function ($scope, $interval, DateService, RemoteDataService) {
+        $scope.applicationStatistics = RemoteDataService.getLastEvent('applicationStatistics');
         $scope.dateFormat = 'yyyy-MM-dd HH:mm:ss';
 
         $scope.$on('applicationStatistics', function (event, data) {
@@ -366,8 +330,8 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         $scope.updateModelInterval = $interval($scope.updateModel, 500, false);
     }])
 
-    .controller('CollectorController', ['$scope', '$interval', 'DateService', 'StompService', function ($scope, $interval, DateService, StompService) {
-        $scope.collectorStatus = StompService.getLastEvent('collectorStatus');
+    .controller('CollectorController', ['$scope', '$interval', 'DateService', 'RemoteDataService', function ($scope, $interval, DateService, RemoteDataService) {
+        $scope.collectorStatus = RemoteDataService.getLastEvent('collectorStatus');
         $scope.collectorStatusOpen = true;
         $scope.dateFormat = 'yyyy-MM-dd HH:mm:ss';
 
@@ -398,71 +362,15 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
     }])
 
-    .controller('SignatureController', ['$scope', '$filter', 'StompService', function ($scope, $filter, StompService) {
-
-        $scope.newestSignatures = undefined;
-        $scope.newestSignaturesOpen = false;
-        $scope.trulyDeadSignatures = undefined;
-        $scope.trulyDeadSignaturesOpen = false;
+    .controller('SignatureController', ['$scope', '$filter', 'RemoteDataService', function ($scope, $filter, RemoteDataService) {
         $scope.dateFormat = 'yyyy-MM-dd HH:mm:ss';
 
         $scope.filter = {
             minAgeValue: 30,
-            signature: undefined,
             maxRows: 100
         };
 
-        $scope.setAgeUnit = function (code) {
-            switch (code) {
-                case 0:
-                    $scope.filter.ageUnit = 'minutes';
-                    $scope.filter.ageStep = 15;
-                    $scope.filter.ageMultiplier = 60 * 1000;
-                    break;
-                case 1:
-                    $scope.filter.ageUnit = 'hours';
-                    $scope.filter.ageStep = 6;
-                    $scope.filter.ageMultiplier = 60 * 60 * 1000;
-                    break;
-                case 2:
-                    $scope.filter.ageUnit = 'days';
-                    $scope.filter.ageStep = 1;
-                    $scope.filter.ageMultiplier = 24 * 60 * 60 * 1000;
-                    break;
-            }
-        };
-
-        $scope.setAgeUnit(0);
-
-        $scope.setFilteredSignatures = function() {
-            var minAgeMillis = Date.now() - $scope.filter.minAgeValue * $scope.filter.ageMultiplier;
-            var filtered = $scope.allSignatures;
-            filtered = $filter('filter')(filtered, $scope.filter.signature);
-            filtered = $filter('filter')(filtered, function (s) {
-                return s.invokedAtMillis < minAgeMillis;
-            });
-            filtered = $filter('orderBy')(filtered, 'invokedAtMillis');
-            filtered = $filter('limitTo')(filtered, $scope.filter.maxRows);
-            $scope.trulyDeadSignatures = filtered;
-
-            filtered = $scope.allSignatures;
-            filtered = $filter('orderBy')(filtered, 'invokedAtMillis', true);
-            filtered = $filter('limitTo')(filtered, 10);
-            $scope.newestSignatures = filtered;
-        };
-
-        $scope.$watchCollection('filter', $scope.setFilteredSignatures);
-
-        $scope.allSignatures = StompService.getAllSignatures();
-        $scope.setFilteredSignatures();
-
-        $scope.$on('signatures', function (event) {
-            $scope.allSignatures = StompService.getAllSignatures();
-            $scope.setFilteredSignatures();
-        });
-
         $scope.$on('stompDisconnected', function (event, message) {
-            $scope.signatures = undefined;
         });
     }])
 
@@ -475,6 +383,6 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         }
     }])
 
-    .run(['StompService', function (StompService) {
-        StompService.initSocket();
+    .run(['RemoteDataService', function (RemoteDataService) {
+        RemoteDataService.initSocket();
     }]);

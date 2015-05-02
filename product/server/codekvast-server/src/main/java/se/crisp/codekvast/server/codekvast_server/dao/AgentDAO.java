@@ -32,9 +32,8 @@ public interface AgentDAO {
      *
      * @param appId The identity of the application
      * @param signatureData The invocation data to store.
-     * @return The data that has actually been inserted in the database (i.e., duplicates are eliminated)
      */
-    SignatureData storeInvocationData(AppId appId, SignatureData signatureData);
+    void storeInvocationData(AppId appId, SignatureData signatureData);
 
     /**
      * Stores data about a JVM run

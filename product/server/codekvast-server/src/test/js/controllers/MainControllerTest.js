@@ -6,14 +6,14 @@ describe('JumbotronController', function () {
     beforeEach(module('codekvastApp'));
 
     var JumbotronController,
-        StompService,
+        RemoteDataService,
         scope,
         now = Date.now();
 
     // Initialize the controller and a mock scope
-    beforeEach(inject(function ($controller, $rootScope, _StompService_) {
+    beforeEach(inject(function ($controller, $rootScope, _RemoteDataService_) {
         scope = $rootScope.$new();
-        StompService = _StompService_;
+        RemoteDataService = _RemoteDataService_;
         JumbotronController = $controller('JumbotronController', {
             $scope: scope
         });

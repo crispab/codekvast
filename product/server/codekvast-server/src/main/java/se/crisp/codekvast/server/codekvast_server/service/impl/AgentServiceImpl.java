@@ -10,7 +10,6 @@ import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
-import se.crisp.codekvast.server.codekvast_server.model.event.internal.InvocationDataReceivedEvent;
 import se.crisp.codekvast.server.codekvast_server.service.AgentService;
 
 import javax.inject.Inject;
@@ -63,10 +62,10 @@ public class AgentServiceImpl implements AgentService {
             log.info("Ignoring invocation data for JVM {}", data.getJvmUuid());
             return;
         }
-        SignatureData storedData = agentDAO.storeInvocationData(appId, data);
+
+        agentDAO.storeInvocationData(appId, data);
 
         agentDAO.recalculateApplicationStatistics(appId);
-        eventBus.post(new InvocationDataReceivedEvent(appId, storedData.getSignatures()));
         eventBus.post(agentDAO.createApplicationStatisticsMessage(appId.getOrganisationId()));
     }
 

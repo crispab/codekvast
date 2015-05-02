@@ -20,7 +20,6 @@ import se.crisp.codekvast.server.codekvast_server.exception.UndefinedUserExcepti
 import se.crisp.codekvast.server.codekvast_server.model.event.display.ApplicationStatisticsMessage;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorDisplay;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorStatusMessage;
-import se.crisp.codekvast.server.codekvast_server.model.event.internal.InvocationDataReceivedEvent;
 import se.crisp.codekvast.server.codekvast_server.service.AgentService;
 
 import javax.inject.Inject;
@@ -60,11 +59,6 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
     public void onApplicationStatisticsMessage(ApplicationStatisticsMessage message) {
         events.add(message);
         lastApplicationStatisticsMessage = message;
-    }
-
-    @Subscribe
-    public void onInvocationDataReceivedEvent(InvocationDataReceivedEvent event) {
-        events.add(event);
     }
 
     @Test
@@ -162,13 +156,9 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
         agentService.storeSignatureData(SignatureData.builder().jvmUuid("uuid2.1").signatures(signatures).build());
         agentService.storeSignatureData(SignatureData.builder().jvmUuid("uuid2.2").signatures(signatures).build());
 
-        assertThat(events, contains(instanceOf(InvocationDataReceivedEvent.class),
+        assertThat(events, contains(instanceOf(ApplicationStatisticsMessage.class),
                                     instanceOf(ApplicationStatisticsMessage.class),
-                                    instanceOf(InvocationDataReceivedEvent.class),
                                     instanceOf(ApplicationStatisticsMessage.class),
-                                    instanceOf(InvocationDataReceivedEvent.class),
-                                    instanceOf(ApplicationStatisticsMessage.class),
-                                    instanceOf(InvocationDataReceivedEvent.class),
                                     instanceOf(ApplicationStatisticsMessage.class)));
     }
 
