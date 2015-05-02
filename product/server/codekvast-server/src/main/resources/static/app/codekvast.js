@@ -153,20 +153,20 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         }
     }])
 
-    .constant('Defaults', {defaultRoute: 'application-statistics'})
+    .constant('Defaults', {defaultRoute: 'application-usage-statistics'})
 
 
     .controller('NavigationController', ['$scope', '$location', '$modal', 'Defaults', function($scope, $location, $modal, Defaults) {
         $scope.menuItems = [
             {
-                name: 'Application Statistics',
-                url: '/page/application-statistics',
+                name: 'Application Usage Statistics',
+                url: '/page/application-usage-statistics',
                 title: 'Show collection status',
                 icon: 'glyphicon-stats'
             },
             {
-                name: 'Reports',
-                url: '/page/reports',
+                name: 'Identify Truly Dead Code',
+                url: '/page/truly-dead-code',
                 title: 'Generate reports of truly dead code',
                 icon: 'glyphicon-th-list'
             }
@@ -330,7 +330,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         $scope.updateModelInterval = $interval($scope.updateModel, 500, false);
     }])
 
-    .controller('CollectorController', ['$scope', '$interval', 'DateService', 'RemoteDataService', function ($scope, $interval, DateService, RemoteDataService) {
+    .controller('CollectorsController', ['$scope', '$interval', 'DateService', 'RemoteDataService', function ($scope, $interval, DateService, RemoteDataService) {
         $scope.collectorStatus = RemoteDataService.getLastEvent('collectorStatus');
         $scope.collectorStatusOpen = true;
         $scope.dateFormat = 'yyyy-MM-dd HH:mm:ss';
@@ -362,7 +362,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
     }])
 
-    .controller('SignatureController', ['$scope', '$filter', 'RemoteDataService', function ($scope, $filter, RemoteDataService) {
+    .controller('ReportController', ['$scope', '$filter', 'RemoteDataService', function ($scope, $filter, RemoteDataService) {
         $scope.dateFormat = 'yyyy-MM-dd HH:mm:ss';
 
         $scope.filter = {

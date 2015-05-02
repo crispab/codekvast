@@ -34,9 +34,10 @@ public class CollectorConfig implements CodekvastConfig {
     public static final String SAMPLE_CODEBASE_URI1 = "/path/to/codebase1/";
     public static final String SAMPLE_CODEBASE_URI2 = "/path/to/codebase2/";
     public static final File SAMPLE_DATA_PATH = new File("/tmp)");
-    public static final String SAMPLE_TAGS = "production, frontend-web";
+    public static final String SAMPLE_TAGS = "key1=value1, key2=value2";
     public static final String OVERRIDE_SEPARATOR = ";";
     public static final String UNSPECIFIED_VERSION = "unspecified";
+    private static final String TAGS_KEY = "tags";
 
     @NonNull
     private final File dataPath;
@@ -56,7 +57,6 @@ public class CollectorConfig implements CodekvastConfig {
     private final String packagePrefixes;
     @NonNull
     private final String tags;
-
 
     public File getAspectFile() {
         return new File(myDataPath(appName), "aop.xml");
@@ -99,6 +99,10 @@ public class CollectorConfig implements CodekvastConfig {
     }
 
     public static CollectorConfig parseCollectorConfig(URI uri, String cmdLineArgs) {
+        return parseCollectorConfig(uri, cmdLineArgs, false);
+    }
+
+    public static CollectorConfig parseCollectorConfig(URI uri, String cmdLineArgs, boolean prependSystemPropertiesToTags) {
         if (uri == null) {
             return null;
         }
@@ -108,6 +112,9 @@ public class CollectorConfig implements CodekvastConfig {
 
             parseOverrides(props, System.getProperty(CollectorConfigLocator.SYSPROP_OPTS));
             parseOverrides(props, cmdLineArgs);
+            if (prependSystemPropertiesToTags) {
+                doPrependSystemPropertiesToTags(props);
+            }
 
             return buildCollectorConfig(props);
         } catch (Exception e) {
@@ -154,9 +161,43 @@ public class CollectorConfig implements CodekvastConfig {
                               .methodVisibility(ConfigUtils.getOptionalStringValue(props, "methodVisibility",
                                                                                    DEFAULT_METHOD_VISIBILITY))
                               .packagePrefixes(ConfigUtils.getMandatoryStringValue(props, "packagePrefixes"))
-                              .tags(ConfigUtils.getOptionalStringValue(props, "tags", ""))
+                              .tags(ConfigUtils.getOptionalStringValue(props, TAGS_KEY, ""))
                               .verbose(getVerboseValue(props))
                               .build();
+    }
+
+    private static void doPrependSystemPropertiesToTags(Properties props) {
+        String systemPropertiesTags = createSystemPropertiesTags();
+
+        String oldTags = props.getProperty(TAGS_KEY);
+        if (oldTags != null) {
+            props.setProperty(TAGS_KEY, systemPropertiesTags + ", " + oldTags);
+        } else {
+            props.setProperty(TAGS_KEY, systemPropertiesTags);
+        }
+    }
+
+    private static String createSystemPropertiesTags() {
+        String[] sysProps = {
+                "java.runtime.name",
+                "java.runtime.version",
+                "os.arch",
+                "os.name",
+                "os.version",
+        };
+
+        StringBuilder sb = new StringBuilder();
+        String delimiter = "";
+
+        for (String prop : sysProps) {
+            String v = System.getProperty(prop);
+            if (v != null && !v.isEmpty()) {
+                sb.append(delimiter).append(prop).append("=").append(v.replaceAll(",", "\\,"));
+                delimiter = ", ";
+            }
+        }
+
+        return sb.toString();
     }
 
     private static String validateAppName(String appName) {
@@ -181,7 +222,7 @@ public class CollectorConfig implements CodekvastConfig {
                               .dataPath(SAMPLE_DATA_PATH)
                               .methodVisibility(DEFAULT_METHOD_VISIBILITY)
                               .packagePrefixes("com.acme. , foo.bar.")
-                              .tags(SAMPLE_TAGS)
+                              .tags(createSystemPropertiesTags() + ", " + SAMPLE_TAGS)
                               .verbose(DEFAULT_VERBOSE)
                               .build();
     }

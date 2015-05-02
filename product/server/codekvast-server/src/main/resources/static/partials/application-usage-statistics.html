@@ -1,12 +1,15 @@
 <div ng-controller="StatisticsController">
     <div class="panel panel-info">
         <div class="panel-heading">
-            <h3>Application Statistics</h3>
+            <h3>Application Usage Statistics</h3>
         </div>
         <div>
+            <div class="well">
+                This page shows usage statistics for all applications that deliver usage data to this server.
+            </div>
             <div class="panel-body">
                 <h2 ng-show="!applicationStatistics">Nothing to show!
-                    <small>There are no applications equipped with codekvast-collector that delivers data to this server.</small>
+                    <small>There are no applications that deliver usage data to this server.</small>
                 </h2>
             </div>
 
@@ -24,7 +27,7 @@
                                                                                                                                   Cycle
                     </th>
                     <th class="col-lg-1" title="How long has the application been used with Codekvast attached?">Usage Time</th>
-                    <th class="col-lg-1" title="Can we start identifying truly dead methods yet?">Usage Confidence
+                    <th class="col-lg-1" title="Can we start identifying truly dead methods yet?">Usage Data Confidence
                     </th>
                     <th class="col-lg-1" title="The number of tracked methods in this version">Number of Methods</th>
                     <th class="col-lg-1" title="Mow many percent of all tracked methods have never been invoked?">Never Invoked Methods</th>

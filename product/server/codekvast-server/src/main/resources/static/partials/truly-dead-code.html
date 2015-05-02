@@ -1,0 +1,50 @@
+<div ng-controller="ReportController">
+
+    <div class="panel panel-info">
+        <div class="panel-heading">Identify Truly Dead Code</div>
+
+        <div class="panel-body">
+
+            <div class="container-fluid">
+                <form class="form form-horizontal">
+                    <fieldset>
+                        <legend>Search criteria</legend>
+                        <div class="form-group">
+                            <label>Include Applications:</label> <label class="checkbox-inline">
+                            <input type="checkbox">
+                            mainserver </label> <label class="checkbox-inline">
+                            <input type="checkbox">
+                            pceserver </label> <label class="checkbox-inline">
+                            <input type="checkbox">
+                            wsserver </label> <label class="checkbox-inline">
+                            <input type="checkbox">
+                            pmserver </label> <label class="checkbox-inline">
+                            <input type="checkbox">
+                            webstartserver </label> <label class="checkbox-inline">
+                            <input type="checkbox">
+                            webapp </label> &nbsp; Select <a href="#">all</a> / <a href="#">none</a>
+                    </div>
+
+                        <div class="form-group">
+                            <label>Include Versions:</label> <label class="checkbox-inline">
+                            <input type="checkbox"/>
+                            25.0 </label> <label class="checkbox-inline">
+                            <input type="checkbox"/>
+                            24.1 </label> <label class="checkbox-inline">
+                            <input type="checkbox"/>
+                            24.0 </label>&nbsp; Select <a href="#">all</a> / <a href="#">none</a>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="preview-rows">Preview rows:</label>
+                            <input type="number" id="preview-rows" value="100" min="0" max="500" step="10"/>
+                            <button>Preview</button>
+                        </div>
+
+                    </fieldset>
+            </form>
+            </div>
+        </div>
+    </div>
+
+</div>

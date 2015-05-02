@@ -1,14 +1,19 @@
-<div ng-controller="CollectorController">
-    <div class="panel panel-info" ng-show="collectorStatus">
-        <div class="panel-heading" ng-click="collectorStatusOpen = !collectorStatusOpen">
-            Collector status <i class="pull-right glyphicon"
-                                ng-class="{'glyphicon-chevron-down': collectorStatusOpen, 'glyphicon-chevron-right': !collectorStatusOpen}"></i>
+<div ng-controller="CollectorsController">
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h3>Collector Status</h3>
         </div>
-        <div collapse="!collectorStatusOpen">
-            <div class="panel-body">
-                <p>The status of all collectors that deliver data to this server.</p>
+        <div>
+            <div class="well">
+                This page shows details for the collectors that deliver usage data to this server.
             </div>
-            <table class="table collector-status">
+            <div class="panel-body">
+                <h2 ng-show="!collectorStatus">Nothing to show!
+                    <small>There are no applications that deliver usage data to this server.</small>
+                </h2>
+            </div>
+
+            <table class="table collector-status" ng-show="collectorStatus">
                 <thead>
                 <tr>
                     <th class="col-lg-1" title="Which application?">Application</th>
@@ -42,32 +47,4 @@
             </table>
         </div>
     </div>
-</div>
-
-<div ng-controller="SignatureController">
-
-    <div class="panel panel-info" ng-show="newestSignatures">
-        <div class="panel-heading" ng-click="newestSignaturesOpen = !newestSignaturesOpen">
-            Newest Signatures <i class="pull-right glyphicon"
-                                 ng-class="{'glyphicon-chevron-down': newestSignaturesOpen, 'glyphicon-chevron-right': !newestSignaturesOpen}"></i>
-        </div>
-        <div collapse="!newestSignaturesOpen">
-            <table class="table table-striped table-hover table-condensed">
-                <thead>
-                <tr class="row">
-                    <th class="col-lg-9">Name</th>
-                    <th class="col-lg-2">Collected In Interval</th>
-                </tr>
-                </thead>
-
-                <tbody>
-                <tr class="row" ng-repeat="s in newestSignatures">
-                    <td class="col-lg-9">{{::s.name}}</td>
-                    <td class="col-lg-2">{{::s.invokedAtMillis | invokedAtDate:dateFormat}}</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
 </div>
