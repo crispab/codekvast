@@ -39,7 +39,7 @@ public class TimestampIsInRangeMatcher extends TypeSafeMatcher<Long> {
                                              new Date(low), new Date(high)));
     }
 
-    public static Matcher<Long> timestampAfter(long low, long tolerance) {
-        return new TimestampIsInRangeMatcher(low, low + tolerance);
+    public static Matcher<Long> timestampInRange(long lowerEndMillis, long intervalLengthMillis) {
+        return new TimestampIsInRangeMatcher(lowerEndMillis, lowerEndMillis + intervalLengthMillis);
     }
 }

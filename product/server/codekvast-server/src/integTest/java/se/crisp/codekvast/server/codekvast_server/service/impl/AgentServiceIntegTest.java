@@ -30,7 +30,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static se.crisp.codekvast.test.matchers.ApplicationStatisticsMatcher.isApplicationStatistics;
-import static se.crisp.codekvast.test.matchers.TimestampIsInRangeMatcher.timestampAfter;
+import static se.crisp.codekvast.test.matchers.TimestampIsInRangeMatcher.timestampInRange;
 
 /**
  * @author olle.hallin@crisp.se
@@ -84,8 +84,8 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
         // then
         assertThat(lastApplicationStatisticsMessage, isApplicationStatistics(
                 allOf(
-                        hasProperty("firstDataReceivedAtMillis", timestampAfter(t0, networkLatencyToleranceMillis)),
-                        hasProperty("lastDataReceivedAtMillis", timestampAfter(t1, networkLatencyToleranceMillis)),
+                        hasProperty("firstDataReceivedAtMillis", timestampInRange(t0, networkLatencyToleranceMillis)),
+                        hasProperty("lastDataReceivedAtMillis", timestampInRange(t1, networkLatencyToleranceMillis)),
                         hasProperty("upTimeSeconds", is((t1 - t0) / 1000))
                 )
         ));
@@ -113,16 +113,16 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
 
         assertThat(lastApplicationStatisticsMessage, isApplicationStatistics(
                 allOf(
-                        hasProperty("firstDataReceivedAtMillis", timestampAfter(t0, networkLatencyToleranceMillis)),
-                        hasProperty("lastDataReceivedAtMillis", timestampAfter(t3, networkLatencyToleranceMillis)),
+                        hasProperty("firstDataReceivedAtMillis", timestampInRange(t0, networkLatencyToleranceMillis)),
+                        hasProperty("lastDataReceivedAtMillis", timestampInRange(t3, networkLatencyToleranceMillis)),
                         hasProperty("upTimeSeconds", is(average(t2 - t0, t3 - t1) / 1000))
                 )
         ));
 
         CollectorStatusMessage csm = lastCollectorStatusMessage;
         CollectorDisplay collector = csm.getCollectors().iterator().next();
-        assertThat(collector.getCollectorStartedAtMillis(), timestampAfter(t1, networkLatencyToleranceMillis));
-        assertThat(collector.getDataReceivedAtMillis(), timestampAfter(t3, networkLatencyToleranceMillis));
+        assertThat(collector.getCollectorStartedAtMillis(), timestampInRange(t1, networkLatencyToleranceMillis));
+        assertThat(collector.getDataReceivedAtMillis(), timestampInRange(t3, networkLatencyToleranceMillis));
     }
 
     private long average(long... values) {
