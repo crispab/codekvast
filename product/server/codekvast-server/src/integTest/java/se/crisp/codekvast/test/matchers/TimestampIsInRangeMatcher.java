@@ -29,8 +29,8 @@ public class TimestampIsInRangeMatcher extends TypeSafeMatcher<Long> {
     @Override
     public void describeMismatchSafely(Long item, Description mismatchDescription) {
         mismatchDescription.appendText(
-                String.format("%1$tF %1$tT is outside the range [%2$tF %2$tT .. %3$tF %3$tT]",
-                              new Date(item), new Date(low), new Date(high)));
+                String.format("%1$tF %1$tT (%4$d) is outside the range [%2$tF %2$tT (%5$d) .. %3$tF %3$tT (%6$d)]",
+                              new Date(item), new Date(low), new Date(high), item, low, high));
     }
 
     @Override

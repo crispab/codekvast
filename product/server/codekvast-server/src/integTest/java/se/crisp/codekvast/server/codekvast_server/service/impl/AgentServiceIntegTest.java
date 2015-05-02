@@ -76,7 +76,7 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
         long t1 = now - 2 * collectionIntervalMillis;
         long t2 = now - 1 * collectionIntervalMillis;
         long t3 = now + 0 * collectionIntervalMillis;
-        long networkLatencyToleranceMillis = 25L;
+        long networkLatencyToleranceMillis = 100L;
 
         // when
         agentService.storeJvmData("agent", createJvmData(t0, t1, "app1", "uuid1", "agentHostName1"));
@@ -175,7 +175,7 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
     private JvmData createJvmData(long startedAtMillis, long reportedAtMillis, String appName,
                                   String jvmUuid, String hostName) {
 
-        int agentClockSkewMillis = hostName.hashCode();
+        int agentClockSkewMillis = hostName.hashCode() % 300_000;
 
         return JvmData.builder()
                       .agentComputerId("agentComputerId")
