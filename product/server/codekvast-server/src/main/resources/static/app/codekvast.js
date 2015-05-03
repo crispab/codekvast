@@ -62,7 +62,6 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
     .factory('RemoteDataService', ['$rootScope', '$http', '$timeout', function ($rootScope, $http, $timeout) {
         var socket = {client: null, stomp: null};
         var lastMessages = {};
-        var allSignatures = [];
 
         var broadcast = function (event, message) {
             lastMessages[event] = message;
@@ -76,17 +75,18 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             return lastMessages[event];
         };
 
-        var getAllSignatures = function () {
-            return allSignatures;
+        var getLastData = function (what) {
+            var data = lastMessages['data']
+            return data ? data[what] : undefined;
         };
 
-        var onApplicationStatisticsMessage = function (message) {
-            broadcast('applicationStatistics', JSON.parse(message.body));
+        var handleWebSocketMessage = function (data) {
+            broadcast('data', data);
         }
 
-        var onCollectorStatusMessage = function (message) {
-            broadcast('collectorStatus', JSON.parse(message.body));
-        };
+        var onWebSocketMessage = function (message) {
+            handleWebSocketMessage(JSON.parse(message.body))
+        }
 
         var onConnected = function () {
             console.log("Connected");
@@ -105,17 +105,15 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
             socket.stomp.connect({}, function () {
                 onConnected();
-                socket.stomp.subscribe("/user/queue/application/statistics", onApplicationStatisticsMessage);
-                socket.stomp.subscribe("/user/queue/collector/status", onCollectorStatusMessage);
+                socket.stomp.subscribe("/user/queue/data", onWebSocketMessage);
 
-                $http.get('/api/web/initialData')
+                $http.get('/api/web/data')
                     .success(function (data) {
                         broadcast('jumbotronMessage', null);
-                        broadcast('applicationStatistics', data.applicationStatistics);
-                        broadcast('collectorStatus', data.collectorStatus);
+                        handleWebSocketMessage(data);
                     })
                     .error(function (data) {
-                        console.log("Cannot get initial data %o", data);
+                        console.log("Cannot get data %o", data);
                         onDisconnect(data.toString());
                     })
             }, function (error) {
@@ -125,11 +123,11 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             socket.client.onclose = onDisconnect;
         };
 
-        var persistsApplicationSettings = function (collectorStatus) {
-            var data = {collectorSettings: []};
-            for (var i = 0, len = collectorStatus.applications.length; i < len; i++) {
-                var a = collectorStatus.applications[i];
-                data.collectorSettings.push({
+        var persistsOrganisationSettings = function (applications) {
+            var data = {applicationSettings: []};
+            for (var i = 0, len = applications.length; i < len; i++) {
+                var a = applications[i];
+                data.applicationSettings.push({
                     name: a.name,
                     usageCycleSeconds: a.usageCycleValue * a.usageCycleMultiplier
                 })
@@ -147,9 +145,9 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
         return {
             getLastEvent: getLastEvent,
+            getLastData: getLastData,
             initSocket: initSocket,
-            getAllSignatures: getAllSignatures,
-            persistsApplicationSettings: persistsApplicationSettings
+            persistsOrganisationSettings: persistsOrganisationSettings
         }
     }])
 
@@ -214,7 +212,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
     }])
 
     .controller('SettingsController', ['$scope', '$modalInstance', 'RemoteDataService', 'DateService', function ($scope, $modalInstance, RemoteDataService, DateService) {
-        $scope.collectorStatus = RemoteDataService.getLastEvent('collectorStatus');
+        $scope.applications = RemoteDataService.getLastData("applications");
 
         $scope.setUnit = function (a, code) {
             if (!a.usageCycleValue) {
@@ -250,9 +248,9 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             }
         };
 
-        if ($scope.collectorStatus) {
-            for (var i = 0, len = $scope.collectorStatus.applications.length; i < len; i++) {
-                var a = $scope.collectorStatus.applications[i];
+        if ($scope.applications) {
+            for (var i = 0, len = $scope.applications.length; i < len; i++) {
+                var a = $scope.applications[i];
                 var v = DateService.prettyDuration(a.usageCycleSeconds * 1000);
                 if (v.endsWith('d')) {
                     $scope.setUnit(a, 'days');
@@ -267,12 +265,12 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         }
 
         $scope.$on('stompDisconnected', function (event, message) {
-            $scope.collectorStatus = undefined;
+            $scope.applications = undefined;
         });
 
         $scope.save = function () {
-            if ($scope.collectorStatus) {
-                RemoteDataService.persistsApplicationSettings($scope.collectorStatus);
+            if ($scope.applications) {
+                RemoteDataService.persistsOrganisationSettings($scope.applications);
             }
 
             $modalInstance.close();
@@ -285,18 +283,18 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
     }])
 
     .controller('StatisticsController', ['$scope', '$interval', 'DateService', 'RemoteDataService', function ($scope, $interval, DateService, RemoteDataService) {
-        $scope.applicationStatistics = RemoteDataService.getLastEvent('applicationStatistics');
+        $scope.applicationStatistics = RemoteDataService.getLastData("applicationStatistics");
         $scope.dateFormat = 'yyyy-MM-dd HH:mm:ss';
 
-        $scope.$on('applicationStatistics', function (event, data) {
-            $scope.applicationStatistics = data;
+        $scope.$on('data', function (event, data) {
+            $scope.applicationStatistics = data.applicationStatistics;
             $scope.updateModel();
         });
 
         $scope.updateModel = function () {
             if ($scope.applicationStatistics) {
-                for (var i = 0, len = $scope.applicationStatistics.applications.length; i < len; i++) {
-                    var a = $scope.applicationStatistics.applications[i];
+                for (var i = 0, len = $scope.applicationStatistics.length; i < len; i++) {
+                    var a = $scope.applicationStatistics[i];
                     a.usageCycle = DateService.prettyDuration(a.usageCycleSeconds * 1000);
                     a.timeToFullUsageCycle = DateService.prettyDuration((a.usageCycleSeconds - a.upTimeSeconds) * 1000);
                     a.collectorAge = DateService.prettyAge(a.firstDataReceivedAtMillis);
@@ -331,25 +329,24 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
     }])
 
     .controller('CollectorsController', ['$scope', '$interval', 'DateService', 'RemoteDataService', function ($scope, $interval, DateService, RemoteDataService) {
-        $scope.collectorStatus = RemoteDataService.getLastEvent('collectorStatus');
-        $scope.collectorStatusOpen = true;
+        $scope.collectorStatuses = RemoteDataService.getLastData("collectors");
         $scope.dateFormat = 'yyyy-MM-dd HH:mm:ss';
 
-        $scope.$on('collectorStatus', function (event, data) {
-            $scope.collectorStatus = data;
+        $scope.$on('data', function (event, data) {
+            $scope.collectorStatuses = data.collectors;
             $scope.updateModel();
         });
 
         $scope.$on('stompDisconnected', function (event, message) {
-            $scope.collectorStatus = undefined;
+            $scope.collectorStatuses = undefined;
 
             $interval.cancel($scope.updateModelInterval);
         });
 
         $scope.updateModel = function () {
-            if ($scope.collectorStatus) {
-                for (var i = 0, len = $scope.collectorStatus.collectors.length; i < len; i++) {
-                    var c = $scope.collectorStatus.collectors[i];
+            if ($scope.collectorStatuses) {
+                for (var i = 0, len = $scope.collectorStatuses.length; i < len; i++) {
+                    var c = $scope.collectorStatuses[i];
                     c.collectorResolution = DateService.prettyDuration(c.collectorResolutionSeconds * 1000);
                     c.agentUploadInterval = DateService.prettyDuration(c.agentUploadIntervalSeconds * 1000);
                     c.collectorAge = DateService.prettyAge(c.startedAtMillis);

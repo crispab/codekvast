@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
  * @author olle.hallin@crisp.se
  */
 @Data
-public class CollectorSettingsEntry {
+public class ApplicationSettingsEntry {
     @NotNull
     @Size(max = Constraints.MAX_APP_NAME_LENGTH)
     private String name;

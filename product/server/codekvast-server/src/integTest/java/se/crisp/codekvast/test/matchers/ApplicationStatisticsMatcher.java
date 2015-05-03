@@ -6,7 +6,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 import org.hamcrest.TypeSafeMatcher;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.ApplicationStatisticsDisplay;
-import se.crisp.codekvast.server.codekvast_server.model.event.display.ApplicationStatisticsMessage;
+import se.crisp.codekvast.server.codekvast_server.model.event.display.WebSocketMessage;
 
 import java.util.Iterator;
 
@@ -22,32 +22,32 @@ public class ApplicationStatisticsMatcher extends TypeSafeMatcher<Object> {
 
     @Override
     protected boolean matchesSafely(Object item) {
-        if (!(item instanceof ApplicationStatisticsMessage)) {
-            mismatchReason = "\n    is not an ApplicationStatisticsMessage";
+        if (!(item instanceof WebSocketMessage)) {
+            mismatchReason = "\n    is not an WebSocketMessage";
             return false;
         }
 
-        ApplicationStatisticsMessage asm = (ApplicationStatisticsMessage) item;
-        if (asm.getApplications() == null) {
-            mismatchReason = "\n    ApplicationStatisticsMessage with null application displays";
+        WebSocketMessage wsm = (WebSocketMessage) item;
+        if (wsm.getApplicationStatistics() == null) {
+            mismatchReason = "\n    WebSocketMessage with null application statistics displays";
             return false;
         }
 
-        if (asm.getApplications().size() != displayMatchers.length) {
-            mismatchReason = String.format("\n     ApplicationStatisticsMessage with wrong number of application displays. Expected = %d," +
-                                                   " actual = %d",
-                                           displayMatchers.length, asm.getApplications().size());
+        if (wsm.getApplicationStatistics().size() != displayMatchers.length) {
+            mismatchReason = String.format("\n     WebSocketMessage with wrong number of application statistics displays. " +
+                                                   "Expected = %d, actual = %d",
+                                           displayMatchers.length, wsm.getApplications().size());
             return false;
         }
 
-        Iterator<ApplicationStatisticsDisplay> iterator = asm.getApplications().iterator();
+        Iterator<ApplicationStatisticsDisplay> iterator = wsm.getApplicationStatistics().iterator();
         for (int i = 0; i < displayMatchers.length; i++) {
             Matcher matcher = displayMatchers[i];
             ApplicationStatisticsDisplay display = iterator.next();
             if (!matcher.matches(display)) {
                 Description description = new StringDescription();
                 matcher.describeMismatch(display, description);
-                mismatchReason = "\n    application display " + i + " does not match: " + description;
+                mismatchReason = "\n    application statistics display " + i + " does not match: " + description;
                 return false;
             }
         }
@@ -62,7 +62,7 @@ public class ApplicationStatisticsMatcher extends TypeSafeMatcher<Object> {
 
     @Override
     public void describeTo(Description description) {
-        description.appendText("an application statistics message");
+        description.appendText("a WebSocketMessage");
     }
 
     public static Matcher<Object> isApplicationStatistics(Matcher<?>... applicationDisplayMatchers) {

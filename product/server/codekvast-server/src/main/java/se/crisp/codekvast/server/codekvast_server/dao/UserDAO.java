@@ -2,10 +2,8 @@ package se.crisp.codekvast.server.codekvast_server.dao;
 
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedUserException;
 import se.crisp.codekvast.server.codekvast_server.model.Role;
-import se.crisp.codekvast.server.codekvast_server.model.event.display.SignatureDisplay;
 
 import java.util.Collection;
-import java.util.Set;
 
 /**
  * A data access object for things related to interactive users.
@@ -30,9 +28,4 @@ public interface UserDAO {
      * @return All usernames in the organisation which have the role {@link Role#USER}.
      */
     Collection<String> getInteractiveUsernamesInOrganisation(long organisationId);
-
-    /**
-     * Retrieve all signatures for a certain organisation
-     */
-    Set<SignatureDisplay> getSignatures(long organisationId);
 }

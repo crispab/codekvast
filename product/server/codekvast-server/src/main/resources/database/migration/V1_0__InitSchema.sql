@@ -132,6 +132,25 @@ COMMENT ON TABLE jvm_info IS 'Data about one JVM that is instrumented by the Cod
 
 CREATE UNIQUE INDEX ix_jvm_info ON jvm_info (organisation_id, application_id, jvm_uuid);
 
+-- Environments -------------------------------------------------------------------------------------------------
+CREATE TABLE environments (
+  id              BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  organisation_id BIGINT       NOT NULL REFERENCES organisations (id),
+  name            VARCHAR(100) NOT NULL
+);
+COMMENT ON TABLE environments IS 'Groups hostnames into environments';
+
+CREATE UNIQUE INDEX ix_environments ON environments (organisation_id, name);
+
+CREATE TABLE environment_hostnames (
+  id              BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  organisation_id BIGINT       NOT NULL REFERENCES organisations (id),
+  environment_id  BIGINT       NOT NULL REFERENCES environments (id),
+  host_name       VARCHAR(255) NOT NULL
+);
+
+CREATE UNIQUE INDEX ix_environment_hostnames ON environment_hostnames (organisation_id, environment_id, host_name);
+
 -- Signatures -----------------------------------------------------------------------------------------------
 CREATE TABLE signatures (
   organisation_id        BIGINT        NOT NULL REFERENCES organisations (id),

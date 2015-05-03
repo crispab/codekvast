@@ -17,9 +17,8 @@ import se.crisp.codekvast.server.codekvast_server.config.EventBusConfig;
 import se.crisp.codekvast.server.codekvast_server.dao.impl.AgentDAOImpl;
 import se.crisp.codekvast.server.codekvast_server.dao.impl.UserDAOImpl;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedUserException;
-import se.crisp.codekvast.server.codekvast_server.model.event.display.ApplicationStatisticsMessage;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorDisplay;
-import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorStatusMessage;
+import se.crisp.codekvast.server.codekvast_server.model.event.display.WebSocketMessage;
 import se.crisp.codekvast.server.codekvast_server.service.AgentService;
 
 import javax.inject.Inject;
@@ -46,19 +45,12 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
     @Inject
     private AgentService agentService;
 
-    private ApplicationStatisticsMessage lastApplicationStatisticsMessage;
-    private CollectorStatusMessage lastCollectorStatusMessage;
+    private WebSocketMessage lastWebSocketMessage;
 
     @Subscribe
-    public void onCollectorStatusMessage(CollectorStatusMessage message) {
+    public void onWebSocketMessage(WebSocketMessage message) {
         events.add(message);
-        lastCollectorStatusMessage = message;
-    }
-
-    @Subscribe
-    public void onApplicationStatisticsMessage(ApplicationStatisticsMessage message) {
-        events.add(message);
-        lastApplicationStatisticsMessage = message;
+        lastWebSocketMessage = message;
     }
 
     @Test
@@ -76,7 +68,7 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
         agentService.storeJvmData("agent", createJvmData(t0, t1, "app1", "uuid1", "agentHostName1"));
 
         // then
-        assertThat(lastApplicationStatisticsMessage, isApplicationStatistics(
+        assertThat(lastWebSocketMessage, isApplicationStatistics(
                 allOf(
                         hasProperty("firstDataReceivedAtMillis", timestampInRange(t0, networkLatencyToleranceMillis)),
                         hasProperty("lastDataReceivedAtMillis", timestampInRange(t1, networkLatencyToleranceMillis)),
@@ -98,14 +90,11 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
                 "uuid2", t1, t1 + networkLatencyToleranceMillis, t3, t3 + networkLatencyToleranceMillis), is(1));
 
         assertThat(events, contains(
-                instanceOf(ApplicationStatisticsMessage.class),
-                instanceOf(CollectorStatusMessage.class),
-                instanceOf(ApplicationStatisticsMessage.class),
-                instanceOf(CollectorStatusMessage.class),
-                instanceOf(ApplicationStatisticsMessage.class),
-                instanceOf(CollectorStatusMessage.class)));
+                instanceOf(WebSocketMessage.class),
+                instanceOf(WebSocketMessage.class),
+                instanceOf(WebSocketMessage.class)));
 
-        assertThat(lastApplicationStatisticsMessage, isApplicationStatistics(
+        assertThat(lastWebSocketMessage, isApplicationStatistics(
                 allOf(
                         hasProperty("firstDataReceivedAtMillis", timestampInRange(t0, networkLatencyToleranceMillis)),
                         hasProperty("lastDataReceivedAtMillis", timestampInRange(t3, networkLatencyToleranceMillis)),
@@ -113,8 +102,7 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
                 )
         ));
 
-        CollectorStatusMessage csm = lastCollectorStatusMessage;
-        CollectorDisplay collector = csm.getCollectors().iterator().next();
+        CollectorDisplay collector = lastWebSocketMessage.getCollectors().iterator().next();
         assertThat(collector.getCollectorStartedAtMillis(), timestampInRange(t1, networkLatencyToleranceMillis));
         assertThat(collector.getDataReceivedAtMillis(), timestampInRange(t3, networkLatencyToleranceMillis));
     }
@@ -143,7 +131,7 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
         agentService.storeJvmData("agent", createJvmData(startedAtMillis - 100L, now, "app2", "uuid2.1", "agentHostName"));
         agentService.storeJvmData("agent", createJvmData(startedAtMillis, now, "app2", "uuid2.2", "agentHostName"));
 
-        assertThat(events, hasSize(8));
+        assertThat(events, hasSize(4));
 
         List<SignatureEntry> signatures = new ArrayList<>();
         signatures.add(new SignatureEntry("sig1", 0L, 0L, null));
@@ -156,10 +144,10 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
         agentService.storeSignatureData(SignatureData.builder().jvmUuid("uuid2.1").signatures(signatures).build());
         agentService.storeSignatureData(SignatureData.builder().jvmUuid("uuid2.2").signatures(signatures).build());
 
-        assertThat(events, contains(instanceOf(ApplicationStatisticsMessage.class),
-                                    instanceOf(ApplicationStatisticsMessage.class),
-                                    instanceOf(ApplicationStatisticsMessage.class),
-                                    instanceOf(ApplicationStatisticsMessage.class)));
+        assertThat(events, contains(instanceOf(WebSocketMessage.class),
+                                    instanceOf(WebSocketMessage.class),
+                                    instanceOf(WebSocketMessage.class),
+                                    instanceOf(WebSocketMessage.class)));
     }
 
     private JvmData createJvmData(long startedAtMillis, long reportedAtMillis, String appName,

@@ -11,10 +11,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
-import se.crisp.codekvast.server.codekvast_server.model.event.display.ApplicationStatisticsMessage;
-import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorStatusMessage;
-import se.crisp.codekvast.server.codekvast_server.model.event.display.InitialDataMessage;
-import se.crisp.codekvast.server.codekvast_server.model.event.rest.CollectorSettings;
+import se.crisp.codekvast.server.codekvast_server.model.event.display.WebSocketMessage;
+import se.crisp.codekvast.server.codekvast_server.model.event.rest.OrganisationSettings;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
 
 import javax.inject.Inject;
@@ -37,7 +35,6 @@ public class WebSocketDataHandler extends AbstractEventBusSubscriber {
     private final WebSocketUserPresenceHandler webSocketUserPresenceHandler;
     @NonNull
     private final Validator validator;
-
 
     @Inject
     public WebSocketDataHandler(EventBus eventBus, SimpMessagingTemplate messagingTemplate, UserService userService,
@@ -70,24 +67,11 @@ public class WebSocketDataHandler extends AbstractEventBusSubscriber {
      * Send the message to the currently logged in users that are affected by the message.
      */
     @Subscribe
-    public void onCollectorStatusMessage(CollectorStatusMessage message) {
+    public void onWebSocketMessage(WebSocketMessage message) {
         for (String username : message.getUsernames()) {
             if (webSocketUserPresenceHandler.isPresent(username)) {
                 log.debug("Sending {} to '{}'", message, username);
-                messagingTemplate.convertAndSendToUser(username, "/queue/collector/status", message);
-            }
-        }
-    }
-
-    /**
-     * Send the message to the currently logged in users that are affected by the message.
-     */
-    @Subscribe
-    public void onApplicationStatisticsMessage(ApplicationStatisticsMessage message) {
-        for (String username : message.getUsernames()) {
-            if (webSocketUserPresenceHandler.isPresent(username)) {
-                log.debug("Sending {} to '{}'", message, username);
-                messagingTemplate.convertAndSendToUser(username, "/queue/application/statistics", message);
+                messagingTemplate.convertAndSendToUser(username, "/queue/data", message);
             }
         }
     }
@@ -96,31 +80,26 @@ public class WebSocketDataHandler extends AbstractEventBusSubscriber {
      * A REST endpoint for getting initial data for the web interface..
      *
      * @param principal The identity of the authenticated user.
-     * @return An InitialDataMessage containing all data needed to inflate the web interface.
+     * @return An WebSocketMessage containing all data needed to inflate the web interface.
      */
-    @RequestMapping("/api/web/initialData")
-    public InitialDataMessage getInitialData(Principal principal) throws CodekvastException {
+    @RequestMapping("/api/web/data")
+    public WebSocketMessage getInitialData(Principal principal) throws CodekvastException {
         String username = principal.getName();
         log.debug("'{}' requests initial data", username);
 
-        ApplicationStatisticsMessage appStats = userService.getApplicationStatisticsMessage(username);
-        CollectorStatusMessage collectorStatus = userService.getCollectorStatusMessage(username);
-
-        return InitialDataMessage.builder()
-                                   .applicationStatistics(appStats)
-                                   .collectorStatus(collectorStatus)
-                                   .build();
+        return userService.getWebSocketMessage(username);
     }
 
     @RequestMapping(value = "/api/web/settings", method = RequestMethod.POST)
-    public void saveSettings(@Valid @RequestBody CollectorSettings collectorSettings, Principal principal)
+    public void saveSettings(@Valid @RequestBody OrganisationSettings settings, Principal principal)
             throws CodekvastException {
+
         String username = principal.getName();
-        log.debug("'{}' persists collector settings {}", username, collectorSettings);
+        log.debug("'{}' persists settings {}", username, settings);
 
-        userService.saveCollectorSettings(username, collectorSettings);
+        userService.saveOrganisationSettings(username, settings);
 
-        log.info("'{}' saved collector settings {}", username, collectorSettings);
+        log.info("'{}' saved settings {}", username, settings);
     }
 
 }

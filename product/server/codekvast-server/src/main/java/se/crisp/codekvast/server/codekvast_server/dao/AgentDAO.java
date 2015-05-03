@@ -4,9 +4,8 @@ import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
-import se.crisp.codekvast.server.codekvast_server.model.event.display.ApplicationStatisticsMessage;
-import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorStatusMessage;
-import se.crisp.codekvast.server.codekvast_server.model.event.rest.CollectorSettings;
+import se.crisp.codekvast.server.codekvast_server.model.event.display.WebSocketMessage;
+import se.crisp.codekvast.server.codekvast_server.model.event.rest.OrganisationSettings;
 
 /**
  * A data access object for things related to the agent API.
@@ -45,20 +44,20 @@ public interface AgentDAO {
     void storeJvmData(long organisationId, long appId, JvmData data);
 
     /**
-     * Create a collector status message for a certain organisation
+     * Create a web socket message for a certain organisation
      *
      * @param organisationId The organisation
      * @return An event to post on the EventBus
      */
-    CollectorStatusMessage createCollectorStatusMessage(long organisationId);
+    WebSocketMessage createWebSocketMessage(long organisationId);
 
     /**
      * Save updated collector settings
      *
      * @param organisationId    The organisation
-     * @param collectorSettings The new settings
+     * @param organisationSettings The new settings
      */
-    void saveCollectorSettings(long organisationId, CollectorSettings collectorSettings);
+    void saveSettings(long organisationId, OrganisationSettings organisationSettings);
 
     /**
      * Recalculate the statistics for a certain app.
@@ -73,13 +72,4 @@ public interface AgentDAO {
      * @param organisationId The identity of the organisation
      */
     void recalculateApplicationStatistics(long organisationId);
-
-    /**
-     * Create an application statistics message for a certain organisation without recalculating statistics.
-     *
-     * @param organisationId The organisation
-     * @return An event to post on the EventBus
-     */
-    ApplicationStatisticsMessage createApplicationStatisticsMessage(long organisationId);
-
 }

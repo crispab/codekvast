@@ -1,31 +1,27 @@
 package se.crisp.codekvast.server.codekvast_server.model.event.display;
 
 import lombok.Builder;
-import lombok.NonNull;
 import lombok.Value;
 
 import java.util.Collection;
 
 /**
- * An event published every time collector data is received from any agent.
+ * A display object containing the initial data a user that logs in to the web interface needs.
+ *
+ * It is also sent automatically over the web socket whenever any data is updated.
  *
  * @author olle.hallin@crisp.se
  */
 @Value
 @Builder
-public class CollectorStatusMessage {
+public class WebSocketMessage {
     /**
      * Which usernames should be broadcast this message (if logged in)?
      */
-    @NonNull
     Collection<String> usernames;
 
-    /**
-     * The collectors to display.
-     */
-    @NonNull
-    Collection<CollectorDisplay> collectors;
-
-    @NonNull
+    Collection<ApplicationStatisticsDisplay> applicationStatistics;
     Collection<ApplicationDisplay> applications;
+    Collection<CollectorDisplay> collectors;
+    Collection<EnvironmentDisplay> environments;
 }

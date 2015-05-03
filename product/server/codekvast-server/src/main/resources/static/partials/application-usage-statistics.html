@@ -13,9 +13,9 @@
                 </h2>
             </div>
 
-            <table class="table application-statistics" ng-show="applicationStatistics">
+            <table class="table" ng-show="applicationStatistics">
 
-                <thead ng-show="applicationStatistics">
+                <thead>
                 <tr>
                     <th class="col-lg-1" title="The name of the application, as reported by the collector">Application</th>
                     <th class="col-lg-1" title="The version of the application">Version</th>
@@ -37,7 +37,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="a in applicationStatistics.applications">
+                <tr ng-repeat="a in applicationStatistics">
                     <td class="col-lg-1">{{a.name}}</td>
                     <td class="col-lg-1">{{a.version}}</td>
                     <td class="col-lg-2" title="It was started {{a.collectorAge}} ago">{{a.firstDataReceivedAtMillis|date:dateFormat}}</td>
@@ -52,7 +52,8 @@
                             <bar tooltip="Usage cycle: {{a.usageCycle}}"
                                  type="warning"
                                  value="a.leftCompletedBarWidth">100%</bar>
-                            <bar tooltip="Uptime: {{a.upTime}}" type="success"
+                            <bar tooltip="{{a.name}} has been used {{a.usageCycleMultiple}} times longer than the usage cycle"
+                                 type="success"
                                  value="a.rightCompletedBarWidth">
                                 <i>{{a.usageCycleMultiple}}x</i></bar>
                         </progress>

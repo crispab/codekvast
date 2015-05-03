@@ -7,7 +7,7 @@
             <fieldset>
                 <legend>Application Usage Cycle<br/>
                     <small>The shortest time an application must be in use before one can identify truly dead code.</small> </legend>
-                <div class="form-group" ng-repeat="a in collectorStatus.applications">
+                <div class="form-group" ng-repeat="a in applications">
                     <label for="app-{{$index}}" class="col-sm-4 control-label">{{a.name}}</label>
 
                     <div class="col-sm-5">

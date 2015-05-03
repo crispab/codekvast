@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,16 +16,13 @@ import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.*;
-import se.crisp.codekvast.server.codekvast_server.model.event.rest.CollectorSettings;
-import se.crisp.codekvast.server.codekvast_server.model.event.rest.CollectorSettingsEntry;
+import se.crisp.codekvast.server.codekvast_server.model.event.rest.ApplicationSettingsEntry;
+import se.crisp.codekvast.server.codekvast_server.model.event.rest.OrganisationSettings;
 
 import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * DAO for agent stuff.
@@ -181,60 +179,103 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     }
 
     @Override
-    public CollectorStatusMessage createCollectorStatusMessage(long organisationId) {
-        Collection<String> usernames = getInteractiveUsernamesInOrganisation(organisationId);
+    public WebSocketMessage createWebSocketMessage(long organisationId) {
 
-        Collection<ApplicationDisplay> applications =
-                jdbcTemplate.query("SELECT " +
-                                           "a.name, " +
-                                           "a.usage_cycle_seconds " +
-                                           "FROM applications a " +
-                                           "WHERE a.organisation_id = ? ",
-                                   new ApplicationDisplayRowMapper(), organisationId);
+        return WebSocketMessage.builder()
+                               .usernames(getInteractiveUsernamesInOrganisation(organisationId))
+                               .applications(queryApplications(organisationId))
+                               .applicationStatistics(queryApplicationStatistics(organisationId))
+                .collectors(queryCollectors(organisationId))
+                        // .environments(queryEnvironments(organisationId))
+                .build();
+    }
 
-        Collection<CollectorDisplay> collectors =
-                jdbcTemplate.query("SELECT " +
-                                           "a.name, " +
-                                           "jvm.application_version, " +
-                                           "jvm.agent_host_name, " +
-                                           "jvm.agent_version, " +
-                                           "jvm.agent_vcs_id, " +
-                                           "jvm.agent_upload_interval_seconds, " +
-                                           "jvm.agent_clock_skew_millis, " +
-                                           "jvm.collector_host_name, " +
-                                           "jvm.collector_version, " +
-                                           "jvm.collector_vcs_id, " +
-                                           "MIN(jvm.started_at_millis), " +
-                                           "MAX(jvm.reported_at_millis), " +
-                                           "jvm.collector_resolution_seconds, " +
-                                           "jvm.method_visibility " +
-                                           "FROM applications a, jvm_info jvm " +
-                                           "WHERE a.id = jvm.application_id " +
-                                           "AND a.organisation_id = ? " +
-                                           "GROUP BY " +
-                                           "a.name, " +
-                                           "jvm.application_version, " +
-                                           "jvm.agent_host_name, " +
-                                           "jvm.agent_version, " +
-                                           "jvm.agent_vcs_id, " +
-                                           "jvm.agent_clock_skew_millis, " +
-                                           "jvm.agent_upload_interval_seconds, " +
-                                           "jvm.collector_host_name, " +
-                                           "jvm.collector_version, " +
-                                           "jvm.collector_vcs_id, " +
-                                           "jvm.collector_resolution_seconds, " +
-                                           "jvm.method_visibility ",
-                                   new CollectorDisplayRowMapper(), organisationId);
+    private Collection<EnvironmentDisplay> queryEnvironments(long organisationId) {
+        EnvironmentRowCallbackHandler callbackHandler = new EnvironmentRowCallbackHandler();
 
-        return CollectorStatusMessage.builder().applications(applications).collectors(collectors).usernames(usernames).build();
+        jdbcTemplate.query("SELECT " +
+                                   "e.name, " +
+                                   "eh.host_name " +
+                                   "FROM environments e, environment_hostnames eh " +
+                                   "WHERE e.organisation_id = ? " +
+                                   "AND eh.environment_id = e.id " +
+                                   "ORDER BY e.name ",
+                           callbackHandler, organisationId);
+        callbackHandler.savePreviousResult();
+        return callbackHandler.getResult();
+    }
+
+    private Collection<CollectorDisplay> queryCollectors(long organisationId) {
+        return jdbcTemplate.query("SELECT " +
+                                          "a.name, " +
+                                          "jvm.application_version, " +
+                                          "jvm.agent_host_name, " +
+                                          "jvm.agent_version, " +
+                                          "jvm.agent_vcs_id, " +
+                                          "jvm.agent_upload_interval_seconds, " +
+                                          "jvm.agent_clock_skew_millis, " +
+                                          "jvm.collector_host_name, " +
+                                          "jvm.collector_version, " +
+                                          "jvm.collector_vcs_id, " +
+                                          "MIN(jvm.started_at_millis), " +
+                                          "MAX(jvm.reported_at_millis), " +
+                                          "jvm.collector_resolution_seconds, " +
+                                          "jvm.method_visibility " +
+                                          "FROM applications a, jvm_info jvm " +
+                                          "WHERE a.id = jvm.application_id " +
+                                          "AND a.organisation_id = ? " +
+                                          "GROUP BY " +
+                                          "a.name, " +
+                                          "jvm.application_version, " +
+                                          "jvm.agent_host_name, " +
+                                          "jvm.agent_version, " +
+                                          "jvm.agent_vcs_id, " +
+                                          "jvm.agent_clock_skew_millis, " +
+                                          "jvm.agent_upload_interval_seconds, " +
+                                          "jvm.collector_host_name, " +
+                                          "jvm.collector_version, " +
+                                          "jvm.collector_vcs_id, " +
+                                          "jvm.collector_resolution_seconds, " +
+                                          "jvm.method_visibility ",
+                                  new CollectorDisplayRowMapper(), organisationId);
+    }
+
+    private Collection<ApplicationStatisticsDisplay> queryApplicationStatistics(long organisationId) {
+        return jdbcTemplate.query("SELECT " +
+                                          "a.name, " +
+                                          "a.usage_cycle_seconds, " +
+                                          "stat.application_version, " +
+                                          "stat.num_signatures, " +
+                                          "stat.num_not_invoked_signatures, " +
+                                          "stat.num_invoked_signatures, " +
+                                          "stat.num_startup_signatures, " +
+                                          "stat.num_truly_dead_signatures, " +
+                                          "stat.first_started_at_millis, " +
+                                          "stat.last_reported_at_millis, " +
+                                          "stat.avg_up_time_millis, " +
+                                          "stat.min_up_time_millis, " +
+                                          "stat.max_up_time_millis " +
+                                          "FROM applications a, application_statistics stat " +
+                                          "WHERE stat.application_id = a.id " +
+                                          "AND a.organisation_id = ? ",
+                                  new ApplicationStatisticsDisplayRowMapper(), organisationId);
+    }
+
+    private Collection<ApplicationDisplay> queryApplications(long organisationId) {
+        return jdbcTemplate.query("SELECT " +
+                                          "a.name, " +
+                                          "a.usage_cycle_seconds " +
+                                          "FROM applications a " +
+                                          "WHERE a.organisation_id = ? ",
+                                  new ApplicationDisplayRowMapper(), organisationId);
     }
 
     @Override
-    public void saveCollectorSettings(long organisationId, CollectorSettings collectorSettings) {
+    public void saveSettings(long organisationId, OrganisationSettings organisationSettings) {
 
         List<Object[]> args = new ArrayList<>();
 
-        for (CollectorSettingsEntry entry : collectorSettings.getCollectorSettings()) {
+        for (ApplicationSettingsEntry entry : organisationSettings.getApplicationSettings()) {
             args.add(new Object[]{
                     entry.getUsageCycleSeconds(),
                     organisationId,
@@ -245,6 +286,8 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         int[] updated = jdbcTemplate.batchUpdate("UPDATE applications SET usage_cycle_seconds = ? " +
                                                          "WHERE organisation_id = ? AND name = ?", args);
 
+        // TODO: save organisationSettings.environments
+
         boolean success = true;
         for (int count : updated) {
             if (count != 1) {
@@ -253,9 +296,9 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         }
 
         if (success) {
-            log.info("Saved collector settings");
+            log.info("Saved organisation settings");
         } else {
-            log.warn("Failed to save collector settings {}", collectorSettings);
+            log.warn("Failed to save organisation settings {}", organisationSettings);
         }
 
     }
@@ -265,9 +308,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         List<AppId> appIds = jdbcTemplate.query("SELECT id, organisation_id, application_id, application_version FROM jvm_info WHERE " +
                                                         "organisation_id = ?",
                                                 new AppIdRowMapper(), organisationId);
-        for (AppId appId : appIds) {
-            recalculateApplicationStatistics(appId);
-        }
+        appIds.forEach(this::recalculateApplicationStatistics);
     }
 
     @Override
@@ -342,49 +383,19 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         int numNeverInvokedSignatures = numSignatures - numInvokedSignatures;
         int numTrulyDeadSignatures = numNeverInvokedSignatures + numSignaturesInvokedBeforeUsageCycle;
 
-        int updated = jdbcTemplate.update("MERGE INTO application_statistics(application_id, application_version, " +
-                                                  "num_signatures, num_not_invoked_signatures, num_invoked_signatures, " +
-                                                  "num_startup_signatures, num_truly_dead_signatures, " +
-                                                  "first_started_at_millis, last_reported_at_millis, " +
-                                                  "avg_up_time_millis, min_up_time_millis, max_up_time_millis) " +
-                                                  "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                                          appId.getAppId(), appId.getAppVersion(),
-                                          numSignatures, numNeverInvokedSignatures, numInvokedSignatures, numStartupSignatures,
-                                          numTrulyDeadSignatures, minStartedAtMillis, maxReportedAtMillis,
-                                          avgUpTimeMillis, minUpTimeMillis, maxUpTimeMillis);
+        jdbcTemplate.update("MERGE INTO application_statistics(application_id, application_version, " +
+                                    "num_signatures, num_not_invoked_signatures, num_invoked_signatures, " +
+                                    "num_startup_signatures, num_truly_dead_signatures, " +
+                                    "first_started_at_millis, last_reported_at_millis, " +
+                                    "avg_up_time_millis, min_up_time_millis, max_up_time_millis) " +
+                                    "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                            appId.getAppId(), appId.getAppVersion(),
+                            numSignatures, numNeverInvokedSignatures, numInvokedSignatures, numStartupSignatures,
+                            numTrulyDeadSignatures, minStartedAtMillis, maxReportedAtMillis,
+                            avgUpTimeMillis, minUpTimeMillis, maxUpTimeMillis);
 
         long elapsed = System.currentTimeMillis() - startedAt;
         log.debug("Statistics for {} {} calculated in {} ms", appName, appId.getAppVersion(), elapsed);
-    }
-
-    @Override
-    public ApplicationStatisticsMessage createApplicationStatisticsMessage(long organisationId) {
-        Collection<String> usernames = getInteractiveUsernamesInOrganisation(organisationId);
-
-        Collection<ApplicationStatisticsDisplay> appStats =
-                jdbcTemplate.query("SELECT " +
-                                           "a.name, " +
-                                           "a.usage_cycle_seconds, " +
-                                           "stat.application_version, " +
-                                           "stat.num_signatures, " +
-                                           "stat.num_not_invoked_signatures, " +
-                                           "stat.num_invoked_signatures, " +
-                                           "stat.num_startup_signatures, " +
-                                           "stat.num_truly_dead_signatures, " +
-                                           "stat.first_started_at_millis, " +
-                                           "stat.last_reported_at_millis, " +
-                                           "stat.avg_up_time_millis, " +
-                                           "stat.min_up_time_millis, " +
-                                           "stat.max_up_time_millis " +
-                                           "FROM applications a, application_statistics stat " +
-                                           "WHERE stat.application_id = a.id " +
-                                           "AND a.organisation_id = ? ",
-                                   new ApplicationStatisticsDisplayRowMapper(), organisationId);
-
-        return ApplicationStatisticsMessage.builder()
-                                           .usernames(usernames)
-                                           .applications(appStats)
-                                           .build();
     }
 
     private static class ApplicationStatisticsDisplayRowMapper implements RowMapper<ApplicationStatisticsDisplay> {
@@ -455,6 +466,37 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                    .collectorResolutionSeconds(rs.getInt(13))
                                    .methodVisibility(rs.getString(14))
                                    .build();
+        }
+    }
+
+    private static class EnvironmentRowCallbackHandler implements RowCallbackHandler {
+        private final List<EnvironmentDisplay> result = new ArrayList<>();
+
+        private String lastName = null;
+        private Set<String> hostNames = null;
+
+        @Override
+        public void processRow(ResultSet rs) throws SQLException {
+            String name = rs.getString(1);
+            String hostName = rs.getString(2);
+
+            if (!name.equals(lastName)) {
+                savePreviousResult();
+                lastName = name;
+                hostNames = new TreeSet<>();
+            }
+            hostNames.add(hostName);
+        }
+
+        private void savePreviousResult() {
+            if (lastName != null) {
+                result.add(EnvironmentDisplay.builder().name(lastName).hostNames(hostNames).build());
+            }
+        }
+
+        List<EnvironmentDisplay> getResult() {
+            savePreviousResult();
+            return result;
         }
     }
 }

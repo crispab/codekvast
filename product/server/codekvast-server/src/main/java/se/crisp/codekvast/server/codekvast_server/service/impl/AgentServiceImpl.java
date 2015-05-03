@@ -44,8 +44,7 @@ public class AgentServiceImpl implements AgentService {
 
         agentDAO.recalculateApplicationStatistics(agentDAO.getAppIdByJvmUuid(data.getJvmUuid()));
 
-        eventBus.post(agentDAO.createApplicationStatisticsMessage(organisationId));
-        eventBus.post(agentDAO.createCollectorStatusMessage(organisationId));
+        eventBus.post(agentDAO.createWebSocketMessage(organisationId));
     }
 
     @Override
@@ -66,7 +65,8 @@ public class AgentServiceImpl implements AgentService {
         agentDAO.storeInvocationData(appId, data);
 
         agentDAO.recalculateApplicationStatistics(appId);
-        eventBus.post(agentDAO.createApplicationStatisticsMessage(appId.getOrganisationId()));
+
+        eventBus.post(agentDAO.createWebSocketMessage(appId.getOrganisationId()));
     }
 
 }
