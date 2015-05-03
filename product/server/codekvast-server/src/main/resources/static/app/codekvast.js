@@ -172,7 +172,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
         $scope.rightMenuItems = [
             {
-                name: 'Collection Details',
+                name: 'Collector Details',
                 url: '/page/collectors',
                 title: 'Shows detailed low-level status of the collectors',
                 icon: 'glyphicon-dashboard'

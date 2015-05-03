@@ -19,6 +19,7 @@
                 <tr>
                     <th class="col-lg-1" title="The name of the application, as reported by the collector">Application</th>
                     <th class="col-lg-1" title="The version of the application">Version</th>
+                    <th class="col-lg-1" title="In how many hosts is this application executing?">Number of hosts</th>
                     <th class="col-lg-2"
                         title="When was this version of the application started for the first time with Codekvast attached?">
                         Collection Started
@@ -40,9 +41,10 @@
                 <tr ng-repeat="a in applicationStatistics">
                     <td class="col-lg-1">{{a.name}}</td>
                     <td class="col-lg-1">{{a.version}}</td>
+                    <td class="col-lg-1">{{a.numHostNames}}</td>
                     <td class="col-lg-2" title="It was started {{a.collectorAge}} ago">{{a.firstDataReceivedAtMillis|date:dateFormat}}</td>
                     <td class="col-lg-1">{{a.usageCycle}}</td>
-                    <td class="col-lg-1" title="The average uptime over all instances of the application version">{{a.upTime}}</td>
+                    <td class="col-lg-1" title="The average uptime for all instances of this application">{{a.upTime}}</td>
                     <td class="col-lg-1">
                         <progressbar ng-hide="a.fullUsageCycleCompleted" tooltip="{{a.timeToFullUsageCycle}} to full usage cycle"
                                      value="a.percentOfUsageCycle"

@@ -19,9 +19,9 @@ CREATE TABLE users (
 );
 
 CREATE TABLE user_roles (
-  user_id    BIGINT                              NOT NULL REFERENCES users (id),
+  user_id     BIGINT                              NOT NULL REFERENCES users (id),
   role        VARCHAR(20)                         NOT NULL REFERENCES roles (name),
-  created_at TIMESTAMP DEFAULT current_timestamp NOT NULL,
+  created_at  TIMESTAMP DEFAULT current_timestamp NOT NULL,
   modified_at TIMESTAMP AS NOW()
 );
 
@@ -29,15 +29,15 @@ CREATE UNIQUE INDEX ix_user_roles ON user_roles (user_id, role);
 
 -- Organisations --------------------------------------------------------------------------------------------
 CREATE TABLE organisations (
-  id         BIGINT                              NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  name       VARCHAR(100)                        NOT NULL UNIQUE,
-  created_at TIMESTAMP DEFAULT current_timestamp NOT NULL,
+  id          BIGINT                              NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  name        VARCHAR(100)                        NOT NULL UNIQUE,
+  created_at  TIMESTAMP DEFAULT current_timestamp NOT NULL,
   modified_at TIMESTAMP AS NOW()
 );
 
 CREATE TABLE organisation_members (
-  organisation_id BIGINT NOT NULL REFERENCES organisations (id),
-  user_id         BIGINT NOT NULL REFERENCES users (id),
+  organisation_id BIGINT                              NOT NULL REFERENCES organisations (id),
+  user_id         BIGINT                              NOT NULL REFERENCES users (id),
   primary_contact BOOLEAN DEFAULT FALSE               NOT NULL,
   created_at      TIMESTAMP DEFAULT current_timestamp NOT NULL,
   modified_at     TIMESTAMP AS NOW()
@@ -63,6 +63,8 @@ CREATE UNIQUE INDEX ix_applications ON applications (organisation_id, name);
 CREATE TABLE application_statistics (
   application_id             BIGINT       NOT NULL REFERENCES applications (id),
   application_version        VARCHAR(100) NOT NULL,
+  num_host_names             INTEGER      NOT NULL
+  COMMENT 'The number of distinct host names in which this application is executing',
   num_signatures             INTEGER      NOT NULL
   COMMENT 'The total number of signatures in this application, invoked or not',
   num_not_invoked_signatures INTEGER      NOT NULL
@@ -74,15 +76,17 @@ CREATE TABLE application_statistics (
   num_truly_dead_signatures  INTEGER      NOT NULL
   COMMENT 'The number of truly dead signatures in the application, i.e., never invoked at all or only invoked before the latest
    full usage cycle',
-  avg_up_time_millis      BIGINT NOT NULL
+  sum_up_time_millis         BIGINT       NOT NULL
+  COMMENT 'How many millis has this application version been running in total (sum over all instances)?',
+  avg_up_time_millis         BIGINT       NOT NULL
   COMMENT 'How many millis has this application version been running in total (average over all instances)?',
-  min_up_time_millis      BIGINT NOT NULL
+  min_up_time_millis         BIGINT       NOT NULL
   COMMENT 'How many millis has this application version been running in total (minimum over all instances)?',
-  max_up_time_millis      BIGINT NOT NULL
+  max_up_time_millis         BIGINT       NOT NULL
   COMMENT 'How many millis has this application version been running in total (maximum over all instances)?',
-  first_started_at_millis BIGINT NOT NULL
+  first_started_at_millis    BIGINT       NOT NULL
   COMMENT 'When was this application version first started?',
-  last_reported_at_millis BIGINT NOT NULL
+  last_reported_at_millis    BIGINT       NOT NULL
   COMMENT 'When was the last time data was received from this application version?'
 );
 
@@ -156,10 +160,11 @@ CREATE TABLE signatures (
   organisation_id        BIGINT        NOT NULL REFERENCES organisations (id),
   application_id         BIGINT        NOT NULL REFERENCES applications (id),
   jvm_id                 BIGINT        NOT NULL REFERENCES jvm_info (id),
-  signature VARCHAR(4000) NOT NULL
+  signature              VARCHAR(4000) NOT NULL
   COMMENT 'The method signature in human readable format',
   invoked_at_millis      BIGINT        NOT NULL
-  COMMENT 'The value of System.currentTimeMillis() the method was invoked (rounded to nearest collection interval). 0 means not yet invoked',
+  COMMENT 'The value of System.currentTimeMillis() at the beginning of the collection interval in which the method was invoked.
+  0 means not yet invoked',
   millis_since_jvm_start BIGINT        NOT NULL
   COMMENT 'The delta between invoked_at_millis and the instant the JVM started',
   confidence             TINYINT       NULL

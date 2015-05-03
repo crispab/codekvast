@@ -16,6 +16,7 @@ public class ApplicationStatisticsDisplay {
     private String name;
     @NonNull
     private String version;
+    int numHostNames;
     int numSignatures;
     int numNeverInvokedSignatures;
     int numInvokedSignatures;

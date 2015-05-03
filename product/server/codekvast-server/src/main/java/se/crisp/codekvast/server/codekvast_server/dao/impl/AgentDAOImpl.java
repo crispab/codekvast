@@ -20,6 +20,7 @@ import se.crisp.codekvast.server.codekvast_server.model.event.rest.ApplicationSe
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.OrganisationSettings;
 
 import javax.inject.Inject;
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -186,11 +187,12 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                .applications(queryApplications(organisationId))
                                .applicationStatistics(queryApplicationStatistics(organisationId))
                 .collectors(queryCollectors(organisationId))
-                        // .environments(queryEnvironments(organisationId))
+                .environments(queryEnvironments(organisationId))
                 .build();
     }
 
     private Collection<EnvironmentDisplay> queryEnvironments(long organisationId) {
+
         EnvironmentRowCallbackHandler callbackHandler = new EnvironmentRowCallbackHandler();
 
         jdbcTemplate.query("SELECT " +
@@ -201,7 +203,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                    "AND eh.environment_id = e.id " +
                                    "ORDER BY e.name ",
                            callbackHandler, organisationId);
-        callbackHandler.savePreviousResult();
+        callbackHandler.saveCurrent();
         return callbackHandler.getResult();
     }
 
@@ -225,7 +227,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                           "WHERE a.id = jvm.application_id " +
                                           "AND a.organisation_id = ? " +
                                           "GROUP BY " +
-                                          "a.name, " +
+                                          "jvm.application_id, " +
                                           "jvm.application_version, " +
                                           "jvm.agent_host_name, " +
                                           "jvm.agent_version, " +
@@ -245,6 +247,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                           "a.name, " +
                                           "a.usage_cycle_seconds, " +
                                           "stat.application_version, " +
+                                          "stat.num_host_names, " +
                                           "stat.num_signatures, " +
                                           "stat.num_not_invoked_signatures, " +
                                           "stat.num_invoked_signatures, " +
@@ -252,6 +255,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                           "stat.num_truly_dead_signatures, " +
                                           "stat.first_started_at_millis, " +
                                           "stat.last_reported_at_millis, " +
+                                          "stat.sum_up_time_millis, " +
                                           "stat.avg_up_time_millis, " +
                                           "stat.min_up_time_millis, " +
                                           "stat.max_up_time_millis " +
@@ -315,22 +319,22 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     public void recalculateApplicationStatistics(AppId appId) {
         long startedAt = System.currentTimeMillis();
 
-        long now = System.currentTimeMillis();
-        Map<String, Object> data = jdbcTemplate.queryForMap("SELECT a.name AS appname, " +
-                                                                    "a.usage_cycle_seconds AS usagecycleseconds, " +
-                                                                    "MIN(jvm.started_at_millis) AS minstartedatmillis, " +
-                                                                    "MAX(jvm.started_at_millis) AS maxstartedatmillis, " +
-                                                                    "MAX(jvm.reported_at_millis) AS maxreportedatmillis, " +
-                                                                    "AVG(jvm.reported_at_millis - jvm.started_at_millis) AS avguptime, " +
-                                                                    "MIN(jvm.reported_at_millis - jvm.started_at_millis) AS minuptime, " +
-                                                                    "MAX(jvm.reported_at_millis - jvm.started_at_millis) AS maxuptime " +
+        Map<String, Object> data = jdbcTemplate.queryForMap("SELECT a.name AS appName, " +
+                                                                    "a.usage_cycle_seconds AS usageCycleSeconds, " +
+                                                                    "MIN(jvm.started_at_millis) AS minStartedAtMillis, " +
+                                                                    "MAX(jvm.started_at_millis) AS maxStartedAtMillis, " +
+                                                                    "MAX(jvm.reported_at_millis) AS maxReportedAtMillis, " +
+                                                                    "SUM(jvm.reported_at_millis - jvm.started_at_millis) AS sumUptime, " +
+                                                                    "AVG(jvm.reported_at_millis - jvm.started_at_millis) AS avgUptime, " +
+                                                                    "MIN(jvm.reported_at_millis - jvm.started_at_millis) AS minUptime, " +
+                                                                    "MAX(jvm.reported_at_millis - jvm.started_at_millis) AS maxUptime " +
                                                                     "FROM applications a, jvm_info jvm " +
                                                                     "WHERE jvm.application_id = a.id " +
                                                                     "AND jvm.application_id = ? " +
                                                                     "AND jvm.application_version = ? " +
                                                                     "GROUP BY " +
                                                                     "jvm.application_id, " +
-                                                                    "jvm.application_version ",
+                                                                    "jvm.application_version",
                                                             appId.getAppId(), appId.getAppVersion());
 
         String appName = (String) data.get("appName");
@@ -338,20 +342,27 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         long minStartedAtMillis = (long) data.get("minStartedAtMillis");
         long maxStartedAtMillis = (long) data.get("maxStartedAtMillis");
         long maxReportedAtMillis = (long) data.get("maxReportedAtMillis");
+        long sumUpTimeMillis = ((BigDecimal) data.get("sumUpTime")).longValue();
         long avgUpTimeMillis = (long) data.get("avgUpTime");
         long minUpTimeMillis = (long) data.get("minUpTime");
         long maxUpTimeMillis = (long) data.get("maxUpTime");
         long startupRelatedIfInvokedBeforeMillis = maxStartedAtMillis + 60000L;
-        long trulyDeadIfInvokedBeforeMillis = now - (usageCycleSeconds * 1000L);
+        long trulyDeadIfInvokedBeforeMillis = maxReportedAtMillis - (usageCycleSeconds * 1000L);
 
-        int numSignatures = jdbcTemplate.queryForObject("SELECT count(1) FROM signatures s, jvm_info jvm " +
+        int numHostNames = jdbcTemplate.queryForObject("SELECT COUNT(DISTINCT collector_host_name) FROM jvm_info jvm " +
+                                                               "WHERE jvm.application_id = ? " +
+                                                               "AND jvm.application_version = ? ",
+                                                       Integer.class,
+                                                       appId.getAppId(), appId.getAppVersion());
+
+        int numSignatures = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM signatures s, jvm_info jvm " +
                                                                 "WHERE s.jvm_id = jvm.id " +
                                                                 "AND jvm.application_id = ? " +
                                                                 "AND jvm.application_version = ? ",
                                                         Integer.class,
                                                         appId.getAppId(), appId.getAppVersion());
 
-        int numInvokedSignatures = jdbcTemplate.queryForObject("SELECT count(1) FROM signatures s, jvm_info jvm " +
+        int numInvokedSignatures = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM signatures s, jvm_info jvm " +
                                                                        "WHERE s.jvm_id = jvm.id " +
                                                                        "AND jvm.application_id = ? " +
                                                                        "AND jvm.application_version = ? " +
@@ -359,22 +370,20 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                                                Integer.class,
                                                                appId.getAppId(), appId.getAppVersion());
 
-        int numStartupSignatures = jdbcTemplate.queryForObject("SELECT count(1) FROM signatures s, jvm_info jvm " +
+        int numStartupSignatures = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM signatures s, jvm_info jvm " +
                                                                        "WHERE s.jvm_id = jvm.id " +
                                                                        "AND jvm.application_id = ? " +
                                                                        "AND jvm.application_version = ? " +
-                                                                       "AND s.invoked_at_millis >= ? " +
-                                                                       "AND s.invoked_at_millis < ? ",
+                                                                       "AND s.invoked_at_millis BETWEEN ? AND ? ",
                                                                Integer.class,
                                                                appId.getAppId(), appId.getAppVersion(),
                                                                maxStartedAtMillis, startupRelatedIfInvokedBeforeMillis);
 
-        int numSignaturesInvokedBeforeUsageCycle = jdbcTemplate.queryForObject("SELECT count(1) FROM signatures s, jvm_info jvm " +
+        int numSignaturesInvokedBeforeUsageCycle = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM signatures s, jvm_info jvm " +
                                                                                        "WHERE s.jvm_id = jvm.id " +
                                                                                        "AND jvm.application_id = ? " +
                                                                                        "AND jvm.application_version = ? " +
-                                                                                       "AND s.invoked_at_millis >= ? " +
-                                                                                       "AND s.invoked_at_millis < ? ",
+                                                                                       "AND s.invoked_at_millis BETWEEN ? AND ? ",
                                                                                Integer.class,
                                                                                appId.getAppId(), appId.getAppVersion(),
                                                                                startupRelatedIfInvokedBeforeMillis,
@@ -384,15 +393,15 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         int numTrulyDeadSignatures = numNeverInvokedSignatures + numSignaturesInvokedBeforeUsageCycle;
 
         jdbcTemplate.update("MERGE INTO application_statistics(application_id, application_version, " +
-                                    "num_signatures, num_not_invoked_signatures, num_invoked_signatures, " +
+                                    "num_host_names, num_signatures, num_not_invoked_signatures, num_invoked_signatures, " +
                                     "num_startup_signatures, num_truly_dead_signatures, " +
                                     "first_started_at_millis, last_reported_at_millis, " +
-                                    "avg_up_time_millis, min_up_time_millis, max_up_time_millis) " +
-                                    "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                            appId.getAppId(), appId.getAppVersion(),
+                                    "sum_up_time_millis, avg_up_time_millis, min_up_time_millis, max_up_time_millis) " +
+                                    "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                            appId.getAppId(), appId.getAppVersion(), numHostNames,
                             numSignatures, numNeverInvokedSignatures, numInvokedSignatures, numStartupSignatures,
                             numTrulyDeadSignatures, minStartedAtMillis, maxReportedAtMillis,
-                            avgUpTimeMillis, minUpTimeMillis, maxUpTimeMillis);
+                            sumUpTimeMillis, avgUpTimeMillis, minUpTimeMillis, maxUpTimeMillis);
 
         long elapsed = System.currentTimeMillis() - startedAt;
         log.debug("Statistics for {} {} calculated in {} ms", appName, appId.getAppVersion(), elapsed);
@@ -404,25 +413,28 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
             String appName = rs.getString(1);
             int usageCycleSeconds = rs.getInt(2);
             String appVersion = rs.getString(3);
-            int numSignatures = rs.getInt(4);
-            int numNeverInvokedSignatures = rs.getInt(5);
-            int numInvokedSignatures = rs.getInt(6);
-            int numStartupSignatures = rs.getInt(7);
-            int numTrulyDead = rs.getInt(8);
-            long firstStartedAtMillis = rs.getLong(9);
-            long lastDataReceivedAtMillis = rs.getLong(10);
-            long avgUpTimeMillis = rs.getLong(11);
+            int numHostNames = rs.getInt(4);
+            int numSignatures = rs.getInt(5);
+            int numNeverInvokedSignatures = rs.getInt(6);
+            int numInvokedSignatures = rs.getInt(7);
+            int numStartupSignatures = rs.getInt(8);
+            int numTrulyDead = rs.getInt(9);
+            long firstStartedAtMillis = rs.getLong(10);
+            long lastDataReceivedAtMillis = rs.getLong(11);
+            long sumUpTimeMillis = rs.getLong(12);
+            long avgUpTimeMillis = rs.getLong(13);
 
             Integer percentDeadSignatures = numSignatures == 0 ? null : Math.round(numTrulyDead * 100f / numSignatures);
             Integer percentInvokedSignatures = numSignatures == 0 ? null : Math.round(numInvokedSignatures * 100f / numSignatures);
             Integer percentNeverInvokedSignatures = percentInvokedSignatures == null ? null : 100 - percentInvokedSignatures;
 
-            long upTimeSeconds = Math.round(avgUpTimeMillis / 1000d);
+            long upTimeSeconds = Math.round(sumUpTimeMillis / 1000d);
 
             return ApplicationStatisticsDisplay.builder()
                                                .name(appName)
                                                .usageCycleSeconds(usageCycleSeconds)
                                                .version(appVersion)
+                                               .numHostNames(numHostNames)
                                                .numSignatures(numSignatures)
                                                .numNeverInvokedSignatures(numNeverInvokedSignatures)
                                                .percentNeverInvokedSignatures(percentNeverInvokedSignatures)
@@ -472,30 +484,31 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     private static class EnvironmentRowCallbackHandler implements RowCallbackHandler {
         private final List<EnvironmentDisplay> result = new ArrayList<>();
 
-        private String lastName = null;
-        private Set<String> hostNames = null;
+        private String currentName = null;
+        private final Set<String> currentHostNames = new TreeSet<>();
 
         @Override
         public void processRow(ResultSet rs) throws SQLException {
             String name = rs.getString(1);
             String hostName = rs.getString(2);
 
-            if (!name.equals(lastName)) {
-                savePreviousResult();
-                lastName = name;
-                hostNames = new TreeSet<>();
+            if (!name.equals(currentName)) {
+                saveCurrent();
+                currentName = name;
             }
-            hostNames.add(hostName);
+            currentHostNames.add(hostName);
         }
 
-        private void savePreviousResult() {
-            if (lastName != null) {
-                result.add(EnvironmentDisplay.builder().name(lastName).hostNames(hostNames).build());
+        private void saveCurrent() {
+            if (currentName != null) {
+                result.add(EnvironmentDisplay.builder().name(currentName).hostNames(currentHostNames).build());
+                currentName = null;
+                currentHostNames.clear();
             }
         }
 
         List<EnvironmentDisplay> getResult() {
-            savePreviousResult();
+            saveCurrent();
             return result;
         }
     }
