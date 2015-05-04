@@ -19,21 +19,22 @@
                 <tr>
                     <th class="col-lg-1" title="The name of the application, as reported by the collector">Application</th>
                     <th class="col-lg-1" title="The version of the application">Version</th>
-                    <th class="col-lg-1" title="In how many hosts is this application executing?">Number of hosts</th>
+                    <th class="col-lg-1" title="In how many hosts is this application executing?">Number of instances</th>
                     <th class="col-lg-2"
                         title="When was this version of the application started for the first time with Codekvast attached?">
                         Collection Started
                     </th>
-                    <th class="col-lg-1" title="After how long can methods that have not been invoked be considered truly dead?">Usage
-                                                                                                                                  Cycle
+                    <th class="col-lg-1" title="After how long time can methods that have not been invoked be considered probably dead?">
+                        Usage Cycle
                     </th>
                     <th class="col-lg-1" title="How long has the application been used with Codekvast attached?">Usage Time</th>
-                    <th class="col-lg-1" title="Can we start identifying truly dead methods yet?">Usage Data Confidence
+                    <th class="col-lg-1" title="Can we start identifying probably dead methods yet?">Usage Data Confidence
                     </th>
                     <th class="col-lg-1" title="The number of tracked methods in this version">Number of Methods</th>
-                    <th class="col-lg-1" title="Mow many percent of all tracked methods have never been invoked?">Never Invoked Methods</th>
-                    <th class="col-lg-1"
-                        title="How many tracked methods have never been invoked, or only invoked before the last usage cycle?">Truly Dead
+                    <th class="col-lg-1" title="Methods that have never been invoked">Dead Methods</th>
+                    <th class="col-lg-1" title="Methods only invoked before the last usage cycle">Probably Dead Methods
+                    </th>
+                    <th class="col-lg-1" title="Methods that have been invoked during the last usage cycle">Live Methods
                     </th>
                 </tr>
                 </thead>
@@ -62,8 +63,8 @@
                     </td>
                     <td class="col-lg-1">{{a.numSignatures}}</td>
                     <td class="col-lg-1">{{a.percentNeverInvokedSignatures}}%</td>
-                    <td class="col-lg-1" title="{{a.trulyDeadTooltip}}">{{a.percentTrulyDead}}</td>
-
+                    <td class="col-lg-1" title="{{a.probablyDeadTooltip}}">{{a.percentProbablyDead}}</td>
+                    <td class="col-lg-1">{{a.percentInvokedSignatures}}%</td>
                 </tr>
                 </tbody>
             </table>

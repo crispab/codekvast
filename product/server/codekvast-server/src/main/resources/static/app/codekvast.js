@@ -163,9 +163,9 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                 icon: 'glyphicon-stats'
             },
             {
-                name: 'Identify Truly Dead Code',
-                url: '/page/truly-dead-code',
-                title: 'Generate reports of truly dead code',
+                name: 'Generate Code Usage Report',
+                url: '/page/code-usage-report',
+                title: 'Generate reports of code usage',
                 icon: 'glyphicon-th-list'
             }
         ];
@@ -308,11 +308,11 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                         a.usageCycleMultiple = Math.round(a.upTimeSeconds / a.usageCycleSeconds);
                     }
                     if (a.fullUsageCycleCompleted) {
-                        a.percentTrulyDead = a.percentTrulyDeadSignatures + "%"
-                        a.trulyDeadTooltip = "This is truly dead code";
+                        a.percentProbablyDead = a.percentProbablyDeadSignatures + "%"
+                        a.probablyDeadTooltip = "This is probably dead code";
                     } else {
-                        a.percentTrulyDead = undefined
-                        a.trulyDeadTooltip = "Be patient for another " + a.timeToFullUsageCycle + " ...";
+                        a.percentProbablyDead = undefined
+                        a.probablyDeadTooltip = "Be patient for another " + a.timeToFullUsageCycle + " ...";
                     }
                     a.dataAge = DateService.prettyAge(a.lastDataReceivedAtMillis);
                     a.collectorsWorkingType = a.collectorsWorking === "all" ? "success" : a.collectorsWorking === "some" ? 'warning' : 'danger';
@@ -361,6 +361,10 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
     .controller('ReportController', ['$scope', '$filter', 'RemoteDataService', function ($scope, $filter, RemoteDataService) {
         $scope.dateFormat = 'yyyy-MM-dd HH:mm:ss';
+        $scope.showMockup = false;
+        $scope.toggleMockupVerb = function () {
+            return $scope.showMockup ? "Hide mockup" : "Show mockup"
+        };
 
         $scope.filter = {
             minAgeValue: 30,

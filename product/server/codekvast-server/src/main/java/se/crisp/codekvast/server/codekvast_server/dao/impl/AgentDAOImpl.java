@@ -247,7 +247,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                           "stat.num_not_invoked_signatures, " +
                                           "stat.num_invoked_signatures, " +
                                           "stat.num_startup_signatures, " +
-                                          "stat.num_truly_dead_signatures, " +
+                                          "stat.num_probably_dead_signatures, " +
                                           "stat.first_started_at_millis, " +
                                           "stat.last_reported_at_millis, " +
                                           "stat.sum_up_time_millis, " +
@@ -342,7 +342,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         long minUpTimeMillis = (long) data.get("minUpTime");
         long maxUpTimeMillis = (long) data.get("maxUpTime");
         long startupRelatedIfInvokedBeforeMillis = maxStartedAtMillis + 60000L;
-        long trulyDeadIfInvokedBeforeMillis = maxReportedAtMillis - (usageCycleSeconds * 1000L);
+        long probablyDeadIfInvokedBeforeMillis = maxReportedAtMillis - (usageCycleSeconds * 1000L);
 
         int numHostNames = jdbcTemplate.queryForObject("SELECT COUNT(DISTINCT(collector_host_name)) FROM jvm_info jvm " +
                                                                "WHERE jvm.application_id = ? " +
@@ -382,20 +382,19 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                                                                Integer.class,
                                                                                appId.getAppId(), appId.getAppVersion(),
                                                                                startupRelatedIfInvokedBeforeMillis,
-                                                                               trulyDeadIfInvokedBeforeMillis);
+                                                                               probablyDeadIfInvokedBeforeMillis);
 
         int numNeverInvokedSignatures = numSignatures - numInvokedSignatures;
-        int numTrulyDeadSignatures = numNeverInvokedSignatures + numSignaturesInvokedBeforeUsageCycle;
 
         jdbcTemplate.update("MERGE INTO application_statistics(application_id, application_version, " +
                                     "num_host_names, num_signatures, num_not_invoked_signatures, num_invoked_signatures, " +
-                                    "num_startup_signatures, num_truly_dead_signatures, " +
+                                    "num_startup_signatures, num_probably_dead_signatures, " +
                                     "first_started_at_millis, last_reported_at_millis, " +
                                     "sum_up_time_millis, avg_up_time_millis, min_up_time_millis, max_up_time_millis) " +
                                     "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                             appId.getAppId(), appId.getAppVersion(), numHostNames,
                             numSignatures, numNeverInvokedSignatures, numInvokedSignatures, numStartupSignatures,
-                            numTrulyDeadSignatures, minStartedAtMillis, maxReportedAtMillis,
+                            numSignaturesInvokedBeforeUsageCycle, minStartedAtMillis, maxReportedAtMillis,
                             sumUpTimeMillis, avgUpTimeMillis, minUpTimeMillis, maxUpTimeMillis);
 
         long elapsed = System.currentTimeMillis() - startedAt;
@@ -413,15 +412,15 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
             int numNeverInvokedSignatures = rs.getInt(6);
             int numInvokedSignatures = rs.getInt(7);
             int numStartupSignatures = rs.getInt(8);
-            int numTrulyDead = rs.getInt(9);
+            int numProbablyDead = rs.getInt(9);
             long firstStartedAtMillis = rs.getLong(10);
             long lastDataReceivedAtMillis = rs.getLong(11);
             long sumUpTimeMillis = rs.getLong(12);
             long avgUpTimeMillis = rs.getLong(13);
 
-            Integer percentDeadSignatures = numSignatures == 0 ? null : Math.round(numTrulyDead * 100f / numSignatures);
-            Integer percentInvokedSignatures = numSignatures == 0 ? null : Math.round(numInvokedSignatures * 100f / numSignatures);
-            Integer percentNeverInvokedSignatures = percentInvokedSignatures == null ? null : 100 - percentInvokedSignatures;
+            Integer percentDeadSignatures = numSignatures == 0 ? null : Math.round(numNeverInvokedSignatures * 100f / numSignatures);
+            Integer percentProbablyDeadSignatures = numSignatures == 0 ? null : Math.round(numProbablyDead * 100f / numSignatures);
+            Integer percentLiveSignatures = numSignatures == 0 ? null : 100 - percentDeadSignatures - percentProbablyDeadSignatures;
 
             long upTimeSeconds = Math.round(sumUpTimeMillis / numHostNames / 1000d);
 
@@ -432,15 +431,15 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                                .numHostNames(numHostNames)
                                                .numSignatures(numSignatures)
                                                .numNeverInvokedSignatures(numNeverInvokedSignatures)
-                                               .percentNeverInvokedSignatures(percentNeverInvokedSignatures)
+                                               .percentNeverInvokedSignatures(percentDeadSignatures)
                                                .numInvokedSignatures(numInvokedSignatures)
-                                               .percentInvokedSignatures(percentInvokedSignatures)
+                                               .percentInvokedSignatures(percentLiveSignatures)
                                                .numStartupSignatures(numStartupSignatures)
-                                               .numTrulyDeadSignatures(numTrulyDead)
+                                               .numProbablyDeadSignatures(numProbablyDead)
                                                .firstDataReceivedAtMillis(firstStartedAtMillis)
                                                .lastDataReceivedAtMillis(lastDataReceivedAtMillis)
                                                .upTimeSeconds(upTimeSeconds)
-                                               .percentTrulyDeadSignatures(percentDeadSignatures)
+                                               .percentProbablyDeadSignatures(percentProbablyDeadSignatures)
                                                .fullUsageCycleCompleted(upTimeSeconds >= usageCycleSeconds)
                                                .build();
         }

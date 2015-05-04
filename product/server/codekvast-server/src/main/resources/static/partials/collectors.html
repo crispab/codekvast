@@ -5,7 +5,7 @@
         </div>
         <div>
             <div class="well">
-                This page shows details for the collectors that deliver usage data to this server.
+                This page shows details for all the collectors that deliver usage data to this server.
             </div>
             <div class="panel-body">
                 <h2 ng-show="!collectorStatuses">Nothing to show!
@@ -18,14 +18,16 @@
                 <tr>
                     <th class="col-lg-1" title="Which application?">Application</th>
                     <th class="col-lg-1" title="Which version of the application?">Version</th>
-                    <th class="col-lg-2" title="Since when have Codekvast been attached to the application?">Collector Started</th>
-                    <th class="col-lg-1" title="In which host is the application executing?">Collector Host</th>
-                    <th class="col-lg-1" title="Which version of the collector is used?">Collector Version</th>
+                    <th class="col-lg-1" title="Which methods are tracked?">Method Visibility</th>
+                    <th class="col-lg-2" title="When did this application start?">Application Started</th>
+                    <th class="col-lg-1" title="In which host is the application executing?">Hostname</th>
+                    <th class="col-lg-1" title="Which version of the Codekvast collector is attached to the application?">Collector
+                                                                                                                          Version
+                    </th>
                     <th class="col-lg-1" title="What is the resolution of the collector?">Collector Resolution</th>
-                    <th class="col-lg-1" title="In which host is the agent executing?">Agent Host</th>
+                    <th class="col-lg-1" title="In which host is the Codekvast agent executing?">Agent Host</th>
                     <th class="col-lg-1" title="Which version of the agent is used?">Agent Version</th>
                     <th class="col-lg-1" title="How often is the agent uploading collected data?">Agent Upload Interval</th>
-                    <th class="col-lg-1" title="Which methods are tracked?">Method Visibility</th>
                     <th class="col-lg-1" title="How old is the data?">Data Age</th>
                 </tr>
                 </thead>
@@ -33,6 +35,7 @@
                 <tr ng-repeat="c in collectorStatuses">
                     <td class="col-lg-1">{{c.appName}}</td>
                     <td class="col-lg-1">{{c.appVersion}}</td>
+                    <td class="col-lg-1">{{c.methodVisibility}}</td>
                     <td class="col-lg-2" title="{{c.collectorAge}}">{{c.collectorStartedAtMillis|date:dateFormat}}</td>
                     <td class="col-lg-1">{{c.collectorHostname}}</td>
                     <td class="col-lg-1">{{c.collectorVersion}}</td>
@@ -40,7 +43,6 @@
                     <td class="col-lg-1">{{c.agentHostname}}</td>
                     <td class="col-lg-1">{{c.agentVersion}}</td>
                     <td class="col-lg-1">{{c.agentUploadInterval}}</td>
-                    <td class="col-lg-1">{{c.methodVisibility}}</td>
                     <td class="col-lg-1">{{c.dataAge}}</td>
                 </tr>
                 </tbody>

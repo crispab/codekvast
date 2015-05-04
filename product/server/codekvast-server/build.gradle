@@ -1,6 +1,7 @@
 buildscript {
     dependencies {
         classpath "org.flywaydb:flyway-gradle-plugin:3.1"
+        classpath 'com.github.jengelman.gradle.plugins:gradle-processes:0.3.0'
     }
 }
 plugins {
@@ -15,6 +16,7 @@ apply from: "$rootDir/gradle/java-8.gradle"
 apply plugin: 'groovy'
 apply plugin: 'spring-boot'
 apply plugin: 'flyway'
+apply plugin: 'com.github.johnrengelman.processes'
 
 description = "The main Codekvast server"
 archivesBaseName = "codekvast-server"
@@ -271,42 +273,40 @@ flyway {
     locations = ['classpath:/database/migration', 'classpath:/se/crisp/codekvast/server/codekvast_server/migration']
 }
 
-task startH2Server {
+task startH2Server(type: com.github.jengelman.gradle.plugins.processes.tasks.JavaFork) {
     description "Starts a H2 server, so that one can inspect the database without Codekvast Server running"
     group "Help"
 
+    def mainClass = 'org.h2.tools.Server'
+
     outputs.upToDateWhen {
-        ["jps", "-l"].execute().text.contains('org.h2.tools.Server')
+        ["jps", "-l"].execute().text.indexOf(mainClass) >= 0
     }
 
-    doLast {
-        logger.lifecycle "Starting an H2 server..."
-        def process = ["java", "-cp", configurations.h2server.asPath, "-Duser.dir=${buildDir.absolutePath}",
-                       'org.h2.tools.Server', "-tcp"].execute()
-        process.in.close()
-        process.out.close()
-        process.err.close()
-    }
+    classpath configurations.h2server.asPath
+    workingDir buildDir
+    main mainClass
+    args = ['-tcp']
+    standardOutput = new PrintStream(new BufferedOutputStream(new FileOutputStream(file("$buildDir/h2-server.log"))))
 }
+
 run.dependsOn startH2Server
 bootRun.dependsOn startH2Server
 
-task stopH2Server {
+task stopH2Server(type: com.github.jengelman.gradle.plugins.processes.tasks.JavaFork) {
     description "Stops the H2 server"
     group "Help"
 
+    def mainClass = 'org.h2.tools.Server'
+
     outputs.upToDateWhen {
-        !["jps", "-l"].execute().text.contains('org.h2.tools.Server')
+        ["jps", "-l"].execute().text.indexOf(mainClass) < 0
     }
 
-    doLast {
-        logger.lifecycle "Shutting down the H2 server..."
-        def process = ["java", "-cp", configurations.h2server.asPath, 'org.h2.tools.Server', "-tcpShutdown", "tcp://localhost"].execute()
-
-        process.in.close()
-        process.out.close()
-        process.err.close()
-    }
+    classpath configurations.h2server.asPath
+    workingDir buildDir
+    main mainClass
+    args = ['-tcpShutdown', 'tcp://localhost']
 }
 
 task copyJdbcDriver(type: Sync) {

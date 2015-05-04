@@ -69,13 +69,13 @@ CREATE TABLE application_statistics (
   num_signatures             INTEGER      NOT NULL
   COMMENT 'The total number of signatures in this application, invoked or not',
   num_not_invoked_signatures INTEGER      NOT NULL
-  COMMENT 'The number of signatures that never has been invoked',
+  COMMENT 'The number of signatures that never have been invoked',
   num_invoked_signatures     INTEGER      NOT NULL
   COMMENT 'The number of invoked signatures in this application',
   num_startup_signatures     INTEGER      NOT NULL
   COMMENT 'The number of signatures that are only invoked within a short time after the application starts',
-  num_truly_dead_signatures  INTEGER      NOT NULL
-  COMMENT 'The number of truly dead signatures in the application, i.e., never invoked at all or only invoked before the latest
+  num_probably_dead_signatures INTEGER    NOT NULL
+  COMMENT 'The number of probably dead signatures in the application, i.e., only invoked before the latest
    full usage cycle',
   sum_up_time_millis         BIGINT       NOT NULL
   COMMENT 'How many millis has this application version been running in total (sum over all instances)?',

@@ -28,8 +28,8 @@ public class ApplicationStatisticsDisplay {
     boolean fullUsageCycleCompleted;
     int numWorkingCollectors;
     int numCollectors;
-    int numTrulyDeadSignatures;
-    Integer percentTrulyDeadSignatures;
+    int numProbablyDeadSignatures;
+    Integer percentProbablyDeadSignatures;
     Integer percentNeverInvokedSignatures;
     Integer percentInvokedSignatures;
 }
