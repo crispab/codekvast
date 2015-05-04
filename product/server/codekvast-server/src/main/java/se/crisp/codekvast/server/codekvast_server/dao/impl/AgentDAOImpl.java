@@ -208,6 +208,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     }
 
     private Collection<CollectorDisplay> queryCollectors(long organisationId) {
+        // select the latest jvm_info for each application/hostname combination
         return jdbcTemplate.query("SELECT " +
                                           "a.name, " +
                                           "jvm.application_version, " +
@@ -219,27 +220,19 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                           "jvm.collector_host_name, " +
                                           "jvm.collector_version, " +
                                           "jvm.collector_vcs_id, " +
-                                          "MIN(jvm.started_at_millis), " +
-                                          "MAX(jvm.reported_at_millis), " +
                                           "jvm.collector_resolution_seconds, " +
-                                          "jvm.method_visibility " +
+                                          "jvm.method_visibility, " +
+                                          "jvm.started_at_millis, " +
+                                          "jvm.reported_at_millis " +
                                           "FROM applications a, jvm_info jvm " +
                                           "WHERE a.id = jvm.application_id " +
+                                          "AND jvm.id = (" +
+                                          "  SELECT MAX(jvm2.id) " +
+                                          "  FROM jvm_info jvm2 " +
+                                          "  WHERE jvm2.application_id = jvm.application_id " +
+                                          "  AND jvm2.collector_host_name = jvm.collector_host_name" +
+                                          ") " +
                                           "AND a.organisation_id = ? " +
-                                          "GROUP BY " +
-                                          "jvm.id, " +
-                                          "jvm.application_id, " +
-                                          "jvm.application_version, " +
-                                          "jvm.agent_host_name, " +
-                                          "jvm.agent_version, " +
-                                          "jvm.agent_vcs_id, " +
-                                          "jvm.agent_clock_skew_millis, " +
-                                          "jvm.agent_upload_interval_seconds, " +
-                                          "jvm.collector_host_name, " +
-                                          "jvm.collector_version, " +
-                                          "jvm.collector_vcs_id, " +
-                                          "jvm.collector_resolution_seconds, " +
-                                          "jvm.method_visibility " +
                                           "ORDER BY jvm.id ",
                                   new CollectorDisplayRowMapper(), organisationId);
     }
@@ -475,10 +468,10 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                    .agentClockSkewMillis(rs.getLong(7))
                                    .collectorHostname(rs.getString(8))
                                    .collectorVersion(String.format("%s.%s", rs.getString(9), rs.getString(10)))
-                                   .collectorStartedAtMillis(rs.getLong(11))
-                                   .dataReceivedAtMillis(rs.getLong(12))
-                                   .collectorResolutionSeconds(rs.getInt(13))
-                                   .methodVisibility(rs.getString(14))
+                                   .collectorResolutionSeconds(rs.getInt(11))
+                                   .methodVisibility(rs.getString(12))
+                                   .collectorStartedAtMillis(rs.getLong(13))
+                                   .dataReceivedAtMillis(rs.getLong(14))
                                    .build();
         }
     }

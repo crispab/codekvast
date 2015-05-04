@@ -59,14 +59,16 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
     public void testStoreJvmData_fromValidAgent() throws Exception {
         // given
         long collectionIntervalMillis = 3600_000L;
-        long t0 = now - 3 * collectionIntervalMillis;
-        long t1 = now - 2 * collectionIntervalMillis;
-        long t2 = now - 1 * collectionIntervalMillis;
-        long t3 = now + 0 * collectionIntervalMillis;
-        long t4 = now + 1 * collectionIntervalMillis;
+        long t0 = now - 10 * collectionIntervalMillis;
+        long t1 = now - 9 * collectionIntervalMillis;
+        long t2 = now - 8 * collectionIntervalMillis;
+        long t3 = now - 7 * collectionIntervalMillis;
+        long t4 = now - 6 * collectionIntervalMillis;
+        long t5 = now - 5 * collectionIntervalMillis;
+        long t6 = now - 4 * collectionIntervalMillis;
         long networkLatencyToleranceMillis = 100L;
 
-        // when
+        // when an app starts for the first time
         agentService.storeJvmData("agent", createJvmData(t0, t1, "app1", "uuid1", "hostName1"));
 
         // then
@@ -79,7 +81,7 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
                 )
         ));
 
-        // when
+        // when it continues to execute in the same JVM
         agentService.storeJvmData("agent", createJvmData(t0, t2, "app1", "uuid1", "hostName1"));
 
         // then
@@ -92,30 +94,43 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
                 )
         ));
 
-        // when
-        agentService.storeJvmData("agent", createJvmData(t3, t4, "app1", "uuid2", "hostName2"));
+        // when it restarts in a new JVM in the same host
+        agentService.storeJvmData("agent", createJvmData(t3, t4, "app1", "uuid2", "hostName1"));
+
+        // then
+        assertThat(lastWebSocketMessage, hasApplicationStatistics(
+                allOf(
+                        hasProperty("numHostNames", is(1)),
+                        hasProperty("firstDataReceivedAtMillis", timestampInRange(t0, networkLatencyToleranceMillis)),
+                        hasProperty("lastDataReceivedAtMillis", timestampInRange(t4, networkLatencyToleranceMillis)),
+                        hasProperty("upTimeSeconds", is((t2 - t0 + t4 - t3) / 1000))
+                )
+        ));
+
+        // when a new instance starts in another host
+        agentService.storeJvmData("agent", createJvmData(t5, t6, "app1", "uuid3", "hostName2"));
 
         // then
         assertThat(lastWebSocketMessage, hasApplicationStatistics(
                 allOf(
                         hasProperty("numHostNames", is(2)),
                         hasProperty("firstDataReceivedAtMillis", timestampInRange(t0, networkLatencyToleranceMillis)),
-                        hasProperty("lastDataReceivedAtMillis", timestampInRange(t4, networkLatencyToleranceMillis)),
+                        hasProperty("lastDataReceivedAtMillis", timestampInRange(t6, networkLatencyToleranceMillis)),
                         // average usage time per hostName
-                        hasProperty("upTimeSeconds", is((t2 - t0 + t4 - t3) / 2 / 1000))
+                        hasProperty("upTimeSeconds", is((t2 - t0 + t4 - t3 + t6 - t5) / 2 / 1000))
                 )
         ));
 
         assertThat(lastWebSocketMessage, hasCollectors(
                 allOf(
                         hasProperty("agentHostname", is("hostName1")),
-                        hasProperty("collectorStartedAtMillis", timestampInRange(t0, networkLatencyToleranceMillis)),
-                        hasProperty("dataReceivedAtMillis", timestampInRange(t2, networkLatencyToleranceMillis))
+                        hasProperty("collectorStartedAtMillis", timestampInRange(t3, networkLatencyToleranceMillis)),
+                        hasProperty("dataReceivedAtMillis", timestampInRange(t4, networkLatencyToleranceMillis))
                 ),
                 allOf(
                         hasProperty("agentHostname", is("hostName2")),
-                        hasProperty("collectorStartedAtMillis", timestampInRange(t3, networkLatencyToleranceMillis)),
-                        hasProperty("dataReceivedAtMillis", timestampInRange(t4, networkLatencyToleranceMillis))
+                        hasProperty("collectorStartedAtMillis", timestampInRange(t5, networkLatencyToleranceMillis)),
+                        hasProperty("dataReceivedAtMillis", timestampInRange(t6, networkLatencyToleranceMillis))
                 )
         ));
 
@@ -127,10 +142,7 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
                 "jvm_info WHERE jvm_uuid= ? AND started_at_millis BETWEEN ? AND ? AND reported_at_millis BETWEEN ? AND ? ",
                 "uuid2", t3, t3 + networkLatencyToleranceMillis, t4, t4 + networkLatencyToleranceMillis), is(1));
 
-        assertThat(events, contains(
-                instanceOf(WebSocketMessage.class),
-                instanceOf(WebSocketMessage.class),
-                instanceOf(WebSocketMessage.class)));
+        assertThat(events, hasSize(4));
     }
 
     @Test(expected = UndefinedUserException.class)

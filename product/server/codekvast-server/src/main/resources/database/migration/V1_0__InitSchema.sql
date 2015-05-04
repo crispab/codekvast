@@ -59,6 +59,7 @@ CREATE TABLE applications (
 );
 
 CREATE UNIQUE INDEX ix_applications ON applications (organisation_id, name);
+CREATE INDEX ix_application_organisation_id ON applications (organisation_id);
 
 CREATE TABLE application_statistics (
   application_id             BIGINT       NOT NULL REFERENCES applications (id),
@@ -135,6 +136,8 @@ CREATE TABLE jvm_info (
 COMMENT ON TABLE jvm_info IS 'Data about one JVM that is instrumented by the Codekvast Collector';
 
 CREATE UNIQUE INDEX ix_jvm_info ON jvm_info (organisation_id, application_id, jvm_uuid);
+CREATE INDEX ix_jvm_info_uuid ON jvm_info (jvm_uuid);
+CREATE INDEX ix_jvm_info_app_id_collector_hostname ON jvm_info (application_id, collector_host_name);
 
 -- Environments -------------------------------------------------------------------------------------------------
 CREATE TABLE environments (
