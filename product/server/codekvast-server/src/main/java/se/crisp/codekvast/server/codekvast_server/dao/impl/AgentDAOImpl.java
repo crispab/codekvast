@@ -227,6 +227,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                           "WHERE a.id = jvm.application_id " +
                                           "AND a.organisation_id = ? " +
                                           "GROUP BY " +
+                                          "jvm.id, " +
                                           "jvm.application_id, " +
                                           "jvm.application_version, " +
                                           "jvm.agent_host_name, " +
@@ -238,7 +239,8 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                           "jvm.collector_version, " +
                                           "jvm.collector_vcs_id, " +
                                           "jvm.collector_resolution_seconds, " +
-                                          "jvm.method_visibility ",
+                                          "jvm.method_visibility " +
+                                          "ORDER BY jvm.id ",
                                   new CollectorDisplayRowMapper(), organisationId);
     }
 
@@ -349,7 +351,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         long startupRelatedIfInvokedBeforeMillis = maxStartedAtMillis + 60000L;
         long trulyDeadIfInvokedBeforeMillis = maxReportedAtMillis - (usageCycleSeconds * 1000L);
 
-        int numHostNames = jdbcTemplate.queryForObject("SELECT COUNT(DISTINCT collector_host_name) FROM jvm_info jvm " +
+        int numHostNames = jdbcTemplate.queryForObject("SELECT COUNT(DISTINCT(collector_host_name)) FROM jvm_info jvm " +
                                                                "WHERE jvm.application_id = ? " +
                                                                "AND jvm.application_version = ? ",
                                                        Integer.class,
@@ -428,7 +430,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
             Integer percentInvokedSignatures = numSignatures == 0 ? null : Math.round(numInvokedSignatures * 100f / numSignatures);
             Integer percentNeverInvokedSignatures = percentInvokedSignatures == null ? null : 100 - percentInvokedSignatures;
 
-            long upTimeSeconds = Math.round(sumUpTimeMillis / 1000d);
+            long upTimeSeconds = Math.round(sumUpTimeMillis / numHostNames / 1000d);
 
             return ApplicationStatisticsDisplay.builder()
                                                .name(appName)

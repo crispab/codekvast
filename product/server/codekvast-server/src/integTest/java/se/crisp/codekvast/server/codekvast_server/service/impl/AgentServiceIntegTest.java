@@ -67,11 +67,12 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
         long networkLatencyToleranceMillis = 100L;
 
         // when
-        agentService.storeJvmData("agent", createJvmData(t0, t1, "app1", "uuid1", "agentHostName1"));
+        agentService.storeJvmData("agent", createJvmData(t0, t1, "app1", "uuid1", "hostName1"));
 
         // then
         assertThat(lastWebSocketMessage, hasApplicationStatistics(
                 allOf(
+                        hasProperty("numHostNames", is(1)),
                         hasProperty("firstDataReceivedAtMillis", timestampInRange(t0, networkLatencyToleranceMillis)),
                         hasProperty("lastDataReceivedAtMillis", timestampInRange(t1, networkLatencyToleranceMillis)),
                         hasProperty("upTimeSeconds", is((t1 - t0) / 1000))
@@ -79,11 +80,12 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
         ));
 
         // when
-        agentService.storeJvmData("agent", createJvmData(t0, t2, "app1", "uuid1", "agentHostName1"));
+        agentService.storeJvmData("agent", createJvmData(t0, t2, "app1", "uuid1", "hostName1"));
 
         // then
         assertThat(lastWebSocketMessage, hasApplicationStatistics(
                 allOf(
+                        hasProperty("numHostNames", is(1)),
                         hasProperty("firstDataReceivedAtMillis", timestampInRange(t0, networkLatencyToleranceMillis)),
                         hasProperty("lastDataReceivedAtMillis", timestampInRange(t2, networkLatencyToleranceMillis)),
                         hasProperty("upTimeSeconds", is((t2 - t0) / 1000))
@@ -91,25 +93,27 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
         ));
 
         // when
-        agentService.storeJvmData("agent", createJvmData(t3, t4, "app1", "uuid2", "agentHostName2"));
+        agentService.storeJvmData("agent", createJvmData(t3, t4, "app1", "uuid2", "hostName2"));
 
         // then
         assertThat(lastWebSocketMessage, hasApplicationStatistics(
                 allOf(
+                        hasProperty("numHostNames", is(2)),
                         hasProperty("firstDataReceivedAtMillis", timestampInRange(t0, networkLatencyToleranceMillis)),
                         hasProperty("lastDataReceivedAtMillis", timestampInRange(t4, networkLatencyToleranceMillis)),
-                        hasProperty("upTimeSeconds", is((t2 - t0 + t4 - t3) / 1000))
+                        // average usage time per hostName
+                        hasProperty("upTimeSeconds", is((t2 - t0 + t4 - t3) / 2 / 1000))
                 )
         ));
 
         assertThat(lastWebSocketMessage, hasCollectors(
                 allOf(
-                        hasProperty("agentHostname", is("agentHostName1")),
+                        hasProperty("agentHostname", is("hostName1")),
                         hasProperty("collectorStartedAtMillis", timestampInRange(t0, networkLatencyToleranceMillis)),
                         hasProperty("dataReceivedAtMillis", timestampInRange(t2, networkLatencyToleranceMillis))
                 ),
                 allOf(
-                        hasProperty("agentHostname", is("agentHostName2")),
+                        hasProperty("agentHostname", is("hostName2")),
                         hasProperty("collectorStartedAtMillis", timestampInRange(t3, networkLatencyToleranceMillis)),
                         hasProperty("dataReceivedAtMillis", timestampInRange(t4, networkLatencyToleranceMillis))
                 )
@@ -180,7 +184,7 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
                       .agentVersion("agentVersion")
                       .appVersion("appVersion")
                       .collectorComputerId("collectorComputerId")
-                      .collectorHostName("collectorHostName")
+                      .collectorHostName(hostName)
                       .collectorResolutionSeconds(600)
                       .collectorVcsId("collectorVcsId")
                       .collectorVersion("collectorVersion")
