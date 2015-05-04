@@ -65,7 +65,7 @@ public class ApplicationStatisticsMatcher extends TypeSafeMatcher<Object> {
         description.appendText("a WebSocketMessage");
     }
 
-    public static Matcher<Object> isApplicationStatistics(Matcher<?>... applicationDisplayMatchers) {
+    public static Matcher<Object> hasApplicationStatistics(Matcher<?>... applicationDisplayMatchers) {
         return new ApplicationStatisticsMatcher(applicationDisplayMatchers);
     }
 }
