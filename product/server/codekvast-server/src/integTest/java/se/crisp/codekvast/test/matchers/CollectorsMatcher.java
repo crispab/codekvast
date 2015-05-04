@@ -5,7 +5,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 import org.hamcrest.TypeSafeMatcher;
-import se.crisp.codekvast.server.codekvast_server.model.event.display.ApplicationStatisticsDisplay;
+import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorDisplay;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.WebSocketMessage;
 
 import java.util.Iterator;
@@ -15,7 +15,7 @@ import java.util.Iterator;
  */
 @SuppressWarnings({"CastToConcreteClass", "InstanceofInterfaces"})
 @RequiredArgsConstructor
-public class ApplicationStatisticsMatcher extends TypeSafeMatcher<Object> {
+public class CollectorsMatcher extends TypeSafeMatcher<Object> {
 
     private final Matcher<?>[] displayMatchers;
     private String mismatchReason;
@@ -28,26 +28,26 @@ public class ApplicationStatisticsMatcher extends TypeSafeMatcher<Object> {
         }
 
         WebSocketMessage wsm = (WebSocketMessage) item;
-        if (wsm.getApplicationStatistics() == null) {
-            mismatchReason = "\n    WebSocketMessage with null application statistics displays";
+        if (wsm.getCollectors() == null) {
+            mismatchReason = "\n    WebSocketMessage with null collector displays";
             return false;
         }
 
-        if (wsm.getApplicationStatistics().size() != displayMatchers.length) {
-            mismatchReason = String.format("\n     WebSocketMessage with wrong number of application statistics displays. " +
+        if (wsm.getCollectors().size() != displayMatchers.length) {
+            mismatchReason = String.format("\n     WebSocketMessage with wrong number of collector displays. " +
                                                    "Expected = %d, actual = %d",
-                                           displayMatchers.length, wsm.getApplicationStatistics().size());
+                                           displayMatchers.length, wsm.getCollectors().size());
             return false;
         }
 
-        Iterator<ApplicationStatisticsDisplay> iterator = wsm.getApplicationStatistics().iterator();
+        Iterator<CollectorDisplay> iterator = wsm.getCollectors().iterator();
         for (int i = 0; i < displayMatchers.length; i++) {
             Matcher matcher = displayMatchers[i];
-            ApplicationStatisticsDisplay display = iterator.next();
+            CollectorDisplay display = iterator.next();
             if (!matcher.matches(display)) {
                 Description description = new StringDescription();
                 matcher.describeMismatch(display, description);
-                mismatchReason = "\n    application statistics display " + i + " does not match: " + description;
+                mismatchReason = "\n    collector display " + i + " does not match: " + description;
                 return false;
             }
         }
@@ -65,7 +65,7 @@ public class ApplicationStatisticsMatcher extends TypeSafeMatcher<Object> {
         description.appendText("a WebSocketMessage");
     }
 
-    public static Matcher<Object> hasApplicationStatistics(Matcher<?>... displayMatchers) {
-        return new ApplicationStatisticsMatcher(displayMatchers);
+    public static Matcher<Object> hasCollectors(Matcher<?>... displayMatchers) {
+        return new CollectorsMatcher(displayMatchers);
     }
 }

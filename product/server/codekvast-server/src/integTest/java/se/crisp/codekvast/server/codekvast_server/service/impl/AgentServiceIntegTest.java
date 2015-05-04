@@ -17,7 +17,6 @@ import se.crisp.codekvast.server.codekvast_server.config.EventBusConfig;
 import se.crisp.codekvast.server.codekvast_server.dao.impl.AgentDAOImpl;
 import se.crisp.codekvast.server.codekvast_server.dao.impl.UserDAOImpl;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedUserException;
-import se.crisp.codekvast.server.codekvast_server.model.event.display.CollectorDisplay;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.WebSocketMessage;
 import se.crisp.codekvast.server.codekvast_server.service.AgentService;
 
@@ -28,6 +27,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static se.crisp.codekvast.test.matchers.ApplicationStatisticsMatcher.hasApplicationStatistics;
+import static se.crisp.codekvast.test.matchers.CollectorsMatcher.hasCollectors;
 import static se.crisp.codekvast.test.matchers.TimestampIsInRangeMatcher.timestampInRange;
 
 /**
@@ -102,6 +102,19 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
                 )
         ));
 
+        assertThat(lastWebSocketMessage, hasCollectors(
+                allOf(
+                        hasProperty("agentHostname", is("agentHostName1")),
+                        hasProperty("collectorStartedAtMillis", timestampInRange(t0, networkLatencyToleranceMillis)),
+                        hasProperty("dataReceivedAtMillis", timestampInRange(t2, networkLatencyToleranceMillis))
+                ),
+                allOf(
+                        hasProperty("agentHostname", is("agentHostName2")),
+                        hasProperty("collectorStartedAtMillis", timestampInRange(t3, networkLatencyToleranceMillis)),
+                        hasProperty("dataReceivedAtMillis", timestampInRange(t4, networkLatencyToleranceMillis))
+                )
+        ));
+
         assertThat(countRows(
                 "jvm_info WHERE jvm_uuid= ? AND started_at_millis BETWEEN ? AND ? AND reported_at_millis BETWEEN ? AND ? ",
                 "uuid1", t0, t0 + networkLatencyToleranceMillis, t2, t2 + networkLatencyToleranceMillis), is(1));
@@ -114,10 +127,6 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
                 instanceOf(WebSocketMessage.class),
                 instanceOf(WebSocketMessage.class),
                 instanceOf(WebSocketMessage.class)));
-
-        CollectorDisplay collector = lastWebSocketMessage.getCollectors().iterator().next();
-        // TODO: assertThat(collector.getCollectorStartedAtMillis(), timestampInRange(t0, networkLatencyToleranceMillis));
-        // TODO: assertThat(collector.getDataReceivedAtMillis(), timestampInRange(t4, networkLatencyToleranceMillis));
     }
 
     @Test(expected = UndefinedUserException.class)
