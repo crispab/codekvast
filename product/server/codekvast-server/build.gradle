@@ -273,8 +273,8 @@ flyway {
     locations = ['classpath:/database/migration', 'classpath:/se/crisp/codekvast/server/codekvast_server/migration']
 }
 
-task startH2Server(type: com.github.jengelman.gradle.plugins.processes.tasks.JavaFork) {
-    description "Starts a H2 server, so that one can inspect the database without Codekvast Server running"
+task startDatabase(type: com.github.jengelman.gradle.plugins.processes.tasks.JavaFork) {
+    description "Starts a H2 database server"
     group "Help"
 
     def mainClass = 'org.h2.tools.Server'
@@ -290,11 +290,11 @@ task startH2Server(type: com.github.jengelman.gradle.plugins.processes.tasks.Jav
     standardOutput = new PrintStream(new BufferedOutputStream(new FileOutputStream(file("$buildDir/h2-server.log"))))
 }
 
-run.dependsOn startH2Server
-bootRun.dependsOn startH2Server
+run.dependsOn startDatabase
+bootRun.dependsOn startDatabase
 
-task stopH2Server(type: com.github.jengelman.gradle.plugins.processes.tasks.JavaFork) {
-    description "Stops the H2 server"
+task stopDatabase(type: com.github.jengelman.gradle.plugins.processes.tasks.JavaFork) {
+    description "Stops the H2 database server"
     group "Help"
 
     def mainClass = 'org.h2.tools.Server'
