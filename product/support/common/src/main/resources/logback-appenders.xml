@@ -1,0 +1,31 @@
+<included>
+    <jmxConfigurator/>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${CODEKVAST_LOG_PATH:-build/log}/${CODEKVAST_LOG_BASENAME:-test}.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>${CODEKVAST_LOG_PATH:-build/log}/${CODEKVAST_LOG_BASENAME:-test}.log.%i.zip</fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>${CODEKVAST_MAX_FILE_GENERATIONS:-5}</maxIndex>
+        </rollingPolicy>
+
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>${CODEKVAST_MAX_FILESIZE:-50MB}</maxFileSize>
+        </triggeringPolicy>
+
+        <encoder>
+            <pattern>%date %level %logger.%method\(\) [%line] %m%n%rootException</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%date %level %logger.%method\(\) [%line] %m%n%rootException</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>${CODEKVAST_LOG_CONSOLE_THRESHOLD:-OFF}</level>
+        </filter>
+    </appender>
+
+</included>

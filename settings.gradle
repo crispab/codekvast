@@ -7,6 +7,7 @@ include ':product:agent:collector'
 include ':product:agent:util'
 include ':product:server:agent-api'
 include ':product:server:codekvast-server'
+include ':product:support:common'
 include ':product:support:websupport'
 include ':product:web'
 

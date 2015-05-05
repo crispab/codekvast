@@ -1,34 +1,6 @@
 <configuration debug="false" scan="true" scanPeriod="30 seconds">
-    <jmxConfigurator/>
 
-    <define name="LOG_PATH" class="se.crisp.codekvast.agent.main.logback.LogPathDefiner"/>
-
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_PATH}/codekvast-agent.log</file>
-
-        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-            <fileNamePattern>${LOG_PATH}/codekvast-agent.log.%i.zip</fileNamePattern>
-            <minIndex>1</minIndex>
-            <maxIndex>5</maxIndex>
-        </rollingPolicy>
-
-        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-            <maxFileSize>50MB</maxFileSize>
-        </triggeringPolicy>
-
-        <encoder>
-            <pattern>%date %level %logger.%method\(\) [%line] %m%n%rootException</pattern>
-        </encoder>
-    </appender>
-
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%date %level %logger.%method\(\) [%line] %m%n%rootException</pattern>
-        </encoder>
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>INFO</level>
-        </filter>
-    </appender>
+    <include resource="logback-appenders.xml"/>
 
     <logger name="se.crisp.codekvast" level="INFO"/>
 

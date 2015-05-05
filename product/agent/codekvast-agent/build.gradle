@@ -16,14 +16,15 @@ mainClassName = "se.crisp.codekvast.agent.main.CodekvastAgentApplication"
 
 dependencies {
     compile lombok
+    compile project(':product:support:common')
     compile project(':product:agent:util')
     compile project(':product:server:agent-api')
-    compile 'ch.qos.logback:logback-classic'
     compile 'org.reflections:reflections:0.9.9'
     compile 'org.springframework.boot:spring-boot-starter'
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
     compile 'com.h2database:h2'
 
+    runtime 'ch.qos.logback:logback-classic'
     runtime 'org.flywaydb:flyway-core'
 
     testCompile junit
@@ -91,6 +92,7 @@ startScripts {
             if (script.name.toLowerCase().endsWith('.bat')) {
                 script.text = script.text.replace('CLASSPATH=%APP_HOME%\\lib', 'CLASSPATH=%APP_HOME%\\conf\\;%APP_HOME%\\lib')
             } else {
+                script.text = script.text.replace('APP_HOME=', 'export APP_HOME=')
                 script.text = script.text.replace('CLASSPATH=$APP_HOME/lib', 'CLASSPATH=$APP_HOME/conf/:$APP_HOME/lib')
             }
         }

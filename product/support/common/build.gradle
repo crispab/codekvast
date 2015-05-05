@@ -1,0 +1,13 @@
+plugins {
+    id 'java'
+    id 'com.ofg.uptodate' version '1.5.0'
+}
+
+archivesBaseName = "codekvast-support"
+
+dependencies {
+    compile lombok
+
+    testCompile junit
+    testCompile mockito
+}

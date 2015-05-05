@@ -8,6 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import se.crisp.codekvast.server.agent_api.AgentApiConfig;
+import se.crisp.codekvast.support.common.LoggingConfig;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -23,6 +24,7 @@ import java.net.URISyntaxException;
 public class CodekvastAgentApplication {
 
     public static void main(String[] args) throws IOException, URISyntaxException {
+        LoggingConfig.configure(CodekvastAgentApplication.class, "codekvast-agent");
         System.setProperty("spring.config.location",
                            "classpath:/application.properties," +
                                    "classpath:/default.properties," +
