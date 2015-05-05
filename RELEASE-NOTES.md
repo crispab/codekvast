@@ -1,5 +1,10 @@
 # Codekvast Release Notes
 
+## 0.11.1
+
+1. Simplified logback.xml
+1. Improved collectors.html so it now shows warning color for dead collectors.
+
 ## 0.11.0
 
 1. Keeps track of agent clock skew. Breaks compatibility of agent-API.

@@ -343,6 +343,15 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             $interval.cancel($scope.updateModelInterval);
         });
 
+        $scope.dataAgeClass = function (c) {
+            return $scope.isDown(c) ? "danger" : undefined;
+        };
+
+        $scope.isDown = function (c) {
+            var ageSeconds = (Date.now() - c.dataReceivedAtMillis) / 1000;
+            return ageSeconds > c.collectorResolutionSeconds + c.agentUploadIntervalSeconds + 30;
+        }
+
         $scope.updateModel = function () {
             if ($scope.collectorStatuses) {
                 for (var i = 0, len = $scope.collectorStatuses.length; i < len; i++) {
