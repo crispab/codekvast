@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import se.crisp.codekvast.support.common.LoggingConfig;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +21,7 @@ import java.util.Properties;
 public class CodekvastPromoWebApplication {
 
     public static void main(String[] args) throws IOException {
+        LoggingConfig.configure(CodekvastPromoWebApplication.class, "codekvast-web");
         SpringApplication application = new SpringApplication(CodekvastPromoWebApplication.class);
         application.setDefaultProperties(loadDefaultProperties());
         application.run(args);

@@ -1,31 +1,7 @@
-<configuration debug="false" scan="true" scanPeriod="10 seconds">
+<configuration debug="false" scan="true" scanPeriod="30 seconds">
     <jmxConfigurator/>
 
-    <define name="LOG_PATH" class="se.crisp.codekvast.server.codekvast_server.logback.LogPathDefiner"/>
-
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_PATH}/codekvast-server.log</file>
-
-        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-            <fileNamePattern>codekvast-server.log.%i.zip</fileNamePattern>
-            <minIndex>1</minIndex>
-            <maxIndex>5</maxIndex>
-        </rollingPolicy>
-
-        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-            <maxFileSize>5MB</maxFileSize>
-        </triggeringPolicy>
-
-        <encoder>
-            <pattern>%date [%thread] %level %logger [%file:%line] %m%n%rootException</pattern>
-        </encoder>
-    </appender>
-
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%date [%thread] %level %logger [%file:%line] %m%n%rootException</pattern>
-        </encoder>
-    </appender>
+    <include resource="logback-appenders.xml"/>
 
     <logger name="se.crisp" level="DEBUG"/>
     <logger name="org.flyway" level="INFO"/>
@@ -38,7 +14,7 @@
     <logger name="org.springframework.security" level="INFO"/>
 
     <root level="WARN">
-        <!--<appender-ref ref="CONSOLE"/>-->
+        <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </root>
 </configuration>

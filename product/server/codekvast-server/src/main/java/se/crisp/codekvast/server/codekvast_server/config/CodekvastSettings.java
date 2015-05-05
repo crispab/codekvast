@@ -31,8 +31,8 @@ public class CodekvastSettings {
 
     @PostConstruct
     public void logStartup() {
-        System.out.printf("%s v%s (%s)...%n", applicationName, displayVersion, commitDate);
-        log.info("{} v{} ({}) starts...", applicationName, displayVersion, commitDate);
+        System.out.printf("%s v%s (%s) started%n", applicationName, displayVersion, commitDate);
+        log.info("{} v{} ({}) starts", applicationName, displayVersion, commitDate);
     }
 
     public File[] getBackupPaths() {
