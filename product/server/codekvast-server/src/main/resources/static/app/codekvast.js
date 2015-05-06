@@ -369,6 +369,72 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
     }])
 
     .controller('ReportController', ['$scope', '$filter', 'RemoteDataService', function ($scope, $filter, RemoteDataService) {
+        $scope.applications = [
+            {
+                name: 'mainserver',
+                usageCycle: '7d',
+                selected: true
+            },
+            {
+                name: 'servergui',
+                usageCycle: '7d',
+                selected: true
+            },
+            {
+                name: 'pceserver',
+                usageCycle: '7d',
+                selected: true
+            },
+            {
+                name: 'pmserver',
+                usageCycle: '2d',
+                selected: true
+            },
+            {
+                name: 'webstart',
+                usageCycle: '2d',
+                selected: true
+            },
+            {
+                name: 'webapp',
+                usageCycle: '2d',
+                selected: true
+            },
+        ];
+
+        $scope.versions = [
+            {
+                name: '25.0',
+                selected: true
+            },
+            {
+                name: '24.1',
+                selected: false
+            },
+            {
+                name: '24.0',
+                selected: false
+            }
+        ];
+
+        $scope.fullUsageCycle = function() {
+            return "14d";
+        };
+
+        $scope.recordingStartedAt = function() {
+            return '2015-03-17 21:30';
+        };
+
+        $scope.bootstrapTime = function() {
+            return '60s';
+        }
+
+        $scope.selectAll = function (what, selected) {
+            angular.forEach($scope[what], function (a, key) {
+                a.selected = selected;
+            });
+        };
+
         $scope.dateFormat = 'yyyy-MM-dd HH:mm:ss';
         $scope.showMockup = false;
         $scope.toggleMockupVerb = function () {

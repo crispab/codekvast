@@ -5,7 +5,103 @@
         </div>
 
         <div class="panel-body">
-            <img src="/images/mockups/ReportGenerator.png" ng-show="showMockup"/>
+            <div ng-show="showMockup">
+                <h2>Static image generated from Balsamiq Mockups</h2>
+                <img src="/images/mockups/ReportGenerator.png"/>
+            </div>
+            <div ng-hide="showMockup">
+                <form class="form">
+                    <fieldset>
+                        <legend>Include in report</legend>
+                        <table>
+                            <tr>
+                                <th class="col-lg-1">Include applications (usage cycle)</th>
+                                <th class="col-lg-1">Include versions</th>
+                                <th class="col-lg-1">Include methods by execution date</th>
+                                <th class="col-lg-1"></th>
+                                <th class="col-lg-1"></th>
+                            </tr>
+                            <tr style="vertical-align: top">
+                                <td class="col-lg-1">
+                                    <ul class="list-unstyled">
+                                        <li ng-repeat="a in applications">
+                                            <div class="checkbox">
+                                                <label> <input type="checkbox" ng-model="a.selected">{{a.name}} ({{a.usageCycle }})</label>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                    Select <a href="#" ng-click="selectAll('applications', true)">all</a>
+                                    / <a href="#" ng-click="selectAll('applications', false)">none</a>
+                                </td>
+                                <td class="col-lg-1">
+                                    <ul class="list-unstyled">
+                                        <li ng-repeat="a in versions">
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input type="checkbox" ng-model="a.selected"> {{a.name}}</label>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                    Select <a href="#" ng-click="selectAll('versions', true)">all</a> / <a href="#" ng-click="selectAll('versions', false)">none</a>
+                                </td>
+                                <td class="col-lg-1">
+                                    <ul class="list-unstyled">
+                                        <li>
+                                            <div class="checkbox"><label> <input type="checkbox" ng-model="methods.neverExecuted"/>
+                                                Include never executed methods </label>
+                                                <span popover-title="Never executed methods"
+                                                      popover="Methods that have not been executed since Codekvast started recording at {{recordingStartedAt()}}"
+                                                      popover-trigger="click"
+                                                      popover-placement="right"
+                                                      popover-append-to-body="true"
+                                                      class="glyphicon glyphicon-info-sign"></span>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="checkbox">
+                                                <label> <input type="checkbox" ng-model="methods.probablyDead"/>
+                                                    Include probably dead methods.</label>
+                                                <span popover-title="Probably dead methods"
+                                                      popover="Methods that have not been executed during the last full usage cycle, which is {{fullUsageCycle()}}"
+                                                      popover-trigger="click"
+                                                      popover-placement="right"
+                                                      popover-append-to-body="true"
+                                                      class="glyphicon glyphicon-info-sign"></span>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="checkbox"><label>
+                                                <input type="checkbox" ng-model="methods.bootstrap"/>
+                                                Include bootstrap methods. </label>
+                                                <span popover-title="Bootstrap methods"
+                                                      popover="Methods that only execute within {{bootstrapTime()}} after start of the application"
+                                                      popover-trigger="click"
+                                                      popover-placement="right"
+                                                      popover-append-to-body="true"
+                                                      class="glyphicon glyphicon-info-sign"></span>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="checkbox"><label>
+                                                <input type="checkbox" ng-model="methods.live"/>
+                                                Include live methods.
+                                            </label>
+                                                <span popover-title="Live methods"
+                                                      popover="Methods that have executed during the last full usage cycle {{fullUsageCycle()}}"
+                                                      popover-trigger="click"
+                                                      popover-placement="right"
+                                                      popover-append-to-body="true"
+                                                      class="glyphicon glyphicon-info-sign"></span>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </table>
+                    </fieldset>
+                </form>
+
+            </div>
         </div>
     </div>
 
