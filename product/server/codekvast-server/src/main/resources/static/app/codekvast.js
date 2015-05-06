@@ -308,11 +308,11 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                         a.usageCycleMultiple = Math.round(a.upTimeSeconds / a.usageCycleSeconds);
                     }
                     if (a.fullUsageCycleCompleted) {
-                        a.percentProbablyDead = a.percentProbablyDeadSignatures + "%"
-                        a.probablyDeadTooltip = "This is probably dead code";
+                        a.percentPossiblyDead = a.percentPossiblyDeadSignatures + "%"
+                        a.possiblyDeadTooltip = "This is possibly dead code";
                     } else {
-                        a.percentProbablyDead = undefined
-                        a.probablyDeadTooltip = "Be patient for another " + a.timeToFullUsageCycle + " ...";
+                        a.percentPossiblyDead = undefined
+                        a.possiblyDeadTooltip = "Be patient for another " + a.timeToFullUsageCycle + " ...";
                     }
                     a.dataAge = DateService.prettyAge(a.lastDataReceivedAtMillis);
                     a.collectorsWorkingType = a.collectorsWorking === "all" ? "success" : a.collectorsWorking === "some" ? 'warning' : 'danger';

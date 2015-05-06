@@ -112,12 +112,16 @@ public class DatabaseUtils {
         }
     }
 
-    public static String getBackupFile(CodekvastSettings settings, Date date, String suffix) {
+    public static String getBackupFile(CodekvastSettings settings, JdbcTemplate jdbcTemplate, Date date, String suffix) {
+        return getBackupFile(settings, getSchemaVersion(jdbcTemplate), date, suffix);
+    }
+
+    public static String getBackupFile(CodekvastSettings settings, String schemaVersion, Date date, String suffix) {
         for (File path : settings.getBackupPaths()) {
             path.mkdirs();
             if (path.canWrite()) {
                 String timestamp = formatTimestamp(date);
-                String name = String.format(Locale.ENGLISH, "%s_%s.%s", timestamp, suffix, COMPRESSION.toLowerCase());
+                String name = String.format(Locale.ENGLISH, "%s_%s_%s.%s", timestamp, schemaVersion, suffix, COMPRESSION.toLowerCase());
                 File file = new File(path, name);
                 try {
                     return file.getCanonicalPath();
@@ -128,6 +132,11 @@ public class DatabaseUtils {
         }
         throw new IllegalArgumentException(
                 new IOException("Cannot create backup file in any of " + Arrays.toString(settings.getBackupPaths())));
+    }
+
+    public static String getSchemaVersion(JdbcTemplate jdbcTemplate) {
+        return jdbcTemplate.queryForObject(
+                "SELECT TOP 1 \"version\" FROM \"schema_version\" ORDER BY \"version_rank\" DESC", String.class);
     }
 
     static class FilenameComparator implements Comparator<File> {

@@ -76,7 +76,7 @@ public class DatabaseConfig {
                 String firstPendingScript = pendingMigrations[0].getScript().replace(".sql", "").replace(".java", "");
                 log.info("Backing up database before executing {}", firstPendingScript);
 
-                String backupFile = DatabaseUtils.getBackupFile(codekvastSettings, new Date(), "before_" + firstPendingScript);
+                String backupFile = DatabaseUtils.getBackupFile(codekvastSettings, jdbcTemplate, new Date(), "before_" + firstPendingScript);
                 DatabaseUtils.backupDatabase(jdbcTemplate, backupFile);
 
                 log.info("Backed up database to {} in {} ms", backupFile, System.currentTimeMillis() - startedAt);

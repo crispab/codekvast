@@ -37,7 +37,7 @@ public class DatabaseBackupScheduler {
         } else {
             long startedAt = System.currentTimeMillis();
 
-            String backupFile = DatabaseUtils.getBackupFile(settings, new Date(), FILENAME_SUFFIX);
+            String backupFile = DatabaseUtils.getBackupFile(settings, jdbcTemplate, new Date(), FILENAME_SUFFIX);
             log.debug("Backing up database to {}", backupFile);
             DatabaseUtils.backupDatabase(jdbcTemplate, backupFile);
             log.info("Database backed up to {} in {} ms", backupFile, System.currentTimeMillis() - startedAt);
@@ -45,4 +45,5 @@ public class DatabaseBackupScheduler {
             DatabaseUtils.removeOldBackups(settings, FILENAME_SUFFIX);
         }
     }
+
 }

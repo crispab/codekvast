@@ -267,13 +267,6 @@ if (!System.properties['os.name'].contains("indows")) {
     check.dependsOn jasmineSingleRun
 }
 
-flyway {
-    url = "jdbc:h2:tcp://localhost/$buildDir/database/codekvast-server;AUTO_SERVER=TRUE"
-    user = 'codekvast'
-    password = 'codekvast'
-    locations = ['classpath:/database/migration', 'classpath:/se/crisp/codekvast/server/codekvast_server/migration']
-}
-
 task startDatabase(type: com.github.jengelman.gradle.plugins.processes.tasks.JavaFork) {
     description "Starts a H2 database server"
     group "Help"
@@ -288,11 +281,10 @@ task startDatabase(type: com.github.jengelman.gradle.plugins.processes.tasks.Jav
     workingDir buildDir
     main mainClass
     args = ['-tcp']
+
+    mkdir "$buildDir/log/"
     standardOutput = new PrintStream(new BufferedOutputStream(new FileOutputStream(file("$buildDir/log/h2-server.log"))))
 }
-
-run.dependsOn startDatabase
-bootRun.dependsOn startDatabase
 
 task stopDatabase(type: com.github.jengelman.gradle.plugins.processes.tasks.JavaFork) {
     description "Stops the H2 database server"
@@ -309,6 +301,15 @@ task stopDatabase(type: com.github.jengelman.gradle.plugins.processes.tasks.Java
     main mainClass
     args = ['-tcpShutdown', 'tcp://localhost']
 }
+
+flyway {
+    url = "jdbc:h2:tcp://localhost/$buildDir/database/codekvast-server;AUTO_SERVER=TRUE"
+    user = 'codekvast'
+    password = 'codekvast'
+    locations = ['classpath:/database/migration', 'classpath:/se/crisp/codekvast/server/codekvast_server/migration']
+}
+
+[run, bootRun, flywayBaseline, flywayClean, flywayInfo, flywayInit, flywayMigrate, flywayRepair, flywayValidate]*.dependsOn startDatabase
 
 task copyJdbcDriver(type: Sync) {
     // Copy the H2 JDBC driver jar to a known location so that IDEs can find it...

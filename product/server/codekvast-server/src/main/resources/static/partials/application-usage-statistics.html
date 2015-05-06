@@ -24,15 +24,15 @@
                         title="When was this version of the application started for the first time with Codekvast attached?">
                         Collection Started
                     </th>
-                    <th class="col-lg-1" title="After how long time can methods that have not been invoked be considered probably dead?">
+                    <th class="col-lg-1" title="After how long time can methods that have not been invoked be considered possibly dead?">
                         Usage Cycle
                     </th>
                     <th class="col-lg-1" title="How long has the application been used with Codekvast attached?">Usage Time</th>
-                    <th class="col-lg-1" title="Can we start identifying probably dead methods yet?">Usage Data Confidence
+                    <th class="col-lg-1" title="Can we start identifying possibly dead methods yet?">Usage Data Confidence
                     </th>
                     <th class="col-lg-1" title="The number of tracked methods in this version">Number of Methods</th>
                     <th class="col-lg-1" title="Methods that have never been invoked">Dead Methods</th>
-                    <th class="col-lg-1" title="Methods only invoked before the last usage cycle">Probably Dead Methods
+                    <th class="col-lg-1" title="Methods only invoked before the last usage cycle">Possibly Dead Methods
                     </th>
                     <th class="col-lg-1" title="Methods that have been invoked during the last usage cycle">Live Methods
                     </th>
@@ -63,7 +63,7 @@
                     </td>
                     <td class="col-lg-1">{{a.numSignatures}}</td>
                     <td class="col-lg-1">{{a.percentNeverInvokedSignatures}}%</td>
-                    <td class="col-lg-1" title="{{a.probablyDeadTooltip}}">{{a.percentProbablyDead}}</td>
+                    <td class="col-lg-1" title="{{a.possiblyDeadTooltip}}">{{a.percentPossiblyDead}}</td>
                     <td class="col-lg-1">{{a.percentInvokedSignatures}}%</td>
                 </tr>
                 </tbody>
