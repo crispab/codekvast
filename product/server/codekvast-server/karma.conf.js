@@ -27,6 +27,7 @@ module.exports = function (config) {
             'build/webjarJs/angular-mocks.js',
             'build/webjarJs/sockjs.js',
             'build/webjarJs/stomp.js',
+            'build/webjarJs/lodash.js',
             'src/main/resources/static/app/*.js',
             'src/test/js/**/*.js'
         ],

@@ -1,13 +1,16 @@
 # Codekvast Release Notes
 
+## 0.11.4
+
+1. Replaced tooltips with popovers in application-statistics.html
+
 ## 0.11.3
 
 1. Added filter and column sorting to application-usage-statistics.html
 
 ## 0.11.2
 
-1. UI and database schema change; renamed application_statistics.num_probably_dead to num_possibly_dead.
- Database is migrated by Flyway.
+1. UI and database schema change; renamed application_statistics.num_probably_dead to num_possibly_dead. Database is migrated by Flyway.
 
 ## 0.11.1
 
@@ -38,7 +41,7 @@
 
 ## 0.9.5
 
-1. Bug fix in codekvast-agent: Signature.millisSinceJvmStart was not correct.
+1. Bug fix in codekvast-agent: Method.millisSinceJvmStart was not correct.
 1. Implemented server-side support for application statistics.
 
 ## 0.9.4

@@ -81,6 +81,24 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         };
 
         var handleWebSocketMessage = function (data) {
+            // extract all distinct versions from data.applicationStatistics and sort them by descending semver order
+            data.versions = _.chain(data.applicationStatistics).uniq('version').map(function (a) {
+                return {name: a.version}
+            })
+                .sortBy(function (v) {
+                    var versionArray = ("" + v.name)
+                            .replace("_", ".")
+                            .replace(/[^0-9.]/g, "")
+                            .split("."),
+                        sum = 0;
+                    for (var i = 0; i < versionArray.length; ++i) {
+                        sum += Number(versionArray[i]) / Math.pow(10, i * 3);
+                    }
+                    console.log(v.name + " -> " + sum);
+                    return sum;
+                })
+                .value();
+
             broadcast('data', data);
         }
 
@@ -147,7 +165,10 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             getLastEvent: getLastEvent,
             getLastData: getLastData,
             initSocket: initSocket,
-            persistsOrganisationSettings: persistsOrganisationSettings
+            persistsOrganisationSettings: persistsOrganisationSettings,
+
+            // for testing only
+            handleWebSocketMessage: handleWebSocketMessage
         }
     }])
 
@@ -371,16 +392,27 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
     }])
 
     .controller('ReportController', ['$scope', 'DateService', 'RemoteDataService', function ($scope, DateService, RemoteDataService) {
-        $scope.apps = RemoteDataService.getLastData("applications")
+        $scope.formData = {
+            applications: RemoteDataService.getLastData("applications"),
+
+            versions: RemoteDataService.getLastData("versions"),
+
+            neverExecutedMethods: true,
+            probablyDeadMethods: true,
+            bootstrapMethods: false,
+            liveMethods: false,
+            previewRows: 100
+        };
 
         $scope.$on('data', function (event, data) {
-            $scope.apps = data.applications;
+            $scope.formData.applications = data.applications;
+            $scope.formData.versions = data.versions;
             $scope.updateModel();
         });
 
         $scope.updateModel = function() {
-            if ($scope.apps) {
-                angular.forEach($scope.apps, function (a) {
+            if ($scope.formData.applications) {
+                angular.forEach($scope.formData.applications, function (a) {
                     a.usageCycle = DateService.prettyDuration(a.usageCycleSeconds * 1000);
                     if (a.selected === undefined) {
                         a.selected = true;
@@ -390,22 +422,6 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         };
 
         $scope.updateModel();
-
-        $scope.formData = {
-            applications: $scope.apps,
-
-            versions: [
-                { name: '25.0', selected: true},
-                { name: '24.1', selected: false},
-                { name: '24.0', selected: false}
-            ],
-
-            neverExecutedMethods: true,
-            probablyDeadMethods: true,
-            bootstrapMethods: false,
-            liveMethods: false,
-            previewRows: 100
-        };
 
         $scope.fullUsageCycle = function() {
             return "14d";
