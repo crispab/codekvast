@@ -151,14 +151,14 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         }
     }])
 
-    .constant('Defaults', {defaultRoute: 'application-usage-statistics'})
+    .constant('Defaults', {defaultRoute: 'application-statistics'})
 
 
     .controller('NavigationController', ['$scope', '$location', '$modal', 'Defaults', function($scope, $location, $modal, Defaults) {
         $scope.menuItems = [
             {
                 name: 'Application Usage Statistics',
-                url: '/page/application-usage-statistics',
+                url: '/page/application-statistics',
                 title: 'Show collection status',
                 icon: 'glyphicon-stats'
             },
@@ -370,16 +370,29 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
     }])
 
-    .controller('ReportController', ['$scope', '$filter', 'RemoteDataService', function ($scope, $filter, RemoteDataService) {
+    .controller('ReportController', ['$scope', 'DateService', 'RemoteDataService', function ($scope, DateService, RemoteDataService) {
+        $scope.apps = RemoteDataService.getLastData("applications")
+
+        $scope.$on('data', function (event, data) {
+            $scope.apps = data.applications;
+            $scope.updateModel();
+        });
+
+        $scope.updateModel = function() {
+            if ($scope.apps) {
+                angular.forEach($scope.apps, function (a) {
+                    a.usageCycle = DateService.prettyDuration(a.usageCycleSeconds * 1000);
+                    if (a.selected === undefined) {
+                        a.selected = true;
+                    }
+                });
+            }
+        };
+
+        $scope.updateModel();
+
         $scope.formData = {
-            applications: [
-                { name: 'mainserver', usageCycle: '7d', selected: true},
-                { name: 'servergui', usageCycle: '7d', selected: true},
-                { name: 'pceserver', usageCycle: '7d', selected: true},
-                { name: 'pmserver', usageCycle: '2d', selected: true},
-                { name: 'webstart', usageCycle: '2d', selected: true},
-                { name: 'webapp', usageCycle: '2d', selected: true}
-            ],
+            applications: $scope.apps,
 
             versions: [
                 { name: '25.0', selected: true},
@@ -416,11 +429,6 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         $scope.showMockup = false;
         $scope.toggleMockupVerb = function () {
             return $scope.showMockup ? "Hide mockup" : "Show mockup"
-        };
-
-        $scope.filter = {
-            minAgeValue: 30,
-            maxRows: 100
         };
 
         $scope.$on('stompDisconnected', function (event, message) {

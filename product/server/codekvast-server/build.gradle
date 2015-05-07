@@ -141,8 +141,8 @@ run {
 bootRun {
     jvmArgs = [
             '-ea',
-            "-javaagent:${configurations.springLoaded.asPath}",
-            '-noverify',
+            //"-javaagent:${configurations.springLoaded.asPath}",
+            //'-noverify',
             '-Dspring.thymeleaf.cache=false',
             '-Dspring.messages.cacheSeconds=1'
     ]
