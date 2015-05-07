@@ -285,6 +285,8 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
     .controller('StatisticsController', ['$scope', '$interval', 'DateService', 'RemoteDataService', function ($scope, $interval, DateService, RemoteDataService) {
         $scope.applicationStatistics = RemoteDataService.getLastData("applicationStatistics");
         $scope.dateFormat = 'yyyy-MM-dd HH:mm:ss';
+        $scope.orderBy = 'name';
+        $scope.reverse = false;
 
         $scope.$on('data', function (event, data) {
             $scope.applicationStatistics = data.applicationStatistics;

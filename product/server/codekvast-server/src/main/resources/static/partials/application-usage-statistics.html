@@ -17,29 +17,59 @@
 
                 <thead>
                 <tr>
-                    <th class="col-lg-1" title="The name of the application, as reported by the collector">Application</th>
-                    <th class="col-lg-1" title="The version of the application">Version</th>
-                    <th class="col-lg-1" title="In how many hosts is this application executing?">Number of instances</th>
+                    <th colspan="3">
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <label for="filter">Filter:
+                                    <input id="filter" type="text" class="form-control" ng-model="filter"/>
+                                </label></div>
+                        </form>
+                    </th>
+                </tr>
+                <tr>
+                    <th class="col-lg-1"
+                        ng-click="orderBy = 'name'; reverse = !reverse"
+                        title="The name of the application, as reported by the collector">Application</th>
+                    <th class="col-lg-1"
+                        ng-click="orderBy = 'version'; reverse = !reverse"
+                        title="The version of the application">Version </th>
+                    <th class="col-lg-1"
+                        ng-click="orderBy = 'numHostNames'; reverse = !reverse"
+                        title="In how many hosts is this application executing?">Number of instances</th>
                     <th class="col-lg-2"
+                        ng-click="orderBy = 'firstDataReceivedAtMillis'; reverse = !reverse"
                         title="When was this version of the application started for the first time with Codekvast attached?">
                         Collection Started
                     </th>
-                    <th class="col-lg-1" title="After how long time can methods that have not been invoked be considered possibly dead?">
+                    <th class="col-lg-1"
+                        ng-click="orderBy = 'usageCycle'; reverse = !reverse"
+                        title="After how long time can methods that have not been invoked be considered possibly dead?">
                         Usage Cycle
                     </th>
-                    <th class="col-lg-1" title="How long has the application been used with Codekvast attached?">Usage Time</th>
-                    <th class="col-lg-1" title="Can we start identifying possibly dead methods yet?">Usage Data Confidence
+                    <th class="col-lg-1"
+                        ng-click="orderBy = 'upTime'; reverse = !reverse"
+                        title="How long has the application been used with Codekvast attached?">Usage Time</th>
+                    <th class="col-lg-1"
+                        ng-click="orderBy = ['rightCompletedBarWidth', 'leftCompletedBarWidth']; reverse = !reverse"
+                        title="Can we start identifying possibly dead methods yet?">Usage Data Confidence
                     </th>
-                    <th class="col-lg-1" title="The number of tracked methods in this version">Number of Methods</th>
-                    <th class="col-lg-1" title="Methods that have never been invoked">Dead Methods</th>
-                    <th class="col-lg-1" title="Methods only invoked before the last usage cycle">Possibly Dead Methods
+                    <th class="col-lg-1"
+                        ng-click="orderBy = 'numSignatures'; reverse = !reverse"
+                        title="The number of tracked methods in this version">Number of Methods</th>
+                    <th class="col-lg-1"
+                        ng-click="orderBy = 'percentNeverInvokedSignatures'; reverse = !reverse"
+                        title="Methods that have never been invoked">Dead Methods</th>
+                    <th class="col-lg-1"
+                        title="Methods only invoked before the last usage cycle">Possibly Dead Methods
                     </th>
-                    <th class="col-lg-1" title="Methods that have been invoked during the last usage cycle">Live Methods
+                    <th class="col-lg-1"
+                        ng-click="orderBy = 'percentInvokedSignatures'; reverse = !reverse"
+                        title="Methods that have been invoked during the last usage cycle">Live Methods
                     </th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="a in applicationStatistics">
+                <tr ng-repeat="a in applicationStatistics|filter:filter|orderBy:orderBy:reverse">
                     <td class="col-lg-1">{{a.name}}</td>
                     <td class="col-lg-1">{{a.version}}</td>
                     <td class="col-lg-1">{{a.numHostNames}}</td>

@@ -1,5 +1,8 @@
 # Codekvast Release Notes
 
+## 0.11.3
+
+1. Added filter and column sorting to application-usage-statistics.html
 
 ## 0.11.2
 
