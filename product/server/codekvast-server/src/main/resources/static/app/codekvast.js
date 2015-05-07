@@ -82,19 +82,17 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
         var handleWebSocketMessage = function (data) {
             // extract all distinct versions from data.applicationStatistics and sort them by descending semver order
-            data.versions = _.chain(data.applicationStatistics).uniq('version').map(function (a) {
-                return {name: a.version}
-            })
+            data.versions = _.chain(data.applicationStatistics)
+                .uniq('version')
+                .map(function (a) {
+                    return {name: a.version}
+                })
                 .sortBy(function (v) {
-                    var versionArray = ("" + v.name)
-                            .replace("_", ".")
-                            .replace(/[^0-9.]/g, "")
-                            .split("."),
+                    var parts = v.name.replace(/[^0-9.]/g, "").split("."),
                         sum = 0;
-                    for (var i = 0; i < versionArray.length; ++i) {
-                        sum += Number(versionArray[i]) / Math.pow(10, i * 3);
+                    for (var i = 0; i < parts.length; i++) {
+                        sum += Number(parts[i]) / Math.pow(10, i * 3);
                     }
-                    console.log(v.name + " -> " + sum);
                     return sum;
                 })
                 .value();
