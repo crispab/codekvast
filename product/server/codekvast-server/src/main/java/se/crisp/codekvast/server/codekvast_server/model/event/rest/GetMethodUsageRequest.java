@@ -2,6 +2,7 @@ package se.crisp.codekvast.server.codekvast_server.model.event.rest;
 
 import lombok.Data;
 
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
@@ -20,6 +21,10 @@ public class GetMethodUsageRequest {
 
     @NotNull
     private Collection<MethodUsageScope> methods;
+
+    @Min(1)
+    @Max(100)
+    private int previewRows;
 
     @Min(1)
     private int bootstrapSeconds;

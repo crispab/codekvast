@@ -503,11 +503,11 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                 applications: _($scope.formData.applications).filter('selected').pluck('name').value(),
                 versions: _($scope.formData.versions).filter('selected').pluck('name').value(),
                 methods: _($scope.formData.methods).filter('selected').pluck('name').value(),
-                bootstrapSeconds: $scope.formData.bootstrapTimeSeconds
+                bootstrapSeconds: $scope.formData.bootstrapTimeSeconds,
+                previewRows: $scope.formData.previewRows
             };
 
-            var promise = RemoteDataService.getMethodUsage(getMethodUsageRequest);
-            promise.then(
+            RemoteDataService.getMethodUsage(getMethodUsageRequest).then(
                 function (rsp) {
                     alert("success " + JSON.stringify(rsp.data))
                 },
