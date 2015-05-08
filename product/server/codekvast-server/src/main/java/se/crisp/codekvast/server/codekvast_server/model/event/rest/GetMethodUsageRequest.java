@@ -7,10 +7,11 @@ import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
 /**
+ * Posted from web layer to get code usage data.
  * @author olle.hallin@crisp.se
  */
 @Data
-public class GetCodeUsageRequest {
+public class GetMethodUsageRequest {
     @NotNull
     private Collection<String> applications;
 

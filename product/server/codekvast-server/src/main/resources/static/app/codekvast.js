@@ -159,23 +159,16 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
         };
 
-        var getCodeUsage = function (getCodeUsageRequest) {
-            $http.post('/api/web/getCodeUsage', getCodeUsageRequest)
-                .success(function () {
-                    alert("Code usage data request successfully posted")
-                    // TODO pass it on to caller
-                })
-                .error(function (rsp) {
-                    alert("Cannot retrieve code usage data:" + JSON.stringify(rsp));
-                })
-        }
+        var getMethodUsage = function (getMethodUsageRequest) {
+            return $http.post('/api/web/getMethodUsage', getMethodUsageRequest);
+        };
 
         return {
             getLastEvent: getLastEvent,
             getLastData: getLastData,
             initSocket: initSocket,
             persistsOrganisationSettings: persistsOrganisationSettings,
-            getCodeUsage: getCodeUsage,
+            getMethodUsage: getMethodUsage,
 
             // for testing only
             handleWebSocketMessage: handleWebSocketMessage
@@ -506,14 +499,21 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         }
 
         $scope.previewReport = function () {
-            var getCodeUsageRequest = {
+            var getMethodUsageRequest = {
                 applications: _($scope.formData.applications).filter('selected').pluck('name').value(),
                 versions: _($scope.formData.versions).filter('selected').pluck('name').value(),
                 methods: _($scope.formData.methods).filter('selected').pluck('name').value(),
                 bootstrapSeconds: $scope.formData.bootstrapTimeSeconds
             };
 
-            RemoteDataService.getCodeUsage(getCodeUsageRequest);
+            var promise = RemoteDataService.getMethodUsage(getMethodUsageRequest);
+            promise.then(
+                function (rsp) {
+                    alert("success " + JSON.stringify(rsp.data))
+                },
+                function (rsp) {
+                    alert("failure " + JSON.stringify(rsp))
+                });
 
             $scope.previewData = !$scope.previewData;
         }

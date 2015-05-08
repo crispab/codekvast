@@ -12,13 +12,17 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.WebSocketMessage;
-import se.crisp.codekvast.server.codekvast_server.model.event.rest.GetCodeUsageRequest;
+import se.crisp.codekvast.server.codekvast_server.model.event.rest.GetMethodUsageRequest;
+import se.crisp.codekvast.server.codekvast_server.model.event.rest.GetMethodUsageResponse;
+import se.crisp.codekvast.server.codekvast_server.model.event.rest.MethodUsageEntry;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.OrganisationSettings;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.Arrays;
+import java.util.Collection;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -103,11 +107,19 @@ public class WebSocketDataHandler extends AbstractEventBusSubscriber {
         log.info("'{}' saved settings {}", username, settings);
     }
 
-    @RequestMapping(value = "/api/web/getCodeUsage", method = RequestMethod.POST)
-    public void getCodeUsage(@Valid @RequestBody GetCodeUsageRequest request, Principal principal) throws CodekvastException {
+    @RequestMapping(value = "/api/web/getMethodUsage", method = RequestMethod.POST)
+    public GetMethodUsageResponse getMethodUsage(@Valid @RequestBody GetMethodUsageRequest request, Principal principal) throws
+                                                                                                                         CodekvastException {
         String username = principal.getName();
         log.debug("'{}' requests {}", username, request);
 
+        long now = System.currentTimeMillis();
+
+        Collection<MethodUsageEntry> methods = Arrays.asList(
+                MethodUsageEntry.builder().name("aaaa").usedAtMillis(now - 2 * 3600_000).build(),
+                MethodUsageEntry.builder().name("bbbb").usedAtMillis(now - 3600_000).build()
+        );
+        return GetMethodUsageResponse.builder().methods(methods).build();
     }
 
 }
