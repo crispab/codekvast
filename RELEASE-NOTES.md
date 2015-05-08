@@ -2,7 +2,8 @@
 
 ## 0.11.4
 
-1. Replaced tooltips with popovers in application-statistics.html
+1. Replaced tooltips with popovers in application-statistics.html.
+1. Connected code-usage-report.html with live version data.
 
 ## 0.11.3
 

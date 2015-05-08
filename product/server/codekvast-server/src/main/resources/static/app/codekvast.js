@@ -391,9 +391,8 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
     .controller('ReportController', ['$scope', 'DateService', 'RemoteDataService', function ($scope, DateService, RemoteDataService) {
         $scope.formData = {
-            applications: RemoteDataService.getLastData("applications"),
-
-            versions: RemoteDataService.getLastData("versions"),
+            applications: undefined,
+            versions: undefined,
 
             neverExecutedMethods: true,
             probablyDeadMethods: true,
@@ -402,24 +401,23 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             previewRows: 100
         };
 
-        $scope.$on('data', function (event, data) {
-            $scope.formData.applications = data.applications;
-            $scope.formData.versions = data.versions;
-            $scope.updateModel();
-        });
-
-        $scope.updateModel = function() {
-            if ($scope.formData.applications) {
-                angular.forEach($scope.formData.applications, function (a) {
+        $scope.updateModel = function (data) {
+            if ($scope.formData.applications === undefined && data && data.applications && data.versions) {
+                $scope.formData.applications = _(data.applications).chain().cloneDeep().forEach(function (a) {
                     a.usageCycle = DateService.prettyDuration(a.usageCycleSeconds * 1000);
-                    if (a.selected === undefined) {
-                        a.selected = true;
-                    }
-                });
+                    a.selected = true;
+                }).value();
+                $scope.formData.versions = _(data.versions).chain().cloneDeep().reverse().forEach(function (v, i) {
+                    v.selected = i == 0;
+                }).value();
             }
         };
 
-        $scope.updateModel();
+        $scope.$on('data', function (event, data) {
+            $scope.updateModel(data);
+        });
+
+        $scope.updateModel(RemoteDataService.getLastData('data'));
 
         $scope.fullUsageCycle = function() {
             return "14d";
