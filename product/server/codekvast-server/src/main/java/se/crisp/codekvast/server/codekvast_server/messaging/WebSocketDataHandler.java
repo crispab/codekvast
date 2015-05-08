@@ -21,8 +21,9 @@ import se.crisp.codekvast.server.codekvast_server.service.UserService;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import java.security.Principal;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -115,11 +116,26 @@ public class WebSocketDataHandler extends AbstractEventBusSubscriber {
 
         long now = System.currentTimeMillis();
 
-        Collection<MethodUsageEntry> methods = Arrays.asList(
-                MethodUsageEntry.builder().name("aaaa").usedAtMillis(now - 2 * 3600_000).build(),
-                MethodUsageEntry.builder().name("bbbb").usedAtMillis(now - 3600_000).build()
-        );
+        List<MethodUsageEntry> methods = new ArrayList<>();
+        for (int i = 0; i < request.getPreviewRows(); i++) {
+            long usedAtMillis = random.nextBoolean() ? now - i * 60_000L : 0L;
+            methods.add(MethodUsageEntry.builder().name(String.format("%s-%04d", randomString(80), i)).invokedAtMillis(usedAtMillis).build
+                    ());
+        }
+
         return GetMethodUsageResponse.builder().methods(methods).build();
+    }
+
+    private final Random random = new Random();
+
+    private String randomString(int averageLength) {
+        StringBuilder sb = new StringBuilder();
+        int len = averageLength / 2 + random.nextInt(averageLength);
+        for (int i = 0; i < len; i++) {
+            char c = (char) ('a' + random.nextInt('z' - 'a'));
+            sb.append(c);
+        }
+        return sb.toString();
     }
 
 }

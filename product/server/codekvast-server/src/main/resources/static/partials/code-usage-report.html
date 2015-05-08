@@ -103,11 +103,30 @@
     <div class="panel panel-info" ng-show="previewData">
         <div class="panel-heading">Report Preview</div>
         <div class="panel-body">
-            <p>Preview</p>
-
-            <p>Preview</p>
-
-            <p>Preview</p>
+            <table>
+                <thead>
+                <tr>
+                    <th colspan="3">
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <label for="filter">Filter:
+                                    <input id="filter" type="text" class="form-control" ng-model="filter"/>
+                                </label></div>
+                        </form>
+                    </th>
+                </tr>
+                <tr>
+                    <th ng-click="orderBy='name'; reverse = !reverse">Method</th>
+                    <th ng-click="orderBy='invokedAtMillis'; reverse = !reverse">Invoked At</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="m in previewData.methods|filter:filter|orderBy:orderBy:reverse">
+                    <td class="col-lg-9">{{m.name}}</td>
+                    <td class="col-lg-2">{{m.invokedAtMillis|orderBy:orderBy|invokedAtDate:dateFormat}}</td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 

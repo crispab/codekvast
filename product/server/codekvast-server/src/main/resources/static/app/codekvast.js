@@ -398,6 +398,8 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
     .controller('ReportController', ['$scope', 'dateFilter', 'DateService', 'RemoteDataService', function ($scope, dateFilter, DateService, RemoteDataService) {
         $scope.dateFormat = 'yyyy-MM-dd HH:mm:ss';
+        $scope.orderBy = 'invokedAtMillis';
+        $scope.reverse = false;
 
         $scope.fullUsageCycle = function () {
             var stats = RemoteDataService.getLastData('applicationStatistics');
@@ -509,13 +511,11 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
             RemoteDataService.getMethodUsage(getMethodUsageRequest).then(
                 function (rsp) {
-                    alert("success " + JSON.stringify(rsp.data))
+                    $scope.previewData = rsp.data;
                 },
                 function (rsp) {
-                    alert("failure " + JSON.stringify(rsp))
+                    alert("Cannot get preview data: " + JSON.stringify(rsp))
                 });
-
-            $scope.previewData = !$scope.previewData;
         }
 
         $scope.$on('stompDisconnected', function (event, message) {
