@@ -11,5 +11,14 @@ import java.util.Collection;
 @Value
 @Builder
 public class GetMethodUsageResponse {
+    int allMethods;
+    int matchedMethods;
+
+    int deadMethods;
+    int probablyDeadInvoked;
+    int bootMethods;
+    int liveMethods;
+    int rowLimit;
+
     Collection<MethodUsageEntry> methods;
 }

@@ -103,27 +103,30 @@
     <div class="panel panel-info" ng-show="previewData">
         <div class="panel-heading">Report Preview</div>
         <div class="panel-body">
+            <div class="row">
+                <span class="col-lg-6">Bla bla bla Bla bla bla Bla bla bla Bla bla bla Bla bla bla Bla bla bla Bla bla bla Bla bla bla Bla bla bla
+                                       Bla bla
+                                       bla
+                                       Bla bla bla Bla bla bla  </span>
+                <div class="col-lg-6">
+                    <button ng-click="alert('Not Yet Implemented')">Fetch as CSV...</button>
+                    <button ng-click="alert('Not Yet Implemented')">Fetch as JSON...</button>
+                    <button ng-click="alert('Not Yet Implemented')">Fetch as XML...</button>
+                    <button ng-click="alert('Not Yet Implemented')">Fetch as Excel...</button>
+                </div>
+            </div>
+
             <table>
                 <thead>
                 <tr>
-                    <th colspan="3">
-                        <form class="form-inline">
-                            <div class="form-group">
-                                <label for="filter">Filter:
-                                    <input id="filter" type="text" class="form-control" ng-model="filter"/>
-                                </label></div>
-                        </form>
-                    </th>
-                </tr>
-                <tr>
-                    <th ng-click="orderBy='name'; reverse = !reverse">Method</th>
-                    <th ng-click="orderBy='invokedAtMillis'; reverse = !reverse">Invoked At</th>
+                    <th class="col-lg-10" ng-click="orderBy='name'; reverse = !reverse">Method</th>
+                    <th class="col-lg-2" ng-click="orderBy='invokedAtMillis'; reverse = !reverse">Invoked At</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="m in previewData.methods|filter:filter|orderBy:orderBy:reverse">
-                    <td class="col-lg-9">{{m.name}}</td>
-                    <td class="col-lg-2">{{m.invokedAtMillis|orderBy:orderBy|invokedAtDate:dateFormat}}</td>
+                <tr ng-repeat="m in previewData.methods|orderBy:orderBy:reverse">
+                    <td class="col-lg-10">{{::m.name}}</td>
+                    <td class="col-lg-2">{{::m.invokedAtMillis|orderBy:orderBy|invokedAtDate:dateFormat}}</td>
                 </tr>
                 </tbody>
             </table>
