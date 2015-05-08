@@ -16,22 +16,80 @@
             <table class="table collector-status" ng-show="collectorStatuses">
                 <thead>
                 <tr>
-                    <th class="col-lg-1" title="Which application?">Application</th>
-                    <th class="col-lg-1" title="Which version of the application?">Version</th>
-                    <th class="col-lg-2" title="When did this application start?">Application Started</th>
-                    <th class="col-lg-1" title="In which host is the application executing?">Hostname</th>
-                    <th class="col-lg-1" title="Which version of the Codekvast collector is attached to the application?">Collector
-                                                                                                                          Version
+                    <th colspan="3">
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <label for="filter">Filter:
+                                    <input id="filter" type="text" class="form-control" ng-model="filter"/>
+                                </label></div>
+                        </form>
                     </th>
-                    <th class="col-lg-1" title="Which version of the agent is used?">Agent Version</th>
-                    <th class="col-lg-1" title="Which methods are tracked?">Method Visibility</th>
-                    <th class="col-lg-1" title="What is the resolution of the collector?">Collector Resolution</th>
-                    <th class="col-lg-1" title="How often is the agent uploading collected data?">Agent Upload Interval</th>
-                    <th class="col-lg-1" title="How old is the data?">Data Age</th>
+                </tr>
+                <tr>
+                    <th class="col-lg-1" ng-click="orderBy = 'appName'; reverse = !reverse">Application
+                        <span popover="The name of the application, as configured in the collector"
+                              popover-trigger="click"
+                              popover-placement="right"
+                              class="glyphicon glyphicon-info-sign"></span>
+                    </th>
+                    <th class="col-lg-1" ng-click="orderBy = 'appVersion'; reverse = !reverse">Version
+                        <span popover="The version of the application, as configured in the collector"
+                              popover-trigger="click"
+                              popover-placement="right"
+                              class="glyphicon glyphicon-info-sign"></span>
+                    </th>
+                    <th class="col-lg-2" ng-click="orderBy = 'collectorStartedAtMillis'; reverse = !reverse"> Collection Started
+                        <span popover="When was this version of the application started for the first time with Codekvast attached?"
+                              popover-trigger="click"
+                              popover-placement="right"
+                              class="glyphicon glyphicon-info-sign"></span>
+                    </th>
+                    <th class="col-lg-1" ng-click="orderBy = 'collectorHostname'; reverse = !reverse">Hostname
+                        <span popover="In which host is the application executing?"
+                              popover-trigger="click"
+                              popover-placement="right"
+                              class="glyphicon glyphicon-info-sign"></span>
+                    </th>
+                    <th class="col-lg-1" ng-click="orderBy = 'collectorVersion'; reverse = !reverse">Collector Version
+                        <span popover="Which version of the Codekvast collector is attached to the application?"
+                              popover-trigger="click"
+                              popover-placement="right"
+                              class="glyphicon glyphicon-info-sign"></span>
+                    </th>
+                    <th class="col-lg-1" ng-click="orderBy = 'agentVersion'; reverse = !reverse">Agent Version
+                        <span popover="Which version of the Codekvast agent is attached to the application?"
+                              popover-trigger="click"
+                              popover-placement="right"
+                              class="glyphicon glyphicon-info-sign"></span>
+                    </th>
+                    <th class="col-lg-1" ng-click="orderBy = 'methodVisibility'; reverse = !reverse">Method Visibility
+                        <span popover="Which methods are tracked?"
+                              popover-trigger="click"
+                              popover-placement="right"
+                              class="glyphicon glyphicon-info-sign"></span>
+                    </th>
+                    <th class="col-lg-1" ng-click="orderBy = 'collectorResolutionSeconds'; reverse = !reverse">Collector Resolution
+                        <span popover="What is the resolution of the collector?"
+                              popover-trigger="click"
+                              popover-placement="left"
+                              class="glyphicon glyphicon-info-sign"></span>
+                    </th>
+                    <th class="col-lg-1" ng-click="orderBy = 'agentUploadIntervalSeconds'; reverse = !reverse">Agent Upload Interval
+                        <span popover="How often is the agent uploading collected data?"
+                              popover-trigger="click"
+                              popover-placement="left"
+                              class="glyphicon glyphicon-info-sign"></span>
+                    </th>
+                    <th class="col-lg-1" ng-click="orderBy = 'dataReceivedAtMillis'; reverse = !reverse">Data Age
+                        <span popover="How old is the data?"
+                              popover-trigger="click"
+                              popover-placement="left"
+                              class="glyphicon glyphicon-info-sign"></span>
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="c in collectorStatuses">
+                <tr ng-repeat="c in collectorStatuses|filter:filter|orderBy:orderBy:reverse">
                     <td class="col-lg-1">{{c.appName}}</td>
                     <td class="col-lg-1">{{c.appVersion}}</td>
                     <td class="col-lg-2" title="{{c.collectorAge}}">{{c.collectorStartedAtMillis|date:dateFormat}}</td>

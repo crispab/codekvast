@@ -352,6 +352,8 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
     .controller('CollectorsController', ['$scope', '$interval', 'DateService', 'RemoteDataService', function ($scope, $interval, DateService, RemoteDataService) {
         $scope.collectorStatuses = RemoteDataService.getLastData("collectors");
         $scope.dateFormat = 'yyyy-MM-dd HH:mm:ss';
+        $scope.orderBy = 'appName';
+        $scope.reverse = false;
 
         $scope.$on('data', function (event, data) {
             $scope.collectorStatuses = data.collectors;
