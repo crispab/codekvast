@@ -5,6 +5,7 @@
 1. Replaced tooltips with popovers in application-statistics.html.
 1. Connected code-usage-report.html with live version data.
 1. Added filtering and sorting to collectors.html
+1. Now the code-usage-report form behaves correctly. Still no report though.
 
 ## 0.11.3
 

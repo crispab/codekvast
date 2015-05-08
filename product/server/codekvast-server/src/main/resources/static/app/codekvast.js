@@ -391,15 +391,65 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
     }])
 
-    .controller('ReportController', ['$scope', 'DateService', 'RemoteDataService', function ($scope, DateService, RemoteDataService) {
+    .controller('ReportController', ['$scope', 'dateFilter', 'DateService', 'RemoteDataService', function ($scope, dateFilter, DateService, RemoteDataService) {
+        $scope.dateFormat = 'yyyy-MM-dd HH:mm:ss';
+
+        $scope.fullUsageCycle = function () {
+            var stats = RemoteDataService.getLastData('applicationStatistics');
+            if (stats) {
+                var maxUsageCycleSeconds = _(stats).chain().pluck('usageCycleSeconds').max().value();
+                return DateService.prettyDuration(maxUsageCycleSeconds * 1000)
+            }
+        };
+
+        $scope.recordingStartedAt = function () {
+            var stats = RemoteDataService.getLastData('applicationStatistics');
+            if (stats) {
+                var minStartedAt = _(stats).chain().pluck('firstDataReceivedAtMillis').min().value();
+                return dateFilter(minStartedAt, $scope.dateFormat);
+            }
+        };
+
         $scope.formData = {
             applications: undefined,
             versions: undefined,
 
-            neverExecutedMethods: true,
-            probablyDeadMethods: true,
-            bootstrapMethods: false,
-            liveMethods: false,
+            methods: [
+                {
+                    labelText: 'Include never executed methods',
+                    popoverTitle: 'Never executed methods',
+                    popoverText: function () {
+                        return 'Methods that have not been executed since Codekvast started ' + $scope.recordingStartedAt();
+                    },
+                    selected: true
+                },
+                {
+                    labelText: 'Include probably dead methods',
+                    popoverTitle: 'Probably dead methods',
+                    popoverText: function () {
+                        return 'Methods that have not been executed during the last full usage cycle, which is ' + $scope.fullUsageCycle() + '. (See Settings)';
+                    },
+                    selected: true
+                },
+                {
+                    labelText: 'Include bootstrap methods',
+                    popoverTitle: 'Bootstrap methods',
+                    popoverText: function () {
+                        return 'Methods that only execute within a number of seconds after start of the application';
+                    },
+                    showBootstrapSecondsInput: true,
+                    selected: false
+                },
+                {
+                    labelText: 'Include live methods',
+                    popoverTitle: 'Live methods',
+                    popoverText: function () {
+                        return 'Methods that have been executed during the last full usage cycle, which is ' + $scope.fullUsageCycle() + '. (See Settings)';
+                    },
+                    selected: false
+                }
+            ],
+            bootstrapTimeSeconds: 60,
             previewRows: 100
         };
 
@@ -421,31 +471,26 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
         $scope.updateModel(RemoteDataService.getLastData('data'));
 
-        $scope.fullUsageCycle = function() {
-            return "14d";
-        };
-
-        $scope.recordingStartedAt = function() {
-            return '2015-03-17 21:30';
-        };
-
-        $scope.bootstrapTime = function() {
-            return '60s';
-        }
-
         $scope.selectAll = function (what, selected) {
             angular.forEach($scope.formData[what], function (item) {
                 item.selected = selected;
             });
         };
 
-        $scope.dateFormat = 'yyyy-MM-dd HH:mm:ss';
         $scope.showMockup = false;
         $scope.toggleMockupVerb = function () {
             return $scope.showMockup ? "Hide mockup" : "Show mockup"
         };
 
+        $scope.isSubmitEnabled = function () {
+            var anyApp = _($scope.formData.applications).any({selected: true});
+            var anyVersion = _($scope.formData.versions).any({selected: true});
+            var anyMethods = _($scope.formData.methods).any({selected: true});
+            return anyApp && anyVersion && anyMethods;
+        }
+
         $scope.$on('stompDisconnected', function (event, message) {
+            $scope.formData.applications = undefined
         });
     }])
 
