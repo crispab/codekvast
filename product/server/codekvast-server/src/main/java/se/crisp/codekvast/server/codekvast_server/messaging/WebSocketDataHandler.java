@@ -12,6 +12,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.WebSocketMessage;
+import se.crisp.codekvast.server.codekvast_server.model.event.rest.GetCodeUsageRequest;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.OrganisationSettings;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
 
@@ -100,6 +101,13 @@ public class WebSocketDataHandler extends AbstractEventBusSubscriber {
         userService.saveOrganisationSettings(username, settings);
 
         log.info("'{}' saved settings {}", username, settings);
+    }
+
+    @RequestMapping(value = "/api/web/getCodeUsage", method = RequestMethod.POST)
+    public void getCodeUsage(@Valid @RequestBody GetCodeUsageRequest request, Principal principal) throws CodekvastException {
+        String username = principal.getName();
+        log.debug("'{}' requests {}", username, request);
+
     }
 
 }

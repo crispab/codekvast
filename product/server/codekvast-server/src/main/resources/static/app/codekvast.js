@@ -151,19 +151,31 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
             $http.post('/api/web/settings', data)
                 .success(function () {
-                    console.log("Saved settings %o", data);
+                    alert("Settings saved");
                 })
                 .error(function (rsp) {
-                    console.log("Cannot save settings %o", rsp);
+                    alert("Cannot save settings:" + JSON.stringify(rsp));
                 })
 
         };
+
+        var getCodeUsage = function (getCodeUsageRequest) {
+            $http.post('/api/web/getCodeUsage', getCodeUsageRequest)
+                .success(function () {
+                    alert("Code usage data request successfully posted")
+                    // TODO pass it on to caller
+                })
+                .error(function (rsp) {
+                    alert("Cannot retrieve code usage data:" + JSON.stringify(rsp));
+                })
+        }
 
         return {
             getLastEvent: getLastEvent,
             getLastData: getLastData,
             initSocket: initSocket,
             persistsOrganisationSettings: persistsOrganisationSettings,
+            getCodeUsage: getCodeUsage,
 
             // for testing only
             handleWebSocketMessage: handleWebSocketMessage
@@ -416,6 +428,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
             methods: [
                 {
+                    name: 'DEAD',
                     labelText: 'Include never executed methods',
                     popoverTitle: 'Never executed methods',
                     popoverText: function () {
@@ -424,6 +437,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                     selected: true
                 },
                 {
+                    name: 'PROBABLY_DEAD',
                     labelText: 'Include probably dead methods',
                     popoverTitle: 'Probably dead methods',
                     popoverText: function () {
@@ -432,6 +446,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                     selected: true
                 },
                 {
+                    name: 'BOOTSTRAP',
                     labelText: 'Include bootstrap methods',
                     popoverTitle: 'Bootstrap methods',
                     popoverText: function () {
@@ -441,6 +456,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                     selected: false
                 },
                 {
+                    name: 'LIVE',
                     labelText: 'Include live methods',
                     popoverTitle: 'Live methods',
                     popoverText: function () {
@@ -487,6 +503,19 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             var anyVersion = _($scope.formData.versions).any({selected: true});
             var anyMethods = _($scope.formData.methods).any({selected: true});
             return anyApp && anyVersion && anyMethods;
+        }
+
+        $scope.previewReport = function () {
+            var getCodeUsageRequest = {
+                applications: _($scope.formData.applications).filter('selected').pluck('name').value(),
+                versions: _($scope.formData.versions).filter('selected').pluck('name').value(),
+                methods: _($scope.formData.methods).filter('selected').pluck('name').value(),
+                bootstrapSeconds: $scope.formData.bootstrapTimeSeconds
+            };
+
+            RemoteDataService.getCodeUsage(getCodeUsageRequest);
+
+            $scope.previewData = !$scope.previewData;
         }
 
         $scope.$on('stompDisconnected', function (event, message) {
