@@ -104,10 +104,10 @@
         <div class="panel-heading">Report Preview</div>
         <div class="panel-body">
             <div class="row">
-                <span class="col-lg-6">Bla bla bla Bla bla bla Bla bla bla Bla bla bla Bla bla bla Bla bla bla Bla bla bla Bla bla bla Bla bla bla
-                                       Bla bla
-                                       bla
-                                       Bla bla bla Bla bla bla  </span>
+                <span class="col-lg-6">
+                    <p>Total number of methods: {{ previewData.numMethods}}</p>
+                    <p>Methods by execution date: {{previewData.numMethodsByScope|json}}</p>
+                </span>
                 <div class="col-lg-6">
                     <button ng-click="alert('Not Yet Implemented')">Fetch as CSV...</button>
                     <button ng-click="alert('Not Yet Implemented')">Fetch as JSON...</button>
@@ -115,18 +115,22 @@
                     <button ng-click="alert('Not Yet Implemented')">Fetch as Excel...</button>
                 </div>
             </div>
-
+            <hr/>
             <table>
                 <thead>
                 <tr>
-                    <th class="col-lg-10" ng-click="orderBy='name'; reverse = !reverse">Method</th>
+                    <th class="col-lg-8" ng-click="orderBy='name'; reverse = !reverse">Method</th>
+                    <th class="col-lg-2" ng-click="orderBy='scope'; reverse = !reverse">Scope</th>
                     <th class="col-lg-2" ng-click="orderBy='invokedAtMillis'; reverse = !reverse">Invoked At</th>
+                    <th class="col-lg-2" ng-click="orderBy='invokedAtMillis'; reverse = !reverse">Age</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr ng-repeat="m in previewData.methods|orderBy:orderBy:reverse">
-                    <td class="col-lg-10">{{::m.name}}</td>
+                    <td class="col-lg-8">{{::m.name}}</td>
+                    <td class="col-lg-2">{{::m.scope|enum}}</td>
                     <td class="col-lg-2">{{::m.invokedAtMillis|orderBy:orderBy|invokedAtDate:dateFormat}}</td>
+                    <td class="col-lg-1">{{::m.invokedAtMillis|orderBy:orderBy|age}}</td>
                 </tr>
                 </tbody>
             </table>

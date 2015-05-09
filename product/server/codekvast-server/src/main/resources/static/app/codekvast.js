@@ -16,6 +16,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             });
 
         $locationProvider.html5Mode(true);
+
     }])
 
     .service('DateService', function () {
@@ -401,12 +402,15 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         $scope.orderBy = 'invokedAtMillis';
         $scope.reverse = false;
 
-        $scope.fullUsageCycle = function () {
-            var stats = RemoteDataService.getLastData('applicationStatistics');
-            if (stats) {
-                var maxUsageCycleSeconds = _(stats).chain().pluck('usageCycleSeconds').max().value();
-                return DateService.prettyDuration(maxUsageCycleSeconds * 1000)
+        $scope.maxUsageCycleSeconds = function () {
+            if ($scope.formData.applications) {
+                return _($scope.formData.applications).chain().filter({selected: true}).pluck('usageCycleSeconds').max().value();
             }
+        };
+
+        $scope.fullUsageCycle = function () {
+            var seconds = $scope.maxUsageCycleSeconds();
+            return isFinite(seconds) ? ", which is " + DateService.prettyDuration(seconds * 1000) : "";
         };
 
         $scope.recordingStartedAt = function () {
@@ -436,7 +440,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                     labelText: 'Include probably dead methods',
                     popoverTitle: 'Probably dead methods',
                     popoverText: function () {
-                        return 'Methods that have not been executed during the last full usage cycle, which is ' + $scope.fullUsageCycle() + '. (See Settings)';
+                        return 'Methods that have not been executed during the last full usage cycle' + $scope.fullUsageCycle();
                     },
                     selected: true
                 },
@@ -455,7 +459,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                     labelText: 'Include live methods',
                     popoverTitle: 'Live methods',
                     popoverText: function () {
-                        return 'Methods that have been executed during the last full usage cycle, which is ' + $scope.fullUsageCycle() + '. (See Settings)';
+                        return 'Methods that have been executed during the last full usage cycle' + $scope.fullUsageCycle();
                     },
                     selected: false
                 }
@@ -480,7 +484,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             $scope.updateModel(data);
         });
 
-        $scope.updateModel(RemoteDataService.getLastData('data'));
+        $scope.updateModel(RemoteDataService.getLastEvent('data'));
 
         $scope.selectAll = function (what, selected) {
             angular.forEach($scope.formData[what], function (item) {
@@ -504,9 +508,10 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             var getMethodUsageRequest = {
                 applications: _($scope.formData.applications).filter('selected').pluck('name').value(),
                 versions: _($scope.formData.versions).filter('selected').pluck('name').value(),
-                methods: _($scope.formData.methods).filter('selected').pluck('name').value(),
+                methodUsageScopes: _($scope.formData.methods).filter('selected').pluck('name').value(),
+                usageCycleSeconds: $scope.maxUsageCycleSeconds(),
                 bootstrapSeconds: $scope.formData.bootstrapTimeSeconds,
-                previewRows: $scope.formData.previewRows
+                maxPreviewRows: $scope.formData.previewRows
             };
 
             RemoteDataService.getMethodUsage(getMethodUsageRequest).then(
@@ -516,7 +521,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                 function (rsp) {
                     alert("Cannot get preview data: " + JSON.stringify(rsp))
                 });
-        }
+        };
 
         $scope.$on('stompDisconnected', function (event, message) {
             $scope.formData.applications = undefined
@@ -529,6 +534,25 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                 return "";
             }
             return dateFilter(input, format);
+        }
+    }])
+
+    .filter('enum', [function () {
+        return function (input) {
+            if (!input) {
+                return "";
+            }
+            var s = input.replace("_", " ");
+            return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()
+        }
+    }])
+
+    .filter('age', ['DateService', function (DateService) {
+        return function (input) {
+            if (!input || input === 0) {
+                return "";
+            }
+            return DateService.prettyAge(input);
         }
     }])
 

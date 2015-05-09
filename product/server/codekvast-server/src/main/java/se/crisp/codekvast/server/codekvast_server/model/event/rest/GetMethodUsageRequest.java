@@ -20,19 +20,16 @@ public class GetMethodUsageRequest {
     private Collection<String> versions;
 
     @NotNull
-    private Collection<MethodUsageScope> methods;
+    private Collection<MethodUsageScope> methodUsageScopes;
 
     @Min(1)
     @Max(100)
-    private int previewRows;
+    private int maxPreviewRows;
+
+    @Min(1)
+    private int usageCycleSeconds;
 
     @Min(1)
     private int bootstrapSeconds;
 
-    /**
-     * @author olle.hallin@crisp.se
-     */
-    public enum MethodUsageScope {
-        DEAD, PROBABLY_DEAD, BOOTSTRAP, LIVE;
-    }
 }

@@ -6,6 +6,7 @@
 1. Connected code-usage-report.html with live version data.
 1. Added filtering and sorting to collectors.html
 1. Now the code-usage-report form behaves correctly. Still no report though.
+1. Worked on code-usage-report. Still random fake data though.
 
 ## 0.11.3
 
