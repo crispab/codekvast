@@ -46,6 +46,12 @@ public class ReportServiceIntegTest extends AbstractServiceIntegTest {
     @Inject
     private ReportDAO reportDAO;
 
+    private final List<SignatureEntry> deadSignatures = asList(
+            new SignatureEntry("dead1", 0L, 0L, null),
+            new SignatureEntry("dead2", 0L, 0L, null),
+            new SignatureEntry("dead3", 0L, 0L, null),
+            new SignatureEntry("dead4", 0L, 0L, null));
+
     @Before
     public void beforeTest() throws CodekvastException {
         // given
@@ -55,38 +61,93 @@ public class ReportServiceIntegTest extends AbstractServiceIntegTest {
 
         agentService.storeJvmData("agent", createJvmData(t0, t1, "app1", "1.0", "jvm1", "hostName1"));
         agentService.storeJvmData("agent", createJvmData(t0, t1, "app1", "1.1", "jvm2", "hostName1"));
-        agentService.storeJvmData("agent", createJvmData(t0, t1, "app2", "1.0", "jvm3", "hostName1"));
-        agentService.storeJvmData("agent", createJvmData(t0, t1, "app2", "2.0", "jvm4", "hostName2"));
+        agentService.storeJvmData("agent", createJvmData(t0, t1, "app2", "2.0", "jvm3", "hostName1"));
+        agentService.storeJvmData("agent", createJvmData(t0, t1, "app2", "2.1", "jvm4", "hostName2"));
 
-        List<SignatureEntry> dead = asList(new SignatureEntry("dead1", 0L, 0L, null), new SignatureEntry("dead2", 0L, 0L, null),
-                                           new SignatureEntry("dead3", 0L, 0L, null), new SignatureEntry("dead4", 0L, 0L, null));
-
-        agentService.storeSignatureData(SignatureData.builder().jvmUuid("jvm1").signatures(dead).build());
-        agentService.storeSignatureData(SignatureData.builder().jvmUuid("jvm2").signatures(dead).build());
-        agentService.storeSignatureData(SignatureData.builder().jvmUuid("jvm3").signatures(dead).build());
-        agentService.storeSignatureData(SignatureData.builder().jvmUuid("jvm4").signatures(dead.subList(0, 2)).build());
+        agentService.storeSignatureData(SignatureData.builder().jvmUuid("jvm1").signatures(deadSignatures).build());
+        agentService.storeSignatureData(SignatureData.builder().jvmUuid("jvm2").signatures(deadSignatures).build());
+        agentService.storeSignatureData(SignatureData.builder().jvmUuid("jvm3").signatures(deadSignatures).build());
+        agentService.storeSignatureData(SignatureData.builder().jvmUuid("jvm4").signatures(deadSignatures.subList(0, 2)).build());
     }
 
     @Test
-    public void testGetApplicationIds() throws Exception {
-        assertThat(reportDAO.getApplicationIds(1, asList("app1", "app2")), contains(1L, 2L));
+    public void testGetApplicationIds_invalid_organisation_id() throws Exception {
+        assertThat(reportDAO.getApplicationIds(0, asList("app1", "app2")), empty());
     }
 
     @Test
-    public void testGetJvmIds() throws Exception {
-        assertThat(reportDAO.getJvmIdsByAppVersions(1, asList("1.0", "2.0")), containsInAnyOrder(1L, 3L, 4L));
+    public void testGetApplicationIds_app1() throws Exception {
+        assertThat(reportDAO.getApplicationIds(1, asList("app1")), contains(1L));
     }
 
     @Test
-    public void testGetDeadMethods() {
-        ReportParameters params = ReportParameters.builder()
-                                                  .organisationId(1)
-                                                  .applicationIds(reportDAO.getApplicationIds(1, asList("app1", "app2")))
-                                                  .jvmIds(reportDAO.getJvmIdsByAppVersions(1, asList("1.0", "1.1", "2.0")))
-                                                  .build();
+    public void testGetApplicationIds_app1_twice() throws Exception {
+        assertThat(reportDAO.getApplicationIds(1, asList("app1", "app1")), contains(1L));
+    }
+
+    @Test
+    public void testGetApplicationIds_app2() throws Exception {
+        assertThat(reportDAO.getApplicationIds(1, asList("app2")), contains(2L));
+    }
+
+    @Test
+    public void testGetApplicationIds_all_apps_plus_non_existing() throws Exception {
+        assertThat(reportDAO.getApplicationIds(1, asList("app2", "foobar", "app1")), contains(1L, 2L));
+    }
+
+    @Test
+    public void testGetApplicationIds_only_non_existing() throws Exception {
+        assertThat(reportDAO.getApplicationIds(1, asList("foobar")), empty());
+    }
+
+    @Test
+    public void testGetJvmIds_invalid_organisation_id() throws Exception {
+        assertThat(reportDAO.getJvmIdsByAppVersions(0, asList("1.0", "2.0")), empty());
+    }
+
+    @Test
+    public void testGetJvmIds_v1_0() throws Exception {
+        assertThat(reportDAO.getJvmIdsByAppVersions(1, asList("1.0")), contains(1L));
+    }
+
+    @Test
+    public void testGetJvmIds_v1_0_twice() throws Exception {
+        assertThat(reportDAO.getJvmIdsByAppVersions(1, asList("1.0", "1.0")), contains(1L));
+    }
+
+    @Test
+    public void testGetJvmIds_subset1() throws Exception {
+        assertThat(reportDAO.getJvmIdsByAppVersions(1, asList("2.0", "1.0")), contains(1L, 3L));
+    }
+
+    @Test
+    public void testGetJvmIds_subset2() throws Exception {
+        assertThat(reportDAO.getJvmIdsByAppVersions(1, asList("2.1", "1.1")), contains(2L, 4L));
+    }
+
+    @Test
+    public void testGetJvmIds_all_plus_non_existing() throws Exception {
+        assertThat(reportDAO.getJvmIdsByAppVersions(1, asList("2.1", "2.0", "XXX", "1.1", "1.0")), contains(1L, 2L, 3L, 4L));
+    }
+
+    @Test
+    public void testGetJvmIds_only_non_existing() throws Exception {
+        assertThat(reportDAO.getJvmIdsByAppVersions(1, asList("XXX")), empty());
+    }
+
+    @Test
+    public void testGetDeadMethods1() {
+        ReportParameters params = getReportParameters(asList("app1"), asList("1.0"));
 
         assertThat(reportDAO.getMethodsForScope(MethodUsageScope.DEAD, params), hasSize(4));
+    }
 
+    private ReportParameters getReportParameters(List<String> applicationNames, List<String> applicationVersions) {
+        return ReportParameters.builder()
+                               .organisationId(1)
+                               .applicationIds(reportDAO.getApplicationIds(1, applicationNames))
+                               .jvmIds(reportDAO.getJvmIdsByAppVersions(1, applicationVersions))
+                               .build();
     }
 
 }
