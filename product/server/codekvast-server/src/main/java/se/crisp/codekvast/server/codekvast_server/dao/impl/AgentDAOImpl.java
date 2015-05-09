@@ -246,7 +246,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                           "stat.num_signatures, " +
                                           "stat.num_not_invoked_signatures, " +
                                           "stat.num_invoked_signatures, " +
-                                          "stat.num_startup_signatures, " +
+                                          "stat.num_bootstrap_signatures, " +
                                           "stat.num_possibly_dead_signatures, " +
                                           "stat.first_started_at_millis, " +
                                           "stat.last_reported_at_millis, " +
@@ -388,7 +388,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
 
         jdbcTemplate.update("MERGE INTO application_statistics(application_id, application_version, " +
                                     "num_host_names, num_signatures, num_not_invoked_signatures, num_invoked_signatures, " +
-                                    "num_startup_signatures, num_possibly_dead_signatures, " +
+                                    "num_bootstrap_signatures, num_possibly_dead_signatures, " +
                                     "first_started_at_millis, last_reported_at_millis, " +
                                     "sum_up_time_millis, avg_up_time_millis, min_up_time_millis, max_up_time_millis) " +
                                     "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",

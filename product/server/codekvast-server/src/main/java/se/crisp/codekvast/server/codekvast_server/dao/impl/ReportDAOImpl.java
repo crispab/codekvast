@@ -93,11 +93,13 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
             String appIds = params.getApplicationIds().stream().map(s -> "?").collect(Collectors.joining(","));
             String jvmIds = params.getJvmIds().stream().map(s -> "?").collect(Collectors.joining(","));
 
-            return "SELECT DISTINCT s.signature, s.invoked_at_millis FROM signatures s, application_statistics stats " +
+            return "SELECT DISTINCT s.signature, s.invoked_at_millis FROM signatures s, application_statistics stats, jvm_info jvm " +
                     "WHERE s.organisation_id = ? " +
                     "AND s.application_id IN (" + appIds + ") " +
                     "AND s.jvm_id IN (" + jvmIds + ") " +
-                    "AND stats.application_id = s.application_id ";
+                    "AND s.jvm_id = jvm.id " +
+                    "AND stats.application_id = s.application_id " +
+                    "AND stats.application_version = jvm.application_version ";
         }
     }
 
