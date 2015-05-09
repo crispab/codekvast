@@ -44,12 +44,12 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
 
     @Override
     @Cacheable("agent")
-    public long getAppId(long organisationId, String appName, String appVersion) throws UndefinedApplicationException {
+    public long getAppId(long organisationId, String appName) throws UndefinedApplicationException {
         log.debug("Looking up app id for {}:{}", organisationId, appName);
-        return doGetOrCreateApp(organisationId, appName, appVersion);
+        return doGetOrCreateApp(organisationId, appName);
     }
 
-    private Long doGetOrCreateApp(long organisationId, String appName, String appVersion)
+    private Long doGetOrCreateApp(long organisationId, String appName)
             throws UndefinedApplicationException {
         try {
             return jdbcTemplate.queryForObject("SELECT id FROM applications WHERE organisation_id = ? AND name = ? ",
@@ -60,7 +60,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         long appId = doInsertRow("INSERT INTO applications(organisation_id, name, usage_cycle_seconds) VALUES(?, ?, ?)",
                                  organisationId, appName, codekvastSettings.getDefaultTrulyDeadAfterSeconds());
 
-        log.info("Created application {}: '{} {}'", appId, appName, appVersion);
+        log.info("Created application {}: '{}'", appId, appName);
         return appId;
     }
 
@@ -132,7 +132,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                 .getAgentUploadIntervalSeconds()) * 1000L;
 
         // Add some tolerance to avoid false negatives...
-        nextReportExpectedBeforeMillis += 60000L;
+        nextReportExpectedBeforeMillis += 60_000L;
 
         int updated =
                 jdbcTemplate
@@ -341,7 +341,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         long avgUpTimeMillis = (long) data.get("avgUpTime");
         long minUpTimeMillis = (long) data.get("minUpTime");
         long maxUpTimeMillis = (long) data.get("maxUpTime");
-        long startupRelatedIfInvokedBeforeMillis = maxStartedAtMillis + 60000L;
+        long bootstrapIfInvokedBeforeMillis = maxStartedAtMillis + 60_000L;
         long possiblyDeadIfInvokedBeforeMillis = maxReportedAtMillis - (usageCycleSeconds * 1000L);
 
         int numHostNames = jdbcTemplate.queryForObject("SELECT COUNT(DISTINCT(collector_host_name)) FROM jvm_info jvm " +
@@ -365,14 +365,14 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                                                Integer.class,
                                                                appId.getAppId(), appId.getAppVersion());
 
-        int numStartupSignatures = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM signatures s, jvm_info jvm " +
-                                                                       "WHERE s.jvm_id = jvm.id " +
-                                                                       "AND jvm.application_id = ? " +
-                                                                       "AND jvm.application_version = ? " +
-                                                                       "AND s.invoked_at_millis BETWEEN ? AND ? ",
-                                                               Integer.class,
-                                                               appId.getAppId(), appId.getAppVersion(),
-                                                               maxStartedAtMillis, startupRelatedIfInvokedBeforeMillis);
+        int numBootstrapSignatures = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM signatures s, jvm_info jvm " +
+                                                                         "WHERE s.jvm_id = jvm.id " +
+                                                                         "AND jvm.application_id = ? " +
+                                                                         "AND jvm.application_version = ? " +
+                                                                         "AND s.invoked_at_millis BETWEEN ? AND ? ",
+                                                                 Integer.class,
+                                                                 appId.getAppId(), appId.getAppVersion(),
+                                                                 maxStartedAtMillis, bootstrapIfInvokedBeforeMillis);
 
         int numSignaturesInvokedBeforeUsageCycle = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM signatures s, jvm_info jvm " +
                                                                                        "WHERE s.jvm_id = jvm.id " +
@@ -381,7 +381,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                                                                        "AND s.invoked_at_millis BETWEEN ? AND ? ",
                                                                                Integer.class,
                                                                                appId.getAppId(), appId.getAppVersion(),
-                                                                               startupRelatedIfInvokedBeforeMillis,
+                                                                               bootstrapIfInvokedBeforeMillis,
                                                                                possiblyDeadIfInvokedBeforeMillis);
 
         int numNeverInvokedSignatures = numSignatures - numInvokedSignatures;
@@ -393,7 +393,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                     "sum_up_time_millis, avg_up_time_millis, min_up_time_millis, max_up_time_millis) " +
                                     "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                             appId.getAppId(), appId.getAppVersion(), numHostNames,
-                            numSignatures, numNeverInvokedSignatures, numInvokedSignatures, numStartupSignatures,
+                            numSignatures, numNeverInvokedSignatures, numInvokedSignatures, numBootstrapSignatures,
                             numSignaturesInvokedBeforeUsageCycle, minStartedAtMillis, maxReportedAtMillis,
                             sumUpTimeMillis, avgUpTimeMillis, minUpTimeMillis, maxUpTimeMillis);
 
@@ -411,7 +411,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
             int numSignatures = rs.getInt(5);
             int numNeverInvokedSignatures = rs.getInt(6);
             int numInvokedSignatures = rs.getInt(7);
-            int numStartupSignatures = rs.getInt(8);
+            int numBootstrapSignatures = rs.getInt(8);
             int numPossiblyDead = rs.getInt(9);
             long firstStartedAtMillis = rs.getLong(10);
             long lastDataReceivedAtMillis = rs.getLong(11);
@@ -434,7 +434,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                                .percentNeverInvokedSignatures(percentDeadSignatures)
                                                .numInvokedSignatures(numInvokedSignatures)
                                                .percentInvokedSignatures(percentLiveSignatures)
-                                               .numStartupSignatures(numStartupSignatures)
+                                               .numBootstrapSignatures(numBootstrapSignatures)
                                                .numPossiblyDeadSignatures(numPossiblyDead)
                                                .firstDataReceivedAtMillis(firstStartedAtMillis)
                                                .lastDataReceivedAtMillis(lastDataReceivedAtMillis)

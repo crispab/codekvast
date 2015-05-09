@@ -20,7 +20,7 @@ public class ApplicationStatisticsDisplay {
     int numSignatures;
     int numNeverInvokedSignatures;
     int numInvokedSignatures;
-    int numStartupSignatures;
+    int numBootstrapSignatures;
     int usageCycleSeconds;
     long upTimeSeconds;
     long firstDataReceivedAtMillis;

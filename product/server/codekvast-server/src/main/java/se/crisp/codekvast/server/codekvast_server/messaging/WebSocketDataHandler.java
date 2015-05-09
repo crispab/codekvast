@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.WebSocketMessage;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.*;
+import se.crisp.codekvast.server.codekvast_server.service.ReportService;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
 
 import javax.inject.Inject;
@@ -33,16 +34,19 @@ public class WebSocketDataHandler extends AbstractEventBusSubscriber {
     @NonNull
     private final UserService userService;
     @NonNull
+    private final ReportService reportService;
+    @NonNull
     private final WebSocketUserPresenceHandler webSocketUserPresenceHandler;
     @NonNull
     private final Validator validator;
 
     @Inject
     public WebSocketDataHandler(EventBus eventBus, SimpMessagingTemplate messagingTemplate, UserService userService,
-                                WebSocketUserPresenceHandler webSocketUserPresenceHandler,
+                                ReportService reportService, WebSocketUserPresenceHandler webSocketUserPresenceHandler,
                                 Validator validator) {
         super(eventBus, messagingTemplate);
         this.userService = userService;
+        this.reportService = reportService;
         this.webSocketUserPresenceHandler = webSocketUserPresenceHandler;
         this.validator = validator;
     }
@@ -69,7 +73,7 @@ public class WebSocketDataHandler extends AbstractEventBusSubscriber {
      */
     @Subscribe
     public void onWebSocketMessage(WebSocketMessage message) {
-        message.getUsernames().stream().filter(username -> webSocketUserPresenceHandler.isPresent(username)).forEach(username -> {
+        message.getUsernames().stream().filter(webSocketUserPresenceHandler::isPresent).forEach(username -> {
             log.debug("Sending {} to '{}'", message, username);
             messagingTemplate.convertAndSendToUser(username, "/queue/data", message);
         });
@@ -109,15 +113,11 @@ public class WebSocketDataHandler extends AbstractEventBusSubscriber {
         String username = principal.getName();
         log.debug("'{}' requests {}", username, request);
 
-        GetMethodUsageResponse response = getMethodUsageResponse(username, request);
+        GetMethodUsageResponse response = reportService.getMethodUsage(username, request);
 
-        log.debug("Response created in {} ms", System.currentTimeMillis() - startedAtMillis);
+        log.debug("Method usage response created in {} ms", System.currentTimeMillis() - startedAtMillis);
+
         return response;
-    }
-
-    private GetMethodUsageResponse getMethodUsageResponse(String username, GetMethodUsageRequest request) {
-        userService.getMethodUsage(username, request);
-        return createFakeMethodUsageResponse(request);
     }
 
 

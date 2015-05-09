@@ -9,8 +9,6 @@ import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.WebSocketMessage;
-import se.crisp.codekvast.server.codekvast_server.model.event.rest.GetMethodUsageRequest;
-import se.crisp.codekvast.server.codekvast_server.model.event.rest.GetMethodUsageResponse;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.OrganisationSettings;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
 
@@ -47,7 +45,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(readOnly = true, rollbackFor = Exception.class)
     public WebSocketMessage getWebSocketMessage(String username) throws CodekvastException {
         long organisationId = userDAO.getOrganisationIdForUsername(username);
         return agentDAO.createWebSocketMessage(organisationId);
@@ -64,11 +62,4 @@ public class UserServiceImpl implements UserService {
         eventBus.post(agentDAO.createWebSocketMessage(organisationId));
     }
 
-    @Override
-    public GetMethodUsageResponse getMethodUsage(String username, GetMethodUsageRequest request) {
-
-        return GetMethodUsageResponse.builder()
-                                     .request(request)
-                                     .build();
-    }
 }

@@ -38,7 +38,7 @@ public class AgentServiceImpl implements AgentService {
     @Transactional(rollbackFor = Exception.class)
     public void storeJvmData(String apiAccessID, JvmData data) throws CodekvastException {
         long organisationId = userDAO.getOrganisationIdForUsername(apiAccessID);
-        long appId = agentDAO.getAppId(organisationId, data.getAppName(), data.getAppVersion());
+        long appId = agentDAO.getAppId(organisationId, data.getAppName());
 
         agentDAO.storeJvmData(organisationId, appId, data);
 

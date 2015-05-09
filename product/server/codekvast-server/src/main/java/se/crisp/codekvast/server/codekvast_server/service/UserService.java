@@ -2,8 +2,6 @@ package se.crisp.codekvast.server.codekvast_server.service;
 
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.WebSocketMessage;
-import se.crisp.codekvast.server.codekvast_server.model.event.rest.GetMethodUsageRequest;
-import se.crisp.codekvast.server.codekvast_server.model.event.rest.GetMethodUsageResponse;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.OrganisationSettings;
 
 /**
@@ -27,12 +25,4 @@ public interface UserService {
      */
     void saveOrganisationSettings(String username, OrganisationSettings organisationSettings) throws CodekvastException;
 
-    /**
-     * Retrieves method usage.
-     *
-     * @param username The logged in user.
-     * @param request  The request filter.
-     * @return A GetMethodUsageResponse object. Does never return null.
-     */
-    GetMethodUsageResponse getMethodUsage(String username, GetMethodUsageRequest request);
 }

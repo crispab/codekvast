@@ -28,4 +28,5 @@ public interface UserDAO {
      * @return All usernames in the organisation which have the role {@link Role#USER}.
      */
     Collection<String> getInteractiveUsernamesInOrganisation(long organisationId);
+
 }

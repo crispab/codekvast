@@ -436,9 +436,9 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                     selected: true
                 },
                 {
-                    name: 'PROBABLY_DEAD',
-                    labelText: 'Include probably dead methods',
-                    popoverTitle: 'Probably dead methods',
+                    name: 'POSSIBLY_DEAD',
+                    labelText: 'Include possibly dead methods',
+                    popoverTitle: 'Possibly dead methods',
                     popoverText: function () {
                         return 'Methods that have not been executed during the last full usage cycle' + $scope.fullUsageCycle();
                     },

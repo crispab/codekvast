@@ -18,7 +18,7 @@ public interface AgentDAO {
      * Retrieve an application ID. If not found, a new row is inserted into APPLICATIONS and an ApplicationCreatedEvent is posted on the
      * event bus.
      */
-    long getAppId(long organisationId, String appName, String appVersion) throws UndefinedApplicationException;
+    long getAppId(long organisationId, String appName) throws UndefinedApplicationException;
 
     /**
      * Retrieve an application ID by JVM id.
