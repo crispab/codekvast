@@ -38,7 +38,7 @@ import static se.crisp.codekvast.test.matchers.TimestampIsInRangeMatcher.timesta
                                  CodekvastSettings.class, AgentDAOImpl.class, UserDAOImpl.class,
                                  EventBusConfig.class, AgentServiceImpl.class, UserServiceImpl.class})
 @IntegrationTest({
-        "spring.datasource.url = jdbc:h2:mem:serviceTest",
+        "spring.datasource.url = jdbc:h2:mem:agentServiceTest",
 })
 public class AgentServiceIntegTest extends AbstractServiceIntegTest {
     @Inject

@@ -374,27 +374,27 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                                                  appId.getAppId(), appId.getAppVersion(),
                                                                  maxStartedAtMillis, bootstrapIfInvokedBeforeMillis);
 
-        int numSignaturesInvokedBeforeUsageCycle = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM signatures s, jvm_info jvm " +
-                                                                                       "WHERE s.jvm_id = jvm.id " +
-                                                                                       "AND jvm.application_id = ? " +
-                                                                                       "AND jvm.application_version = ? " +
-                                                                                       "AND s.invoked_at_millis BETWEEN ? AND ? ",
-                                                                               Integer.class,
-                                                                               appId.getAppId(), appId.getAppVersion(),
-                                                                               bootstrapIfInvokedBeforeMillis,
-                                                                               possiblyDeadIfInvokedBeforeMillis);
+        int numPossiblyDeadSignatures = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM signatures s, jvm_info jvm " +
+                                                                            "WHERE s.jvm_id = jvm.id " +
+                                                                            "AND jvm.application_id = ? " +
+                                                                            "AND jvm.application_version = ? " +
+                                                                            "AND s.invoked_at_millis BETWEEN ? AND ? ",
+                                                                    Integer.class,
+                                                                    appId.getAppId(), appId.getAppVersion(),
+                                                                    bootstrapIfInvokedBeforeMillis,
+                                                                    possiblyDeadIfInvokedBeforeMillis);
 
         int numNeverInvokedSignatures = numSignatures - numInvokedSignatures;
 
         jdbcTemplate.update("MERGE INTO application_statistics(application_id, application_version, " +
                                     "num_host_names, num_signatures, num_not_invoked_signatures, num_invoked_signatures, " +
                                     "num_bootstrap_signatures, num_possibly_dead_signatures, " +
-                                    "first_started_at_millis, last_reported_at_millis, " +
+                                    "first_started_at_millis, max_started_at_millis, last_reported_at_millis, " +
                                     "sum_up_time_millis, avg_up_time_millis, min_up_time_millis, max_up_time_millis) " +
-                                    "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                                    "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                             appId.getAppId(), appId.getAppVersion(), numHostNames,
                             numSignatures, numNeverInvokedSignatures, numInvokedSignatures, numBootstrapSignatures,
-                            numSignaturesInvokedBeforeUsageCycle, minStartedAtMillis, maxReportedAtMillis,
+                            numPossiblyDeadSignatures, minStartedAtMillis, maxStartedAtMillis, maxReportedAtMillis,
                             sumUpTimeMillis, avgUpTimeMillis, minUpTimeMillis, maxUpTimeMillis);
 
         long elapsed = System.currentTimeMillis() - startedAt;

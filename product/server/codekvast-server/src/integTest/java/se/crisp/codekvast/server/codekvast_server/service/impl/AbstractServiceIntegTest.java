@@ -1,6 +1,7 @@
 package se.crisp.codekvast.server.codekvast_server.service.impl;
 
 import com.google.common.eventbus.EventBus;
+import org.junit.After;
 import org.junit.Before;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
@@ -22,6 +23,12 @@ public abstract class AbstractServiceIntegTest extends AbstractTransactionalJUni
     @Before
     public void before() throws Exception {
         eventBus.register(this);
+        events.clear();
+    }
+
+    @After
+    public void after() throws Exception {
+        eventBus.unregister(this);
         events.clear();
     }
 

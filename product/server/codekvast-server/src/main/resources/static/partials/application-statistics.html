@@ -27,77 +27,78 @@
                     </th>
                 </tr>
                 <tr>
-                    <th class="col-lg-1"
-                        ng-click="orderBy = 'name'; reverse = !reverse">Application
+                    <th class="col-lg-1">
+                        <span ng-click="orderBy = 'name'; reverse = !reverse">Application</span>
                         <span popover="The name of the application, as configured in the collector"
                               popover-trigger="click"
                               popover-placement="right"
                               class="glyphicon glyphicon-info-sign"></span>
                     </th>
-                    <th class="col-lg-1"
-                        ng-click="orderBy = 'version'; reverse = !reverse">Version
+                    <th class="col-lg-1">
+                        <span ng-click="orderBy = 'version'; reverse = !reverse">Version</span>
                         <span popover="The version of the application, as configured in the collector"
                               popover-trigger="click"
                               popover-placement="right"
                               class="glyphicon glyphicon-info-sign"></span>
                     </th>
-                    <th class="col-lg-1"
-                        ng-click="orderBy = 'numHostNames'; reverse = !reverse">Number of instances
+                    <th class="col-lg-1">
+                        <span ng-click="orderBy = 'numHostNames'; reverse = !reverse">Number of instances</span>
                         <span popover="In how many hosts is this application executing?"
                               popover-trigger="click"
                               popover-placement="right"
                               class="glyphicon glyphicon-info-sign"></span>
                     </th>
-                    <th class="col-lg-2"
-                        ng-click="orderBy = 'firstDataReceivedAtMillis'; reverse = !reverse"> Collection Started
+                    <th class="col-lg-2">
+                        <span ng-click="orderBy = 'firstDataReceivedAtMillis'; reverse = !reverse">Collection Started</span>
                         <span popover="When was this version of the application started for the first time with Codekvast attached?"
                               popover-trigger="click"
                               popover-placement="right"
                               class="glyphicon glyphicon-info-sign"></span>
                     </th>
-                    <th class="col-lg-1"
-                        ng-click="orderBy = 'usageCycle'; reverse = !reverse"> Usage Cycle
+                    <th class="col-lg-1">
+                        <span ng-click="orderBy = 'usageCycle'; reverse = !reverse">Usage Cycle</span>
                         <span popover="After how long time can methods that have not been invoked be considered possibly dead?"
                               popover-trigger="click"
                               popover-placement="right"
                               class="glyphicon glyphicon-info-sign"></span>
                     </th>
-                    <th class="col-lg-1"
-                        ng-click="orderBy = 'upTime'; reverse = !reverse">Usage Time
+                    <th class="col-lg-1">
+                        <span ng-click="orderBy = 'upTime'; reverse = !reverse">Usage Time</span>
                         <span popover="How long has the application been used with Codekvast attached?"
                               popover-trigger="click"
                               popover-placement="right"
                               class="glyphicon glyphicon-info-sign"></span>
                     </th>
-                    <th class="col-lg-1"
-                        ng-click="orderBy = ['rightCompletedBarWidth', 'leftCompletedBarWidth']; reverse = !reverse">Usage Data Confidence
+                    <th class="col-lg-1">
+                        <span ng-click="orderBy = ['rightCompletedBarWidth', 'leftCompletedBarWidth']; reverse = !reverse">Usage Data Confidence</span>
                         <span popover="Can we start identifying possibly dead methods yet?"
                               popover-trigger="click"
                               popover-placement="right"
                               class="glyphicon glyphicon-info-sign"></span>
                     </th>
-                    <th class="col-lg-1"
-                        ng-click="orderBy = 'numSignatures'; reverse = !reverse">Number of Methods
+                    <th class="col-lg-1">
+                        <span ng-click="orderBy = 'numSignatures'; reverse = !reverse">Number of Methods</span>
                         <span popover="The number of tracked methods in this version"
                               popover-trigger="click"
                               popover-placement="left"
                               class="glyphicon glyphicon-info-sign"></span>
                     </th>
-                    <th class="col-lg-1"
-                        ng-click="orderBy = 'percentNeverInvokedSignatures'; reverse = !reverse">Dead Methods
+                    <th class="col-lg-1">
+                        <span ng-click="orderBy = 'percentNeverInvokedSignatures'; reverse = !reverse">Dead Methods</span>
                         <span popover="Methods that have never been invoked"
                               popover-trigger="click"
                               popover-placement="left"
                               class="glyphicon glyphicon-info-sign"></span>
                     </th>
-                    <th class="col-lg-1">Possibly Dead Methods
+                    <th class="col-lg-1">
+                        <span ng-click="orderBy = 'percentPossiblyDead'; reverse = !reverse">Possibly Dead Methods</span>
                         <span popover="Methods only invoked before the last usage cycle"
                               popover-trigger="click"
                               popover-placement="left"
                               class="glyphicon glyphicon-info-sign"></span>
                     </th>
-                    <th class="col-lg-1"
-                        ng-click="orderBy = 'percentInvokedSignatures'; reverse = !reverse">Live Methods
+                    <th class="col-lg-1">
+                        <span ng-click="orderBy = 'percentInvokedSignatures'; reverse = !reverse">Live Methods</span>
                         <span popover="Methods that have been invoked during the last usage cycle"
                               popover-trigger="click"
                               popover-placement="left"

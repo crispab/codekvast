@@ -29,7 +29,7 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
     private final Map<MethodUsageScope, MethodRetriever> methodRetrievalStrategies =
             (Map<MethodUsageScope, MethodRetriever>) ImmutableMap.of(
                     MethodUsageScope.DEAD, new RetrieveDeadMethods(),
-                    MethodUsageScope.POSSIBLY_DEAD, new RetrieveProbablyDeadMethods(),
+                    MethodUsageScope.POSSIBLY_DEAD, new RetrievePossiblyDeadMethods(),
                     MethodUsageScope.BOOTSTRAP, new RetrieveBootstrapMethods(),
                     MethodUsageScope.LIVE, new RetrieveLiveMethods()
             );
@@ -79,52 +79,62 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
     }
 
     private abstract class MethodRetriever {
-        abstract Collection<MethodUsageEntry> getMethods(ReportParameters params);
+        abstract Collection<MethodUsageEntry> getMethods(ReportParameters reportParameters);
 
-        protected List<Object> generateParams(ReportParameters params) {
-            List<Object> result = new ArrayList<>();
-            result.add(params.getOrganisationId());
-            result.addAll(params.getApplicationIds());
-            result.addAll(params.getJvmIds());
-            return result;
+        protected List<Object> generateParams(ReportParameters reportParameters) {
+            List<Object> params = new ArrayList<>();
+            params.add(reportParameters.getOrganisationId());
+            params.addAll(reportParameters.getApplicationIds());
+            params.addAll(reportParameters.getJvmIds());
+            return params;
         }
 
-        protected String generateSql(ReportParameters params) {
-            String appIds = params.getApplicationIds().stream().map(s -> "?").collect(Collectors.joining(","));
-            String jvmIds = params.getJvmIds().stream().map(s -> "?").collect(Collectors.joining(","));
+        protected String generateSql(ReportParameters reportParameters) {
+            String appIds = reportParameters.getApplicationIds().stream().map(s -> "?").collect(Collectors.joining(","));
+            String jvmIds = reportParameters.getJvmIds().stream().map(s -> "?").collect(Collectors.joining(","));
 
-            return "SELECT DISTINCT s.signature, s.invoked_at_millis FROM signatures s, application_statistics stats, jvm_info jvm " +
+            String sql = "SELECT DISTINCT s.signature, s.invoked_at_millis FROM signatures s, application_statistics stats, jvm_info jvm" +
+                    " " +
                     "WHERE s.organisation_id = ? " +
                     "AND s.application_id IN (" + appIds + ") " +
                     "AND s.jvm_id IN (" + jvmIds + ") " +
                     "AND s.jvm_id = jvm.id " +
                     "AND stats.application_id = s.application_id " +
                     "AND stats.application_version = jvm.application_version ";
+            sql = sql.replaceAll("IN \\(\\?\\)", "= ?");
+            return sql;
         }
     }
 
     private class RetrieveDeadMethods extends MethodRetriever {
 
         @Override
-        public Collection<MethodUsageEntry> getMethods(ReportParameters params) {
-            return jdbcTemplate.query(generateSql(params) + " AND invoked_at_millis = 0 ",
+        public Collection<MethodUsageEntry> getMethods(ReportParameters reportParameters) {
+            return jdbcTemplate.query(generateSql(reportParameters) + " AND invoked_at_millis = 0 ",
                                       new MethodUsageEntryRowMapper(MethodUsageScope.DEAD),
-                                      generateParams(params).toArray());
+                                      generateParams(reportParameters).toArray());
         }
 
     }
 
-    private class RetrieveProbablyDeadMethods extends MethodRetriever {
+    private class RetrievePossiblyDeadMethods extends MethodRetriever {
         @Override
-        public Collection<MethodUsageEntry> getMethods(ReportParameters params) {
-            // TODO: implement
-            return Collections.emptyList();
+        public Collection<MethodUsageEntry> getMethods(ReportParameters reportParameters) {
+            List<Object> params = generateParams(reportParameters);
+            params.add(reportParameters.getBootstrapSeconds() * 1000L);
+            params.add(reportParameters.getUsageCycleSeconds() * 1000L);
+
+            String sql = generateSql(reportParameters) +
+                    "AND s.invoked_at_millis > stats.max_started_at_millis+? " +
+                    "AND s.invoked_at_millis <= stats.last_reported_at_millis-? ";
+
+            return jdbcTemplate.query(sql, new MethodUsageEntryRowMapper(MethodUsageScope.POSSIBLY_DEAD), params.toArray());
         }
     }
 
     private class RetrieveBootstrapMethods extends MethodRetriever {
         @Override
-        public Collection<MethodUsageEntry> getMethods(ReportParameters params) {
+        public Collection<MethodUsageEntry> getMethods(ReportParameters reportParameters) {
             // TODO: implement
             return Collections.emptyList();
         }
@@ -132,7 +142,7 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
 
     private class RetrieveLiveMethods extends MethodRetriever {
         @Override
-        public Collection<MethodUsageEntry> getMethods(ReportParameters params) {
+        public Collection<MethodUsageEntry> getMethods(ReportParameters reportParameters) {
             // TODO: implement
             return Collections.emptyList();
         }
