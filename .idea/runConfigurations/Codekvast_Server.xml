@@ -43,6 +43,8 @@
     <ConfigurationWrapper RunnerId="JRebel Debug" />
     <ConfigurationWrapper RunnerId="JRebel Executor" />
     <ConfigurationWrapper RunnerId="Run" />
-    <method />
+    <method>
+      <option name="Gradle.BeforeRunTask" enabled="true" tasks="processResources startDatabase" externalProjectPath="$PROJECT_DIR$/product/server/codekvast-server" vmOptions="" scriptParameters="" />
+    </method>
   </configuration>
 </component>

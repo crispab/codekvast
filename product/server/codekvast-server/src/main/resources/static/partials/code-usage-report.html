@@ -1,16 +1,22 @@
 <div ng-controller="ReportController">
 
     <div class="panel panel-info">
-        <div class="panel-heading">Create Code Usage Report (<a href="#" ng-click="showMockup = !showMockup">{{toggleMockupVerb()}}</a>)
+        <div class="panel-heading">
+            <h3>Create Code Usage Report (<a href="#" ng-click="showMockup = !showMockup">{{toggleMockupVerb()}}</a>)</h3>
         </div>
-
-
+        <div class="well">
+            This page allows you to create a code usage report.
+        </div>
         <div class="panel-body">
+            <h2 ng-show="!formData.applications && !showMockup">Nothing to show!
+                <small>There are no applications that deliver usage data to this server.</small>
+            </h2>
+
             <div ng-show="showMockup">
                 <h2>Static image generated from Balsamiq Mockups</h2>
                 <img src="/images/mockups/ReportGenerator.png"/>
             </div>
-            <div ng-hide="showMockup">
+            <div ng-show="formData.applications && !showMockup">
                 <table>
                     <tr>
                         <th class="col-lg-1">Include applications (usage cycle)</th>
@@ -105,14 +111,14 @@
         <div class="panel-body">
             <div class="row">
                 <span class="col-lg-6">
-                    <p>Total number of methods: {{ previewData.numMethods}}</p>
+                    <p>Total number of methods: {{previewData.numMethods}}</p>
                     <p>Methods by execution date: {{previewData.numMethodsByScope|json}}</p>
                 </span>
                 <div class="col-lg-6">
-                    <button ng-click="alert('Not Yet Implemented')">Fetch as CSV...</button>
-                    <button ng-click="alert('Not Yet Implemented')">Fetch as JSON...</button>
-                    <button ng-click="alert('Not Yet Implemented')">Fetch as XML...</button>
-                    <button ng-click="alert('Not Yet Implemented')">Fetch as Excel...</button>
+                    <button ng-click="generateReport('CSV')">Fetch as CSV...</button>
+                    <button ng-click="generateReport('JSON')">Fetch as JSON...</button>
+                    <button ng-click="generateReport('XML')">Fetch as XML...</button>
+                    <button ng-click="generateReport('Excel')">Fetch as Excel...</button>
                 </div>
             </div>
             <hr/>

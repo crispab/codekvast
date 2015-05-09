@@ -15,9 +15,10 @@ import java.io.IOException;
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
 public class LoggingConfig {
 
-    public static final String CODEKVAST_LOG_PATH = "CODEKVAST_LOG_PATH";
-    public static final String CODEKVAST_LOG_BASENAME = "CODEKVAST_LOG_BASENAME";
-    public static final String CODEKVAST_LOG_CONSOLE_THRESHOLD = "CODEKVAST_LOG_CONSOLE_THRESHOLD";
+    public static final String CODEKVAST_LOG_PATH = "codekvast.logPath";
+    public static final String CODEKVAST_LOG_PATH_AS_ENVVAR = "CODEKVAST_LOGPATH";
+    public static final String CODEKVAST_LOG_BASENAME = "codekvast.log.baseName";
+    public static final String CODEKVAST_LOG_CONSOLE_THRESHOLD = "codekvast.log.consoleThreshold";
 
     public static void configure(Class<?> mainClass, String appName) {
         File varLogCodekvast = new File("/var/log/codekvast");
@@ -27,7 +28,7 @@ public class LoggingConfig {
         String consoleThreshold = "OFF";
 
         boolean makeLogPathWritable = false;
-        String logPath = System.getProperty("codekvast.logPath", System.getenv(CODEKVAST_LOG_PATH));
+        String logPath = System.getProperty(CODEKVAST_LOG_PATH, System.getenv(CODEKVAST_LOG_PATH_AS_ENVVAR));
         if (logPath != null) {
             // use it as it is
         } else if (varLogCodekvast.isDirectory()) {
@@ -70,7 +71,9 @@ public class LoggingConfig {
 
         System.setProperty(CODEKVAST_LOG_PATH, logPath);
         System.setProperty(CODEKVAST_LOG_BASENAME, appName);
-        System.setProperty(CODEKVAST_LOG_CONSOLE_THRESHOLD, consoleThreshold);
+        if (System.getProperty(CODEKVAST_LOG_CONSOLE_THRESHOLD) == null) {
+            System.setProperty(CODEKVAST_LOG_CONSOLE_THRESHOLD, consoleThreshold);
+        }
     }
 
     private static String getCanonicalPath(File file) {

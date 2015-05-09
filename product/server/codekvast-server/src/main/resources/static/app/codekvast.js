@@ -523,6 +523,10 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                 });
         };
 
+        $scope.generateReport = function (format) {
+            alert("Generating " + format + " report using " + JSON.stringify($scope.previewData.request))
+        };
+
         $scope.$on('stompDisconnected', function (event, message) {
             $scope.formData.applications = undefined
         });

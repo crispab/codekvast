@@ -102,17 +102,32 @@ public class WebSocketDataHandler extends AbstractEventBusSubscriber {
     }
 
     @RequestMapping(value = "/api/web/getMethodUsage", method = RequestMethod.POST)
-    public GetMethodUsageResponse getMethodUsage(@Valid @RequestBody GetMethodUsageRequest request, Principal principal) throws
-                                                                                                                         CodekvastException {
+    public GetMethodUsageResponse getMethodUsage(@Valid @RequestBody GetMethodUsageRequest request, Principal principal)
+            throws CodekvastException {
+        long startedAtMillis = System.currentTimeMillis();
+
         String username = principal.getName();
         log.debug("'{}' requests {}", username, request);
 
+        GetMethodUsageResponse response = getMethodUsageResponse(username, request);
+
+        log.debug("Response created in {} ms", System.currentTimeMillis() - startedAtMillis);
+        return response;
+    }
+
+    private GetMethodUsageResponse getMethodUsageResponse(String username, GetMethodUsageRequest request) {
+        userService.getMethodUsage(username, request);
+        return createFakeMethodUsageResponse(request);
+    }
+
+
+    private GetMethodUsageResponse createFakeMethodUsageResponse(GetMethodUsageRequest request) {
         long now = System.currentTimeMillis();
 
         List<MethodUsageEntry> methods = new ArrayList<>();
         for (int i = 0; i < request.getMaxPreviewRows(); i++) {
             boolean dead = request.getMethodUsageScopes().contains(MethodUsageScope.DEAD) ? random.nextBoolean() : false;
-            long usedAtMillis = dead ? 0L : now - i * 60_000L;
+            long usedAtMillis = dead ? 0L : now - random.nextInt(5 * 24 * 60 * 60 * 1000);
             methods.add(MethodUsageEntry.builder()
                                         .name(String.format("%s-%04d", randomString(80), i))
                                         .scope(getRandomScope(request.getMethodUsageScopes(), usedAtMillis))
