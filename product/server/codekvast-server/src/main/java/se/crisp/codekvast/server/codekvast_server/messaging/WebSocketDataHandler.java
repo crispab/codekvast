@@ -73,7 +73,7 @@ public class WebSocketDataHandler extends AbstractEventBusSubscriber {
      */
     @Subscribe
     public void onWebSocketMessage(WebSocketMessage message) {
-        message.getUsernames().stream().filter(webSocketUserPresenceHandler::isPresent).forEach(username -> {
+        message.getUsernames().stream().filter(username -> webSocketUserPresenceHandler.isPresent(username)).forEach(username -> {
             log.debug("Sending {} to '{}'", message, username);
             messagingTemplate.convertAndSendToUser(username, "/queue/data", message);
         });

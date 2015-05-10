@@ -421,6 +421,13 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             }
         };
 
+        $scope.getUsageCycle = function (a) {
+            var apps = RemoteDataService.getLastData('applications');
+            var seconds = _(apps).chain().filter({name: a.name}).pluck('usageCycleSeconds').max().value();
+            a.usageCycleSeconds = seconds;
+            return DateService.prettyDuration(seconds * 1000);
+        };
+
         $scope.formData = {
             applications: undefined,
             versions: undefined,
@@ -471,7 +478,6 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         $scope.updateModel = function (data) {
             if ($scope.formData.applications === undefined && data && data.applications && data.versions) {
                 $scope.formData.applications = _(data.applications).chain().cloneDeep().forEach(function (a) {
-                    a.usageCycle = DateService.prettyDuration(a.usageCycleSeconds * 1000);
                     a.selected = true;
                 }).value();
                 $scope.formData.versions = _(data.versions).chain().cloneDeep().reverse().forEach(function (v, i) {
