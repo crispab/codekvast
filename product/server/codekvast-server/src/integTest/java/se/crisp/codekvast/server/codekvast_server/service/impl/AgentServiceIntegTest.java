@@ -27,7 +27,6 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static se.crisp.codekvast.test.matchers.ApplicationStatisticsMatcher.hasApplicationStatistics;
 import static se.crisp.codekvast.test.matchers.CollectorsMatcher.hasCollectors;
-import static se.crisp.codekvast.test.matchers.TimestampIsInRangeMatcher.timestampInRange;
 
 /**
  * @author olle.hallin@crisp.se
@@ -63,17 +62,25 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
         long t4 = now - 6 * collectionIntervalMillis;
         long t5 = now - 5 * collectionIntervalMillis;
         long t6 = now - 4 * collectionIntervalMillis;
-        long networkLatencyToleranceMillis = 100L;
+
+        String statsWhereClause = "application_statistics " +
+                "WHERE application_id = ? " +
+                "AND application_version = ? " +
+                "AND first_started_at_millis = ? " +
+                "AND max_started_at_millis = ? " +
+                "AND last_reported_at_millis = ? ";
 
         // when an app starts for the first time
         agentService.storeJvmData("agent", createJvmData(t0, t1, "app1", "1.0", "jvm1", "hostName1"));
 
         // then
+        assertThat(countRows(statsWhereClause, 1, "1.0", t0, t0, t1), is(1));
+
         assertThat(lastWebSocketMessage, hasApplicationStatistics(
                 allOf(
                         hasProperty("numHostNames", is(1)),
-                        hasProperty("firstDataReceivedAtMillis", timestampInRange(t0, networkLatencyToleranceMillis)),
-                        hasProperty("lastDataReceivedAtMillis", timestampInRange(t1, networkLatencyToleranceMillis)),
+                        hasProperty("firstDataReceivedAtMillis", is(t0)),
+                        hasProperty("lastDataReceivedAtMillis", is(t1)),
                         hasProperty("upTimeSeconds", is((t1 - t0) / 1000))
                 )
         ));
@@ -82,11 +89,14 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
         agentService.storeJvmData("agent", createJvmData(t0, t2, "app1", "1.0", "jvm1", "hostName1"));
 
         // then
+        assertThat(countRows(statsWhereClause, 1, "1.0", t0, t0, t1), is(0));
+        assertThat(countRows(statsWhereClause, 1, "1.0", t0, t0, t2), is(1));
+
         assertThat(lastWebSocketMessage, hasApplicationStatistics(
                 allOf(
                         hasProperty("numHostNames", is(1)),
-                        hasProperty("firstDataReceivedAtMillis", timestampInRange(t0, networkLatencyToleranceMillis)),
-                        hasProperty("lastDataReceivedAtMillis", timestampInRange(t2, networkLatencyToleranceMillis)),
+                        hasProperty("firstDataReceivedAtMillis", is(t0)),
+                        hasProperty("lastDataReceivedAtMillis", is(t2)),
                         hasProperty("upTimeSeconds", is((t2 - t0) / 1000))
                 )
         ));
@@ -95,11 +105,13 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
         agentService.storeJvmData("agent", createJvmData(t3, t4, "app1", "1.0", "jvm2", "hostName1"));
 
         // then
+        assertThat(countRows(statsWhereClause, 1, "1.0", t0, t3, t4), is(1));
+
         assertThat(lastWebSocketMessage, hasApplicationStatistics(
                 allOf(
                         hasProperty("numHostNames", is(1)),
-                        hasProperty("firstDataReceivedAtMillis", timestampInRange(t0, networkLatencyToleranceMillis)),
-                        hasProperty("lastDataReceivedAtMillis", timestampInRange(t4, networkLatencyToleranceMillis)),
+                        hasProperty("firstDataReceivedAtMillis", is(t0)),
+                        hasProperty("lastDataReceivedAtMillis", is(t4)),
                         hasProperty("upTimeSeconds", is((t2 - t0 + t4 - t3) / 1000))
                 )
         ));
@@ -108,11 +120,13 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
         agentService.storeJvmData("agent", createJvmData(t5, t6, "app1", "1.0", "jvm3", "hostName2"));
 
         // then
+        assertThat(countRows(statsWhereClause, 1, "1.0", t0, t5, t6), is(1));
+
         assertThat(lastWebSocketMessage, hasApplicationStatistics(
                 allOf(
                         hasProperty("numHostNames", is(2)),
-                        hasProperty("firstDataReceivedAtMillis", timestampInRange(t0, networkLatencyToleranceMillis)),
-                        hasProperty("lastDataReceivedAtMillis", timestampInRange(t6, networkLatencyToleranceMillis)),
+                        hasProperty("firstDataReceivedAtMillis", is(t0)),
+                        hasProperty("lastDataReceivedAtMillis", is(t6)),
                         // average usage time per hostName
                         hasProperty("upTimeSeconds", is((t2 - t0 + t4 - t3 + t6 - t5) / 2 / 1000))
                 )
@@ -121,23 +135,23 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
         assertThat(lastWebSocketMessage, hasCollectors(
                 allOf(
                         hasProperty("agentHostname", is("hostName1")),
-                        hasProperty("collectorStartedAtMillis", timestampInRange(t3, networkLatencyToleranceMillis)),
-                        hasProperty("dataReceivedAtMillis", timestampInRange(t4, networkLatencyToleranceMillis))
+                        hasProperty("collectorStartedAtMillis", is(t3)),
+                        hasProperty("dataReceivedAtMillis", is(t4))
                 ),
                 allOf(
                         hasProperty("agentHostname", is("hostName2")),
-                        hasProperty("collectorStartedAtMillis", timestampInRange(t5, networkLatencyToleranceMillis)),
-                        hasProperty("dataReceivedAtMillis", timestampInRange(t6, networkLatencyToleranceMillis))
+                        hasProperty("collectorStartedAtMillis", is(t5)),
+                        hasProperty("dataReceivedAtMillis", is(t6))
                 )
         ));
 
         assertThat(countRows(
-                "jvm_info WHERE jvm_uuid= ? AND started_at_millis BETWEEN ? AND ? AND reported_at_millis BETWEEN ? AND ? ",
-                "jvm1", t0, t0 + networkLatencyToleranceMillis, t2, t2 + networkLatencyToleranceMillis), is(1));
+                "jvm_info WHERE jvm_uuid = ? AND started_at_millis = ? AND reported_at_millis = ? ",
+                "jvm1", t0, t2), is(1));
 
         assertThat(countRows(
-                "jvm_info WHERE jvm_uuid= ? AND started_at_millis BETWEEN ? AND ? AND reported_at_millis BETWEEN ? AND ? ",
-                "jvm2", t3, t3 + networkLatencyToleranceMillis, t4, t4 + networkLatencyToleranceMillis), is(1));
+                "jvm_info WHERE jvm_uuid = ? AND started_at_millis = ? AND reported_at_millis = ? ",
+                "jvm2", t3, t4), is(1));
 
         assertThat(events, hasSize(4));
     }

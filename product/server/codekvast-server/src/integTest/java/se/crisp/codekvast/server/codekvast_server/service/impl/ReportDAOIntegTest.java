@@ -23,6 +23,7 @@ import se.crisp.codekvast.server.codekvast_server.service.AgentService;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.*;
@@ -52,8 +53,8 @@ public class ReportDAOIntegTest extends AbstractServiceIntegTest {
     private final long hour = 3600_000L;
     private final long t0 = now - 10 * hour;
     private final long t1 = now - 9 * hour;
-    private final long t2 = now - 9 * hour;
-    private final long t3 = now - 9 * hour;
+    private final long t2 = now - 8 * hour;
+    private final long t3 = now - 7 * hour;
 
     private final List<SignatureEntry> deadSignatures = asList(
             new SignatureEntry("dead1", 0L, 0L, null),
@@ -171,16 +172,33 @@ public class ReportDAOIntegTest extends AbstractServiceIntegTest {
     }
 
     @Test
-    public void testGetPossiblyDeadMethods_app1_v1_1() throws CodekvastException {
+    public void testGet_PossiblyDead_Bootstrap_Live_Methods_app1_v1_1() throws CodekvastException {
+
         List<SignatureEntry> signatures = asList(
                 new SignatureEntry("bootstrap1", t0 + bootstrapMillis / 2, bootstrapMillis / 2, null),
-                new SignatureEntry("possiblyDead1", t2 - usageCycleMillis * 2, bootstrapMillis * 2, null));
+                new SignatureEntry("possiblyDead1", t2 - usageCycleMillis * 2, bootstrapMillis * 2, null),
+                new SignatureEntry("live1", t3 - usageCycleMillis / 2, bootstrapMillis * 2, null));
 
         agentService.storeSignatureData(SignatureData.builder().jvmUuid("jvm2").signatures(signatures).build());
+
+        long appId = reportDAO.getApplicationIds(1, asList("app1")).iterator().next();
+        long jvmId = reportDAO.getJvmIdsByAppVersions(1, asList("1.1")).iterator().next();
+
+        String sql = "SELECT * FROM signatures s, application_statistics stats, jvm_info jvm " +
+                "WHERE s.organisation_id = ? " +
+                "AND s.application_id = ? " +
+                "AND s.jvm_id = ? " +
+                "AND s.jvm_id = jvm.id " +
+                "AND stats.application_id = s.application_id " +
+                "AND stats.application_version = jvm.application_version " +
+                "AND s.invoked_at_millis >= stats.last_reported_at_millis - ? ";
+
+        Map<String, Object> map = jdbcTemplate.queryForMap(sql, 1, appId, jvmId, usageCycleMillis);
 
         ReportParameters params = getReportParameters(asList("app1"), asList("1.1"));
         assertThat(reportDAO.getMethodsForScope(MethodUsageScope.POSSIBLY_DEAD, params), hasSize(1));
         assertThat(reportDAO.getMethodsForScope(MethodUsageScope.BOOTSTRAP, params), hasSize(1));
+        assertThat(reportDAO.getMethodsForScope(MethodUsageScope.LIVE, params), hasSize(1));
     }
 
     private ReportParameters getReportParameters(List<String> applicationNames, List<String> applicationVersions) {

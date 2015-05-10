@@ -41,8 +41,7 @@ public class AgentServiceImpl implements AgentService {
         long appId = agentDAO.getAppId(organisationId, data.getAppName());
 
         agentDAO.storeJvmData(organisationId, appId, data);
-
-        agentDAO.recalculateApplicationStatistics(agentDAO.getAppIdByJvmUuid(data.getJvmUuid()));
+        agentDAO.recalculateApplicationStatistics(appId);
 
         eventBus.post(agentDAO.createWebSocketMessage(organisationId));
     }

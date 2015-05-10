@@ -7,6 +7,7 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
 import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
 
 import javax.inject.Inject;
+import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -15,7 +16,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public abstract class AbstractServiceIntegTest extends AbstractTransactionalJUnit4SpringContextTests {
     protected final List<Object> events = new CopyOnWriteArrayList<>();
-    protected final long now = System.currentTimeMillis();
+
+    protected final long now = Instant.parse("2015-05-10T10:11:12.456Z").toEpochMilli();
 
     @Inject
     private EventBus eventBus;
@@ -39,28 +41,26 @@ public abstract class AbstractServiceIntegTest extends AbstractTransactionalJUni
     protected JvmData createJvmData(long startedAtMillis, long reportedAtMillis, String appName, String appVersion, String jvmUuid,
                                     String hostName) {
 
-        int agentClockSkewMillis = hostName.hashCode() % 300_000;
-
         return JvmData.builder()
                       .agentHostName(hostName)
-                      .agentTimeMillis(System.currentTimeMillis() - agentClockSkewMillis)
+                      .agentTimeMillis(-1L)
                       .appName(appName)
-                      .dumpedAtMillis(reportedAtMillis - agentClockSkewMillis)
+                      .dumpedAtMillis(reportedAtMillis)
                       .jvmUuid(jvmUuid)
-                .startedAtMillis(startedAtMillis - agentClockSkewMillis)
-                        // hard-coded stuff below
-                .agentComputerId("agentComputerId")
-                .agentUploadIntervalSeconds(300)
-                .agentVcsId("agentVcsId")
-                .agentVersion("agentVersion")
-                .appVersion(appVersion)
-                .collectorComputerId("collectorComputerId")
-                .collectorHostName(hostName)
-                .collectorResolutionSeconds(600)
-                .collectorVcsId("collectorVcsId")
-                .collectorVersion("collectorVersion")
-                .methodVisibility("methodVisibility")
-                .tags("  ")
-                .build();
+                      .startedAtMillis(startedAtMillis)
+
+                      .agentComputerId("agentComputerId")
+                      .agentUploadIntervalSeconds(300)
+                      .agentVcsId("agentVcsId")
+                      .agentVersion("agentVersion")
+                      .appVersion(appVersion)
+                      .collectorComputerId("collectorComputerId")
+                      .collectorHostName(hostName)
+                      .collectorResolutionSeconds(600)
+                      .collectorVcsId("collectorVcsId")
+                      .collectorVersion("collectorVersion")
+                      .methodVisibility("methodVisibility")
+                      .tags("  ")
+                      .build();
     }
 }

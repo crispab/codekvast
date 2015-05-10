@@ -171,7 +171,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     }
 
     private long calculateAgentClockSkewMillis(long agentTimeMillis) {
-        return System.currentTimeMillis() - agentTimeMillis;
+        return agentTimeMillis <= 0L ? 0L : System.currentTimeMillis() - agentTimeMillis;
     }
 
     String normalizeTags(String tags) {

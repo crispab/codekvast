@@ -14,7 +14,10 @@ import se.crisp.codekvast.server.codekvast_server.model.event.rest.MethodUsageSc
 import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -93,8 +96,7 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
             String appIds = reportParameters.getApplicationIds().stream().map(s -> "?").collect(Collectors.joining(","));
             String jvmIds = reportParameters.getJvmIds().stream().map(s -> "?").collect(Collectors.joining(","));
 
-            String sql = "SELECT DISTINCT s.signature, s.invoked_at_millis FROM signatures s, application_statistics stats, jvm_info jvm" +
-                    " " +
+            String sql = "SELECT DISTINCT s.signature, s.invoked_at_millis FROM signatures s, application_statistics stats, jvm_info jvm " +
                     "WHERE s.organisation_id = ? " +
                     "AND s.application_id IN (" + appIds + ") " +
                     "AND s.jvm_id IN (" + jvmIds + ") " +
@@ -135,16 +137,27 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
     private class RetrieveBootstrapMethods extends MethodRetriever {
         @Override
         public Collection<MethodUsageEntry> getMethods(ReportParameters reportParameters) {
-            // TODO: implement
-            return Collections.emptyList();
+            List<Object> params = generateParams(reportParameters);
+            params.add(reportParameters.getBootstrapSeconds() * 1000L);
+
+            String sql = generateSql(reportParameters) +
+                    "AND s.invoked_at_millis >= stats.max_started_at_millis " +
+                    "AND s.invoked_at_millis < stats.max_started_at_millis + ? ";
+
+            return jdbcTemplate.query(sql, new MethodUsageEntryRowMapper(MethodUsageScope.BOOTSTRAP), params.toArray());
         }
     }
 
     private class RetrieveLiveMethods extends MethodRetriever {
         @Override
         public Collection<MethodUsageEntry> getMethods(ReportParameters reportParameters) {
-            // TODO: implement
-            return Collections.emptyList();
+            List<Object> params = generateParams(reportParameters);
+            params.add(reportParameters.getUsageCycleSeconds() * 1000L);
+
+            String sql = generateSql(reportParameters) +
+                    "AND s.invoked_at_millis >= stats.last_reported_at_millis - ? ";
+
+            return jdbcTemplate.query(sql, new MethodUsageEntryRowMapper(MethodUsageScope.LIVE), params.toArray());
         }
     }
 

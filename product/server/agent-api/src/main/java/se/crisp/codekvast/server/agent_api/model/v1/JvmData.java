@@ -94,7 +94,8 @@ public class JvmData {
     @Min(1)
     private Long dumpedAtMillis;
 
+    /* Disable clock skew compensation during tests by setting -1 */
     @NonNull
-    @Min(1)
+    @Min(-1)
     private Long agentTimeMillis;
 }
