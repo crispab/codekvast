@@ -2,19 +2,10 @@ package se.crisp.codekvast.server.codekvast_server.service.impl;
 
 import com.google.common.eventbus.Subscribe;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.test.IntegrationTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
-import se.crisp.codekvast.server.codekvast_server.config.CodekvastSettings;
-import se.crisp.codekvast.server.codekvast_server.config.DatabaseConfig;
-import se.crisp.codekvast.server.codekvast_server.config.EventBusConfig;
-import se.crisp.codekvast.server.codekvast_server.dao.impl.AgentDAOImpl;
-import se.crisp.codekvast.server.codekvast_server.dao.impl.UserDAOImpl;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedUserException;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.WebSocketMessage;
 import se.crisp.codekvast.server.codekvast_server.service.AgentService;
@@ -31,14 +22,7 @@ import static se.crisp.codekvast.test.matchers.CollectorsMatcher.hasCollectors;
 /**
  * @author olle.hallin@crisp.se
  */
-@SuppressWarnings({"CastToConcreteClass", "OverlyCoupledClass"})
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {DataSourceAutoConfiguration.class, DatabaseConfig.class,
-                                 CodekvastSettings.class, AgentDAOImpl.class, UserDAOImpl.class,
-                                 EventBusConfig.class, AgentServiceImpl.class, UserServiceImpl.class})
-@IntegrationTest({
-        "spring.datasource.url = jdbc:h2:mem:agentServiceTest",
-})
+@ContextConfiguration(classes = {AgentServiceImpl.class, UserServiceImpl.class})
 public class AgentServiceIntegTest extends AbstractServiceIntegTest {
     @Inject
     private AgentService agentService;

@@ -208,7 +208,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     }
 
     private Collection<CollectorDisplay> queryCollectors(long organisationId) {
-        // select the latest jvm_info for each application/hostname combination
+        // select the latest jvm_info for each application/version/hostname combination
         return jdbcTemplate.query("SELECT " +
                                           "a.name, " +
                                           "jvm.application_version, " +
@@ -230,6 +230,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                           "  SELECT MAX(jvm2.id) " +
                                           "  FROM jvm_info jvm2 " +
                                           "  WHERE jvm2.application_id = jvm.application_id " +
+                                          "  AND jvm2.application_version = jvm.application_version " +
                                           "  AND jvm2.collector_host_name = jvm.collector_host_name" +
                                           ") " +
                                           "AND a.organisation_id = ? " +

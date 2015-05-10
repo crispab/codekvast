@@ -2,21 +2,11 @@ package se.crisp.codekvast.server.codekvast_server.service.impl;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.test.IntegrationTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
-import se.crisp.codekvast.server.codekvast_server.config.CodekvastSettings;
-import se.crisp.codekvast.server.codekvast_server.config.DatabaseConfig;
-import se.crisp.codekvast.server.codekvast_server.config.EventBusConfig;
 import se.crisp.codekvast.server.codekvast_server.dao.ReportDAO;
 import se.crisp.codekvast.server.codekvast_server.dao.ReportDAO.ReportParameters;
-import se.crisp.codekvast.server.codekvast_server.dao.impl.AgentDAOImpl;
-import se.crisp.codekvast.server.codekvast_server.dao.impl.ReportDAOImpl;
-import se.crisp.codekvast.server.codekvast_server.dao.impl.UserDAOImpl;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.MethodUsageScope;
 import se.crisp.codekvast.server.codekvast_server.service.AgentService;
@@ -32,15 +22,9 @@ import static org.junit.Assert.assertThat;
 /**
  * @author olle.hallin@crisp.se
  */
-@SuppressWarnings({"CastToConcreteClass", "OverlyCoupledClass"})
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {DataSourceAutoConfiguration.class, DatabaseConfig.class,
-                                 CodekvastSettings.class, AgentDAOImpl.class, UserDAOImpl.class, ReportDAOImpl.class,
-                                 EventBusConfig.class, AgentServiceImpl.class})
-@IntegrationTest({
-        "spring.datasource.url = jdbc:h2:mem:reportServiceTest",
-})
+@ContextConfiguration(classes = {AgentServiceImpl.class})
 public class ReportDAOIntegTest extends AbstractServiceIntegTest {
+
     @Inject
     private AgentService agentService;
 
