@@ -56,29 +56,31 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
     @Override
     @Cacheable("report")
     public Collection<Long> getApplicationIds(long organisationId, Collection<String> applicationNames) {
-        String placeholders = applicationNames.stream().map(s -> "?").collect(Collectors.joining(","));
+        String condition = applicationNames.size() == 1 ? "= ?"
+                : "IN (" + applicationNames.stream().map(s -> "?").collect(Collectors.joining(",")) + ")";
 
         List<Object> args = new ArrayList<>();
         args.add(organisationId);
         args.addAll(applicationNames);
 
-        return jdbcTemplate.queryForList("SELECT id FROM applications WHERE organisation_id = ? AND name IN (" + placeholders + ") " +
-                                                 "ORDER BY id ",
-                                         Long.class, args.toArray());
+        return jdbcTemplate.queryForList(
+                "SELECT id FROM applications WHERE organisation_id = ? AND name " + condition + " ORDER BY id ",
+                Long.class, args.toArray());
     }
 
     @Override
     @Cacheable("report")
     public Collection<Long> getJvmIdsByAppVersions(long organisationId, Collection<String> applicationVersions) {
-        String placeholders = applicationVersions.stream().map(s -> "?").collect(Collectors.joining(","));
+        String condition = applicationVersions.size() == 1 ? "= ?"
+                : "IN (" + applicationVersions.stream().map(s -> "?").collect(Collectors.joining(",")) + ")";
 
         List<Object> args = new ArrayList<>();
         args.add(organisationId);
         args.addAll(applicationVersions);
 
-        return jdbcTemplate
-                .queryForList("SELECT id FROM jvm_info WHERE organisation_id = ? AND application_version IN (" + placeholders + ") " +
-                                      "ORDER BY id", Long.class, args.toArray());
+        return jdbcTemplate.queryForList(
+                "SELECT id FROM jvm_info WHERE organisation_id = ? AND application_version " + condition + "ORDER BY id",
+                Long.class, args.toArray());
     }
 
     private abstract class MethodRetriever {
@@ -127,8 +129,8 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
             params.add(reportParameters.getUsageCycleSeconds() * 1000L);
 
             String sql = generateSql(reportParameters) +
-                    "AND s.invoked_at_millis > stats.max_started_at_millis+? " +
-                    "AND s.invoked_at_millis <= stats.last_reported_at_millis-? ";
+                    "AND s.invoked_at_millis > stats.max_started_at_millis + ? " +
+                    "AND s.invoked_at_millis <= stats.last_reported_at_millis - ? ";
 
             return jdbcTemplate.query(sql, new MethodUsageEntryRowMapper(MethodUsageScope.POSSIBLY_DEAD), params.toArray());
         }
@@ -142,7 +144,7 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
 
             String sql = generateSql(reportParameters) +
                     "AND s.invoked_at_millis >= stats.max_started_at_millis " +
-                    "AND s.invoked_at_millis < stats.max_started_at_millis + ? ";
+                    "AND s.millis_since_jvm_start < ? ";
 
             return jdbcTemplate.query(sql, new MethodUsageEntryRowMapper(MethodUsageScope.BOOTSTRAP), params.toArray());
         }

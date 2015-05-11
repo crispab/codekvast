@@ -78,6 +78,11 @@ public class ReportDAOIntegTest extends AbstractServiceIntegTest {
     }
 
     @Test
+    public void testGetApplicationIds_app1_app2() throws Exception {
+        assertThat(reportDAO.getApplicationIds(1, asList("app1", "app2")), contains(1L, 2L));
+    }
+
+    @Test
     public void testGetApplicationIds_app2() throws Exception {
         assertThat(reportDAO.getApplicationIds(1, asList("app2")), contains(2L));
     }
@@ -175,9 +180,10 @@ public class ReportDAOIntegTest extends AbstractServiceIntegTest {
                 "AND s.jvm_id = jvm.id " +
                 "AND stats.application_id = s.application_id " +
                 "AND stats.application_version = jvm.application_version " +
-                "AND s.invoked_at_millis >= stats.last_reported_at_millis - ? ";
+                "AND s.invoked_at_millis >= stats.max_started_at_millis " +
+                "AND s.millis_since_jvm_start <= ? ";
 
-        Map<String, Object> map = jdbcTemplate.queryForMap(sql, 1, appId, jvmId, usageCycleMillis);
+        Map<String, Object> map = jdbcTemplate.queryForMap(sql, 1, appId, jvmId, bootstrapMillis);
 
         ReportParameters params = getReportParameters(asList("app1"), asList("1.1"));
         assertThat(reportDAO.getMethodsForScope(MethodUsageScope.POSSIBLY_DEAD, params), hasSize(1));
