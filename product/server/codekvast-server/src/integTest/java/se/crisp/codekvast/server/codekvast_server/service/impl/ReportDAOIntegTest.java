@@ -5,15 +5,18 @@ import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
+import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
 import se.crisp.codekvast.server.codekvast_server.dao.ReportDAO;
 import se.crisp.codekvast.server.codekvast_server.dao.ReportDAO.ReportParameters;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
+import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.MethodUsageScope;
 import se.crisp.codekvast.server.codekvast_server.service.AgentService;
 
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.*;
@@ -27,6 +30,9 @@ public class ReportDAOIntegTest extends AbstractServiceIntegTest {
 
     @Inject
     private AgentService agentService;
+
+    @Inject
+    private AgentDAO agentDAO;
 
     @Inject
     private ReportDAO reportDAO;
@@ -60,41 +66,6 @@ public class ReportDAOIntegTest extends AbstractServiceIntegTest {
         agentService.storeSignatureData(SignatureData.builder().jvmUuid("jvm2").signatures(deadSignatures).build());
         agentService.storeSignatureData(SignatureData.builder().jvmUuid("jvm3").signatures(deadSignatures).build());
         agentService.storeSignatureData(SignatureData.builder().jvmUuid("jvm4").signatures(deadSignatures.subList(0, 2)).build());
-    }
-
-    @Test
-    public void testGetApplicationIds_invalid_organisation_id() throws Exception {
-        assertThat(reportDAO.getApplicationIds(0, asList("app1", "app2")), empty());
-    }
-
-    @Test
-    public void testGetApplicationIds_app1() throws Exception {
-        assertThat(reportDAO.getApplicationIds(1, asList("app1")), contains(1L));
-    }
-
-    @Test
-    public void testGetApplicationIds_app1_twice() throws Exception {
-        assertThat(reportDAO.getApplicationIds(1, asList("app1", "app1")), contains(1L));
-    }
-
-    @Test
-    public void testGetApplicationIds_app1_app2() throws Exception {
-        assertThat(reportDAO.getApplicationIds(1, asList("app1", "app2")), contains(1L, 2L));
-    }
-
-    @Test
-    public void testGetApplicationIds_app2() throws Exception {
-        assertThat(reportDAO.getApplicationIds(1, asList("app2")), contains(2L));
-    }
-
-    @Test
-    public void testGetApplicationIds_all_apps_plus_non_existing() throws Exception {
-        assertThat(reportDAO.getApplicationIds(1, asList("app2", "foobar", "app1")), contains(1L, 2L));
-    }
-
-    @Test
-    public void testGetApplicationIds_only_non_existing() throws Exception {
-        assertThat(reportDAO.getApplicationIds(1, asList("foobar")), empty());
     }
 
     @Test
@@ -170,7 +141,7 @@ public class ReportDAOIntegTest extends AbstractServiceIntegTest {
 
         agentService.storeSignatureData(SignatureData.builder().jvmUuid("jvm2").signatures(signatures).build());
 
-        long appId = reportDAO.getApplicationIds(1, asList("app1")).iterator().next();
+        long appId = agentDAO.getApplicationIds(1, asList("app1")).iterator().next().getAppId();
         long jvmId = reportDAO.getJvmIdsByAppVersions(1, asList("1.1")).iterator().next();
 
         String sql = "SELECT * FROM signatures s, application_statistics stats, jvm_info jvm " +
@@ -198,7 +169,8 @@ public class ReportDAOIntegTest extends AbstractServiceIntegTest {
                                .usageCycleSeconds((int) (usageCycleMillis / 1000L))
                                .bootstrapSeconds((int) (bootstrapMillis / 1000L))
                                .organisationId(organisationId)
-                               .applicationIds(reportDAO.getApplicationIds(organisationId, applicationNames))
+                               .applicationIds(agentDAO.getApplicationIds(organisationId, applicationNames).stream().map(AppId::getAppId)
+                                                       .collect(Collectors.toList()))
                                .jvmIds(reportDAO.getJvmIdsByAppVersions(organisationId, applicationVersions))
                                .build();
     }

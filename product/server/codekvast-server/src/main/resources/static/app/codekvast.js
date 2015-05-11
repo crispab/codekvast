@@ -140,7 +140,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             socket.client.onclose = onDisconnect;
         };
 
-        var persistsOrganisationSettings = function (applications) {
+        var persistSettings = function (applications, successMessage) {
             var data = {applicationSettings: []};
             for (var i = 0, len = applications.length; i < len; i++) {
                 var a = applications[i];
@@ -152,10 +152,10 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
             $http.post('/api/web/settings', data)
                 .success(function () {
-                    alert("Settings saved");
+                    broadcast('settingsSaved', successMessage);
                 })
                 .error(function (rsp) {
-                    alert("Cannot save settings:" + JSON.stringify(rsp));
+                    broadcast('settingsSaved', 'Cannot save settings:' + JSON.stringify(rsp));
                 })
 
         };
@@ -168,7 +168,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             getLastEvent: getLastEvent,
             getLastData: getLastData,
             initSocket: initSocket,
-            persistsOrganisationSettings: persistsOrganisationSettings,
+            persistSettings: persistSettings,
             getMethodUsage: getMethodUsage,
 
             // for testing only
@@ -238,6 +238,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
     .controller('SettingsController', ['$scope', '$modalInstance', 'RemoteDataService', 'DateService', function ($scope, $modalInstance, RemoteDataService, DateService) {
         $scope.applications = RemoteDataService.getLastData("applications");
+        $scope.progressMessage = undefined;
 
         $scope.setUnit = function (a, code) {
             if (!a.usageCycleValue) {
@@ -293,12 +294,17 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             $scope.applications = undefined;
         });
 
+        $scope.$on('settingsSaved', function (event, message) {
+            $scope.progressMessage = message;
+            $modalInstance.close();
+        });
+
         $scope.save = function () {
             if ($scope.applications) {
-                RemoteDataService.persistsOrganisationSettings($scope.applications);
+                $scope.progressMessage = 'Recalculating statistics...';
+                RemoteDataService.persistSettings($scope.applications, 'Recalculated statistics');
             }
 
-            $modalInstance.close();
         };
 
         $scope.cancel = function () {
@@ -401,6 +407,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         $scope.dateFormat = 'yyyy-MM-dd HH:mm:ss';
         $scope.orderBy = 'invokedAtMillis';
         $scope.reverse = false;
+        $scope.reportInProgress = false;
 
         $scope.maxUsageCycleSeconds = function () {
             if ($scope.formData.applications) {
@@ -498,16 +505,12 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             });
         };
 
-        $scope.showMockup = false;
-        $scope.toggleMockupVerb = function () {
-            return $scope.showMockup ? "Hide mockup" : "Show mockup"
-        };
-
         $scope.isSubmitEnabled = function () {
             var anyApp = _($scope.formData.applications).any({selected: true});
             var anyVersion = _($scope.formData.versions).any({selected: true});
             var anyMethods = _($scope.formData.methods).any({selected: true});
-            return anyApp && anyVersion && anyMethods;
+            return anyApp && anyVersion && anyMethods && !$scope.reportInProgress;
+            ;
         }
 
         $scope.previewReport = function () {
@@ -520,12 +523,16 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                 maxPreviewRows: $scope.formData.previewRows
             };
 
+            $scope.reportInProgress = true;
+
             RemoteDataService.getMethodUsage(getMethodUsageRequest).then(
                 function (rsp) {
                     $scope.previewData = rsp.data;
+                    $scope.reportInProgress = false;
                 },
                 function (rsp) {
                     alert("Cannot get preview data: " + JSON.stringify(rsp))
+                    $scope.reportInProgress = false;
                 });
         };
 

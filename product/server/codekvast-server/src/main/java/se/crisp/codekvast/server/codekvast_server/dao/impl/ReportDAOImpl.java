@@ -55,21 +55,6 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
 
     @Override
     @Cacheable("report")
-    public Collection<Long> getApplicationIds(long organisationId, Collection<String> applicationNames) {
-        String condition = applicationNames.size() == 1 ? "= ?"
-                : "IN (" + applicationNames.stream().map(s -> "?").collect(Collectors.joining(",")) + ")";
-
-        List<Object> args = new ArrayList<>();
-        args.add(organisationId);
-        args.addAll(applicationNames);
-
-        return jdbcTemplate.queryForList(
-                "SELECT id FROM applications WHERE organisation_id = ? AND name " + condition + " ORDER BY id ",
-                Long.class, args.toArray());
-    }
-
-    @Override
-    @Cacheable("report")
     public Collection<Long> getJvmIdsByAppVersions(long organisationId, Collection<String> applicationVersions) {
         String condition = applicationVersions.size() == 1 ? "= ?"
                 : "IN (" + applicationVersions.stream().map(s -> "?").collect(Collectors.joining(",")) + ")";

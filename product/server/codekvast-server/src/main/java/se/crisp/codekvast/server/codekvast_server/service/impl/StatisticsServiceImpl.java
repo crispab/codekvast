@@ -15,6 +15,7 @@ import se.crisp.codekvast.server.codekvast_server.service.StatisticsService;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
+import java.util.Collection;
 import java.util.concurrent.*;
 
 import static com.google.common.base.Throwables.getRootCause;
@@ -65,7 +66,7 @@ public class StatisticsServiceImpl implements StatisticsService {
     public void recalculateApplicationStatistics(AppId appId) {
 
         if (codekvastSettings.getStatisticsDelayMillis() <= 0L) {
-            doTheWork(appId);
+            recalculate(appId, true);
             return;
         }
 
@@ -84,14 +85,42 @@ public class StatisticsServiceImpl implements StatisticsService {
         }
     }
 
-    private void doTheWork(AppId appId) {
+    @Override
+    public void recalculateApplicationStatistics(long organisationId, Collection<String> applicationNames) {
+        if (!applicationNames.isEmpty()) {
+            log.info("Recalculating application statistics for organisation {} {}...", organisationId, applicationNames);
+
+            long startedAt = System.currentTimeMillis();
+
+            Collection<AppId> appIds = agentDAO.getApplicationIds(organisationId, applicationNames);
+
+            // Eliminate duplicates that only differs on JVM id...
+            appIds.stream()
+                  .map(id -> AppId.builder()
+                                  .organisationId(id.getOrganisationId())
+                                  .appId(id.getAppId())
+                                  .appVersion(id.getAppVersion())
+                                  .jvmId(0)
+                                  .build())
+                  .distinct()
+                  .forEach(appId -> recalculate(appId, false));
+
+            log.info("Calculated statistics for organisation {} in {} ms", organisationId, System.currentTimeMillis() - startedAt);
+
+            eventBus.post(agentDAO.createWebSocketMessage(organisationId));
+        }
+    }
+
+    private void recalculate(AppId appId, boolean postOnEventBus) {
         log.debug("Recalculating statistics for {}", appId);
 
         long startedAt = System.currentTimeMillis();
         agentDAO.recalculateApplicationStatistics(appId);
         log.info("Calculated statistics for {} in {} ms", appId, System.currentTimeMillis() - startedAt);
 
-        eventBus.post(agentDAO.createWebSocketMessage(appId.getOrganisationId()));
+        if (postOnEventBus) {
+            eventBus.post(agentDAO.createWebSocketMessage(appId.getOrganisationId()));
+        }
     }
 
     @RequiredArgsConstructor
@@ -104,7 +133,7 @@ public class StatisticsServiceImpl implements StatisticsService {
                 try {
                     appId = queue.take().getAppId();
 
-                    doTheWork(appId);
+                    recalculate(appId, true);
                 } catch (InterruptedException ignore) {
                     log.debug("Interrupted");
                     return;

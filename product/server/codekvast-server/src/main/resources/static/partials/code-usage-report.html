@@ -2,21 +2,17 @@
 
     <div class="panel panel-info">
         <div class="panel-heading">
-            <h3>Create Code Usage Report (<a href="#" ng-click="showMockup = !showMockup">{{toggleMockupVerb()}}</a>)</h3>
+            <h3>Create Code Usage Report</h3>
         </div>
         <div class="well">
             This page allows you to create a code usage report.
         </div>
         <div class="panel-body">
-            <h2 ng-show="!formData.applications && !showMockup">Nothing to show!
+            <h2 ng-show="!formData.applications">Nothing to show!
                 <small>There are no applications that deliver usage data to this server.</small>
             </h2>
 
-            <div ng-show="showMockup">
-                <h2>Static image generated from Balsamiq Mockups</h2>
-                <img src="/images/mockups/ReportGenerator.png"/>
-            </div>
-            <div ng-show="formData.applications && !showMockup">
+            <div ng-show="formData.applications">
                 <table>
                     <tr>
                         <th class="col-lg-1">Include applications (usage cycle)</th>
@@ -100,6 +96,7 @@
                                         class="btn btn-primary"
                                         ng-disabled="!isSubmitEnabled()" ng-click="previewReport()">Preview report
                                 </button>
+                                <span ng-show="reportInProgress">Fetching preview data...</span>
                             </form>
                         </td>
                     </tr>

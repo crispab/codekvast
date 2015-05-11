@@ -1,5 +1,6 @@
 package se.crisp.codekvast.server.codekvast_server.model.event.display;
 
+import com.google.common.base.MoreObjects;
 import lombok.Builder;
 import lombok.Value;
 
@@ -24,4 +25,14 @@ public class WebSocketMessage {
     Collection<ApplicationDisplay> applications;
     Collection<CollectorDisplay> collectors;
     Collection<EnvironmentDisplay> environments;
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                          .add("applicationStatistics.size()", applicationStatistics == null ? "" : applicationStatistics.size())
+                          .add("applications.size()", applications == null ? "" : applications.size())
+                          .add("collectors.size()", collectors == null ? "" : collectors.size())
+                          .add("environments.size()", environments == null ? "" : environments.size())
+                          .toString();
+    }
 }

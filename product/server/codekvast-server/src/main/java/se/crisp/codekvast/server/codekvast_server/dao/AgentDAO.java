@@ -7,6 +7,8 @@ import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.WebSocketMessage;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.OrganisationSettings;
 
+import java.util.Collection;
+
 /**
  * A data access object for things related to the agent API.
  *
@@ -24,6 +26,15 @@ public interface AgentDAO {
      * Retrieve an application ID by JVM id.
      */
     AppId getAppIdByJvmUuid(String jvmUuid);
+
+    /**
+     * Convert the given application names to a list of AppIds
+     *
+     * @param organisationId
+     * @param applicationNames
+     * @return Does never return null
+     */
+    Collection<AppId> getApplicationIds(long organisationId, Collection<String> applicationNames);
 
     /**
      * Stores invocation data in the database.
@@ -53,23 +64,18 @@ public interface AgentDAO {
 
     /**
      * Save updated collector settings
-     *
      * @param organisationId    The organisation
      * @param organisationSettings The new settings
+     *
+     * @return A collection of application names that were actually updated. Does never return null.
      */
-    void saveSettings(long organisationId, OrganisationSettings organisationSettings);
+    Collection<String> saveSettings(long organisationId, OrganisationSettings organisationSettings);
 
     /**
-     * Recalculate the statistics for a certain app.
+     * Synchronously recalculate the statistics for a certain app.
      *
      * @param appId The identity of the application
      */
     void recalculateApplicationStatistics(AppId appId);
 
-    /**
-     * Recalculate the statistics for all apps in an organisation..
-     *
-     * @param organisationId The identity of the organisation
-     */
-    void recalculateApplicationStatistics(long organisationId);
 }

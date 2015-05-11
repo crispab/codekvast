@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * DAO for agent stuff.
@@ -66,6 +67,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable("agent")
     public AppId getAppIdByJvmUuid(String jvmUuid) {
         log.debug("Looking up AppId for JVM {}...", jvmUuid);
         try {
@@ -79,6 +81,24 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
             log.info("No AppId found for JVM {}, probably an agent that uploaded stale data", jvmUuid);
             return null;
         }
+    }
+
+    @Override
+    @Cacheable("agent")
+    public Collection<AppId> getApplicationIds(long organisationId, Collection<String> applicationNames) {
+        String condition = applicationNames.size() == 1 ? "= ?"
+                : "IN (" + applicationNames.stream().map(s -> "?").collect(Collectors.joining(",")) + ")";
+
+        List<Object> args = new ArrayList<>();
+        args.add(organisationId);
+        args.addAll(applicationNames);
+
+        return jdbcTemplate.query("SELECT jvm.id, jvm.organisation_id, jvm.application_id, jvm.application_version " +
+                                          "FROM jvm_info jvm, applications a " +
+                                          "WHERE jvm.application_id = a.id " +
+                                          "AND jvm.organisation_id = ? " +
+                                          "AND a.name " + condition,
+                                  new AppIdRowMapper(), args.toArray());
     }
 
     private static class AppIdRowMapper implements RowMapper<AppId> {
@@ -271,7 +291,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     }
 
     @Override
-    public void saveSettings(long organisationId, OrganisationSettings organisationSettings) {
+    public Collection<String> saveSettings(long organisationId, OrganisationSettings organisationSettings) {
 
         List<Object[]> args = new ArrayList<>();
 
@@ -279,36 +299,35 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
             args.add(new Object[]{
                     entry.getUsageCycleSeconds(),
                     organisationId,
-                    entry.getName()
+                    entry.getName(),
+                    entry.getUsageCycleSeconds()
+
             });
         }
 
         int[] updated = jdbcTemplate.batchUpdate("UPDATE applications SET usage_cycle_seconds = ? " +
-                                                         "WHERE organisation_id = ? AND name = ?", args);
+                                                         "WHERE organisation_id = ? " +
+                                                         "AND name = ? " +
+                                                         "AND usage_cycle_seconds <> ? ", args);
 
         // TODO: save organisationSettings.environments
 
-        boolean success = true;
-        for (int count : updated) {
-            if (count != 1) {
-                success = false;
+        Set<String> updatedApps = new HashSet<>();
+
+        for (int i = 0; i < updated.length; i++) {
+            int count = updated[i];
+            if (count != 0) {
+                updatedApps.add(organisationSettings.getApplicationSettings().get(i).getName());
             }
         }
 
-        if (success) {
-            log.info("Saved organisation settings");
+        if (updatedApps.isEmpty()) {
+            log.info("Nothing to save");
         } else {
-            log.warn("Failed to save organisation settings {}", organisationSettings);
+            log.info("Saved settings for {}", updatedApps.stream().collect(Collectors.joining(", ")));
         }
 
-    }
-
-    @Override
-    public void recalculateApplicationStatistics(long organisationId) {
-        List<AppId> appIds = jdbcTemplate.query("SELECT id, organisation_id, application_id, application_version FROM jvm_info WHERE " +
-                                                        "organisation_id = ?",
-                                                new AppIdRowMapper(), organisationId);
-        appIds.forEach(this::recalculateApplicationStatistics);
+        return updatedApps;
     }
 
     @Override

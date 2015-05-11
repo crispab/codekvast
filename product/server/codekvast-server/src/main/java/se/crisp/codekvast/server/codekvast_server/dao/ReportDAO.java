@@ -13,8 +13,6 @@ import java.util.Collection;
 public interface ReportDAO {
     int countMethods(long organisationId);
 
-    Collection<Long> getApplicationIds(long organisationId, Collection<String> applicationNames);
-
     Collection<Long> getJvmIdsByAppVersions(long organisationId, Collection<String> applicationVersions);
 
     Collection<MethodUsageEntry> getMethodsForScope(MethodUsageScope scope, ReportParameters reportParameters);
