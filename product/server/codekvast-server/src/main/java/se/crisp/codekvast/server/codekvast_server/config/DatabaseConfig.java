@@ -18,11 +18,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Initializes the database.
- *
+ * <p>
  * <ol> <li>runs Flyway.migrate().</li> <li>creates a JdbcTemplate bean</li> </ol>
  *
  * @author olle.hallin@crisp.se
@@ -53,7 +56,11 @@ public class DatabaseConfig {
         flyway.setDataSource(dataSource);
         flyway.setLocations(SQL_MIGRATION_LOCATION, JAVA_MIGRATION_LOCATION);
 
-        backupDatabaseBeforeMigration(jdbcTemplate, codekvastSettings, flyway.info().pending());
+        MigrationInfo[] pendingMigrations = flyway.info().pending();
+        if (pendingMigrations != null && pendingMigrations.length > 0) {
+            backupDatabaseBeforeMigration(jdbcTemplate, codekvastSettings, pendingMigrations);
+            logPendingMigrations(pendingMigrations);
+        }
 
         flyway.migrate();
 
@@ -62,25 +69,30 @@ public class DatabaseConfig {
         return flyway;
     }
 
+    private void logPendingMigrations(MigrationInfo[] pendingMigrations) {
+        List<MigrationInfo> infos = Arrays.asList(pendingMigrations);
+        String pending = infos.stream().map(mi -> String.format("%s %s", mi.getVersion(), mi.getDescription()))
+                              .collect(Collectors.joining("\n    "));
+
+        log.info("Will apply the following pending migrations:\n    {}", pending);
+    }
+
     private void backupDatabaseBeforeMigration(JdbcTemplate jdbcTemplate, CodekvastSettings codekvastSettings,
-                                               MigrationInfo[] pendingMigrations)
-            throws SQLException {
+                                               MigrationInfo[] pendingMigrations) throws SQLException {
 
-        if (pendingMigrations != null && pendingMigrations.length > 0) {
+        String firstPendingVersion = pendingMigrations[0].getVersion().toString();
 
-            String firstPendingVersion = pendingMigrations[0].getVersion().toString();
+        if (!DatabaseUtils.isMemoryDatabase(jdbcTemplate) && !firstPendingVersion.equals("1.0")) {
+            long startedAt = System.currentTimeMillis();
 
-            if (!DatabaseUtils.isMemoryDatabase(jdbcTemplate) && !firstPendingVersion.equals("1.0")) {
-                long startedAt = System.currentTimeMillis();
+            String firstPendingScript = pendingMigrations[0].getScript().replace(".sql", "").replace(".java", "");
+            log.info("Backing up database before executing {}", firstPendingScript);
 
-                String firstPendingScript = pendingMigrations[0].getScript().replace(".sql", "").replace(".java", "");
-                log.info("Backing up database before executing {}", firstPendingScript);
+            String backupFile =
+                    DatabaseUtils.getBackupFile(codekvastSettings, jdbcTemplate, new Date(), "before_" + firstPendingScript);
+            DatabaseUtils.backupDatabase(jdbcTemplate, backupFile);
 
-                String backupFile = DatabaseUtils.getBackupFile(codekvastSettings, jdbcTemplate, new Date(), "before_" + firstPendingScript);
-                DatabaseUtils.backupDatabase(jdbcTemplate, backupFile);
-
-                log.info("Backed up database to {} in {} ms", backupFile, System.currentTimeMillis() - startedAt);
-            }
+            log.info("Backed up database to {} in {} ms", backupFile, System.currentTimeMillis() - startedAt);
         }
     }
 

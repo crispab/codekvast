@@ -47,15 +47,17 @@ public class DatabaseUtils {
                 File renameTo;
                 String timestamp = formatTimestamp(new Date());
                 try {
-                    log.debug("Restoring database from {} ...", file);
+                    log.debug("Restoring database from {} ({} KB) ...", file, file.length()/1024);
+                    long startedAt = System.currentTimeMillis();
 
                     String sql = String.format("RUNSCRIPT FROM '%s' COMPRESSION %s CHARSET '%s' ", file, COMPRESSION, CHARSET);
                     jdbcTemplate.execute(sql);
-                    renameTo = new File(file.getPath() + ".restored_" + timestamp);
-                    log.info("Restored database from {}", file);
+                    renameTo = new File(file.getParentFile(), timestamp + "_restored_" + file.getName());
+
+                    log.info("Restored database from {} in {} ms", file, System.currentTimeMillis() - startedAt);
                 } catch (DataAccessException e) {
                     log.error("Could not restore database from " + file, e);
-                    renameTo = new File(file.getPath() + ".failed_" + timestamp);
+                    renameTo = new File(file.getParentFile(), timestamp + "_failedtorestore_" + file.getName());
                 }
 
                 boolean renamed = file.renameTo(renameTo);
