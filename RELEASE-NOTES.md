@@ -1,5 +1,14 @@
 # Codekvast Release Notes
 
+## 0.11.5
+
+1. Capacity: Application statistics calculations are delayed by 5s (configurable).
+   Requests for the same app during the delay are ignored.
+1. Bug: Clicking I icons in table header in collectors.html resorted the column
+1. Improvement: Now logging also shows the thread name
+1. Improvement: Better logging when backing up and restoring database.
+1. Improvement: Logs pending Flyway migrations at app startup.
+
 ## 0.11.4
 
 1. Replaced tooltips with popovers in application-statistics.html.

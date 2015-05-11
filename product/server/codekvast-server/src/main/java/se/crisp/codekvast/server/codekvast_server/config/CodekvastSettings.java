@@ -28,6 +28,7 @@ public class CodekvastSettings {
     private String commitDate;
     private String commitMessage;
     private int eventBusThreads = 0;
+    private long statisticsDelayMillis = 5000;
 
     @PostConstruct
     public void logStartup() {

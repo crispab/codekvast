@@ -26,61 +26,71 @@
                     </th>
                 </tr>
                 <tr>
-                    <th class="col-lg-1" ng-click="orderBy = 'appName'; reverse = !reverse">Application
+                    <th class="col-lg-1">
+                        <span ng-click="orderBy = 'appName'; reverse = !reverse">Application</span>
                         <span popover="The name of the application, as configured in the collector"
                               popover-trigger="click"
                               popover-placement="right"
                               class="glyphicon glyphicon-info-sign"></span>
                     </th>
-                    <th class="col-lg-1" ng-click="orderBy = 'appVersion'; reverse = !reverse">Version
+                    <th class="col-lg-1">
+                        <span ng-click="orderBy = 'appVersion'; reverse = !reverse">Version</span>
                         <span popover="The version of the application, as configured in the collector"
                               popover-trigger="click"
                               popover-placement="right"
                               class="glyphicon glyphicon-info-sign"></span>
                     </th>
-                    <th class="col-lg-2" ng-click="orderBy = 'collectorStartedAtMillis'; reverse = !reverse"> Collection Started
+                    <th class="col-lg-2">
+                        <span ng-click="orderBy = 'collectorStartedAtMillis'; reverse = !reverse"> Collection<br/>Started</span>
                         <span popover="When was this version of the application started for the first time with Codekvast attached?"
                               popover-trigger="click"
                               popover-placement="right"
                               class="glyphicon glyphicon-info-sign"></span>
                     </th>
-                    <th class="col-lg-1" ng-click="orderBy = 'collectorHostname'; reverse = !reverse">Hostname
+                    <th class="col-lg-1">
+                        <span ng-click="orderBy = 'collectorHostname'; reverse = !reverse">Hostname</span>
                         <span popover="In which host is the application executing?"
                               popover-trigger="click"
                               popover-placement="right"
                               class="glyphicon glyphicon-info-sign"></span>
                     </th>
-                    <th class="col-lg-1" ng-click="orderBy = 'collectorVersion'; reverse = !reverse">Collector Version
+                    <th class="col-lg-1">
+                        <span ng-click="orderBy = 'collectorVersion'; reverse = !reverse">Collector<br/>Version</span>
                         <span popover="Which version of the Codekvast collector is attached to the application?"
                               popover-trigger="click"
                               popover-placement="right"
                               class="glyphicon glyphicon-info-sign"></span>
                     </th>
-                    <th class="col-lg-1" ng-click="orderBy = 'agentVersion'; reverse = !reverse">Agent Version
+                    <th class="col-lg-1">
+                        <span ng-click="orderBy = 'agentVersion'; reverse = !reverse">Agent<br/>Version</span>
                         <span popover="Which version of the Codekvast agent is attached to the application?"
                               popover-trigger="click"
                               popover-placement="right"
                               class="glyphicon glyphicon-info-sign"></span>
                     </th>
-                    <th class="col-lg-1" ng-click="orderBy = 'methodVisibility'; reverse = !reverse">Method Visibility
+                    <th class="col-lg-1">
+                        <span ng-click="orderBy = 'methodVisibility'; reverse = !reverse">Method<br/>Visibility</span>
                         <span popover="Which methods are tracked?"
                               popover-trigger="click"
                               popover-placement="right"
                               class="glyphicon glyphicon-info-sign"></span>
                     </th>
-                    <th class="col-lg-1" ng-click="orderBy = 'collectorResolutionSeconds'; reverse = !reverse">Collector Resolution
+                    <th class="col-lg-1">
+                        <span ng-click="orderBy = 'collectorResolutionSeconds'; reverse = !reverse">Collector<br/>Resolution</span>
                         <span popover="What is the resolution of the collector?"
                               popover-trigger="click"
                               popover-placement="left"
                               class="glyphicon glyphicon-info-sign"></span>
                     </th>
-                    <th class="col-lg-1" ng-click="orderBy = 'agentUploadIntervalSeconds'; reverse = !reverse">Agent Upload Interval
+                    <th class="col-lg-1">
+                        <span ng-click="orderBy = 'agentUploadIntervalSeconds'; reverse = !reverse">Agent Upload<br/>Interval</span>
                         <span popover="How often is the agent uploading collected data?"
                               popover-trigger="click"
                               popover-placement="left"
                               class="glyphicon glyphicon-info-sign"></span>
                     </th>
-                    <th class="col-lg-1" ng-click="orderBy = 'dataReceivedAtMillis'; reverse = !reverse">Data Age
+                    <th class="col-lg-1">
+                        <span ng-click="orderBy = 'dataReceivedAtMillis'; reverse = !reverse">Data Age</span>
                         <span popover="How old is the data?"
                               popover-trigger="click"
                               popover-placement="left"

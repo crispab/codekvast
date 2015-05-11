@@ -15,13 +15,13 @@
         </triggeringPolicy>
 
         <encoder>
-            <pattern>%date %level %logger.%method\(\) [%line] %m%n%rootException</pattern>
+            <pattern>%date [%25thread] %5level %logger.%method\(\) [%line] %m%n%rootException</pattern>
         </encoder>
     </appender>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%date %level %logger.%method\(\) [%line] %m%n%rootException</pattern>
+            <pattern>%date [%25thread] %5level %logger.%method\(\) [%line] %m%n%rootException</pattern>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>${codekvast.log.consoleThreshold:-OFF}</level>
