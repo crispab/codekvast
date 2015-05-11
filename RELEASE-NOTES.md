@@ -4,6 +4,7 @@
 
 1. Capacity: Application statistics calculations are delayed by 5s (configurable).
    Requests for the same app during the delay are ignored.
+1. Capacity: Now Save Settings only recalculates actually changed applications.
 1. Bug: Clicking I icons in table header in collectors.html resorted the column
 1. Improvement: Now logging also shows the thread name
 1. Improvement: Better logging when backing up and restoring database.
