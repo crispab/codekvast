@@ -8,6 +8,10 @@
     cursor: pointer;
 }
 
+.navbar-nav>li>a {
+    outline: 0;
+}
+
 body {
     padding-bottom: 70px;
 }
