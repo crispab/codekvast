@@ -93,7 +93,7 @@ public class StatisticsServiceImpl implements StatisticsService {
 
                     eventBus.post(agentDAO.createWebSocketMessage(appId.getOrganisationId()));
                 } catch (InterruptedException ignore) {
-                    log.info("Interrupted");
+                    log.debug("Interrupted");
                     return;
                 } catch (Exception e) {
                     log.warn("Cannot calculate statistics for {}: {}", appId, getRootCause(e).toString());
