@@ -33,7 +33,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @ContextConfiguration(classes = {
         DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class,
         DatabaseConfig.class, EventBusConfig.class, CodekvastSettings.class,
-        AgentDAOImpl.class, UserDAOImpl.class, ReportDAOImpl.class})
+        AgentDAOImpl.class, UserDAOImpl.class, ReportDAOImpl.class, StatisticsServiceImpl.class})
 @IntegrationTest({
         "spring.datasource.url = jdbc:h2:mem:",
 })

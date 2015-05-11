@@ -26,6 +26,8 @@ import static com.google.common.base.Throwables.getRootCause;
  *     <li>Eliminate the risk for database lock conflicts</li>
  * </ol>
  *
+ * setting codekvast.statisticsDelayMillis to <= 0 turns off the async behaviour.
+ *
  * @author Olle Hallin (qolha), olle.hallin@crisp.se
  */
 @Service
@@ -61,6 +63,12 @@ public class StatisticsServiceImpl implements StatisticsService {
     @Override
     @Synchronized
     public void recalculateApplicationStatistics(AppId appId) {
+
+        if (codekvastSettings.getStatisticsDelayMillis() <= 0L) {
+            doTheWork(appId);
+            return;
+        }
+
         if (executor.isShutdown()) {
             log.debug("Ignoring statistics request during shutdown");
             return;
@@ -76,6 +84,16 @@ public class StatisticsServiceImpl implements StatisticsService {
         }
     }
 
+    private void doTheWork(AppId appId) {
+        log.debug("Recalculating statistics for {}", appId);
+
+        long startedAt = System.currentTimeMillis();
+        agentDAO.recalculateApplicationStatistics(appId);
+        log.info("Calculated statistics for {} in {} ms", appId, System.currentTimeMillis() - startedAt);
+
+        eventBus.post(agentDAO.createWebSocketMessage(appId.getOrganisationId()));
+    }
+
     @RequiredArgsConstructor
     private class Worker implements Runnable {
 
@@ -85,13 +103,8 @@ public class StatisticsServiceImpl implements StatisticsService {
                 AppId appId = null;
                 try {
                     appId = queue.take().getAppId();
-                    log.debug("Recalculating statistics for {}", appId);
 
-                    long startedAt = System.currentTimeMillis();
-                    agentDAO.recalculateApplicationStatistics(appId);
-                    log.info("Calculated statistics for {} in {} ms", appId, System.currentTimeMillis() - startedAt);
-
-                    eventBus.post(agentDAO.createWebSocketMessage(appId.getOrganisationId()));
+                    doTheWork(appId);
                 } catch (InterruptedException ignore) {
                     log.debug("Interrupted");
                     return;

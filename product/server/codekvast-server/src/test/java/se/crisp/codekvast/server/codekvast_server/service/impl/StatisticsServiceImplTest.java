@@ -34,7 +34,6 @@ public class StatisticsServiceImplTest {
 
     @Before
     public void before() throws Exception {
-        settings.setStatisticsDelayMillis(100);
         statisticsService = new StatisticsServiceImpl(agentDAO, eventBus, settings);
         statisticsService.start();
     }
@@ -45,7 +44,9 @@ public class StatisticsServiceImplTest {
     }
 
     @Test
-    public void testRequestMultipleStats() throws Exception {
+    public void testRequestMultipleStats_withDelay() throws Exception {
+        settings.setStatisticsDelayMillis(100);
+
         statisticsService.recalculateApplicationStatistics(APP_ID1);
         statisticsService.recalculateApplicationStatistics(APP_ID1);
         statisticsService.recalculateApplicationStatistics(APP_ID1);
@@ -55,9 +56,22 @@ public class StatisticsServiceImplTest {
 
         verifyNoMoreInteractions(agentDAO);
 
-        Thread.sleep(settings.getStatisticsDelayMillis() * 2);
+        Thread.sleep(200);
 
         verify(agentDAO, times(1)).recalculateApplicationStatistics(APP_ID1);
         verify(agentDAO, times(1)).recalculateApplicationStatistics(APP_ID2);
+    }
+
+    @Test
+    public void testRequestMultipleStats_withoutDelay() throws Exception {
+        statisticsService.recalculateApplicationStatistics(APP_ID1);
+        statisticsService.recalculateApplicationStatistics(APP_ID1);
+        statisticsService.recalculateApplicationStatistics(APP_ID1);
+
+        statisticsService.recalculateApplicationStatistics(APP_ID2);
+        statisticsService.recalculateApplicationStatistics(APP_ID2);
+
+        verify(agentDAO, times(3)).recalculateApplicationStatistics(APP_ID1);
+        verify(agentDAO, times(2)).recalculateApplicationStatistics(APP_ID2);
     }
 }
