@@ -38,8 +38,11 @@ public class DatabaseUtils {
     /**
      * Looks for {@link #RESTORE_ME_FILE} in {@link CodekvastSettings#getBackupPaths()}. If found, it is used for restoring the database.
      * The file is renamed afterwards to prevent it from being restored again.
+     *
+     * @return true if a restore was done.
      */
-    public static void restoreDatabaseIfRestoreMeFileWasFound(JdbcTemplate jdbcTemplate, CodekvastSettings settings) {
+    public static boolean restoreDatabaseIfRestoreMeFileWasFound(JdbcTemplate jdbcTemplate, CodekvastSettings settings) {
+        boolean result = false;
         for (File path : settings.getBackupPaths()) {
             File file = new File(path, RESTORE_ME_FILE);
             if (file.isFile() && file.canRead()) {
@@ -47,17 +50,18 @@ public class DatabaseUtils {
                 File renameTo;
                 String timestamp = formatTimestamp(new Date());
                 try {
-                    log.debug("Restoring database from {} ({} KB) ...", file, file.length()/1024);
+                    log.debug(String.format("Restoring database from %s (%,d KB) ...", file, file.length() / 1024));
                     long startedAt = System.currentTimeMillis();
 
                     String sql = String.format("RUNSCRIPT FROM '%s' COMPRESSION %s CHARSET '%s' ", file, COMPRESSION, CHARSET);
                     jdbcTemplate.execute(sql);
-                    renameTo = new File(file.getParentFile(), timestamp + "_restored_" + file.getName());
+                    renameTo = new File(file.getParentFile(), timestamp + "_restored-from_" + file.getName());
 
                     log.info("Restored database from {} in {} ms", file, System.currentTimeMillis() - startedAt);
+                    result = true;
                 } catch (DataAccessException e) {
                     log.error("Could not restore database from " + file, e);
-                    renameTo = new File(file.getParentFile(), timestamp + "_failedtorestore_" + file.getName());
+                    renameTo = new File(file.getParentFile(), timestamp + "_failed-to_" + file.getName());
                 }
 
                 boolean renamed = file.renameTo(renameTo);
@@ -72,9 +76,10 @@ public class DatabaseUtils {
                              file, renameTo);
                 }
 
-                return;
+                return result;
             }
         }
+        return false;
     }
 
     private static String formatTimestamp(Date date) {

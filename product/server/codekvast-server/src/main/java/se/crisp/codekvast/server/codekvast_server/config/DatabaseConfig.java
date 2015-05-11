@@ -47,18 +47,23 @@ public class DatabaseConfig {
         // The method {@code @Bean jdbcTemplate(DataSource)} depends on the currently executing method.
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 
+        boolean didRestore = false;
         if (!DatabaseUtils.isMemoryDatabase(jdbcTemplate)) {
-            DatabaseUtils.restoreDatabaseIfRestoreMeFileWasFound(jdbcTemplate, codekvastSettings);
+            didRestore = DatabaseUtils.restoreDatabaseIfRestoreMeFileWasFound(jdbcTemplate, codekvastSettings);
         }
 
-        log.info("Migrating database at {}", dataSource.getConnection().getMetaData().getURL());
+        log.info("Applying Flyway to {}", dataSource.getConnection().getMetaData().getURL());
         Flyway flyway = new Flyway();
         flyway.setDataSource(dataSource);
         flyway.setLocations(SQL_MIGRATION_LOCATION, JAVA_MIGRATION_LOCATION);
 
         MigrationInfo[] pendingMigrations = flyway.info().pending();
         if (pendingMigrations != null && pendingMigrations.length > 0) {
-            backupDatabaseBeforeMigration(jdbcTemplate, codekvastSettings, pendingMigrations);
+
+            if (!didRestore) {
+                // Only backup if we did not restore from a backup...
+                backupDatabaseBeforeMigration(jdbcTemplate, codekvastSettings, pendingMigrations);
+            }
             logPendingMigrations(pendingMigrations);
         }
 
