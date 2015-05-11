@@ -1,6 +1,5 @@
 package se.crisp.codekvast.server.codekvast_server.service.impl;
 
-import com.google.common.eventbus.EventBus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +10,7 @@ import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import se.crisp.codekvast.server.codekvast_server.service.AgentService;
+import se.crisp.codekvast.server.codekvast_server.service.StatisticsService;
 
 import javax.inject.Inject;
 
@@ -23,15 +23,15 @@ import javax.inject.Inject;
 @Slf4j
 public class AgentServiceImpl implements AgentService {
 
-    private final EventBus eventBus;
     private final AgentDAO agentDAO;
     private final UserDAO userDAO;
+    private final StatisticsService statisticsService;
 
     @Inject
-    public AgentServiceImpl(EventBus eventBus, AgentDAO agentDAO, UserDAO userDAO) {
-        this.eventBus = eventBus;
+    public AgentServiceImpl(AgentDAO agentDAO, UserDAO userDAO, StatisticsService statisticsService) {
         this.agentDAO = agentDAO;
         this.userDAO = userDAO;
+        this.statisticsService = statisticsService;
     }
 
     @Override
@@ -41,9 +41,7 @@ public class AgentServiceImpl implements AgentService {
         long appId = agentDAO.getAppId(organisationId, data.getAppName());
 
         agentDAO.storeJvmData(organisationId, appId, data);
-        agentDAO.recalculateApplicationStatistics(appId);
-
-        eventBus.post(agentDAO.createWebSocketMessage(organisationId));
+        statisticsService.recalculateApplicationStatistics(agentDAO.getAppIdByJvmUuid(data.getJvmUuid()));
     }
 
     @Override
@@ -62,10 +60,7 @@ public class AgentServiceImpl implements AgentService {
         }
 
         agentDAO.storeInvocationData(appId, data);
-
-        agentDAO.recalculateApplicationStatistics(appId);
-
-        eventBus.post(agentDAO.createWebSocketMessage(appId.getOrganisationId()));
+        statisticsService.recalculateApplicationStatistics(appId);
     }
 
 }
