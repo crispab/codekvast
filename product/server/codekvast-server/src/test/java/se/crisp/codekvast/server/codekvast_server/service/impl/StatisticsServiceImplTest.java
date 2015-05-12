@@ -19,8 +19,9 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class StatisticsServiceImplTest {
 
-    private static final AppId APP_ID1 = AppId.builder().organisationId(1).appId(1).build();
-    private static final AppId APP_ID2 = AppId.builder().organisationId(1).appId(2).build();
+    private static final AppId APP_ID1_1 = AppId.builder().organisationId(1).appId(1).jvmId(1).build();
+    private static final AppId APP_ID1_2 = AppId.builder().organisationId(1).appId(1).jvmId(2).build();
+    private static final AppId APP_ID2 = AppId.builder().organisationId(1).appId(2).jvmId(2).build();
 
     @Mock
     private EventBus eventBus;
@@ -47,9 +48,9 @@ public class StatisticsServiceImplTest {
     public void testRequestMultipleStats_withDelay() throws Exception {
         settings.setStatisticsDelayMillis(100);
 
-        statisticsService.recalculateApplicationStatistics(APP_ID1);
-        statisticsService.recalculateApplicationStatistics(APP_ID1);
-        statisticsService.recalculateApplicationStatistics(APP_ID1);
+        statisticsService.recalculateApplicationStatistics(APP_ID1_1);
+        statisticsService.recalculateApplicationStatistics(APP_ID1_1);
+        statisticsService.recalculateApplicationStatistics(APP_ID1_2);
 
         statisticsService.recalculateApplicationStatistics(APP_ID2);
         statisticsService.recalculateApplicationStatistics(APP_ID2);
@@ -58,20 +59,20 @@ public class StatisticsServiceImplTest {
 
         Thread.sleep(200);
 
-        verify(agentDAO, times(1)).recalculateApplicationStatistics(APP_ID1);
+        verify(agentDAO, times(1)).recalculateApplicationStatistics(APP_ID1_1);
         verify(agentDAO, times(1)).recalculateApplicationStatistics(APP_ID2);
     }
 
     @Test
     public void testRequestMultipleStats_withoutDelay() throws Exception {
-        statisticsService.recalculateApplicationStatistics(APP_ID1);
-        statisticsService.recalculateApplicationStatistics(APP_ID1);
-        statisticsService.recalculateApplicationStatistics(APP_ID1);
+        statisticsService.recalculateApplicationStatistics(APP_ID1_1);
+        statisticsService.recalculateApplicationStatistics(APP_ID1_1);
+        statisticsService.recalculateApplicationStatistics(APP_ID1_2);
 
         statisticsService.recalculateApplicationStatistics(APP_ID2);
         statisticsService.recalculateApplicationStatistics(APP_ID2);
 
-        verify(agentDAO, times(3)).recalculateApplicationStatistics(APP_ID1);
+        verify(agentDAO, times(3)).recalculateApplicationStatistics(APP_ID1_1);
         verify(agentDAO, times(2)).recalculateApplicationStatistics(APP_ID2);
     }
 }

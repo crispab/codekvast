@@ -1,16 +1,18 @@
 package se.crisp.codekvast.server.codekvast_server.model;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 /**
  * The identity of an application.
  *
- * Two applications with the same name executing in different JVMs are considered different applications.
+ * The JVM id is not included in equals() and hashCode()
  *
  * @author olle.hallin@crisp.se
  */
 @Value
+@EqualsAndHashCode(exclude = "jvmId")
 @Builder
 public class AppId {
     /**
@@ -24,12 +26,15 @@ public class AppId {
     long appId;
 
     /**
-     * What is the primary key of the jvm_info row?
-     */
-    long jvmId;
-
-    /**
      * What version of the app is running in this JVM?
      */
     String appVersion;
+
+    /**
+     * What is the primary key of the jvm_info row?
+     *
+     * NOTE: jvmId is not included in equals() and hashCode()
+     */
+    long jvmId;
+
 }

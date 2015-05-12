@@ -96,16 +96,8 @@ public class StatisticsServiceImpl implements StatisticsService {
 
             Collection<AppId> appIds = agentDAO.getApplicationIds(organisationId, applicationNames);
 
-            // Eliminate duplicates that only differs on JVM id...
-            appIds.stream()
-                  .map(id -> AppId.builder()
-                                  .organisationId(id.getOrganisationId())
-                                  .appId(id.getAppId())
-                                  .appVersion(id.getAppVersion())
-                                  .jvmId(0)
-                                  .build())
-                  .distinct()
-                  .forEach(appId -> recalculate(appId, false));
+            // Eliminate duplicates..
+            appIds.stream().distinct().forEach(appId -> recalculate(appId, false));
 
             log.info("Calculated statistics for organisation {} in {} ms", organisationId, System.currentTimeMillis() - startedAt);
 

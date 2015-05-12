@@ -9,7 +9,8 @@
 1. Improvement: Now logging also shows the thread name
 1. Improvement: Better logging when backing up and restoring database.
 1. Improvement: Logs pending Flyway migrations at app startup.
-1. Improvement: Avoids backing up database immediately after restoring from restore-me.zip 
+1. Improvement: Avoids backing up database immediately after restoring from restore-me.zip
+1. Bug: Redundant statistics recalculations for same app in different JVMs.
 
 ## 0.11.4
 
