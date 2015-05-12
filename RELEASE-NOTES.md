@@ -11,6 +11,7 @@
 1. Improvement: Logs pending Flyway migrations at app startup.
 1. Improvement: Avoids backing up database immediately after restoring from restore-me.zip
 1. Bug: Redundant statistics recalculations for same app in different JVMs.
+1. Improvement: added timing logging to report generator.
 
 ## 0.11.4
 

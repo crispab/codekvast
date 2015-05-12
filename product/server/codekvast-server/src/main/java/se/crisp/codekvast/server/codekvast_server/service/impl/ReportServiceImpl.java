@@ -42,6 +42,7 @@ public class ReportServiceImpl implements ReportService {
     @Override
     @Transactional(readOnly = true, rollbackFor = Exception.class)
     public GetMethodUsageResponse getMethodUsage(String username, GetMethodUsageRequest request) throws CodekvastException {
+        long startedAt = System.currentTimeMillis();
 
         ReportParameters params =
                 ReportParameters.builder()
@@ -64,11 +65,15 @@ public class ReportServiceImpl implements ReportService {
             methods.addAll(methodsForScope);
         }
 
-        return GetMethodUsageResponse.builder()
-                                     .request(request)
-                                     .numMethods(reportDAO.countMethods(userDAO.getOrganisationIdForUsername(username)))
-                                     .methods(methods.subList(0, Math.min(methods.size(), request.getMaxPreviewRows())))
-                                     .numMethodsByScope(numMethodsByScope)
-                                     .build();
+        GetMethodUsageResponse response =
+                GetMethodUsageResponse.builder()
+                                      .request(request)
+                                      .numMethods(reportDAO.countMethods(userDAO.getOrganisationIdForUsername(username)))
+                                      .methods(methods.subList(0, Math.min(methods.size(), request.getMaxPreviewRows())))
+                                      .numMethodsByScope(numMethodsByScope)
+                                      .build();
+
+        log.debug("Created response to {}'s request for {} in {} ms", username, request, System.currentTimeMillis() - startedAt);
+        return response;
     }
 }
