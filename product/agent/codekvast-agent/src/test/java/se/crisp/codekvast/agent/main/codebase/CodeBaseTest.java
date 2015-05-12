@@ -3,7 +3,7 @@ package se.crisp.codekvast.agent.main.codebase;
 import org.junit.Test;
 import se.crisp.codekvast.agent.config.CollectorConfig;
 
-import java.io.File;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 
@@ -51,11 +51,29 @@ public class CodeBaseTest {
     public void testNormalizeGuiceEnhancedMethod() throws URISyntaxException {
         codeBase = getCodeBase(SAMPLE_APP_JAR);
         String sig = codeBase.normalizeSignature(
-                "public final void se.customer.module.l1mgr.connectivity.persistence.TrailEAO..EnhancerByGuice..a219ec4a" +
-                        ".removeTrails(java.util.Collection)"
+                "package-private se.customer.module.l1mgr.connectivity.persistence.TrailEAOJpaImpl..EnhancerByGuice..fb660c79" +
+                        ".CGLIB$removeTrails$3(java.util.Collection)"
         );
         assertThat(sig,
-                   is("public void se.customer.module.l1mgr.connectivity.persistence.TrailEAO.removeTrails(java.util.Collection)"));
+                   is("package-private se.customer.module.l1mgr.connectivity.persistence.TrailEAOJpaImpl.removeTrails(java.util" +
+                              ".Collection)"));
+    }
+
+    @Test
+    public void testNormalizeStrangeSignatures() throws URISyntaxException, IOException {
+        codeBase = getCodeBase(SAMPLE_APP_JAR);
+        InputStream inputStream = getClass().getResourceAsStream("/customer1/strange-signatures1.dat");
+
+        BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
+        String signature;
+        while ((signature = r.readLine()) != null) {
+            String normalized = codeBase.normalizeSignature(signature);
+            if (normalized != null) {
+                assertThat("Could not normalize " + signature, normalized.contains(".."), is(false));
+                assertThat("Could not normalize " + signature + ", result contains Guice-generated hash: " + normalized,
+                           normalized.matches(".*\\.[a-f0-9]{7,8}\\..*"), is(false));
+            }
+        }
     }
 
     @Test(expected = NullPointerException.class)

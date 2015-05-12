@@ -13,6 +13,7 @@ import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -25,11 +26,18 @@ import java.util.regex.Pattern;
 @Slf4j
 public class CodeBase {
 
-    private static final Pattern[] ENHANCE_BY_GUICE_PATTERNS = {
+    private static final Pattern[] ADDED_BY_GUICE_PATTERNS = {
+            Pattern.compile(".*\\.\\.FastClassByGuice.*\\.getIndex\\(java\\.lang\\.String, java\\.lang\\.Class\\[\\]\\)$"),
             Pattern.compile(".*\\.\\.FastClassByGuice.*\\.getIndex\\(java\\.lang\\.Class\\[\\]\\)$"),
             Pattern.compile(".*\\.\\.FastClassByGuice.*\\.newInstance\\(int, java\\.lang\\.Object\\[\\]\\)$"),
             Pattern.compile(".*\\.\\.FastClassByGuice.*\\.invoke\\(int, java\\.lang\\.Object, java\\.lang\\.Object\\[\\]\\)$"),
+            Pattern.compile(".*\\.\\.EnhancerByGuice\\.\\.[a-f0-9]+\\.CGLIB\\$STATICHOOK[0-9]+\\(\\)"),
             Pattern.compile(".*\\(com\\.google\\.inject\\.internal\\.cglib.*\\)$"),
+    };
+
+    private static final Pattern[] ENHANCED_BY_GUICE_PATTERNS = {
+            Pattern.compile("(.*)\\.\\.EnhancerByGuice\\.\\.[a-z0-9.]+CGLIB\\$(\\w+)\\$\\d+(.*)"),
+            Pattern.compile("(.*)\\.\\.EnhancerByGuice\\.\\.[a-f0-9]+\\.(\\w+)(.*)"),
     };
 
     private final List<File> codeBaseFiles;
@@ -43,6 +51,8 @@ public class CodeBase {
     @Getter
     private final Map<String, String> overriddenSignatures = new HashMap<String, String>();
 
+    private static final Set<String> strangeSignatures = new TreeSet<String>();
+
     private final CodeBaseFingerprint fingerprint;
 
     private List<URL> urls;
@@ -53,6 +63,37 @@ public class CodeBase {
         this.codeBaseFiles = config.getCodeBaseFiles();
         this.fingerprint = initUrls();
     }
+
+    public String normalizeSignature(String signature) {
+        if (signature == null) {
+            return null;
+        }
+
+        if (signature.contains("..")) {
+            strangeSignatures.add(signature);
+        }
+
+        for (Pattern pattern : ADDED_BY_GUICE_PATTERNS) {
+            if (pattern.matcher(signature).matches()) {
+                return null;
+            }
+        }
+        String result = signature.replaceAll(" final ", " ");
+
+        for (Pattern pattern : ENHANCED_BY_GUICE_PATTERNS) {
+            Matcher matcher = pattern.matcher(result);
+            if (matcher.matches()) {
+                result = matcher.group(1) + "." + matcher.group(2) + matcher.group(3);
+                log.trace("Normalized {} to {}", signature, result);
+            }
+        }
+
+        if (result.contains("..")) {
+            log.warn("Could not normalize {}: {}", signature, result);
+        }
+        return result;
+    }
+
 
     URL[] getUrls() {
         if (needsExploding) {
@@ -124,7 +165,7 @@ public class CodeBase {
         }
     }
 
-    void writeSignaturesToDisk() {
+    public void writeSignaturesToDisk() {
         File file = config.getSignatureFile(config.getAppName());
         PrintWriter out = null;
         try {
@@ -147,6 +188,13 @@ public class CodeBase {
                 out.printf("%s -> %s%n", entry.getKey(), entry.getValue());
             }
 
+            out.println();
+            out.println("------------------------------------------------------------------------------------------------");
+            out.println("# Strange signatures:");
+            for (String signature : strangeSignatures) {
+                out.println(signature);
+            }
+
             if (!tmpFile.renameTo(file)) {
                 log.error("Cannot rename {} to {}", tmpFile.getAbsolutePath(), file.getAbsolutePath());
                 tmpFile.delete();
@@ -166,18 +214,6 @@ public class CodeBase {
 
     public String getBaseSignature(String signature) {
         return signature == null ? null : overriddenSignatures.get(signature);
-    }
-
-    public String normalizeSignature(String signature) {
-        if (signature == null) {
-            return null;
-        }
-        for (Pattern pattern : ENHANCE_BY_GUICE_PATTERNS) {
-            if (pattern.matcher(signature).matches()) {
-                return null;
-            }
-        }
-        return signature.replaceAll(" final ", " ").replaceAll("\\.\\.EnhancerByGuice\\.\\..*[0-9a-f]\\.([\\w]+\\()", ".$1").trim();
     }
 
     public boolean isEmpty() {

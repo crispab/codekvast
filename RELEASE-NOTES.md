@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.11.6
+
+1. Bug fix in Agent: now it handles more Guice-manipulated method names
+
 ## 0.11.5
 
 1. Capacity: Application statistics calculations are delayed by 5s (configurable).
