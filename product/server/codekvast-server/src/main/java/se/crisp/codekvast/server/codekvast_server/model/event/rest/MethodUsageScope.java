@@ -7,4 +7,8 @@ package se.crisp.codekvast.server.codekvast_server.model.event.rest;
  */
 public enum MethodUsageScope {
     DEAD, POSSIBLY_DEAD, BOOTSTRAP, LIVE;
+
+    public String toDisplayString() {
+        return name().toLowerCase().replace("_", " ");
+    }
 }

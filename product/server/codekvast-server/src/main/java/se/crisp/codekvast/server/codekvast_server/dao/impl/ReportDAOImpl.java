@@ -44,13 +44,17 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
 
     @Override
     public int countMethods(long organisationId) {
-        log.debug("Counting signatures for organisation {}", organisationId);
-        return jdbcTemplate.queryForObject("SELECT COUNT(1) FROM signatures WHERE organisation_id = ?", Integer.class, organisationId);
+        long startedAt = System.currentTimeMillis();
+        try {
+            return jdbcTemplate.queryForObject("SELECT COUNT(1) FROM signatures WHERE organisation_id = ?", Integer.class, organisationId);
+        } finally {
+            log.debug("Counted signatures for organisation {} in {} ms", organisationId, System.currentTimeMillis() - startedAt);
+        }
     }
 
     @Override
     public Collection<MethodUsageEntry> getMethodsForScope(MethodUsageScope scope, ReportParameters reportParameters) {
-        return methodRetrievalStrategies.get(scope).getMethods(reportParameters);
+        return methodRetrievalStrategies.get(scope).getMethods(scope, reportParameters);
     }
 
     @Override
@@ -69,7 +73,16 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
     }
 
     private abstract class MethodRetriever {
-        abstract Collection<MethodUsageEntry> getMethods(ReportParameters reportParameters);
+        abstract Collection<MethodUsageEntry> doGetMethods(ReportParameters reportParameters);
+
+        Collection<MethodUsageEntry> getMethods(MethodUsageScope scope, ReportParameters reportParameters) {
+            long startedAt = System.currentTimeMillis();
+
+            Collection<MethodUsageEntry> result = doGetMethods(reportParameters);
+
+            log.debug("Retrieved {} {} methods in {} ms", result.size(), scope.toDisplayString(), System.currentTimeMillis() - startedAt);
+            return result;
+        }
 
         protected List<Object> generateParams(ReportParameters reportParameters) {
             List<Object> params = new ArrayList<>();
@@ -98,7 +111,7 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
     private class RetrieveDeadMethods extends MethodRetriever {
 
         @Override
-        public Collection<MethodUsageEntry> getMethods(ReportParameters reportParameters) {
+        public Collection<MethodUsageEntry> doGetMethods(ReportParameters reportParameters) {
             return jdbcTemplate.query(generateSql(reportParameters) + " AND invoked_at_millis = 0 ",
                                       new MethodUsageEntryRowMapper(MethodUsageScope.DEAD),
                                       generateParams(reportParameters).toArray());
@@ -108,7 +121,7 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
 
     private class RetrievePossiblyDeadMethods extends MethodRetriever {
         @Override
-        public Collection<MethodUsageEntry> getMethods(ReportParameters reportParameters) {
+        public Collection<MethodUsageEntry> doGetMethods(ReportParameters reportParameters) {
             List<Object> params = generateParams(reportParameters);
             params.add(reportParameters.getBootstrapSeconds() * 1000L);
             params.add(reportParameters.getUsageCycleSeconds() * 1000L);
@@ -123,7 +136,7 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
 
     private class RetrieveBootstrapMethods extends MethodRetriever {
         @Override
-        public Collection<MethodUsageEntry> getMethods(ReportParameters reportParameters) {
+        public Collection<MethodUsageEntry> doGetMethods(ReportParameters reportParameters) {
             List<Object> params = generateParams(reportParameters);
             params.add(reportParameters.getBootstrapSeconds() * 1000L);
 
@@ -137,7 +150,7 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
 
     private class RetrieveLiveMethods extends MethodRetriever {
         @Override
-        public Collection<MethodUsageEntry> getMethods(ReportParameters reportParameters) {
+        public Collection<MethodUsageEntry> doGetMethods(ReportParameters reportParameters) {
             List<Object> params = generateParams(reportParameters);
             params.add(reportParameters.getUsageCycleSeconds() * 1000L);
 
