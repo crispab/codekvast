@@ -46,8 +46,10 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
     public int countMethods(long organisationId) {
         long startedAt = System.currentTimeMillis();
         Integer result =
-                jdbcTemplate.queryForObject("SELECT COUNT(1) FROM signatures WHERE organisation_id = ?", Integer.class, organisationId);
-        log.debug("Counted {} signatures for organisation {} in {} ms", result, organisationId, System.currentTimeMillis() - startedAt);
+                jdbcTemplate.queryForObject("SELECT COUNT(DISTINCT signature) FROM signatures WHERE organisation_id = ?", Integer.class,
+                                            organisationId);
+        log.debug("Found distinct {} signatures for organisation {} in {} ms", result, organisationId, System.currentTimeMillis() -
+                startedAt);
         return result;
     }
 

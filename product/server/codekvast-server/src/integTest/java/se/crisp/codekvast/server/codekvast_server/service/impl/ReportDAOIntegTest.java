@@ -69,6 +69,16 @@ public class ReportDAOIntegTest extends AbstractServiceIntegTest {
     }
 
     @Test
+    public void testCountSignatures_invalidOrganisation() {
+        assertThat(reportDAO.countMethods(0), is(0));
+    }
+
+    @Test
+    public void testCountSignatures_validOrganisation() {
+        assertThat(reportDAO.countMethods(1), is(4));
+    }
+
+    @Test
     public void testGetJvmIds_invalid_organisation_id() throws Exception {
         assertThat(reportDAO.getJvmIdsByAppVersions(0, asList("1.0", "2.0")), empty());
     }

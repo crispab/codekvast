@@ -42,6 +42,8 @@ public class ReportServiceImpl implements ReportService {
     @Override
     @Transactional(readOnly = true, rollbackFor = Exception.class)
     public GetMethodUsageResponse getMethodUsage(String username, GetMethodUsageRequest request) throws CodekvastException {
+        log.debug("Received {} from {}", request, username);
+
         long startedAt = System.currentTimeMillis();
 
         ReportParameters params =
