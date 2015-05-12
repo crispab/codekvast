@@ -40,7 +40,7 @@ public class StatisticsServiceImpl implements StatisticsService {
     private final CodekvastSettings codekvastSettings;
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private final BlockingQueue<DelayedAppId> queue = new DelayQueue<>();
+    private final BlockingQueue<StatisticsRequest> queue = new DelayQueue<>();
 
     @Inject
     public StatisticsServiceImpl(AgentDAO agentDAO, EventBus eventBus, CodekvastSettings codekvastSettings) {
@@ -65,7 +65,9 @@ public class StatisticsServiceImpl implements StatisticsService {
     @Synchronized
     public void recalculateApplicationStatistics(AppId appId) {
 
-        if (codekvastSettings.getStatisticsDelayMillis() <= 0L) {
+        long statisticsDelayMillis = codekvastSettings.getStatisticsDelayMillis();
+
+        if (statisticsDelayMillis <= 0L) {
             recalculate(appId, true);
             return;
         }
@@ -75,13 +77,13 @@ public class StatisticsServiceImpl implements StatisticsService {
             return;
         }
 
-        DelayedAppId delayedAppId = new DelayedAppId(appId, codekvastSettings.getStatisticsDelayMillis());
+        StatisticsRequest statisticsRequest = new StatisticsRequest(appId, statisticsDelayMillis);
 
-        if (queue.contains(delayedAppId)) {
+        if (queue.contains(statisticsRequest)) {
             log.debug("{} is already queued for statistics", appId);
         } else {
             log.debug("Queueing statistics for {}", appId);
-            queue.add(delayedAppId);
+            queue.add(statisticsRequest);
         }
     }
 
@@ -145,29 +147,29 @@ public class StatisticsServiceImpl implements StatisticsService {
     }
 
     @EqualsAndHashCode(of = "appId")
-    private class DelayedAppId implements Delayed {
+    private class StatisticsRequest implements Delayed {
 
         @Getter
         private final AppId appId;
-        private final long expiresAtMillis;
+        private final long dueAtMillis;
 
-        private DelayedAppId(AppId appId, long delayMillis) {
+        private StatisticsRequest(AppId appId, long delayMillis) {
             this.appId = appId;
-            expiresAtMillis = System.currentTimeMillis() + delayMillis;
+            dueAtMillis = System.currentTimeMillis() + delayMillis;
         }
 
         @Override
         public long getDelay(TimeUnit unit) {
-            long diff = expiresAtMillis - System.currentTimeMillis();
+            long diff = dueAtMillis - System.currentTimeMillis();
             return unit.convert(diff, TimeUnit.MILLISECONDS);
         }
 
         @Override
         public int compareTo(Delayed o) {
-            if (this.expiresAtMillis < ((DelayedAppId) o).expiresAtMillis) {
+            if (this.dueAtMillis < ((StatisticsRequest) o).dueAtMillis) {
                 return -1;
             }
-            if (this.expiresAtMillis > ((DelayedAppId) o).expiresAtMillis) {
+            if (this.dueAtMillis > ((StatisticsRequest) o).dueAtMillis) {
                 return 1;
             }
             return 0;
