@@ -11,8 +11,6 @@ import java.util.Collection;
  * @author olle.hallin@crisp.se
  */
 public interface ReportDAO {
-    int countMethods(long organisationId);
-
     Collection<Long> getJvmIdsByAppVersions(long organisationId, Collection<String> applicationVersions);
 
     Collection<MethodUsageEntry> getMethodsForScope(MethodUsageScope scope, ReportParameters reportParameters);

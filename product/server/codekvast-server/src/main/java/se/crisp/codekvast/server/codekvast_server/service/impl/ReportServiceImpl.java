@@ -70,7 +70,6 @@ public class ReportServiceImpl implements ReportService {
         GetMethodUsageResponse response =
                 GetMethodUsageResponse.builder()
                                       .request(request)
-                                      .numMethods(reportDAO.countMethods(userDAO.getOrganisationIdForUsername(username)))
                                       .methods(methods.subList(0, Math.min(methods.size(), request.getMaxPreviewRows())))
                                       .numMethodsByScope(numMethodsByScope)
                                       .build();

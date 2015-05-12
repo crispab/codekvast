@@ -16,8 +16,6 @@ public class GetMethodUsageResponse {
     @NonNull
     private final GetMethodUsageRequest request;
 
-    private final int numMethods;
     private final Map<MethodUsageScope, Integer> numMethodsByScope;
-
     private final Collection<MethodUsageEntry> methods;
 }

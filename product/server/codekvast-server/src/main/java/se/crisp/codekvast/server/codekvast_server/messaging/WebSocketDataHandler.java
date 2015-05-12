@@ -12,14 +12,15 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.WebSocketMessage;
-import se.crisp.codekvast.server.codekvast_server.model.event.rest.*;
+import se.crisp.codekvast.server.codekvast_server.model.event.rest.GetMethodUsageRequest;
+import se.crisp.codekvast.server.codekvast_server.model.event.rest.GetMethodUsageResponse;
+import se.crisp.codekvast.server.codekvast_server.model.event.rest.OrganisationSettings;
 import se.crisp.codekvast.server.codekvast_server.service.ReportService;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
 import java.security.Principal;
-import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -119,59 +120,4 @@ public class WebSocketDataHandler extends AbstractEventBusSubscriber {
 
         return response;
     }
-
-
-    private GetMethodUsageResponse createFakeMethodUsageResponse(GetMethodUsageRequest request) {
-        long now = System.currentTimeMillis();
-
-        List<MethodUsageEntry> methods = new ArrayList<>();
-        for (int i = 0; i < request.getMaxPreviewRows(); i++) {
-            boolean dead = request.getMethodUsageScopes().contains(MethodUsageScope.DEAD) ? random.nextBoolean() : false;
-            long usedAtMillis = dead ? 0L : now - random.nextInt(5 * 24 * 60 * 60 * 1000);
-            methods.add(MethodUsageEntry.builder()
-                                        .name(String.format("%s-%04d", randomString(80), i))
-                                        .scope(getRandomScope(request.getMethodUsageScopes(), usedAtMillis))
-                                        .invokedAtMillis(usedAtMillis)
-                                        .build());
-        }
-
-        Map<MethodUsageScope, Integer> methodsByScope = new HashMap<>();
-        for (MethodUsageScope scope : request.getMethodUsageScopes()) {
-            methodsByScope.put(scope, random.nextInt(methods.size()));
-        }
-
-        return GetMethodUsageResponse.builder()
-                                     .request(request)
-                                     .methods(methods)
-                                     .numMethods((int) (methods.size() * (1.5d + random.nextDouble())))
-                                     .numMethodsByScope(methodsByScope)
-                                     .build();
-    }
-
-    private MethodUsageScope getRandomScope(Collection<MethodUsageScope> requestScopes, long usedAtMillis) {
-        if (usedAtMillis == 0L && requestScopes.contains(MethodUsageScope.DEAD)) {
-            return MethodUsageScope.DEAD;
-        }
-
-        MethodUsageScope[] values = MethodUsageScope.values();
-        while (true) {
-            MethodUsageScope scope = values[random.nextInt(values.length)];
-            if (scope != MethodUsageScope.DEAD && requestScopes.contains(scope)) {
-                return scope;
-            }
-        }
-    }
-
-    private final Random random = new Random();
-
-    private String randomString(int averageLength) {
-        StringBuilder sb = new StringBuilder();
-        int len = averageLength / 2 + random.nextInt(averageLength);
-        for (int i = 0; i < len; i++) {
-            char c = (char) ('a' + random.nextInt('z' - 'a'));
-            sb.append(c);
-        }
-        return sb.toString();
-    }
-
 }

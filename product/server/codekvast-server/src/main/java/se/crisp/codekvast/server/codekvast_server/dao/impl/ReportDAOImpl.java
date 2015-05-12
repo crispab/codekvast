@@ -43,17 +43,6 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
     }
 
     @Override
-    public int countMethods(long organisationId) {
-        long startedAt = System.currentTimeMillis();
-        Integer result =
-                jdbcTemplate.queryForObject("SELECT COUNT(DISTINCT signature) FROM signatures WHERE organisation_id = ?", Integer.class,
-                                            organisationId);
-        log.debug("Found distinct {} signatures for organisation {} in {} ms", result, organisationId, System.currentTimeMillis() -
-                startedAt);
-        return result;
-    }
-
-    @Override
     public Collection<MethodUsageEntry> getMethodsForScope(MethodUsageScope scope, ReportParameters reportParameters) {
         return methodRetrievalStrategies.get(scope).getMethods(scope, reportParameters);
     }
