@@ -67,7 +67,11 @@ public class DatabaseConfig {
             logPendingMigrations(pendingMigrations);
         }
 
+        long startedAt = System.currentTimeMillis();
+
         flyway.migrate();
+
+        log.info("Database migrated in {} ms", System.currentTimeMillis() - startedAt);
 
         replacePlaintextPasswords(dataSource.getConnection());
 
