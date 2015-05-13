@@ -57,11 +57,6 @@ distributions {
     }
 }
 
-task build(dependsOn: [agentDistZip, serverDistZip, webDistZip]) {
-    description = "Builds distribution zips for agent, server and web"
-    group "build"
-}
-
 bintray {
     // These are supposed to be defined in $HOME/.gradle/gradle.properties
     user = project.hasProperty('bintrayUser') ? bintrayUser : "undefined"

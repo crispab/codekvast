@@ -122,15 +122,17 @@ applicationDistribution.from("src/main/resources") {
 
 startScripts {
     doLast {
-        outputs.files.each { script ->
-            logger.info "Adjusting start script {} ...", script.name
-            if (script.name.toLowerCase().endsWith('.bat')) {
-                script.text = script.text
-                        .replace('CLASSPATH=%APP_HOME%\\lib', 'CLASSPATH=%APP_HOME%\\conf\\;%APP_HOME%\\lib')
-            } else {
-                script.text = script.text
-                        .replace('APP_HOME=', 'export APP_HOME=')
-                        .replace('CLASSPATH=$APP_HOME/lib', 'CLASSPATH=$APP_HOME/conf/:$APP_HOME/lib')
+        outputs.files.each { scriptDir ->
+            scriptDir.eachFile { script ->
+                logger.info "Adjusting start script {} ...", script.name
+                if (script.name.toLowerCase().endsWith('.bat')) {
+                    script.text = script.text
+                            .replace('CLASSPATH=%APP_HOME%\\lib', 'CLASSPATH=%APP_HOME%\\conf\\;%APP_HOME%\\lib')
+                } else {
+                    script.text = script.text
+                            .replace('APP_HOME=', 'export APP_HOME=')
+                            .replace('CLASSPATH=$APP_HOME/lib', 'CLASSPATH=$APP_HOME/conf/:$APP_HOME/lib')
+                }
             }
         }
     }
