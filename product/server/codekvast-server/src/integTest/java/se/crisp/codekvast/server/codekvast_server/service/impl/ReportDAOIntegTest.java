@@ -10,12 +10,12 @@ import se.crisp.codekvast.server.codekvast_server.dao.ReportDAO;
 import se.crisp.codekvast.server.codekvast_server.dao.ReportDAO.ReportParameters;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
+import se.crisp.codekvast.server.codekvast_server.model.event.rest.MethodUsageEntry;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.MethodUsageScope;
 import se.crisp.codekvast.server.codekvast_server.service.AgentService;
 
 import javax.inject.Inject;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
@@ -135,33 +135,43 @@ public class ReportDAOIntegTest extends AbstractServiceIntegTest {
     public void testGet_PossiblyDead_Bootstrap_Live_Methods_app1_v1_1() throws CodekvastException {
 
         List<SignatureEntry> signatures = asList(
-                new SignatureEntry("bootstrap1", t0 + bootstrapMillis / 2, bootstrapMillis / 2, null),
-                new SignatureEntry("possiblyDead1", t2 - usageCycleMillis * 2, bootstrapMillis * 2, null),
-                new SignatureEntry("live1", t3 - usageCycleMillis / 2, bootstrapMillis * 2, null));
+                new SignatureEntry("bootstrap1", t0 + bootstrapMillis - 1, bootstrapMillis - 1, null),
+                new SignatureEntry("bootstrap2", t0 + bootstrapMillis, bootstrapMillis, null),
+                new SignatureEntry("possiblyDead1", t3 - usageCycleMillis - 2, bootstrapMillis + 1, null),
+                new SignatureEntry("possiblyDead2", t3 - usageCycleMillis - 1, bootstrapMillis + 1, null),
+                new SignatureEntry("live1", t3 - usageCycleMillis + 0, bootstrapMillis + 1, null),
+                new SignatureEntry("live2", t3 - usageCycleMillis + 1, bootstrapMillis + 1, null));
 
         agentService.storeSignatureData(SignatureData.builder().jvmUuid("jvm2").signatures(signatures).build());
 
-        long appId = agentDAO.getApplicationIds(1, asList("app1")).iterator().next().getAppId();
-        long jvmId = reportDAO.getJvmIdsByAppVersions(1, asList("1.1")).iterator().next();
+        ReportParameters params = getReportParameters(asList("app1"), asList("1.0"));
 
-        String sql = "SELECT * FROM signatures s, application_statistics stats, jvm_info jvm " +
-                "WHERE s.organisation_id = ? " +
-                "AND s.application_id = ? " +
-                "AND s.jvm_id = ? " +
-                "AND s.jvm_id = jvm.id " +
-                "AND stats.application_id = s.application_id " +
-                "AND stats.application_version = jvm.application_version " +
-                "AND s.invoked_at_millis >= stats.max_started_at_millis " +
-                "AND s.millis_since_jvm_start <= ? ";
+        assertScopeContainsMethods(params, MethodUsageScope.POSSIBLY_DEAD);
+        assertScopeContainsMethods(params, MethodUsageScope.BOOTSTRAP);
+        assertScopeContainsMethods(params, MethodUsageScope.LIVE);
 
-        Map<String, Object> map = jdbcTemplate.queryForMap(sql, 1, appId, jvmId, bootstrapMillis);
+        params = getReportParameters(asList("app1"), asList("1.1"));
+        assertScopeContainsMethods(params, MethodUsageScope.POSSIBLY_DEAD, "possiblyDead1", "possiblyDead2");
+        assertScopeContainsMethods(params, MethodUsageScope.BOOTSTRAP, "bootstrap1", "bootstrap2");
+        assertScopeContainsMethods(params, MethodUsageScope.LIVE, "live1", "live2");
 
-        ReportParameters params = getReportParameters(asList("app1"), asList("1.1"));
-        assertThat(reportDAO.getMethodsForScope(MethodUsageScope.POSSIBLY_DEAD, params), hasSize(1));
-        assertThat(reportDAO.getMethodsForScope(MethodUsageScope.BOOTSTRAP, params), hasSize(1));
-        assertThat(reportDAO.getMethodsForScope(MethodUsageScope.LIVE, params), hasSize(1));
+        params = getReportParameters(asList("app2"), asList("1.0"));
+        assertScopeContainsMethods(params, MethodUsageScope.POSSIBLY_DEAD);
+        assertScopeContainsMethods(params, MethodUsageScope.BOOTSTRAP);
+        assertScopeContainsMethods(params, MethodUsageScope.LIVE);
+
     }
 
+    private void assertScopeContainsMethods(ReportParameters params, MethodUsageScope scope, String... expected) {
+        List<String> actual = reportDAO.getMethodsForScope(scope, params).stream().map(MethodUsageEntry::getName).collect(
+                Collectors.toList());
+        if (expected.length > 0) {
+            assertThat(actual, containsInAnyOrder(expected));
+        } else {
+            assertThat(actual, empty());
+        }
+
+    }
     private ReportParameters getReportParameters(List<String> applicationNames, List<String> applicationVersions) {
         int organisationId = 1;
 

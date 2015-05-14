@@ -77,14 +77,14 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
         protected List<Object> generateParams(ReportParameters reportParameters) {
             List<Object> params = new ArrayList<>();
             params.add(reportParameters.getOrganisationId());
-            params.addAll(reportParameters.getApplicationIds());
-            params.addAll(reportParameters.getJvmIds());
+            params.addAll(reportParameters.getApplicationIds().stream().distinct().collect(Collectors.toList()));
+            params.addAll(reportParameters.getJvmIds().stream().distinct().collect(Collectors.toList()));
             return params;
         }
 
         protected String generateSql(ReportParameters reportParameters) {
-            String appIds = reportParameters.getApplicationIds().stream().map(s -> "?").collect(Collectors.joining(","));
-            String jvmIds = reportParameters.getJvmIds().stream().map(s -> "?").collect(Collectors.joining(","));
+            String appIds = reportParameters.getApplicationIds().stream().distinct().map(s -> "?").collect(Collectors.joining(","));
+            String jvmIds = reportParameters.getJvmIds().stream().distinct().map(s -> "?").collect(Collectors.joining(","));
 
             String sql = "SELECT DISTINCT s.signature, s.invoked_at_millis FROM signatures s, application_statistics stats, jvm_info jvm " +
                     "WHERE s.organisation_id = ? " +
@@ -118,7 +118,7 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
 
             String sql = generateSql(reportParameters) +
                     "AND s.invoked_at_millis > stats.max_started_at_millis + ? " +
-                    "AND s.invoked_at_millis <= stats.last_reported_at_millis - ? ";
+                    "AND s.invoked_at_millis < stats.last_reported_at_millis - ? ";
 
             return jdbcTemplate.query(sql, new MethodUsageEntryRowMapper(MethodUsageScope.POSSIBLY_DEAD), params.toArray());
         }
@@ -132,7 +132,7 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
 
             String sql = generateSql(reportParameters) +
                     "AND s.invoked_at_millis >= stats.max_started_at_millis " +
-                    "AND s.millis_since_jvm_start < ? ";
+                    "AND s.millis_since_jvm_start <= ? ";
 
             return jdbcTemplate.query(sql, new MethodUsageEntryRowMapper(MethodUsageScope.BOOTSTRAP), params.toArray());
         }
