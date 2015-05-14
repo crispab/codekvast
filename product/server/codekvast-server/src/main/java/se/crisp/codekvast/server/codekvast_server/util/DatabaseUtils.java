@@ -7,7 +7,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import se.crisp.codekvast.server.codekvast_server.config.CodekvastSettings;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -94,11 +93,8 @@ public class DatabaseUtils {
         final String endsWith = suffix + "." + COMPRESSION.toLowerCase();
         for (File path : settings.getBackupPaths()) {
 
-            File[] files = path.listFiles(new FilenameFilter() {
-                @Override
-                public boolean accept(File file, String s) {
-                    return s.endsWith(endsWith);
-                }
+            File[] files = path.listFiles((file, s) -> {
+                return s.endsWith(endsWith);
             });
 
             if (files != null) {
