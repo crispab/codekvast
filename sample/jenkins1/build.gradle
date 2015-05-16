@@ -1,4 +1,4 @@
-ext.tomcatVersion = "7.0.61"
+ext.tomcatVersion = "7.0.62"
 ext.tomcatPort = "8081"
 ext.jenkinsVersion = "1.598"
 
