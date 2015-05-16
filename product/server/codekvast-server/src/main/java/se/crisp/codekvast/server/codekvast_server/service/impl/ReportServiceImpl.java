@@ -46,14 +46,15 @@ public class ReportServiceImpl implements ReportService {
 
         long startedAt = System.currentTimeMillis();
 
+        long organisationId = userDAO.getOrganisationIdForUsername(username);
+
         ReportParameters params =
                 ReportParameters.builder()
-                                .organisationId(userDAO.getOrganisationIdForUsername(username))
-                                .applicationIds(agentDAO.getApplicationIds(userDAO.getOrganisationIdForUsername(username),
-                                                                           request.getApplications()).stream().map(AppId::getAppId)
+                                .organisationId(organisationId)
+                                .applicationIds(agentDAO.getApplicationIds(organisationId, request.getApplications())
+                                                        .stream().map(AppId::getAppId)
                                                         .collect(Collectors.toList()))
-                                .jvmIds(reportDAO.getJvmIdsByAppVersions(userDAO.getOrganisationIdForUsername(username),
-                                                                         request.getVersions()))
+                                .jvmIds(reportDAO.getJvmIdsByAppVersions(organisationId, request.getVersions()))
                                 .bootstrapSeconds(request.getBootstrapSeconds())
                                 .usageCycleSeconds(request.getUsageCycleSeconds())
                                 .build();
@@ -67,10 +68,13 @@ public class ReportServiceImpl implements ReportService {
             methods.addAll(methodsForScope);
         }
 
+
+        Integer maxPreviewRows = request.getMaxPreviewRows() == null ? Integer.MAX_VALUE : request.getMaxPreviewRows();
+
         GetMethodUsageResponse response =
                 GetMethodUsageResponse.builder()
                                       .request(request)
-                                      .methods(methods.subList(0, Math.min(methods.size(), request.getMaxPreviewRows())))
+                                      .methods(methods.subList(0, Math.min(methods.size(), maxPreviewRows)))
                                       .numMethodsByScope(numMethodsByScope)
                                       .build();
 

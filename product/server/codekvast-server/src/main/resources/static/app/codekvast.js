@@ -60,7 +60,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         }
     })
 
-    .factory('RemoteDataService', ['$rootScope', '$http', '$timeout', function ($rootScope, $http, $timeout) {
+    .factory('RemoteDataService', ['$rootScope', '$http', '$timeout', '$location', function ($rootScope, $http, $timeout, $location) {
         var socket = {client: null, stomp: null};
         var lastMessages = {};
 
@@ -160,8 +160,11 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
         };
 
-        var getMethodUsage = function (getMethodUsageRequest) {
-            return $http.post('/api/web/getMethodUsage', getMethodUsageRequest);
+        var getMethodUsageData = function (getMethodUsageRequest, format) {
+            if (format == "preview") {
+                return $http.post('/api/web/methodUsage/' + format, getMethodUsageRequest)
+            }
+            $location.url = "/api/web/methodUsage/" + format + "?" + JSON.stringify(getMethodUsageRequest);
         };
 
         return {
@@ -169,7 +172,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             getLastData: getLastData,
             initSocket: initSocket,
             persistSettings: persistSettings,
-            getMethodUsage: getMethodUsage,
+            getMethodUsageData: getMethodUsageData,
 
             // for testing only
             handleWebSocketMessage: handleWebSocketMessage
@@ -513,31 +516,33 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             ;
         }
 
-        $scope.previewReport = function () {
+        $scope.getReportData = function (format) {
             var getMethodUsageRequest = {
                 applications: _($scope.formData.applications).filter('selected').pluck('name').value(),
                 versions: _($scope.formData.versions).filter('selected').pluck('name').value(),
                 methodUsageScopes: _($scope.formData.methods).filter('selected').pluck('name').value(),
                 usageCycleSeconds: $scope.maxUsageCycleSeconds(),
                 bootstrapSeconds: $scope.formData.bootstrapTimeSeconds,
-                maxPreviewRows: $scope.formData.previewRows
+                maxPreviewRows: format == 'preview' ? $scope.formData.previewRows : null,
             };
 
-            $scope.reportInProgress = true;
+            if (format == "preview") {
+                $scope.reportInProgress = true;
+            }
 
-            RemoteDataService.getMethodUsage(getMethodUsageRequest).then(
+            RemoteDataService.getMethodUsageData(getMethodUsageRequest, format).then(
                 function (rsp) {
-                    $scope.previewData = rsp.data;
                     $scope.reportInProgress = false;
+                    $scope.previewData = rsp.data;
                 },
                 function (rsp) {
-                    alert("Cannot get preview data: " + JSON.stringify(rsp))
                     $scope.reportInProgress = false;
+                    alert("Cannot get preview data: " + JSON.stringify(rsp))
                 });
         };
 
         $scope.generateReport = function (format) {
-            alert("Generating " + format + " report using " + JSON.stringify($scope.previewData.request))
+            $scope.getReportData(format);
         };
 
         $scope.$on('stompDisconnected', function (event, message) {

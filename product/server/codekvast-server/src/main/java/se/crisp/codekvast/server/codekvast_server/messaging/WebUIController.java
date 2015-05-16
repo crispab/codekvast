@@ -25,26 +25,29 @@ import java.security.Principal;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Responsible for sending data messages to the correct users.
+ * Responsible for serving data to/from the Web UI.
  *
  * @author olle.hallin@crisp.se
  */
 @RestController
 @Slf4j
-public class WebSocketDataHandler extends AbstractEventBusSubscriber {
+public class WebUIController extends AbstractEventBusSubscriber {
     @NonNull
     private final UserService userService;
+
     @NonNull
     private final ReportService reportService;
+
     @NonNull
     private final WebSocketUserPresenceHandler webSocketUserPresenceHandler;
+
     @NonNull
     private final Validator validator;
 
     @Inject
-    public WebSocketDataHandler(EventBus eventBus, SimpMessagingTemplate messagingTemplate, UserService userService,
-                                ReportService reportService, WebSocketUserPresenceHandler webSocketUserPresenceHandler,
-                                Validator validator) {
+    public WebUIController(EventBus eventBus, SimpMessagingTemplate messagingTemplate, UserService userService,
+                           ReportService reportService, WebSocketUserPresenceHandler webSocketUserPresenceHandler,
+                           Validator validator) {
         super(eventBus, messagingTemplate);
         this.userService = userService;
         this.reportService = reportService;
@@ -106,8 +109,29 @@ public class WebSocketDataHandler extends AbstractEventBusSubscriber {
         log.info("'{}' saved settings {}", username, settings);
     }
 
-    @RequestMapping(value = "/api/web/getMethodUsage", method = RequestMethod.POST)
-    public GetMethodUsageResponse getMethodUsage(@Valid @RequestBody GetMethodUsageRequest request, Principal principal)
+    @RequestMapping(value = "/api/web/methodUsage/preview", method = RequestMethod.POST, produces = "application/json")
+    public GetMethodUsageResponse getMethodUsagePreview(@Valid @RequestBody GetMethodUsageRequest request, Principal principal)
+            throws CodekvastException {
+
+        return createGetMethodUsageResponse(request, principal);
+    }
+
+    @RequestMapping(value = "/api/web/methodUsage/csv", method = RequestMethod.GET, produces = "application/csv")
+    public
+    @ResponseBody
+    String getMethodUsageCsv(@Valid @RequestBody GetMethodUsageRequest request, Principal principal)
+            throws CodekvastException {
+
+        GetMethodUsageResponse response = createGetMethodUsageResponse(request, principal);
+
+        return toCSV(response);
+    }
+
+    private String toCSV(GetMethodUsageResponse response) {
+        return response.toString();
+    }
+
+    private GetMethodUsageResponse createGetMethodUsageResponse(@Valid @RequestBody GetMethodUsageRequest request, Principal principal)
             throws CodekvastException {
         long startedAtMillis = System.currentTimeMillis();
 
@@ -117,7 +141,7 @@ public class WebSocketDataHandler extends AbstractEventBusSubscriber {
         GetMethodUsageResponse response = reportService.getMethodUsage(username, request);
 
         log.debug("Method usage response created in {} ms", System.currentTimeMillis() - startedAtMillis);
-
         return response;
     }
+
 }

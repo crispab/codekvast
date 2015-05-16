@@ -93,8 +93,8 @@
                                            ng-model="formData.previewRows"/>&nbsp;rows&nbsp;</label>
                                 </div>
                                 <button type="submit"
-                                        class="btn btn-primary"
-                                        ng-disabled="!isSubmitEnabled()" ng-click="previewReport()">Preview report
+                                        class="btn btn-primary" ng-disabled="!isSubmitEnabled()" ng-click="getReportData('preview')">Preview
+                                                                                                                                     report
                                 </button>
                                 <span ng-show="reportInProgress">Fetching preview data...</span>
                             </form>
@@ -113,10 +113,10 @@
                     <p>Methods by execution date: {{previewData.numMethodsByScope|json}}</p>
                 </span>
                 <div class="col-lg-6">
-                    <button ng-click="generateReport('CSV')">Fetch as CSV...</button>
-                    <button ng-click="generateReport('JSON')">Fetch as JSON...</button>
-                    <button ng-click="generateReport('XML')">Fetch as XML...</button>
-                    <button ng-click="generateReport('Excel')">Fetch as Excel...</button>
+                    <button ng-click="generateReport('csv')">Fetch as CSV...</button>
+                    <button ng-click="generateReport('json')">Fetch as JSON...</button>
+                    <button ng-click="generateReport('xml')">Fetch as XML...</button>
+                    <button ng-click="generateReport('excel')">Fetch as Excel...</button>
                 </div>
             </div>
             <hr/>

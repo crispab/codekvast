@@ -23,6 +23,8 @@
     <RunnerSettings RunnerId="ExternalSystemTaskRunner" />
     <ConfigurationWrapper RunnerId="ExternalSystemTaskDebugRunner" />
     <ConfigurationWrapper RunnerId="ExternalSystemTaskRunner" />
-    <method />
+    <method>
+      <option name="Gradle.BeforeRunTask" enabled="true" tasks="processResources startDatabase" externalProjectPath="$PROJECT_DIR$/product/server/codekvast-server" vmOptions="" scriptParameters="" />
+    </method>
   </configuration>
 </component>

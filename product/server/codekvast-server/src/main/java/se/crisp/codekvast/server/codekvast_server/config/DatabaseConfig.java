@@ -58,6 +58,7 @@ public class DatabaseConfig {
         flyway.setLocations(SQL_MIGRATION_LOCATION, JAVA_MIGRATION_LOCATION);
 
         MigrationInfo[] pendingMigrations = flyway.info().pending();
+        boolean werePendingMigrations = false;
         if (pendingMigrations != null && pendingMigrations.length > 0) {
 
             if (!didRestore) {
@@ -65,13 +66,16 @@ public class DatabaseConfig {
                 backupDatabaseBeforeMigration(jdbcTemplate, codekvastSettings, pendingMigrations);
             }
             logPendingMigrations(pendingMigrations);
+            werePendingMigrations = true;
         }
 
         long startedAt = System.currentTimeMillis();
 
         flyway.migrate();
 
-        log.info("Database migrated in {} ms", System.currentTimeMillis() - startedAt);
+        if (werePendingMigrations) {
+            log.info("Database migrated in {} ms", System.currentTimeMillis() - startedAt);
+        }
 
         replacePlaintextPasswords(dataSource.getConnection());
 
