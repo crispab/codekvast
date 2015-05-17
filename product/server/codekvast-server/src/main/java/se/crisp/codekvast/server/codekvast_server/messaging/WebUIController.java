@@ -13,12 +13,13 @@ import org.springframework.web.bind.annotation.*;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.WebSocketMessage;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.GetMethodUsageRequest;
-import se.crisp.codekvast.server.codekvast_server.model.event.rest.GetMethodUsageResponse;
+import se.crisp.codekvast.server.codekvast_server.model.event.rest.MethodUsageReport;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.OrganisationSettings;
 import se.crisp.codekvast.server.codekvast_server.service.ReportService;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.security.Principal;
 
@@ -109,39 +110,39 @@ public class WebUIController extends AbstractEventBusSubscriber {
         log.info("'{}' saved settings {}", username, settings);
     }
 
-    @RequestMapping(value = "/api/web/methodUsage/preview", method = RequestMethod.POST, produces = "application/json")
-    public GetMethodUsageResponse getMethodUsagePreview(@Valid @RequestBody GetMethodUsageRequest request, Principal principal)
+    @RequestMapping(value = "/api/web/methodUsagePreview", method = RequestMethod.POST, produces = "application/json")
+    public MethodUsageReport getMethodUsagePreview(@Valid @RequestBody GetMethodUsageRequest request, Principal principal)
             throws CodekvastException {
 
-        return createGetMethodUsageResponse(request, principal);
-    }
-
-    @RequestMapping(value = "/api/web/methodUsage/csv", method = RequestMethod.GET, produces = "application/csv")
-    public
-    @ResponseBody
-    String getMethodUsageCsv(@Valid @RequestBody GetMethodUsageRequest request, Principal principal)
-            throws CodekvastException {
-
-        GetMethodUsageResponse response = createGetMethodUsageResponse(request, principal);
-
-        return toCSV(response);
-    }
-
-    private String toCSV(GetMethodUsageResponse response) {
-        return response.toString();
-    }
-
-    private GetMethodUsageResponse createGetMethodUsageResponse(@Valid @RequestBody GetMethodUsageRequest request, Principal principal)
-            throws CodekvastException {
         long startedAtMillis = System.currentTimeMillis();
 
         String username = principal.getName();
         log.debug("'{}' requests {}", username, request);
 
-        GetMethodUsageResponse response = reportService.getMethodUsage(username, request);
+        MethodUsageReport report = reportService.getMethodUsagePreview(username, request);
 
-        log.debug("Method usage response created in {} ms", System.currentTimeMillis() - startedAtMillis);
-        return response;
+        log.debug("Method usage report created in {} ms", System.currentTimeMillis() - startedAtMillis);
+        return report;
+    }
+
+    @RequestMapping(value = "/api/web/methodUsage/{reportId}/{format}", method = RequestMethod.GET)
+    public
+    @ResponseBody
+    String getMethodUsageReport(Principal principal,
+                                @PathVariable(value = "reportId") int reportId,
+                                @PathVariable(value = "format") String format,
+                                HttpServletResponse response)
+            throws CodekvastException {
+
+        log.debug("{} fetches report {} in {} format", principal.getName(), reportId, format);
+
+        MethodUsageReport report = reportService.getMethodUsageReport(principal.getName(), reportId);
+
+        response.setContentType("application/" + format);
+        response.setHeader("Content-Disposition", String.format("attachment; filename=%d.%s", reportId, format));
+
+        // TODO implement
+        return report.toString();
     }
 
 }

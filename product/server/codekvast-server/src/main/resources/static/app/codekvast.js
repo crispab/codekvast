@@ -160,11 +160,8 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
         };
 
-        var getMethodUsageData = function (getMethodUsageRequest, format) {
-            if (format == "preview") {
-                return $http.post('/api/web/methodUsage/' + format, getMethodUsageRequest)
-            }
-            $location.url = "/api/web/methodUsage/" + format + "?" + JSON.stringify(getMethodUsageRequest);
+        var getMethodUsageData = function (getMethodUsageRequest) {
+            return $http.post('/api/web/methodUsagePreview', getMethodUsageRequest)
         };
 
         return {
@@ -516,21 +513,19 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             ;
         }
 
-        $scope.getReportData = function (format) {
+        $scope.getReportData = function () {
             var getMethodUsageRequest = {
                 applications: _($scope.formData.applications).filter('selected').pluck('name').value(),
                 versions: _($scope.formData.versions).filter('selected').pluck('name').value(),
                 methodUsageScopes: _($scope.formData.methods).filter('selected').pluck('name').value(),
                 usageCycleSeconds: $scope.maxUsageCycleSeconds(),
                 bootstrapSeconds: $scope.formData.bootstrapTimeSeconds,
-                maxPreviewRows: format == 'preview' ? $scope.formData.previewRows : null,
+                maxPreviewRows: $scope.formData.previewRows,
             };
 
-            if (format == "preview") {
-                $scope.reportInProgress = true;
-            }
+            $scope.reportInProgress = true;
 
-            RemoteDataService.getMethodUsageData(getMethodUsageRequest, format).then(
+            RemoteDataService.getMethodUsageData(getMethodUsageRequest).then(
                 function (rsp) {
                     $scope.reportInProgress = false;
                     $scope.previewData = rsp.data;
@@ -539,10 +534,6 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                     $scope.reportInProgress = false;
                     alert("Cannot get preview data: " + JSON.stringify(rsp))
                 });
-        };
-
-        $scope.generateReport = function (format) {
-            $scope.getReportData(format);
         };
 
         $scope.$on('stompDisconnected', function (event, message) {

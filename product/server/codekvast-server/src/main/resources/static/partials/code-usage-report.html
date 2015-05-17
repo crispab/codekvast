@@ -113,10 +113,10 @@
                     <p>Methods by execution date: {{previewData.numMethodsByScope|json}}</p>
                 </span>
                 <div class="col-lg-6">
-                    <button ng-click="generateReport('csv')">Fetch as CSV...</button>
-                    <button ng-click="generateReport('json')">Fetch as JSON...</button>
-                    <button ng-click="generateReport('xml')">Fetch as XML...</button>
-                    <button ng-click="generateReport('excel')">Fetch as Excel...</button>
+                    <a href="/api/web/methodUsage/{{previewData.reportId}}/csv" target="_new" class="button">Fetch as CSV...</a>
+                    <a href="/api/web/methodUsage/{{previewData.reportId}}/json" target="_new" class="button">Fetch as JSON...</a>
+                    <a href="/api/web/methodUsage/{{previewData.reportId}}/xml" target="_new" class="button">Fetch as XML...</a>
+                    <a href="/api/web/methodUsage/{{previewData.reportId}}/excel" target="_new" class="button">Fetch as Excel...</a>
                 </div>
             </div>
             <hr/>

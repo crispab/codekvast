@@ -12,9 +12,16 @@ import java.util.Map;
  */
 @Value
 @Builder
-public class GetMethodUsageResponse {
+public class MethodUsageReport {
     @NonNull
     private final GetMethodUsageRequest request;
+
+    @NonNull
+    private final String username;
+
+    private final int reportId;
+
+    private long reportExpiresAtMillis;
 
     private final Map<MethodUsageScope, Integer> numMethodsByScope;
     private final Collection<MethodUsageEntry> methods;
