@@ -18,6 +18,8 @@ import se.crisp.codekvast.server.codekvast_server.service.ReportService;
 
 import javax.inject.Inject;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -114,6 +116,8 @@ public class ReportServiceImpl implements ReportService {
                                  .request(request)
                                  .username(username)
                                  .reportId(nextReportId.incrementAndGet())
+                                 .reportCreatedAt(LocalDateTime.now().toString())
+                                 .timeZone(ZoneId.systemDefault().toString())
                                  .reportExpiresAtMillis(Instant.now().plusSeconds(600).toEpochMilli())
                                  .methods(methods)
                                  .numMethodsByScope(numMethodsByScope)
@@ -123,12 +127,14 @@ public class ReportServiceImpl implements ReportService {
             reports.put(report.getReportId(), report);
         }
 
-        // Create a preview copy of the report with only maxPreviewRows methods
+        // Create a preview copy of the report limited to maxPreviewRows methods
         MethodUsageReport response =
                 MethodUsageReport.builder()
                                  .request(report.getRequest())
                                  .username(report.getUsername())
                                  .reportId(report.getReportId())
+                                 .reportCreatedAt(report.getReportCreatedAt())
+                                 .timeZone(report.getTimeZone())
                                  .reportExpiresAtMillis(report.getReportExpiresAtMillis())
                                  .methods(methods.subList(0, Math.min(methods.size(), request.getMaxPreviewRows())))
                                  .numMethodsByScope(report.getNumMethodsByScope())
@@ -140,7 +146,8 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public String getFormattedMethodUsageReport(String username, int reportId, Format format) {
+    public String getFormattedMethodUsageReport(String username, int reportId, Format format)
+            throws CodekvastException {
         synchronized (reports) {
             MethodUsageReport report = reports.get(reportId);
 

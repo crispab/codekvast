@@ -23,7 +23,11 @@ public class MethodUsageReport {
 
     private final int reportId;
 
+    private String reportCreatedAt;
+
     private long reportExpiresAtMillis;
+
+    private String timeZone;
 
     private final Map<MethodUsageScope, Integer> numMethodsByScope;
     private final Collection<MethodUsageEntry> methods;

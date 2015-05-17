@@ -30,8 +30,9 @@ public interface ReportService {
      * @param format The desired report format
      * @return A report in the desired format
      * @throws IllegalArgumentException if invalid username or reportId or if the report has expired.
+     * @throws CodekvastException If the report cannot be produced.
      */
-    String getFormattedMethodUsageReport(String username, int reportId, Format format);
+    String getFormattedMethodUsageReport(String username, int reportId, Format format) throws CodekvastException;
 
     /**
      * Scheduled method that removes expired reports. It must be exposed in this interface or else Spring will throw an exception.
