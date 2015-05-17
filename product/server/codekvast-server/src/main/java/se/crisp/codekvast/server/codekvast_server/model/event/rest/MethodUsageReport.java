@@ -1,8 +1,6 @@
 package se.crisp.codekvast.server.codekvast_server.model.event.rest;
 
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
+import lombok.*;
 import org.springframework.stereotype.Component;
 
 import java.beans.PropertyEditorSupport;
@@ -19,8 +17,16 @@ public class MethodUsageReport {
     /**
      * In which formats can we fetch MethodUsageReports?
      */
+    @RequiredArgsConstructor
     public enum Format {
-        CSV, JSON;
+        CSV("application/csv"), JSON("application/json");
+
+        @Getter
+        private final String contentType;
+
+        public String getFilenameExtension() {
+            return name().toLowerCase();
+        }
     }
 
     @NonNull

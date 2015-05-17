@@ -25,6 +25,12 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.security.Principal;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -51,6 +57,13 @@ public class WebUIController extends AbstractEventBusSubscriber {
     @NonNull
     private final MethodUsageReportFormatEnumConverter methodUsageReportFormatEnumConverter;
 
+    private final Map<MethodUsageReport.Format, ContentFormatter> formatters = new HashMap<>();
+
+    {
+        formatters.put(MethodUsageReport.Format.CSV, new CsvContentFormatter());
+        formatters.put(MethodUsageReport.Format.JSON, new JsonContentFormatter());
+    }
+
     @Inject
     public WebUIController(EventBus eventBus, SimpMessagingTemplate messagingTemplate, UserService userService,
                            ReportService reportService, WebSocketUserPresenceHandler webSocketUserPresenceHandler,
@@ -61,6 +74,16 @@ public class WebUIController extends AbstractEventBusSubscriber {
         this.webSocketUserPresenceHandler = webSocketUserPresenceHandler;
         this.validator = validator;
         this.methodUsageReportFormatEnumConverter = methodUsageReportFormatEnumConverter;
+
+        checkFormatters();
+    }
+
+    private void checkFormatters() {
+        for (MethodUsageReport.Format format : MethodUsageReport.Format.values()) {
+            if (!formatters.containsKey(format)) {
+                throw new IllegalArgumentException("Missing content formatter for " + format);
+            }
+        }
     }
 
     @InitBinder
@@ -146,11 +169,53 @@ public class WebUIController extends AbstractEventBusSubscriber {
 
         MethodUsageReport report = reportService.getMethodUsageReport(principal.getName(), reportId);
 
-        response.setContentType("application/" + format);
-        response.setHeader("Content-Disposition", String.format("attachment; filename=%d.%s", reportId, format));
+        setContentType(response, format, reportId);
 
-        // TODO implement
-        return report.toString();
+        return formatters.get(format).format(report);
     }
+
+    private void setContentType(HttpServletResponse response, MethodUsageReport.Format format, int reportId) {
+        response.setContentType(format.getContentType() + "; charset=UTF-8");
+        response.setHeader("Content-Disposition",
+                           String.format("attachment; filename=codekvast-method-usage-report-%d.%s",
+                                         reportId, format.getFilenameExtension()));
+    }
+
+    private static abstract class ContentFormatter {
+
+        abstract String format(MethodUsageReport report);
+
+        String formatInvokedAt(long invokedAtMillis) {
+            return invokedAtMillis <= 0L ? "" : Instant.ofEpochMilli(invokedAtMillis).toString();
+        }
+    }
+
+
+    private static class CsvContentFormatter extends ContentFormatter {
+        @Override
+        public String format(MethodUsageReport report) {
+            List<String> lines = new ArrayList<>();
+            lines.add("# method, scope, invokedAt");
+
+            report.getMethods().forEach(entry -> {
+                lines.add(
+                        String.format("\"%s\",\"%s\",\"%s\"",
+                                      entry.getName(),
+                                      entry.getScope().toDisplayString(),
+                                      formatInvokedAt(entry.getInvokedAtMillis())));
+            });
+
+            return lines.stream().collect(Collectors.joining("\n"));
+        }
+    }
+
+    private static class JsonContentFormatter extends ContentFormatter {
+        @Override
+        public String format(MethodUsageReport report) {
+            // TODO: implement JsonContentFormatter
+            return "";
+        }
+    }
+
 
 }
