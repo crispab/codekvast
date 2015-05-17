@@ -14,6 +14,10 @@ import se.crisp.codekvast.server.codekvast_server.model.event.rest.MethodUsageSc
 import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -63,8 +67,6 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
     }
 
     private abstract class MethodRetriever {
-        abstract Collection<MethodUsageEntry> doGetMethods(ReportParameters reportParameters);
-
         Collection<MethodUsageEntry> getMethods(MethodUsageScope scope, ReportParameters reportParameters) {
             long startedAt = System.currentTimeMillis();
 
@@ -73,6 +75,8 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
             log.debug("Retrieved {} {} methods in {} ms", result.size(), scope.toDisplayString(), System.currentTimeMillis() - startedAt);
             return result;
         }
+
+        protected abstract Collection<MethodUsageEntry> doGetMethods(ReportParameters reportParameters);
 
         protected List<Object> generateParams(ReportParameters reportParameters) {
             List<Object> params = new ArrayList<>();
@@ -154,15 +158,25 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
     @RequiredArgsConstructor
     private static class MethodUsageEntryRowMapper implements RowMapper<MethodUsageEntry> {
         private final MethodUsageScope scope;
+        private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         @Override
         public MethodUsageEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
+            long invokedAtMillis = rs.getLong(2);
             return MethodUsageEntry.builder()
                                    .name(rs.getString(1))
-                                   .scope(scope)
-                                   .invokedAtMillis(rs.getLong(2))
+                                   .scope(scope.toDisplayString())
+                                   .invokedAtMillis(invokedAtMillis)
+                                   .invokedAtDisplay(getInvokedAtDisplay(invokedAtMillis))
                                    .build();
 
+        }
+
+        private String getInvokedAtDisplay(long invokedAtMillis) {
+            if (invokedAtMillis <= 0L) {
+                return "";
+            }
+            return formatter.format(LocalDateTime.ofInstant(Instant.ofEpochMilli(invokedAtMillis), ZoneId.systemDefault()));
         }
     }
 }

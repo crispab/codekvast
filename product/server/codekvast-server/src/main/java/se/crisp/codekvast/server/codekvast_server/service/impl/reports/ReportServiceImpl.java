@@ -1,4 +1,4 @@
-package se.crisp.codekvast.server.codekvast_server.service.impl;
+package se.crisp.codekvast.server.codekvast_server.service.impl.reports;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -37,13 +37,29 @@ public class ReportServiceImpl implements ReportService {
 
     private AtomicInteger nextReportId = new AtomicInteger();
     private final Map<Integer, MethodUsageReport> reports = new HashMap<>();
+    private final Map<Format, ReportFormatter> reportFormatterMap = new HashMap<>();
 
     @Inject
-    public ReportServiceImpl(UserDAO userDAO, AgentDAO agentDAO, ReportDAO reportDAO) {
+    public ReportServiceImpl(UserDAO userDAO, AgentDAO agentDAO, ReportDAO reportDAO, Collection<ReportFormatter> reportFormatters) {
         this.userDAO = userDAO;
         this.agentDAO = agentDAO;
         this.reportDAO = reportDAO;
+
+        createReportFormatterMap(reportFormatters);
     }
+
+    private void createReportFormatterMap(Collection<ReportFormatter> reportFormatters) {
+        for (ReportFormatter formatter : reportFormatters) {
+            reportFormatterMap.put(formatter.getFormat(), formatter);
+        }
+
+        for (Format format : Format.values()) {
+            if (!reportFormatterMap.containsKey(format)) {
+                throw new IllegalArgumentException("Missing report formatter for " + format);
+            }
+        }
+    }
+
 
     @Override
     @Scheduled(initialDelay = 60_000L, fixedRate = 60_000L)
@@ -116,7 +132,7 @@ public class ReportServiceImpl implements ReportService {
                                  .reportExpiresAtMillis(report.getReportExpiresAtMillis())
                                  .methods(methods.subList(0, Math.min(methods.size(), request.getMaxPreviewRows())))
                                  .numMethodsByScope(report.getNumMethodsByScope())
-                                 .availableFormats(Arrays.asList(MethodUsageReport.Format.values()))
+                                 .availableFormats(Arrays.asList(Format.values()))
                                  .build();
 
         log.debug("Created response to {}'s request for {} in {} ms", username, request, System.currentTimeMillis() - startedAt);
@@ -124,7 +140,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public MethodUsageReport getMethodUsageReport(String username, int reportId) {
+    public String getFormattedMethodUsageReport(String username, int reportId, Format format) {
         synchronized (reports) {
             MethodUsageReport report = reports.get(reportId);
 
@@ -137,7 +153,10 @@ public class ReportServiceImpl implements ReportService {
             }
 
             log.debug("{} gets report {}", username, reportId);
-            return report;
+
+            return reportFormatterMap.get(format).format(report);
         }
     }
+
+
 }

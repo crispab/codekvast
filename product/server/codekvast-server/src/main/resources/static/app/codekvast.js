@@ -439,13 +439,13 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             applications: undefined,
             versions: undefined,
 
-            methods: [
+            scopes: [
                 {
                     name: 'DEAD',
                     labelText: 'Include never executed methods',
                     popoverTitle: 'Never executed methods',
                     popoverText: function () {
-                        return 'Methods that have not been executed since Codekvast started ' + $scope.recordingStartedAt();
+                        return 'Methods that have not executed since Codekvast started ' + $scope.recordingStartedAt();
                     },
                     selected: true
                 },
@@ -454,7 +454,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                     labelText: 'Include possibly dead methods',
                     popoverTitle: 'Possibly dead methods',
                     popoverText: function () {
-                        return 'Methods that have not been executed during the last full usage cycle' + $scope.fullUsageCycle();
+                        return 'Methods that have not executed during the last full usage cycle' + $scope.fullUsageCycle();
                     },
                     selected: true
                 },
@@ -463,7 +463,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                     labelText: 'Include bootstrap methods',
                     popoverTitle: 'Bootstrap methods',
                     popoverText: function () {
-                        return 'Methods that only execute within a number of seconds after start of the application';
+                        return 'Methods that have only executed within a number of seconds after start of the application';
                     },
                     showBootstrapSecondsInput: true,
                     selected: false
@@ -473,7 +473,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                     labelText: 'Include live methods',
                     popoverTitle: 'Live methods',
                     popoverText: function () {
-                        return 'Methods that have been executed during the last full usage cycle' + $scope.fullUsageCycle();
+                        return 'Methods that have executed during the last full usage cycle' + $scope.fullUsageCycle();
                     },
                     selected: false
                 }
@@ -508,8 +508,8 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         $scope.isSubmitEnabled = function () {
             var anyApp = _($scope.formData.applications).any({selected: true});
             var anyVersion = _($scope.formData.versions).any({selected: true});
-            var anyMethods = _($scope.formData.methods).any({selected: true});
-            return anyApp && anyVersion && anyMethods && !$scope.reportInProgress;
+            var anyScope = _($scope.formData.scopes).any({selected: true});
+            return anyApp && anyVersion && anyScope && !$scope.reportInProgress;
             ;
         }
 
@@ -517,7 +517,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             var getMethodUsageRequest = {
                 applications: _($scope.formData.applications).filter('selected').pluck('name').value(),
                 versions: _($scope.formData.versions).filter('selected').pluck('name').value(),
-                methodUsageScopes: _($scope.formData.methods).filter('selected').pluck('name').value(),
+                methodUsageScopes: _($scope.formData.scopes).filter('selected').pluck('name').value(),
                 usageCycleSeconds: $scope.maxUsageCycleSeconds(),
                 bootstrapSeconds: $scope.formData.bootstrapTimeSeconds,
                 maxPreviewRows: $scope.formData.previewRows,
@@ -547,16 +547,6 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                 return "";
             }
             return dateFilter(input, format);
-        }
-    }])
-
-    .filter('enum', [function () {
-        return function (input) {
-            if (!input) {
-                return "";
-            }
-            var s = input.replace("_", " ");
-            return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()
         }
     }])
 

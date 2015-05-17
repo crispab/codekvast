@@ -1,5 +1,7 @@
 package se.crisp.codekvast.server.codekvast_server.service;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.GetMethodUsageRequest;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.MethodUsageReport;
@@ -11,7 +13,7 @@ public interface ReportService {
 
     /**
      * Prepares a preview of a MethodUsageReport. The report is cached for 10 minutes, and can be retrieved by {@link
-     * #getMethodUsageReport(String, int)}.
+     * #getFormattedMethodUsageReport(String, int, se.crisp.codekvast.server.codekvast_server.service.ReportService.Format)}.
      *
      * @param username The logged in user.
      * @param request  The request filter.
@@ -20,18 +22,34 @@ public interface ReportService {
     MethodUsageReport getMethodUsagePreview(String username, GetMethodUsageRequest request) throws CodekvastException;
 
     /**
-     * Retrieve a full report prepared by {@link #getMethodUsagePreview(String, GetMethodUsageRequest)}.
+     * Retrieve a full formatted method usage report prepared by {@link #getMethodUsagePreview(String, GetMethodUsageRequest)}.
      *
      * @param username The name of the user who invoked {@link #getMethodUsagePreview(String, GetMethodUsageRequest)}
      * @param reportId The reportId in the {@link MethodUsageReport} produced by {@link #getMethodUsagePreview(String,
      *                 GetMethodUsageRequest)}
-     * @return A full report object
+     * @param format The desired report format
+     * @return A report in the desired format
      * @throws IllegalArgumentException if invalid username or reportId or if the report has expired.
      */
-    MethodUsageReport getMethodUsageReport(String username, int reportId);
+    String getFormattedMethodUsageReport(String username, int reportId, Format format);
 
     /**
-     * Scheduled method that removes expired reports.
+     * Scheduled method that removes expired reports. It must be exposed in this interface or else Spring will throw an exception.
      */
     void reportScavenger();
+
+    /**
+     * In which formats can we fetch MethodUsageReports?
+     */
+    @RequiredArgsConstructor
+    enum Format {
+        CSV("application/csv"), JSON("application/json");
+
+        @Getter
+        private final String contentType;
+
+        public String getFilenameExtension() {
+            return name().toLowerCase();
+        }
+    }
 }

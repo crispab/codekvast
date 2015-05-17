@@ -10,6 +10,7 @@ import lombok.Value;
 @Builder
 public class MethodUsageEntry {
     String name;
-    MethodUsageScope scope;
+    String scope;
     long invokedAtMillis;
+    String invokedAtDisplay;
 }

@@ -1,9 +1,10 @@
 package se.crisp.codekvast.server.codekvast_server.model.event.rest;
 
-import lombok.*;
-import org.springframework.stereotype.Component;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Value;
+import se.crisp.codekvast.server.codekvast_server.service.ReportService;
 
-import java.beans.PropertyEditorSupport;
 import java.util.Collection;
 import java.util.Map;
 
@@ -13,21 +14,6 @@ import java.util.Map;
 @Value
 @Builder
 public class MethodUsageReport {
-
-    /**
-     * In which formats can we fetch MethodUsageReports?
-     */
-    @RequiredArgsConstructor
-    public enum Format {
-        CSV("application/csv"), JSON("application/json");
-
-        @Getter
-        private final String contentType;
-
-        public String getFilenameExtension() {
-            return name().toLowerCase();
-        }
-    }
 
     @NonNull
     private final GetMethodUsageRequest request;
@@ -42,17 +28,6 @@ public class MethodUsageReport {
     private final Map<MethodUsageScope, Integer> numMethodsByScope;
     private final Collection<MethodUsageEntry> methods;
 
-    private final Collection<Format> availableFormats;
+    private final Collection<ReportService.Format> availableFormats;
 
-    /**
-     * Spring converter to support lower case format parameters
-     */
-    @Component
-    public static class MethodUsageReportFormatEnumConverter extends PropertyEditorSupport {
-
-        @Override
-        public void setAsText(String text) throws IllegalArgumentException {
-            setValue(Format.valueOf(text.toUpperCase()));
-        }
-    }
 }

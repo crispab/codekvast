@@ -16,7 +16,6 @@ import se.crisp.codekvast.server.codekvast_server.messaging.WebSocketUserPresenc
 import se.crisp.codekvast.server.codekvast_server.model.event.display.WebSocketMessage;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.GetMethodUsageRequest;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.MethodUsageReport;
-import se.crisp.codekvast.server.codekvast_server.model.event.rest.MethodUsageReport.MethodUsageReportFormatEnumConverter;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.OrganisationSettings;
 import se.crisp.codekvast.server.codekvast_server.service.ReportService;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
@@ -24,24 +23,19 @@ import se.crisp.codekvast.server.codekvast_server.service.UserService;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.beans.PropertyEditorSupport;
 import java.security.Principal;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Responsible for serving data to/from the Web UI.
+ * Responsible for serving data to/from the single-page Angular UI.
  *
  * @author olle.hallin@crisp.se
  */
 @RestController
 @Slf4j
-public class WebUIController extends AbstractEventBusSubscriber {
+public class AngularController extends AbstractEventBusSubscriber {
     @NonNull
     private final UserService userService;
 
@@ -54,42 +48,21 @@ public class WebUIController extends AbstractEventBusSubscriber {
     @NonNull
     private final Validator validator;
 
-    @NonNull
-    private final MethodUsageReportFormatEnumConverter methodUsageReportFormatEnumConverter;
-
-    private final Map<MethodUsageReport.Format, ContentFormatter> formatters = new HashMap<>();
-
-    {
-        formatters.put(MethodUsageReport.Format.CSV, new CsvContentFormatter());
-        formatters.put(MethodUsageReport.Format.JSON, new JsonContentFormatter());
-    }
-
     @Inject
-    public WebUIController(EventBus eventBus, SimpMessagingTemplate messagingTemplate, UserService userService,
-                           ReportService reportService, WebSocketUserPresenceHandler webSocketUserPresenceHandler,
-                           Validator validator, MethodUsageReportFormatEnumConverter methodUsageReportFormatEnumConverter) {
+    public AngularController(EventBus eventBus, SimpMessagingTemplate messagingTemplate, UserService userService,
+                             ReportService reportService, WebSocketUserPresenceHandler webSocketUserPresenceHandler,
+                             Validator validator) {
         super(eventBus, messagingTemplate);
         this.userService = userService;
         this.reportService = reportService;
         this.webSocketUserPresenceHandler = webSocketUserPresenceHandler;
         this.validator = validator;
-        this.methodUsageReportFormatEnumConverter = methodUsageReportFormatEnumConverter;
-
-        checkFormatters();
-    }
-
-    private void checkFormatters() {
-        for (MethodUsageReport.Format format : MethodUsageReport.Format.values()) {
-            if (!formatters.containsKey(format)) {
-                throw new IllegalArgumentException("Missing content formatter for " + format);
-            }
-        }
     }
 
     @InitBinder
     private void initBinder(WebDataBinder binder) {
         binder.setValidator(checkNotNull(validator, "validator is null"));
-        binder.registerCustomEditor(MethodUsageReport.Format.class, methodUsageReportFormatEnumConverter);
+        binder.registerCustomEditor(ReportService.Format.class, new ReportFormatEnumConverter());
     }
 
     @ExceptionHandler
@@ -161,61 +134,30 @@ public class WebUIController extends AbstractEventBusSubscriber {
     @ResponseBody
     String getMethodUsageReport(Principal principal,
                                 @PathVariable(value = "reportId") int reportId,
-                                @PathVariable(value = "format") MethodUsageReport.Format format,
+                                @PathVariable(value = "format") ReportService.Format format,
                                 HttpServletResponse response)
             throws CodekvastException {
 
         log.debug("{} fetches report {} in {} format", principal.getName(), reportId, format);
 
-        MethodUsageReport report = reportService.getMethodUsageReport(principal.getName(), reportId);
+        String report = reportService.getFormattedMethodUsageReport(principal.getName(), reportId, format);
 
-        setContentType(response, format, reportId);
-
-        return formatters.get(format).format(report);
-    }
-
-    private void setContentType(HttpServletResponse response, MethodUsageReport.Format format, int reportId) {
         response.setContentType(format.getContentType() + "; charset=UTF-8");
         response.setHeader("Content-Disposition",
                            String.format("attachment; filename=codekvast-method-usage-report-%d.%s",
                                          reportId, format.getFilenameExtension()));
+
+        return report;
     }
 
-    private static abstract class ContentFormatter {
+    /**
+     * Spring converter to support lower case enum parameter
+     */
+    public static class ReportFormatEnumConverter extends PropertyEditorSupport {
 
-        abstract String format(MethodUsageReport report);
-
-        String formatInvokedAt(long invokedAtMillis) {
-            return invokedAtMillis <= 0L ? "" : Instant.ofEpochMilli(invokedAtMillis).toString();
-        }
-    }
-
-
-    private static class CsvContentFormatter extends ContentFormatter {
         @Override
-        public String format(MethodUsageReport report) {
-            List<String> lines = new ArrayList<>();
-            lines.add("# method, scope, invokedAt");
-
-            report.getMethods().forEach(entry -> {
-                lines.add(
-                        String.format("\"%s\",\"%s\",\"%s\"",
-                                      entry.getName(),
-                                      entry.getScope().toDisplayString(),
-                                      formatInvokedAt(entry.getInvokedAtMillis())));
-            });
-
-            return lines.stream().collect(Collectors.joining("\n"));
+        public void setAsText(String text) throws IllegalArgumentException {
+            setValue(ReportService.Format.valueOf(text.toUpperCase()));
         }
     }
-
-    private static class JsonContentFormatter extends ContentFormatter {
-        @Override
-        public String format(MethodUsageReport report) {
-            // TODO: implement JsonContentFormatter
-            return "";
-        }
-    }
-
-
 }
