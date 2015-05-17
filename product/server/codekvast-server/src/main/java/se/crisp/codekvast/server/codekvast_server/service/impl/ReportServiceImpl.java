@@ -95,13 +95,13 @@ public class ReportServiceImpl implements ReportService {
 
         MethodUsageReport report =
                 MethodUsageReport.builder()
-                                      .request(request)
+                                 .request(request)
                                  .username(username)
                                  .reportId(nextReportId.incrementAndGet())
                                  .reportExpiresAtMillis(Instant.now().plusSeconds(600).toEpochMilli())
                                  .methods(methods)
-                                      .numMethodsByScope(numMethodsByScope)
-                                      .build();
+                                 .numMethodsByScope(numMethodsByScope)
+                                 .build();
 
         synchronized (reports) {
             reports.put(report.getReportId(), report);
@@ -116,6 +116,7 @@ public class ReportServiceImpl implements ReportService {
                                  .reportExpiresAtMillis(report.getReportExpiresAtMillis())
                                  .methods(methods.subList(0, Math.min(methods.size(), request.getMaxPreviewRows())))
                                  .numMethodsByScope(report.getNumMethodsByScope())
+                                 .availableFormats(Arrays.asList(MethodUsageReport.Format.values()))
                                  .build();
 
         log.debug("Created response to {}'s request for {} in {} ms", username, request, System.currentTimeMillis() - startedAt);

@@ -1,4 +1,4 @@
-package se.crisp.codekvast.server.codekvast_server.messaging;
+package se.crisp.codekvast.server.codekvast_server.controller;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -11,9 +11,12 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
+import se.crisp.codekvast.server.codekvast_server.messaging.AbstractEventBusSubscriber;
+import se.crisp.codekvast.server.codekvast_server.messaging.WebSocketUserPresenceHandler;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.WebSocketMessage;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.GetMethodUsageRequest;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.MethodUsageReport;
+import se.crisp.codekvast.server.codekvast_server.model.event.rest.MethodUsageReport.MethodUsageReportFormatEnumConverter;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.OrganisationSettings;
 import se.crisp.codekvast.server.codekvast_server.service.ReportService;
 import se.crisp.codekvast.server.codekvast_server.service.UserService;
@@ -45,20 +48,25 @@ public class WebUIController extends AbstractEventBusSubscriber {
     @NonNull
     private final Validator validator;
 
+    @NonNull
+    private final MethodUsageReportFormatEnumConverter methodUsageReportFormatEnumConverter;
+
     @Inject
     public WebUIController(EventBus eventBus, SimpMessagingTemplate messagingTemplate, UserService userService,
                            ReportService reportService, WebSocketUserPresenceHandler webSocketUserPresenceHandler,
-                           Validator validator) {
+                           Validator validator, MethodUsageReportFormatEnumConverter methodUsageReportFormatEnumConverter) {
         super(eventBus, messagingTemplate);
         this.userService = userService;
         this.reportService = reportService;
         this.webSocketUserPresenceHandler = webSocketUserPresenceHandler;
         this.validator = validator;
+        this.methodUsageReportFormatEnumConverter = methodUsageReportFormatEnumConverter;
     }
 
     @InitBinder
     private void initBinder(WebDataBinder binder) {
         binder.setValidator(checkNotNull(validator, "validator is null"));
+        binder.registerCustomEditor(MethodUsageReport.Format.class, methodUsageReportFormatEnumConverter);
     }
 
     @ExceptionHandler
@@ -130,7 +138,7 @@ public class WebUIController extends AbstractEventBusSubscriber {
     @ResponseBody
     String getMethodUsageReport(Principal principal,
                                 @PathVariable(value = "reportId") int reportId,
-                                @PathVariable(value = "format") String format,
+                                @PathVariable(value = "format") MethodUsageReport.Format format,
                                 HttpServletResponse response)
             throws CodekvastException {
 

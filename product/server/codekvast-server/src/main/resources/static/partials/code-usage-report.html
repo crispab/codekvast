@@ -112,11 +112,11 @@
                 <span class="col-lg-6">
                     <p>Methods by execution date: {{previewData.numMethodsByScope|json}}</p>
                 </span>
-                <div class="col-lg-6">
-                    <a href="/api/web/methodUsage/{{previewData.reportId}}/csv" target="_new" class="button">Fetch as CSV...</a>
-                    <a href="/api/web/methodUsage/{{previewData.reportId}}/json" target="_new" class="button">Fetch as JSON...</a>
-                    <a href="/api/web/methodUsage/{{previewData.reportId}}/xml" target="_new" class="button">Fetch as XML...</a>
-                    <a href="/api/web/methodUsage/{{previewData.reportId}}/excel" target="_new" class="button">Fetch as Excel...</a>
+                <div class="col-lg-6 btn-group">
+                    <a ng-repeat="f in previewData.availableFormats"
+                       href="/api/web/methodUsage/{{previewData.reportId}}/{{f.toLowerCase()}}"
+                       target="_new"
+                       class="btn btn-default"> Fetch as {{f}} ... </a>
                 </div>
             </div>
             <hr/>
