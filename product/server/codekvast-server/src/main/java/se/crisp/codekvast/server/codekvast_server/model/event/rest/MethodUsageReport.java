@@ -30,6 +30,7 @@ public class MethodUsageReport {
     private String timeZone;
 
     private final Map<MethodUsageScope, Integer> numMethodsByScope;
+
     private final Collection<MethodUsageEntry> methods;
 
     private final Collection<ReportService.Format> availableFormats;

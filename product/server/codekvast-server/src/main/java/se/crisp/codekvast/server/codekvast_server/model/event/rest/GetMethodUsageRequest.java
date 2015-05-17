@@ -1,6 +1,9 @@
 package se.crisp.codekvast.server.codekvast_server.model.event.rest;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -12,6 +15,9 @@ import java.util.Collection;
  * @author olle.hallin@crisp.se
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class GetMethodUsageRequest {
     @NotNull
     private Collection<String> applications;
