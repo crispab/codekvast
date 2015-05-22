@@ -130,9 +130,8 @@ public class AngularController extends AbstractEventBusSubscriber {
     }
 
     @RequestMapping(value = "/api/web/methodUsage/{reportId}/{format}", method = RequestMethod.GET)
-    public
     @ResponseBody
-    String getMethodUsageReport(Principal principal,
+    public String getMethodUsageReport(Principal principal,
                                 @PathVariable(value = "reportId") int reportId,
                                 @PathVariable(value = "format") ReportService.Format format,
                                 HttpServletResponse response)
