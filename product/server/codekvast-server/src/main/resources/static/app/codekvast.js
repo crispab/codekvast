@@ -459,16 +459,6 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                     selected: true
                 },
                 {
-                    name: 'BOOTSTRAP',
-                    labelText: 'Include bootstrap methods',
-                    popoverTitle: 'Bootstrap methods',
-                    popoverText: function () {
-                        return 'Methods that have only executed within a number of seconds after start of the application';
-                    },
-                    showBootstrapSecondsInput: true,
-                    selected: false
-                },
-                {
                     name: 'LIVE',
                     labelText: 'Include live methods',
                     popoverTitle: 'Live methods',

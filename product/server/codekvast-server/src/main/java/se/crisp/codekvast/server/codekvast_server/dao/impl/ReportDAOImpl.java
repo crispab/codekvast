@@ -37,7 +37,6 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
             (Map<MethodUsageScope, MethodRetriever>) ImmutableMap.of(
                     MethodUsageScope.DEAD, new RetrieveDeadMethods(),
                     MethodUsageScope.POSSIBLY_DEAD, new RetrievePossiblyDeadMethods(),
-                    MethodUsageScope.BOOTSTRAP, new RetrieveBootstrapMethods(),
                     MethodUsageScope.LIVE, new RetrieveLiveMethods()
             );
 
@@ -90,13 +89,17 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
             String appIds = reportParameters.getApplicationIds().stream().distinct().map(s -> "?").collect(Collectors.joining(","));
             String jvmIds = reportParameters.getJvmIds().stream().distinct().map(s -> "?").collect(Collectors.joining(","));
 
-            String sql = "SELECT s.signature, s.invoked_at_millis FROM signatures s, application_statistics stats, jvm_info jvm " +
+            String sql = "SELECT s.signature, s.invoked_at_millis, " +
+                    "stats.last_reported_at_millis - s.invoked_at_millis, " +
+                    "a.name, stats.application_version " +
+                    "FROM signatures s, application_statistics stats, jvm_info jvm, applications a " +
                     "WHERE s.organisation_id = ? " +
                     "AND s.application_id IN (" + appIds + ") " +
                     "AND s.jvm_id IN (" + jvmIds + ") " +
                     "AND s.jvm_id = jvm.id " +
                     "AND stats.application_id = s.application_id " +
-                    "AND stats.application_version = jvm.application_version ";
+                    "AND stats.application_version = jvm.application_version " +
+                    "AND stats.application_id = a.id ";
             sql = sql.replaceAll("IN \\(\\?\\)", "= ?");
             return sql;
         }
@@ -117,28 +120,13 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
         @Override
         public Collection<MethodUsageEntry> doGetMethods(ReportParameters reportParameters) {
             List<Object> params = generateParams(reportParameters);
-            params.add(reportParameters.getBootstrapSeconds() * 1000L);
             params.add(reportParameters.getUsageCycleSeconds() * 1000L);
 
             String sql = generateSql(reportParameters) +
-                    "AND s.invoked_at_millis > stats.max_started_at_millis + ? " +
+                    "AND s.invoked_at_millis > stats.max_started_at_millis " +
                     "AND s.invoked_at_millis < stats.last_reported_at_millis - ? ";
 
             return jdbcTemplate.query(sql, new MethodUsageEntryRowMapper(MethodUsageScope.POSSIBLY_DEAD), params.toArray());
-        }
-    }
-
-    private class RetrieveBootstrapMethods extends MethodRetriever {
-        @Override
-        public Collection<MethodUsageEntry> doGetMethods(ReportParameters reportParameters) {
-            List<Object> params = generateParams(reportParameters);
-            params.add(reportParameters.getBootstrapSeconds() * 1000L);
-
-            String sql = generateSql(reportParameters) +
-                    "AND s.invoked_at_millis >= stats.max_started_at_millis " +
-                    "AND s.millis_since_jvm_start <= ? ";
-
-            return jdbcTemplate.query(sql, new MethodUsageEntryRowMapper(MethodUsageScope.BOOTSTRAP), params.toArray());
         }
     }
 
@@ -164,10 +152,13 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
         public MethodUsageEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
             long invokedAtMillis = rs.getLong(2);
             return MethodUsageEntry.builder()
-                                   .name(rs.getString(1))
+                                   .signature(rs.getString(1))
                                    .scope(scope.toDisplayString())
                                    .invokedAtMillis(invokedAtMillis)
                                    .invokedAtDisplay(getInvokedAtDisplay(invokedAtMillis))
+                                   .millisBeforeLastCollectorReport(rs.getLong(3))
+                                   .applicationName(rs.getString(4))
+                                   .applicationVersion(rs.getString(5))
                                    .build();
 
         }

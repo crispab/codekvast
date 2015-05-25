@@ -98,7 +98,6 @@ public class ReportServiceImpl implements ReportService {
                                                         .stream().map(AppId::getAppId)
                                                         .collect(Collectors.toList()))
                                 .jvmIds(reportDAO.getJvmIdsByAppVersions(organisationId, request.getVersions()))
-                                .bootstrapSeconds(request.getBootstrapSeconds())
                                 .usageCycleSeconds(request.getUsageCycleSeconds())
                                 .build();
 

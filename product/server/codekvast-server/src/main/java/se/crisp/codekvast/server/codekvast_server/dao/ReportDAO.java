@@ -21,7 +21,6 @@ public interface ReportDAO {
         private final long organisationId;
         private final Collection<Long> applicationIds;
         private final Collection<Long> jvmIds;
-        private final int bootstrapSeconds;
         private final int usageCycleSeconds;
     }
 }

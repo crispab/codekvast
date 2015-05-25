@@ -9,8 +9,11 @@ import lombok.Value;
 @Value
 @Builder
 public class MethodUsageEntry {
-    String name;
+    String signature;
+    String applicationName;
+    String applicationVersion;
     String scope;
     long invokedAtMillis;
     String invokedAtDisplay;
+    long millisBeforeLastCollectorReport;
 }

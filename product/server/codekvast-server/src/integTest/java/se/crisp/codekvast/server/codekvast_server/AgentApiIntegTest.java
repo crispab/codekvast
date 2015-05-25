@@ -84,38 +84,6 @@ public class AgentApiIntegTest {
         JvmData jvmData = getJvmData();
         agentApi.uploadJvmData(jvmData);
         agentApi.uploadSignatureData(jvmData, signatures);
-
-        /*
-        TODO: implement test once reporting feature is completed.
-        // then
-        assertThat(userService.getSignatures("user"), hasSize(SIGNATURES_SIZE));
-
-        // given
-        long now = System.currentTimeMillis();
-        List<SignatureEntry> invocationEntries = asList(new SignatureEntry(signatures.get(1), now, 100L, EXACT_MATCH),
-                                                        new SignatureEntry(signatures.get(2), now, 100L, EXACT_MATCH),
-                                                        new SignatureEntry(signatures.get(2), now + 1000L, 1100L, EXACT_MATCH));
-        // when
-        agentApi.uploadInvocationData(jvmData, invocationEntries);
-
-        // then
-        Collection<SignatureDisplay> actual = userService.getSignatures("user");
-        assertThat(actual, hasSize(SIGNATURES_SIZE));
-        for (SignatureDisplay entry : actual) {
-            if (entry.getName().equals(signatures.get(0))) {
-                assertThat(entry.getInvokedAtMillis(), is(0L));
-            }
-            if (entry.getName().equals(signatures.get(1))) {
-                assertThat(entry.getInvokedAtMillis(), timestampInRange(now, 100L));
-            }
-            if (entry.getName().equals(signatures.get(2))) {
-                assertThat(entry.getInvokedAtMillis(), timestampInRange(now + 1000L, 100L));
-            }
-        }
-
-        // assert that only signatures from the own organisation is returned...
-        assertThat(userService.getSignatures("system"), hasSize(0));
-*/
     }
 
     private List<String> getRandomSignatures(int size) {

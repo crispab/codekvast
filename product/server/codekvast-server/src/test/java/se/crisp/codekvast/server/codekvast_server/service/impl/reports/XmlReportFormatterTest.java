@@ -38,11 +38,10 @@ public class XmlReportFormatterTest {
 
         Map<MethodUsageScope, Integer> methodsByScope = new HashMap<>();
         methodsByScope.put(MethodUsageScope.DEAD, 1000);
-        methodsByScope.put(MethodUsageScope.BOOTSTRAP, 10);
 
         List<MethodUsageEntry> methods = asList(
                 MethodUsageEntry.builder()
-                                .name("signature1")
+                                .signature("signature1")
                                 .invokedAtDisplay("")
                                 .invokedAtMillis(0L)
                                 .scope("Dead")

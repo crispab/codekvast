@@ -27,14 +27,18 @@ class CsvReportFormatter extends ReportFormatter {
         lines.add("# Codekvast Method Usage Report");
         lines.add("# Generated at " + LocalDateTime.now());
         lines.add("#");
-        lines.add("# method,scope,invokedAtMillis (UTC),invokedAt (" + ZoneId.systemDefault().toString() + ")");
+        lines.add("# method,application,version,scope,invokedAtMillis (UTC),invokedAt (" + ZoneId.systemDefault().toString() + ")," +
+                          "millisBeforeLastCollectorReport");
 
         report.getMethods().forEach(method -> lines.add(
-                String.format("\"%s\",\"%s\",\"%s\",\"%s\"",
-                              method.getName(),
+                String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
+                              method.getSignature(),
+                              method.getApplicationName(),
+                              method.getApplicationVersion(),
                               method.getScope(),
                               method.getInvokedAtMillis(),
-                              method.getInvokedAtDisplay())));
+                              method.getInvokedAtDisplay(),
+                              method.getMillisBeforeLastCollectorReport())));
 
         return lines.stream().collect(Collectors.joining("\n"));
     }

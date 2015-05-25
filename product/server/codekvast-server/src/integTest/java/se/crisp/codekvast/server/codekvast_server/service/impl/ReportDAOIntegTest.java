@@ -135,8 +135,6 @@ public class ReportDAOIntegTest extends AbstractServiceIntegTest {
     public void testGet_PossiblyDead_Bootstrap_Live_Methods_app1_v1_1() throws CodekvastException {
 
         List<SignatureEntry> signatures = asList(
-                new SignatureEntry("bootstrap1", t0 + bootstrapMillis - 1, bootstrapMillis - 1, null),
-                new SignatureEntry("bootstrap2", t0 + bootstrapMillis, bootstrapMillis, null),
                 new SignatureEntry("possiblyDead1", t3 - usageCycleMillis - 2, bootstrapMillis + 1, null),
                 new SignatureEntry("possiblyDead2", t3 - usageCycleMillis - 1, bootstrapMillis + 1, null),
                 new SignatureEntry("live1", t3 - usageCycleMillis + 0, bootstrapMillis + 1, null),
@@ -145,25 +143,20 @@ public class ReportDAOIntegTest extends AbstractServiceIntegTest {
         agentService.storeSignatureData(SignatureData.builder().jvmUuid("jvm2").signatures(signatures).build());
 
         ReportParameters params = getReportParameters(asList("app1"), asList("1.0"));
-
         assertScopeContainsMethods(params, MethodUsageScope.POSSIBLY_DEAD);
-        assertScopeContainsMethods(params, MethodUsageScope.BOOTSTRAP);
         assertScopeContainsMethods(params, MethodUsageScope.LIVE);
 
         params = getReportParameters(asList("app1"), asList("1.1"));
         assertScopeContainsMethods(params, MethodUsageScope.POSSIBLY_DEAD, "possiblyDead1", "possiblyDead2");
-        assertScopeContainsMethods(params, MethodUsageScope.BOOTSTRAP, "bootstrap1", "bootstrap2");
         assertScopeContainsMethods(params, MethodUsageScope.LIVE, "live1", "live2");
 
         params = getReportParameters(asList("app2"), asList("1.0"));
         assertScopeContainsMethods(params, MethodUsageScope.POSSIBLY_DEAD);
-        assertScopeContainsMethods(params, MethodUsageScope.BOOTSTRAP);
         assertScopeContainsMethods(params, MethodUsageScope.LIVE);
-
     }
 
     private void assertScopeContainsMethods(ReportParameters params, MethodUsageScope scope, String... expected) {
-        List<String> actual = reportDAO.getMethodsForScope(scope, params).stream().map(MethodUsageEntry::getName).collect(
+        List<String> actual = reportDAO.getMethodsForScope(scope, params).stream().map(MethodUsageEntry::getSignature).collect(
                 Collectors.toList());
         if (expected.length > 0) {
             assertThat(actual, containsInAnyOrder(expected));
@@ -172,12 +165,12 @@ public class ReportDAOIntegTest extends AbstractServiceIntegTest {
         }
 
     }
+
     private ReportParameters getReportParameters(List<String> applicationNames, List<String> applicationVersions) {
         int organisationId = 1;
 
         return ReportParameters.builder()
                                .usageCycleSeconds((int) (usageCycleMillis / 1000L))
-                               .bootstrapSeconds((int) (bootstrapMillis / 1000L))
                                .organisationId(organisationId)
                                .applicationIds(agentDAO.getApplicationIds(organisationId, applicationNames).stream().map(AppId::getAppId)
                                                        .collect(Collectors.toList()))

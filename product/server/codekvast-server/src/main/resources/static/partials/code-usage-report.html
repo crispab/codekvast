@@ -123,18 +123,22 @@
             <table>
                 <thead>
                 <tr>
-                    <th class="col-lg-7" ng-click="orderBy='name'; reverse = !reverse">Method</th>
+                    <th class="col-lg-7" ng-click="orderBy='signature'; reverse = !reverse">Method</th>
+                    <th class="col-lg-1" ng-click="orderBy='applicationName'; reverse = !reverse">Application</th>
+                    <th class="col-lg-1" ng-click="orderBy='applicationVersion'; reverse = !reverse">Version</th>
                     <th class="col-lg-1" ng-click="orderBy='scope'; reverse = !reverse">Scope</th>
                     <th class="col-lg-2" ng-click="orderBy='invokedAtMillis'; reverse = !reverse">Invoked At</th>
-                    <th class="col-lg-2" ng-click="orderBy='invokedAtMillis'; reverse = !reverse">Age</th>
+                    <th class="col-lg-2" ng-click="orderBy='millisBeforeCollectorReport'; reverse = !reverse">Age</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr ng-repeat="m in previewData.methods|orderBy:orderBy:reverse">
-                    <td class="col-lg-7">{{::m.name}}</td>
+                    <td class="col-lg-7">{{::m.signature}}</td>
+                    <td class="col-lg-1">{{::m.applicationName}}</td>
+                    <td class="col-lg-1">{{::m.applicationVersion}}</td>
                     <td class="col-lg-1">{{::m.scope}}</td>
                     <td class="col-lg-2">{{::m.invokedAtDisplay}}</td>
-                    <td class="col-lg-2">{{::m.invokedAtMillis|age}}</td>
+                    <td class="col-lg-2">{{::m.millisBeforeCollectorReport|age}}</td>
                 </tr>
                 </tbody>
             </table>

@@ -6,7 +6,7 @@ package se.crisp.codekvast.server.codekvast_server.model.event.rest;
  * @author olle.hallin@crisp.se
  */
 public enum MethodUsageScope {
-    DEAD, POSSIBLY_DEAD, BOOTSTRAP, LIVE;
+    DEAD, POSSIBLY_DEAD, LIVE;
 
     public String toDisplayString() {
         return name().toLowerCase().replace("_", " ");

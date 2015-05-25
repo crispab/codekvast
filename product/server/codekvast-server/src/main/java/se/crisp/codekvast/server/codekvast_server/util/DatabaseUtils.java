@@ -49,7 +49,7 @@ public class DatabaseUtils {
                 File renameTo;
                 String timestamp = formatTimestamp(new Date());
                 try {
-                    log.debug(String.format("Restoring database from %s (%,d KB) ...", file, file.length() / 1024));
+                    log.info(String.format("Restoring database from %s (%,d KB) ...", file, file.length() / 1024));
                     long startedAt = System.currentTimeMillis();
 
                     String sql = String.format("RUNSCRIPT FROM '%s' COMPRESSION %s CHARSET '%s' ", file, COMPRESSION, CHARSET);
@@ -65,7 +65,7 @@ public class DatabaseUtils {
 
                 boolean renamed = file.renameTo(renameTo);
                 if (renamed) {
-                    log.debug("Renamed {} to {}", file, renameTo);
+                    log.info("Renamed {} to {}", file, renameTo);
                 } else {
                     log.warn("\n----------------------------------------------------------------------\n" +
                                      "  Could not rename {} to {}\n" +
