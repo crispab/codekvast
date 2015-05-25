@@ -15,8 +15,8 @@
       </pattern>
     </extension>
     <option name="MAIN_CLASS_NAME" value="se.crisp.codekvast.server.codekvast_server.CodekvastServerApplication" />
-    <option name="VM_PARAMETERS" value="" />
-    <option name="PROGRAM_PARAMETERS" value="--spring.thymeleaf.cache=false --codekvast.databasePath=tcp://localhost/$MODULE_DIR$/build/database  --codekvast.log.consoleThreshold=DEBUG" />
+    <option name="VM_PARAMETERS" value="-Dcodekvast.log.consoleThreshold=DEBUG" />
+    <option name="PROGRAM_PARAMETERS" value="--spring.thymeleaf.cache=false --codekvast.databasePath=tcp://localhost/$MODULE_DIR$/build/database" />
     <option name="WORKING_DIRECTORY" value="file://$MODULE_DIR$" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" value="" />

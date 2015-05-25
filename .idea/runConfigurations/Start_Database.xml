@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Start H2 Server" type="GradleRunConfiguration" factoryName="Gradle">
+  <configuration default="false" name="Start Database" type="GradleRunConfiguration" factoryName="Gradle">
     <ExternalSystemSettings>
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$/product/server/codekvast-server" />
@@ -10,7 +10,7 @@
       </option>
       <option name="taskNames">
         <list>
-          <option value="startH2Server" />
+          <option value="startDatabase" />
         </list>
       </option>
       <option name="vmOptions" value="" />

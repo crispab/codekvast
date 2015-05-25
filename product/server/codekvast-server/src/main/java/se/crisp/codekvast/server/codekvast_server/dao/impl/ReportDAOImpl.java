@@ -90,7 +90,7 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
             String appIds = reportParameters.getApplicationIds().stream().distinct().map(s -> "?").collect(Collectors.joining(","));
             String jvmIds = reportParameters.getJvmIds().stream().distinct().map(s -> "?").collect(Collectors.joining(","));
 
-            String sql = "SELECT DISTINCT s.signature, s.invoked_at_millis FROM signatures s, application_statistics stats, jvm_info jvm " +
+            String sql = "SELECT s.signature, s.invoked_at_millis FROM signatures s, application_statistics stats, jvm_info jvm " +
                     "WHERE s.organisation_id = ? " +
                     "AND s.application_id IN (" + appIds + ") " +
                     "AND s.jvm_id IN (" + jvmIds + ") " +
@@ -106,7 +106,7 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
 
         @Override
         public Collection<MethodUsageEntry> doGetMethods(ReportParameters reportParameters) {
-            return jdbcTemplate.query(generateSql(reportParameters) + " AND invoked_at_millis = 0 ",
+            return jdbcTemplate.query(generateSql(reportParameters) + " AND s.invoked_at_millis = 0 ",
                                       new MethodUsageEntryRowMapper(MethodUsageScope.DEAD),
                                       generateParams(reportParameters).toArray());
         }
