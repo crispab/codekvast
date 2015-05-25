@@ -44,7 +44,7 @@ public interface ReportService {
      */
     @RequiredArgsConstructor
     enum Format {
-        CSV("application/csv"), JSON("application/json"), XML("application/xml");
+        CSV("application/csv"), JSON("application/json");
 
         @Getter
         private final String contentType;

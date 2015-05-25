@@ -74,13 +74,11 @@ dependencies {
     compile 'com.h2database:h2'
     compile 'org.flywaydb:flyway-core'
     compile 'com.orange.redis-embedded:embedded-redis:0.6'
-    compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
 
     runtime project(':product:support:websupport')
     runtime 'ch.qos.logback:logback-classic'
     runtime 'org.hibernate:hibernate-validator'
     runtime 'org.springframework.data:spring-data-redis:1.5.0.RELEASE'
-    runtime 'org.codehaus.woodstox:woodstox-core-asl:4.4.1'
     runtime webjars
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'
