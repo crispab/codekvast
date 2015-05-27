@@ -127,7 +127,7 @@ public class ReportServiceImpl implements ReportService {
         }
 
         // Create a preview copy of the report limited to maxPreviewRows methods
-        MethodUsageReport response =
+        MethodUsageReport preview =
                 MethodUsageReport.builder()
                                  .request(report.getRequest())
                                  .username(report.getUsername())
@@ -141,7 +141,7 @@ public class ReportServiceImpl implements ReportService {
                                  .build();
 
         log.debug("Created response to {}'s request for {} in {} ms", username, request, System.currentTimeMillis() - startedAt);
-        return response;
+        return preview;
     }
 
     @Override

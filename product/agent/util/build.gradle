@@ -1,7 +1,3 @@
-plugins {
-    id 'java'
-    id 'com.ofg.uptodate' version '1.5.0'
-}
 apply from: "$rootDir/gradle/java-6.gradle"
 apply from: "$rootDir/gradle/sources-javadoc.gradle"
 

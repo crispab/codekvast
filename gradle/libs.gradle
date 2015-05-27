@@ -15,4 +15,3 @@ ext {
     lombok = 'org.projectlombok:lombok:1.16.4'
     springLoadedAgent = 'org.springframework:springloaded:1.2.3.RELEASE'
 }
-

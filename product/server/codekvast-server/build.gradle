@@ -5,15 +5,14 @@ buildscript {
     }
 }
 plugins {
-    id 'application'
     id 'jacoco'
-    id 'com.ofg.uptodate' version '1.5.0'
     id "com.moowork.node" version "0.8"
     // id "com.eriwen.gradle.js" version "1.12.1"
     // id "com.eriwen.gradle.css" version "1.11.1"
 }
 apply from: "$rootDir/gradle/java-8.gradle"
 apply plugin: 'groovy'
+apply plugin: 'application'
 apply plugin: 'spring-boot'
 apply plugin: 'flyway'
 apply plugin: 'com.github.johnrengelman.processes'
@@ -47,12 +46,12 @@ task integTest(type: Test) {
 check.dependsOn integTest
 
 def webjars = [
-        'org.webjars:angular-ui-bootstrap:0.12.1-1',
-        'org.webjars:angularjs:1.3.15',
+        'org.webjars:angular-ui-bootstrap:0.13.0',
+        'org.webjars:angularjs:1.4.0',
         'org.webjars:bootstrap:3.3.4',
-        'org.webjars:jquery:2.1.3',
+        'org.webjars:jquery:2.1.4',
         'org.webjars:lodash:3.6.0',
-        'org.webjars:sockjs-client:0.3.4-1',
+        'org.webjars:sockjs-client:1.0.0',
         'org.webjars:stomp-websocket:2.3.3',
 ]
 

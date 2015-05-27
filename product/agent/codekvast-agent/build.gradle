@@ -1,11 +1,7 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 buildscript { dependencies { classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion" } }
-plugins {
-    id 'java'
-    id 'application'
-    id 'com.ofg.uptodate' version '1.5.0'
-}
+apply plugin: 'application'
 apply plugin: 'spring-boot'
 apply from: "$rootDir/gradle/java-6.gradle"
 
@@ -19,7 +15,7 @@ dependencies {
     compile project(':product:support:common')
     compile project(':product:agent:util')
     compile project(':product:server:agent-api')
-    compile 'org.reflections:reflections:0.9.9'
+    compile 'org.reflections:reflections:0.9.10'
     compile 'org.springframework.boot:spring-boot-starter'
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
     compile 'com.h2database:h2'

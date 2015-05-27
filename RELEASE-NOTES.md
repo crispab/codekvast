@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.11.7
+
+1. Upgraded dependencies
+
 ## 0.11.6
 
 1. Bug fix in Agent: now it handles more Guice-manipulated method names

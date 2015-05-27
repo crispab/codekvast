@@ -1,4 +1,13 @@
 apply plugin: 'java'
+apply plugin: 'com.ofg.uptodate'
+
+uptodate {
+    connectionTimeout 10000
+    addExcludedVersionPatterns '.*-alpha.*'
+    addExcludedVersionPatterns '.*-b[0-9]+$'
+    addExcludedVersionPatterns '.*-[0-9]$'
+}
+
 jar {
     manifest {
         attributes(

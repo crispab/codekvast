@@ -1,18 +1,14 @@
-plugins {
-    id 'java'
-    id 'application'
-    id 'com.ofg.uptodate' version '1.5.0'
-}
 apply from: "$rootDir/gradle/java-6.gradle"
+apply plugin: 'application'
 
 mainClassName = "sample.app.SampleApp"
 archivesBaseName = "standalone-app"
 
 dependencies {
-    compile "org.projectlombok:lombok:1.16.2"
-    compile "org.slf4j:slf4j-api:1.7.7"
+    compile "org.projectlombok:lombok:1.16.4"
+    compile "org.slf4j:slf4j-api:1.7.12"
     compile "aopalliance:aopalliance:1.0"
-    compile 'com.google.inject:guice:3.0'
+    compile 'com.google.inject:guice:4.0'
 }
 
 task generateCodekvastConfig {
@@ -48,7 +44,7 @@ verbose = true
 processResources.dependsOn generateCodekvastConfig
 
 configurations { aspectj }
-dependencies { aspectj 'org.aspectj:aspectjweaver:1.8.2' }
+dependencies { aspectj 'org.aspectj:aspectjweaver:1.8.5' }
 
 run {
     dependsOn = [":product:agent:collector:shadowJar", "generateCodekvastConfig"]

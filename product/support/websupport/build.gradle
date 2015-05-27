@@ -1,7 +1,4 @@
-plugins {
-    id 'java'
-    id 'com.ofg.uptodate' version '1.5.0'
-}
+apply from: "$rootDir/gradle/java-7.gradle"
 apply plugin: 'spring-boot'
 
 archivesBaseName = "codekvast-websupport"
@@ -16,7 +13,8 @@ dependencies {
     testCompile junit
     testCompile mockito
 
-    testRuntime "org.webjars:sockjs-client:0.3.4-1"
+    // NOTE: When you change these, WebjarVersionFilterTest.java must also be upgraded!
+    testRuntime "org.webjars:sockjs-client:1.0.0"
     testRuntime "org.webjars:d3js:3.5.5"
 }
 
