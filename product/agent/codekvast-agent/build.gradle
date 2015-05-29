@@ -1,6 +1,5 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
-buildscript { dependencies { classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion" } }
 apply plugin: 'application'
 apply plugin: 'spring-boot'
 apply from: "$rootDir/gradle/java-6.gradle"
