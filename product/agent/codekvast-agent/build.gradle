@@ -67,7 +67,7 @@ applicationDistribution.from("src/main/resources") {
 
 applicationDistribution.from("src/main/resources") {
     into "conf"
-    include "codekvast-collector.conf.sample"
+    include "codekvast-collector.conf.sample", "byte-code-added-methods.txt", "byte-code-decorated-methods.txt"
     rename {
         "${it}.${version}"
     }

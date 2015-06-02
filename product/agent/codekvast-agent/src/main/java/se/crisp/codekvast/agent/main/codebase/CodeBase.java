@@ -1,5 +1,6 @@
 package se.crisp.codekvast.agent.main.codebase;
 
+import com.google.common.io.Files;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -12,9 +13,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Handles a code base, i.e., the set of public methods of an application.
@@ -26,19 +29,8 @@ import java.util.regex.Pattern;
 @Slf4j
 public class CodeBase {
 
-    private static final Pattern[] ADDED_BY_GUICE_PATTERNS = {
-            Pattern.compile(".*\\.\\.FastClassByGuice.*\\.getIndex\\(java\\.lang\\.String, java\\.lang\\.Class\\[\\]\\)$"),
-            Pattern.compile(".*\\.\\.FastClassByGuice.*\\.getIndex\\(java\\.lang\\.Class\\[\\]\\)$"),
-            Pattern.compile(".*\\.\\.FastClassByGuice.*\\.newInstance\\(int, java\\.lang\\.Object\\[\\]\\)$"),
-            Pattern.compile(".*\\.\\.FastClassByGuice.*\\.invoke\\(int, java\\.lang\\.Object, java\\.lang\\.Object\\[\\]\\)$"),
-            Pattern.compile(".*\\.\\.EnhancerByGuice\\.\\.[a-f0-9]+\\.CGLIB\\$STATICHOOK[0-9]+\\(\\)"),
-            Pattern.compile(".*\\(com\\.google\\.inject\\.internal\\.cglib.*\\)$"),
-    };
-
-    private static final Pattern[] ENHANCED_BY_GUICE_PATTERNS = {
-            Pattern.compile("(.*)\\.\\.EnhancerByGuice\\.\\.[a-z0-9.]+CGLIB\\$(\\w+)\\$\\d+(.*)"),
-            Pattern.compile("(.*)\\.\\.EnhancerByGuice\\.\\.[a-f0-9]+\\.(\\w+)(.*)"),
-    };
+    public static final String ADDED_PATTERNS_FILENAME = "/byte-code-added-methods.txt";
+    public static final String ENHANCED_PATTERNS_FILENAME = "/byte-code-enhanced-methods.txt";
 
     private final List<File> codeBaseFiles;
 
@@ -58,10 +50,41 @@ public class CodeBase {
     private List<URL> urls;
     private boolean needsExploding = false;
 
+    private final Set<Pattern> bytecodeAddedPatterns;
+    private final Set<Pattern> bytecodeEnhancedPatterns;
+    private final Set<Pattern> loggedBadPatterns = new HashSet<Pattern>();
+
     public CodeBase(CollectorConfig config) {
         this.config = config;
         this.codeBaseFiles = config.getCodeBaseFiles();
         this.fingerprint = initUrls();
+        this.bytecodeAddedPatterns = readByteCodePatternsFrom(ADDED_PATTERNS_FILENAME);
+        this.bytecodeEnhancedPatterns = readByteCodePatternsFrom(ENHANCED_PATTERNS_FILENAME);
+    }
+
+    private Set<Pattern> readByteCodePatternsFrom(String resourceName) {
+        Set<Pattern> result = new HashSet<Pattern>();
+        URL resource = getClass().getResource(resourceName);
+        try {
+            List<String> lines = Files.readLines(new File(resource.toURI()), Charset.forName("UTF-8"));
+            for (int i = 0; i < lines.size(); i++) {
+                String line = lines.get(i).trim();
+                if (!line.isEmpty() && !line.startsWith("#")) {
+                    addPatternTo(result, resourceName, i + 1, line);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Cannot read " + resourceName, e);
+        }
+        return result;
+    }
+
+    private void addPatternTo(Collection<Pattern> result, String fileName, int lineNumber, String pattern) {
+        try {
+            result.add(Pattern.compile(pattern));
+        } catch (PatternSyntaxException e) {
+            log.error("Illegal regexp syntax in {}:{}", fileName, lineNumber);
+        }
     }
 
     public String normalizeSignature(String signature) {
@@ -73,18 +96,22 @@ public class CodeBase {
             strangeSignatures.add(signature);
         }
 
-        for (Pattern pattern : ADDED_BY_GUICE_PATTERNS) {
+        for (Pattern pattern : bytecodeAddedPatterns) {
             if (pattern.matcher(signature).matches()) {
                 return null;
             }
         }
         String result = signature.replaceAll(" final ", " ");
 
-        for (Pattern pattern : ENHANCED_BY_GUICE_PATTERNS) {
+        for (Pattern pattern : bytecodeEnhancedPatterns) {
             Matcher matcher = pattern.matcher(result);
             if (matcher.matches()) {
-                result = matcher.group(1) + "." + matcher.group(2) + matcher.group(3);
-                log.trace("Normalized {} to {}", signature, result);
+                if (matcher.groupCount() != 3) {
+                    logBadPattern(pattern);
+                } else {
+                    result = matcher.group(1) + "." + matcher.group(2) + matcher.group(3);
+                    log.trace("Normalized {} to {}", signature, result);
+                }
             }
         }
 
@@ -92,6 +119,12 @@ public class CodeBase {
             log.warn("Could not normalize {}: {}", signature, result);
         }
         return result;
+    }
+
+    private void logBadPattern(Pattern pattern) {
+        if (loggedBadPatterns.add(pattern)) {
+            log.error("Expected exactly 3 capturing groups in regexp '{}', ignored.", pattern);
+        }
     }
 
 

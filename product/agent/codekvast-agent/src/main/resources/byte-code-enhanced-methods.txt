@@ -1,0 +1,12 @@
+# This file contains regular expressions for methods that are enhanced in runtime by e.g., Guice.
+# Such method names must be un-decorated or else the declaring method in the code base will not be found.
+#
+# One pattern per line.
+# Empty lines and lines beginning with # are ignored.
+# Syntax: see java.util.regex.Pattern.compile()
+# Each pattern should have three groups: 1: the class name, 2: the method name and 3: the parameter list
+# Charset: UTF-8
+
+(.*)\.\.EnhancerByGuice\.\.[a-z0-9.]+CGLIB\$(\w+)\$\d+(.*)
+(.*)\.\.EnhancerByGuice\.\.[a-f0-9]+\.(\w+)(.*)
+
