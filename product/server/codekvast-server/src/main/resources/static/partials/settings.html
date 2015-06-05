@@ -37,7 +37,8 @@
             </fieldset>
         </form>
         <div class="well" ng-show="progressMessage">
-            {{progressMessage}}
+            <img ng-show="preloaderImage" src="/images/preloader/{{progressMessage}}"/>
+            <span ng-hide="preloaderImage">{{progressMessage}}</span>
         </div>
     </div>
     <div class="modal-footer">

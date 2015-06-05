@@ -240,6 +240,10 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         $scope.applications = RemoteDataService.getLastData("applications");
         $scope.progressMessage = undefined;
 
+        $scope.preloaderImage = function () {
+            return $scope.progressMessage && $scope.progressMessage.endsWith(".gif");
+        }
+
         $scope.setUnit = function (a, code) {
             if (!a.usageCycleValue) {
                 a.usageCycleValue = a.usageCycleSeconds;
@@ -301,7 +305,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
         $scope.save = function () {
             if ($scope.applications) {
-                $scope.progressMessage = 'Recalculating statistics...';
+                $scope.progressMessage = 'recalculating-statistics.gif';
                 RemoteDataService.persistSettings($scope.applications, 'Recalculated statistics');
             }
 
