@@ -292,6 +292,7 @@ task startDatabase(type: com.github.jengelman.gradle.plugins.processes.tasks.Jav
     workingDir buildDir
     main mainClass
     args = ['-tcp']
+    // maxHeapSize = "100M"
 
     mkdir "$buildDir/log/"
     standardOutput = new PrintStream(new BufferedOutputStream(new FileOutputStream(file("$buildDir/log/h2-server.log"))))

@@ -96,7 +96,9 @@
                                         class="btn btn-primary" ng-disabled="!isSubmitEnabled()" ng-click="getReportData('preview')">Preview
                                                                                                                                      report
                                 </button>
-                                <span ng-show="reportInProgress">Fetching preview data...</span>
+                                <img ng-show="reportInProgress"
+                                     style="margin-left: 2em;"
+                                     src="/images/preloader/fetching-preview-data.gif"/>
                             </form>
                         </td>
                     </tr>
