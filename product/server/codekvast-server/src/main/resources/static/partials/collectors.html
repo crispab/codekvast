@@ -89,7 +89,7 @@
                               popover-placement="left"
                               class="glyphicon glyphicon-info-sign"></span>
                     </th>
-                    <th class="col-lg-1">
+                    <th class="col-lg-2">
                         <span ng-click="orderBy = 'dataReceivedAtMillis'; reverse = !reverse">Data Age</span>
                         <span popover="How old is the data?"
                               popover-trigger="click"
@@ -109,9 +109,14 @@
                     <td class="col-lg-1">{{c.methodVisibility}}</td>
                     <td class="col-lg-1">{{c.collectorResolution}}</td>
                     <td class="col-lg-1">{{c.agentUploadInterval}}</td>
-                    <td class="col-lg-1" ng-class="dataAgeClass(c)">{{c.dataAge}} <i class="glyphicon glyphicon-warning-sign"
+                    <td class="col-lg-2" ng-class="dataAgeClass(c)">{{c.dataAge}} <i class="glyphicon glyphicon-warning-sign"
                                                                                      ng-show="isDown(c)"></i></td>
-                    <td class="col-lg-1"><a href="#" ng-click="deleteCollector(c)">Delete...</a></td>
+                    <td class="col-lg-1">
+                        <i class="glyphicon glyphicon-trash" ng-click="deleteCollector(c)" ng-hide="c.isDeleting"> </i>
+                        <span ng-show="c.isDeleting">Deleting...</span>
+                        </i>
+                    </td>
+                    </td>
                 </tr>
                 </tbody>
             </table>

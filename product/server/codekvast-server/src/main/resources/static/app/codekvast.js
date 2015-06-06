@@ -162,7 +162,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
         };
 
-        var deleteCollector = function (collector, successMessage) {
+        var deleteCollector = function (collector) {
             var data = {
                 appName: collector.appName,
                 appVersion: collector.appVersion,
@@ -171,7 +171,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
             $http.delete('/api/web/collector', {data: data})
                 .success(function () {
-                    broadcast('collectorDeleted', successMessage);
+                    broadcast('collectorDeleted');
                 })
                 .error(function (rsp) {
                     broadcast('collectorDeleted', 'Cannot delete collector:' + JSON.stringify(rsp));
@@ -401,7 +401,12 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         });
 
         $scope.$on("collectorDeleted", function (event, message) {
-            alert(message);
+            angular.forEach($scope.collectorStatuses, function (c) {
+                c.isDeleting = false;
+            });
+            if (message) {
+                alert(message);
+            }
         });
 
         $scope.dataAgeClass = function (c) {
@@ -416,7 +421,8 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         $scope.deleteCollector = function (c) {
             var displayName = c.appName + " " + c.appVersion + " " + c.collectorHostname;
             if (confirm("Really delete " + displayName + "?")) {
-                RemoteDataService.deleteCollector(c, displayName + " deleted");
+                c.isDeleting = true;
+                RemoteDataService.deleteCollector(c);
             }
         };
 

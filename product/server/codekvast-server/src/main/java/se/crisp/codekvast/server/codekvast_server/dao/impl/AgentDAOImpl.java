@@ -443,6 +443,16 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     }
 
     @Override
+    public int getNumCollectors(long organisationId, String appName, String appVersion) {
+        return jdbcTemplate.queryForObject("SELECT COUNT(jvm.id) FROM jvm_info jvm, applications a " +
+                                                   "WHERE jvm.application_id = a.id " +
+                                                   "AND a.organisation_id = ? " +
+                                                   "AND a.name = ? " +
+                                                   "AND jvm.application_version = ? ",
+                                           Integer.class, organisationId, appName, appVersion);
+    }
+
+    @Override
     public int deleteCollectors(long organisationId, String appName, String appVersion, String hostName) {
         int rowsDeleted = jdbcTemplate.update("DELETE FROM signatures " +
                                                       "WHERE jvm_id IN ( " +
@@ -476,6 +486,15 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         rowsDeleted += jdbcTemplate.update("DELETE FROM applications WHERE organisation_id = ? AND name = ? ",
                                            organisationId, appName);
         return rowsDeleted;
+    }
+
+    @Override
+    public int deleteApplicationStatistics(long organisationId, String appName, String appVersion) {
+        return jdbcTemplate.update("DELETE FROM application_statistics " +
+                                           "WHERE application_id = " +
+                                           "(SELECT id FROM applications WHERE organisation_id = ? AND name = ?) " +
+                                           "AND application_version = ? ",
+                                   organisationId, appName, appVersion);
     }
 
     private static class ApplicationStatisticsDisplayRowMapper implements RowMapper<ApplicationStatisticsDisplay> {

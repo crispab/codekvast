@@ -64,12 +64,15 @@ public class UserServiceImpl implements UserService {
         // The collection does only contain one element
         int rowsDeleted =
                 agentDAO.deleteCollectors(organisationId, collector.getAppName(), collector.getAppVersion(), collector.getHostname());
-        int numCollectors = agentDAO.getNumCollectors(organisationId, collector.getAppName());
-        if (numCollectors == 0) {
+        int numCollectorsByName = agentDAO.getNumCollectors(organisationId, collector.getAppName());
+        int numCollectorsByNameAndVersion = agentDAO.getNumCollectors(organisationId, collector.getAppName(), collector.getAppVersion());
+        if (numCollectorsByName == 0) {
             log.debug("Deleting application {}", collector.getAppName());
             rowsDeleted += agentDAO.deleteApplication(organisationId, collector.getAppName());
-        } else {
+        } else if (numCollectorsByNameAndVersion > 0) {
             statisticsService.recalculateApplicationStatistics(organisationId, Collections.singletonList(collector.getAppName()));
+        } else if (numCollectorsByNameAndVersion == 0) {
+            rowsDeleted += agentDAO.deleteApplicationStatistics(organisationId, collector.getAppName(), collector.getAppVersion());
         }
         log.info("Deleted {}, {} database rows deleted", collector, rowsDeleted);
         eventBus.post(agentDAO.createWebSocketMessage(organisationId));

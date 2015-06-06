@@ -96,9 +96,21 @@ public interface AgentDAO {
     int getNumCollectors(long organisationId, String appName);
 
     /**
+     * Retrieve the number of collectors for a certain application name/version.
+     */
+    int getNumCollectors(long organisationId, String appName, String appVersion);
+
+    /**
      * Delete the application row and it's statistics.
      *
      * @return The number of database rows that were deleted.
      */
     int deleteApplication(long organisationId, String appName);
+
+    /**
+     * Delete statistics for a certain app/version
+     *
+     * @return The number of database rows that were deleted.
+     */
+    int deleteApplicationStatistics(long organisationId, String appName, String appVersion);
 }
