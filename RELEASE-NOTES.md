@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.11.8
+
+1. Implemented Delete collectors
+
 ## 0.11.7
 
 1. Upgraded dependencies

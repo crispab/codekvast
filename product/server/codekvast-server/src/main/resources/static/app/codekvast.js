@@ -3,7 +3,7 @@
 
 var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
-    .config(['$routeProvider', '$locationProvider', 'Defaults', function ($routeProvider, $locationProvider, Defaults) {
+    .config(['$routeProvider', '$httpProvider', '$locationProvider', 'Defaults', function ($routeProvider, $httpProvider, $locationProvider, Defaults) {
         $routeProvider
             .when('/page/:page*', {
                 templateUrl: function (routeParams) {
@@ -14,6 +14,8 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             .otherwise({
                 templateUrl: 'partials/' + Defaults.defaultRoute + '.html'
             });
+
+        $httpProvider.defaults.headers.delete = {'Content-Type': 'application/json'};
 
         $locationProvider.html5Mode(true);
 
@@ -160,6 +162,22 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
         };
 
+        var deleteCollector = function (collector, successMessage) {
+            var data = {
+                appName: collector.appName,
+                appVersion: collector.appVersion,
+                hostname: collector.collectorHostname
+            };
+
+            $http.delete('/api/web/collector', {data: data})
+                .success(function () {
+                    broadcast('collectorDeleted', successMessage);
+                })
+                .error(function (rsp) {
+                    broadcast('collectorDeleted', 'Cannot delete collector:' + JSON.stringify(rsp));
+                })
+        };
+
         var getMethodUsageData = function (getMethodUsageRequest) {
             return $http.post('/api/web/methodUsagePreview', getMethodUsageRequest)
         };
@@ -170,6 +188,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             initSocket: initSocket,
             persistSettings: persistSettings,
             getMethodUsageData: getMethodUsageData,
+            deleteCollector: deleteCollector,
 
             // for testing only
             handleWebSocketMessage: handleWebSocketMessage
@@ -314,7 +333,6 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         $scope.cancel = function () {
             $modalInstance.dismiss('cancel');
         };
-
     }])
 
     .controller('StatisticsController', ['$scope', '$interval', 'DateService', 'RemoteDataService', function ($scope, $interval, DateService, RemoteDataService) {
@@ -382,6 +400,10 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             $interval.cancel($scope.updateModelInterval);
         });
 
+        $scope.$on("collectorDeleted", function (event, message) {
+            alert(message);
+        });
+
         $scope.dataAgeClass = function (c) {
             return $scope.isDown(c) ? "danger" : undefined;
         };
@@ -389,7 +411,14 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         $scope.isDown = function (c) {
             var ageSeconds = (Date.now() - c.dataReceivedAtMillis) / 1000;
             return ageSeconds > c.collectorResolutionSeconds + c.agentUploadIntervalSeconds + 30;
-        }
+        };
+
+        $scope.deleteCollector = function (c) {
+            var displayName = c.appName + " " + c.appVersion + " " + c.collectorHostname;
+            if (confirm("Really delete " + displayName + "?")) {
+                RemoteDataService.deleteCollector(c, displayName + " deleted");
+            }
+        };
 
         $scope.updateModel = function () {
             if ($scope.collectorStatuses) {
@@ -404,7 +433,6 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         };
 
         $scope.updateModelInterval = $interval($scope.updateModel, 500, false);
-
     }])
 
     .controller('ReportController', ['$scope', 'dateFilter', 'DateService', 'RemoteDataService', function ($scope, dateFilter, DateService, RemoteDataService) {

@@ -30,11 +30,16 @@ public interface AgentDAO {
     /**
      * Convert the given application names to a list of AppIds
      *
-     * @param organisationId
-     * @param applicationNames
      * @return Does never return null
      */
     Collection<AppId> getApplicationIds(long organisationId, Collection<String> applicationNames);
+
+    /**
+     * Retrieve all application IDs by name/version/hostname
+     *
+     * @return Does never return null
+     */
+    Collection<AppId> getApplicationIds(long organisationId, String appName, String appVersion, String hostname);
 
     /**
      * Stores invocation data in the database.
@@ -78,4 +83,22 @@ public interface AgentDAO {
      */
     void recalculateApplicationStatistics(AppId appId);
 
+    /**
+     * Delete all signature and jvm_info rows for a certain app/version/hostname.
+     *
+     * @return The number of database rows that were deleted.
+     */
+    int deleteCollectors(long organisationId, String appName, String appVersion, String hostName);
+
+    /**
+     * Retrieve the number of collectors for a certain application name.
+     */
+    int getNumCollectors(long organisationId, String appName);
+
+    /**
+     * Delete the application row and it's statistics.
+     *
+     * @return The number of database rows that were deleted.
+     */
+    int deleteApplication(long organisationId, String appName);
 }

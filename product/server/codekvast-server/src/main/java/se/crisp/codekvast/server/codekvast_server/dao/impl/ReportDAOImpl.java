@@ -61,7 +61,7 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
         args.addAll(applicationVersions);
 
         return jdbcTemplate.queryForList(
-                "SELECT id FROM jvm_info WHERE organisation_id = ? AND application_version " + condition + "ORDER BY id",
+                "SELECT id FROM jvm_info WHERE organisation_id = ? AND application_version " + condition + " ORDER BY id",
                 Long.class, args.toArray());
     }
 

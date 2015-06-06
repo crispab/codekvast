@@ -111,6 +111,7 @@
                     <td class="col-lg-1">{{c.agentUploadInterval}}</td>
                     <td class="col-lg-1" ng-class="dataAgeClass(c)">{{c.dataAge}} <i class="glyphicon glyphicon-warning-sign"
                                                                                      ng-show="isDown(c)"></i></td>
+                    <td class="col-lg-1"><a href="#" ng-click="deleteCollector(c)">Delete...</a></td>
                 </tr>
                 </tbody>
             </table>

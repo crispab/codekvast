@@ -14,6 +14,7 @@ import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.messaging.AbstractEventBusSubscriber;
 import se.crisp.codekvast.server.codekvast_server.messaging.WebSocketUserPresenceHandler;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.WebSocketMessage;
+import se.crisp.codekvast.server.codekvast_server.model.event.rest.Collector;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.GetMethodUsageRequest;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.MethodUsageReport;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.OrganisationSettings;
@@ -112,6 +113,17 @@ public class AngularController extends AbstractEventBusSubscriber {
         userService.saveOrganisationSettings(username, settings);
 
         log.info("'{}' saved settings {}", username, settings);
+    }
+
+    @RequestMapping(value = "/api/web/collector", method = RequestMethod.DELETE)
+    public void deleteCollector(@Valid @RequestBody Collector collector, Principal principal)
+            throws CodekvastException {
+        String username = principal.getName();
+        log.debug("'{}' deletes {}", username, collector);
+
+        userService.deleteCollector(username, collector);
+
+        log.info("'{}' deleted {}", username, collector);
     }
 
     @RequestMapping(value = "/api/web/methodUsagePreview", method = RequestMethod.POST, produces = "application/json")

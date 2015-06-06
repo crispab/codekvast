@@ -2,6 +2,7 @@ package se.crisp.codekvast.server.codekvast_server.service;
 
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.WebSocketMessage;
+import se.crisp.codekvast.server.codekvast_server.model.event.rest.Collector;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.OrganisationSettings;
 
 /**
@@ -25,4 +26,12 @@ public interface UserService {
      */
     void saveOrganisationSettings(String username, OrganisationSettings organisationSettings) throws CodekvastException;
 
+    /**
+     * Deletes all data associated with a certain collector. If it is the last collector for an application, the application is also
+     * deleted.
+     *
+     * @param username  The username who made the request.
+     * @param collector The collector to delete
+     */
+    void deleteCollector(String username, Collector collector) throws CodekvastException;
 }

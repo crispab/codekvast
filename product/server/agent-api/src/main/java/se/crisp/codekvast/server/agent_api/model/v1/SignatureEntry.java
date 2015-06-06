@@ -19,6 +19,7 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @ToString
 @EqualsAndHashCode(of = "signature")
+@Builder
 public class SignatureEntry {
     @NonNull
     @NotBlank

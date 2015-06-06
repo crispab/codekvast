@@ -101,6 +101,18 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                   new AppIdRowMapper(), args.toArray());
     }
 
+    @Override
+    public Collection<AppId> getApplicationIds(long organisationId, String appName, String appVersion, String hostname) {
+        return jdbcTemplate.query("SELECT jvm.id, jvm.organisation_id, jvm.application_id, jvm.application_version " +
+                                          "FROM jvm_info jvm, applications a " +
+                                          "WHERE jvm.application_id = a.id " +
+                                          "AND jvm.organisation_id = ? " +
+                                          "AND a.name = ? " +
+                                          "AND jvm.application_version = ? " +
+                                          "AND jvm.collector_host_name = ? ",
+                                  new AppIdRowMapper(), organisationId, appName, appVersion, hostname);
+    }
+
     private static class AppIdRowMapper implements RowMapper<AppId> {
         @Override
         public AppId mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -419,6 +431,51 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
 
         long elapsed = System.currentTimeMillis() - startedAt;
         log.debug("Statistics for {} {} calculated in {} ms", appName, appId.getAppVersion(), elapsed);
+    }
+
+    @Override
+    public int getNumCollectors(long organisationId, String appName) {
+        return jdbcTemplate.queryForObject("SELECT COUNT(jvm.id) FROM jvm_info jvm, applications a " +
+                                                   "WHERE jvm.application_id = a.id " +
+                                                   "AND a.organisation_id = ? " +
+                                                   "AND a.name = ? ",
+                                           Integer.class, organisationId, appName);
+    }
+
+    @Override
+    public int deleteCollectors(long organisationId, String appName, String appVersion, String hostName) {
+        int rowsDeleted = jdbcTemplate.update("DELETE FROM signatures " +
+                                                      "WHERE jvm_id IN ( " +
+                                                      "  SELECT jvm.id " +
+                                                      "  FROM jvm_info jvm, applications a " +
+                                                      "  WHERE jvm.application_id = a.id " +
+                                                      "    AND jvm.organisation_id = ? " +
+                                                      "    AND a.name = ? " +
+                                                      "    AND jvm.application_version = ? " +
+                                                      "    AND jvm.collector_host_name = ? ) ",
+                                              organisationId, appName, appVersion, hostName);
+
+        rowsDeleted += jdbcTemplate.update("DELETE FROM jvm_info " +
+                                                   "WHERE organisation_id = ? " +
+                                                   "  AND application_version = ? " +
+                                                   "  AND collector_host_name = ? " +
+                                                   "  AND application_id IN (" +
+                                                   "    SELECT id FROM applications " +
+                                                   "    WHERE organisation_id = ? " +
+                                                   "      AND name = ? ) ",
+                                           organisationId, appVersion, hostName, organisationId, appName);
+        return rowsDeleted;
+    }
+
+    @Override
+    public int deleteApplication(long organisationId, String appName) {
+        int rowsDeleted = jdbcTemplate.update("DELETE FROM application_statistics " +
+                                                      "WHERE application_id = " +
+                                                      "(SELECT id FROM applications WHERE organisation_id = ? AND name = ?)",
+                                              organisationId, appName);
+        rowsDeleted += jdbcTemplate.update("DELETE FROM applications WHERE organisation_id = ? AND name = ? ",
+                                           organisationId, appName);
+        return rowsDeleted;
     }
 
     private static class ApplicationStatisticsDisplayRowMapper implements RowMapper<ApplicationStatisticsDisplay> {
