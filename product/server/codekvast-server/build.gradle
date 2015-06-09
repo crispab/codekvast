@@ -17,6 +17,7 @@ buildscript {
 }
 
 
+import com.github.jengelman.gradle.plugins.processes.tasks.JavaFork
 import org.apache.tools.ant.filters.ReplaceTokens
 
 apply from: "$rootDir/gradle/java-8.gradle"
@@ -290,7 +291,7 @@ if (!System.properties['os.name'].contains("indows")) {
     check.dependsOn jasmineSingleRun
 }
 
-task startDatabase(type: com.github.jengelman.gradle.plugins.processes.tasks.JavaFork) {
+task startDatabase(type: JavaFork) {
     description "Starts a H2 database server"
     group "Help"
 
@@ -315,7 +316,7 @@ task startDatabase(type: com.github.jengelman.gradle.plugins.processes.tasks.Jav
     }
 }
 
-task stopDatabase(type: com.github.jengelman.gradle.plugins.processes.tasks.JavaFork) {
+task stopDatabase(type: JavaFork) {
     description "Stops the H2 database server"
     group "Help"
 
