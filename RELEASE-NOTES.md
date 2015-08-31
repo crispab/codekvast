@@ -1,5 +1,11 @@
 # Codekvast Release Notes
 
+## 0.11.9
+
+1. Upgraded to Spring Boot 1.2.5
+1. Upgraded dependencies
+1. Rewrote from ajc to @Aspect style
+
 ## 0.11.8
 
 1. Implemented Delete collectors

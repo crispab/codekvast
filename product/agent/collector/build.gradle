@@ -1,21 +1,15 @@
-buildscript {
-    repositories { maven { url 'https://maven.eveoh.nl/content/repositories/releases' } }
-    dependencies {
-        classpath 'nl.eveoh:gradle-aspectj:1.4'
-    }
-}
 plugins {
     id "com.github.johnrengelman.shadow" version "1.2.1"
 }
 apply from: "$rootDir/gradle/java-6.gradle"
-apply plugin: 'aspectj'
 apply from: "$rootDir/gradle/sources-javadoc.gradle"
 apply plugin: 'com.jfrog.bintray'
+
 // This build script is prepared for publishing the shadow jar to bintray for linking to jcenter.
 // It is however currently disabled, since bintray won't allow linking it to jcenter because the GitHub repo is not public.
 // All bintray-related code is commented out with the marker JCENTER
 
-description = "The javaagent part of Codekvast agent"
+description = "The javaagent part of Codekvast"
 archivesBaseName = "codekvast-agent-collector"
 version = project.parent.parent.version
 
@@ -24,7 +18,6 @@ configurations {
 }
 
 dependencies {
-    // cannot use lombok here, since this is an AspectJ project
     compile project(":product:agent:util"), { transitive = false }
     compile "org.aspectj:aspectjweaver:$aspectjVersion"
 

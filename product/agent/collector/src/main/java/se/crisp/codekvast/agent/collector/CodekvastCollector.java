@@ -10,7 +10,6 @@ import se.crisp.codekvast.agent.util.FileUtils;
 import java.io.File;
 import java.io.PrintStream;
 import java.lang.instrument.Instrumentation;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -104,15 +103,9 @@ public class CodekvastCollector {
             aspectjOptions = "";
         }
 
-        List<String> packagePrefixes = config.getNormalizedPackagePrefixes();
-        StringBuilder executionWithin = new StringBuilder();
         StringBuilder includeWithin = new StringBuilder();
-        String executionDelimiter = "";
-
-        for (String prefix : packagePrefixes) {
-            executionWithin.append(executionDelimiter).append("within(").append(prefix).append("..*)");
+        for (String prefix : config.getNormalizedPackagePrefixes()) {
             includeWithin.append(String.format("    <include within='%s..*' />\n", prefix));
-            executionDelimiter = " || ";
         }
 
         String xml = String.format(
@@ -120,16 +113,14 @@ public class CodekvastCollector {
                         + "  <aspects>\n"
                         + "    <concrete-aspect name='se.crisp.codekvast.agent.collector.aspects.MethodExecutionAspect'\n"
                         + "                     extends='%1$s'>\n"
-                        + "      <pointcut name='withinScope' expression='(%2$s)'/>\n"
-                        + "      <pointcut name='methodExecution' expression='%3$s'/>\n"
+                        + "      <pointcut name='methodExecution' expression='%2$s'/>\n"
                         + "    </concrete-aspect>\n"
                         + "  </aspects>\n"
-                        + "  <weaver options='%4$s'>\n"
-                        + "%5$s"
+                        + "  <weaver options='%3$s'>\n"
+                        + "%4$s"
                         + "  </weaver>\n"
                         + "</aspectj>\n",
                 AbstractMethodExecutionAspect.class.getName(),
-                executionWithin.toString(),
                 toMethodExecutionPointcut(config.getMethodVisibility()),
                 aspectjOptions,
                 includeWithin.toString()
