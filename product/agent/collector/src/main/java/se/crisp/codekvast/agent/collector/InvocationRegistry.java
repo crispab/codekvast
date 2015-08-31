@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 @SuppressWarnings("Singleton")
 public class InvocationRegistry {
 
-    public static InvocationRegistry instance = new NoopInvocationRegistry();
+    public static InvocationRegistry instance;
 
     private final CollectorConfig config;
     private final Jvm jvm;
@@ -49,32 +49,28 @@ public class InvocationRegistry {
     /**
      * Should be called before handing over to the AspectJ load-time weaver, or else nothing will be registered.
      *
-     * @param config The collector configuration. Specifying null will disable the invocation registry.
+     * @param config The collector configuration. May not be null.
      */
     public static void initialize(CollectorConfig config) {
-        if (config == null) {
-            InvocationRegistry.instance = new NoopInvocationRegistry();
-        } else {
-            String version = InvocationRegistry.class.getPackage().getImplementationVersion();
-            if (version == null || version.trim().isEmpty()) {
-                version = "dev-vcsId";
-            }
-
-            int dash = version.lastIndexOf("-");
-            String collectorVersion = version.substring(0, dash);
-            String collectorVcsId = version.substring(dash + 1);
-
-            InvocationRegistry.instance = new InvocationRegistry(config,
-                                                                 Jvm.builder()
-                                                                    .collectorVersion(collectorVersion)
-                                                                    .collectorVcsId(collectorVcsId)
-                                                                    .collectorConfig(config)
-                                                                    .computerId(ComputerID.compute().toString())
-                                                                    .hostName(getHostName())
-                                                                    .jvmUuid(UUID.randomUUID().toString())
-                                                                    .startedAtMillis(System.currentTimeMillis())
-                                                                    .build());
+        String version = InvocationRegistry.class.getPackage().getImplementationVersion();
+        if (version == null || version.trim().isEmpty()) {
+            version = "dev-vcsId";
         }
+
+        int dash = version.lastIndexOf("-");
+        String collectorVersion = version.substring(0, dash);
+        String collectorVcsId = version.substring(dash + 1);
+
+        InvocationRegistry.instance = new InvocationRegistry(config,
+                                                             Jvm.builder()
+                                                                .collectorVersion(collectorVersion)
+                                                                .collectorVcsId(collectorVcsId)
+                                                                .collectorConfig(config)
+                                                                .computerId(ComputerID.compute().toString())
+                                                                .hostName(getHostName())
+                                                                .jvmUuid(UUID.randomUUID().toString())
+                                                                .startedAtMillis(System.currentTimeMillis())
+                                                                .build());
     }
 
     private static String getHostName() {
@@ -143,20 +139,6 @@ public class InvocationRegistry {
             CodekvastCollector.out.println(CodekvastCollector.NAME + " cannot save " + jvmFile + ": " + e);
         } finally {
             FileUtils.safeDelete(tmpFile);
-        }
-    }
-
-    /**
-     * A no-op invocation registry that does nothing.
-     */
-    private static class NoopInvocationRegistry extends InvocationRegistry {
-        public NoopInvocationRegistry() {
-            super(null, null);
-        }
-
-        @Override
-        public void registerMethodInvocation(Signature signature) {
-            // no-op
         }
     }
 }

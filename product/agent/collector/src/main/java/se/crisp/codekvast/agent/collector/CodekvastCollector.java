@@ -1,7 +1,6 @@
 package se.crisp.codekvast.agent.collector;
 
 import org.aspectj.bridge.Constants;
-import se.crisp.codekvast.agent.collector.aspects.AbstractMethodExecutionAspect;
 import se.crisp.codekvast.agent.config.CollectorConfig;
 import se.crisp.codekvast.agent.config.CollectorConfigLocator;
 import se.crisp.codekvast.agent.config.MethodFilter;
@@ -15,8 +14,6 @@ import java.util.TimerTask;
 
 /**
  * This is the Java agent that hooks up Codekvast to the app.
- *
- * It does <strong>NOT</strong> load aspectjweaver.
  *
  * Invocation: Add the following options to the Java command line:
  * <pre><code>
@@ -111,7 +108,7 @@ public class CodekvastCollector {
         String xml = String.format(
                 "<aspectj>\n"
                         + "  <aspects>\n"
-                        + "    <concrete-aspect name='se.crisp.codekvast.agent.collector.aspects.MethodExecutionAspect'\n"
+                        + "    <concrete-aspect name='se.crisp.codekvast.agent.collector.MethodExecutionAspect'\n"
                         + "                     extends='%1$s'>\n"
                         + "      <pointcut name='methodExecution' expression='%2$s'/>\n"
                         + "    </concrete-aspect>\n"

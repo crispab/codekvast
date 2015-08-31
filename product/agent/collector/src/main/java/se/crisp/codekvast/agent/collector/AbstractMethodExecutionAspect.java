@@ -1,10 +1,9 @@
-package se.crisp.codekvast.agent.collector.aspects;
+package se.crisp.codekvast.agent.collector;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
-import se.crisp.codekvast.agent.collector.InvocationRegistry;
 
 /**
  * This is an AspectJ aspect that captures execution of methods in the scope of interest.
