@@ -118,12 +118,14 @@ public class CodekvastCollector {
                         + "  </aspects>\n"
                         + "  <weaver options='%3$s'>\n"
                         + "%4$s"
+                        + "    <exclude within='%5$s..*'/>\n"
                         + "  </weaver>\n"
                         + "</aspectj>\n",
                 AbstractMethodExecutionAspect.class.getName(),
                 toMethodExecutionPointcut(config.getMethodVisibility()),
                 aspectjOptions,
-                includeWithin.toString()
+                includeWithin.toString(),
+                CodekvastCollector.class.getPackage().getName()
         );
 
         File file = config.getAspectFile();
