@@ -3,7 +3,6 @@ buildscript {
         classpath "org.flywaydb:flyway-gradle-plugin:3.1"
         classpath 'com.github.jengelman.gradle.plugins:gradle-processes:0.3.0'
         classpath 'com.moowork.gradle:gradle-node-plugin:0.10'
-        classpath 'nu.studer:gradle-jooq-plugin:1.0.5'
         classpath 'com.h2database:h2:1.4.185'
         // classpath 'com.eriwen:gradle-js-plugin:1.12.1'
         // classpath 'com.eriwen:gradle-css-plugin:1.11.1'
@@ -28,7 +27,6 @@ apply plugin: 'flyway'
 apply plugin: 'com.moowork.node'
 apply plugin: 'com.github.johnrengelman.processes'
 apply plugin: 'jacoco'
-apply plugin: 'nu.studer.jooq'
 // apply plugin: 'com.eriwen.gradle.js'
 // apply plugin: 'com.eriwen.gradle.css'
 
@@ -88,7 +86,6 @@ dependencies {
     compile 'com.h2database:h2'
     compile 'org.flywaydb:flyway-core'
     compile 'com.orange.redis-embedded:embedded-redis:0.6'
-    compile 'org.jooq:jooq:3.6.1'
 
     runtime project(':product:support:websupport')
     runtime 'ch.qos.logback:logback-classic'
@@ -339,38 +336,7 @@ flyway {
     locations = ['classpath:/database/migration', 'classpath:/se/crisp/codekvast/server/codekvast_server/migration']
 }
 
-jooq {
-    main(sourceSets.main) {
-        jdbc {
-            driver = 'org.h2.Driver'
-            url = "jdbc:h2:tcp://localhost/$buildDir/database/codekvast-server"
-            user = 'codekvast'
-            password = 'codekvast'
-        }
-
-        generator {
-            database {
-                name = 'org.jooq.util.h2.H2Database'
-                inputSchema = 'PUBLIC'
-            }
-            generate {
-                relations = true
-                deprecated = false
-                records = true
-                immutablePojos = true
-                fluentSetters = true
-                daos = true
-            }
-            target {
-                packageName = 'se.crisp.codekvast.server.codekvast_server.jooq'
-                directory = file("gen/jooq/main")
-            }
-        }
-    }
-}
-
-[run, bootRun, flywayBaseline, flywayClean, flywayInfo, flywayInit, flywayMigrate, flywayRepair, flywayValidate,
- generateMainJooqSchemaSource]*.dependsOn startDatabase
+[run, bootRun, flywayBaseline, flywayClean, flywayInfo, flywayInit, flywayMigrate, flywayRepair, flywayValidate]*.dependsOn startDatabase
 
 task copyJdbcDriver(type: Sync) {
     // Copy the H2 JDBC driver jar to a known location so that IDEs can find it...
@@ -378,16 +344,3 @@ task copyJdbcDriver(type: Sync) {
     into file("build/jdbcDriver")
 }
 build.dependsOn copyJdbcDriver
-
-task generateSchemaSources(type: GradleBuild) {
-    // This task is a GradleBuild in order to avoid the circular dependency
-    // classes -> flywayMigrate -> generateMainJooqSchemaSource -> classes
-    description = "Generate Java sources from the database schema built by Flyway into gen/ which should be under version control"
-    group = "generate sources"
-    tasks = ['generateMainJooqSchemaSource', 'jar']
-    doFirst {
-        delete "gen/jooq/main"
-    }
-    dependsOn flywayMigrate
-}
-classes.shouldRunAfter generateSchemaSources
