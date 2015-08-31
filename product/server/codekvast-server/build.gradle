@@ -60,11 +60,11 @@ check.dependsOn integTest
 
 def webjars = [
         'org.webjars:angular-ui-bootstrap:0.13.0',
-        'org.webjars:angularjs:1.4.0',
-        'org.webjars:bootstrap:3.3.4',
+        'org.webjars:angularjs:1.4.4',
+        'org.webjars:bootstrap:3.3.5',
         'org.webjars:jquery:2.1.4',
-        'org.webjars:lodash:3.6.0',
-        'org.webjars:sockjs-client:1.0.0',
+        'org.webjars:lodash:3.9.0',
+        'org.webjars:sockjs-client:1.0.2',
         'org.webjars:stomp-websocket:2.3.3',
 ]
 
@@ -81,8 +81,8 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-security'
     compile 'org.springframework.boot:spring-boot-starter-actuator'
     compile 'org.springframework:spring-messaging'
-    compile 'org.springframework.session:spring-session:1.0.1.RELEASE'
-    compile 'org.springframework.session:spring-session-data-redis:1.0.1.RELEASE'
+    compile 'org.springframework.session:spring-session:1.0.2.RELEASE'
+    compile 'org.springframework.session:spring-session-data-redis:1.0.2.RELEASE'
     compile 'com.h2database:h2'
     compile 'org.flywaydb:flyway-core'
     compile 'com.orange.redis-embedded:embedded-redis:0.6'
@@ -90,13 +90,13 @@ dependencies {
     runtime project(':product:support:websupport')
     runtime 'ch.qos.logback:logback-classic'
     runtime 'org.hibernate:hibernate-validator'
-    runtime 'org.springframework.data:spring-data-redis:1.5.0.RELEASE'
+    runtime 'org.springframework.data:spring-data-redis:1.5.2.RELEASE'
     runtime webjars
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'
-    testCompile 'org.spockframework:spock-core:1.0-groovy-2.3'
-    testCompile 'org.spockframework:spock-spring:1.0-groovy-2.3'
-    testCompile 'org.codehaus.groovy:groovy-all:2.3.10'
+    testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
+    testCompile 'org.spockframework:spock-spring:1.0-groovy-2.4'
+    testCompile 'org.codehaus.groovy:groovy-all:2.4.4'
 
     integTestCompile sourceSets.main.output
     integTestCompile sourceSets.test.output

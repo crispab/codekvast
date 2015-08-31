@@ -30,9 +30,10 @@ dependencies {
 processResources {
     from(sourceSets.main.resources.srcDirs) {
         include '**/application.properties'
-        filter(ReplaceTokens, tokens: gitVersionTokens + ['gradle.name': archivesBaseName,
-                                                          'gradle.description': project.description,
-                                                          'gradle.version'    : project.version]
+        filter(ReplaceTokens, tokens: gitVersionTokens + ['gradle.name'          : archivesBaseName,
+                                                          'gradle.description'   : project.description,
+                                                          'gradle.version'       : project.version,
+                                                          'gradle.displayVersion': codekvastDisplayVersion]
         )
     }
 }
