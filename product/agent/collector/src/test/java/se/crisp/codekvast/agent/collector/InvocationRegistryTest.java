@@ -80,7 +80,7 @@ public class InvocationRegistryTest {
         assertThat(jvm.getCollectorConfig().getCodeBase(), is(codeBase));
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void testRegisterBeforeInitialize() throws Exception {
         InvocationRegistry.initialize(null);
         InvocationRegistry.instance.registerMethodInvocation(signature);

@@ -52,6 +52,11 @@ public class InvocationRegistry {
      * @param config The collector configuration. May not be null.
      */
     public static void initialize(CollectorConfig config) {
+        if (config == null) {
+            instance = null;
+            return;
+        }
+
         String version = InvocationRegistry.class.getPackage().getImplementationVersion();
         if (version == null || version.trim().isEmpty()) {
             version = "dev-vcsId";
