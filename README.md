@@ -34,7 +34,8 @@ You also need to be member of the Crisp organisation in Bintray.
 **Intellij Ultimate Edition 14+** is the recommended IDE with the following plugins:
 
 1. **Lombok Support** (required)
-1. **AspectJ Support** (required)
+1. Github (optional)
+1. AspectJ Support (optional)
 1. AngularJS (optional)
 1. Karma (optional)
 
