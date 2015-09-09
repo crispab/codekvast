@@ -2,6 +2,8 @@ package sample.app;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import sample.lib.used.Bar1;
+import sample.lib.used.Bar2;
 import untracked.UntrackedClass;
 
 /**

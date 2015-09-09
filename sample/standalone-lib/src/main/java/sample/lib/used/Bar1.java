@@ -1,4 +1,4 @@
-package sample.app;
+package sample.lib.used;
 
 /**
  * @author olle.hallin@crisp.se

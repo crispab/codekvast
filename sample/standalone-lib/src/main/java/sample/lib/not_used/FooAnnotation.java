@@ -1,4 +1,4 @@
-package se.crisp.app.useless;
+package sample.lib.not_used;
 
 /**
  * @author olle.hallin@crisp.se

@@ -9,6 +9,7 @@ dependencies {
     compile "org.slf4j:slf4j-api:1.7.12"
     compile "aopalliance:aopalliance:1.0"
     compile 'com.google.inject:guice:4.0'
+    compile project(":sample:standalone-lib")
 }
 
 task generateCodekvastConfig {

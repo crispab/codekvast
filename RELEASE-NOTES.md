@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.11.10
+
+1. Prepared for static weaving of the Codekvast Agent
+
 ## 0.11.9
 
 1. Upgraded to Spring Boot 1.2.5
