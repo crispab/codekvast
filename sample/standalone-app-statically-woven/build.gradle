@@ -7,14 +7,14 @@ apply plugin: 'aspectj'
 apply plugin: 'application'
 
 mainClassName = "sample.app.SampleApp"
+archivesBaseName = "standalone-app-codekvast"
+
 ext.aspectjVersion = '1.8.6'
 
 dependencies {
     compile project(":product:agent:collector")
-    ajInpath project(":sample:standalone-app")
 
-    // Make sure transitive dependencies are included in distZip...
-    runtime project(":sample:standalone-app"), { exclude module: "standalone-app" }
+    ajInpath project(":sample:standalone-app")
 }
 
 configurations.all {
