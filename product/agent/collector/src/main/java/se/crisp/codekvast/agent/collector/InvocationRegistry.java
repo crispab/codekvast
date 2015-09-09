@@ -2,13 +2,11 @@ package se.crisp.codekvast.agent.collector;
 
 import org.aspectj.lang.Signature;
 import se.crisp.codekvast.agent.config.CollectorConfig;
+import se.crisp.codekvast.agent.io.DataDumper;
 import se.crisp.codekvast.agent.model.Jvm;
 import se.crisp.codekvast.agent.util.ComputerID;
-import se.crisp.codekvast.agent.util.FileUtils;
 import se.crisp.codekvast.agent.util.SignatureUtils;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Set;
@@ -17,7 +15,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * This is the target of the method execution recording aspects.
- *
+ * <p>
  * It holds data about method invocations, and methods for outputting the invocation data to disk.
  *
  * @author olle.hallin@crisp.se
@@ -27,19 +25,17 @@ public class InvocationRegistry {
 
     public static InvocationRegistry instance;
 
-    private final CollectorConfig config;
     private final Jvm jvm;
-    private final File jvmFile;
+    private final DataDumper dataDumper;
 
     // Toggle between two invocation sets to avoid synchronisation
     private final Set[] invocations = new Set[2];
     private volatile int currentInvocationIndex = 0;
     private long recordingIntervalStartedAtMillis = System.currentTimeMillis();
 
-    public InvocationRegistry(CollectorConfig config, Jvm jvm) {
-        this.config = config;
+    public InvocationRegistry(Jvm jvm, DataDumper dataDumper) {
         this.jvm = jvm;
-        this.jvmFile = config == null ? null : config.getJvmFile();
+        this.dataDumper = dataDumper;
 
         for (int i = 0; i < invocations.length; i++) {
             this.invocations[i] = new ConcurrentSkipListSet<String>();
@@ -50,8 +46,9 @@ public class InvocationRegistry {
      * Should be called before handing over to the AspectJ load-time weaver, or else nothing will be registered.
      *
      * @param config The collector configuration. May not be null.
+     * @param dataDumper
      */
-    public static void initialize(CollectorConfig config) {
+    public static void initialize(CollectorConfig config, DataDumper dataDumper) {
         if (config == null) {
             instance = null;
             return;
@@ -66,16 +63,17 @@ public class InvocationRegistry {
         String collectorVersion = version.substring(0, dash);
         String collectorVcsId = version.substring(dash + 1);
 
-        InvocationRegistry.instance = new InvocationRegistry(config,
-                                                             Jvm.builder()
-                                                                .collectorVersion(collectorVersion)
-                                                                .collectorVcsId(collectorVcsId)
-                                                                .collectorConfig(config)
-                                                                .computerId(ComputerID.compute().toString())
-                                                                .hostName(getHostName())
-                                                                .jvmUuid(UUID.randomUUID().toString())
-                                                                .startedAtMillis(System.currentTimeMillis())
-                                                                .build());
+        InvocationRegistry.instance = new InvocationRegistry(
+                Jvm.builder()
+                   .collectorVersion(collectorVersion)
+                   .collectorVcsId(collectorVcsId)
+                   .collectorConfig(config)
+                   .computerId(ComputerID.compute().toString())
+                   .hostName(getHostName())
+                   .jvmUuid(UUID.randomUUID().toString())
+                   .startedAtMillis(System.currentTimeMillis())
+                   .build(),
+                dataDumper);
     }
 
     private static String getHostName() {
@@ -88,7 +86,7 @@ public class InvocationRegistry {
 
     /**
      * Record that this method signature was invoked at current recording interval.
-     *
+     * <p>
      * Thread-safe.
      *
      * @param signature The captured method invocation signature.
@@ -100,27 +98,22 @@ public class InvocationRegistry {
 
     /**
      * Dumps method invocations to a file on disk.
-     *
+     * <p>
      * Thread-safe.
      *
      * @param dumpCount the ordinal number of this dump. Is used in a comment in the dump file.
      */
-    public void dumpDataToDisk(int dumpCount) {
-        File outputPath = config.getInvocationsFile().getParentFile();
-        outputPath.mkdirs();
-        if (!outputPath.exists()) {
-            CodekvastCollector.out.println("Cannot dump invocation data, " + outputPath + " cannot be created");
+    public void dumpData(int dumpCount) {
+        if (!dataDumper.prepareForDump()) {
+            CodekvastCollector.out.println("Cannot dump invocation data");
         } else {
             long oldRecordingIntervalStartedAtMillis = recordingIntervalStartedAtMillis;
             int oldIndex = currentInvocationIndex;
 
             toggleInvocationsIndex();
 
-            dumpJvmData();
-
             //noinspection unchecked
-            FileUtils.writeInvocationDataTo(config.getInvocationsFile(), dumpCount, oldRecordingIntervalStartedAtMillis,
-                                            invocations[oldIndex]);
+            dataDumper.dumpData(jvm, dumpCount, oldRecordingIntervalStartedAtMillis, invocations[oldIndex]);
 
             invocations[oldIndex].clear();
         }
@@ -131,19 +124,4 @@ public class InvocationRegistry {
         currentInvocationIndex = currentInvocationIndex == 0 ? 1 : 0;
     }
 
-    /**
-     * Dumps data about this JVM run to a disk file.
-     */
-    private void dumpJvmData() {
-        File tmpFile = null;
-        try {
-            tmpFile = File.createTempFile("codekvast", ".tmp", jvmFile.getParentFile());
-            jvm.saveTo(tmpFile);
-            FileUtils.renameFile(tmpFile, jvmFile);
-        } catch (IOException e) {
-            CodekvastCollector.out.println(CodekvastCollector.NAME + " cannot save " + jvmFile + ": " + e);
-        } finally {
-            FileUtils.safeDelete(tmpFile);
-        }
-    }
 }

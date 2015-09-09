@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import se.crisp.codekvast.agent.config.CollectorConfig;
 import se.crisp.codekvast.agent.config.MethodFilter;
+import se.crisp.codekvast.agent.io.FileSystemDataDumper;
 import se.crisp.codekvast.agent.model.Jvm;
 import se.crisp.codekvast.agent.util.SignatureUtils;
 
@@ -49,20 +50,20 @@ public class InvocationRegistryTest {
                                 .methodVisibility(CollectorConfig.DEFAULT_METHOD_VISIBILITY)
                                 .build();
         //@formatter:on
-        InvocationRegistry.initialize(config);
+        InvocationRegistry.initialize(config, new FileSystemDataDumper(config, CodekvastCollector.out));
         signature = SignatureUtils.makeSignature(new MethodFilter("public"), TestClass.class, TestClass.class.getMethod("m1"));
     }
 
     @After
     public void afterTest() throws Exception {
-        InvocationRegistry.initialize(null);
+        InvocationRegistry.initialize(null, new FileSystemDataDumper(null, CodekvastCollector.out));
     }
 
     @Test
     public void testRegisterMethodInvocationAndDumpToDisk() throws IOException {
         InvocationRegistry.instance.registerMethodInvocation(signature);
 
-        InvocationRegistry.instance.dumpDataToDisk(1);
+        InvocationRegistry.instance.dumpData(1);
 
         File[] files = config.getDataPath().listFiles();
         assertThat(files.length, is(1));
@@ -82,7 +83,7 @@ public class InvocationRegistryTest {
 
     @Test(expected = NullPointerException.class)
     public void testRegisterBeforeInitialize() throws Exception {
-        InvocationRegistry.initialize(null);
+        InvocationRegistry.initialize(null, new FileSystemDataDumper(null, CodekvastCollector.out));
         InvocationRegistry.instance.registerMethodInvocation(signature);
     }
 

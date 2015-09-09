@@ -4,6 +4,8 @@ import org.aspectj.bridge.Constants;
 import se.crisp.codekvast.agent.config.CollectorConfig;
 import se.crisp.codekvast.agent.config.CollectorConfigLocator;
 import se.crisp.codekvast.agent.config.MethodFilter;
+import se.crisp.codekvast.agent.io.DataDumper;
+import se.crisp.codekvast.agent.io.FileSystemDataDumper;
 import se.crisp.codekvast.agent.util.FileUtils;
 
 import java.io.File;
@@ -14,13 +16,30 @@ import java.util.TimerTask;
 
 /**
  * This is the Java agent that hooks up Codekvast to the app.
- *
+ * <p>
  * Invocation: Add the following options to the Java command line:
  * <pre><code>
  *    -javaagent:/path/to/codekvast-collector-n.n.jar -javaagent:/path/to/aspectjweaver-n.n.jar
  * </code></pre>
- *
+ * <p>
  * <em>NOTE: the ordering of the collector and the aspectjweaver is important!</em>
+ * <p>
+ * CodekvastCollector could also be initialized from a statically woven aspect.
+ * <p>
+ * In that case, the aspect should have a static block that locates the config and initializes the collector:
+ * <pre><code>
+ *     public aspect MethodExecutionAspect extends AbstractMethodExecutionAspect {
+ *
+ *         static {
+ *             CollectorConfig config = ...
+ *             DataDumper dataDumper = ...
+ *             CodekvastCollector.initialize(config, dataDumper);
+ *         }
+ *
+ *         public pointcut methodExecution: execution(public * *..*(..)) && within(foo..*)
+ *
+ *     }
+ * </code></pre>
  *
  * @author olle.hallin@crisp.se
  */
@@ -28,7 +47,7 @@ public class CodekvastCollector {
 
     public static final String NAME = "Codekvast";
 
-    // AspectJ uses this system property for defining the list of names of AOP config files to locate...
+    // AspectJ uses this system property for defining the list of names of load-time weaving config files to locate...
     private static final String ASPECTJ_WEAVER_CONFIGURATION = "org.aspectj.weaver.loadtime.configuration";
 
     public static PrintStream out;
@@ -39,6 +58,7 @@ public class CodekvastCollector {
 
     /**
      * This method is invoked by the JVM as part of bootstrapping the -javaagent
+     *
      * @param args The string after the equals sign in -javaagent:codekvast-collector.jar=args. Is used as overrides to the collector
      *             configuration file.
      * @param inst The standard instrumentation hook.
@@ -46,15 +66,26 @@ public class CodekvastCollector {
     @SuppressWarnings("UseOfSystemOutOrSystemErr")
     public static void premain(String args, Instrumentation inst) {
         CollectorConfig config = CollectorConfig.parseCollectorConfig(CollectorConfigLocator.locateConfig(System.out), args, true);
+
+        initialize(config, new FileSystemDataDumper(config, out));
+    }
+
+    /**
+     * Initializes CodekvastCollector. Before this method has been invoked, no method invocations are recorded.
+     *
+     * @param config     The configuration object. May be null, in which case Codekvast is disabled.
+     * @param dataDumper The strategy for how to dump data.
+     */
+    public static void initialize(CollectorConfig config, DataDumper dataDumper) {
+        InvocationRegistry.initialize(config, dataDumper);
+
         if (config == null) {
             return;
         }
 
         CodekvastCollector.out = config.isVerbose() ? System.err : new PrintStream(new NullOutputStream());
 
-        InvocationRegistry.initialize(config);
-
-        defineAspectjWeaverConfig(config);
+        defineAspectjLoadTimeWeaverConfig(config);
 
         int firstResultInSeconds = createTimerTask(config.getCollectorResolutionSeconds());
 
@@ -67,9 +98,9 @@ public class CodekvastCollector {
     }
 
     private static int createTimerTask(int dumpIntervalSeconds) {
-        InvocationDumpingTimerTask timerTask = new InvocationDumpingTimerTask();
-
         Timer timer = new Timer(NAME, true);
+
+        InvocationDumpingTimerTask timerTask = new InvocationDumpingTimerTask(timer);
 
         int initialDelaySeconds = 5;
         timer.scheduleAtFixedRate(timerTask, initialDelaySeconds * 1000L, dumpIntervalSeconds * 1000L);
@@ -79,13 +110,19 @@ public class CodekvastCollector {
         return initialDelaySeconds;
     }
 
-    private static void defineAspectjWeaverConfig(CollectorConfig config) {
-        System.setProperty(ASPECTJ_WEAVER_CONFIGURATION, createAopXml(config) + ";" +
-                Constants.AOP_USER_XML + ";" +
-                Constants.AOP_AJC_XML + ";" +
-                Constants.AOP_OSGI_XML);
+    private static void defineAspectjLoadTimeWeaverConfig(CollectorConfig config) {
+        try {
+            Class.forName("org.aspectj.bridge.Constants");
 
-        CodekvastCollector.out.printf("%s=%s%n", ASPECTJ_WEAVER_CONFIGURATION, System.getProperty(ASPECTJ_WEAVER_CONFIGURATION));
+            System.setProperty(ASPECTJ_WEAVER_CONFIGURATION, createAopXml(config) + ";" +
+                    Constants.AOP_USER_XML + ";" +
+                    Constants.AOP_AJC_XML + ";" +
+                    Constants.AOP_OSGI_XML);
+
+            CodekvastCollector.out.printf("%s=%s%n", ASPECTJ_WEAVER_CONFIGURATION, System.getProperty(ASPECTJ_WEAVER_CONFIGURATION));
+        } catch (ClassNotFoundException e) {
+            CodekvastCollector.out.printf("Not using AspectJ load-time weaving");
+        }
     }
 
     /**
@@ -147,12 +184,22 @@ public class CodekvastCollector {
 
     private static class InvocationDumpingTimerTask extends TimerTask {
 
+        private final Timer timer;
         private int dumpCount;
+
+        private InvocationDumpingTimerTask(Timer timer) {
+            this.timer = timer;
+        }
 
         @Override
         public void run() {
-            dumpCount += 1;
-            InvocationRegistry.instance.dumpDataToDisk(dumpCount);
+            if (InvocationRegistry.instance == null) {
+                // Someone has pulled the carpet...
+                timer.cancel();
+            } else {
+                dumpCount += 1;
+                InvocationRegistry.instance.dumpData(dumpCount);
+            }
         }
     }
 }
