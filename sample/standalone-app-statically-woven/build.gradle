@@ -20,3 +20,19 @@ dependencies {
 configurations.all {
     exclude module: "aspectjweaver"
 }
+
+compileAspect {
+
+    def logFile = file("$buildDir/aspectj.log")
+
+    doFirst {
+        logFile.mkdirs()
+        logFile.delete()
+    }
+
+    additionalAjcArgs = [
+            'verbose'      : false,
+            'showWeaveInfo': true,
+            'log'          : logFile,
+    ]
+}
