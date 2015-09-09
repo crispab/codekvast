@@ -2,7 +2,8 @@
 
 ## 0.11.10
 
-1. Prepared for static weaving of the Codekvast Agent
+1. Enabled static weaving of the Codekvast Agent
+1. Codekvast Collector is now possible to initialize from a non-javaagent context.
 
 ## 0.11.9
 

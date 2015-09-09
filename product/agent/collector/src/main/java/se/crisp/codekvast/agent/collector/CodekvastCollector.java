@@ -36,7 +36,7 @@ import java.util.TimerTask;
  *             CodekvastCollector.initialize(config, dataDumper);
  *         }
  *
- *         public pointcut methodExecution: execution(public * *..*(..)) && within(foo..*)
+ *         public pointcut methodExecution: execution(public * *..*(..)) &amp;&amp; within(foo..*)
  *
  *     }
  * </code></pre>
