@@ -23,7 +23,7 @@ public abstract class AbstractMethodExecutionAspect {
      * loading the AspectJ load-time weaving agent.
      */
     @Pointcut
-    abstract void methodExecution();
+    public abstract void methodExecution();
 
     @Pointcut("execution(int compareTo(Object)) " +
             "|| execution(boolean equals(Object)) " +
@@ -34,12 +34,11 @@ public abstract class AbstractMethodExecutionAspect {
     public void trivialMethodExecution() {
     }
 
-    ;
-    ;
-
     @Before("methodExecution() && !trivialMethodExecution()")
     public void registerInvokation(JoinPoint thisJointPoint) {
-        InvocationRegistry.instance.registerMethodInvocation(thisJointPoint.getSignature());
+        if (InvocationRegistry.instance != null) {
+            InvocationRegistry.instance.registerMethodInvocation(thisJointPoint.getSignature());
+        }
     }
 
 }

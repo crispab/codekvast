@@ -1,0 +1,22 @@
+buildscript {
+    repositories { maven { url "https://maven.eveoh.nl/content/repositories/releases" } }
+    dependencies { classpath "nl.eveoh:gradle-aspectj:1.6" }
+}
+
+apply plugin: 'aspectj'
+apply plugin: 'application'
+
+mainClassName = "sample.app.SampleApp"
+ext.aspectjVersion = '1.8.6'
+
+dependencies {
+    compile project(":product:agent:collector")
+    ajInpath project(":sample:standalone-app")
+
+    // Make sure transitive dependencies are included in distZip...
+    runtime project(":sample:standalone-app"), { exclude module: "standalone-app" }
+}
+
+configurations.all {
+    exclude module: "aspectjweaver"
+}

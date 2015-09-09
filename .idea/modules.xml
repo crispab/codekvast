@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/product/agent/agent.iml" filepath="$PROJECT_DIR$/product/agent/agent.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/server/agent-api/agent-api.iml" filepath="$PROJECT_DIR$/product/server/agent-api/agent-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sample/binary-weaving/binary-weaving.iml" filepath="$PROJECT_DIR$/sample/binary-weaving/binary-weaving.iml" />
       <module fileurl="file://$PROJECT_DIR$/codekvast.iml" filepath="$PROJECT_DIR$/codekvast.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/agent/codekvast-agent/codekvast-agent.iml" filepath="$PROJECT_DIR$/product/agent/codekvast-agent/codekvast-agent.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/server/codekvast-server/codekvast-server.iml" filepath="$PROJECT_DIR$/product/server/codekvast-server/codekvast-server.iml" />
