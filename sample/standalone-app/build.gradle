@@ -40,17 +40,78 @@ verbose = true
 
 processResources.dependsOn generateCodekvastConfig
 
-configurations { aspectj }
-dependencies { aspectj 'org.aspectj:aspectjweaver:1.8.5' }
+configurations {
+    aspectjtools
+    aspects
+// aspectjweaver
+}
 
+dependencies {
+    aspectjtools 'org.aspectj:aspectjtools:1.8.5'
+
+    aspects project(":sample:standalone-aspect")
+    runtime project(":sample:standalone-aspect")
+
+    // aspectjweaver 'org.aspectj:aspectjweaver:1.8.5'
+}
+
+/*
 run {
     dependsOn = [":product:agent:collector:shadowJar", "generateCodekvastConfig"]
     def codekvastCollector = tasks.getByPath(":product:agent:collector:shadowJar").outputs.files.asPath
-    def aspectjWeaver = configurations.aspectj.asPath
+    def aspectjWeaver = configurations.aspectjweaver.asPath
 
     jvmArgs = [
             "-Dcodekvast.configuration=$generateCodekvastConfig.configFile",
             "-javaagent:$codekvastCollector",
             "-javaagent:$aspectjWeaver"
     ]
+}
+*/
+
+task weaveAspects {
+    dependsOn classes
+
+    def inpath = "$buildDir/classes/main"
+    def destDir = "$buildDir/woven/classes"
+    def logFile = "$buildDir/aspectj.log"
+
+    inputs.dir inpath
+    outputs.dir destDir
+
+    def iajcArgs = [destDir      : destDir,
+                    source       : project.convention.plugins.java.sourceCompatibility,
+                    target       : project.convention.plugins.java.targetCompatibility,
+                    inpath       : inpath,
+                    xlint        : "ignore",
+                    fork         : 'true',
+                    aspectPath   : project.configurations.aspects.asPath,
+                    showWeaveInfo: 'true',
+                    log          : logFile
+    ]
+
+    ant.taskdef(resource: "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties",
+            classpath: project.configurations.aspectjtools.asPath)
+
+    doLast {
+        mkdir destDir
+        ant.iajc(iajcArgs)
+    }
+}
+
+jar {
+    dependsOn weaveAspects
+    from "$buildDir/woven/classes"
+}
+
+startScripts {
+    doLast {
+        outputs.files.each { scriptDir ->
+            scriptDir.eachFile { script ->
+                script.text = script.text
+                        .replace('APP_HOME=', 'export APP_HOME=')
+                        .replace('APP_NAME=', 'export APP_NAME=')
+            }
+        }
+    }
 }

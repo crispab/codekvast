@@ -18,6 +18,7 @@
       <module fileurl="file://$PROJECT_DIR$/product/server/server.iml" filepath="$PROJECT_DIR$/product/server/server.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/standalone-app/standalone-app.iml" filepath="$PROJECT_DIR$/sample/standalone-app/standalone-app.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/standalone-app-statically-woven/standalone-app-statically-woven.iml" filepath="$PROJECT_DIR$/sample/standalone-app-statically-woven/standalone-app-statically-woven.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sample/standalone-aspect/standalone-aspect.iml" filepath="$PROJECT_DIR$/sample/standalone-aspect/standalone-aspect.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/standalone-lib/standalone-lib.iml" filepath="$PROJECT_DIR$/sample/standalone-lib/standalone-lib.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/support/support.iml" filepath="$PROJECT_DIR$/product/support/support.iml" />
       <module fileurl="file://$PROJECT_DIR$/tools/tools.iml" filepath="$PROJECT_DIR$/tools/tools.iml" />

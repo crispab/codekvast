@@ -185,7 +185,9 @@ public final class FileUtils {
                     extractFieldValuesFrom(value, lines);
                 } else if (value != null) {
                     lines.add(String.format("%s = %s", field.getName(),
-                                            value.toString().replace("\\", "\\\\").replace(":", "\\:")));
+                                            ConfigUtils.expandVariables(null, value.toString())
+                                                       .replace("\\", "\\\\")
+                                                       .replace(":", "\\:")));
                 } else {
                     lines.add(String.format("# %s = ", field.getName()));
                 }

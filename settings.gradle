@@ -17,6 +17,7 @@ include ':sample:jenkins1'
 include ':sample:jenkins2'
 include ':sample:jenkins3'
 include ':sample:standalone-app'
+include ':sample:standalone-aspect'
 include ':sample:standalone-app-statically-woven'
 include ':sample:standalone-lib'
 

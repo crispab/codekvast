@@ -61,7 +61,7 @@ public final class ConfigUtils {
             if (replacement == null) {
                 replacement = System.getenv(key);
             }
-            if (replacement == null) {
+            if (replacement == null && props != null) {
                 replacement = props.getProperty(key);
             }
             if (replacement == null) {
