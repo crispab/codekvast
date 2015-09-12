@@ -22,10 +22,10 @@ dependencies {
     compile 'org.reflections:reflections:0.9.10'
     compile 'org.springframework.boot:spring-boot-starter'
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
-    compile 'com.h2database:h2'
+    compile 'org.flywaydb:flyway-core'
 
+    runtime 'com.h2database:h2'
     runtime 'ch.qos.logback:logback-classic'
-    runtime 'org.flywaydb:flyway-core'
 
     testCompile junit
     testCompile mockito
@@ -49,7 +49,7 @@ flyway {
     url = "jdbc:h2:tcp://localhost/$buildDir/database/codekvast-agent"
     user = 'codekvast'
     password = 'codekvast'
-    locations = ['classpath:/database/migration', 'classpath:/se/crisp/codekvast/agent/codekvast_agent/migration']
+    locations = ['classpath:/database/migration', 'classpath:/se/crisp/codekvast/agent/database/migration']
 }
 
 jar {
