@@ -150,15 +150,13 @@ run {
 
 bootRun {
     jvmArgs = [
-            '-ea',
-            '-Dcodekvast.log.consoleThreshold=DEBUG',
             "-javaagent:${configurations.springLoaded.asPath}",
             '-noverify',
             '-Dspring.thymeleaf.cache=false',
             '-Dspring.messages.cacheSeconds=1'
     ] + run.jvmArgs
 
-    args = ["--codekvast.databasePath=tcp://localhost/$buildDir/database"]
+    args = run.args
 }
 
 [run, bootRun]*.dependsOn startDatabase

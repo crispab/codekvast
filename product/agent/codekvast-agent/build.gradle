@@ -1,6 +1,7 @@
 apply from: "$rootDir/gradle/java-6.gradle"
 apply plugin: 'application'
 apply plugin: 'spring-boot'
+apply from: "$rootDir/gradle/standalone-h2server.gradle"
 
 description = "The Codekvast agent"
 archivesBaseName = "codekvast-agent"
@@ -44,6 +45,13 @@ processResources {
     }
 }
 
+flyway {
+    url = "jdbc:h2:tcp://localhost/$buildDir/database/codekvast-agent"
+    user = 'codekvast'
+    password = 'codekvast'
+    locations = ['classpath:/database/migration', 'classpath:/se/crisp/codekvast/agent/codekvast_agent/migration']
+}
+
 jar {
     exclude "lombok"
 }
@@ -58,7 +66,6 @@ run {
 
 bootRun {
     jvmArgs = [
-            '-ea',
             '-Dcodekvast.log.consoleThreshold=DEBUG',
             "-javaagent:${configurations.springLoaded.asPath}",
             '-noverify',
