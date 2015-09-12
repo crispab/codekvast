@@ -6,7 +6,7 @@ description = "Downloads certain tools for easier IDE setup"
 configurations { tools }
 
 dependencies {
-    tools "org.aspectj:aspectjtools:$aspectjVersion"
+    tools h2database
 }
 
 task downloadTools(type: Sync) {

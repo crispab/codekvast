@@ -1,13 +1,4 @@
 buildscript {
-    dependencies {
-        classpath "org.flywaydb:flyway-gradle-plugin:3.1"
-        classpath 'com.github.jengelman.gradle.plugins:gradle-processes:0.3.0'
-        classpath 'com.moowork.gradle:gradle-node-plugin:0.10'
-        classpath 'com.h2database:h2:1.4.185'
-        // classpath 'com.eriwen:gradle-js-plugin:1.12.1'
-        // classpath 'com.eriwen:gradle-css-plugin:1.11.1'
-    }
-
     configurations.classpath {
         resolutionStrategy {
             forcedModules = ['org.codehaus.groovy:groovy-all:2.3.10']
@@ -15,18 +6,15 @@ buildscript {
     }
 }
 
-
-import com.github.jengelman.gradle.plugins.processes.tasks.JavaFork
 import org.apache.tools.ant.filters.ReplaceTokens
 
 apply from: "$rootDir/gradle/java-8.gradle"
 apply plugin: 'groovy'
 apply plugin: 'application'
 apply plugin: 'spring-boot'
-apply plugin: 'flyway'
 apply plugin: 'com.moowork.node'
-apply plugin: 'com.github.johnrengelman.processes'
 apply plugin: 'jacoco'
+apply from: "$rootDir/gradle/standalone-h2server.gradle"
 // apply plugin: 'com.eriwen.gradle.js'
 // apply plugin: 'com.eriwen.gradle.css'
 
@@ -38,7 +26,6 @@ mainClassName = "se.crisp.codekvast.server.codekvast_server.CodekvastServerAppli
 configurations {
     springLoaded
     webjar
-    h2server
 }
 
 sourceSets {
@@ -106,9 +93,6 @@ dependencies {
     springLoaded springLoadedAgent
 
     webjar webjars
-
-    h2server 'com.h2database:h2'
-    h2server 'ch.qos.logback:logback-classic'
 }
 
 processResources {
@@ -149,6 +133,13 @@ startScripts {
     }
 }
 
+flyway {
+    url = "jdbc:h2:tcp://localhost/$buildDir/database/codekvast-server"
+    user = 'codekvast'
+    password = 'codekvast'
+    locations = ['classpath:/database/migration', 'classpath:/se/crisp/codekvast/server/codekvast_server/migration']
+}
+
 run {
     jvmArgs = [
             '-ea',
@@ -169,6 +160,8 @@ bootRun {
 
     args = ["--codekvast.databasePath=tcp://localhost/$buildDir/database"]
 }
+
+[run, bootRun]*.dependsOn startDatabase
 
 jacoco {
     applyTo run
@@ -288,59 +281,3 @@ if (!System.properties['os.name'].contains("indows")) {
     check.dependsOn jasmineSingleRun
 }
 
-task startDatabase(type: JavaFork) {
-    description "Starts a H2 database server"
-    group "Help"
-
-    def mainClass = 'org.h2.tools.Server'
-
-    outputs.upToDateWhen {
-        ["jps", "-l"].execute().text.indexOf(mainClass) >= 0
-    }
-
-    classpath configurations.h2server.asPath
-    workingDir buildDir
-    main mainClass
-    args = ['-tcp']
-    // maxHeapSize = "100M"
-
-    mkdir "$buildDir/log/"
-    standardOutput = new PrintStream(new BufferedOutputStream(new FileOutputStream(file("$buildDir/log/h2-server.log"))))
-
-    doFirst {
-        // Make 'gradle clean startDatabase' work...
-        mkdir "$buildDir/log/"
-    }
-}
-
-task stopDatabase(type: JavaFork) {
-    description "Stops the H2 database server"
-    group "Help"
-
-    def mainClass = 'org.h2.tools.Server'
-
-    outputs.upToDateWhen {
-        ["jps", "-l"].execute().text.indexOf(mainClass) < 0
-    }
-
-    classpath configurations.h2server.asPath
-    workingDir buildDir
-    main mainClass
-    args = ['-tcpShutdown', 'tcp://localhost']
-}
-
-flyway {
-    url = "jdbc:h2:tcp://localhost/$buildDir/database/codekvast-server"
-    user = 'codekvast'
-    password = 'codekvast'
-    locations = ['classpath:/database/migration', 'classpath:/se/crisp/codekvast/server/codekvast_server/migration']
-}
-
-[run, bootRun, flywayBaseline, flywayClean, flywayInfo, flywayInit, flywayMigrate, flywayRepair, flywayValidate]*.dependsOn startDatabase
-
-task copyJdbcDriver(type: Sync) {
-    // Copy the H2 JDBC driver jar to a known location so that IDEs can find it...
-    from configurations.h2server
-    into file("build/jdbcDriver")
-}
-build.dependsOn copyJdbcDriver
