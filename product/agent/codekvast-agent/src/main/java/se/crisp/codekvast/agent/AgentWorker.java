@@ -1,8 +1,11 @@
-package se.crisp.codekvast.agent.main;
+package se.crisp.codekvast.agent;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import se.crisp.codekvast.agent.appversion.AppVersionResolver;
+import se.crisp.codekvast.agent.beans.AgentConfig;
+import se.crisp.codekvast.agent.beans.JvmState;
 import se.crisp.codekvast.agent.codebase.CodeBase;
 import se.crisp.codekvast.shared.config.CollectorConfig;
 import se.crisp.codekvast.shared.model.Jvm;

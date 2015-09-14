@@ -6,10 +6,10 @@ import org.slf4j.Logger;
 import java.net.ConnectException;
 
 /**
- * Utility class for consistent logging
+ * Utility class for consistent logging.
  */
 @UtilityClass
-public class LoggingUtil {
+public class LogUtil {
 
     public static void logException(Logger logger, String msg, Exception e) {
         Throwable rootCause = getRootCause(e);
@@ -25,6 +25,5 @@ public class LoggingUtil {
     private static Throwable getRootCause(Throwable t) {
         return t.getCause() == null ? t : getRootCause(t.getCause());
     }
-
 
 }

@@ -6,8 +6,8 @@
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
-    <option name="MAIN_CLASS_NAME" value="se.crisp.codekvast.agent.main.CodekvastAgentApplication" />
-    <option name="VM_PARAMETERS" value="" />
+    <option name="MAIN_CLASS_NAME" value="se.crisp.codekvast.agent.CodekvastAgentApplication" />
+    <option name="VM_PARAMETERS" value="-Dspring.profiles.active=httpPost" />
     <option name="PROGRAM_PARAMETERS" value="--codekvast.serverUploadIntervalSeconds=3" />
     <option name="WORKING_DIRECTORY" value="file://$MODULE_DIR$" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />

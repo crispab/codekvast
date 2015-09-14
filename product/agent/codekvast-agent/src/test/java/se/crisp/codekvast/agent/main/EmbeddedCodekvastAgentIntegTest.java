@@ -2,6 +2,7 @@ package se.crisp.codekvast.agent.main;
 
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import se.crisp.codekvast.agent.CodekvastAgentApplication;
 
 import java.lang.annotation.*;
 

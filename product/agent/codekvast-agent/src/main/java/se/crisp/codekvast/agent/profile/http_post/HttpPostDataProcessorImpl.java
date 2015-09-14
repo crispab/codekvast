@@ -1,16 +1,16 @@
-package se.crisp.codekvast.agent.main.http_post;
+package se.crisp.codekvast.agent.profile.http_post;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import se.crisp.codekvast.agent.DataProcessor;
+import se.crisp.codekvast.agent.appversion.AppVersionResolver;
+import se.crisp.codekvast.agent.beans.AgentConfig;
+import se.crisp.codekvast.agent.beans.JvmState;
 import se.crisp.codekvast.agent.codebase.CodeBase;
 import se.crisp.codekvast.agent.codebase.CodeBaseScanner;
-import se.crisp.codekvast.agent.main.AgentConfig;
-import se.crisp.codekvast.agent.main.AppVersionResolver;
-import se.crisp.codekvast.agent.main.DataProcessor;
-import se.crisp.codekvast.agent.main.JvmState;
-import se.crisp.codekvast.agent.util.LoggingUtil;
+import se.crisp.codekvast.agent.util.LogUtil;
 import se.crisp.codekvast.server.agent_api.AgentApi;
 import se.crisp.codekvast.server.agent_api.AgentApiException;
 import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
@@ -65,7 +65,7 @@ public class HttpPostDataProcessorImpl implements DataProcessor {
                 agentApi.uploadJvmData(getJvmData(jvmState));
                 jvmState.setJvmDataUploadedAt(jvm.getDumpedAtMillis());
             } catch (AgentApiException e) {
-                LoggingUtil.logException(log, "Cannot upload JVM data to " + agentApi.getServerUri(), e);
+                LogUtil.logException(log, "Cannot upload JVM data to " + agentApi.getServerUri(), e);
             }
         }
     }
@@ -87,7 +87,7 @@ public class HttpPostDataProcessorImpl implements DataProcessor {
                 agentApi.uploadSignatureData(getJvmData(jvmState), codeBase.getSignatures());
                 jvmState.setCodebaseUploadedAt(now);
             } catch (AgentApiException e) {
-                LoggingUtil.logException(log, "Cannot upload signature data to " + agentApi.getServerUri(), e);
+                LogUtil.logException(log, "Cannot upload signature data to " + agentApi.getServerUri(), e);
             }
         }
     }
@@ -203,7 +203,7 @@ public class HttpPostDataProcessorImpl implements DataProcessor {
                                           invocationsCollector.getNotUploadedInvocations(jvmState.getJvm().getJvmUuid()));
             invocationsCollector.clearNotUploadedSignatures(jvmState.getJvm().getJvmUuid());
         } catch (AgentApiException e) {
-            LoggingUtil.logException(log, "Cannot upload invocation data to " + agentApi.getServerUri(), e);
+            LogUtil.logException(log, "Cannot upload invocation data to " + agentApi.getServerUri(), e);
         }
     }
 

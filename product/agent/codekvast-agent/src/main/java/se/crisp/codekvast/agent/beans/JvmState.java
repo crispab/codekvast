@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.main;
+package se.crisp.codekvast.agent.beans;
 
 import lombok.Data;
 import se.crisp.codekvast.agent.codebase.CodeBase;

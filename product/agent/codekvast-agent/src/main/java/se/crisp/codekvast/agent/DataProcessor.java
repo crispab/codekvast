@@ -1,5 +1,6 @@
-package se.crisp.codekvast.agent.main;
+package se.crisp.codekvast.agent;
 
+import se.crisp.codekvast.agent.beans.JvmState;
 import se.crisp.codekvast.agent.codebase.CodeBase;
 
 /**

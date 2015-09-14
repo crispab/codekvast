@@ -6,7 +6,7 @@ apply from: "$rootDir/gradle/standalone-h2server.gradle"
 description = "The Codekvast agent"
 archivesBaseName = "codekvast-agent"
 version = project.parent.parent.version
-mainClassName = "se.crisp.codekvast.agent.main.CodekvastAgentApplication"
+mainClassName = "se.crisp.codekvast.agent.CodekvastAgentApplication"
 
 import org.apache.tools.ant.filters.ReplaceTokens
 

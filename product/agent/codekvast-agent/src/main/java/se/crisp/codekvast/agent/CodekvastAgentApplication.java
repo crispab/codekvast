@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.main;
+package se.crisp.codekvast.agent;
 
 
 import org.springframework.boot.SpringApplication;
@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import se.crisp.codekvast.agent.beans.AgentConfig;
 import se.crisp.codekvast.server.agent_api.AgentApiConfig;
 import se.crisp.codekvast.support.common.LoggingConfig;
 

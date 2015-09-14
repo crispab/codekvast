@@ -1,11 +1,9 @@
-package se.crisp.codekvast.agent.main;
+package se.crisp.codekvast.agent.appversion;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
-import se.crisp.codekvast.agent.appversion.AppVersionStrategy;
-import se.crisp.codekvast.agent.appversion.LiteralAppVersionStrategy;
 
 import java.util.ArrayList;
 import java.util.Collection;
