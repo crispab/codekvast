@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.collector;
+package se.crisp.codekvast.collector;
 
 import org.aspectj.lang.Signature;
 import org.junit.After;

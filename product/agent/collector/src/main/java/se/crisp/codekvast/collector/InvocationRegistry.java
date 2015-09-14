@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.collector;
+package se.crisp.codekvast.collector;
 
 import com.sun.istack.internal.Nullable;
 import org.aspectj.lang.Signature;

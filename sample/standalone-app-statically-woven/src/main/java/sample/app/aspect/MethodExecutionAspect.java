@@ -2,7 +2,7 @@ package sample.app.aspect;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import se.crisp.codekvast.agent.collector.AbstractMethodExecutionAspect;
+import se.crisp.codekvast.collector.AbstractMethodExecutionAspect;
 
 @Aspect
 public class MethodExecutionAspect extends AbstractMethodExecutionAspect {

@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.collector;
+package se.crisp.codekvast.collector;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -11,7 +11,7 @@ import org.aspectj.lang.annotation.Pointcut;
  * It is weaved into the target app by the AspectJ load-time weaver.
  *
  * @author olle.hallin@crisp.se
- * @see se.crisp.codekvast.agent.collector.CodekvastCollector
+ * @see CodekvastCollector
  */
 @Aspect
 public abstract class AbstractMethodExecutionAspect {
@@ -19,7 +19,7 @@ public abstract class AbstractMethodExecutionAspect {
     /**
      * This abstract pointcut specifies what method executions to detect.
      * <p>
-     * It is made concrete by an XML file that is created on-the-fly by {@link se.crisp.codekvast.agent.collector.CodekvastCollector} before
+     * It is made concrete by an XML file that is created on-the-fly by {@link CodekvastCollector} before
      * loading the AspectJ load-time weaving agent.
      */
     @Pointcut

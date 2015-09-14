@@ -36,7 +36,7 @@ shadowJar {
     classifier = ''
     manifest {
         attributes(
-                "Premain-Class": "se.crisp.codekvast.agent.collector.CodekvastCollector",
+                "Premain-Class": "CodekvastCollector",
                 "Implementation-Title": archivesBaseName,
                 "Implementation-Version": codekvastDisplayVersion
         )

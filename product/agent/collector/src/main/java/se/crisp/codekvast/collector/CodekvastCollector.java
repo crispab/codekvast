@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.collector;
+package se.crisp.codekvast.collector;
 
 import org.aspectj.bridge.Constants;
 import se.crisp.codekvast.shared.config.CollectorConfig;
