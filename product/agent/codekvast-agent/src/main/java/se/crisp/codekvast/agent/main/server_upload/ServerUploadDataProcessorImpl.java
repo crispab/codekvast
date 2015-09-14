@@ -1,6 +1,7 @@
 package se.crisp.codekvast.agent.main.server_upload;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import se.crisp.codekvast.agent.codebase.CodeBase;
 import se.crisp.codekvast.agent.codebase.CodeBaseScanner;
@@ -23,6 +24,7 @@ import java.util.List;
  * An implementation of DataProcessor that uploads all data to a remote server using the {@link AgentApi}.
  */
 @Component
+@Profile("serverUpload")
 @Slf4j
 public class ServerUploadDataProcessorImpl implements DataProcessor {
 
