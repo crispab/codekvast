@@ -25,7 +25,7 @@ task generateCodekvastConfig {
         configFile.parentFile.mkdirs()
         configFile.text = """# Run Codekvast against Crisp Sample App
 appName = $archivesBaseName
-appVersion = $version
+appVersion = from load-time-weaving
 tags = development, sample
 codeBase = ${file("build/install/${project.name}/lib/")}
 packagePrefixes = sample. , foo.bar.
@@ -43,21 +43,21 @@ processResources.dependsOn generateCodekvastConfig
 configurations {
     aspectjtools
     aspects
-// aspectjweaver
+    aspectjweaver
 }
 
+def aspectjVersion = '1.8.5'
+
 dependencies {
-    aspectjtools 'org.aspectj:aspectjtools:1.8.5'
+    aspectjtools "org.aspectj:aspectjtools:$aspectjVersion"
+    aspectjweaver "org.aspectj:aspectjweaver:$aspectjVersion"
 
     aspects project(":sample:standalone-aspect")
     runtime project(":sample:standalone-aspect")
-
-    // aspectjweaver 'org.aspectj:aspectjweaver:1.8.5'
 }
 
-/*
 run {
-    dependsOn = [":product:agent:collector:shadowJar", "generateCodekvastConfig"]
+    dependsOn = [":product:agent:collector:shadowJar", "generateCodekvastConfig", "weaveAspects"]
     def codekvastCollector = tasks.getByPath(":product:agent:collector:shadowJar").outputs.files.asPath
     def aspectjWeaver = configurations.aspectjweaver.asPath
 
@@ -67,7 +67,6 @@ run {
             "-javaagent:$aspectjWeaver"
     ]
 }
-*/
 
 task weaveAspects {
     dependsOn classes
@@ -104,6 +103,7 @@ jar {
     from "$buildDir/woven/classes"
 }
 
+
 startScripts {
     doLast {
         outputs.files.each { scriptDir ->
@@ -115,3 +115,10 @@ startScripts {
         }
     }
 }
+
+// Uncomment to enable load-time weaving
+//applicationDefaultJvmArgs = [
+//        "-Dcodekvast.configuration=${generateCodekvastConfig.configFile}",
+//        "-javaagent:${tasks.getByPath(':product:agent:collector:shadowJar').outputs.files.asPath}",
+//        "-javaagent:${configurations.aspectjweaver.asPath}"
+//]

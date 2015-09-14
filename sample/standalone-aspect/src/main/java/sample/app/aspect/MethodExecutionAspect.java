@@ -22,7 +22,7 @@ public class MethodExecutionAspect extends AbstractMethodExecutionAspect {
         CollectorConfig config = CollectorConfig
                 .builder()
                 .appName(ConfigUtils.expandVariables(null, "$APP_NAME"))
-                .appVersion("1.2.3")
+                .appVersion("from static aspect")
                 .collectorResolutionSeconds(5)
                 .methodVisibility("public")
                 .codeBase("$APP_HOME/lib")

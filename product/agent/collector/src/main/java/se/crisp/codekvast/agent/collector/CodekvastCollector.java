@@ -77,6 +77,11 @@ public class CodekvastCollector {
      * @param dataDumper The strategy for how to dump data.
      */
     public static void initialize(CollectorConfig config, DataDumper dataDumper) {
+        if (InvocationRegistry.instance != null && config != null) {
+            // Already initialized from -javaagent. Let it be.
+            return;
+        }
+
         InvocationRegistry.initialize(config, dataDumper);
 
         if (config == null) {
