@@ -1,12 +1,12 @@
 package se.crisp.codekvast.agent.collector;
 
 import org.aspectj.bridge.Constants;
-import se.crisp.codekvast.agent.config.CollectorConfig;
-import se.crisp.codekvast.agent.config.CollectorConfigLocator;
-import se.crisp.codekvast.agent.config.MethodFilter;
-import se.crisp.codekvast.agent.io.DataDumper;
-import se.crisp.codekvast.agent.io.FileSystemDataDumper;
-import se.crisp.codekvast.agent.util.FileUtils;
+import se.crisp.codekvast.shared.config.CollectorConfig;
+import se.crisp.codekvast.shared.config.CollectorConfigLocator;
+import se.crisp.codekvast.shared.config.MethodFilter;
+import se.crisp.codekvast.shared.io.FileSystemInvocationDataDumper;
+import se.crisp.codekvast.shared.io.InvocationDataDumper;
+import se.crisp.codekvast.shared.util.FileUtils;
 
 import java.io.File;
 import java.io.PrintStream;
@@ -67,7 +67,7 @@ public class CodekvastCollector {
     public static void premain(String args, Instrumentation inst) {
         CollectorConfig config = CollectorConfig.parseCollectorConfig(CollectorConfigLocator.locateConfig(System.out), args, true);
 
-        initialize(config, new FileSystemDataDumper(config, out));
+        initialize(config, new FileSystemInvocationDataDumper(config, out));
     }
 
     /**
@@ -76,7 +76,7 @@ public class CodekvastCollector {
      * @param config     The configuration object. May be null, in which case Codekvast is disabled.
      * @param dataDumper The strategy for how to dump data.
      */
-    public static void initialize(CollectorConfig config, DataDumper dataDumper) {
+    public static void initialize(CollectorConfig config, InvocationDataDumper dataDumper) {
         if (InvocationRegistry.instance != null && config != null) {
             // Already initialized from -javaagent. Let it be.
             return;

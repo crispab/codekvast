@@ -2,7 +2,7 @@ package se.crisp.codekvast.agent.codebase;
 
 import com.google.common.io.Files;
 import org.junit.Test;
-import se.crisp.codekvast.agent.config.CollectorConfig;
+import se.crisp.codekvast.shared.config.CollectorConfig;
 
 import java.io.File;
 import java.io.IOException;

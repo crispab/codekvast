@@ -24,8 +24,8 @@ distributions {
             from tasks.getByPath(":product:agent:collector:javaagents"), { into "javaagents" }
             from tasks.getByPath(":product:agent:collector:javadocJar"), { into "src" }
             from tasks.getByPath(":product:agent:collector:sourcesJar"), { into "src" }
-            from tasks.getByPath(":product:agent:util:javadocJar"), { into "src" }
-            from tasks.getByPath(":product:agent:util:sourcesJar"), { into "src" }
+            from tasks.getByPath(":product:agent:shared:javadocJar"), { into "src" }
+            from tasks.getByPath(":product:agent:shared:sourcesJar"), { into "src" }
             from tasks.getByPath(":product:docs:asciidoctor"), {
                 exclude "html5/**"
                 into "doc"

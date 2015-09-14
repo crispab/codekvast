@@ -2,12 +2,12 @@ package se.crisp.codekvast.agent.main;
 
 import lombok.Data;
 import se.crisp.codekvast.agent.codebase.CodeBase;
-import se.crisp.codekvast.agent.model.Jvm;
+import se.crisp.codekvast.shared.model.Jvm;
 
 import java.io.File;
 
 /**
- * Created by olle on 2015-09-14.
+ * Mutable state for a {@link Jvm} object.
  */
 @Data
 public class JvmState {

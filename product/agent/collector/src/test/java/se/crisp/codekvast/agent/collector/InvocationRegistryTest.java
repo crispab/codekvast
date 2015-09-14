@@ -6,11 +6,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import se.crisp.codekvast.agent.config.CollectorConfig;
-import se.crisp.codekvast.agent.config.MethodFilter;
-import se.crisp.codekvast.agent.io.FileSystemDataDumper;
-import se.crisp.codekvast.agent.model.Jvm;
-import se.crisp.codekvast.agent.util.SignatureUtils;
+import se.crisp.codekvast.shared.config.CollectorConfig;
+import se.crisp.codekvast.shared.config.MethodFilter;
+import se.crisp.codekvast.shared.io.FileSystemInvocationDataDumper;
+import se.crisp.codekvast.shared.model.Jvm;
+import se.crisp.codekvast.shared.util.SignatureUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,13 +50,13 @@ public class InvocationRegistryTest {
                                 .methodVisibility(CollectorConfig.DEFAULT_METHOD_VISIBILITY)
                                 .build();
         //@formatter:on
-        InvocationRegistry.initialize(config, new FileSystemDataDumper(config, CodekvastCollector.out));
+        InvocationRegistry.initialize(config, new FileSystemInvocationDataDumper(config, CodekvastCollector.out));
         signature = SignatureUtils.makeSignature(new MethodFilter("public"), TestClass.class, TestClass.class.getMethod("m1"));
     }
 
     @After
     public void afterTest() throws Exception {
-        InvocationRegistry.initialize(null, new FileSystemDataDumper(null, CodekvastCollector.out));
+        InvocationRegistry.initialize(null, new FileSystemInvocationDataDumper(null, CodekvastCollector.out));
     }
 
     @Test
@@ -83,7 +83,7 @@ public class InvocationRegistryTest {
 
     @Test(expected = NullPointerException.class)
     public void testRegisterBeforeInitialize() throws Exception {
-        InvocationRegistry.initialize(null, new FileSystemDataDumper(null, CodekvastCollector.out));
+        InvocationRegistry.initialize(null, new FileSystemInvocationDataDumper(null, CodekvastCollector.out));
         InvocationRegistry.instance.registerMethodInvocation(signature);
     }
 

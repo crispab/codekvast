@@ -1,11 +1,12 @@
 package se.crisp.codekvast.agent.collector;
 
+import com.sun.istack.internal.Nullable;
 import org.aspectj.lang.Signature;
-import se.crisp.codekvast.agent.config.CollectorConfig;
-import se.crisp.codekvast.agent.io.DataDumper;
-import se.crisp.codekvast.agent.model.Jvm;
-import se.crisp.codekvast.agent.util.ComputerID;
-import se.crisp.codekvast.agent.util.SignatureUtils;
+import se.crisp.codekvast.shared.config.CollectorConfig;
+import se.crisp.codekvast.shared.io.InvocationDataDumper;
+import se.crisp.codekvast.shared.model.Jvm;
+import se.crisp.codekvast.shared.util.ComputerID;
+import se.crisp.codekvast.shared.util.SignatureUtils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -23,19 +24,20 @@ import java.util.concurrent.ConcurrentSkipListSet;
 @SuppressWarnings("Singleton")
 public class InvocationRegistry {
 
+    @Nullable
     public static InvocationRegistry instance;
 
     private final Jvm jvm;
-    private final DataDumper dataDumper;
+    private final InvocationDataDumper invocationDataDumper;
 
     // Toggle between two invocation sets to avoid synchronisation
     private final Set[] invocations = new Set[2];
     private volatile int currentInvocationIndex = 0;
     private long recordingIntervalStartedAtMillis = System.currentTimeMillis();
 
-    public InvocationRegistry(Jvm jvm, DataDumper dataDumper) {
+    public InvocationRegistry(Jvm jvm, InvocationDataDumper invocationDataDumper) {
         this.jvm = jvm;
-        this.dataDumper = dataDumper;
+        this.invocationDataDumper = invocationDataDumper;
 
         for (int i = 0; i < invocations.length; i++) {
             this.invocations[i] = new ConcurrentSkipListSet<String>();
@@ -46,9 +48,9 @@ public class InvocationRegistry {
      * Should be called before handing over to the AspectJ load-time weaver, or else nothing will be registered.
      *
      * @param config The collector configuration. May not be null.
-     * @param dataDumper
+     * @param invocationDataDumper The strategy for dumping invocation data to the outside world.
      */
-    public static void initialize(CollectorConfig config, DataDumper dataDumper) {
+    public static void initialize(CollectorConfig config, InvocationDataDumper invocationDataDumper) {
         if (config == null) {
             instance = null;
             return;
@@ -73,7 +75,7 @@ public class InvocationRegistry {
                    .jvmUuid(UUID.randomUUID().toString())
                    .startedAtMillis(System.currentTimeMillis())
                    .build(),
-                dataDumper);
+                invocationDataDumper);
     }
 
     private static String getHostName() {
@@ -104,7 +106,7 @@ public class InvocationRegistry {
      * @param dumpCount the ordinal number of this dump. Is used in a comment in the dump file.
      */
     public void dumpData(int dumpCount) {
-        if (!dataDumper.prepareForDump()) {
+        if (!invocationDataDumper.prepareForDump()) {
             CodekvastCollector.out.println("Cannot dump invocation data");
         } else {
             long oldRecordingIntervalStartedAtMillis = recordingIntervalStartedAtMillis;
@@ -113,7 +115,7 @@ public class InvocationRegistry {
             toggleInvocationsIndex();
 
             //noinspection unchecked
-            dataDumper.dumpData(jvm, dumpCount, oldRecordingIntervalStartedAtMillis, invocations[oldIndex]);
+            invocationDataDumper.dumpData(jvm, dumpCount, oldRecordingIntervalStartedAtMillis, invocations[oldIndex]);
 
             invocations[oldIndex].clear();
         }

@@ -4,12 +4,12 @@
   "description": "foobar",
   "repository": "foobar",
   "dependencies": {
-    "karma": "0.12.31",
-    "karma-chrome-launcher": "0.1.7",
-    "karma-coverage": "0.2.7",
-    "karma-firefox-launcher": "0.1.4",
-    "karma-jasmine": "0.3.4",
-    "karma-phantomjs-launcher": "0.1.4"
+    "karma": "0.13.9",
+    "karma-chrome-launcher": "0.2.0",
+    "karma-coverage": "0.5.2",
+    "karma-firefox-launcher": "0.1.6",
+    "karma-jasmine": "0.3.6",
+    "karma-phantomjs-launcher": "0.2.1"
   },
   "scripts": {
     "single-run": "node_modules/karma/bin/karma start karma.conf.js --single-run",

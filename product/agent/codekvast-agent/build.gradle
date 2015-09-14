@@ -17,7 +17,7 @@ configurations {
 dependencies {
     compile lombok
     compile project(':product:support:common')
-    compile project(':product:agent:util')
+    compile project(':product:agent:shared')
     compile project(':product:server:agent-api')
     compile 'org.reflections:reflections:0.9.10'
     compile 'org.springframework.boot:spring-boot-starter'
@@ -75,7 +75,7 @@ bootRun {
 }
 
 
-jar.dependsOn tasks.getByPath(":product:agent:util:test")
+jar.dependsOn tasks.getByPath(":product:agent:shared:test")
 
 applicationDefaultJvmArgs = ['-Dspring.profiles.active=httpPost']
 

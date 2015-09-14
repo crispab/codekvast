@@ -8,7 +8,7 @@ import se.crisp.codekvast.agent.codebase.scannertest.ScannerTest1;
 import se.crisp.codekvast.agent.codebase.scannertest.ScannerTest2;
 import se.crisp.codekvast.agent.codebase.scannertest.ScannerTest3;
 import se.crisp.codekvast.agent.codebase.scannertest.ScannerTest4;
-import se.crisp.codekvast.agent.config.CollectorConfig;
+import se.crisp.codekvast.shared.config.CollectorConfig;
 
 import java.io.File;
 import java.net.URISyntaxException;

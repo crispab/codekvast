@@ -4,9 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import se.crisp.codekvast.agent.codebase.CodeBase;
-import se.crisp.codekvast.agent.config.CollectorConfig;
-import se.crisp.codekvast.agent.model.Jvm;
-import se.crisp.codekvast.agent.util.FileUtils;
+import se.crisp.codekvast.shared.config.CollectorConfig;
+import se.crisp.codekvast.shared.model.Jvm;
+import se.crisp.codekvast.shared.util.FileUtils;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;

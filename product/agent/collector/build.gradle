@@ -18,7 +18,7 @@ configurations {
 }
 
 dependencies {
-    compile project(":product:agent:util"), { transitive = false }
+    compile project(":product:agent:shared"), { transitive = false }
     compile "org.aspectj:aspectjweaver:$aspectjVersion"
 
     aspectjweaver "org.aspectj:aspectjweaver:$aspectjVersion"

@@ -16,13 +16,13 @@
       <module fileurl="file://$PROJECT_DIR$/product/product.iml" filepath="$PROJECT_DIR$/product/product.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/sample.iml" filepath="$PROJECT_DIR$/sample/sample.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/server/server.iml" filepath="$PROJECT_DIR$/product/server/server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/product/agent/shared/shared.iml" filepath="$PROJECT_DIR$/product/agent/shared/shared.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/standalone-app/standalone-app.iml" filepath="$PROJECT_DIR$/sample/standalone-app/standalone-app.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/standalone-app-statically-woven/standalone-app-statically-woven.iml" filepath="$PROJECT_DIR$/sample/standalone-app-statically-woven/standalone-app-statically-woven.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/standalone-aspect/standalone-aspect.iml" filepath="$PROJECT_DIR$/sample/standalone-aspect/standalone-aspect.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/standalone-lib/standalone-lib.iml" filepath="$PROJECT_DIR$/sample/standalone-lib/standalone-lib.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/support/support.iml" filepath="$PROJECT_DIR$/product/support/support.iml" />
       <module fileurl="file://$PROJECT_DIR$/tools/tools.iml" filepath="$PROJECT_DIR$/tools/tools.iml" />
-      <module fileurl="file://$PROJECT_DIR$/product/agent/util/util.iml" filepath="$PROJECT_DIR$/product/agent/util/util.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/web/web.iml" filepath="$PROJECT_DIR$/product/web/web.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/support/websupport/websupport.iml" filepath="$PROJECT_DIR$/product/support/websupport/websupport.iml" />
     </modules>

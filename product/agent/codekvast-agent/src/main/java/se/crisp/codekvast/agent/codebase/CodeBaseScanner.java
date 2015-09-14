@@ -4,8 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.springframework.stereotype.Component;
-import se.crisp.codekvast.agent.config.MethodFilter;
-import se.crisp.codekvast.agent.util.SignatureUtils;
+import se.crisp.codekvast.shared.config.MethodFilter;
+import se.crisp.codekvast.shared.util.SignatureUtils;
 
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;

@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import se.crisp.codekvast.agent.config.CollectorConfig;
+import se.crisp.codekvast.shared.config.CollectorConfig;
 
 import java.io.File;
 import java.io.IOException;
