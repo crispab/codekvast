@@ -14,7 +14,7 @@ public interface AppVersionStrategy {
 
     /**
      * Can this strategy handle these args?
-     * @param args The white-space separated value from {@link se.crisp.codekvast.agent.config.CollectorConfig#getAppVersion()}
+     * @param args The white-space separated value from {@link se.crisp.codekvast.shared.config.CollectorConfig#getAppVersion()}
      * @return true if-and-only-if the strategy recognizes the args.
      */
     boolean canHandle(String[] args);
