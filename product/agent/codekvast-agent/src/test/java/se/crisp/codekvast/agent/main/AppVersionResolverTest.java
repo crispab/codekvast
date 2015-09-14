@@ -4,8 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
-import se.crisp.codekvast.agent.main.appversion.AppVersionStrategy;
-import se.crisp.codekvast.agent.main.appversion.LiteralAppVersionStrategy;
+import se.crisp.codekvast.agent.appversion.AppVersionStrategy;
+import se.crisp.codekvast.agent.appversion.LiteralAppVersionStrategy;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,7 +14,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AgentWorkerTest {
+public class AppVersionResolverTest {
 
     private final Collection<AppVersionStrategy> appVersionStrategies = new ArrayList<AppVersionStrategy>();
 
@@ -25,17 +25,17 @@ public class AgentWorkerTest {
 
     @Test
     public void testResolveConstantAppVersion() throws Exception {
-        assertThat(AgentWorker.resolveAppVersion(appVersionStrategies, null, "constant foo"), is("foo"));
+        assertThat(AppVersionResolver.resolveAppVersion(appVersionStrategies, null, "constant foo"), is("foo"));
     }
 
     @Test
     public void testResolveLiteralAppVersion() throws Exception {
-        assertThat(AgentWorker.resolveAppVersion(appVersionStrategies, null, "   LITERAL    foo"), is("foo"));
+        assertThat(AppVersionResolver.resolveAppVersion(appVersionStrategies, null, "   LITERAL    foo"), is("foo"));
     }
 
     @Test
     public void testResolveUnrecognizedAppVersion() throws Exception {
-        assertThat(AgentWorker.resolveAppVersion(appVersionStrategies, null, "   FOOBAR    foo   "), is("FOOBAR    foo"));
+        assertThat(AppVersionResolver.resolveAppVersion(appVersionStrategies, null, "   FOOBAR    foo   "), is("FOOBAR    foo"));
     }
 
 }

@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.main.codebase.scannertest;
+package se.crisp.codekvast.agent.codebase.scannertest;
 
 /**
  * @author olle.hallin@crisp.se

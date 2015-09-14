@@ -1,10 +1,11 @@
-package se.crisp.codekvast.agent.main;
+package se.crisp.codekvast.agent.main.server_upload;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import se.crisp.codekvast.agent.main.InvocationsCollector;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
 
@@ -15,12 +16,12 @@ import java.util.List;
 
 @Repository
 @Slf4j
-class InvocationsCollectorImpl implements InvocationsCollector {
+class ServerUploadInvocationsCollectorImpl implements InvocationsCollector {
 
     private final JdbcTemplate jdbcTemplate;
 
     @Inject
-    public InvocationsCollectorImpl(JdbcTemplate jdbcTemplate) {
+    ServerUploadInvocationsCollectorImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.main.codebase;
+package se.crisp.codekvast.agent.codebase;
 
 import com.google.common.base.Predicate;
 

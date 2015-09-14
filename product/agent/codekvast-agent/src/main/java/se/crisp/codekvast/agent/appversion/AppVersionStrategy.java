@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.main.appversion;
+package se.crisp.codekvast.agent.appversion;
 
 import java.io.File;
 import java.util.Collection;

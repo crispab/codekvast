@@ -1,14 +1,14 @@
-package se.crisp.codekvast.agent.main.codebase;
+package se.crisp.codekvast.agent.codebase;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import se.crisp.codekvast.agent.codebase.scannertest.ScannerTest1;
+import se.crisp.codekvast.agent.codebase.scannertest.ScannerTest2;
+import se.crisp.codekvast.agent.codebase.scannertest.ScannerTest3;
+import se.crisp.codekvast.agent.codebase.scannertest.ScannerTest4;
 import se.crisp.codekvast.agent.config.CollectorConfig;
-import se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest1;
-import se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest2;
-import se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest3;
-import se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest4;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -61,8 +61,8 @@ public class CodeBaseScannerTest {
 
         assertThat(codeBase.getSignatures().size(), is(1));
         assertThat(codeBase.getOverriddenSignatures().size(), is(1));
-        assertThat(codeBase.getOverriddenSignatures().get("public se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest2.m1()"),
-                   is("public se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest1.m1()"));
+        assertThat(codeBase.getOverriddenSignatures().get("public " + ScannerTest2.class.getName() + ".m1()"),
+                   is("public " + ScannerTest1.class.getName() + ".m1()"));
     }
 
     @Test
@@ -71,10 +71,10 @@ public class CodeBaseScannerTest {
 
         assertThat(codeBase.getSignatures().size(), is(1));
         assertThat(codeBase.getOverriddenSignatures().size(), is(2));
-        assertThat(codeBase.getOverriddenSignatures().get("public se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest3.m1()"),
-                   is("public se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest1.m1()"));
-        assertThat(codeBase.getOverriddenSignatures().get("public se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest3.m2()"),
-                   is("public se.crisp.codekvast.agent.main.codebase.scannertest.ScannerTest2.m2()"));
+        assertThat(codeBase.getOverriddenSignatures().get("public " + ScannerTest3.class.getName() + ".m1()"),
+                   is("public " + ScannerTest1.class.getName() + ".m1()"));
+        assertThat(codeBase.getOverriddenSignatures().get("public " + ScannerTest3.class.getName() + ".m2()"),
+                   is("public " + ScannerTest2.class.getName() + ".m2()"));
     }
 
     @Test

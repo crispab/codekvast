@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.main.appversion;
+package se.crisp.codekvast.agent.appversion;
 
 import org.junit.Test;
 

@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.main.codebase.scannertest;
+package se.crisp.codekvast.agent.codebase.scannertest;
 
 import lombok.extern.slf4j.Slf4j;
 

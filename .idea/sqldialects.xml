@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="SqlDialectMappings">
-    <file url="file://$PROJECT_DIR$/product/agent/codekvast-agent/src/main/java/se/crisp/codekvast/agent/main/InvocationsCollectorImpl.java" dialect="H2" />
+    <file url="file://$PROJECT_DIR$/product/agent/codekvast-agent/src/main/java/se/crisp/codekvast/agent/main/server_upload/ServerUploadInvocationsCollectorImpl.java" dialect="H2" />
     <file url="file://$PROJECT_DIR$/product/agent/codekvast-agent/src/main/resources/database/migration" dialect="H2" />
     <file url="file://$PROJECT_DIR$/product/server/codekvast-server/src/integTest/java/se/crisp/codekvast/server/codekvast_server/service/impl/AbstractServiceIntegTest.java" dialect="H2" />
     <file url="file://$PROJECT_DIR$/product/server/codekvast-server/src/main/java/se/crisp/codekvast/server/codekvast_server/config/DatabaseConfig.java" dialect="H2" />

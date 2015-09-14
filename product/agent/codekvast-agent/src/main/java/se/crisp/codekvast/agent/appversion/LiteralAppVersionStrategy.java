@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.main.appversion;
+package se.crisp.codekvast.agent.appversion;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
