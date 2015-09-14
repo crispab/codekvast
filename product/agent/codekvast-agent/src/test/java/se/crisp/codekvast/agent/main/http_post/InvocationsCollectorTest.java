@@ -1,16 +1,17 @@
-package se.crisp.codekvast.agent.main;
+package se.crisp.codekvast.agent.main.http_post;
 
+import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import se.crisp.codekvast.agent.main.EmbeddedCodekvastAgentIntegTest;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
 
 import javax.inject.Inject;
 import java.util.List;
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
 import static se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence.EXACT_MATCH;
 import static se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence.FOUND_IN_PARENT_CLASS;
 
@@ -27,30 +28,30 @@ public class InvocationsCollectorTest {
 
     @Test
     public void testPutSignatureOnce() {
-        assertThat(invocationsCollector.getNotUploadedInvocations(jvmUuid1), hasSize(0));
-        assertThat(invocationsCollector.getNotUploadedInvocations(jvmUuid2), hasSize(0));
+        Assert.assertThat(invocationsCollector.getNotUploadedInvocations(jvmUuid1), Matchers.hasSize(0));
+        Assert.assertThat(invocationsCollector.getNotUploadedInvocations(jvmUuid2), Matchers.hasSize(0));
         invocationsCollector.put(jvmUuid1, now - 100L, "sig", now, EXACT_MATCH);
-        assertThat(invocationsCollector.getNotUploadedInvocations(jvmUuid1), hasSize(1));
-        assertThat(invocationsCollector.getNotUploadedInvocations(jvmUuid2), hasSize(0));
+        Assert.assertThat(invocationsCollector.getNotUploadedInvocations(jvmUuid1), Matchers.hasSize(1));
+        Assert.assertThat(invocationsCollector.getNotUploadedInvocations(jvmUuid2), Matchers.hasSize(0));
     }
 
     @Test
     public void testPutTwoSignaturesOnce() {
-        assertThat(invocationsCollector.getNotUploadedInvocations(jvmUuid1), hasSize(0));
-        assertThat(invocationsCollector.getNotUploadedInvocations(jvmUuid2), hasSize(0));
+        Assert.assertThat(invocationsCollector.getNotUploadedInvocations(jvmUuid1), Matchers.hasSize(0));
+        Assert.assertThat(invocationsCollector.getNotUploadedInvocations(jvmUuid2), Matchers.hasSize(0));
 
         invocationsCollector.put(jvmUuid1, now - 100L, "sig1", now, EXACT_MATCH);
         invocationsCollector.put(jvmUuid1, now - 100L, "sig2", now, EXACT_MATCH);
 
-        assertThat(invocationsCollector.getNotUploadedInvocations(jvmUuid1), hasSize(2));
-        assertThat(invocationsCollector.getNotUploadedInvocations(jvmUuid2), hasSize(0));
+        Assert.assertThat(invocationsCollector.getNotUploadedInvocations(jvmUuid1), Matchers.hasSize(2));
+        Assert.assertThat(invocationsCollector.getNotUploadedInvocations(jvmUuid2), Matchers.hasSize(0));
     }
 
     @Test
     public void testPutSignatureTwice() {
         invocationsCollector.put(jvmUuid1, now - 100L, "sig", now, EXACT_MATCH);
         invocationsCollector.put(jvmUuid1, now - 100L, "sig", now, EXACT_MATCH);
-        assertThat(invocationsCollector.getNotUploadedInvocations(jvmUuid1), hasSize(1));
+        Assert.assertThat(invocationsCollector.getNotUploadedInvocations(jvmUuid1), Matchers.hasSize(1));
     }
 
     @Test
@@ -59,8 +60,8 @@ public class InvocationsCollectorTest {
         invocationsCollector.put(jvmUuid1, now - 100L, "sig", now, EXACT_MATCH);
         invocationsCollector.put(jvmUuid1, now - 100L, "sig", now - 2, EXACT_MATCH);
         List<SignatureEntry> signatures = invocationsCollector.getNotUploadedInvocations(jvmUuid1);
-        assertThat(signatures, hasSize(1));
-        assertThat(signatures.get(0).getInvokedAtMillis(), is(now));
+        Assert.assertThat(signatures, Matchers.hasSize(1));
+        Assert.assertThat(signatures.get(0).getInvokedAtMillis(), Matchers.is(now));
     }
 
     @Test
@@ -68,21 +69,21 @@ public class InvocationsCollectorTest {
         invocationsCollector.put(jvmUuid1, now - 100L, "sig", now, EXACT_MATCH);
         invocationsCollector.put(jvmUuid1, now - 100L, "sig", now, FOUND_IN_PARENT_CLASS);
         List<SignatureEntry> signatures = invocationsCollector.getNotUploadedInvocations(jvmUuid1);
-        assertThat(signatures, hasSize(1));
-        assertThat(signatures.get(0).getConfidence(), is(FOUND_IN_PARENT_CLASS));
+        Assert.assertThat(signatures, Matchers.hasSize(1));
+        Assert.assertThat(signatures.get(0).getConfidence(), Matchers.is(FOUND_IN_PARENT_CLASS));
     }
 
     @Test
     public void testClearNotUploadedSignatures() {
         invocationsCollector.put(jvmUuid1, now - 100L, "sig", now, EXACT_MATCH);
         invocationsCollector.put(jvmUuid2, now - 100L, "sig", now, EXACT_MATCH);
-        assertThat(invocationsCollector.getNotUploadedInvocations(jvmUuid1), hasSize(1));
-        assertThat(invocationsCollector.getNotUploadedInvocations(jvmUuid2), hasSize(1));
+        Assert.assertThat(invocationsCollector.getNotUploadedInvocations(jvmUuid1), Matchers.hasSize(1));
+        Assert.assertThat(invocationsCollector.getNotUploadedInvocations(jvmUuid2), Matchers.hasSize(1));
 
         invocationsCollector.clearNotUploadedSignatures(jvmUuid1);
 
-        assertThat(invocationsCollector.getNotUploadedInvocations(jvmUuid1), hasSize(0));
-        assertThat(invocationsCollector.getNotUploadedInvocations(jvmUuid2), hasSize(1));
+        Assert.assertThat(invocationsCollector.getNotUploadedInvocations(jvmUuid1), Matchers.hasSize(0));
+        Assert.assertThat(invocationsCollector.getNotUploadedInvocations(jvmUuid2), Matchers.hasSize(1));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -104,7 +105,7 @@ public class InvocationsCollectorTest {
     public void testPutZeroSignature() throws Exception {
         invocationsCollector.put(jvmUuid1, now, "sig", 0L, null);
         List<SignatureEntry> notUploadedInvocations = invocationsCollector.getNotUploadedInvocations(jvmUuid1);
-        assertThat(notUploadedInvocations, hasSize(1));
-        assertThat(notUploadedInvocations.get(0).getConfidence(), is(nullValue()));
+        Assert.assertThat(notUploadedInvocations, Matchers.hasSize(1));
+        Assert.assertThat(notUploadedInvocations.get(0).getConfidence(), Matchers.is(Matchers.nullValue()));
     }
 }

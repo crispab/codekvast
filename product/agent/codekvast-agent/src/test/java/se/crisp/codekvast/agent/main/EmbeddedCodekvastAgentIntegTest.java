@@ -15,7 +15,7 @@ import java.lang.annotation.*;
 @Documented
 @SpringApplicationConfiguration(classes = CodekvastAgentApplication.class)
 @IntegrationTest({
-        "spring.profiles.active=serverUpload",
+        "spring.profiles.active=httpPost",
         "spring.datasource.url=jdbc:h2:mem:integrationTest",
         "codekvast.apiAccessID=apiAccessID",
         "codekvast.apiAccessSecret=apiAccessSecret",

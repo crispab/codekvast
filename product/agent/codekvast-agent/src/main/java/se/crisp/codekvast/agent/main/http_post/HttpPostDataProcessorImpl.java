@@ -1,11 +1,15 @@
-package se.crisp.codekvast.agent.main.server_upload;
+package se.crisp.codekvast.agent.main.http_post;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.agent.codebase.CodeBase;
 import se.crisp.codekvast.agent.codebase.CodeBaseScanner;
-import se.crisp.codekvast.agent.main.*;
+import se.crisp.codekvast.agent.main.AgentConfig;
+import se.crisp.codekvast.agent.main.AppVersionResolver;
+import se.crisp.codekvast.agent.main.DataProcessor;
+import se.crisp.codekvast.agent.main.JvmState;
 import se.crisp.codekvast.agent.model.Invocation;
 import se.crisp.codekvast.agent.model.Jvm;
 import se.crisp.codekvast.agent.util.ComputerID;
@@ -14,6 +18,7 @@ import se.crisp.codekvast.agent.util.LoggingUtil;
 import se.crisp.codekvast.server.agent_api.AgentApi;
 import se.crisp.codekvast.server.agent_api.AgentApiException;
 import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
+import se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence;
 
 import javax.inject.Inject;
 import java.net.InetAddress;
@@ -21,35 +26,33 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 /**
- * An implementation of DataProcessor that uploads all data to a remote server using the {@link AgentApi}.
+ * An implementation of DataProcessor that uploads all data to a remote server using the HTTP POST API that is embedded in {@link
+ * AgentApi}.
  */
 @Component
-@Profile("serverUpload")
+@Profile("httpPost")
 @Slf4j
-public class ServerUploadDataProcessorImpl implements DataProcessor {
+public class HttpPostDataProcessorImpl implements DataProcessor {
 
     private final AgentConfig config;
     private final AgentApi agentApi;
     private final CodeBaseScanner codeBaseScanner;
     private final AppVersionResolver appVersionResolver;
     private final InvocationsCollector invocationsCollector;
-    private final TransactionHelper transactionHelper;
     private final String agentComputerId = ComputerID.compute().toString();
     private final String agentHostName = getHostName();
 
     @Inject
-    public ServerUploadDataProcessorImpl(AgentConfig config,
-                                         AgentApi agentApi,
-                                         CodeBaseScanner codeBaseScanner,
-                                         AppVersionResolver appVersionResolver,
-                                         InvocationsCollector invocationsCollector,
-                                         TransactionHelper transactionHelper) {
+    public HttpPostDataProcessorImpl(AgentConfig config,
+                                     AgentApi agentApi,
+                                     CodeBaseScanner codeBaseScanner,
+                                     AppVersionResolver appVersionResolver,
+                                     InvocationsCollector invocationsCollector) {
         this.config = config;
         this.agentApi = agentApi;
         this.codeBaseScanner = codeBaseScanner;
         this.appVersionResolver = appVersionResolver;
         this.invocationsCollector = invocationsCollector;
-        this.transactionHelper = transactionHelper;
     }
 
     @Override
@@ -90,14 +93,75 @@ public class ServerUploadDataProcessorImpl implements DataProcessor {
     }
 
     @Override
+    @Transactional
     public void processInvocationsData(long now, JvmState jvmState) {
         List<Invocation> invocations = FileUtils.consumeAllInvocationDataFiles(jvmState.getInvocationsFile());
         if (jvmState.getCodeBase() != null && !invocations.isEmpty()) {
-            transactionHelper.storeNormalizedInvocations(jvmState, invocations);
+            storeNormalizedInvocations(jvmState, invocations);
             uploadNotUploadedSignatures(jvmState);
         }
     }
 
+    private void storeNormalizedInvocations(JvmState jvmState, List<Invocation> invocations) {
+        CodeBase codeBase = jvmState.getCodeBase();
+
+        int recognized = 0;
+        int unrecognized = 0;
+        int ignored = 0;
+        int overridden = 0;
+
+        for (Invocation invocation : invocations) {
+            String rawSignature = invocation.getSignature();
+            String normalizedSignature = codeBase.normalizeSignature(rawSignature);
+            String baseSignature = codeBase.getBaseSignature(normalizedSignature);
+
+            SignatureConfidence confidence = null;
+            if (normalizedSignature == null) {
+                ignored += 1;
+            } else if (codeBase.hasSignature(normalizedSignature)) {
+                recognized += 1;
+                confidence = SignatureConfidence.EXACT_MATCH;
+            } else if (baseSignature != null) {
+                overridden += 1;
+                confidence = SignatureConfidence.FOUND_IN_PARENT_CLASS;
+                log.debug("{} replaced by {}", normalizedSignature, baseSignature);
+                normalizedSignature = baseSignature;
+            } else if (normalizedSignature.equals(rawSignature)) {
+                unrecognized += 1;
+                confidence = SignatureConfidence.NOT_FOUND_IN_CODE_BASE;
+                log.debug("Unrecognized signature: {}", normalizedSignature);
+            } else {
+                unrecognized += 1;
+                confidence = SignatureConfidence.NOT_FOUND_IN_CODE_BASE;
+                log.debug("Unrecognized signature: {} (was {})", normalizedSignature, rawSignature);
+            }
+
+            storeNormalizedSignature(jvmState, invocation, normalizedSignature, confidence);
+        }
+
+        FileUtils.deleteAllConsumedInvocationDataFiles(jvmState.getInvocationsFile());
+
+        // For debugging...
+        codeBase.writeSignaturesToDisk();
+
+        if (unrecognized > 0) {
+            log.warn("{} recognized, {} overridden, {} unrecognized and {} ignored method invocations applied", recognized, overridden,
+                     unrecognized, ignored);
+        } else {
+            log.debug("{} signature invocations applied ({} overridden, {} ignored)", recognized, overridden, ignored);
+        }
+    }
+
+    private void storeNormalizedSignature(JvmState jvmState, Invocation invocation, String normalizedSignature,
+                                          SignatureConfidence confidence) {
+        if (normalizedSignature != null) {
+            invocationsCollector.put(jvmState.getJvm().getJvmUuid(),
+                                     jvmState.getJvm().getStartedAtMillis(),
+                                     normalizedSignature,
+                                     invocation.getInvokedAtMillis(),
+                                     confidence);
+        }
+    }
 
     private JvmData getJvmData(JvmState jvmState) {
         Jvm jvm = jvmState.getJvm();

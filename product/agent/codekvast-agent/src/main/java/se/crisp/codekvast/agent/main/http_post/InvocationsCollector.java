@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.main.server_upload;
+package se.crisp.codekvast.agent.main.http_post;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -6,7 +6,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import se.crisp.codekvast.agent.main.InvocationsCollector;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence;
 import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
 
@@ -16,18 +15,17 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Repository
-@Profile("serverUpload")
+@Profile("httpPost")
 @Slf4j
-class ServerUploadInvocationsCollectorImpl implements InvocationsCollector {
+class InvocationsCollector {
 
     private final JdbcTemplate jdbcTemplate;
 
     @Inject
-    ServerUploadInvocationsCollectorImpl(JdbcTemplate jdbcTemplate) {
+    InvocationsCollector(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    @Override
     @Transactional
     public void put(String jvmUuid, long jvmStartedAtMillis, String signature, long invokedAtMillis,
                     SignatureConfidence confidence) {
@@ -63,7 +61,6 @@ class ServerUploadInvocationsCollectorImpl implements InvocationsCollector {
         }
     }
 
-    @Override
     public List<SignatureEntry> getNotUploadedInvocations(String jvmUuid) {
         return jdbcTemplate.query("SELECT signature, invoked_at_millis, millis_since_jvm_start, confidence " +
                                           "FROM signatures " +
@@ -82,7 +79,6 @@ class ServerUploadInvocationsCollectorImpl implements InvocationsCollector {
                                   jvmUuid);
     }
 
-    @Override
     @Transactional
     public void clearNotUploadedSignatures(String jvmUuid) {
         jdbcTemplate.update("DELETE FROM signatures WHERE jvm_uuid = ?", jvmUuid);

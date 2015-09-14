@@ -57,7 +57,7 @@ jar {
 }
 
 run {
-    jvmArgs = ['-ea', '-Dspring.profiles.active=serverUpload']
+    jvmArgs = ['-ea', '-Dspring.profiles.active=httpPost']
     args = [
             "--codekvast.serverUploadIntervalSeconds=5",
             "--codekvast.databasePath=$buildDir/database"
@@ -77,7 +77,7 @@ bootRun {
 
 jar.dependsOn tasks.getByPath(":product:agent:util:test")
 
-applicationDefaultJvmArgs = ['-Dspring.profiles.active=serverUpload']
+applicationDefaultJvmArgs = ['-Dspring.profiles.active=httpPost']
 
 applicationDistribution.from("src/main/resources") {
     into "conf"
