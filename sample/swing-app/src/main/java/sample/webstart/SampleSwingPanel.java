@@ -32,7 +32,7 @@ public class SampleSwingPanel extends JPanel implements ActionListener {
         textArea.setRows(5);
 
         //Lay everything out.
-        JPanel panel = new JPanel(new GridLayout(0, 3));
+        JPanel panel = new JPanel(new GridLayout(1, 3));
         panel.add(addButton);
         panel.add(removeButton);
         panel.add(clearButton);
@@ -43,6 +43,26 @@ public class SampleSwingPanel extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        textArea.append(actionEvent.getActionCommand() + "\n");
+        if (actionEvent.getActionCommand().equals(ADD_COMMAND)) {
+            doAdd();
+        }
+        if (actionEvent.getActionCommand().equals(REMOVE_COMMAND)) {
+            doRemove();
+        }
+        if (actionEvent.getActionCommand().equals(CLEAR_COMMAND)) {
+            doClear();
+        }
+    }
+
+    private void doClear() {
+        textArea.setText(null);
+    }
+
+    private void doRemove() {
+        textArea.append("Removing...\n");
+    }
+
+    private void doAdd() {
+        textArea.append("Adding...\n");
     }
 }

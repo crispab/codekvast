@@ -1,5 +1,5 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "1.2.1"
+    id "com.github.johnrengelman.shadow" version "1.2.2"
 }
 apply from: "$rootDir/gradle/java-6.gradle"
 apply from: "$rootDir/gradle/sources-javadoc.gradle"
@@ -19,9 +19,9 @@ configurations {
 
 dependencies {
     compile project(":product:agent:shared"), { transitive = false }
-    compile "org.aspectj:aspectjweaver:$aspectjVersion"
+    compile aspectjWeaver
 
-    aspectjweaver "org.aspectj:aspectjweaver:$aspectjVersion"
+    aspectjweaver aspectjWeaver
 
     // Absolutely NO other compile or runtime dependencies are allowed here!
     // All (transitive) compile and runtime dependencies will end up in the instrumented app's system

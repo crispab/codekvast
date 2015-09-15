@@ -1,13 +1,13 @@
 apply from: "$rootDir/gradle/java-6.gradle"
 apply from: "$rootDir/gradle/sources-javadoc.gradle"
 
-description = "Code that is shared between codekvast-shared and the collector"
-archivesBaseName = "codekvast-shared-shared"
+description = "Code that is shared between codekvast-agent and codekvast-collector"
+archivesBaseName = "codekvast-agent-shared"
 version = project.parent.parent.version
 
 dependencies {
     compile lombok
-    compile "org.aspectj:aspectjweaver:$aspectjVersion"
+    compile aspectjWeaver
 
     // Absolutely NO other compile or runtime dependencies are allowed here!
 

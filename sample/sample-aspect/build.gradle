@@ -8,5 +8,5 @@ apply plugin: 'aspectj'
 ext.aspectjVersion = '1.8.6'
 
 dependencies {
-    compile project(":product:agent:collector"), { exclude module: "aspectjweaver" }
+    compile project(path: ":product:agent:collector", configuration: "shadow")
 }

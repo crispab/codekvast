@@ -1,4 +1,65 @@
-apply plugin: 'java'
+apply from: "$rootDir/gradle/java-6.gradle"
+apply plugin: 'application'
 
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
+mainClassName = "sample.webstart.SampleSwingApp"
+
+configurations {
+    aspectjtools
+    aspects
+}
+
+def aspectjVersion = '1.8.5'
+
+dependencies {
+    aspectjtools "org.aspectj:aspectjtools:$aspectjVersion"
+
+    compile project(path: ":product:agent:collector", configuration: "shadow")
+
+    aspects project(":sample:sample-aspect")
+    runtime project(":sample:sample-aspect")
+}
+
+task weaveClasses {
+    dependsOn classes
+
+    def inpath = "$buildDir/classes/orig"
+    def destDir = "$buildDir/classes/main"
+    def logFile = "$buildDir/aspectj.log"
+
+    inputs.dir inpath
+    outputs.dir destDir
+
+    def iajcArgs = [destDir      : destDir,
+                    source       : project.convention.plugins.java.sourceCompatibility,
+                    target       : project.convention.plugins.java.targetCompatibility,
+                    inpath       : inpath,
+                    xlint        : "ignore",
+                    fork         : 'true',
+                    aspectPath   : project.configurations.aspects.asPath,
+                    showWeaveInfo: 'true',
+                    log          : logFile
+    ]
+
+    ant.taskdef(resource: "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties",
+            classpath: project.configurations.aspectjtools.asPath)
+
+    doLast {
+        file(destDir).renameTo file(inpath)
+        mkdir destDir
+        ant.iajc iajcArgs
+    }
+}
+
+jar.dependsOn weaveClasses
+
+startScripts {
+    doLast {
+        outputs.files.each { scriptDir ->
+            scriptDir.eachFile { script ->
+                script.text = script.text
+                        .replace('APP_HOME=', 'export APP_HOME=')
+                        .replace('APP_NAME=', 'export APP_NAME=')
+            }
+        }
+    }
+}

@@ -11,6 +11,9 @@
     <resources>
         <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
         <jar href="swing-app.jar" main="true"/>
+        <jar href="sample-aspect.jar"/>
+        <jar href="codekvast-collector-0.11.10.jar"/>
+        <jar href="aspectjrt-1.8.6.jar"/>
     </resources>
 
     <application-desc

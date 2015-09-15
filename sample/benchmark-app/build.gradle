@@ -2,14 +2,13 @@ apply from: "$rootDir/gradle/java-6.gradle"
 apply plugin: 'application'
 
 mainClassName = "sample.app.SampleApp"
-archivesBaseName = "standalone-app"
 
 dependencies {
     compile "org.projectlombok:lombok:1.16.4"
     compile "org.slf4j:slf4j-api:1.7.12"
     compile "aopalliance:aopalliance:1.0"
     compile 'com.google.inject:guice:4.0'
-    compile project(":sample:standalone-lib")
+    compile project(":sample:sample-lib")
 }
 
 task generateCodekvastConfig {
@@ -23,7 +22,7 @@ task generateCodekvastConfig {
 
     doLast {
         configFile.parentFile.mkdirs()
-        configFile.text = """# Run Codekvast against Crisp Sample App
+        configFile.text = """# Run Codekvast against Crisp Benchmark App
 appName = $archivesBaseName
 appVersion = from load-time-weaving
 tags = development, sample
@@ -52,8 +51,8 @@ dependencies {
     aspectjtools "org.aspectj:aspectjtools:$aspectjVersion"
     aspectjweaver "org.aspectj:aspectjweaver:$aspectjVersion"
 
-    aspects project(":sample:standalone-aspect")
-    runtime project(":sample:standalone-aspect")
+    aspects project(":sample:sample-aspect")
+    runtime project(":sample:sample-aspect")
 }
 
 run {

@@ -11,6 +11,7 @@ import se.crisp.codekvast.shared.util.FileUtils;
 import java.io.File;
 import java.io.PrintStream;
 import java.lang.instrument.Instrumentation;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -97,9 +98,14 @@ public class CodekvastCollector {
         CodekvastCollector.out.printf("%s is ready to detect used code within(%s..*).%n" +
                                               "First write to %s will be in %d seconds, thereafter every %d seconds.%n" +
                                               "-------------------------------------------------------------------------------%n",
-                                      NAME, config.getNormalizedPackagePrefixes(), config.getInvocationsFile(),
+                                      NAME, getNormalizedPackagePrefixes(config), config.getInvocationsFile(),
                                       firstResultInSeconds, config.getCollectorResolutionSeconds()
         );
+    }
+
+    private static String getNormalizedPackagePrefixes(CollectorConfig config) {
+        List<String> prefixes = config.getNormalizedPackagePrefixes();
+        return prefixes.size() == 1 ? prefixes.get(0) : prefixes.toString();
     }
 
     private static int createTimerTask(int dumpIntervalSeconds) {
@@ -126,7 +132,7 @@ public class CodekvastCollector {
 
             CodekvastCollector.out.printf("%s=%s%n", ASPECTJ_WEAVER_CONFIGURATION, System.getProperty(ASPECTJ_WEAVER_CONFIGURATION));
         } catch (ClassNotFoundException e) {
-            CodekvastCollector.out.printf("Not using AspectJ load-time weaving");
+            CodekvastCollector.out.printf("Not using AspectJ load-time weaving.%n");
         }
     }
 

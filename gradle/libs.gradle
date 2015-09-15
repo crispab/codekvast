@@ -4,6 +4,7 @@ ext {
     // Synchronize it with "org.springframework.boot:spring-boot-dependencies:$springBootVersion" (available as HTML
     // at http://docs.spring.io/spring-boot/docs/1.2.3.RELEASE/reference/htmlsingle/#appendix-dependency-versions )
     aspectjVersion = '1.8.6'
+    aspectjWeaver = "org.aspectj:aspectjweaver:$aspectjVersion"
 
     // These are used by non-spring-boot modules. Make sure the version is synchronized with
     // spring-boot-dependencies
