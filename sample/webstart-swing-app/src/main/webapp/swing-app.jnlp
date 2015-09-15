@@ -9,8 +9,8 @@
     </information>
 
     <resources>
-        <j2se version="1.7+" href="http://java.sun.com/products/autodl/j2se"/>
-        <jar href="swing-app.jar" main="true" download="true"/>
+        <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+        <jar href="swing-app.jar" main="true"/>
     </resources>
 
     <application-desc
