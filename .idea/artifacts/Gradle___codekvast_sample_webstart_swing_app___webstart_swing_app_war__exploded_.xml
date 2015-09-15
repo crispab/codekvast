@@ -1,0 +1,20 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="Gradle : codekvast.sample:webstart-swing-app : webstart-swing-app.war (exploded)">
+    <output-path>$PROJECT_DIR$/build/classes/artifacts/webstart-swing-app/exploded/webstart-swing-app.war</output-path>
+    <properties id="gradle-properties">
+      <options external-project-path="$PROJECT_DIR$/sample/webstart-swing-app" />
+    </properties>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="swing-app/web/Web Gradle : webstart-swing-app.war" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="webstart-swing-app" />
+          <element id="dir-copy" path="$PROJECT_DIR$/sample/webstart-swing-app/build/resources/main" />
+        </element>
+      </element>
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/build/classes/artifacts/webstart-swing-app/exploded/webstart-swing-app.war/META-INF/MANIFEST.MF" />
+      </element>
+    </root>
+  </artifact>
+</component>

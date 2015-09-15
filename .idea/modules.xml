@@ -22,8 +22,10 @@
       <module fileurl="file://$PROJECT_DIR$/sample/standalone-aspect/standalone-aspect.iml" filepath="$PROJECT_DIR$/sample/standalone-aspect/standalone-aspect.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/standalone-lib/standalone-lib.iml" filepath="$PROJECT_DIR$/sample/standalone-lib/standalone-lib.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/support/support.iml" filepath="$PROJECT_DIR$/product/support/support.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sample/swing-app/swing-app.iml" filepath="$PROJECT_DIR$/sample/swing-app/swing-app.iml" />
       <module fileurl="file://$PROJECT_DIR$/tools/tools.iml" filepath="$PROJECT_DIR$/tools/tools.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/web/web.iml" filepath="$PROJECT_DIR$/product/web/web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sample/webstart-swing-app/webstart-swing-app.iml" filepath="$PROJECT_DIR$/sample/webstart-swing-app/webstart-swing-app.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/support/websupport/websupport.iml" filepath="$PROJECT_DIR$/product/support/websupport/websupport.iml" />
     </modules>
   </component>

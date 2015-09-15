@@ -1,0 +1,18 @@
+apply plugin: 'war'
+apply plugin: 'jetty'
+
+configurations {
+    theapp
+}
+
+dependencies {
+    theapp project(":sample:swing-app")
+}
+
+war {
+    from configurations.theapp
+}
+
+jettyRunWar {
+    contextPath = ''
+}

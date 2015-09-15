@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+"
+      codebase="http://localhost:8080/"
+      href="swing-app.jnlp">
+
+    <information>
+        <title>Sample Webstart Swing App</title>
+        <vendor>Crisp AB</vendor>
+    </information>
+
+    <resources>
+        <j2se version="1.7+" href="http://java.sun.com/products/autodl/j2se"/>
+        <jar href="swing-app.jar" main="true" download="true"/>
+    </resources>
+
+    <application-desc
+            name="Sample Webstart Swing App"
+            main-class="sample.webstart.SampleSwingApp">
+    </application-desc>
+
+    <update check="background"/>
+</jnlp>
