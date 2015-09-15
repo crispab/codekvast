@@ -16,6 +16,10 @@
         <jar href="aspectjrt-1.8.6.jar"/>
     </resources>
 
+    <security>
+        <all-permissions/>
+    </security>
+
     <application-desc
             name="Sample Webstart Swing App"
             main-class="sample.webstart.SampleSwingApp">
