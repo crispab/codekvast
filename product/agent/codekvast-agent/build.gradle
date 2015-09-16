@@ -16,7 +16,7 @@ configurations {
 
 dependencies {
     compile lombok
-    compile project(':product:support:common')
+    compile project(':product:support:commons')
     compile project(':product:agent:shared')
     compile project(':product:server:agent-api')
     compile 'org.reflections:reflections:0.9.10'

@@ -58,7 +58,7 @@ def webjars = [
 dependencies {
     compile lombok
     compile project(':product:server:agent-api')
-    compile project(':product:support:common')
+    compile project(':product:support:commons')
     compile project(':product:support:websupport')
 
     compile 'org.springframework.boot:spring-boot-starter-jdbc'

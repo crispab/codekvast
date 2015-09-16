@@ -1,7 +1,7 @@
 apply from: "$rootDir/gradle/java-7.gradle"
 apply plugin: 'spring-boot'
 
-archivesBaseName = "codekvast-websupport"
+archivesBaseName = "codekvast-support-websupport"
 
 dependencies {
     compile lombok

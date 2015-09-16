@@ -14,7 +14,7 @@ configurations {
 dependencies {
     compile lombok
     compile 'com.google.guava:guava:18.0'
-    compile project(':product:support:common')
+    compile project(':product:support:commons')
 
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
     compile 'org.springframework.boot:spring-boot-starter-web'

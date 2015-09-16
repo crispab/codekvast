@@ -1,6 +1,6 @@
 apply from: "$rootDir/gradle/java-6.gradle"
 
-archivesBaseName = "codekvast-support"
+archivesBaseName = "codekvast-support-commons"
 
 dependencies {
     compile lombok

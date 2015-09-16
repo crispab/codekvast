@@ -9,7 +9,7 @@
       <module fileurl="file://$PROJECT_DIR$/product/agent/codekvast-agent/codekvast-agent.iml" filepath="$PROJECT_DIR$/product/agent/codekvast-agent/codekvast-agent.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/server/codekvast-server/codekvast-server.iml" filepath="$PROJECT_DIR$/product/server/codekvast-server/codekvast-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/agent/collector/collector.iml" filepath="$PROJECT_DIR$/product/agent/collector/collector.iml" />
-      <module fileurl="file://$PROJECT_DIR$/product/support/common/common.iml" filepath="$PROJECT_DIR$/product/support/common/common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/product/support/commons/commons.iml" filepath="$PROJECT_DIR$/product/support/commons/commons.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/docs/docs.iml" filepath="$PROJECT_DIR$/product/docs/docs.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/jenkins1/jenkins1.iml" filepath="$PROJECT_DIR$/sample/jenkins1/jenkins1.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/jenkins2/jenkins2.iml" filepath="$PROJECT_DIR$/sample/jenkins2/jenkins2.iml" />
