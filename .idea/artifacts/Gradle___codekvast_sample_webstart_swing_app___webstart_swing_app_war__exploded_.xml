@@ -5,7 +5,7 @@
       <options external-project-path="$PROJECT_DIR$/sample/webstart-swing-app" />
     </properties>
     <root id="root">
-      <element id="javaee-facet-resources" facet="swing-app/web/Web Gradle : webstart-swing-app.war" />
+      <element id="javaee-facet-resources" facet="webstart-swing-app/web/Web Gradle : webstart-swing-app.war" />
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
           <element id="module-output" name="webstart-swing-app" />

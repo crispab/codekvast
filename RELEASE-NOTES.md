@@ -1,5 +1,10 @@
 # Codekvast Release Notes
 
+## 0.11.11
+
+1. Preparations for making it possible to use Codekvast for Java Web Started applications (incubating).
+1. Upgraded to Gradle 2.7
+
 ## 0.11.10
 
 1. Enabled static weaving of the Codekvast Agent
@@ -9,7 +14,7 @@
 
 1. Upgraded to Spring Boot 1.2.5
 1. Upgraded dependencies
-1. Rewrote from ajc to @Aspect style
+1. Rewrote from ajc to @Aspect style (so that all modules can be compiled with a plain Java compiler)
 
 ## 0.11.8
 
