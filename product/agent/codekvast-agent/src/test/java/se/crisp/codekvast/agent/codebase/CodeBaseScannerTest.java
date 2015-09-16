@@ -8,7 +8,7 @@ import se.crisp.codekvast.agent.codebase.scannertest.ScannerTest1;
 import se.crisp.codekvast.agent.codebase.scannertest.ScannerTest2;
 import se.crisp.codekvast.agent.codebase.scannertest.ScannerTest3;
 import se.crisp.codekvast.agent.codebase.scannertest.ScannerTest4;
-import se.crisp.codekvast.shared.config.CollectorConfig;
+import se.crisp.codekvast.shared.config.CollectorConfigFactory;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -34,17 +34,13 @@ public class CodeBaseScannerTest {
     }
 
     private CodeBase getCodeBase(String codeBase) {
-        return new CodeBase(CollectorConfig.builder()
-                                           .dataPath(temporaryFolder.getRoot())
-                                           .codeBase(new File(codeBase).getAbsolutePath())
-                                           .packagePrefixes(ScannerTest1.class.getPackage().getName())
-                                           .appName("appName")
-                                           .appVersion("1.0")
-                                           .tags("tags")
-                                           .collectorResolutionSeconds(1)
-                                           .aspectjOptions("")
-                                           .methodVisibility("private")
-                                           .build());
+        return new CodeBase(CollectorConfigFactory.builder()
+                                                  .appName("appName")
+                                                  .codeBase(new File(codeBase).getAbsolutePath())
+                                                  .dataPath(temporaryFolder.getRoot())
+                                                  .methodVisibility("private")
+                                                  .packagePrefixes(ScannerTest1.class.getPackage().getName())
+                                                  .build());
     }
 
     @Test

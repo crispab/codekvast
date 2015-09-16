@@ -39,17 +39,13 @@ public class InvocationRegistryTest {
         File dataPath = temporaryFolder.newFolder("collector");
 
         //@formatter:off
-        config = CollectorConfig.builder()
-                                .dataPath(dataPath)
-                                .codeBase(codeBase)
-                                .packagePrefixes("se.crisp")
-                                .appName(APP_NAME)
-                                .appVersion(APP_VERSION)
-                                .tags("")
-                                .collectorResolutionSeconds(1)
-                                .aspectjOptions("")
-                                .methodVisibility(CollectorConfigFactory.DEFAULT_METHOD_VISIBILITY)
-                                .build();
+        config = CollectorConfigFactory.builder()
+                                       .appName(APP_NAME)
+                                       .appVersion(APP_VERSION)
+                                       .codeBase(codeBase)
+                                       .dataPath(dataPath)
+                                       .packagePrefixes("se.crisp")
+                                       .build();
         //@formatter:on
         InvocationRegistry.initialize(config, new FileSystemInvocationDataDumper(config, CodekvastCollector.out));
         signature = SignatureUtils.makeSignature(new MethodFilter("public"), TestClass.class, TestClass.class.getMethod("m1"));

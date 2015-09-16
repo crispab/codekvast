@@ -146,19 +146,11 @@ public class CollectorConfigFactory {
     }
 
     public static CollectorConfig createSampleCollectorConfig() {
-        return CollectorConfig.builder()
-                              .appName("Sample Application Name")
-                              .appVersion(UNSPECIFIED_VERSION)
-                              .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
-                              .clobberAopXml(DEFAULT_CLOBBER_AOP_XML)
-                              .codeBase(SAMPLE_CODEBASE_URI1 + " , " + SAMPLE_CODEBASE_URI2)
-                              .collectorResolutionSeconds(DEFAULT_COLLECTOR_RESOLUTION_SECONDS)
-                              .dataPath(SAMPLE_DATA_PATH)
-                              .methodVisibility(DEFAULT_METHOD_VISIBILITY)
-                              .packagePrefixes("com.acme. , foo.bar.")
-                              .tags(createSystemPropertiesTags() + ", " + SAMPLE_TAGS)
-                              .verbose(DEFAULT_VERBOSE)
-                              .build();
+        return builder()
+                .appName("Sample Application Name")
+                .codeBase(SAMPLE_CODEBASE_URI1 + " , " + SAMPLE_CODEBASE_URI2)
+                .packagePrefixes("com.acme. , foo.bar.")
+                .build();
     }
 
     public static CollectorConfig.CollectorConfigBuilder builder() {
