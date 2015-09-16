@@ -19,10 +19,10 @@ public class CollectorConfigTest {
 
     @Before
     public void beforeTest() throws Exception {
-        config1 = CollectorConfig.createSampleCollectorConfig();
+        config1 = CollectorConfigFactory.createSampleCollectorConfig();
         file1 = File.createTempFile("codekvast", ".conf");
         file1.deleteOnExit();
-        config1.saveTo(file1);
+        CollectorConfigFactory.saveTo(config1, file1);
     }
 
     @After
@@ -32,13 +32,13 @@ public class CollectorConfigTest {
 
     @Test
     public void testSaveSampleConfigToFile() throws IOException {
-        CollectorConfig config2 = CollectorConfig.parseCollectorConfig(file1.toURI(), null);
+        CollectorConfig config2 = CollectorConfigFactory.parseCollectorConfig(file1.toURI(), null);
         assertEquals(config1, config2);
     }
 
     @Test
     public void testParseConfigFileWithOverride() throws IOException, URISyntaxException {
-        CollectorConfig config2 = CollectorConfig.parseCollectorConfig(file1.toURI(), "verbose=true");
+        CollectorConfig config2 = CollectorConfigFactory.parseCollectorConfig(file1.toURI(), "verbose=true");
         assertNotEquals(config1, config2);
         assertThat(config1.isVerbose(), is(false));
         assertThat(config2.isVerbose(), is(true));
@@ -46,13 +46,13 @@ public class CollectorConfigTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseConfigFileWithIllegalAppNameOverride() throws IOException, URISyntaxException {
-        CollectorConfig.parseCollectorConfig(file1.toURI(), "appName=.illegalAppName");
+        CollectorConfigFactory.parseCollectorConfig(file1.toURI(), "appName=.illegalAppName");
     }
 
     @Test
     public void testParseConfigFilePathWithSyspropAndCmdLineOverride() throws IOException, URISyntaxException {
         System.setProperty(CollectorConfigLocator.SYSPROP_OPTS, "verbose=true;clobberAopXml=false;codeBase=/path/to/$appName");
-        CollectorConfig config = CollectorConfig.parseCollectorConfig(new URI("classpath:/incomplete-collector-config.conf"),
+        CollectorConfig config = CollectorConfigFactory.parseCollectorConfig(new URI("classpath:/incomplete-collector-config.conf"),
                                                                       "appName=kaka;appVersion=version;");
         assertThat(config.getAppName(), is("kaka"));
         assertThat(config.getAppVersion(), is("version"));
@@ -63,13 +63,13 @@ public class CollectorConfigTest {
 
     @Test
     public void testIsSyspropVerbose() {
-        assertThat(CollectorConfig.isSyspropVerbose(), is(false));
+        assertThat(CollectorConfigFactory.isSyspropVerbose(), is(false));
 
         System.setProperty(CollectorConfigLocator.SYSPROP_OPTS, "verbose=true;clobberAopXml=false;codeBase=/path/to/$appName");
-        assertThat(CollectorConfig.isSyspropVerbose(), is(true));
+        assertThat(CollectorConfigFactory.isSyspropVerbose(), is(true));
 
         System.setProperty(CollectorConfigLocator.SYSPROP_OPTS, "verbose=false;clobberAopXml=false;codeBase=/path/to/$appName");
-        assertThat(CollectorConfig.isSyspropVerbose(), is(false));
+        assertThat(CollectorConfigFactory.isSyspropVerbose(), is(false));
     }
 
 }

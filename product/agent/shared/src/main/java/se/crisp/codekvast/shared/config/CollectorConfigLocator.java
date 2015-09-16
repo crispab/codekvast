@@ -6,7 +6,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
- * This class locates the file to feed into {@link CollectorConfig#parseCollectorConfig(URI, String)} .
+ * This class locates the file to feed into {@link CollectorConfigFactory#parseCollectorConfig(URI, String)} .
  * 
  * It does this by checking a number of locations, stopping as soon as a file with the correct name is found.
  *
@@ -35,7 +35,7 @@ public class CollectorConfigLocator {
      * @return null if no config file could be found.
      */
     public static URI locateConfig(PrintStream out) {
-        boolean verbose = CollectorConfig.isSyspropVerbose();
+        boolean verbose = CollectorConfigFactory.isSyspropVerbose();
         File file = tryLocation(out, verbose, System.getProperty(SYSPROP_CONFIG));
         if (file != null) {
             printMessage(out, verbose, "Found " + file);
@@ -151,7 +151,7 @@ public class CollectorConfigLocator {
                 home = home.getParentFile();
             }
             return home.getAbsolutePath();
-        } catch (URISyntaxException e) {
+        } catch (URISyntaxException ignored) {
         }
         return null;
     }

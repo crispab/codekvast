@@ -2,6 +2,7 @@ package se.crisp.codekvast.collector;
 
 import org.aspectj.bridge.Constants;
 import se.crisp.codekvast.shared.config.CollectorConfig;
+import se.crisp.codekvast.shared.config.CollectorConfigFactory;
 import se.crisp.codekvast.shared.config.CollectorConfigLocator;
 import se.crisp.codekvast.shared.config.MethodFilter;
 import se.crisp.codekvast.shared.io.FileSystemInvocationDataDumper;
@@ -66,7 +67,7 @@ public class CodekvastCollector {
      */
     @SuppressWarnings("UseOfSystemOutOrSystemErr")
     public static void premain(String args, Instrumentation inst) {
-        CollectorConfig config = CollectorConfig.parseCollectorConfig(CollectorConfigLocator.locateConfig(System.out), args, true);
+        CollectorConfig config = CollectorConfigFactory.parseCollectorConfig(CollectorConfigLocator.locateConfig(System.out), args, true);
 
         initialize(config, new FileSystemInvocationDataDumper(config, out));
     }

@@ -7,6 +7,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import se.crisp.codekvast.shared.config.CollectorConfig;
+import se.crisp.codekvast.shared.config.CollectorConfigFactory;
 import se.crisp.codekvast.shared.config.MethodFilter;
 import se.crisp.codekvast.shared.io.FileSystemInvocationDataDumper;
 import se.crisp.codekvast.shared.model.Jvm;
@@ -47,7 +48,7 @@ public class InvocationRegistryTest {
                                 .tags("")
                                 .collectorResolutionSeconds(1)
                                 .aspectjOptions("")
-                                .methodVisibility(CollectorConfig.DEFAULT_METHOD_VISIBILITY)
+                                .methodVisibility(CollectorConfigFactory.DEFAULT_METHOD_VISIBILITY)
                                 .build();
         //@formatter:on
         InvocationRegistry.initialize(config, new FileSystemInvocationDataDumper(config, CodekvastCollector.out));

@@ -2,6 +2,7 @@ package se.crisp.codekvast.shared.model;
 
 import lombok.*;
 import se.crisp.codekvast.shared.config.CollectorConfig;
+import se.crisp.codekvast.shared.config.CollectorConfigFactory;
 import se.crisp.codekvast.shared.util.FileUtils;
 
 import java.io.File;
@@ -44,7 +45,7 @@ public class Jvm {
 
         try {
             return Jvm.builder()
-                      .collectorConfig(CollectorConfig.buildCollectorConfig(props))
+                      .collectorConfig(CollectorConfigFactory.buildCollectorConfig(props))
                       .collectorVcsId(props.getProperty("collectorVcsId"))
                       .collectorVersion(props.getProperty("collectorVersion"))
                       .computerId(props.getProperty("computerId"))

@@ -9,8 +9,8 @@ apply plugin: 'com.jfrog.bintray'
 // It is however currently disabled, since bintray won't allow linking it to jcenter because the GitHub repo is not public.
 // All bintray-related code is commented out with the marker JCENTER
 
-description = "The javaagent part of Codekvast"
-archivesBaseName = "codekvast-agent-collector"
+description = "The collector part of Codekvast"
+archivesBaseName = "codekvast-collector"
 version = project.parent.parent.version
 
 configurations {
@@ -32,8 +32,7 @@ dependencies {
 }
 
 shadowJar {
-    baseName = "codekvast-collector"
-    classifier = ''
+    classifier = 'shadow'
     manifest {
         attributes(
                 "Premain-Class": "CodekvastCollector",
@@ -52,6 +51,18 @@ task javaagents(type: Sync) {
     into "$buildDir/javaagents"
 }
 
+task assemble {
+    dependsOn shadowJar
+    doLast {
+        // Swap in the shadow jar instead of the normal skinny jar
+        def skinnyJar = file(project.jar.archivePath)
+        def shadowJar = file(project.shadowJar.archivePath)
+
+        skinnyJar.renameTo skinnyJar.path.replace(".jar", "-skinny.jar")
+        shadowJar.renameTo shadowJar.path.replace("-shadow.jar", ".jar")
+    }
+}
+
 /*
 --- JCENTER begin ---------------------
 apply plugin: 'maven-publish'
@@ -62,7 +73,7 @@ publishing {
             groupId 'se.crisp.codekvast'
             artifactId 'codekvast-collector'
 
-            from components.shadow
+            from components.jar
             artifact sourcesJar { classifier "sources" }
             artifact javadocJar { classifier "javadoc" }
         }

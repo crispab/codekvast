@@ -16,3 +16,17 @@ jar {
         )
     }
 }
+
+configurations.forEach { it ->
+    def config = it
+    def configName = config.name
+    def taskName = "sync${configName.capitalize()}Dependencies"
+
+    task "$taskName"(type: Sync) {
+        group = "Support"
+        description = "Syncs $configName dependencies into build/deps/$configName"
+
+        from config
+        into "$buildDir/deps/$configName"
+    }
+}

@@ -13,7 +13,7 @@ def aspectjVersion = '1.8.5'
 dependencies {
     aspectjtools "org.aspectj:aspectjtools:$aspectjVersion"
 
-    compile project(path: ":product:agent:collector", configuration: "shadow")
+    compile project(":product:agent:collector")
 
     aspects project(":sample:sample-aspect")
     runtime project(":sample:sample-aspect")

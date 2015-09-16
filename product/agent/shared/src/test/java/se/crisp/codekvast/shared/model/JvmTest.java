@@ -1,7 +1,7 @@
 package se.crisp.codekvast.shared.model;
 
 import org.junit.Test;
-import se.crisp.codekvast.shared.config.CollectorConfig;
+import se.crisp.codekvast.shared.config.CollectorConfigFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +20,7 @@ public class JvmTest {
         File file = File.createTempFile("jvm-run", ".properties");
         file.deleteOnExit();
         Jvm jvm1 = Jvm.builder()
-                     .collectorConfig(CollectorConfig.createSampleCollectorConfig())
+                     .collectorConfig(CollectorConfigFactory.createSampleCollectorConfig())
                      .collectorVcsId("collectorVcsId")
                      .collectorVersion("collectorVersion")
                      .computerId("computerId")
