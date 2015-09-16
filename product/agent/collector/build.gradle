@@ -32,10 +32,10 @@ dependencies {
 }
 
 shadowJar {
-    classifier = 'shadow'
+    classifier = 'all'
     manifest {
         attributes(
-                "Premain-Class": "CodekvastCollector",
+                "Premain-Class": "se.crisp.codekvast.collector.CodekvastCollector",
                 "Implementation-Title": archivesBaseName,
                 "Implementation-Version": codekvastDisplayVersion
         )
@@ -49,18 +49,6 @@ task javaagents(type: Sync) {
     from configurations.aspectjweaver
     from tasks.shadowJar
     into "$buildDir/javaagents"
-}
-
-task assemble {
-    dependsOn shadowJar
-    doLast {
-        // Swap in the shadow jar instead of the normal skinny jar
-        def skinnyJar = file(project.jar.archivePath)
-        def shadowJar = file(project.shadowJar.archivePath)
-
-        skinnyJar.renameTo skinnyJar.path.replace(".jar", "-skinny.jar")
-        shadowJar.renameTo shadowJar.path.replace("-shadow.jar", ".jar")
-    }
 }
 
 /*

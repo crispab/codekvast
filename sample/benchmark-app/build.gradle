@@ -3,12 +3,19 @@ apply plugin: 'application'
 
 mainClassName = "sample.app.SampleApp"
 
+configurations {
+    javaagent
+}
+
 dependencies {
     compile "org.projectlombok:lombok:1.16.4"
     compile "org.slf4j:slf4j-api:1.7.12"
     compile "aopalliance:aopalliance:1.0"
     compile 'com.google.inject:guice:4.0'
     compile project(":sample:sample-lib")
+
+    javaagent project(path: ":product:agent:collector", configuration: 'shadow')
+    javaagent "org.aspectj:aspectjweaver:1.8.6"
 }
 
 task generateCodekvastConfig {
@@ -39,26 +46,16 @@ verbose = true
 
 processResources.dependsOn generateCodekvastConfig
 
-configurations {
-    aspectjtools
-    aspects
-    aspectjweaver
-}
-
-def aspectjVersion = '1.8.5'
-
-dependencies {
-    aspectjtools "org.aspectj:aspectjtools:$aspectjVersion"
-    aspectjweaver "org.aspectj:aspectjweaver:$aspectjVersion"
-
-    aspects project(":sample:sample-aspect")
-    runtime project(":sample:sample-aspect")
+task fetchJavaagents(type: Sync) {
+    from configurations.javaagent
+    into "$buildDir/javaagent"
 }
 
 run {
-    dependsOn = [":product:agent:collector:shadowJar", "generateCodekvastConfig", "weaveAspects"]
-    def codekvastCollector = tasks.getByPath(":product:agent:collector:shadowJar").outputs.files.asPath
-    def aspectjWeaver = configurations.aspectjweaver.asPath
+    dependsOn = [fetchJavaagents, generateCodekvastConfig]
+
+    def codekvastCollector = file("$buildDir/javaagent").listFiles().find { it.name.startsWith("codekvast") }
+    def aspectjWeaver = file("$buildDir/javaagent").listFiles().find { it.name.startsWith("aspectjweaver") }
 
     jvmArgs = [
             "-Dcodekvast.configuration=$generateCodekvastConfig.configFile",
@@ -66,58 +63,3 @@ run {
             "-javaagent:$aspectjWeaver"
     ]
 }
-
-task weaveAspects {
-    dependsOn classes
-
-    def inpath = "$buildDir/classes/main"
-    def destDir = "$buildDir/woven/classes"
-    def logFile = "$buildDir/aspectj.log"
-
-    inputs.dir inpath
-    outputs.dir destDir
-
-    def iajcArgs = [destDir      : destDir,
-                    source       : project.convention.plugins.java.sourceCompatibility,
-                    target       : project.convention.plugins.java.targetCompatibility,
-                    inpath       : inpath,
-                    xlint        : "ignore",
-                    fork         : 'true',
-                    aspectPath   : project.configurations.aspects.asPath,
-                    showWeaveInfo: 'true',
-                    log          : logFile
-    ]
-
-    ant.taskdef(resource: "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties",
-            classpath: project.configurations.aspectjtools.asPath)
-
-    doLast {
-        mkdir destDir
-        ant.iajc(iajcArgs)
-    }
-}
-
-jar {
-    dependsOn weaveAspects
-    from "$buildDir/woven/classes"
-}
-
-
-startScripts {
-    doLast {
-        outputs.files.each { scriptDir ->
-            scriptDir.eachFile { script ->
-                script.text = script.text
-                        .replace('APP_HOME=', 'export APP_HOME=')
-                        .replace('APP_NAME=', 'export APP_NAME=')
-            }
-        }
-    }
-}
-
-// Uncomment to enable load-time weaving
-//applicationDefaultJvmArgs = [
-//        "-Dcodekvast.configuration=${generateCodekvastConfig.configFile}",
-//        "-javaagent:${tasks.getByPath(':product:agent:collector:shadowJar').outputs.files.asPath}",
-//        "-javaagent:${configurations.aspectjweaver.asPath}"
-//]

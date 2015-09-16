@@ -126,10 +126,11 @@ public class CodekvastCollector {
         try {
             Class.forName("org.aspectj.bridge.Constants");
 
-            System.setProperty(ASPECTJ_WEAVER_CONFIGURATION, createAopXml(config) + ";" +
-                    Constants.AOP_USER_XML + ";" +
-                    Constants.AOP_AJC_XML + ";" +
-                    Constants.AOP_OSGI_XML);
+            System.setProperty(ASPECTJ_WEAVER_CONFIGURATION,
+                               createAopXml(config) + ";" +
+                                       Constants.AOP_USER_XML + ";" +
+                                       Constants.AOP_AJC_XML + ";" +
+                                       Constants.AOP_OSGI_XML);
 
             CodekvastCollector.out.printf("%s=%s%n", ASPECTJ_WEAVER_CONFIGURATION, System.getProperty(ASPECTJ_WEAVER_CONFIGURATION));
         } catch (ClassNotFoundException e) {
@@ -144,10 +145,6 @@ public class CodekvastCollector {
      * @return A file URI to a temporary aop-ajc.xml file.
      */
     private static String createAopXml(CollectorConfig config) {
-        String aspectjOptions = config.getAspectjOptions();
-        if (aspectjOptions == null) {
-            aspectjOptions = "";
-        }
 
         StringBuilder includeWithin = new StringBuilder();
         for (String prefix : config.getNormalizedPackagePrefixes()) {
@@ -169,10 +166,9 @@ public class CodekvastCollector {
                         + "</aspectj>\n",
                 AbstractMethodExecutionAspect.class.getName(),
                 toMethodExecutionPointcut(config.getMethodVisibility()),
-                aspectjOptions,
+                config.getAspectjOptions(),
                 includeWithin.toString(),
-                CodekvastCollector.class.getPackage().getName()
-        );
+                "se.crisp.codekvast");
 
         File file = config.getAspectFile();
         if (config.isClobberAopXml() || !file.canRead()) {
