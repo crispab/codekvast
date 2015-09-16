@@ -80,7 +80,7 @@ You can access Jenkins at [http://localhost:8082/jenkins](http://localhost:8082/
     gradle :product:agent:codekvast-agent:run
 
 This will launch **codekvast-agent**, that will process output from all collectors. The agent will try to upload the
-data to **http://localhost:8090**, which is the default URL for the **codekvast-server**.
+data to http://localhost:8090, which is the default URL for the **codekvast-server**.
 Terminate with `Ctrl-C`.
 
 ### Start codekvast-server in terminal 4
