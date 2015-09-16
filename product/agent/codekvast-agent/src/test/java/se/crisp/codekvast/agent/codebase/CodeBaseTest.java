@@ -2,7 +2,7 @@ package se.crisp.codekvast.agent.codebase;
 
 import com.google.common.io.Files;
 import org.junit.Test;
-import se.crisp.codekvast.shared.config.CollectorConfig;
+import se.crisp.codekvast.shared.config.CollectorConfigFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,17 +38,11 @@ public class CodeBaseTest {
     }
 
     private CodeBase getCodeBase(String codeBase) throws URISyntaxException {
-        return new CodeBase(CollectorConfig.builder()
-                                           .dataPath(new File("."))
-                                           .codeBase(new File(codeBase).getAbsolutePath())
-                                           .packagePrefixes("se.crisp")
-                                           .appName("appName")
-                                           .appVersion("appVersion")
-                                           .tags("tag1, tag2")
-                                           .collectorResolutionSeconds(1)
-                                           .aspectjOptions("")
-                                           .methodVisibility(CollectorConfig.DEFAULT_METHOD_VISIBILITY)
-                                           .build());
+        return new CodeBase(CollectorConfigFactory.builder()
+                                                  .codeBase(new File(codeBase).getAbsolutePath())
+                                                  .packagePrefixes("se.crisp")
+                                                  .appName("appName")
+                                                  .build());
     }
 
     @Test

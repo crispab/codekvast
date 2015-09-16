@@ -163,6 +163,7 @@ public class CollectorConfigFactory {
 
     public static CollectorConfig.CollectorConfigBuilder builder() {
         return CollectorConfig.builder()
+                              .appVersion(UNSPECIFIED_VERSION)
                               .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
                               .clobberAopXml(DEFAULT_CLOBBER_AOP_XML)
                               .collectorResolutionSeconds(DEFAULT_COLLECTOR_RESOLUTION_SECONDS)
