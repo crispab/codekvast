@@ -9,7 +9,7 @@ apply plugin: 'com.jfrog.bintray'
 // It is however currently disabled, since bintray won't allow linking it to jcenter because the GitHub repo is not public.
 // All bintray-related code is commented out with the marker JCENTER
 
-description = "The collector part of Codekvast"
+description = "The collector part of Codekvast, the code that runs inside the instrumented app's JVM"
 archivesBaseName = "codekvast-collector"
 version = project.parent.parent.version
 

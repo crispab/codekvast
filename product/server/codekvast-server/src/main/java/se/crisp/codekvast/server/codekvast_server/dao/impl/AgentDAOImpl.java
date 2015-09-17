@@ -8,9 +8,9 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
-import se.crisp.codekvast.server.agent_api.model.v1.SignatureData;
-import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
+import se.crisp.codekvast.server.daemon_api.model.v1.JvmData;
+import se.crisp.codekvast.server.daemon_api.model.v1.SignatureData;
+import se.crisp.codekvast.server.daemon_api.model.v1.SignatureEntry;
 import se.crisp.codekvast.server.codekvast_server.config.CodekvastSettings;
 import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
@@ -125,7 +125,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     @Override
     public void storeInvocationData(AppId appId, SignatureData signatureData) {
 
-        long agentClockSkewMillis = calculateAgentClockSkewMillis(signatureData.getAgentTimeMillis());
+        long agentClockSkewMillis = calculateAgentClockSkewMillis(signatureData.getDaemonTimeMillis());
 
         List<Object[]> args = new ArrayList<>();
 
@@ -156,12 +156,12 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     @Override
     public void storeJvmData(long organisationId, long appId, JvmData data) {
         // Calculate the agent clock skew. Don't try to compensate for network latency...
-        long agentClockSkewMillis = calculateAgentClockSkewMillis(data.getAgentTimeMillis());
+        long agentClockSkewMillis = calculateAgentClockSkewMillis(data.getDaemonTimeMillis());
 
         long startedAtMillis = compensateForClockSkew(data.getStartedAtMillis(), agentClockSkewMillis);
         long reportedAtMillis = compensateForClockSkew(data.getDumpedAtMillis(), agentClockSkewMillis);
         long nextReportExpectedBeforeMillis = reportedAtMillis + (data.getCollectorResolutionSeconds() + data
-                .getAgentUploadIntervalSeconds()) * 1000L;
+                .getDaemonUploadIntervalSeconds()) * 1000L;
 
         // Add some tolerance to avoid false negatives...
         nextReportExpectedBeforeMillis += 60_000L;
@@ -188,8 +188,9 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                 "collector_version, method_visibility, started_at_millis, reported_at_millis, " +
                                 "next_report_expected_before_millis, tags)" +
                                 " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                        organisationId, appId, data.getAppVersion(), data.getJvmUuid(), data.getAgentComputerId(), data.getAgentHostName(),
-                        data.getAgentUploadIntervalSeconds(), data.getAgentVcsId(), data.getAgentVersion(), agentClockSkewMillis,
+                        organisationId, appId, data.getAppVersion(), data.getJvmUuid(), data.getDaemonComputerId(), data
+                                .getDaemonHostName(),
+                        data.getDaemonUploadIntervalSeconds(), data.getDaemonVcsId(), data.getDaemonVersion(), agentClockSkewMillis,
                         data.getCollectorComputerId(), data.getCollectorHostName(), data.getCollectorResolutionSeconds(),
                         data.getCollectorVcsId(),
                         data.getCollectorVersion(), data.getMethodVisibility(), startedAtMillis, reportedAtMillis,
@@ -202,8 +203,8 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         }
     }
 
-    private long calculateAgentClockSkewMillis(long agentTimeMillis) {
-        return agentTimeMillis <= 0L ? 0L : System.currentTimeMillis() - agentTimeMillis;
+    private long calculateAgentClockSkewMillis(long daemonTimeMillis) {
+        return daemonTimeMillis <= 0L ? 0L : System.currentTimeMillis() - daemonTimeMillis;
     }
 
     String normalizeTags(String tags) {
@@ -558,8 +559,8 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                                    .appName(rs.getString(1))
                                    .appVersion(rs.getString(2))
                                    .agentHostname(rs.getString(3))
-                                   .agentVersion(String.format("%s.%s", rs.getString(4), rs.getString(5)))
-                                   .agentUploadIntervalSeconds(rs.getInt(6))
+                                   .daemonVersion(String.format("%s.%s", rs.getString(4), rs.getString(5)))
+                                   .daemonUploadIntervalSeconds(rs.getInt(6))
                                    .agentClockSkewMillis(rs.getLong(7))
                                    .collectorHostname(rs.getString(8))
                                    .collectorVersion(String.format("%s.%s", rs.getString(9), rs.getString(10)))

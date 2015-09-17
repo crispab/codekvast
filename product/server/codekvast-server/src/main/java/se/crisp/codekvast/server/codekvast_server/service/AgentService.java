@@ -1,7 +1,7 @@
 package se.crisp.codekvast.server.codekvast_server.service;
 
-import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
-import se.crisp.codekvast.server.agent_api.model.v1.SignatureData;
+import se.crisp.codekvast.server.daemon_api.model.v1.JvmData;
+import se.crisp.codekvast.server.daemon_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 
 /**

@@ -57,7 +57,7 @@ def webjars = [
 
 dependencies {
     compile lombok
-    compile project(':product:server:agent-api')
+    compile project(':product:server:daemon-api')
     compile project(':product:support:commons')
     compile project(':product:support:websupport')
 

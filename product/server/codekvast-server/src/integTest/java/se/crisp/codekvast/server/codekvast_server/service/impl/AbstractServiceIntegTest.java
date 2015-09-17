@@ -14,7 +14,7 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
-import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
+import se.crisp.codekvast.server.daemon_api.model.v1.JvmData;
 import se.crisp.codekvast.server.codekvast_server.config.CodekvastSettings;
 import se.crisp.codekvast.server.codekvast_server.config.DatabaseConfig;
 import se.crisp.codekvast.server.codekvast_server.config.EventBusConfig;
@@ -80,17 +80,17 @@ public abstract class AbstractServiceIntegTest extends AbstractJUnit4SpringConte
                                     String hostName) {
 
         return JvmData.builder()
-                      .agentHostName(hostName)
-                      .agentTimeMillis(-1L)
+                      .daemonHostName(hostName)
+                      .daemonTimeMillis(-1L)
                       .appName(appName)
                       .dumpedAtMillis(reportedAtMillis)
                       .jvmUuid(jvmUuid)
                       .startedAtMillis(startedAtMillis)
 
-                      .agentComputerId("agentComputerId")
-                      .agentUploadIntervalSeconds(300)
-                      .agentVcsId("agentVcsId")
-                      .agentVersion("agentVersion")
+                      .daemonComputerId("daemonComputerId")
+                      .daemonUploadIntervalSeconds(300)
+                      .daemonVcsId("daemonVcsId")
+                      .daemonVersion("daemonVersion")
                       .appVersion(appVersion)
                       .collectorComputerId("collectorComputerId")
                       .collectorHostName(hostName)

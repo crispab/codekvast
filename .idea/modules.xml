@@ -3,21 +3,21 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/product/agent/agent.iml" filepath="$PROJECT_DIR$/product/agent/agent.iml" />
-      <module fileurl="file://$PROJECT_DIR$/product/server/agent-api/agent-api.iml" filepath="$PROJECT_DIR$/product/server/agent-api/agent-api.iml" />
-      <module fileurl="file://$PROJECT_DIR$/sample/benchmark-app/benchmark-app.iml" filepath="$PROJECT_DIR$/sample/benchmark-app/benchmark-app.iml" />
       <module fileurl="file://$PROJECT_DIR$/codekvast.iml" filepath="$PROJECT_DIR$/codekvast.iml" />
-      <module fileurl="file://$PROJECT_DIR$/product/agent/codekvast-agent/codekvast-agent.iml" filepath="$PROJECT_DIR$/product/agent/codekvast-agent/codekvast-agent.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/server/codekvast-server/codekvast-server.iml" filepath="$PROJECT_DIR$/product/server/codekvast-server/codekvast-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/agent/collector/collector.iml" filepath="$PROJECT_DIR$/product/agent/collector/collector.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/support/commons/commons.iml" filepath="$PROJECT_DIR$/product/support/commons/commons.iml" />
+      <module fileurl="file://$PROJECT_DIR$/product/agent/daemon/daemon.iml" filepath="$PROJECT_DIR$/product/agent/daemon/daemon.iml" />
+      <module fileurl="file://$PROJECT_DIR$/product/server/daemon-api/daemon-api.iml" filepath="$PROJECT_DIR$/product/server/daemon-api/daemon-api.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/docs/docs.iml" filepath="$PROJECT_DIR$/product/docs/docs.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/jenkins1/jenkins1.iml" filepath="$PROJECT_DIR$/sample/jenkins1/jenkins1.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/jenkins2/jenkins2.iml" filepath="$PROJECT_DIR$/sample/jenkins2/jenkins2.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/jenkins3/jenkins3.iml" filepath="$PROJECT_DIR$/sample/jenkins3/jenkins3.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/product.iml" filepath="$PROJECT_DIR$/product/product.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/sample.iml" filepath="$PROJECT_DIR$/sample/sample.iml" />
-      <module fileurl="file://$PROJECT_DIR$/sample/sample-aspect/sample-aspect.iml" filepath="$PROJECT_DIR$/sample/sample-aspect/sample-aspect.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sample/sample-concrete-aspect/sample-concrete-aspect.iml" filepath="$PROJECT_DIR$/sample/sample-concrete-aspect/sample-concrete-aspect.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/sample-lib/sample-lib.iml" filepath="$PROJECT_DIR$/sample/sample-lib/sample-lib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sample/sample-ltw/sample-ltw.iml" filepath="$PROJECT_DIR$/sample/sample-ltw/sample-ltw.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/server/server.iml" filepath="$PROJECT_DIR$/product/server/server.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/agent/shared/shared.iml" filepath="$PROJECT_DIR$/product/agent/shared/shared.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/support/support.iml" filepath="$PROJECT_DIR$/product/support/support.iml" />

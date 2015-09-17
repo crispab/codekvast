@@ -18,9 +18,9 @@ ext.bintrayDownloadPrefix = "https://dl.bintray.com/$bintrayUserOrg/$bintrayRepo
 
 distributions {
     agent {
-        baseName = 'codekvast-agent'
+        baseName = 'codekvast-daemon'
         contents {
-            from tasks.getByPath(":product:agent:codekvast-agent:installDist")
+            from tasks.getByPath(":product:agent:daemon:installDist")
             from tasks.getByPath(":product:agent:collector:javaagents"), { into "javaagents" }
             from tasks.getByPath(":product:agent:collector:javadocJar"), { into "src" }
             from tasks.getByPath(":product:agent:collector:sourcesJar"), { into "src" }
@@ -36,8 +36,8 @@ distributions {
             }
             from file("$rootDir/RELEASE-NOTES.md")
 
-            // from tasks.getByPath(":product:agent:codekvast-agent:javadocJar"), { into "src" }
-            // from tasks.getByPath(":product:agent:codekvast-agent:sourcesJar"), { into "src" }
+            // from tasks.getByPath(":product:agent:daemon:javadocJar"), { into "src" }
+            // from tasks.getByPath(":product:agent:daemon:sourcesJar"), { into "src" }
         }
     }
 

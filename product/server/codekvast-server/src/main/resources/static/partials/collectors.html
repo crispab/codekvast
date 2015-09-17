@@ -62,7 +62,7 @@
                               class="glyphicon glyphicon-info-sign"></span>
                     </th>
                     <th class="col-lg-1">
-                        <span ng-click="orderBy = 'agentVersion'; reverse = !reverse">Agent<br/>Version</span>
+                        <span ng-click="orderBy = 'daemonVersion'; reverse = !reverse">Agent<br/>Version</span>
                         <span popover="Which version of the Codekvast agent is attached to the application?"
                               popover-trigger="click"
                               popover-placement="right"
@@ -83,7 +83,7 @@
                               class="glyphicon glyphicon-info-sign"></span>
                     </th>
                     <th class="col-lg-1">
-                        <span ng-click="orderBy = 'agentUploadIntervalSeconds'; reverse = !reverse">Agent Upload<br/>Interval</span>
+                        <span ng-click="orderBy = 'daemonUploadIntervalSeconds'; reverse = !reverse">Agent Upload<br/>Interval</span>
                         <span popover="How often is the agent uploading collected data?"
                               popover-trigger="click"
                               popover-placement="left"
@@ -105,10 +105,10 @@
                     <td class="col-lg-2" title="{{c.collectorAge}}">{{c.collectorStartedAtMillis|date:dateFormat}}</td>
                     <td class="col-lg-1">{{c.collectorHostname}}</td>
                     <td class="col-lg-1">{{c.collectorVersion}}</td>
-                    <td class="col-lg-1">{{c.agentVersion}}</td>
+                    <td class="col-lg-1">{{c.daemonVersion}}</td>
                     <td class="col-lg-1">{{c.methodVisibility}}</td>
                     <td class="col-lg-1">{{c.collectorResolution}}</td>
-                    <td class="col-lg-1">{{c.agentUploadInterval}}</td>
+                    <td class="col-lg-1">{{c.daemonUploadInterval}}</td>
                     <td class="col-lg-2" ng-class="dataAgeClass(c)">{{c.dataAge}} <i class="glyphicon glyphicon-warning-sign"
                                                                                      ng-show="isDown(c)"></i></td>
                     <td class="col-lg-1">

@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.12.0
+
+1. Renamed codekvast-agent to codekvast-daemon
+
 ## 0.11.11
 
 1. Preparations for making it possible to use Codekvast for Java Web Started applications (incubating).

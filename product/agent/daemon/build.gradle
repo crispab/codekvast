@@ -1,0 +1,115 @@
+apply from: "$rootDir/gradle/java-6.gradle"
+apply plugin: 'application'
+apply plugin: 'spring-boot'
+apply from: "$rootDir/gradle/standalone-h2server.gradle"
+
+description = "The Codekvast agent daemon"
+archivesBaseName = "codekvast-daemon"
+version = project.parent.parent.version
+mainClassName = "se.crisp.codekvast.agent.CodekvastDaemon"
+
+import org.apache.tools.ant.filters.ReplaceTokens
+
+configurations {
+    springLoaded
+}
+
+dependencies {
+    compile lombok
+    compile project(':product:support:commons')
+    compile project(':product:agent:shared')
+    compile project(':product:server:daemon-api')
+    compile 'org.reflections:reflections:0.9.10'
+    compile 'org.springframework.boot:spring-boot-starter'
+    compile 'org.springframework.boot:spring-boot-starter-jdbc'
+    compile 'org.flywaydb:flyway-core'
+
+    runtime 'com.h2database:h2'
+    runtime 'ch.qos.logback:logback-classic'
+
+    testCompile junit
+    testCompile mockito
+    testCompile "org.springframework.boot:spring-boot-starter-test"
+
+    springLoaded springLoadedAgent
+}
+
+processResources {
+    from(sourceSets.main.resources.srcDirs) {
+        include '**/application.properties'
+        filter(ReplaceTokens, tokens: gitVersionTokens + ['gradle.name'          : archivesBaseName,
+                                                          'gradle.description'   : project.description,
+                                                          'gradle.version'       : project.version,
+                                                          'gradle.displayVersion': codekvastDisplayVersion]
+        )
+    }
+}
+
+flyway {
+    url = "jdbc:h2:tcp://localhost/$buildDir/database/codekvast-daemon"
+    user = 'codekvast'
+    password = 'codekvast'
+    locations = ['classpath:/database/migration', 'classpath:/se/crisp/codekvast/daemon/database/migration']
+}
+
+jar {
+    exclude "lombok"
+}
+
+run {
+    jvmArgs = ['-ea', '-Dspring.profiles.active=httpPost']
+    args = [
+            "--codekvast.serverUploadIntervalSeconds=5",
+            "--codekvast.databasePath=$buildDir/database"
+    ]
+}
+
+bootRun {
+    jvmArgs = [
+            '-Dcodekvast.log.consoleThreshold=DEBUG',
+            "-javaagent:${configurations.springLoaded.asPath}",
+            '-noverify',
+    ] + run.jvmArgs
+
+    args = run.args
+}
+
+
+jar.dependsOn tasks.getByPath(":product:agent:shared:test")
+
+applicationDefaultJvmArgs = ['-Dspring.profiles.active=httpPost']
+
+applicationDistribution.from("src/main/resources") {
+    into "conf"
+    include "logback.xml", "default.properties"
+    rename {
+        def name = it == "default.properties" ? "codekvast-daemon.properties" : it
+        "${name}.sample.${version}"
+    }
+}
+
+applicationDistribution.from("src/main/resources") {
+    into "conf"
+    include "codekvast-collector.conf.sample", "byte-code-added-methods.txt", "byte-code-decorated-methods.txt"
+    rename {
+        "${it}.${version}"
+    }
+}
+
+applicationDistribution.from("src/dist") {
+    into "/"
+    filter { it.replace("@CODEKVAST_VERSION@", project.version).replace("@ASPECTJ_VERSION@", aspectjVersion) }
+}
+
+apply from: "$rootDir/gradle/sources-javadoc.gradle"
+
+startScripts {
+    doLast {
+        windowsScript.text = windowsScript.text
+                .replace('CLASSPATH=%APP_HOME%\\lib', 'CLASSPATH=%APP_HOME%\\conf\\;%APP_HOME%\\lib')
+
+        unixScript.text = unixScript.text
+                .replace('APP_HOME=', 'export APP_HOME=')
+                .replace('CLASSPATH=$APP_HOME/lib', 'CLASSPATH=$APP_HOME/conf/:$APP_HOME/lib')
+    }
+}

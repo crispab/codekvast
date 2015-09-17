@@ -22,7 +22,7 @@
 
     <application-desc
             name="Sample Webstart Swing App"
-            main-class="sample.webstart.SampleSwingApp">
+            main-class="sample.swing.SampleSwingApp">
     </application-desc>
 
     <update check="background"/>

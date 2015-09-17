@@ -3,9 +3,9 @@ package se.crisp.codekvast.server.codekvast_server.service.impl;
 import com.google.common.eventbus.Subscribe;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
-import se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence;
-import se.crisp.codekvast.server.agent_api.model.v1.SignatureData;
-import se.crisp.codekvast.server.agent_api.model.v1.SignatureEntry;
+import se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence;
+import se.crisp.codekvast.server.daemon_api.model.v1.SignatureData;
+import se.crisp.codekvast.server.daemon_api.model.v1.SignatureEntry;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedUserException;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.WebSocketMessage;
 import se.crisp.codekvast.server.codekvast_server.service.AgentService;
@@ -142,17 +142,17 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
 
     @Test(expected = UndefinedUserException.class)
     public void testStoreJvmData_fromUnknownAgent() throws Exception {
-        agentService.storeJvmData("foobar", createJvmData(now, now, "app2", "1.0", "jvm1", "agentHostName"));
+        agentService.storeJvmData("foobar", createJvmData(now, now, "app2", "1.0", "jvm1", "daemonHostName"));
     }
 
     @Test
     public void testStoreInvocationData() throws Exception {
         long startedAtMillis = now - 3600_000L;
 
-        agentService.storeJvmData("agent", createJvmData(startedAtMillis, now, "app1", "1.0", "jvm1.1", "agentHostName"));
-        agentService.storeJvmData("agent", createJvmData(startedAtMillis + 100L, now, "app1", "1.0", "jvm1.2", "agentHostName"));
-        agentService.storeJvmData("agent", createJvmData(startedAtMillis - 100L, now, "app2", "1.0", "jvm2.1", "agentHostName"));
-        agentService.storeJvmData("agent", createJvmData(startedAtMillis, now, "app2", "1.0", "jvm2.2", "agentHostName"));
+        agentService.storeJvmData("agent", createJvmData(startedAtMillis, now, "app1", "1.0", "jvm1.1", "daemonHostName"));
+        agentService.storeJvmData("agent", createJvmData(startedAtMillis + 100L, now, "app1", "1.0", "jvm1.2", "daemonHostName"));
+        agentService.storeJvmData("agent", createJvmData(startedAtMillis - 100L, now, "app2", "1.0", "jvm2.1", "daemonHostName"));
+        agentService.storeJvmData("agent", createJvmData(startedAtMillis, now, "app2", "1.0", "jvm2.2", "daemonHostName"));
 
         assertThat(events, hasSize(4));
 

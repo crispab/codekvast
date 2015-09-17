@@ -415,7 +415,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
         $scope.isDown = function (c) {
             var ageSeconds = (Date.now() - c.dataReceivedAtMillis) / 1000;
-            return ageSeconds > c.collectorResolutionSeconds + c.agentUploadIntervalSeconds + 30;
+            return ageSeconds > c.collectorResolutionSeconds + c.daemonUploadIntervalSeconds + 30;
         };
 
         $scope.deleteCollector = function (c) {
@@ -431,7 +431,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                 for (var i = 0, len = $scope.collectorStatuses.length; i < len; i++) {
                     var c = $scope.collectorStatuses[i];
                     c.collectorResolution = DateService.prettyDuration(c.collectorResolutionSeconds * 1000);
-                    c.agentUploadInterval = DateService.prettyDuration(c.agentUploadIntervalSeconds * 1000);
+                    c.daemonUploadInterval = DateService.prettyDuration(c.daemonUploadIntervalSeconds * 1000);
                     c.collectorAge = DateService.prettyAge(c.startedAtMillis);
                     c.dataAge = DateService.prettyAge(c.dataReceivedAtMillis);
                 }

@@ -1,7 +1,7 @@
 apply from: "$rootDir/gradle/java-6.gradle"
 apply from: "$rootDir/gradle/sources-javadoc.gradle"
 
-description = "Code that is shared between codekvast-agent and codekvast-collector"
+description = "Code that is shared between the Codekvast daemon and collector"
 archivesBaseName = "codekvast-agent-shared"
 version = project.parent.parent.version
 

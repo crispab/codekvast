@@ -1,7 +1,7 @@
 package se.crisp.codekvast.server.codekvast_server.model.event.rest;
 
 import lombok.Data;
-import se.crisp.codekvast.server.agent_api.model.v1.Constraints;
+import se.crisp.codekvast.server.daemon_api.model.v1.Constraints;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;

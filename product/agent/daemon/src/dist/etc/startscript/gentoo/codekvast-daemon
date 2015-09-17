@@ -1,0 +1,19 @@
+#!/sbin/runscript
+
+depend() {
+    need net
+}
+
+start() {
+    ebegin "Starting codekvast-daemon"
+    start-stop-daemon --start --exec /opt/codekvast-daemon/bin/codekvast-daemon \
+        --background --make-pidfile --pidfile /var/run/codekvast-daemon.pid \
+        --stdout /var/log/codekvast/codekvast-daemon.out --stderr /var/log/codekvast/codekvast-daemon.out
+    eend $?
+}
+
+stop() {
+    ebegin "Stopping codekvast-daemon"
+    start-stop-daemon --stop --exec /opt/codekvast-daemon/bin/codekvast-daemon --pidfile /var/run/codekvast-daemon.pid
+    eend $?
+}

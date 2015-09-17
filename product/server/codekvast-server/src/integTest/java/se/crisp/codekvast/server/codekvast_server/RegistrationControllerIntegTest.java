@@ -13,7 +13,7 @@ import java.util.Random;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static se.crisp.codekvast.server.agent_api.model.v1.Constraints.*;
+import static se.crisp.codekvast.server.daemon_api.model.v1.Constraints.*;
 import static se.crisp.codekvast.server.codekvast_server.controller.RegistrationController.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)

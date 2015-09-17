@@ -2,11 +2,11 @@
   <configuration default="false" name="Codekvast Agent" type="Application" factoryName="Application" singleton="true">
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
       <pattern>
-        <option name="PATTERN" value="se.crisp.codekvast.agent.main.*" />
+        <option name="PATTERN" value="se.crisp.codekvast.daemon.main.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
-    <option name="MAIN_CLASS_NAME" value="se.crisp.codekvast.agent.CodekvastAgentApplication" />
+    <option name="MAIN_CLASS_NAME" value="se.crisp.codekvast.daemon.CodekvastDaemon" />
     <option name="VM_PARAMETERS" value="-Dspring.profiles.active=httpPost" />
     <option name="PROGRAM_PARAMETERS" value="--codekvast.serverUploadIntervalSeconds=3" />
     <option name="WORKING_DIRECTORY" value="file://$MODULE_DIR$" />
@@ -15,7 +15,7 @@
     <option name="ENABLE_SWING_INSPECTOR" value="false" />
     <option name="ENV_VARIABLES" />
     <option name="PASS_PARENT_ENVS" value="true" />
-    <module name="codekvast-agent" />
+    <module name="daemon" />
     <envs />
     <RunnerSettings RunnerId="Debug">
       <option name="DEBUG_PORT" value="" />

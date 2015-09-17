@@ -75,11 +75,11 @@ Terminate with `Ctrl-C`.
 
 You can access Jenkins at [http://localhost:8082/jenkins](http://localhost:8082/jenkins)
 
-### Start codekvast-agent in terminal 3
+### Start codekvast-daemon in terminal 3
 
-    gradle :product:agent:codekvast-agent:run
+    gradle :product:agent:codekvast-daemon:run
 
-This will launch **codekvast-agent**, that will process output from all collectors. The agent will try to upload the
+This will launch **codekvast-daemon**, that will process output from all collectors. The agent will try to upload the
 data to http://localhost:8090, which is the default URL for the **codekvast-server**.
 Terminate with `Ctrl-C`.
 

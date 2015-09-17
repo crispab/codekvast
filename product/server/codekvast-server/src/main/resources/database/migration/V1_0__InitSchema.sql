@@ -171,7 +171,7 @@ CREATE TABLE signatures (
   millis_since_jvm_start BIGINT        NOT NULL
   COMMENT 'The delta between invoked_at_millis and the instant the JVM started',
   confidence             TINYINT       NULL
-  COMMENT 'The ordinal for se.crisp.codekvast.server.agent_api.model.v1.SignatureConfidence. NULL for not yet invoked.'
+  COMMENT 'The ordinal for se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence. NULL for not yet invoked.'
 );
 
 CREATE PRIMARY KEY ON signatures (organisation_id, application_id, jvm_id, signature);

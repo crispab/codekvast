@@ -1,3 +1,5 @@
+description = "Illustrates how to weave the sample-concrete-aspect when preparing swing-app for Java Web Start (JWS)"
+
 apply plugin: 'war'
 apply plugin: 'jetty'
 
@@ -5,7 +7,18 @@ configurations {
     theapp
 }
 
+configurations {
+    aspectjtools
+    aspects
+}
+
+def aspectjVersion = '1.8.5'
+
 dependencies {
+    aspectjtools "org.aspectj:aspectjtools:$aspectjVersion"
+
+    aspects project(":sample:sample-concrete-aspect")
+
     theapp project(":sample:swing-app")
 }
 
@@ -16,3 +29,36 @@ war {
 jettyRunWar {
     contextPath = ''
 }
+
+
+task weaveClasses {
+    dependsOn classes
+
+    def inpath = "$buildDir/classes/orig"
+    def destDir = "$buildDir/classes/main"
+    def logFile = "$buildDir/aspectj.log"
+
+    inputs.dir inpath
+    outputs.dir destDir
+
+    def iajcArgs = [destDir      : destDir,
+                    source       : project.convention.plugins.java.sourceCompatibility,
+                    target       : project.convention.plugins.java.targetCompatibility,
+                    inpath       : inpath,
+                    xlint        : "ignore",
+                    fork         : 'true',
+                    aspectPath   : project.configurations.aspects.asPath,
+                    showWeaveInfo: 'true',
+                    log          : logFile
+    ]
+
+    ant.taskdef(resource: "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties",
+            classpath: project.configurations.aspectjtools.asPath)
+
+    doLast {
+        file(destDir).renameTo file(inpath)
+        mkdir destDir
+        ant.iajc iajcArgs
+    }
+}
+

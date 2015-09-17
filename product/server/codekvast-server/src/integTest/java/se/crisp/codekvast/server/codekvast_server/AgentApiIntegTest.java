@@ -5,11 +5,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import se.crisp.codekvast.server.agent_api.AgentApi;
-import se.crisp.codekvast.server.agent_api.AgentApiConfig;
-import se.crisp.codekvast.server.agent_api.AgentApiException;
-import se.crisp.codekvast.server.agent_api.impl.AgentApiImpl;
-import se.crisp.codekvast.server.agent_api.model.v1.JvmData;
+import se.crisp.codekvast.server.daemon_api.AgentApi;
+import se.crisp.codekvast.server.daemon_api.AgentApiConfig;
+import se.crisp.codekvast.server.daemon_api.AgentApiException;
+import se.crisp.codekvast.server.daemon_api.impl.AgentApiImpl;
+import se.crisp.codekvast.server.daemon_api.model.v1.JvmData;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 
 import javax.inject.Inject;
@@ -107,12 +107,12 @@ public class AgentApiIntegTest {
     @SuppressWarnings("unused")
     private JvmData getJvmData() {
         return JvmData.builder()
-                      .agentComputerId("agentComputerId")
-                      .agentHostName("agentHostName")
-                      .agentUploadIntervalSeconds(300)
-                      .agentVcsId("agentVcsId")
-                      .agentVersion("agentVersion")
-                      .agentTimeMillis(System.currentTimeMillis())
+                      .daemonComputerId("daemonComputerId")
+                      .daemonHostName("daemonHostName")
+                      .daemonUploadIntervalSeconds(300)
+                      .daemonVcsId("daemonVcsId")
+                      .daemonVersion("daemonVersion")
+                      .daemonTimeMillis(System.currentTimeMillis())
                       .appName("appName")
                       .appVersion("appVersion")
                       .collectorComputerId("collectorComputerId")

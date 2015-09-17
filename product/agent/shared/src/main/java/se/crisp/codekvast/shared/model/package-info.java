@@ -1,5 +1,5 @@
 /**
- * Model objects shared between collector and agent.
+ * Model objects shared between collector and daemon.
  *
  * @author olle.hallin@crisp.se
  */

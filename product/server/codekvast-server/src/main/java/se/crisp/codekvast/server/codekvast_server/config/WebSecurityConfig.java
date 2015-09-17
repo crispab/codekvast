@@ -8,7 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
-import se.crisp.codekvast.server.agent_api.AgentRestEndpoints;
+import se.crisp.codekvast.server.daemon_api.AgentRestEndpoints;
 import se.crisp.codekvast.server.codekvast_server.model.Role;
 
 import javax.inject.Inject;

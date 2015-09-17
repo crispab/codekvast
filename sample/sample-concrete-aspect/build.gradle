@@ -1,0 +1,19 @@
+description = """A sample concretization of AbstractMethodExecutionAspect for use in compile-time weaving (CTW).
+The aspect is written in ajc style"""
+
+buildscript {
+    repositories { maven { url "https://maven.eveoh.nl/content/repositories/releases" } }
+    dependencies { classpath "nl.eveoh:gradle-aspectj:1.6" }
+}
+
+apply plugin: 'aspectj'
+
+ext.aspectjVersion = '1.8.6'
+
+dependencies {
+    compile project(":product:agent:collector")
+}
+
+compileAspect {
+    additionalAjcArgs = ['source': '1.6', 'target': '1.6']
+}
