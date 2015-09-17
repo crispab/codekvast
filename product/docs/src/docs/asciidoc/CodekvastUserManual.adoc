@@ -14,6 +14,8 @@
 :source-highlighter: prettify
 :attribute-missing: warn
 :description: Codekvast is a tool that detects Truly Dead Code in your Java app.
+:aspectj-ltw-config: link:https://eclipse.org/aspectj/doc/next/devguide/ltw-configuration.html[AspectJ Load-Time Weaver configuration]
+
 
 Codekvast User Manual covers installation and usage of Codekvast, a tool for detecting Truly Dead Code in JVM-based applications.
 
@@ -302,8 +304,6 @@ dataDir = ${user.home}/codekvast
 dataDir = $HOME/codekvast
 ....
 
-{set:aspectj-ltw-configuration: https://eclipse.org/aspectj/doc/next/devguide/ltw-configuration.html}
-
 .Codekvast Collector parameters (mandatory parameters in *bold face*)
 [cols="1,2,3,5,1", options="header"]
 |===
@@ -373,7 +373,7 @@ A higher value also means less precision
 |aspectjOptions
 |Should Codekvast Collector configure logging for Aspectj Weaver?
 Useful for trouble shooting.
-See also {aspectj-ltw-configuration}.
+See also {aspectj-ltw-config}.
 |A string
 |aspectjOptions = \ +
 {nbsp}{nbsp}-verbose -showWeaveInfo
@@ -461,7 +461,7 @@ If you have special needs, you can disable this behaviour by setting `clobberAop
 This gives you a chance to fine-tune how the AspectJ weaver shall work. You can for instance exclude certain performance-critical packages
 from weaving.
 
-See also {aspectj-ltw-configuration}.
+See also {aspectj-ltw-config}.
 
 [WARNING]
 ====
