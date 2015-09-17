@@ -6,13 +6,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.daemon.DataProcessor;
 import se.crisp.codekvast.daemon.appversion.AppVersionResolver;
-import se.crisp.codekvast.daemon.beans.AgentConfig;
+import se.crisp.codekvast.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.daemon.beans.JvmState;
 import se.crisp.codekvast.daemon.codebase.CodeBase;
 import se.crisp.codekvast.daemon.codebase.CodeBaseScanner;
 import se.crisp.codekvast.daemon.util.LogUtil;
-import se.crisp.codekvast.server.daemon_api.AgentApi;
-import se.crisp.codekvast.server.daemon_api.AgentApiException;
+import se.crisp.codekvast.server.daemon_api.DaemonApi;
+import se.crisp.codekvast.server.daemon_api.DaemonApiException;
 import se.crisp.codekvast.server.daemon_api.model.v1.JvmData;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence;
 import se.crisp.codekvast.shared.model.Invocation;
@@ -27,15 +27,15 @@ import java.util.List;
 
 /**
  * An implementation of DataProcessor that uploads all data to a remote server using the HTTP POST API that is embedded in {@link
- * AgentApi}.
+ * DaemonApi}.
  */
 @Component
 @Profile("httpPost")
 @Slf4j
 public class HttpPostDataProcessorImpl implements DataProcessor {
 
-    private final AgentConfig config;
-    private final AgentApi agentApi;
+    private final DaemonConfig config;
+    private final DaemonApi daemonApi;
     private final CodeBaseScanner codeBaseScanner;
     private final AppVersionResolver appVersionResolver;
     private final InvocationsCollector invocationsCollector;
@@ -43,13 +43,13 @@ public class HttpPostDataProcessorImpl implements DataProcessor {
     private final String daemonHostName = getHostName();
 
     @Inject
-    public HttpPostDataProcessorImpl(AgentConfig config,
-                                     AgentApi agentApi,
+    public HttpPostDataProcessorImpl(DaemonConfig config,
+                                     DaemonApi daemonApi,
                                      CodeBaseScanner codeBaseScanner,
                                      AppVersionResolver appVersionResolver,
                                      InvocationsCollector invocationsCollector) {
         this.config = config;
-        this.agentApi = agentApi;
+        this.daemonApi = daemonApi;
         this.codeBaseScanner = codeBaseScanner;
         this.appVersionResolver = appVersionResolver;
         this.invocationsCollector = invocationsCollector;
@@ -62,10 +62,10 @@ public class HttpPostDataProcessorImpl implements DataProcessor {
 
         if (jvmState.getJvmDataUploadedAt() < jvm.getDumpedAtMillis()) {
             try {
-                agentApi.uploadJvmData(getJvmData(jvmState));
+                daemonApi.uploadJvmData(getJvmData(jvmState));
                 jvmState.setJvmDataUploadedAt(jvm.getDumpedAtMillis());
-            } catch (AgentApiException e) {
-                LogUtil.logException(log, "Cannot upload JVM data to " + agentApi.getServerUri(), e);
+            } catch (DaemonApiException e) {
+                LogUtil.logException(log, "Cannot upload JVM data to " + daemonApi.getServerUri(), e);
             }
         }
     }
@@ -84,10 +84,10 @@ public class HttpPostDataProcessorImpl implements DataProcessor {
             jvmState.setCodeBase(codeBase);
 
             try {
-                agentApi.uploadSignatureData(getJvmData(jvmState), codeBase.getSignatures());
+                daemonApi.uploadSignatureData(getJvmData(jvmState), codeBase.getSignatures());
                 jvmState.setCodebaseUploadedAt(now);
-            } catch (AgentApiException e) {
-                LogUtil.logException(log, "Cannot upload signature data to " + agentApi.getServerUri(), e);
+            } catch (DaemonApiException e) {
+                LogUtil.logException(log, "Cannot upload signature data to " + daemonApi.getServerUri(), e);
             }
         }
     }
@@ -199,11 +199,11 @@ public class HttpPostDataProcessorImpl implements DataProcessor {
 
     private void uploadNotUploadedSignatures(JvmState jvmState) {
         try {
-            agentApi.uploadInvocationData(getJvmData(jvmState),
+            daemonApi.uploadInvocationData(getJvmData(jvmState),
                                           invocationsCollector.getNotUploadedInvocations(jvmState.getJvm().getJvmUuid()));
             invocationsCollector.clearNotUploadedSignatures(jvmState.getJvm().getJvmUuid());
-        } catch (AgentApiException e) {
-            LogUtil.logException(log, "Cannot upload invocation data to " + agentApi.getServerUri(), e);
+        } catch (DaemonApiException e) {
+            LogUtil.logException(log, "Cannot upload invocation data to " + daemonApi.getServerUri(), e);
         }
     }
 

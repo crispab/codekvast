@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="bootRun codekvast-agent" type="GradleRunConfiguration" factoryName="Gradle">
+  <configuration default="false" name="bootRun codekvast-daemon" type="GradleRunConfiguration" factoryName="Gradle">
     <ExternalSystemSettings>
       <option name="executionName" />
-      <option name="externalProjectPath" value="$PROJECT_DIR$/product/agent/codekvast-agent" />
+      <option name="externalProjectPath" value="$PROJECT_DIR$/product/agent/daemon" />
       <option name="externalSystemIdString" value="GRADLE" />
       <option name="scriptParameters" value="" />
       <option name="taskDescriptions">

@@ -1,7 +1,7 @@
 package sample.app;
 
 /**
- * This class is inside of the packagePrefix that the Codekvast agent monitors.
+ * This class is inside of the packagePrefix that the Codekvast daemon monitors.
  *
  * @author olle.hallin@crisp.se
  */

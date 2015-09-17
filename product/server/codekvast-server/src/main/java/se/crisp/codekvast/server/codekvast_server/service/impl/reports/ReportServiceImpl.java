@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
+import se.crisp.codekvast.server.codekvast_server.dao.DaemonDAO;
 import se.crisp.codekvast.server.codekvast_server.dao.ReportDAO;
 import se.crisp.codekvast.server.codekvast_server.dao.ReportDAO.ReportParameters;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 public class ReportServiceImpl implements ReportService {
 
     private final UserDAO userDAO;
-    private final AgentDAO agentDAO;
+    private final DaemonDAO daemonDAO;
     private final ReportDAO reportDAO;
 
     private AtomicInteger nextReportId = new AtomicInteger();
@@ -42,9 +42,9 @@ public class ReportServiceImpl implements ReportService {
     private final Map<Format, ReportFormatter> reportFormatterMap = new HashMap<>();
 
     @Inject
-    public ReportServiceImpl(UserDAO userDAO, AgentDAO agentDAO, ReportDAO reportDAO, Collection<ReportFormatter> reportFormatters) {
+    public ReportServiceImpl(UserDAO userDAO, DaemonDAO daemonDAO, ReportDAO reportDAO, Collection<ReportFormatter> reportFormatters) {
         this.userDAO = userDAO;
-        this.agentDAO = agentDAO;
+        this.daemonDAO = daemonDAO;
         this.reportDAO = reportDAO;
 
         createReportFormatterMap(reportFormatters);
@@ -94,7 +94,7 @@ public class ReportServiceImpl implements ReportService {
         ReportParameters params =
                 ReportParameters.builder()
                                 .organisationId(organisationId)
-                                .applicationIds(agentDAO.getApplicationIds(organisationId, request.getApplications())
+                                .applicationIds(daemonDAO.getApplicationIds(organisationId, request.getApplications())
                                                         .stream().map(AppId::getAppId)
                                                         .collect(Collectors.toList()))
                                 .jvmIds(reportDAO.getJvmIdsByAppVersions(organisationId, request.getVersions()))

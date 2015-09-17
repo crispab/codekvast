@@ -13,7 +13,7 @@ import java.net.URI;
  */
 @Value
 @Builder
-public class AgentApiConfig {
+public class DaemonApiConfig {
 
     @NonNull
     private final URI serverUri;

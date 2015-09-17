@@ -8,7 +8,7 @@ import se.crisp.codekvast.server.daemon_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureEntry;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedUserException;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.WebSocketMessage;
-import se.crisp.codekvast.server.codekvast_server.service.AgentService;
+import se.crisp.codekvast.server.codekvast_server.service.DaemonService;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -22,10 +22,10 @@ import static se.crisp.codekvast.test.matchers.CollectorsMatcher.hasCollectors;
 /**
  * @author olle.hallin@crisp.se
  */
-@ContextConfiguration(classes = {AgentServiceImpl.class, UserServiceImpl.class})
-public class AgentServiceIntegTest extends AbstractServiceIntegTest {
+@ContextConfiguration(classes = {DaemonServiceImpl.class, UserServiceImpl.class})
+public class DaemonServiceIntegTest extends AbstractServiceIntegTest {
     @Inject
-    private AgentService agentService;
+    private DaemonService daemonService;
 
     private WebSocketMessage lastWebSocketMessage;
 
@@ -36,7 +36,7 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
     }
 
     @Test
-    public void testStoreJvmData_fromValidAgent() throws Exception {
+    public void testStoreJvmData_fromValidDaemon() throws Exception {
         // given
         long collectionIntervalMillis = 3600_000L;
         long t0 = now - 10 * collectionIntervalMillis;
@@ -55,7 +55,7 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
                 "AND last_reported_at_millis = ? ";
 
         // when an app starts for the first time
-        agentService.storeJvmData("agent", createJvmData(t0, t1, "app1", "1.0", "jvm1", "hostName1"));
+        daemonService.storeJvmData("daemon", createJvmData(t0, t1, "app1", "1.0", "jvm1", "hostName1"));
 
         // then
         assertThat(countRows(statsWhereClause, 1, "1.0", t0, t0, t1), is(1));
@@ -70,7 +70,7 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
         ));
 
         // when it continues to execute in the same JVM
-        agentService.storeJvmData("agent", createJvmData(t0, t2, "app1", "1.0", "jvm1", "hostName1"));
+        daemonService.storeJvmData("daemon", createJvmData(t0, t2, "app1", "1.0", "jvm1", "hostName1"));
 
         // then
         assertThat(countRows(statsWhereClause, 1, "1.0", t0, t0, t1), is(0));
@@ -86,7 +86,7 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
         ));
 
         // when it restarts in a new JVM in the same host
-        agentService.storeJvmData("agent", createJvmData(t3, t4, "app1", "1.0", "jvm2", "hostName1"));
+        daemonService.storeJvmData("daemon", createJvmData(t3, t4, "app1", "1.0", "jvm2", "hostName1"));
 
         // then
         assertThat(countRows(statsWhereClause, 1, "1.0", t0, t3, t4), is(1));
@@ -101,7 +101,7 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
         ));
 
         // when a new instance starts in another host
-        agentService.storeJvmData("agent", createJvmData(t5, t6, "app1", "1.0", "jvm3", "hostName2"));
+        daemonService.storeJvmData("daemon", createJvmData(t5, t6, "app1", "1.0", "jvm3", "hostName2"));
 
         // then
         assertThat(countRows(statsWhereClause, 1, "1.0", t0, t5, t6), is(1));
@@ -118,12 +118,12 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
 
         assertThat(lastWebSocketMessage, hasCollectors(
                 allOf(
-                        hasProperty("agentHostname", is("hostName1")),
+                        hasProperty("daemonHostname", is("hostName1")),
                         hasProperty("collectorStartedAtMillis", is(t3)),
                         hasProperty("dataReceivedAtMillis", is(t4))
                 ),
                 allOf(
-                        hasProperty("agentHostname", is("hostName2")),
+                        hasProperty("daemonHostname", is("hostName2")),
                         hasProperty("collectorStartedAtMillis", is(t5)),
                         hasProperty("dataReceivedAtMillis", is(t6))
                 )
@@ -141,18 +141,18 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
     }
 
     @Test(expected = UndefinedUserException.class)
-    public void testStoreJvmData_fromUnknownAgent() throws Exception {
-        agentService.storeJvmData("foobar", createJvmData(now, now, "app2", "1.0", "jvm1", "daemonHostName"));
+    public void testStoreJvmData_fromUnknownDaemon() throws Exception {
+        daemonService.storeJvmData("foobar", createJvmData(now, now, "app2", "1.0", "jvm1", "daemonHostName"));
     }
 
     @Test
     public void testStoreInvocationData() throws Exception {
         long startedAtMillis = now - 3600_000L;
 
-        agentService.storeJvmData("agent", createJvmData(startedAtMillis, now, "app1", "1.0", "jvm1.1", "daemonHostName"));
-        agentService.storeJvmData("agent", createJvmData(startedAtMillis + 100L, now, "app1", "1.0", "jvm1.2", "daemonHostName"));
-        agentService.storeJvmData("agent", createJvmData(startedAtMillis - 100L, now, "app2", "1.0", "jvm2.1", "daemonHostName"));
-        agentService.storeJvmData("agent", createJvmData(startedAtMillis, now, "app2", "1.0", "jvm2.2", "daemonHostName"));
+        daemonService.storeJvmData("daemon", createJvmData(startedAtMillis, now, "app1", "1.0", "jvm1.1", "daemonHostName"));
+        daemonService.storeJvmData("daemon", createJvmData(startedAtMillis + 100L, now, "app1", "1.0", "jvm1.2", "daemonHostName"));
+        daemonService.storeJvmData("daemon", createJvmData(startedAtMillis - 100L, now, "app2", "1.0", "jvm2.1", "daemonHostName"));
+        daemonService.storeJvmData("daemon", createJvmData(startedAtMillis, now, "app2", "1.0", "jvm2.2", "daemonHostName"));
 
         assertThat(events, hasSize(4));
 
@@ -162,10 +162,10 @@ public class AgentServiceIntegTest extends AbstractServiceIntegTest {
         signatures.add(new SignatureEntry("sig1", 200L, 200L, SignatureConfidence.EXACT_MATCH));
 
         events.clear();
-        agentService.storeSignatureData(SignatureData.builder().jvmUuid("jvm1.1").signatures(signatures).build());
-        agentService.storeSignatureData(SignatureData.builder().jvmUuid("jvm1.2").signatures(signatures).build());
-        agentService.storeSignatureData(SignatureData.builder().jvmUuid("jvm2.1").signatures(signatures).build());
-        agentService.storeSignatureData(SignatureData.builder().jvmUuid("jvm2.2").signatures(signatures).build());
+        daemonService.storeSignatureData(SignatureData.builder().jvmUuid("jvm1.1").signatures(signatures).build());
+        daemonService.storeSignatureData(SignatureData.builder().jvmUuid("jvm1.2").signatures(signatures).build());
+        daemonService.storeSignatureData(SignatureData.builder().jvmUuid("jvm2.1").signatures(signatures).build());
+        daemonService.storeSignatureData(SignatureData.builder().jvmUuid("jvm2.2").signatures(signatures).build());
 
         assertThat(events, contains(instanceOf(WebSocketMessage.class),
                                     instanceOf(WebSocketMessage.class),

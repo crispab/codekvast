@@ -12,7 +12,7 @@ import se.crisp.codekvast.server.daemon_api.model.v1.JvmData;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureEntry;
 import se.crisp.codekvast.server.codekvast_server.config.CodekvastSettings;
-import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
+import se.crisp.codekvast.server.codekvast_server.dao.DaemonDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.*;
@@ -27,24 +27,24 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * DAO for agent stuff.
+ * DAO for daemon stuff.
  *
  * @author olle.hallin@crisp.se
  */
 @Repository
 @Slf4j
-public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
+public class DaemonDAOImpl extends AbstractDAOImpl implements DaemonDAO {
 
     private final CodekvastSettings codekvastSettings;
 
     @Inject
-    public AgentDAOImpl(JdbcTemplate jdbcTemplate, CodekvastSettings codekvastSettings) {
+    public DaemonDAOImpl(JdbcTemplate jdbcTemplate, CodekvastSettings codekvastSettings) {
         super(jdbcTemplate);
         this.codekvastSettings = codekvastSettings;
     }
 
     @Override
-    @Cacheable("agent")
+    @Cacheable("daemon")
     public long getAppId(long organisationId, String appName) throws UndefinedApplicationException {
         log.debug("Looking up app id for {}:{}", organisationId, appName);
         return doGetOrCreateApp(organisationId, appName);
@@ -67,7 +67,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable("agent")
+    @Cacheable("daemon")
     public AppId getAppIdByJvmUuid(String jvmUuid) {
         log.debug("Looking up AppId for JVM {}...", jvmUuid);
         try {
@@ -78,13 +78,13 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
             log.debug("Result = {}", result);
             return result;
         } catch (EmptyResultDataAccessException e) {
-            log.info("No AppId found for JVM {}, probably an agent that uploaded stale data", jvmUuid);
+            log.info("No AppId found for JVM {}, probably a daemon that uploaded stale data", jvmUuid);
             return null;
         }
     }
 
     @Override
-    @Cacheable("agent")
+    @Cacheable("daemon")
     public Collection<AppId> getApplicationIds(long organisationId, Collection<String> applicationNames) {
         String condition = applicationNames.size() == 1 ? "= ?"
                 : "IN (" + applicationNames.stream().map(s -> "?").collect(Collectors.joining(",")) + ")";
@@ -125,7 +125,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
     @Override
     public void storeInvocationData(AppId appId, SignatureData signatureData) {
 
-        long agentClockSkewMillis = calculateAgentClockSkewMillis(signatureData.getDaemonTimeMillis());
+        long daemonClockSkewMillis = calculateAgentClockSkewMillis(signatureData.getDaemonTimeMillis());
 
         List<Object[]> args = new ArrayList<>();
 
@@ -135,7 +135,7 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                     appId.getAppId(),
                     appId.getJvmId(),
                     entry.getSignature(),
-                    compensateForClockSkew(entry.getInvokedAtMillis(), agentClockSkewMillis),
+                    compensateForClockSkew(entry.getInvokedAtMillis(), daemonClockSkewMillis),
                     entry.getMillisSinceJvmStart(),
                     entry.getConfidence() == null ? null : entry.getConfidence().ordinal()
             });
@@ -155,11 +155,11 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
 
     @Override
     public void storeJvmData(long organisationId, long appId, JvmData data) {
-        // Calculate the agent clock skew. Don't try to compensate for network latency...
-        long agentClockSkewMillis = calculateAgentClockSkewMillis(data.getDaemonTimeMillis());
+        // Calculate the daemon clock skew. Don't try to compensate for network latency...
+        long daemonClockSkewMillis = calculateAgentClockSkewMillis(data.getDaemonTimeMillis());
 
-        long startedAtMillis = compensateForClockSkew(data.getStartedAtMillis(), agentClockSkewMillis);
-        long reportedAtMillis = compensateForClockSkew(data.getDumpedAtMillis(), agentClockSkewMillis);
+        long startedAtMillis = compensateForClockSkew(data.getStartedAtMillis(), daemonClockSkewMillis);
+        long reportedAtMillis = compensateForClockSkew(data.getDumpedAtMillis(), daemonClockSkewMillis);
         long nextReportExpectedBeforeMillis = reportedAtMillis + (data.getCollectorResolutionSeconds() + data
                 .getDaemonUploadIntervalSeconds()) * 1000L;
 
@@ -170,9 +170,9 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
                 jdbcTemplate
                         .update("UPDATE jvm_info SET reported_at_millis = ?," +
                                         "next_report_expected_before_millis = ?, " +
-                                        "agent_clock_skew_millis = ? " +
+                                        "daemon_clock_skew_millis = ? " +
                                         "WHERE application_id = ? AND jvm_uuid = ?",
-                                reportedAtMillis, nextReportExpectedBeforeMillis, agentClockSkewMillis,
+                                reportedAtMillis, nextReportExpectedBeforeMillis, daemonClockSkewMillis,
                                 appId, data.getJvmUuid
                                         ());
         if (updated > 0) {
@@ -182,15 +182,15 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
 
         updated = jdbcTemplate
                 .update("INSERT INTO jvm_info(organisation_id, application_id, application_version, jvm_uuid, " +
-                                "agent_computer_id, agent_host_name, agent_upload_interval_seconds, agent_vcs_id, agent_version, " +
-                                "agent_clock_skew_millis, " +
+                                "daemon_computer_id, daemon_host_name, daemon_upload_interval_seconds, daemon_vcs_id, daemon_version, " +
+                                "daemon_clock_skew_millis, " +
                                 "collector_computer_id, collector_host_name, collector_resolution_seconds, collector_vcs_id, " +
                                 "collector_version, method_visibility, started_at_millis, reported_at_millis, " +
                                 "next_report_expected_before_millis, tags)" +
                                 " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                         organisationId, appId, data.getAppVersion(), data.getJvmUuid(), data.getDaemonComputerId(), data
                                 .getDaemonHostName(),
-                        data.getDaemonUploadIntervalSeconds(), data.getDaemonVcsId(), data.getDaemonVersion(), agentClockSkewMillis,
+                        data.getDaemonUploadIntervalSeconds(), data.getDaemonVcsId(), data.getDaemonVersion(), daemonClockSkewMillis,
                         data.getCollectorComputerId(), data.getCollectorHostName(), data.getCollectorResolutionSeconds(),
                         data.getCollectorVcsId(),
                         data.getCollectorVersion(), data.getMethodVisibility(), startedAtMillis, reportedAtMillis,
@@ -245,11 +245,11 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
         return jdbcTemplate.query("SELECT " +
                                           "a.name, " +
                                           "jvm.application_version, " +
-                                          "jvm.agent_host_name, " +
-                                          "jvm.agent_version, " +
-                                          "jvm.agent_vcs_id, " +
-                                          "jvm.agent_upload_interval_seconds, " +
-                                          "jvm.agent_clock_skew_millis, " +
+                                          "jvm.daemon_host_name, " +
+                                          "jvm.daemon_version, " +
+                                          "jvm.daemon_vcs_id, " +
+                                          "jvm.daemon_upload_interval_seconds, " +
+                                          "jvm.daemon_clock_skew_millis, " +
                                           "jvm.collector_host_name, " +
                                           "jvm.collector_version, " +
                                           "jvm.collector_vcs_id, " +
@@ -558,10 +558,10 @@ public class AgentDAOImpl extends AbstractDAOImpl implements AgentDAO {
             return CollectorDisplay.builder()
                                    .appName(rs.getString(1))
                                    .appVersion(rs.getString(2))
-                                   .agentHostname(rs.getString(3))
+                                   .daemonHostname(rs.getString(3))
                                    .daemonVersion(String.format("%s.%s", rs.getString(4), rs.getString(5)))
                                    .daemonUploadIntervalSeconds(rs.getInt(6))
-                                   .agentClockSkewMillis(rs.getLong(7))
+                                   .daemonClockSkewMillis(rs.getLong(7))
                                    .collectorHostname(rs.getString(8))
                                    .collectorVersion(String.format("%s.%s", rs.getString(9), rs.getString(10)))
                                    .collectorResolutionSeconds(rs.getInt(11))

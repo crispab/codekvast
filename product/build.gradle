@@ -17,7 +17,7 @@ ext.bintrayRepo = 'codekvast'
 ext.bintrayDownloadPrefix = "https://dl.bintray.com/$bintrayUserOrg/$bintrayRepo"
 
 distributions {
-    agent {
+    daemon {
         baseName = 'codekvast-daemon'
         contents {
             from tasks.getByPath(":product:agent:daemon:installDist")
@@ -63,7 +63,7 @@ bintray {
     key = project.hasProperty('bintrayKey') ? bintrayKey : "undefined"
 
     filesSpec {
-        from tasks.getByPath(":product:agentDistZip")
+        from tasks.getByPath(":product:daemonDistZip")
         from tasks.getByPath(":product:serverDistZip")
         from tasks.getByPath(":product:docs:asciidoctor"), {
             include "CodekvastUserManual.html"

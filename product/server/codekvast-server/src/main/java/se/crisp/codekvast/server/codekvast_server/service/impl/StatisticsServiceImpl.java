@@ -8,7 +8,7 @@ import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.crisp.codekvast.server.codekvast_server.config.CodekvastSettings;
-import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
+import se.crisp.codekvast.server.codekvast_server.dao.DaemonDAO;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import se.crisp.codekvast.server.codekvast_server.service.StatisticsService;
 
@@ -35,7 +35,7 @@ import static com.google.common.base.Throwables.getRootCause;
 @Slf4j
 public class StatisticsServiceImpl implements StatisticsService {
 
-    private final AgentDAO agentDAO;
+    private final DaemonDAO daemonDAO;
     private final EventBus eventBus;
     private final CodekvastSettings codekvastSettings;
 
@@ -43,8 +43,8 @@ public class StatisticsServiceImpl implements StatisticsService {
     private final BlockingQueue<StatisticsRequest> queue = new DelayQueue<>();
 
     @Inject
-    public StatisticsServiceImpl(AgentDAO agentDAO, EventBus eventBus, CodekvastSettings codekvastSettings) {
-        this.agentDAO = agentDAO;
+    public StatisticsServiceImpl(DaemonDAO daemonDAO, EventBus eventBus, CodekvastSettings codekvastSettings) {
+        this.daemonDAO = daemonDAO;
         this.eventBus = eventBus;
         this.codekvastSettings = codekvastSettings;
     }
@@ -94,14 +94,14 @@ public class StatisticsServiceImpl implements StatisticsService {
 
             long startedAt = System.currentTimeMillis();
 
-            Collection<AppId> appIds = agentDAO.getApplicationIds(organisationId, applicationNames);
+            Collection<AppId> appIds = daemonDAO.getApplicationIds(organisationId, applicationNames);
 
             // Eliminate duplicates..
             appIds.stream().distinct().forEach(appId -> recalculate(appId, false));
 
             log.info("Calculated statistics for organisation {} in {} ms", organisationId, System.currentTimeMillis() - startedAt);
 
-            eventBus.post(agentDAO.createWebSocketMessage(organisationId));
+            eventBus.post(daemonDAO.createWebSocketMessage(organisationId));
         }
     }
 
@@ -109,11 +109,11 @@ public class StatisticsServiceImpl implements StatisticsService {
         log.debug("Recalculating statistics for {}", appId);
 
         long startedAt = System.currentTimeMillis();
-        agentDAO.recalculateApplicationStatistics(appId);
+        daemonDAO.recalculateApplicationStatistics(appId);
         log.info("Calculated statistics for {} in {} ms", appId, System.currentTimeMillis() - startedAt);
 
         if (postOnEventBus) {
-            eventBus.post(agentDAO.createWebSocketMessage(appId.getOrganisationId()));
+            eventBus.post(daemonDAO.createWebSocketMessage(appId.getOrganisationId()));
         }
     }
 

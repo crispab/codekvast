@@ -1,5 +1,5 @@
 /**
- * This package contains the agent api, i.e., code that conceptually belong to the server, but is deployed with the agent.
+ * This package contains the daemon api, i.e., code that conceptually belong to the server, but is deployed with the daemon.
  *
  * @author olle.hallin@crisp.se
  */

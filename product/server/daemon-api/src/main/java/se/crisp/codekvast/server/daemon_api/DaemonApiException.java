@@ -3,14 +3,14 @@ package se.crisp.codekvast.server.daemon_api;
 /**
  * @author olle.hallin@crisp.se
  */
-public class AgentApiException extends Exception {
+public class DaemonApiException extends Exception {
     private static final long serialVersionUID = 1L;
 
-    public AgentApiException(String message) {
+    public DaemonApiException(String message) {
         super(message);
     }
 
-    public AgentApiException(String message, Throwable cause) {
+    public DaemonApiException(String message, Throwable cause) {
         super(message, cause);
     }
 }

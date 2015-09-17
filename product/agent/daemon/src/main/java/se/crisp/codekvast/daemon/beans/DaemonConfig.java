@@ -25,7 +25,7 @@ import java.net.URI;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AgentConfig {
+public class DaemonConfig {
     @NotNull
     private File dataPath;
 

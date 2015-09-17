@@ -3,7 +3,7 @@ package untracked;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * This class is outside of the packagePrefix that the Codekvast agent monitors.
+ * This class is outside of the packagePrefix that the Codekvast daemon monitors.
  *
  * @author olle.hallin@crisp.se
  */

@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-import se.crisp.codekvast.daemon.beans.AgentConfig;
-import se.crisp.codekvast.server.daemon_api.AgentApiConfig;
+import se.crisp.codekvast.daemon.beans.DaemonConfig;
+import se.crisp.codekvast.server.daemon_api.DaemonApiConfig;
 import se.crisp.codekvast.support.common.LoggingConfig;
 
 import java.io.IOException;
@@ -34,17 +34,17 @@ public class CodekvastDaemon {
         application.run(args);
     }
     /**
-     * Converts an AgentConfig to a AgentApiConfig
+     * Converts an DaemonConfig to a DaemonApiConfig
      *
-     * @param agentConfig The daemon configuration object.
+     * @param daemonConfig The daemon configuration object.
      * @return A server delegate config object.
      */
     @Bean
-    public AgentApiConfig serverDelegateConfig(AgentConfig agentConfig) {
-        return AgentApiConfig.builder()
-                                   .serverUri(agentConfig.getServerUri())
-                                   .apiAccessID(agentConfig.getApiAccessID())
-                                   .apiAccessSecret(agentConfig.getApiAccessSecret())
+    public DaemonApiConfig serverDelegateConfig(DaemonConfig daemonConfig) {
+        return DaemonApiConfig.builder()
+                                   .serverUri(daemonConfig.getServerUri())
+                                   .apiAccessID(daemonConfig.getApiAccessID())
+                                   .apiAccessSecret(daemonConfig.getApiAccessSecret())
                                    .build();
     }
 

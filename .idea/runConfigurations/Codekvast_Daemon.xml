@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Codekvast Agent" type="Application" factoryName="Application" singleton="true">
+  <configuration default="false" name="Codekvast Daemon" type="Application" factoryName="Application" singleton="true">
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
       <pattern>
         <option name="PATTERN" value="se.crisp.codekvast.daemon.main.*" />

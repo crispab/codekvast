@@ -12,23 +12,16 @@ import lombok.Value;
 @Value
 @Builder
 public class CollectorDisplay {
-    @NonNull
-    String appName;
-    @NonNull
-    String appVersion;
-    @NonNull
-    String agentHostname;
-    @NonNull
-    String daemonVersion;
+    @NonNull String appName;
+    @NonNull String appVersion;
+    @NonNull String daemonHostname;
+    @NonNull String daemonVersion;
     int daemonUploadIntervalSeconds;
-    long agentClockSkewMillis;
-    @NonNull
-    String collectorHostname;
-    @NonNull
-    String collectorVersion;
+    long daemonClockSkewMillis;
+    @NonNull String collectorHostname;
+    @NonNull String collectorVersion;
     long collectorStartedAtMillis;
     int collectorResolutionSeconds;
-    @NonNull
-    String methodVisibility;
+    @NonNull String methodVisibility;
     long dataReceivedAtMillis;
 }

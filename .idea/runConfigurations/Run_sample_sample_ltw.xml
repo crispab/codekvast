@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run codekvast-agent" type="GradleRunConfiguration" factoryName="Gradle" singleton="true">
+  <configuration default="false" name="Run sample:sample-ltw" type="GradleRunConfiguration" factoryName="Gradle">
     <ExternalSystemSettings>
       <option name="executionName" />
-      <option name="externalProjectPath" value="$PROJECT_DIR$/product/agent/codekvast-agent" />
+      <option name="externalProjectPath" value="$PROJECT_DIR$/sample/sample-ltw" />
       <option name="externalSystemIdString" value="GRADLE" />
       <option name="scriptParameters" value="" />
       <option name="taskDescriptions">

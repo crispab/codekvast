@@ -6,7 +6,7 @@ package se.crisp.codekvast.server.codekvast_server.model;
  * @author olle.hallin@crisp.se
  */
 public enum Role {
-    SUPERUSER, AGENT, USER, ADMIN, MONITOR;
+    SUPERUSER, DAEMON, USER, ADMIN, MONITOR;
 
     public static final String ANNOTATION_PREFIX = "ROLE_";
 

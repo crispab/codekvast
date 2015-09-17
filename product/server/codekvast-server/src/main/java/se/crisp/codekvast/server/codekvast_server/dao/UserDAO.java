@@ -15,8 +15,8 @@ public interface UserDAO {
     /**
      * Translates a username to a organisation ID
      *
-     * @param username A real user's login name or an agent's agentAccessID
-     * @return The organisation ID for that user or agent.
+     * @param username A real user's login name or a daemon's apiAccessID
+     * @return The organisation ID for that user or daemon.
      * @throws se.crisp.codekvast.server.codekvast_server.exception.UndefinedUserException
      */
     long getOrganisationIdForUsername(String username) throws UndefinedUserException;
@@ -24,7 +24,7 @@ public interface UserDAO {
     /**
      * Which interactive usernames does an organisation contain?
      *
-     * @param organisationId
+     * @param organisationId The organisation ID
      * @return All usernames in the organisation which have the role {@link Role#USER}.
      */
     Collection<String> getInteractiveUsernamesInOrganisation(long organisationId);

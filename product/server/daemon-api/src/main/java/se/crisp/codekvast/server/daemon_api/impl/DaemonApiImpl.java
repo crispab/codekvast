@@ -13,10 +13,10 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import se.crisp.codekvast.server.daemon_api.AgentApi;
-import se.crisp.codekvast.server.daemon_api.AgentApiConfig;
-import se.crisp.codekvast.server.daemon_api.AgentApiException;
-import se.crisp.codekvast.server.daemon_api.AgentRestEndpoints;
+import se.crisp.codekvast.server.daemon_api.DaemonApi;
+import se.crisp.codekvast.server.daemon_api.DaemonApiConfig;
+import se.crisp.codekvast.server.daemon_api.DaemonApiException;
+import se.crisp.codekvast.server.daemon_api.DaemonRestEndpoints;
 import se.crisp.codekvast.server.daemon_api.model.test.Ping;
 import se.crisp.codekvast.server.daemon_api.model.test.Pong;
 import se.crisp.codekvast.server.daemon_api.model.v1.JvmData;
@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * The implementation of the AgentApi.
+ * The implementation of the DaemonApi.
  *
  * Uses a Spring RestTemplate for doing the REST calls.
  *
@@ -42,18 +42,18 @@ import java.util.Set;
  */
 @Slf4j
 @Component
-public class AgentApiImpl implements AgentApi {
+public class DaemonApiImpl implements DaemonApi {
 
     private static final int UPLOAD_CHUNK_SIZE = 1000;
 
-    private final AgentApiConfig config;
+    private final DaemonApiConfig config;
     private final Validator validator;
 
     @Getter
     private final RestTemplate restTemplate;
 
     @Inject
-    public AgentApiImpl(AgentApiConfig config, Validator validator) {
+    public DaemonApiImpl(DaemonApiConfig config, Validator validator) {
         this.config = config;
         this.validator = validator;
         this.restTemplate = new RestTemplate(createBasicAuthHttpClient(config.getApiAccessID(), config.getApiAccessSecret()));
@@ -66,8 +66,8 @@ public class AgentApiImpl implements AgentApi {
     }
 
     @Override
-    public void uploadJvmData(JvmData jvmData) throws AgentApiException {
-        String endPoint = config.getServerUri() + AgentRestEndpoints.UPLOAD_V1_JVM_DATA;
+    public void uploadJvmData(JvmData jvmData) throws DaemonApiException {
+        String endPoint = config.getServerUri() + DaemonRestEndpoints.UPLOAD_V1_JVM_DATA;
         log.debug("Uploading JVM data to {}", endPoint);
 
         try {
@@ -77,14 +77,14 @@ public class AgentApiImpl implements AgentApi {
 
             log.info("Uploaded JVM data from {} to {} in {}s", jvmData.getAppName(), endPoint, elapsedSeconds(startedAt));
         } catch (URISyntaxException e) {
-            throw new AgentApiException("Illegal REST endpoint: " + endPoint, e);
+            throw new DaemonApiException("Illegal REST endpoint: " + endPoint, e);
         } catch (RestClientException e) {
-            throw new AgentApiException("Failed to post JVM run data", e);
+            throw new DaemonApiException("Failed to post JVM run data", e);
         }
     }
 
     @Override
-    public void uploadSignatureData(JvmData jvmData, Collection<String> signatures) throws AgentApiException {
+    public void uploadSignatureData(JvmData jvmData, Collection<String> signatures) throws DaemonApiException {
         if (signatures.isEmpty()) {
             log.debug("Not uploading empty signatures");
             return;
@@ -100,13 +100,13 @@ public class AgentApiImpl implements AgentApi {
 
     @Override
     public void uploadInvocationData(JvmData jvmData, List<SignatureEntry> signatures)
-            throws AgentApiException {
+            throws DaemonApiException {
         if (signatures.isEmpty()) {
             log.debug("Not uploading empty invocations");
             return;
         }
 
-        String endPoint = config.getServerUri() + AgentRestEndpoints.UPLOAD_V1_SIGNATURES;
+        String endPoint = config.getServerUri() + DaemonRestEndpoints.UPLOAD_V1_SIGNATURES;
         log.debug("Uploading {} invocations from {} to {}", signatures.size(), jvmData.getAppName(), endPoint);
         long startedAtMillis = System.currentTimeMillis();
 
@@ -122,11 +122,11 @@ public class AgentApiImpl implements AgentApi {
             log.info("Uploaded {} signatures from {} to {} in {}s", signatures.size(), jvmData.getAppName(), endPoint,
                      elapsedSeconds(startedAtMillis));
         } catch (URISyntaxException e) {
-            throw new AgentApiException("Illegal REST endpoint: " + endPoint, e);
+            throw new DaemonApiException("Illegal REST endpoint: " + endPoint, e);
         }
     }
 
-    public void uploadSignatureChunk(URI uri, String jvmUuid, int chunkNumber, List<SignatureEntry> chunk) throws AgentApiException {
+    public void uploadSignatureChunk(URI uri, String jvmUuid, int chunkNumber, List<SignatureEntry> chunk) throws DaemonApiException {
         try {
             long startedAt = System.currentTimeMillis();
             log.debug("Uploading chunk #{} of size {}", chunkNumber, chunk.size());
@@ -137,13 +137,13 @@ public class AgentApiImpl implements AgentApi {
 
             log.debug("Uploaded chunk #{} in {} ms", chunkNumber, System.currentTimeMillis() - startedAt);
         } catch (RestClientException e) {
-            throw new AgentApiException("Failed to post signatures data", e);
+            throw new DaemonApiException("Failed to post signatures data", e);
         }
     }
 
     @Override
-    public String ping(String message) throws AgentApiException {
-        String endPoint = config.getServerUri() + AgentRestEndpoints.PING;
+    public String ping(String message) throws DaemonApiException {
+        String endPoint = config.getServerUri() + DaemonRestEndpoints.PING;
         log.debug("Sending ping '{}' to {}", message, endPoint);
         try {
             Ping data = Ping.builder().message(message).build();
@@ -154,9 +154,9 @@ public class AgentApiImpl implements AgentApi {
             log.debug("Server responded with '{}'", pongMessage);
             return pongMessage;
         } catch (URISyntaxException e) {
-            throw new AgentApiException("Illegal REST endpoint: " + endPoint, e);
+            throw new DaemonApiException("Illegal REST endpoint: " + endPoint, e);
         } catch (RestClientException e) {
-            throw new AgentApiException("Failed to ping server", e);
+            throw new DaemonApiException("Failed to ping server", e);
         }
     }
 
@@ -165,7 +165,7 @@ public class AgentApiImpl implements AgentApi {
         return config.getServerUri();
     }
 
-    private <T> T validate(T data) throws AgentApiException {
+    private <T> T validate(T data) throws DaemonApiException {
         Set<ConstraintViolation<T>> violations = validator.validate(data);
 
         if (!violations.isEmpty()) {
@@ -178,7 +178,7 @@ public class AgentApiImpl implements AgentApi {
                 delimiter = ", ";
             }
 
-            throw new AgentApiException(sb.toString());
+            throw new DaemonApiException(sb.toString());
         }
 
         return data;

@@ -21,7 +21,7 @@ There is the convenience script `tools/src/script/gradle` which simplifies invoc
 and use that script instead of `path/to/gradlew`
 
 ### Software publishing
-The agent part of Codekvast is published to Bintray. To be able to upload to Bintray you need the following lines in your `~/.gradle/gradle
+The daemon part of Codekvast is published to Bintray. To be able to upload to Bintray you need the following lines in your `~/.gradle/gradle
 .properties`:
 
     bintrayUser=my-bintray-user
@@ -79,7 +79,7 @@ You can access Jenkins at [http://localhost:8082/jenkins](http://localhost:8082/
 
     gradle :product:agent:codekvast-daemon:run
 
-This will launch **codekvast-daemon**, that will process output from all collectors. The agent will try to upload the
+This will launch **codekvast-daemon**, that will process output from all collectors. The daemon will try to upload the
 data to http://localhost:8090, which is the default URL for the **codekvast-server**.
 Terminate with `Ctrl-C`.
 

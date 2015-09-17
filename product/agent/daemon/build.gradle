@@ -6,7 +6,7 @@ apply from: "$rootDir/gradle/standalone-h2server.gradle"
 description = "The Codekvast agent daemon"
 archivesBaseName = "codekvast-daemon"
 version = project.parent.parent.version
-mainClassName = "se.crisp.codekvast.agent.CodekvastDaemon"
+mainClassName = "se.crisp.codekvast.daemon.CodekvastDaemon"
 
 import org.apache.tools.ant.filters.ReplaceTokens
 

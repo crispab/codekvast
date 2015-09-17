@@ -1,3 +1,3 @@
-# How to install Codekvast Agent
+# How to install Codekvast Daemon
 
 See doc/CodekvastUserManual.html or doc/CodekvastUserManual.adoc

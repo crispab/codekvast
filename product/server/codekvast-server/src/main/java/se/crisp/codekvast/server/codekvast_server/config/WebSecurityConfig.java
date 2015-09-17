@@ -8,7 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
-import se.crisp.codekvast.server.daemon_api.AgentRestEndpoints;
+import se.crisp.codekvast.server.daemon_api.DaemonRestEndpoints;
 import se.crisp.codekvast.server.codekvast_server.model.Role;
 
 import javax.inject.Inject;
@@ -54,14 +54,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/app/**").permitAll()
                 .antMatchers("/register/**").permitAll()
                 .antMatchers("/management/**").hasRole(Role.MONITOR.name())
-                .antMatchers(AgentRestEndpoints.PREFIX + "**").hasRole(Role.AGENT.name())
+                .antMatchers(DaemonRestEndpoints.PREFIX + "**").hasRole(Role.DAEMON.name())
                 .antMatchers("/**").hasRole(Role.USER.name())
                 .and()
             // an interactive user uses form login
             .formLogin()
                 .loginPage("/login").permitAll()
                 .and()
-            // The agent uses BASIC authentication
+            // The daemon uses BASIC authentication
             .httpBasic()
                 .realmName("Codekvast")
                 .and()

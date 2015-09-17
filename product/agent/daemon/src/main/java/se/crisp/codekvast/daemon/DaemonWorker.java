@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import se.crisp.codekvast.daemon.appversion.AppVersionResolver;
-import se.crisp.codekvast.daemon.beans.AgentConfig;
+import se.crisp.codekvast.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.daemon.beans.JvmState;
 import se.crisp.codekvast.daemon.codebase.CodeBase;
 import se.crisp.codekvast.shared.config.CollectorConfig;
@@ -25,16 +25,16 @@ import java.util.Map;
  */
 @Component
 @Slf4j
-public class AgentWorker {
+public class DaemonWorker {
 
-    private final AgentConfig config;
+    private final DaemonConfig config;
     private final AppVersionResolver appVersionResolver;
     private final DataProcessor dataProcessor;
 
     private final Map<String, JvmState> jvmStates = new HashMap<String, JvmState>();
 
     @Inject
-    public AgentWorker(AgentConfig config, AppVersionResolver appVersionResolver, DataProcessor dataProcessor) {
+    public DaemonWorker(DaemonConfig config, AppVersionResolver appVersionResolver, DataProcessor dataProcessor) {
         this.config = config;
         this.appVersionResolver = appVersionResolver;
         this.dataProcessor = dataProcessor;

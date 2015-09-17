@@ -5,14 +5,14 @@ import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureEntry;
-import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
+import se.crisp.codekvast.server.codekvast_server.dao.DaemonDAO;
 import se.crisp.codekvast.server.codekvast_server.dao.ReportDAO;
 import se.crisp.codekvast.server.codekvast_server.dao.ReportDAO.ReportParameters;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.MethodUsageEntry;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.MethodUsageScope;
-import se.crisp.codekvast.server.codekvast_server.service.AgentService;
+import se.crisp.codekvast.server.codekvast_server.service.DaemonService;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -25,14 +25,14 @@ import static org.junit.Assert.assertThat;
 /**
  * @author olle.hallin@crisp.se
  */
-@ContextConfiguration(classes = {AgentServiceImpl.class})
+@ContextConfiguration(classes = {DaemonServiceImpl.class})
 public class ReportDAOIntegTest extends AbstractServiceIntegTest {
 
     @Inject
-    private AgentService agentService;
+    private DaemonService daemonService;
 
     @Inject
-    private AgentDAO agentDAO;
+    private DaemonDAO daemonDAO;
 
     @Inject
     private ReportDAO reportDAO;
@@ -55,17 +55,17 @@ public class ReportDAOIntegTest extends AbstractServiceIntegTest {
     @Before
     public void beforeTest() throws CodekvastException {
         // given
-        agentService.storeJvmData("agent", createJvmData(t0, t1, "app1", "1.0", "jvm1", "hostName1"));
-        agentService.storeJvmData("agent", createJvmData(t0, t1, "app1", "1.1", "jvm2", "hostName1"));
-        agentService.storeJvmData("agent", createJvmData(t0, t2, "app1", "1.1", "jvm2", "hostName1"));
-        agentService.storeJvmData("agent", createJvmData(t0, t3, "app1", "1.1", "jvm2", "hostName1"));
-        agentService.storeJvmData("agent", createJvmData(t2, t3, "app2", "2.0", "jvm3", "hostName1"));
-        agentService.storeJvmData("agent", createJvmData(t2, t3, "app2", "2.1", "jvm4", "hostName2"));
+        daemonService.storeJvmData("daemon", createJvmData(t0, t1, "app1", "1.0", "jvm1", "hostName1"));
+        daemonService.storeJvmData("daemon", createJvmData(t0, t1, "app1", "1.1", "jvm2", "hostName1"));
+        daemonService.storeJvmData("daemon", createJvmData(t0, t2, "app1", "1.1", "jvm2", "hostName1"));
+        daemonService.storeJvmData("daemon", createJvmData(t0, t3, "app1", "1.1", "jvm2", "hostName1"));
+        daemonService.storeJvmData("daemon", createJvmData(t2, t3, "app2", "2.0", "jvm3", "hostName1"));
+        daemonService.storeJvmData("daemon", createJvmData(t2, t3, "app2", "2.1", "jvm4", "hostName2"));
 
-        agentService.storeSignatureData(SignatureData.builder().jvmUuid("jvm1").signatures(deadSignatures).build());
-        agentService.storeSignatureData(SignatureData.builder().jvmUuid("jvm2").signatures(deadSignatures).build());
-        agentService.storeSignatureData(SignatureData.builder().jvmUuid("jvm3").signatures(deadSignatures).build());
-        agentService.storeSignatureData(SignatureData.builder().jvmUuid("jvm4").signatures(deadSignatures.subList(0, 2)).build());
+        daemonService.storeSignatureData(SignatureData.builder().jvmUuid("jvm1").signatures(deadSignatures).build());
+        daemonService.storeSignatureData(SignatureData.builder().jvmUuid("jvm2").signatures(deadSignatures).build());
+        daemonService.storeSignatureData(SignatureData.builder().jvmUuid("jvm3").signatures(deadSignatures).build());
+        daemonService.storeSignatureData(SignatureData.builder().jvmUuid("jvm4").signatures(deadSignatures.subList(0, 2)).build());
     }
 
     @Test
@@ -140,7 +140,7 @@ public class ReportDAOIntegTest extends AbstractServiceIntegTest {
                 new SignatureEntry("live1", t3 - usageCycleMillis + 0, bootstrapMillis + 1, null),
                 new SignatureEntry("live2", t3 - usageCycleMillis + 1, bootstrapMillis + 1, null));
 
-        agentService.storeSignatureData(SignatureData.builder().jvmUuid("jvm2").signatures(signatures).build());
+        daemonService.storeSignatureData(SignatureData.builder().jvmUuid("jvm2").signatures(signatures).build());
 
         ReportParameters params = getReportParameters(asList("app1"), asList("1.0"));
         assertScopeContainsMethods(params, MethodUsageScope.POSSIBLY_DEAD);
@@ -172,7 +172,7 @@ public class ReportDAOIntegTest extends AbstractServiceIntegTest {
         return ReportParameters.builder()
                                .usageCycleSeconds((int) (usageCycleMillis / 1000L))
                                .organisationId(organisationId)
-                               .applicationIds(agentDAO.getApplicationIds(organisationId, applicationNames).stream().map(AppId::getAppId)
+                               .applicationIds(daemonDAO.getApplicationIds(organisationId, applicationNames).stream().map(AppId::getAppId)
                                                        .collect(Collectors.toList()))
                                .jvmIds(reportDAO.getJvmIdsByAppVersions(organisationId, applicationVersions))
                                .build();

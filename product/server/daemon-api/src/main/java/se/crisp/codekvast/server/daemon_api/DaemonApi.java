@@ -8,29 +8,29 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * This is the business delegate interface used by a Codekvast agent for communicating with the server.
+ * This is the business delegate interface used by a Codekvast daemon for communicating with the server.
  *
  * @author olle.hallin@crisp.se
  */
-public interface AgentApi {
+public interface DaemonApi {
     /**
      * Uploads data about a JVM run to the server.
      *
      * @param jvmData Data about the JVM
-     * @throws AgentApiException For all problems.
+     * @throws DaemonApiException For all problems.
      */
-    void uploadJvmData(JvmData jvmData) throws AgentApiException;
+    void uploadJvmData(JvmData jvmData) throws DaemonApiException;
 
     /**
      * Upload a collection of signatures to the server.
      *
-     * This should typically be done when the agent detects that a JVM has started and then each time it detects a change in the code base.
+     * This should typically be done when the daemon detects that a JVM has started and then each time it detects a change in the code base.
      *
      * @param jvmData Data about the JVM
      * @param signatures     The complete set of signatures found in the application
-     * @throws AgentApiException Should the upload fail for some reason.
+     * @throws DaemonApiException Should the upload fail for some reason.
      */
-    void uploadSignatureData(JvmData jvmData, Collection<String> signatures) throws AgentApiException;
+    void uploadSignatureData(JvmData jvmData, Collection<String> signatures) throws DaemonApiException;
 
     /**
      * Upload data about method invocations to the server.
@@ -39,18 +39,18 @@ public interface AgentApi {
      *
      * @param jvmData Data about the JVM
      * @param invocations    A collection of invocations entries.
-     * @throws AgentApiException For all problems.
+     * @throws DaemonApiException For all problems.
      */
-    void uploadInvocationData(JvmData jvmData, List<SignatureEntry> invocations) throws AgentApiException;
+    void uploadInvocationData(JvmData jvmData, List<SignatureEntry> invocations) throws DaemonApiException;
 
     /**
      * Pings the server.
      *
      * @param message An arbitrary message.
      * @return A decorated version of the message.
-     * @throws AgentApiException For all problems.
+     * @throws DaemonApiException For all problems.
      */
-    String ping(String message) throws AgentApiException;
+    String ping(String message) throws DaemonApiException;
 
     /**
      * To which server are we connected? Useful when logging problems.

@@ -18,7 +18,7 @@ import se.crisp.codekvast.server.daemon_api.model.v1.JvmData;
 import se.crisp.codekvast.server.codekvast_server.config.CodekvastSettings;
 import se.crisp.codekvast.server.codekvast_server.config.DatabaseConfig;
 import se.crisp.codekvast.server.codekvast_server.config.EventBusConfig;
-import se.crisp.codekvast.server.codekvast_server.dao.impl.AgentDAOImpl;
+import se.crisp.codekvast.server.codekvast_server.dao.impl.DaemonDAOImpl;
 import se.crisp.codekvast.server.codekvast_server.dao.impl.ReportDAOImpl;
 import se.crisp.codekvast.server.codekvast_server.dao.impl.UserDAOImpl;
 
@@ -33,7 +33,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @ContextConfiguration(classes = {
         DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class,
         DatabaseConfig.class, EventBusConfig.class, CodekvastSettings.class,
-        AgentDAOImpl.class, UserDAOImpl.class, ReportDAOImpl.class, StatisticsServiceImpl.class})
+        DaemonDAOImpl.class, UserDAOImpl.class, ReportDAOImpl.class, StatisticsServiceImpl.class})
 @IntegrationTest({
         "spring.datasource.url = jdbc:h2:mem:",
 })

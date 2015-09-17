@@ -10,11 +10,11 @@ import se.crisp.codekvast.server.codekvast_server.model.event.rest.OrganisationS
 import java.util.Collection;
 
 /**
- * A data access object for things related to the agent API.
+ * A data access object for things related to the daemon API.
  *
  * @author olle.hallin@crisp.se
  */
-public interface AgentDAO {
+public interface DaemonDAO {
 
     /**
      * Retrieve an application ID. If not found, a new row is inserted into APPLICATIONS and an ApplicationCreatedEvent is posted on the

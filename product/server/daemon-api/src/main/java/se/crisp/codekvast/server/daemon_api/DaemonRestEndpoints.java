@@ -5,7 +5,7 @@ package se.crisp.codekvast.server.daemon_api;
  *
  * @author olle.hallin@crisp.se
  */
-public interface AgentRestEndpoints {
+public interface DaemonRestEndpoints {
 
     String PREFIX = "/api/daemon/";
 

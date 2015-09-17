@@ -5,10 +5,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import se.crisp.codekvast.server.daemon_api.AgentApi;
-import se.crisp.codekvast.server.daemon_api.AgentApiConfig;
-import se.crisp.codekvast.server.daemon_api.AgentApiException;
-import se.crisp.codekvast.server.daemon_api.impl.AgentApiImpl;
+import se.crisp.codekvast.server.daemon_api.DaemonApi;
+import se.crisp.codekvast.server.daemon_api.DaemonApiConfig;
+import se.crisp.codekvast.server.daemon_api.DaemonApiException;
+import se.crisp.codekvast.server.daemon_api.impl.DaemonApiImpl;
 import se.crisp.codekvast.server.daemon_api.model.v1.JvmData;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 
@@ -27,7 +27,7 @@ import static org.junit.Assert.fail;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @EmbeddedCodekvastServerIntegTest
-public class AgentApiIntegTest {
+public class DaemonApiIntegTest {
 
     private static final int SIGNATURES_SIZE = 1300;
 
@@ -41,10 +41,10 @@ public class AgentApiIntegTest {
     @Inject
     private Validator validator;
 
-    private AgentApi agentApi;
+    private DaemonApi daemonApi;
 
     private void createServerDelegate(String apiAccessID, String apiAccessSecret) throws URISyntaxException {
-        agentApi = new AgentApiImpl(AgentApiConfig.builder()
+        daemonApi = new DaemonApiImpl(DaemonApiConfig.builder()
                                                   .serverUri(new URI(String.format("http://localhost:%d", port)))
                                                   .apiAccessID(apiAccessID)
                                                   .apiAccessSecret(apiAccessSecret)
@@ -53,12 +53,12 @@ public class AgentApiIntegTest {
 
     @Before
     public void beforeTest() throws URISyntaxException {
-        createServerDelegate("agent", "0000");
+        createServerDelegate("daemon", "0000");
     }
 
     @Test
-    public void testCredentialsOkForUserNameAgent() throws AgentApiException, URISyntaxException {
-        assertThat(agentApi.ping("Hello!"), is("You said Hello!"));
+    public void testCredentialsOkForUserNameAgent() throws DaemonApiException, URISyntaxException {
+        assertThat(daemonApi.ping("Hello!"), is("You said Hello!"));
     }
 
     @Test
@@ -68,7 +68,7 @@ public class AgentApiIntegTest {
 
     @Test
     public void testBadCredentials() throws URISyntaxException {
-        createServerDelegate("agent", "0000foobar");
+        createServerDelegate("daemon", "0000foobar");
         assertThatPingThrowsHttpClientErrorException("Hello!", "401 Unauthorized");
     }
 
@@ -79,11 +79,11 @@ public class AgentApiIntegTest {
     }
 
     @Test
-    public void testUploadSignatures() throws AgentApiException, URISyntaxException, CodekvastException {
+    public void testUploadSignatures() throws DaemonApiException, URISyntaxException, CodekvastException {
         // when
         JvmData jvmData = getJvmData();
-        agentApi.uploadJvmData(jvmData);
-        agentApi.uploadSignatureData(jvmData, signatures);
+        daemonApi.uploadJvmData(jvmData);
+        daemonApi.uploadSignatureData(jvmData, signatures);
     }
 
     private List<String> getRandomSignatures(int size) {
@@ -130,9 +130,9 @@ public class AgentApiIntegTest {
 
     private void assertThatPingThrowsHttpClientErrorException(String pingMessage, String expectedRootCauseMessage) {
         try {
-            agentApi.ping(pingMessage);
-            fail("Expected a AgentApiException");
-        } catch (AgentApiException e) {
+            daemonApi.ping(pingMessage);
+            fail("Expected a DaemonApiException");
+        } catch (DaemonApiException e) {
             assertThat(getRootCause(e).getMessage(), is(expectedRootCauseMessage));
         }
     }

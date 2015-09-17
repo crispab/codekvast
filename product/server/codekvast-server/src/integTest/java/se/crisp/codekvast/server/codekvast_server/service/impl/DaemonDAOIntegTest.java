@@ -4,12 +4,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ContextConfiguration;
+import se.crisp.codekvast.server.codekvast_server.service.DaemonService;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureEntry;
-import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
+import se.crisp.codekvast.server.codekvast_server.dao.DaemonDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
-import se.crisp.codekvast.server.codekvast_server.service.AgentService;
 
 import javax.inject.Inject;
 import java.util.Arrays;
@@ -23,14 +23,14 @@ import static org.junit.Assert.assertThat;
 /**
  * @author olle.hallin@crisp.se
  */
-@ContextConfiguration(classes = {AgentServiceImpl.class})
-public class AgentDAOIntegTest extends AbstractServiceIntegTest {
+@ContextConfiguration(classes = {DaemonServiceImpl.class})
+public class DaemonDAOIntegTest extends AbstractServiceIntegTest {
 
     @Inject
-    private AgentService agentService;
+    private DaemonService daemonService;
 
     @Inject
-    private AgentDAO agentDAO;
+    private DaemonDAO daemonDAO;
 
     private final long bootstrapMillis = 10_000L;
     private final long usageCycleMillis = 600_000L;
@@ -44,56 +44,56 @@ public class AgentDAOIntegTest extends AbstractServiceIntegTest {
     @Before
     public void beforeTest() throws CodekvastException {
         // given
-        agentService.storeJvmData("agent", createJvmData(t0, t1, "app1", "1.0", "jvm1", "hostName1"));
-        agentService.storeJvmData("agent", createJvmData(t0, t1, "app1", "1.1", "jvm2", "hostName1"));
-        agentService.storeJvmData("agent", createJvmData(t0, t2, "app1", "1.1", "jvm2", "hostName1"));
-        agentService.storeJvmData("agent", createJvmData(t0, t3, "app1", "1.1", "jvm2", "hostName1"));
-        agentService.storeJvmData("agent", createJvmData(t2, t3, "app2", "2.0", "jvm3", "hostName1"));
-        agentService.storeJvmData("agent", createJvmData(t2, t3, "app2", "2.1", "jvm4", "hostName2"));
+        daemonService.storeJvmData("daemon", createJvmData(t0, t1, "app1", "1.0", "jvm1", "hostName1"));
+        daemonService.storeJvmData("daemon", createJvmData(t0, t1, "app1", "1.1", "jvm2", "hostName1"));
+        daemonService.storeJvmData("daemon", createJvmData(t0, t2, "app1", "1.1", "jvm2", "hostName1"));
+        daemonService.storeJvmData("daemon", createJvmData(t0, t3, "app1", "1.1", "jvm2", "hostName1"));
+        daemonService.storeJvmData("daemon", createJvmData(t2, t3, "app2", "2.0", "jvm3", "hostName1"));
+        daemonService.storeJvmData("daemon", createJvmData(t2, t3, "app2", "2.1", "jvm4", "hostName2"));
     }
 
     @Test
     public void testGetApplicationIds_invalid_organisation_id() throws Exception {
-        assertThat(agentDAO.getApplicationIds(0, asList("app1", "app2")), empty());
+        assertThat(daemonDAO.getApplicationIds(0, asList("app1", "app2")), empty());
     }
 
     @Test
     public void testGetApplicationIds_app1() throws Exception {
-        Collection<AppId> appIds = agentDAO.getApplicationIds(1, asList("app1"));
+        Collection<AppId> appIds = daemonDAO.getApplicationIds(1, asList("app1"));
         assertThat(appIds, hasSize(2));
     }
 
     @Test
     public void testGetApplicationIds_app1_twice() throws Exception {
-        Collection<AppId> appIds = agentDAO.getApplicationIds(1, asList("app1", "app1"));
+        Collection<AppId> appIds = daemonDAO.getApplicationIds(1, asList("app1", "app1"));
         assertThat(appIds, hasSize(2));
     }
 
     @Test
     public void testGetApplicationIds_app1_app2() throws Exception {
-        Collection<AppId> appIds = agentDAO.getApplicationIds(1, asList("app2", "app1"));
+        Collection<AppId> appIds = daemonDAO.getApplicationIds(1, asList("app2", "app1"));
         assertThat(appIds, hasSize(4));
     }
 
     @Test
     public void testGetNumCollectors() throws CodekvastException {
-        agentService.storeJvmData("agent", createJvmData(t2, t3, "app2", "2.1", "jvm5", "hostName3"));
-        assertThat(agentDAO.getNumCollectors(1, "app1"), is(2));
-        assertThat(agentDAO.getNumCollectors(1, "app2"), is(3));
+        daemonService.storeJvmData("daemon", createJvmData(t2, t3, "app2", "2.1", "jvm5", "hostName3"));
+        assertThat(daemonDAO.getNumCollectors(1, "app1"), is(2));
+        assertThat(daemonDAO.getNumCollectors(1, "app2"), is(3));
     }
 
     @Test
     public void testDeleteCollectors() throws Exception {
-        agentService.storeSignatureData(createSignatureData("jvm1", "s1", "s2"));
-        agentService.storeSignatureData(createSignatureData("jvm2", "s3", "s4"));
-        agentService.storeSignatureData(createSignatureData("jvm3", "s1", "s2"));
-        agentService.storeSignatureData(createSignatureData("jvm4", "s3", "s4"));
+        daemonService.storeSignatureData(createSignatureData("jvm1", "s1", "s2"));
+        daemonService.storeSignatureData(createSignatureData("jvm2", "s3", "s4"));
+        daemonService.storeSignatureData(createSignatureData("jvm3", "s1", "s2"));
+        daemonService.storeSignatureData(createSignatureData("jvm4", "s3", "s4"));
 
         assertThat(countRows("applications"), is(2));
         assertThat(countRows("signatures"), is(8));
         assertThat(countRows("jvm_info"), is(4));
 
-        assertThat(agentDAO.deleteCollectors(1, "app1", "1.0", "hostName1"), is(3));
+        assertThat(daemonDAO.deleteCollectors(1, "app1", "1.0", "hostName1"), is(3));
 
         assertThat(countRows("applications"), is(2));
         assertThat(countRows("signatures"), is(6));
@@ -102,17 +102,17 @@ public class AgentDAOIntegTest extends AbstractServiceIntegTest {
 
     @Test(expected = DataIntegrityViolationException.class)
     public void testDeleteApplication_whenNotEmpty() throws Exception {
-        agentDAO.deleteApplication(1, "app2");
+        daemonDAO.deleteApplication(1, "app2");
     }
 
     @Test
     public void testDeleteApplication_whenEmpty() throws Exception {
-        agentDAO.deleteCollectors(1, "app2", "2.0", "hostName1");
-        agentDAO.deleteCollectors(1, "app2", "2.1", "hostName2");
+        daemonDAO.deleteCollectors(1, "app2", "2.0", "hostName1");
+        daemonDAO.deleteCollectors(1, "app2", "2.1", "hostName2");
         assertThat(countRows("applications"), is(2));
         assertThat(countRows("application_statistics"), is(4));
 
-        assertThat(agentDAO.deleteApplication(1, "app2"), is(3));
+        assertThat(daemonDAO.deleteApplication(1, "app2"), is(3));
 
         assertThat(countRows("applications"), is(1));
         assertThat(countRows("application_statistics"), is(2));

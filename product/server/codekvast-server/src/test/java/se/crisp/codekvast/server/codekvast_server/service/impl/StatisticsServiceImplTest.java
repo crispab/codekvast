@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import se.crisp.codekvast.server.codekvast_server.config.CodekvastSettings;
-import se.crisp.codekvast.server.codekvast_server.dao.AgentDAO;
+import se.crisp.codekvast.server.codekvast_server.dao.DaemonDAO;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
 
 import static org.mockito.Mockito.*;
@@ -27,7 +27,7 @@ public class StatisticsServiceImplTest {
     private EventBus eventBus;
 
     @Mock
-    private AgentDAO agentDAO;
+    private DaemonDAO daemonDAO;
 
     private CodekvastSettings settings = new CodekvastSettings();
 
@@ -35,7 +35,7 @@ public class StatisticsServiceImplTest {
 
     @Before
     public void before() throws Exception {
-        statisticsService = new StatisticsServiceImpl(agentDAO, eventBus, settings);
+        statisticsService = new StatisticsServiceImpl(daemonDAO, eventBus, settings);
         statisticsService.start();
     }
 
@@ -55,12 +55,12 @@ public class StatisticsServiceImplTest {
         statisticsService.recalculateApplicationStatistics(APP_ID2);
         statisticsService.recalculateApplicationStatistics(APP_ID2);
 
-        verifyNoMoreInteractions(agentDAO);
+        verifyNoMoreInteractions(daemonDAO);
 
         Thread.sleep(200);
 
-        verify(agentDAO, times(1)).recalculateApplicationStatistics(APP_ID1_1);
-        verify(agentDAO, times(1)).recalculateApplicationStatistics(APP_ID2);
+        verify(daemonDAO, times(1)).recalculateApplicationStatistics(APP_ID1_1);
+        verify(daemonDAO, times(1)).recalculateApplicationStatistics(APP_ID2);
     }
 
     @Test
@@ -72,7 +72,7 @@ public class StatisticsServiceImplTest {
         statisticsService.recalculateApplicationStatistics(APP_ID2);
         statisticsService.recalculateApplicationStatistics(APP_ID2);
 
-        verify(agentDAO, times(3)).recalculateApplicationStatistics(APP_ID1_1);
-        verify(agentDAO, times(2)).recalculateApplicationStatistics(APP_ID2);
+        verify(daemonDAO, times(3)).recalculateApplicationStatistics(APP_ID1_1);
+        verify(daemonDAO, times(2)).recalculateApplicationStatistics(APP_ID2);
     }
 }

@@ -65,7 +65,7 @@ public class RegistrationServiceImpl implements RegistrationService {
             long userId =
                     registrationDAO.createUser(data.getFullName(), normalizeName(data.getUsername()), normalizeName(data.getEmailAddress()),
                                              data.getPassword(), Role.ADMIN, Role.USER);
-            // TODO: create Role.AGENT
+            // TODO: create Role.DAEMON
             registrationDAO.createOrganisationWithPrimaryContact(data.getOrganisationName(), userId);
             return userId;
         } catch (DuplicateKeyException e) {
