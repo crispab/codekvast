@@ -2,7 +2,7 @@ ext {
     springBootVersion = '1.2.6.RELEASE'
 
     // Synchronize it with "org.springframework.boot:spring-boot-dependencies:$springBootVersion" (available as HTML
-    // at http://docs.spring.io/spring-boot/docs/1.2.3.RELEASE/reference/htmlsingle/#appendix-dependency-versions )
+    // at http://docs.spring.io/spring-boot/docs/1.2.6.RELEASE/reference/htmlsingle/#appendix-dependency-versions )
     aspectjVersion = '1.8.7'
     aspectjWeaver = "org.aspectj:aspectjweaver:$aspectjVersion"
 
