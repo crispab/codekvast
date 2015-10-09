@@ -28,9 +28,9 @@ dependencies {
     runtime 'ch.qos.logback:logback-classic'
     runtime 'org.webjars:headjs:1.0.3'
     runtime 'org.webjars:jquery:2.1.4'
-    runtime 'org.webjars:angularjs:1.4.0'
-    runtime 'org.webjars:angular-ui-bootstrap:0.13.0'
-    runtime 'org.webjars:bootstrap:3.3.4'
+    runtime 'org.webjars:angularjs:1.4.7'
+    runtime 'org.webjars:angular-ui-bootstrap:0.13.4'
+    runtime 'org.webjars:bootstrap:3.3.5'
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'

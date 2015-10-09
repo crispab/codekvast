@@ -1,7 +1,7 @@
 buildscript {
     configurations.classpath {
         resolutionStrategy {
-            forcedModules = ['org.codehaus.groovy:groovy-all:2.3.10']
+            forcedModules = ['org.codehaus.groovy:groovy-all:2.4.5']
         }
     }
 }
@@ -46,11 +46,11 @@ task integTest(type: Test) {
 check.dependsOn integTest
 
 def webjars = [
-        'org.webjars:angular-ui-bootstrap:0.13.0',
-        'org.webjars:angularjs:1.4.4',
+        'org.webjars:angular-ui-bootstrap:0.13.4',
+        'org.webjars:angularjs:1.4.7',
         'org.webjars:bootstrap:3.3.5',
         'org.webjars:jquery:2.1.4',
-        'org.webjars:lodash:3.9.0',
+        'org.webjars:lodash:3.10.1',
         'org.webjars:sockjs-client:1.0.2',
         'org.webjars:stomp-websocket:2.3.3',
 ]
@@ -77,13 +77,13 @@ dependencies {
     runtime project(':product:support:websupport')
     runtime 'ch.qos.logback:logback-classic'
     runtime 'org.hibernate:hibernate-validator'
-    runtime 'org.springframework.data:spring-data-redis:1.5.2.RELEASE'
+    runtime 'org.springframework.data:spring-data-redis:1.6.0.RELEASE'
     runtime webjars
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
     testCompile 'org.spockframework:spock-spring:1.0-groovy-2.4'
-    testCompile 'org.codehaus.groovy:groovy-all:2.4.4'
+    testCompile 'org.codehaus.groovy:groovy-all:2.4.5'
 
     integTestCompile sourceSets.main.output
     integTestCompile sourceSets.test.output

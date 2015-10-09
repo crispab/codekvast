@@ -10,14 +10,14 @@ configurations {
 }
 
 dependencies {
-    compile "org.projectlombok:lombok:1.16.4"
+    compile "org.projectlombok:lombok:1.16.6"
     compile "org.slf4j:slf4j-api:1.7.12"
     compile "aopalliance:aopalliance:1.0"
     compile 'com.google.inject:guice:4.0'
     compile project(":sample:sample-lib")
 
     javaagent project(path: ":product:agent:collector", configuration: 'shadow')
-    javaagent "org.aspectj:aspectjweaver:1.8.6"
+    javaagent "org.aspectj:aspectjweaver:1.8.7"
 }
 
 task generateCodekvastConfig {

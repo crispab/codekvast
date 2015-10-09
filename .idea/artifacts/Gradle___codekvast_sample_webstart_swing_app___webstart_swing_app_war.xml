@@ -2,7 +2,7 @@
   <artifact type="war" name="Gradle : codekvast.sample:webstart-swing-app : webstart-swing-app.war">
     <output-path>$PROJECT_DIR$/build/classes/artifacts/webstart-swing-app</output-path>
     <properties id="gradle-properties">
-      <options external-project-path="$PROJECT_DIR$/sample/webstart-swing-app" />
+      <options external-project-path="$PROJECT_DIR$" />
     </properties>
     <root id="archive" name="webstart-swing-app.war">
       <element id="javaee-facet-resources" facet="webstart-swing-app/web/Web Gradle : webstart-swing-app.war" />
