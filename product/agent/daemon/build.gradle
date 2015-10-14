@@ -24,7 +24,7 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
     compile 'org.flywaydb:flyway-core'
 
-    runtime 'com.h2database:h2'
+    runtime h2database
     runtime 'ch.qos.logback:logback-classic'
 
     testCompile junit

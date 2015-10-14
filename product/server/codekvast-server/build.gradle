@@ -38,6 +38,7 @@ sourceSets {
 task integTest(type: Test) {
     group = "Verification"
     description = "Runs all integration tests"
+    dependsOn test
 
     testClassesDir = sourceSets.integTest.output.classesDir
     classpath = sourceSets.integTest.runtimeClasspath
@@ -46,7 +47,7 @@ task integTest(type: Test) {
 check.dependsOn integTest
 
 def webjars = [
-        'org.webjars:angular-ui-bootstrap:0.13.4',
+        'org.webjars:angular-ui-bootstrap:0.14.0',
         'org.webjars:angularjs:1.4.7',
         'org.webjars:bootstrap:3.3.5',
         'org.webjars:jquery:2.1.4',
@@ -70,7 +71,7 @@ dependencies {
     compile 'org.springframework:spring-messaging'
     compile 'org.springframework.session:spring-session:1.0.2.RELEASE'
     compile 'org.springframework.session:spring-session-data-redis:1.0.2.RELEASE'
-    compile 'com.h2database:h2'
+    compile h2database
     compile 'org.flywaydb:flyway-core'
     compile 'com.orange.redis-embedded:embedded-redis:0.6'
 
@@ -117,19 +118,12 @@ applicationDistribution.from("src/main/resources") {
 
 startScripts {
     doLast {
-        outputs.files.each { scriptDir ->
-            scriptDir.eachFile { script ->
-                logger.info "Adjusting start script {} ...", script.name
-                if (script.name.toLowerCase().endsWith('.bat')) {
-                    script.text = script.text
-                            .replace('CLASSPATH=%APP_HOME%\\lib', 'CLASSPATH=%APP_HOME%\\conf\\;%APP_HOME%\\lib')
-                } else {
-                    script.text = script.text
-                            .replace('APP_HOME=', 'export APP_HOME=')
-                            .replace('CLASSPATH=$APP_HOME/lib', 'CLASSPATH=$APP_HOME/conf/:$APP_HOME/lib')
-                }
-            }
-        }
+        logger.info "Adjusting start scripts..."
+        windowsScript.text = windowsScript.text
+                .replace('CLASSPATH=%APP_HOME%\\lib', 'CLASSPATH=%APP_HOME%\\conf\\;%APP_HOME%\\lib')
+        unixScript.text = unixScript.text
+                .replace('APP_HOME=', 'export APP_HOME=')
+                .replace('CLASSPATH=$APP_HOME/lib', 'CLASSPATH=$APP_HOME/conf/:$APP_HOME/lib')
     }
 }
 

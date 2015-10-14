@@ -19,7 +19,7 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    compile 'com.h2database:h2'
+    compile h2database
     compile 'org.flywaydb:flyway-core'
     compile 'com.ecwid:ecwid-mailchimp:2.0.1.0'
     compile 'net.sourceforge.pjl-comp-filter:pjl-comp-filter:1.7'
@@ -29,7 +29,7 @@ dependencies {
     runtime 'org.webjars:headjs:1.0.3'
     runtime 'org.webjars:jquery:2.1.4'
     runtime 'org.webjars:angularjs:1.4.7'
-    runtime 'org.webjars:angular-ui-bootstrap:0.13.4'
+    runtime 'org.webjars:angular-ui-bootstrap:0.14.0'
     runtime 'org.webjars:bootstrap:3.3.5'
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'

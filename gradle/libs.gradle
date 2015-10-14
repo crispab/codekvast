@@ -1,5 +1,6 @@
 ext {
     springBootVersion = '1.2.6.RELEASE'
+    h2databaseVersion = '1.4.190'
 
     // Synchronize it with "org.springframework.boot:spring-boot-dependencies:$springBootVersion" (available as HTML
     // at http://docs.spring.io/spring-boot/docs/1.2.6.RELEASE/reference/htmlsingle/#appendix-dependency-versions )
@@ -13,7 +14,7 @@ ext {
 
     // These are used when starting the stand-alone h2 server during development. Make sure the version is synchronized with
     // spring-boot-dependencies
-    h2database = 'com.h2database:h2:1.4.189'
+    h2database = "com.h2database:h2:$h2databaseVersion"
     logback = 'ch.qos.logback:logback-classic:1.1.3'
 
     // Development tools, not part of the product
