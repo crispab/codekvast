@@ -61,7 +61,7 @@ public class DaemonWorker {
     private void doAnalyzeCollectorData(long now) {
         log.debug("Analyzing collector data");
 
-        findJvmStates();
+        findJvmStates(config.getDataPath());
 
         for (JvmState jvmState : jvmStates.values()) {
             if (jvmState.isFirstRun()) {
@@ -76,11 +76,7 @@ public class DaemonWorker {
         }
     }
 
-    private void findJvmStates() {
-        findJvmState(config.getDataPath());
-    }
-
-    private void findJvmState(File dataPath) {
+    private void findJvmStates(File dataPath) {
         log.debug("Looking for jvm.dat in {}", dataPath);
 
         File[] files = dataPath.listFiles();
@@ -89,7 +85,7 @@ public class DaemonWorker {
                 if (file.isFile() && file.getName().equals(CollectorConfig.JVM_BASENAME)) {
                     addOrUpdateJvmState(file);
                 } else if (file.isDirectory()) {
-                    findJvmState(file);
+                    findJvmStates(file);
                 }
             }
         }

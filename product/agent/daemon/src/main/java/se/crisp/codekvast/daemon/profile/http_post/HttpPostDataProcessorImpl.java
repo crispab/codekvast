@@ -53,6 +53,7 @@ public class HttpPostDataProcessorImpl implements DataProcessor {
         this.codeBaseScanner = codeBaseScanner;
         this.appVersionResolver = appVersionResolver;
         this.invocationsCollector = invocationsCollector;
+        log.info("{} created", getClass().getSimpleName());
     }
 
     @Override

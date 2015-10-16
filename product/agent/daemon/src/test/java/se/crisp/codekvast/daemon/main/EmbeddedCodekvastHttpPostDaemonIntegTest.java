@@ -7,7 +7,7 @@ import se.crisp.codekvast.daemon.CodekvastDaemon;
 import java.lang.annotation.*;
 
 /**
- * Meta annotation for integration tests against an embedded CodekvastServerApplication
+ * Meta annotation for integration tests against an embedded CodekvastDaemon application that uses HTTP POST as data processing strategy.
  *
  * @author olle.hallin@crisp.se
  */
@@ -24,5 +24,5 @@ import java.lang.annotation.*;
         "codekvast.dataPath=dataPath",
         "codekvast.serverUploadIntervalSeconds=600"
 })
-public @interface EmbeddedCodekvastDaemonIntegTest {
+public @interface EmbeddedCodekvastHttpPostDaemonIntegTest {
 }

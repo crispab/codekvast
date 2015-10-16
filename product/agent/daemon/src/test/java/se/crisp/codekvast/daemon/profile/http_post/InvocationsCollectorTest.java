@@ -5,7 +5,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import se.crisp.codekvast.daemon.main.EmbeddedCodekvastDaemonIntegTest;
+import se.crisp.codekvast.daemon.main.EmbeddedCodekvastHttpPostDaemonIntegTest;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureEntry;
 
 import javax.inject.Inject;
@@ -16,7 +16,7 @@ import static se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence.
 import static se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence.FOUND_IN_PARENT_CLASS;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@EmbeddedCodekvastDaemonIntegTest
+@EmbeddedCodekvastHttpPostDaemonIntegTest
 public class InvocationsCollectorTest {
 
     private final long now = System.currentTimeMillis();

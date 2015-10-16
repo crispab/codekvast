@@ -56,8 +56,11 @@ jar {
     exclude "lombok"
 }
 
+ext.springProfiles = 'httpPost'
+// ext.springProfiles = 'localWarehouse'
+
 run {
-    jvmArgs = ['-ea', '-Dspring.profiles.active=httpPost']
+    jvmArgs = ['-ea', "-Dspring.profiles.active=$springProfiles"]
     args = [
             "--codekvast.serverUploadIntervalSeconds=5",
             "--codekvast.databasePath=$buildDir/database"
@@ -70,14 +73,12 @@ bootRun {
             "-javaagent:${configurations.springLoaded.asPath}",
             '-noverify',
     ] + run.jvmArgs
-
     args = run.args
 }
 
-
 jar.dependsOn tasks.getByPath(":product:agent:shared:test")
 
-applicationDefaultJvmArgs = ['-Dspring.profiles.active=httpPost']
+// applicationDefaultJvmArgs = ['-Dspring.profiles.active=httpPost']
 
 applicationDistribution.from("src/main/resources") {
     into "conf"
