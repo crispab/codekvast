@@ -28,6 +28,9 @@ public class CollectorConfigFactory {
 
     private static final String TAGS_KEY = "tags";
 
+    private CollectorConfigFactory() {
+    }
+
     public static CollectorConfig parseCollectorConfig(URI uri, String cmdLineArgs) {
         return parseCollectorConfig(uri, cmdLineArgs, false);
     }
@@ -146,11 +149,12 @@ public class CollectorConfigFactory {
     }
 
     public static CollectorConfig createSampleCollectorConfig() {
-        return builder()
-                .appName("Sample Application Name")
-                .codeBase(SAMPLE_CODEBASE_URI1 + " , " + SAMPLE_CODEBASE_URI2)
-                .packagePrefixes("com.acme. , foo.bar.")
-                .build();
+        return CollectorConfigFactory.builder()
+                                     .appName("Sample Application Name")
+                                     .codeBase(SAMPLE_CODEBASE_URI1 + " , " + SAMPLE_CODEBASE_URI2)
+                                     .packagePrefixes("com.acme. , foo.bar.")
+                                     .dataPath(SAMPLE_DATA_PATH)
+                                     .build();
     }
 
     public static CollectorConfig.CollectorConfigBuilder builder() {

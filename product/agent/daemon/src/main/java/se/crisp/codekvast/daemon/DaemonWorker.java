@@ -70,9 +70,7 @@ public class DaemonWorker {
                 FileUtils.resetAllConsumedInvocationDataFiles(jvmState.getInvocationsFile());
                 jvmState.setFirstRun(false);
             }
-            dataProcessor.processJvmData(now, jvmState);
-            dataProcessor.processCodeBase(now, jvmState, new CodeBase(jvmState.getJvm().getCollectorConfig()));
-            dataProcessor.processInvocationsData(now, jvmState);
+            dataProcessor.processData(now, jvmState, new CodeBase(jvmState.getJvm().getCollectorConfig()));
         }
     }
 

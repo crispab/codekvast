@@ -3,13 +3,12 @@ package se.crisp.codekvast.daemon.impl.http_post;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-import se.crisp.codekvast.daemon.DataProcessor;
 import se.crisp.codekvast.daemon.appversion.AppVersionResolver;
 import se.crisp.codekvast.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.daemon.beans.JvmState;
 import se.crisp.codekvast.daemon.codebase.CodeBase;
 import se.crisp.codekvast.daemon.codebase.CodeBaseScanner;
-import se.crisp.codekvast.daemon.impl.AbstractDataProcessor;
+import se.crisp.codekvast.daemon.impl.AbstractDataProcessorImpl;
 import se.crisp.codekvast.daemon.util.LogUtil;
 import se.crisp.codekvast.server.daemon_api.DaemonApi;
 import se.crisp.codekvast.server.daemon_api.DaemonApiException;
@@ -19,7 +18,6 @@ import se.crisp.codekvast.shared.model.Invocation;
 import se.crisp.codekvast.shared.model.Jvm;
 
 import javax.inject.Inject;
-import java.util.List;
 
 /**
  * An implementation of DataProcessor that uploads all data to a remote server using the HTTP POST API that is embedded in {@link
@@ -28,7 +26,7 @@ import java.util.List;
 @Component
 @Profile("httpPost")
 @Slf4j
-public class HttpPostDataProcessorImpl extends AbstractDataProcessor implements DataProcessor {
+public class HttpPostDataProcessorImpl extends AbstractDataProcessorImpl {
 
     private final DaemonApi daemonApi;
     private final InvocationsCollector invocationsCollector;
@@ -48,27 +46,24 @@ public class HttpPostDataProcessorImpl extends AbstractDataProcessor implements 
     @Override
     protected void doProcessJvmData(JvmState jvmState) {
         try {
-            daemonApi.uploadJvmData(getJvmData(jvmState));
+            daemonApi.uploadJvmData(createUploadJvmData(jvmState));
             jvmState.setJvmDataProcessedAt(jvmState.getJvm().getDumpedAtMillis());
         } catch (DaemonApiException e) {
             LogUtil.logException(log, "Cannot upload JVM data to " + daemonApi.getServerUri(), e);
         }
     }
 
+    @Override
     protected void doProcessCodebase(long now, JvmState jvmState, CodeBase codeBase) {
         try {
-            daemonApi.uploadSignatureData(getJvmData(jvmState), codeBase.getSignatures());
+            daemonApi.uploadSignatureData(createUploadJvmData(jvmState), codeBase.getSignatures());
             jvmState.setCodebaseProcessedAt(now);
         } catch (DaemonApiException e) {
             LogUtil.logException(log, "Cannot upload signature data to " + daemonApi.getServerUri(), e);
         }
     }
 
-    protected void doProcessInvocationsData(JvmState jvmState, List<Invocation> invocations) {
-        storeNormalizedInvocations(jvmState, invocations);
-        doProcessUnprocessedSignatures(jvmState);
-    }
-
+    @Override
     protected void doStoreNormalizedSignature(JvmState jvmState, Invocation invocation, String normalizedSignature,
                                               SignatureConfidence confidence) {
         invocationsCollector.put(jvmState.getJvm().getJvmUuid(),
@@ -78,10 +73,11 @@ public class HttpPostDataProcessorImpl extends AbstractDataProcessor implements 
                                  confidence);
     }
 
+    @Override
     protected void doProcessUnprocessedSignatures(JvmState jvmState) {
         try {
-            daemonApi.uploadInvocationData(getJvmData(jvmState),
-                                          invocationsCollector.getNotUploadedInvocations(jvmState.getJvm().getJvmUuid()));
+            daemonApi.uploadInvocationData(createUploadJvmData(jvmState),
+                                           invocationsCollector.getNotUploadedInvocations(jvmState.getJvm().getJvmUuid()));
             invocationsCollector.clearNotUploadedSignatures(jvmState.getJvm().getJvmUuid());
         } catch (DaemonApiException e) {
             LogUtil.logException(log, "Cannot upload invocation data to " + daemonApi.getServerUri(), e);
@@ -89,7 +85,7 @@ public class HttpPostDataProcessorImpl extends AbstractDataProcessor implements 
     }
 
 
-    protected JvmData getJvmData(JvmState jvmState) {
+    private JvmData createUploadJvmData(JvmState jvmState) {
         Jvm jvm = jvmState.getJvm();
 
         return JvmData.builder()

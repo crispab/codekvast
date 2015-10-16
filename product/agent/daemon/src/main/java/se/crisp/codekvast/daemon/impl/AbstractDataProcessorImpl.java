@@ -2,6 +2,7 @@ package se.crisp.codekvast.daemon.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
+import se.crisp.codekvast.daemon.DataProcessor;
 import se.crisp.codekvast.daemon.appversion.AppVersionResolver;
 import se.crisp.codekvast.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.daemon.beans.JvmState;
@@ -17,42 +18,40 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 /**
- * Common behavoiur for all data processors.
+ * Common behaviour for all data processors.
  *
  * @author olle.hallin@crisp.se
  */
 @Slf4j
-public abstract class AbstractDataProcessor {
+public abstract class AbstractDataProcessorImpl implements DataProcessor {
     protected final DaemonConfig config;
     protected final AppVersionResolver appVersionResolver;
     protected final CodeBaseScanner codeBaseScanner;
     protected final String daemonComputerId = ComputerID.compute().toString();
     protected final String daemonHostName = getHostName();
 
-    public AbstractDataProcessor(DaemonConfig config, AppVersionResolver appVersionResolver, CodeBaseScanner codeBaseScanner) {
+    protected AbstractDataProcessorImpl(DaemonConfig config, AppVersionResolver appVersionResolver, CodeBaseScanner codeBaseScanner) {
         this.config = config;
         this.appVersionResolver = appVersionResolver;
         this.codeBaseScanner = codeBaseScanner;
     }
 
-    protected String getHostName() {
-        try {
-            return InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-            log.error("Cannot get name of localhost");
-            return "-- unknown --";
-        }
+    @Override
+    @Transactional
+    public void processData(long now, JvmState jvmState, CodeBase codeBase) {
+        appVersionResolver.resolveAppVersion(jvmState);
+        processJvmData(jvmState);
+        processCodeBase(now, jvmState, codeBase);
+        processInvocationsData(jvmState);
     }
 
-    public void processJvmData(long now, JvmState jvmState) {
-        appVersionResolver.resolveAppVersion(jvmState);
-
+    private void processJvmData(JvmState jvmState) {
         if (jvmState.getJvmDataProcessedAt() < jvmState.getJvm().getDumpedAtMillis()) {
             doProcessJvmData(jvmState);
         }
     }
 
-    public void processCodeBase(long now, JvmState jvmState, CodeBase codeBase) {
+    private void processCodeBase(long now, JvmState jvmState, CodeBase codeBase) {
         if (jvmState.getCodebaseProcessedAt() == 0 || !codeBase.equals(jvmState.getCodeBase())) {
             if (jvmState.getCodebaseProcessedAt() == 0) {
                 log.debug("Codebase has not yet been processed");
@@ -68,15 +67,15 @@ public abstract class AbstractDataProcessor {
         }
     }
 
-    @Transactional
-    public void processInvocationsData(long now, JvmState jvmState) {
+    private void processInvocationsData(JvmState jvmState) {
         List<Invocation> invocations = FileUtils.consumeAllInvocationDataFiles(jvmState.getInvocationsFile());
         if (jvmState.getCodeBase() != null && !invocations.isEmpty()) {
-            doProcessInvocationsData(jvmState, invocations);
+            normalizeAndProcessInvocations(jvmState, invocations);
+            doProcessUnprocessedSignatures(jvmState);
         }
     }
 
-    protected void storeNormalizedInvocations(JvmState jvmState, List<Invocation> invocations) {
+    private void normalizeAndProcessInvocations(JvmState jvmState, List<Invocation> invocations) {
         CodeBase codeBase = jvmState.getCodeBase();
 
         int recognized = 0;
@@ -128,12 +127,22 @@ public abstract class AbstractDataProcessor {
         }
     }
 
+    private String getHostName() {
+        try {
+            return InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            log.error("Cannot get name of localhost");
+            return "-- unknown --";
+        }
+    }
+
     protected abstract void doProcessJvmData(JvmState jvmState);
 
     protected abstract void doProcessCodebase(long now, JvmState jvmState, CodeBase codeBase);
 
-    protected abstract void doProcessInvocationsData(JvmState jvmState, List<Invocation> invocations);
-
     protected abstract void doStoreNormalizedSignature(JvmState jvmState, Invocation invocation, String normalizedSignature,
                                                        SignatureConfidence confidence);
+
+    protected abstract void doProcessUnprocessedSignatures(JvmState jvmState);
+
 }
