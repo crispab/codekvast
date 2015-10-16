@@ -1,6 +1,6 @@
 description = "Support utilities that can be used from any web application"
 
-apply from: "$rootDir/gradle/java-7.gradle"
+apply from: "$rootDir/gradle/java-8.gradle"
 apply plugin: 'spring-boot'
 
 archivesBaseName = "codekvast-support-websupport"

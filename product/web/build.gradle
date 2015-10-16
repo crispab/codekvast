@@ -1,6 +1,6 @@
 apply plugin: 'application'
 apply plugin: 'spring-boot'
-apply from: "$rootDir/gradle/java-7.gradle"
+apply from: "$rootDir/gradle/java-8.gradle"
 
 description = "The Codekvast Promotion Web"
 archivesBaseName = "codekvast-web"
