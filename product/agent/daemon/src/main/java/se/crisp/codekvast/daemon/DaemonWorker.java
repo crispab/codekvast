@@ -7,6 +7,8 @@ import se.crisp.codekvast.daemon.appversion.AppVersionResolver;
 import se.crisp.codekvast.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.daemon.beans.JvmState;
 import se.crisp.codekvast.daemon.codebase.CodeBase;
+import se.crisp.codekvast.daemon.impl.DataProcessingException;
+import se.crisp.codekvast.daemon.util.LogUtil;
 import se.crisp.codekvast.shared.config.CollectorConfig;
 import se.crisp.codekvast.shared.model.Jvm;
 import se.crisp.codekvast.shared.util.FileUtils;
@@ -70,7 +72,11 @@ public class DaemonWorker {
                 FileUtils.resetAllConsumedInvocationDataFiles(jvmState.getInvocationsFile());
                 jvmState.setFirstRun(false);
             }
-            dataProcessor.processData(now, jvmState, new CodeBase(jvmState.getJvm().getCollectorConfig()));
+            try {
+                dataProcessor.processData(now, jvmState, new CodeBase(jvmState.getJvm().getCollectorConfig()));
+            } catch (DataProcessingException e) {
+                LogUtil.logException(log, "Could not process data for " + jvmState.getJvm().getCollectorConfig().getAppName(), e);
+            }
         }
     }
 

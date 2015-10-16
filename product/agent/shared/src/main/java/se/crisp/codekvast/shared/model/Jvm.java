@@ -16,22 +16,23 @@ import java.util.Properties;
  */
 @Data
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Setter(AccessLevel.PRIVATE)
 @Builder
 public class Jvm {
     @NonNull
-    private final String jvmUuid;
+    private String jvmUuid;
     @NonNull
-    private final CollectorConfig collectorConfig;
+    private CollectorConfig collectorConfig;
     @NonNull
-    private final String computerId;
+    private String computerId;
     @NonNull
-    private final String hostName;
-    private final long startedAtMillis;
+    private String hostName;
+    private long startedAtMillis;
     @NonNull
-    private final String collectorVcsId;
+    private String collectorVcsId;
     @NonNull
-    private final String collectorVersion;
+    private String collectorVersion;
 
     private long dumpedAtMillis;
 

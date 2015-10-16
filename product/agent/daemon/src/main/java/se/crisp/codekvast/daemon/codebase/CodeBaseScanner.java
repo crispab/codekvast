@@ -84,7 +84,7 @@ public class CodeBaseScanner {
         }
 
         log.debug("Analyzing {}", clazz);
-        MethodFilter methodFilter = codeBase.getConfig().getMethodVisibility();
+        MethodFilter methodFilter = codeBase.getConfig().getMethodFilter();
         int result = 1;
         try {
             Method[] declaredMethods = clazz.getDeclaredMethods();

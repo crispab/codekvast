@@ -42,14 +42,14 @@ public abstract class AbstractDataProcessorImpl implements DataProcessor {
 
     @Override
     @Transactional
-    public void processData(long now, JvmState jvmState, CodeBase codeBase) {
+    public void processData(long now, JvmState jvmState, CodeBase codeBase) throws DataProcessingException {
         appVersionResolver.resolveAppVersion(jvmState);
         processJvmData(jvmState);
         processCodeBase(now, jvmState, codeBase);
         processInvocationsData(jvmState);
     }
 
-    private void processJvmData(JvmState jvmState) {
+    private void processJvmData(JvmState jvmState) throws DataProcessingException {
         if (jvmState.getJvmDataProcessedAt() < jvmState.getJvm().getDumpedAtMillis()) {
             doProcessJvmData(jvmState);
         }
@@ -140,7 +140,7 @@ public abstract class AbstractDataProcessorImpl implements DataProcessor {
         }
     }
 
-    protected abstract void doProcessJvmData(JvmState jvmState);
+    protected abstract void doProcessJvmData(JvmState jvmState) throws DataProcessingException;
 
     protected abstract void doProcessCodebase(long now, JvmState jvmState, CodeBase codeBase);
 

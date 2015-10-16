@@ -104,7 +104,7 @@ public class HttpPostDataProcessorImpl extends AbstractDataProcessorImpl {
                       .collectorVersion(jvm.getCollectorVersion())
                       .dumpedAtMillis(jvm.getDumpedAtMillis())
                       .jvmUuid(jvm.getJvmUuid())
-                      .methodVisibility(jvm.getCollectorConfig().getMethodVisibility().toString())
+                      .methodVisibility(jvm.getCollectorConfig().getMethodFilter().toString())
                       .startedAtMillis(jvm.getStartedAtMillis())
                       .tags(jvm.getCollectorConfig().getTags())
                       .build();

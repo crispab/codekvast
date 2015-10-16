@@ -165,7 +165,7 @@ public class CodekvastCollector {
                         + "  </weaver>\n"
                         + "</aspectj>\n",
                 AbstractMethodExecutionAspect.class.getName(),
-                toMethodExecutionPointcut(config.getMethodVisibility()),
+                toMethodExecutionPointcut(config.getMethodFilter()),
                 config.getAspectjOptions(),
                 includeWithin.toString(),
                 "se.crisp.codekvast");

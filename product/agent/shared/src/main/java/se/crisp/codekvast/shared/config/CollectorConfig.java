@@ -1,5 +1,6 @@
 package se.crisp.codekvast.shared.config;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import se.crisp.codekvast.shared.util.ConfigUtils;
 
@@ -11,66 +12,77 @@ import java.util.List;
  *
  * @author olle.hallin@crisp.se
  */
-@Value
+@Data
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Setter(AccessLevel.PRIVATE)
 @Builder
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class CollectorConfig implements CodekvastConfig {
     public static final String INVOCATIONS_BASENAME = "invocations.dat";
     public static final String JVM_BASENAME = "jvm.dat";
 
     @NonNull
-    private final File dataPath;
+    private File dataPath;
     @NonNull
-    private final String aspectjOptions;
+    private String aspectjOptions;
     @NonNull
-    private final String methodVisibility;
-    private final int collectorResolutionSeconds;
-    private final boolean clobberAopXml;
-    private final boolean verbose;
+    private String methodVisibility;
+    private int collectorResolutionSeconds;
+    private boolean clobberAopXml;
+    private boolean verbose;
     @NonNull
-    private final String appName;
+    private String appName;
     @NonNull
-    private final String appVersion;
+    private String appVersion;
     @NonNull
-    private final String codeBase;
+    private String codeBase;
     @NonNull
-    private final String packagePrefixes;
+    private String packagePrefixes;
     @NonNull
-    private final String tags;
+    private String tags;
 
+    @JsonIgnore
     public File getAspectFile() {
         return new File(myDataPath(appName), "aop.xml");
     }
 
+    @JsonIgnore
     public File getJvmFile() {
         return new File(myDataPath(appName), JVM_BASENAME);
     }
 
+    @JsonIgnore
     public File getCollectorLogFile() {
         return new File(myDataPath(appName), "codekvast-collector.log");
     }
 
+    @JsonIgnore
     public File getInvocationsFile() {
         return new File(myDataPath(appName), INVOCATIONS_BASENAME);
     }
 
+    @JsonIgnore
     public File getSignatureFile(String appName) {
         return new File(myDataPath(appName), "signatures.dat");
     }
 
+    @JsonIgnore
     protected File myDataPath(String appName) {
         return new File(dataPath, ConfigUtils.normalizePathName(appName));
     }
 
+    @JsonIgnore
     public List<String> getNormalizedPackagePrefixes() {
         return ConfigUtils.getNormalizedPackagePrefixes(packagePrefixes);
     }
 
+    @JsonIgnore
     public List<File> getCodeBaseFiles() {
         return ConfigUtils.getCommaSeparatedFileValues(codeBase, false);
     }
 
-    public MethodFilter getMethodVisibility() {
+    @JsonIgnore
+    public MethodFilter getMethodFilter() {
         return new MethodFilter(this.methodVisibility);
     }
 

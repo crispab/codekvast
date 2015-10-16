@@ -8,6 +8,7 @@ version = project.parent.parent.version
 dependencies {
     compile lombok
     compile aspectjWeaver
+    compile "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
 
     // Absolutely NO other compile or runtime dependencies are allowed here!
 
@@ -16,4 +17,5 @@ dependencies {
 
     testCompile junit
     testCompile mockito
+    testCompile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
 }
