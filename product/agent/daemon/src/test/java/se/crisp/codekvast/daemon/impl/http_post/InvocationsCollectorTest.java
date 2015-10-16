@@ -1,4 +1,4 @@
-package se.crisp.codekvast.daemon.profile.http_post;
+package se.crisp.codekvast.daemon.impl.http_post;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;

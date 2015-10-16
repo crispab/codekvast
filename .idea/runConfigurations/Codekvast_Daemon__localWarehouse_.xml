@@ -1,13 +1,13 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Codekvast Web" type="Application" factoryName="Application" singleton="true">
+  <configuration default="false" name="Codekvast Daemon (localWarehouse)" type="Application" factoryName="Application" singleton="true">
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
       <pattern>
-        <option name="PATTERN" value="se.crisp.codekvast.web.*" />
+        <option name="PATTERN" value="se.crisp.codekvast.daemon.main.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
-    <option name="MAIN_CLASS_NAME" value="se.crisp.codekvast.web.CodekvastPromoWebApplication" />
-    <option name="VM_PARAMETERS" value="" />
+    <option name="MAIN_CLASS_NAME" value="se.crisp.codekvast.daemon.CodekvastDaemon" />
+    <option name="VM_PARAMETERS" value="-Dspring.profiles.active=localWarehouse" />
     <option name="PROGRAM_PARAMETERS" value="" />
     <option name="WORKING_DIRECTORY" value="file://$MODULE_DIR$" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
@@ -15,16 +15,8 @@
     <option name="ENABLE_SWING_INSPECTOR" value="false" />
     <option name="ENV_VARIABLES" />
     <option name="PASS_PARENT_ENVS" value="true" />
-    <module name="web" />
+    <module name="daemon" />
     <envs />
-    <RunnerSettings RunnerId="Debug">
-      <option name="DEBUG_PORT" value="" />
-      <option name="TRANSPORT" value="0" />
-      <option name="LOCAL" value="true" />
-    </RunnerSettings>
-    <RunnerSettings RunnerId="Run" />
-    <ConfigurationWrapper RunnerId="Debug" />
-    <ConfigurationWrapper RunnerId="Run" />
     <method />
   </configuration>
 </component>

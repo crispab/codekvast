@@ -1,4 +1,4 @@
-package se.crisp.codekvast.daemon.profile.local_warehouse;
+package se.crisp.codekvast.daemon.impl.local_warehouse;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;

@@ -56,8 +56,8 @@ jar {
     exclude "lombok"
 }
 
-ext.springProfiles = 'httpPost'
-// ext.springProfiles = 'localWarehouse'
+// ext.springProfiles = 'httpPost'
+ext.springProfiles = 'localWarehouse'
 
 run {
     jvmArgs = ['-ea', "-Dspring.profiles.active=$springProfiles"]

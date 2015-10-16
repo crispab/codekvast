@@ -15,8 +15,8 @@ public class JvmState {
     private File invocationsFile;
     private CodeBase codeBase;
     private String appVersion;
-    private long jvmDataUploadedAt;
-    private long codebaseUploadedAt;
-    private long invocationDataUploadedAt;
+    private long jvmDataProcessedAt;
+    private long codebaseProcessedAt;
+    private long invocationDataProcessedAt;
     private boolean firstRun = true;
 }

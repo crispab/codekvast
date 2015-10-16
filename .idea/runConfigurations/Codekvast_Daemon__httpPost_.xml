@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Codekvast Daemon" type="Application" factoryName="Application" singleton="true">
+  <configuration default="false" name="Codekvast Daemon (httpPost)" type="Application" factoryName="Application" singleton="true">
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
       <pattern>
         <option name="PATTERN" value="se.crisp.codekvast.daemon.main.*" />
@@ -11,7 +11,7 @@
     <option name="PROGRAM_PARAMETERS" value="--codekvast.serverUploadIntervalSeconds=3" />
     <option name="WORKING_DIRECTORY" value="file://$MODULE_DIR$" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-    <option name="ALTERNATIVE_JRE_PATH" value="" />
+    <option name="ALTERNATIVE_JRE_PATH" />
     <option name="ENABLE_SWING_INSPECTOR" value="false" />
     <option name="ENV_VARIABLES" />
     <option name="PASS_PARENT_ENVS" value="true" />
@@ -25,8 +25,6 @@
     <RunnerSettings RunnerId="Run" />
     <ConfigurationWrapper RunnerId="Debug" />
     <ConfigurationWrapper RunnerId="Run" />
-    <method>
-      <option name="Gradle.BeforeRunTask" enabled="true" tasks="processResources" externalProjectPath="$PROJECT_DIR$/product/agent/codekvast-agent" vmOptions="" scriptParameters="" />
-    </method>
+    <method />
   </configuration>
 </component>
