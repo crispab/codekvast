@@ -13,6 +13,7 @@ import se.crisp.codekvast.shared.model.Invocation;
 import se.crisp.codekvast.shared.util.ComputerID;
 import se.crisp.codekvast.shared.util.FileUtils;
 
+import javax.annotation.Nonnull;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -24,8 +25,11 @@ import java.util.List;
  */
 @Slf4j
 public abstract class AbstractDataProcessorImpl implements DataProcessor {
+    @Nonnull
     protected final DaemonConfig config;
+    @Nonnull
     protected final AppVersionResolver appVersionResolver;
+    @Nonnull
     protected final CodeBaseScanner codeBaseScanner;
     protected final String daemonComputerId = ComputerID.compute().toString();
     protected final String daemonHostName = getHostName();
