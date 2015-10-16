@@ -78,7 +78,7 @@ bootRun {
 
 jar.dependsOn tasks.getByPath(":product:agent:shared:test")
 
-// applicationDefaultJvmArgs = ['-Dspring.profiles.active=httpPost']
+applicationDefaultJvmArgs = ["-Dspring.profiles.active=$springProfiles"]
 
 applicationDistribution.from("src/main/resources") {
     into "conf"
