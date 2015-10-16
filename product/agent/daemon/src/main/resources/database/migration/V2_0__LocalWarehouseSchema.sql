@@ -13,7 +13,7 @@ CREATE TABLE invocations (
   jvm_uuid           VARCHAR(40) NOT NULL,
   invoked_at_millis  BIGINT      NOT NULL,
   confidence         TINYINT     NULL,
-  uploaded_at_millis BIGINT      NOT NULL,
+  exported_at_millis BIGINT      NOT NULL,
 
   FOREIGN KEY (method_id) REFERENCES methods (id),
   FOREIGN KEY (jvm_uuid) REFERENCES jvms (jvm_uuid)
