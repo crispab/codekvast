@@ -2,10 +2,16 @@ package se.crisp.codekvast.daemon.impl.local_warehouse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Builder;
+import lombok.Value;
+import lombok.experimental.Wither;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import se.crisp.codekvast.daemon.appversion.AppVersionResolver;
 import se.crisp.codekvast.daemon.beans.DaemonConfig;
@@ -19,12 +25,14 @@ import se.crisp.codekvast.shared.model.Invocation;
 import se.crisp.codekvast.shared.model.Jvm;
 
 import javax.annotation.Nonnull;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * An implementation of DataProcessor that stores invocation data in a local data warehouse.
@@ -42,7 +50,16 @@ public class LocalWarehouseDataProcessorImpl extends AbstractDataProcessorImpl {
     @Nonnull
     private final ObjectMapper objectMapper;
 
-    private final Map<String, Long> signatureToIdMap = new HashMap<String, Long>();
+    @Value
+    @Builder
+    private static class SignatureData {
+        long id;
+
+        @Wither
+        long invokedAtMillis;
+    }
+
+    private final Map<String, SignatureData> signatureDataMap = new HashMap<String, SignatureData>();
 
     @Inject
     public LocalWarehouseDataProcessorImpl(@Nonnull DaemonConfig config,
@@ -54,6 +71,26 @@ public class LocalWarehouseDataProcessorImpl extends AbstractDataProcessorImpl {
         this.jdbcTemplate = jdbcTemplate;
         this.objectMapper = objectMapper;
         log.info("{} created", getClass().getSimpleName());
+    }
+
+    @PostConstruct
+    void populateSignatureDataMap() {
+        signatureDataMap.clear();
+
+        jdbcTemplate.query("SELECT m.signature, m.id, i.invoked_at_millis FROM methods m, invocations i " +
+                                   "WHERE m.id = i.method_id ", new RowCallbackHandler() {
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                String signature = rs.getString(1);
+                SignatureData signatureData = SignatureData.builder().id(rs.getLong(2)).invokedAtMillis(rs.getLong(3)).build();
+                SignatureData existing = signatureDataMap.get(signature);
+
+                // Only save the latest invocation...
+                if (existing == null || existing.getInvokedAtMillis() < signatureData.getInvokedAtMillis()) {
+                    signatureDataMap.put(signature, signatureData);
+                }
+            }
+        });
     }
 
     @Override
@@ -71,37 +108,10 @@ public class LocalWarehouseDataProcessorImpl extends AbstractDataProcessorImpl {
 
     @Override
     protected void doProcessCodebase(long now, JvmState jvmState, CodeBase codeBase) {
-        updateSignatureToIdMap();
-        if (saveSignatures(jvmState, codeBase.getSignatures())) {
-            updateSignatureToIdMap();
+        for (String signature : codeBase.getSignatures()) {
+            doStoreInvocation(jvmState, -1L, signature, null);
         }
         jvmState.setCodebaseProcessedAt(now);
-    }
-
-    private boolean saveSignatures(JvmState jvmState, Set<String> signatures) {
-        boolean anyInsert = false;
-        for (String signature : signatures) {
-            Long id = signatureToIdMap.get(signature);
-            if (id == null) {
-                jdbcTemplate.update("INSERT INTO methods(signature) VALUES(?)", signature);
-                doStoreInvocation(jvmState, -1L, signature, null);
-                anyInsert = true;
-            }
-        }
-        return anyInsert;
-    }
-
-    private void updateSignatureToIdMap() {
-        signatureToIdMap.clear();
-
-        jdbcTemplate.query("SELECT id, signature FROM methods", new RowCallbackHandler() {
-            @Override
-            public void processRow(ResultSet rs) throws SQLException {
-                Long id = rs.getLong(1);
-                String signature = rs.getString(2);
-                signatureToIdMap.put(signature, id);
-            }
-        });
     }
 
     @Override
@@ -110,24 +120,38 @@ public class LocalWarehouseDataProcessorImpl extends AbstractDataProcessorImpl {
         doStoreInvocation(jvmState, invocation.getInvokedAtMillis(), normalizedSignature, confidence.ordinal());
     }
 
-    private void doStoreInvocation(JvmState jvmState, Long invokedAtMillis, String normalizedSignature, Integer confidence) {
-        // TODO: make sure not to overwrite newer invocations
-        Long methodId = getSignatureId(normalizedSignature);
-        jdbcTemplate.update("MERGE INTO invocations(method_id, jvm_uuid, invoked_at_millis, confidence, exported_at_millis) " +
-                                    "KEY(method_id, jvm_uuid) " +
-                                    "VALUES(?, ?, ?, ?, ?) ",
-                            methodId, jvmState.getJvm().getJvmUuid(), invokedAtMillis, confidence, -1L);
-    }
+    private void doStoreInvocation(JvmState jvmState, long invokedAtMillis, final String normalizedSignature, Integer confidence) {
+        SignatureData signatureData = signatureDataMap.get(normalizedSignature);
 
-    private Long getSignatureId(String signature) {
-        Long id = signatureToIdMap.get(signature);
-        if (id == null) {
-            log.debug("Cache miss for {}, inserting...", signature);
-            jdbcTemplate.update("INSERT INTO methods(signature) VALUES(?)", signature);
-            id = jdbcTemplate.queryForObject("SELECT id FROM methods WHERE signature = ?", new String[]{signature}, Long.class);
-            signatureToIdMap.put(signature, id);
+        if (signatureData == null) {
+            log.debug("Inserting {}...", normalizedSignature);
+
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            jdbcTemplate.update(new PreparedStatementCreator() {
+                @Override
+                public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+                    PreparedStatement ps = con.prepareStatement("INSERT INTO methods(signature) VALUES(?)");
+                    ps.setString(1, normalizedSignature);
+                    return ps;
+                }
+            }, keyHolder);
+
+            signatureData = SignatureData.builder()
+                                         .id(keyHolder.getKey().longValue())
+                                         .invokedAtMillis(Long.MIN_VALUE)
+                                         .build();
+
+            signatureDataMap.put(normalizedSignature, signatureData);
         }
-        return id;
+
+
+        if (invokedAtMillis > signatureData.getInvokedAtMillis()) {
+            jdbcTemplate.update("MERGE INTO invocations(method_id, jvm_uuid, invoked_at_millis, confidence, exported_at_millis) " +
+                                        "KEY(method_id, jvm_uuid) " +
+                                        "VALUES(?, ?, ?, ?, ?) ",
+                                signatureData.getId(), jvmState.getJvm().getJvmUuid(), invokedAtMillis, confidence, -1L);
+            signatureDataMap.put(normalizedSignature, signatureData.withInvokedAtMillis(invokedAtMillis));
+        }
     }
 
     @Override
