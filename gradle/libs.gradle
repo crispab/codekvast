@@ -1,7 +1,7 @@
 ext {
     springBootVersion = '1.2.6.RELEASE'
     h2databaseVersion = '1.4.190'
-    jacksonVersion = '2.4.6'
+    jacksonVersion = '2.6.3'
 
     // Synchronize it with "org.springframework.boot:spring-boot-dependencies:$springBootVersion" (available as HTML
     // at http://docs.spring.io/spring-boot/docs/1.2.6.RELEASE/reference/htmlsingle/#appendix-dependency-versions )

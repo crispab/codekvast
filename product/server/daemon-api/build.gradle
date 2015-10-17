@@ -7,8 +7,8 @@ version = project.parent.parent.version
 
 dependencies {
     compile lombok
-    compile "com.fasterxml.jackson.core:jackson-annotations"
-    compile "com.fasterxml.jackson.core:jackson-databind"
+    compile "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
+    compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
     compile "javax.inject:javax.inject:1"
     compile "javax.validation:validation-api:1.1.0.Final"
     compile "org.apache.httpcomponents:httpclient"
