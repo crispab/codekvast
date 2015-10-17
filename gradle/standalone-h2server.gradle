@@ -17,7 +17,7 @@ dependencies {
 
 task startDatabase(type: JavaFork) {
     description "Starts a H2 database server"
-    group "Help"
+    group "Support"
 
     def mainClass = 'org.h2.tools.Server'
 
@@ -42,7 +42,7 @@ task startDatabase(type: JavaFork) {
 
 task stopDatabase(type: JavaFork) {
     description "Stops the H2 database server"
-    group "Help"
+    group "Support"
 
     def mainClass = 'org.h2.tools.Server'
 
