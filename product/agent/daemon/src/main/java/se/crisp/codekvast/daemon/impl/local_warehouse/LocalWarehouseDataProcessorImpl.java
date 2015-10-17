@@ -2,9 +2,6 @@ package se.crisp.codekvast.daemon.impl.local_warehouse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Builder;
-import lombok.Value;
-import lombok.experimental.Wither;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -34,6 +31,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkState;
+
 /**
  * An implementation of DataProcessor that stores invocation data in a local data warehouse.
  *
@@ -50,16 +49,8 @@ public class LocalWarehouseDataProcessorImpl extends AbstractDataProcessorImpl {
     @Nonnull
     private final ObjectMapper objectMapper;
 
-    @Value
-    @Builder
-    private static class SignatureData {
-        long id;
-
-        @Wither
-        long invokedAtMillis;
-    }
-
-    private final Map<String, SignatureData> signatureDataMap = new HashMap<String, SignatureData>();
+    private final Map<String, Long> methodIdBySignatureMap = new HashMap<String, Long>();
+    private final Map<String, Map<Long, Long>> invokedAtMillisMapByJvmUuidMap = new HashMap<String, Map<Long, Long>>();
 
     @Inject
     public LocalWarehouseDataProcessorImpl(@Nonnull DaemonConfig config,
@@ -74,21 +65,24 @@ public class LocalWarehouseDataProcessorImpl extends AbstractDataProcessorImpl {
     }
 
     @PostConstruct
-    void populateSignatureDataMap() {
-        signatureDataMap.clear();
+    void populateCache() {
+        methodIdBySignatureMap.clear();
+        invokedAtMillisMapByJvmUuidMap.clear();
 
-        jdbcTemplate.query("SELECT m.signature, m.id, i.invoked_at_millis FROM methods m, invocations i " +
+        jdbcTemplate.query("SELECT m.signature, i.method_id, i.jvm_uuid, i.invoked_at_millis " +
+                                   "FROM methods m, invocations i " +
                                    "WHERE m.id = i.method_id ", new RowCallbackHandler() {
             @Override
             public void processRow(ResultSet rs) throws SQLException {
                 String signature = rs.getString(1);
-                SignatureData signatureData = SignatureData.builder().id(rs.getLong(2)).invokedAtMillis(rs.getLong(3)).build();
-                SignatureData existing = signatureDataMap.get(signature);
+                long methodId = rs.getLong(2);
+                String jvmUuid = rs.getString(3);
+                long invokedAtMillis = rs.getLong(4);
 
-                // Only save the latest invocation...
-                if (existing == null || existing.getInvokedAtMillis() < signatureData.getInvokedAtMillis()) {
-                    signatureDataMap.put(signature, signatureData);
-                }
+                methodIdBySignatureMap.put(signature, methodId);
+
+                Map<Long, Long> invokedAtMillisMap = getInvokedAtMillisMap(jvmUuid);
+                invokedAtMillisMap.put(methodId, invokedAtMillis);
             }
         });
     }
@@ -98,6 +92,8 @@ public class LocalWarehouseDataProcessorImpl extends AbstractDataProcessorImpl {
         try {
             Jvm jvm = jvmState.getJvm();
             String json = objectMapper.writeValueAsString(jvm);
+            checkState(json.length() <= 2000, "JSON string longer than 2000 characters");
+
             jdbcTemplate.update("MERGE INTO jvms(jvm_uuid, json_data) VALUES(?, ?)", jvm.getJvmUuid(), json);
             log.debug("Updated JVM {}", jvm.getJvmUuid());
             jvmState.setJvmDataProcessedAt(jvmState.getJvm().getDumpedAtMillis());
@@ -121,37 +117,53 @@ public class LocalWarehouseDataProcessorImpl extends AbstractDataProcessorImpl {
     }
 
     private void doStoreInvocation(JvmState jvmState, long invokedAtMillis, final String normalizedSignature, Integer confidence) {
-        SignatureData signatureData = signatureDataMap.get(normalizedSignature);
+        Long methodId = getMethodId(normalizedSignature);
 
-        if (signatureData == null) {
-            log.debug("Inserting {}...", normalizedSignature);
+        String jvmUuid = jvmState.getJvm().getJvmUuid();
+
+        Map<Long, Long> invokedAtMillisMap = getInvokedAtMillisMap(jvmUuid);
+        Long oldInvokedAtMillis = invokedAtMillisMap.get(methodId);
+
+        if (oldInvokedAtMillis == null || invokedAtMillis > oldInvokedAtMillis) {
+            jdbcTemplate.update("MERGE INTO invocations(method_id, jvm_uuid, invoked_at_millis, confidence, exported_at_millis) " +
+                                        "KEY(method_id, jvm_uuid) " +
+                                        "VALUES(?, ?, ?, ?, ?) ",
+                                methodId, jvmUuid, invokedAtMillis, confidence, -1L);
+            invokedAtMillisMap.put(methodId, invokedAtMillis);
+        }
+    }
+
+    @Nonnull
+    private Long getMethodId(final String signature) {
+        Long methodId = methodIdBySignatureMap.get(signature);
+
+        if (methodId == null) {
 
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(new PreparedStatementCreator() {
                 @Override
                 public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
                     PreparedStatement ps = con.prepareStatement("INSERT INTO methods(signature) VALUES(?)");
-                    ps.setString(1, normalizedSignature);
+                    ps.setString(1, signature);
                     return ps;
                 }
             }, keyHolder);
 
-            signatureData = SignatureData.builder()
-                                         .id(keyHolder.getKey().longValue())
-                                         .invokedAtMillis(Long.MIN_VALUE)
-                                         .build();
-
-            signatureDataMap.put(normalizedSignature, signatureData);
+            methodId = keyHolder.getKey().longValue();
+            methodIdBySignatureMap.put(signature, methodId);
+            log.debug("Inserted {}:{}...", methodId, signature);
         }
+        return methodId;
+    }
 
-
-        if (invokedAtMillis > signatureData.getInvokedAtMillis()) {
-            jdbcTemplate.update("MERGE INTO invocations(method_id, jvm_uuid, invoked_at_millis, confidence, exported_at_millis) " +
-                                        "KEY(method_id, jvm_uuid) " +
-                                        "VALUES(?, ?, ?, ?, ?) ",
-                                signatureData.getId(), jvmState.getJvm().getJvmUuid(), invokedAtMillis, confidence, -1L);
-            signatureDataMap.put(normalizedSignature, signatureData.withInvokedAtMillis(invokedAtMillis));
+    @Nonnull
+    private Map<Long, Long> getInvokedAtMillisMap(String jvmUuid) {
+        Map<Long, Long> result = invokedAtMillisMapByJvmUuidMap.get(jvmUuid);
+        if (result == null) {
+            result = new HashMap<Long, Long>();
+            invokedAtMillisMapByJvmUuidMap.put(jvmUuid, result);
         }
+        return result;
     }
 
     @Override
