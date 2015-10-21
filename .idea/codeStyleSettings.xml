@@ -13,7 +13,6 @@
         <option name="WRAP_COMMENTS" value="true" />
         <SqlCodeStyleSettings>
           <option name="QUOTE_IDENTIFIER" value="1" />
-          <option name="IDENTIFIER_CASE" value="1" />
           <option name="QUOTED_IDENTIFIER_CASE" value="1" />
         </SqlCodeStyleSettings>
         <XML>
