@@ -128,7 +128,7 @@ public class CodeBase {
     }
 
 
-    URL[] getUrls() {
+    public URL[] getUrls() {
         if (needsExploding) {
             throw new UnsupportedOperationException("Exploding WAR or EAR not yet implemented");
         }

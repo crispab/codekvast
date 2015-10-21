@@ -24,5 +24,5 @@ import java.lang.annotation.*;
         "codekvast.dataPath=dataPath",
         "codekvast.serverUploadIntervalSeconds=600"
 })
-public @interface EmbeddedCodekvastHttpPostDaemonIntegTest {
+public @interface HttpPostIntegrationTest {
 }
