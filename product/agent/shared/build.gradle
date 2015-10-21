@@ -17,6 +17,5 @@ dependencies {
 
     testCompile junit
     testCompile mockito
-    testCompile project(':product:server:daemon-api')
     testCompile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
 }
