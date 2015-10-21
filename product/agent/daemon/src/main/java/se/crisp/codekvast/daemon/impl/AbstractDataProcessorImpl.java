@@ -1,5 +1,8 @@
 package se.crisp.codekvast.daemon.impl;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.daemon.DataProcessor;
@@ -13,7 +16,6 @@ import se.crisp.codekvast.shared.model.Invocation;
 import se.crisp.codekvast.shared.util.ComputerID;
 import se.crisp.codekvast.shared.util.FileUtils;
 
-import javax.annotation.Nonnull;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -24,21 +26,15 @@ import java.util.List;
  * @author olle.hallin@crisp.se
  */
 @Slf4j
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class AbstractDataProcessorImpl implements DataProcessor {
-    @Nonnull
-    protected final DaemonConfig config;
-    @Nonnull
-    protected final AppVersionResolver appVersionResolver;
-    @Nonnull
-    protected final CodeBaseScanner codeBaseScanner;
+    @Getter
+    private final DaemonConfig daemonConfig;
+    private final AppVersionResolver appVersionResolver;
+    private final CodeBaseScanner codeBaseScanner;
+
     protected final String daemonComputerId = ComputerID.compute().toString();
     protected final String daemonHostName = getHostName();
-
-    protected AbstractDataProcessorImpl(DaemonConfig config, AppVersionResolver appVersionResolver, CodeBaseScanner codeBaseScanner) {
-        this.config = config;
-        this.appVersionResolver = appVersionResolver;
-        this.codeBaseScanner = codeBaseScanner;
-    }
 
     @Override
     @Transactional
@@ -114,7 +110,7 @@ public abstract class AbstractDataProcessorImpl implements DataProcessor {
             }
 
             if (normalizedSignature != null) {
-                doStoreNormalizedSignature(jvmState, invocation, normalizedSignature, confidence);
+                doStoreNormalizedSignature(jvmState, invocation.getInvokedAtMillis(), normalizedSignature, confidence);
             }
         }
 
@@ -144,7 +140,7 @@ public abstract class AbstractDataProcessorImpl implements DataProcessor {
 
     protected abstract void doProcessCodebase(long now, JvmState jvmState, CodeBase codeBase);
 
-    protected abstract void doStoreNormalizedSignature(JvmState jvmState, Invocation invocation, String normalizedSignature,
+    protected abstract void doStoreNormalizedSignature(JvmState jvmState, long invokedAtMillis, String signature,
                                                        SignatureConfidence confidence);
 
     protected abstract void doProcessUnprocessedSignatures(JvmState jvmState);

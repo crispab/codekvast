@@ -14,7 +14,6 @@ import se.crisp.codekvast.server.daemon_api.DaemonApi;
 import se.crisp.codekvast.server.daemon_api.DaemonApiException;
 import se.crisp.codekvast.server.daemon_api.model.v1.JvmData;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence;
-import se.crisp.codekvast.shared.model.Invocation;
 import se.crisp.codekvast.shared.model.Jvm;
 
 import javax.inject.Inject;
@@ -64,13 +63,9 @@ public class HttpPostDataProcessorImpl extends AbstractDataProcessorImpl {
     }
 
     @Override
-    protected void doStoreNormalizedSignature(JvmState jvmState, Invocation invocation, String normalizedSignature,
-                                              SignatureConfidence confidence) {
-        invocationsCollector.put(jvmState.getJvm().getJvmUuid(),
-                                 jvmState.getJvm().getStartedAtMillis(),
-                                 normalizedSignature,
-                                 invocation.getInvokedAtMillis(),
-                                 confidence);
+    protected void doStoreNormalizedSignature(JvmState jvmState, long invokedAtMillis, String signature, SignatureConfidence confidence) {
+        invocationsCollector
+                .put(jvmState.getJvm().getJvmUuid(), jvmState.getJvm().getStartedAtMillis(), signature, invokedAtMillis, confidence);
     }
 
     @Override
@@ -89,12 +84,6 @@ public class HttpPostDataProcessorImpl extends AbstractDataProcessorImpl {
         Jvm jvm = jvmState.getJvm();
 
         return JvmData.builder()
-                      .daemonComputerId(daemonComputerId)
-                      .daemonHostName(daemonHostName)
-                      .daemonTimeMillis(System.currentTimeMillis())
-                      .daemonUploadIntervalSeconds(config.getServerUploadIntervalSeconds())
-                      .daemonVcsId(config.getDaemonVcsId())
-                      .daemonVersion(config.getDaemonVersion())
                       .appName(jvm.getCollectorConfig().getAppName())
                       .appVersion(jvmState.getAppVersion())
                       .collectorComputerId(jvm.getComputerId())
@@ -102,6 +91,12 @@ public class HttpPostDataProcessorImpl extends AbstractDataProcessorImpl {
                       .collectorResolutionSeconds(jvm.getCollectorConfig().getCollectorResolutionSeconds())
                       .collectorVcsId(jvm.getCollectorVcsId())
                       .collectorVersion(jvm.getCollectorVersion())
+                      .daemonComputerId(daemonComputerId)
+                      .daemonHostName(daemonHostName)
+                      .daemonTimeMillis(System.currentTimeMillis())
+                      .daemonUploadIntervalSeconds(getDaemonConfig().getServerUploadIntervalSeconds())
+                      .daemonVcsId(getDaemonConfig().getDaemonVcsId())
+                      .daemonVersion(getDaemonConfig().getDaemonVersion())
                       .dumpedAtMillis(jvm.getDumpedAtMillis())
                       .jvmUuid(jvm.getJvmUuid())
                       .methodVisibility(jvm.getCollectorConfig().getMethodFilter().toString())

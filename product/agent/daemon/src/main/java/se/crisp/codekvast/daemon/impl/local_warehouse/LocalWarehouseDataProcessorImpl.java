@@ -18,7 +18,6 @@ import se.crisp.codekvast.daemon.codebase.CodeBaseScanner;
 import se.crisp.codekvast.daemon.impl.AbstractDataProcessorImpl;
 import se.crisp.codekvast.daemon.impl.DataProcessingException;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence;
-import se.crisp.codekvast.shared.model.Invocation;
 import se.crisp.codekvast.shared.model.Jvm;
 
 import javax.annotation.Nonnull;
@@ -40,10 +39,7 @@ import static com.google.common.base.Preconditions.checkState;
 @Slf4j
 public class LocalWarehouseDataProcessorImpl extends AbstractDataProcessorImpl {
 
-    @Nonnull
     private final JdbcTemplate jdbcTemplate;
-
-    @Nonnull
     private final ObjectMapper objectMapper;
 
     @Inject
@@ -80,11 +76,6 @@ public class LocalWarehouseDataProcessorImpl extends AbstractDataProcessorImpl {
         return appId;
     }
 
-    private Long queryForLong(String sql, Object... args) {
-        List<Long> list = jdbcTemplate.queryForList(sql, Long.class, args);
-        return list.isEmpty() ? null : list.get(0);
-    }
-
     private long storeJvm(final Jvm jvm) {
         Long jvmId = queryForLong("SELECT id FROM jvms WHERE uuid = ? ", jvm.getJvmUuid());
 
@@ -94,7 +85,7 @@ public class LocalWarehouseDataProcessorImpl extends AbstractDataProcessorImpl {
             jvmId = keyHolder.getKey().longValue();
             log.debug("Stored JVM {}:{}", jvmId, jvm.getJvmUuid());
         } else {
-            jdbcTemplate.update("UPDATE jvms SET dumped_at_millis = ? WHERE id = ?", jvm.getDumpedAtMillis(), jvmId);
+            jdbcTemplate.update("UPDATE jvms SET dumpedAtMillis = ? WHERE id = ?", jvm.getDumpedAtMillis(), jvmId);
             log.debug("Updated JVM {}:{}", jvmId, jvm.getJvmUuid());
         }
         return jvmId;
@@ -109,33 +100,38 @@ public class LocalWarehouseDataProcessorImpl extends AbstractDataProcessorImpl {
     }
 
     @Override
-    protected void doStoreNormalizedSignature(JvmState jvmState, Invocation invocation, String normalizedSignature,
-                                              SignatureConfidence confidence) {
-        doStoreInvocation(jvmState, invocation.getInvokedAtMillis(), normalizedSignature, confidence.ordinal());
+    protected void doStoreNormalizedSignature(JvmState jvmState, long invokedAtMillis, String signature, SignatureConfidence confidence) {
+        doStoreInvocation(jvmState, invokedAtMillis, signature, confidence.ordinal());
     }
 
     private void doStoreInvocation(JvmState jvmState, long invokedAtMillis, final String signature, Integer confidence) {
         long applicationId = jvmState.getDatabaseAppId();
         long methodId = getMethodId(signature);
         long jvmId = jvmState.getDatabaseJvmId();
+        long initialCount = invokedAtMillis > 0 ? 1 : 0;
+        String what = invokedAtMillis > 0 ? "invocation" : "signature";
 
         Long oldInvokedAtMillis =
-                queryForLong("SELECT invoked_at_millis FROM invocations WHERE application_id = ? AND method_id = ? AND jvm_id = ? ",
+                queryForLong("SELECT invokedAtMillis FROM invocations WHERE applicationId = ? AND methodId = ? AND jvmId = ? ",
                              applicationId, methodId, jvmId);
 
-        if (oldInvokedAtMillis == null || invokedAtMillis > oldInvokedAtMillis) {
+        if (oldInvokedAtMillis == null) {
+            jdbcTemplate.update("INSERT INTO invocations(applicationId, methodId, jvmId, invokedAtMillis, invocationCount, " +
+                                        "confidence, exportedAtMillis) " +
+                                        "VALUES(?, ?, ?, ?, ?, ?, ?) ",
+                                applicationId, methodId, jvmId, invokedAtMillis, initialCount, confidence, -1L);
+            log.debug("Stored {} {}:{}:{}", what, applicationId, methodId, jvmId);
+        } else if (invokedAtMillis > oldInvokedAtMillis) {
             jdbcTemplate
-                    .update("MERGE INTO invocations(application_id, method_id, jvm_id, invoked_at_millis, confidence, exported_at_millis)" +
-                                    " " +
-                                    "KEY(application_id, method_id, jvm_id) " +
-                                    "VALUES(?, ?, ?, ?, ?, ?) ",
-                            applicationId, methodId, jvmId, invokedAtMillis, confidence, -1L);
-            String what = invokedAtMillis > 0 ? "invocation" : "signature";
-            if (oldInvokedAtMillis == null) {
-                log.debug("Stored {} {}:{}:{}", what, applicationId, methodId, jvmId);
-            } else {
-                log.debug("Updated {} {}:{}:{}", what, applicationId, methodId, jvmId);
-            }
+                    .update("UPDATE invocations SET invokedAtMillis = ?, invocationCount = invocationCount + 1, confidence = ?, " +
+                                    "exportedAtMillis = ? " +
+                                    "WHERE applicationId = ? AND methodId = ? AND jvmId = ? ",
+                            invokedAtMillis, confidence, -1L, applicationId, methodId, jvmId);
+            log.debug("Updated {} {}:{}:{}", what, applicationId, methodId, jvmId);
+        } else if (invokedAtMillis == oldInvokedAtMillis) {
+            log.trace("Ignoring invocation of {}, same row exists in database", signature);
+        } else {
+            log.trace("Ignoring invocation of {}, a newer row exists in database", signature);
         }
     }
 
@@ -157,6 +153,11 @@ public class LocalWarehouseDataProcessorImpl extends AbstractDataProcessorImpl {
         // Nothing to do here
     }
 
+    private Long queryForLong(String sql, Object... args) {
+        List<Long> list = jdbcTemplate.queryForList(sql, Long.class, args);
+        return list.isEmpty() ? null : list.get(0);
+    }
+
     @Value
     private static class InsertApplication implements PreparedStatementCreator {
         private final String name;
@@ -165,7 +166,7 @@ public class LocalWarehouseDataProcessorImpl extends AbstractDataProcessorImpl {
 
         @Override
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-            PreparedStatement ps = con.prepareStatement("INSERT INTO applications(name, version, created_at_millis) VALUES(?, ?, ?)");
+            PreparedStatement ps = con.prepareStatement("INSERT INTO applications(name, version, createdAtMillis) VALUES(?, ?, ?)");
             ps.setString(1, name);
             ps.setString(2, version);
             ps.setLong(3, createdAtMillis);
@@ -179,7 +180,7 @@ public class LocalWarehouseDataProcessorImpl extends AbstractDataProcessorImpl {
 
         @Override
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-            PreparedStatement ps = con.prepareStatement("INSERT INTO methods(signature, created_at_millis) VALUES(?, ?)");
+            PreparedStatement ps = con.prepareStatement("INSERT INTO methods(signature, createdAtMillis) VALUES(?, ?)");
             ps.setString(1, signature);
             ps.setLong(2, System.currentTimeMillis());
             return ps;
@@ -193,7 +194,7 @@ public class LocalWarehouseDataProcessorImpl extends AbstractDataProcessorImpl {
         @Override
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
             PreparedStatement ps =
-                    con.prepareStatement("INSERT INTO jvms(uuid, started_at_millis, dumped_at_millis, json_data) VALUES(?, ?, ?, ?)");
+                    con.prepareStatement("INSERT INTO jvms(uuid, startedAtMillis, dumpedAtMillis, jsonData) VALUES(?, ?, ?, ?)");
             ps.setString(1, jvm.getJvmUuid());
             ps.setLong(2, jvm.getStartedAtMillis());
             ps.setLong(3, jvm.getDumpedAtMillis());
