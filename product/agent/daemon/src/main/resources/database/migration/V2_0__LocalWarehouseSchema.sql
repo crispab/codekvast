@@ -10,9 +10,11 @@ CREATE UNIQUE INDEX ix_application_identity ON applications (name, version);
 // --- methods --------------------------------
 CREATE TABLE methods (
   id              BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
-  signature       VARCHAR(4000)         NOT NULL UNIQUE,
+  visibility      VARCHAR(20)           NOT NULL,
+  signature       VARCHAR(4000)         NOT NULL,
   createdAtMillis BIGINT                NOT NULL
 );
+CREATE UNIQUE INDEX ix_method_identity ON methods (visibility, signature);
 
 // --- JVMs --------------------------------
 CREATE TABLE jvms (

@@ -12,9 +12,7 @@ import se.crisp.codekvast.daemon.impl.AbstractDataProcessorImpl;
 import se.crisp.codekvast.daemon.util.LogUtil;
 import se.crisp.codekvast.server.daemon_api.DaemonApi;
 import se.crisp.codekvast.server.daemon_api.DaemonApiException;
-import se.crisp.codekvast.server.daemon_api.model.v1.JvmData;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence;
-import se.crisp.codekvast.shared.model.Jvm;
 
 import javax.inject.Inject;
 
@@ -80,28 +78,4 @@ public class HttpPostDataProcessorImpl extends AbstractDataProcessorImpl {
     }
 
 
-    private JvmData createUploadJvmData(JvmState jvmState) {
-        Jvm jvm = jvmState.getJvm();
-
-        return JvmData.builder()
-                      .appName(jvm.getCollectorConfig().getAppName())
-                      .appVersion(jvmState.getAppVersion())
-                      .collectorComputerId(jvm.getComputerId())
-                      .collectorHostName(jvm.getHostName())
-                      .collectorResolutionSeconds(jvm.getCollectorConfig().getCollectorResolutionSeconds())
-                      .collectorVcsId(jvm.getCollectorVcsId())
-                      .collectorVersion(jvm.getCollectorVersion())
-                      .daemonComputerId(daemonComputerId)
-                      .daemonHostName(daemonHostName)
-                      .daemonTimeMillis(System.currentTimeMillis())
-                      .daemonUploadIntervalSeconds(getDaemonConfig().getServerUploadIntervalSeconds())
-                      .daemonVcsId(getDaemonConfig().getDaemonVcsId())
-                      .daemonVersion(getDaemonConfig().getDaemonVersion())
-                      .dumpedAtMillis(jvm.getDumpedAtMillis())
-                      .jvmUuid(jvm.getJvmUuid())
-                      .methodVisibility(jvm.getCollectorConfig().getMethodFilter().toString())
-                      .startedAtMillis(jvm.getStartedAtMillis())
-                      .tags(jvm.getCollectorConfig().getTags())
-                      .build();
-    }
 }

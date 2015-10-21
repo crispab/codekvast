@@ -1,7 +1,6 @@
 package se.crisp.codekvast.daemon.impl;
 
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,8 +10,10 @@ import se.crisp.codekvast.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.daemon.beans.JvmState;
 import se.crisp.codekvast.daemon.codebase.CodeBase;
 import se.crisp.codekvast.daemon.codebase.CodeBaseScanner;
+import se.crisp.codekvast.server.daemon_api.model.v1.JvmData;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence;
 import se.crisp.codekvast.shared.model.Invocation;
+import se.crisp.codekvast.shared.model.Jvm;
 import se.crisp.codekvast.shared.util.ComputerID;
 import se.crisp.codekvast.shared.util.FileUtils;
 
@@ -28,13 +29,12 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class AbstractDataProcessorImpl implements DataProcessor {
-    @Getter
     private final DaemonConfig daemonConfig;
     private final AppVersionResolver appVersionResolver;
     private final CodeBaseScanner codeBaseScanner;
 
-    protected final String daemonComputerId = ComputerID.compute().toString();
-    protected final String daemonHostName = getHostName();
+    private final String daemonComputerId = ComputerID.compute().toString();
+    private final String daemonHostName = getHostName();
 
     @Override
     @Transactional
@@ -74,6 +74,10 @@ public abstract class AbstractDataProcessorImpl implements DataProcessor {
             doProcessUnprocessedSignatures(jvmState);
         }
     }
+
+    protected abstract void doProcessJvmData(JvmState jvmState) throws DataProcessingException;
+
+    protected abstract void doProcessCodebase(long now, JvmState jvmState, CodeBase codeBase);
 
     private void normalizeAndProcessInvocations(JvmState jvmState, List<Invocation> invocations) {
         CodeBase codeBase = jvmState.getCodeBase();
@@ -127,6 +131,11 @@ public abstract class AbstractDataProcessorImpl implements DataProcessor {
         }
     }
 
+    protected abstract void doProcessUnprocessedSignatures(JvmState jvmState);
+
+    protected abstract void doStoreNormalizedSignature(JvmState jvmState, long invokedAtMillis, String signature,
+                                                       SignatureConfidence confidence);
+
     private String getHostName() {
         try {
             return InetAddress.getLocalHost().getHostName();
@@ -136,13 +145,28 @@ public abstract class AbstractDataProcessorImpl implements DataProcessor {
         }
     }
 
-    protected abstract void doProcessJvmData(JvmState jvmState) throws DataProcessingException;
+    protected JvmData createUploadJvmData(JvmState jvmState) {
+        Jvm jvm = jvmState.getJvm();
 
-    protected abstract void doProcessCodebase(long now, JvmState jvmState, CodeBase codeBase);
-
-    protected abstract void doStoreNormalizedSignature(JvmState jvmState, long invokedAtMillis, String signature,
-                                                       SignatureConfidence confidence);
-
-    protected abstract void doProcessUnprocessedSignatures(JvmState jvmState);
-
+        return JvmData.builder()
+                      .appName(jvm.getCollectorConfig().getAppName())
+                      .appVersion(jvmState.getAppVersion())
+                      .collectorComputerId(jvm.getComputerId())
+                      .collectorHostName(jvm.getHostName())
+                      .collectorResolutionSeconds(jvm.getCollectorConfig().getCollectorResolutionSeconds())
+                      .collectorVcsId(jvm.getCollectorVcsId())
+                      .collectorVersion(jvm.getCollectorVersion())
+                      .daemonComputerId(daemonComputerId)
+                      .daemonHostName(daemonHostName)
+                      .daemonTimeMillis(System.currentTimeMillis())
+                      .daemonUploadIntervalSeconds(daemonConfig.getServerUploadIntervalSeconds())
+                      .daemonVcsId(daemonConfig.getDaemonVcsId())
+                      .daemonVersion(daemonConfig.getDaemonVersion())
+                      .dumpedAtMillis(jvm.getDumpedAtMillis())
+                      .jvmUuid(jvm.getJvmUuid())
+                      .methodVisibility(jvm.getCollectorConfig().getMethodFilter().toString())
+                      .startedAtMillis(jvm.getStartedAtMillis())
+                      .tags(jvm.getCollectorConfig().getTags())
+                      .build();
+    }
 }
