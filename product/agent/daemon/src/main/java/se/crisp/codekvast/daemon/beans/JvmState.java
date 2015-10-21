@@ -19,4 +19,12 @@ public class JvmState {
     private long codebaseProcessedAt;
     private long invocationDataProcessedAt;
     private boolean firstRun = true;
+    private long databaseAppId;
+    private long databaseJvmId;
+
+    public void setProcessed(long applicationId, long jvmId, long processedAt) {
+        this.databaseAppId = applicationId;
+        this.databaseJvmId = jvmId;
+        this.jvmDataProcessedAt = processedAt;
+    }
 }

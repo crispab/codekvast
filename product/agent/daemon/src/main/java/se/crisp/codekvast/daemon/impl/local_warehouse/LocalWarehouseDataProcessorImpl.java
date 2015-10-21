@@ -2,11 +2,11 @@ package se.crisp.codekvast.daemon.impl.local_warehouse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
@@ -22,14 +22,11 @@ import se.crisp.codekvast.shared.model.Invocation;
 import se.crisp.codekvast.shared.model.Jvm;
 
 import javax.annotation.Nonnull;
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkState;
 
@@ -49,9 +46,6 @@ public class LocalWarehouseDataProcessorImpl extends AbstractDataProcessorImpl {
     @Nonnull
     private final ObjectMapper objectMapper;
 
-    private final Map<String, Long> methodIdBySignatureMap = new HashMap<String, Long>();
-    private final Map<String, Map<Long, Long>> invokedAtMillisMapByJvmUuidMap = new HashMap<String, Map<Long, Long>>();
-
     @Inject
     public LocalWarehouseDataProcessorImpl(@Nonnull DaemonConfig config,
                                            @Nonnull AppVersionResolver appVersionResolver,
@@ -64,42 +58,46 @@ public class LocalWarehouseDataProcessorImpl extends AbstractDataProcessorImpl {
         log.info("{} created", getClass().getSimpleName());
     }
 
-    @PostConstruct
-    void populateCache() {
-        methodIdBySignatureMap.clear();
-        invokedAtMillisMapByJvmUuidMap.clear();
-
-        jdbcTemplate.query("SELECT m.signature, i.method_id, i.jvm_uuid, i.invoked_at_millis " +
-                                   "FROM methods m, invocations i " +
-                                   "WHERE m.id = i.method_id ", new RowCallbackHandler() {
-            @Override
-            public void processRow(ResultSet rs) throws SQLException {
-                String signature = rs.getString(1);
-                long methodId = rs.getLong(2);
-                String jvmUuid = rs.getString(3);
-                long invokedAtMillis = rs.getLong(4);
-
-                methodIdBySignatureMap.put(signature, methodId);
-
-                Map<Long, Long> invokedAtMillisMap = getInvokedAtMillisMap(jvmUuid);
-                invokedAtMillisMap.put(methodId, invokedAtMillis);
-            }
-        });
-    }
-
     @Override
     protected void doProcessJvmData(JvmState jvmState) throws DataProcessingException {
-        try {
-            Jvm jvm = jvmState.getJvm();
-            String json = objectMapper.writeValueAsString(jvm);
-            checkState(json.length() <= 2000, "JSON string longer than 2000 characters");
+        Jvm jvm = jvmState.getJvm();
 
-            jdbcTemplate.update("MERGE INTO jvms(jvm_uuid, json_data) VALUES(?, ?)", jvm.getJvmUuid(), json);
-            log.debug("Updated JVM {}", jvm.getJvmUuid());
-            jvmState.setJvmDataProcessedAt(jvmState.getJvm().getDumpedAtMillis());
-        } catch (JsonProcessingException e) {
-            throw new DataProcessingException("Cannot convert JVM data to JSON", e);
+        long applicationId = storeApplication(jvm.getCollectorConfig().getAppName(), jvmState.getAppVersion(), jvm.getStartedAtMillis());
+        long jvmId = storeJvm(jvm);
+
+        jvmState.setProcessed(applicationId, jvmId, jvmState.getJvm().getDumpedAtMillis());
+    }
+
+    private long storeApplication(final String name, final String version, final long createdAtMillis) {
+        Long appId = queryForLong("SELECT id FROM applications WHERE name = ? AND version = ? ", name, version);
+
+        if (appId == null) {
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            jdbcTemplate.update(new InsertApplication(name, version, createdAtMillis), keyHolder);
+            appId = keyHolder.getKey().longValue();
+            log.debug("Stored application {}:{}:{}", appId, name, version);
         }
+        return appId;
+    }
+
+    private Long queryForLong(String sql, Object... args) {
+        List<Long> list = jdbcTemplate.queryForList(sql, Long.class, args);
+        return list.isEmpty() ? null : list.get(0);
+    }
+
+    private long storeJvm(final Jvm jvm) {
+        Long jvmId = queryForLong("SELECT id FROM jvms WHERE uuid = ? ", jvm.getJvmUuid());
+
+        if (jvmId == null) {
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            jdbcTemplate.update(new InsertJvm(jvm), keyHolder);
+            jvmId = keyHolder.getKey().longValue();
+            log.debug("Stored JVM {}:{}", jvmId, jvm.getJvmUuid());
+        } else {
+            jdbcTemplate.update("UPDATE jvms SET dumped_at_millis = ? WHERE id = ?", jvm.getDumpedAtMillis(), jvmId);
+            log.debug("Updated JVM {}:{}", jvmId, jvm.getJvmUuid());
+        }
+        return jvmId;
     }
 
     @Override
@@ -116,54 +114,42 @@ public class LocalWarehouseDataProcessorImpl extends AbstractDataProcessorImpl {
         doStoreInvocation(jvmState, invocation.getInvokedAtMillis(), normalizedSignature, confidence.ordinal());
     }
 
-    private void doStoreInvocation(JvmState jvmState, long invokedAtMillis, final String normalizedSignature, Integer confidence) {
-        Long methodId = getMethodId(normalizedSignature);
+    private void doStoreInvocation(JvmState jvmState, long invokedAtMillis, final String signature, Integer confidence) {
+        long applicationId = jvmState.getDatabaseAppId();
+        long methodId = getMethodId(signature);
+        long jvmId = jvmState.getDatabaseJvmId();
 
-        String jvmUuid = jvmState.getJvm().getJvmUuid();
-
-        Map<Long, Long> invokedAtMillisMap = getInvokedAtMillisMap(jvmUuid);
-        Long oldInvokedAtMillis = invokedAtMillisMap.get(methodId);
+        Long oldInvokedAtMillis =
+                queryForLong("SELECT invoked_at_millis FROM invocations WHERE application_id = ? AND method_id = ? AND jvm_id = ? ",
+                             applicationId, methodId, jvmId);
 
         if (oldInvokedAtMillis == null || invokedAtMillis > oldInvokedAtMillis) {
-            jdbcTemplate.update("MERGE INTO invocations(method_id, jvm_uuid, invoked_at_millis, confidence, exported_at_millis) " +
-                                        "KEY(method_id, jvm_uuid) " +
-                                        "VALUES(?, ?, ?, ?, ?) ",
-                                methodId, jvmUuid, invokedAtMillis, confidence, -1L);
-            invokedAtMillisMap.put(methodId, invokedAtMillis);
+            jdbcTemplate
+                    .update("MERGE INTO invocations(application_id, method_id, jvm_id, invoked_at_millis, confidence, exported_at_millis)" +
+                                    " " +
+                                    "KEY(application_id, method_id, jvm_id) " +
+                                    "VALUES(?, ?, ?, ?, ?, ?) ",
+                            applicationId, methodId, jvmId, invokedAtMillis, confidence, -1L);
+            String what = invokedAtMillis > 0 ? "invocation" : "signature";
+            if (oldInvokedAtMillis == null) {
+                log.debug("Stored {} {}:{}:{}", what, applicationId, methodId, jvmId);
+            } else {
+                log.debug("Updated {} {}:{}:{}", what, applicationId, methodId, jvmId);
+            }
         }
     }
 
-    @Nonnull
-    private Long getMethodId(final String signature) {
-        Long methodId = methodIdBySignatureMap.get(signature);
+    private long getMethodId(final String signature) {
+        Long methodId = queryForLong("SELECT id FROM methods WHERE signature = ?", signature);
 
         if (methodId == null) {
 
             KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(new PreparedStatementCreator() {
-                @Override
-                public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-                    PreparedStatement ps = con.prepareStatement("INSERT INTO methods(signature) VALUES(?)");
-                    ps.setString(1, signature);
-                    return ps;
-                }
-            }, keyHolder);
-
+            jdbcTemplate.update(new InsertMethod(signature), keyHolder);
             methodId = keyHolder.getKey().longValue();
-            methodIdBySignatureMap.put(signature, methodId);
-            log.debug("Inserted {}:{}...", methodId, signature);
+            log.debug("Inserted method {}:{}...", methodId, signature);
         }
         return methodId;
-    }
-
-    @Nonnull
-    private Map<Long, Long> getInvokedAtMillisMap(String jvmUuid) {
-        Map<Long, Long> result = invokedAtMillisMapByJvmUuidMap.get(jvmUuid);
-        if (result == null) {
-            result = new HashMap<Long, Long>();
-            invokedAtMillisMapByJvmUuidMap.put(jvmUuid, result);
-        }
-        return result;
     }
 
     @Override
@@ -171,4 +157,59 @@ public class LocalWarehouseDataProcessorImpl extends AbstractDataProcessorImpl {
         // Nothing to do here
     }
 
+    @Value
+    private static class InsertApplication implements PreparedStatementCreator {
+        private final String name;
+        private final String version;
+        private final long createdAtMillis;
+
+        @Override
+        public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+            PreparedStatement ps = con.prepareStatement("INSERT INTO applications(name, version, created_at_millis) VALUES(?, ?, ?)");
+            ps.setString(1, name);
+            ps.setString(2, version);
+            ps.setLong(3, createdAtMillis);
+            return ps;
+        }
+    }
+
+    @Value
+    private static class InsertMethod implements PreparedStatementCreator {
+        private final String signature;
+
+        @Override
+        public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+            PreparedStatement ps = con.prepareStatement("INSERT INTO methods(signature, created_at_millis) VALUES(?, ?)");
+            ps.setString(1, signature);
+            ps.setLong(2, System.currentTimeMillis());
+            return ps;
+        }
+    }
+
+    @Value
+    private class InsertJvm implements PreparedStatementCreator {
+        private final Jvm jvm;
+
+        @Override
+        public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+            PreparedStatement ps =
+                    con.prepareStatement("INSERT INTO jvms(uuid, started_at_millis, dumped_at_millis, json_data) VALUES(?, ?, ?, ?)");
+            ps.setString(1, jvm.getJvmUuid());
+            ps.setLong(2, jvm.getStartedAtMillis());
+            ps.setLong(3, jvm.getDumpedAtMillis());
+            ps.setString(4, asJson(jvm));
+            return ps;
+        }
+
+        private String asJson(Jvm jvm) throws DataProcessingException {
+            try {
+                String json = objectMapper.writeValueAsString(jvm);
+                checkState(json.length() <= 2000, "JVM as JSON string is longer than 2000 characters");
+                return json;
+            } catch (JsonProcessingException e) {
+                throw new DataProcessingException("Cannot convert JVM data to JSON", e);
+            }
+        }
+
+    }
 }
