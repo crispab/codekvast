@@ -87,7 +87,7 @@ public class LocalWarehouseDataProcessorImpl extends AbstractDataProcessorImpl {
         long applicationId = jvmState.getDatabaseAppId();
         long methodId = getMethodId(signature);
         long jvmId = jvmState.getDatabaseJvmId();
-        long initialCount = invokedAtMillis > 0 ? 1 : 0;
+        long initialInvocationCount = invokedAtMillis > 0 ? 1 : 0;
         String what = invokedAtMillis > 0 ? "invocation" : "signature";
 
         Long oldInvokedAtMillis =
@@ -98,7 +98,7 @@ public class LocalWarehouseDataProcessorImpl extends AbstractDataProcessorImpl {
             jdbcTemplate.update("INSERT INTO invocations(applicationId, methodId, jvmId, invokedAtMillis, invocationCount, " +
                                         "confidence, exportedAtMillis) " +
                                         "VALUES(?, ?, ?, ?, ?, ?, ?) ",
-                                applicationId, methodId, jvmId, invokedAtMillis, initialCount, confidence, -1L);
+                                applicationId, methodId, jvmId, invokedAtMillis, initialInvocationCount, confidence, -1L);
             log.debug("Stored {} {}:{}:{}", what, applicationId, methodId, jvmId);
         } else if (invokedAtMillis > oldInvokedAtMillis) {
             jdbcTemplate

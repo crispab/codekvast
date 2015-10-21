@@ -1,6 +1,7 @@
 package se.crisp.codekvast.shared.model;
 
 import lombok.*;
+import lombok.experimental.Wither;
 import se.crisp.codekvast.shared.config.CollectorConfig;
 import se.crisp.codekvast.shared.config.CollectorConfigFactory;
 import se.crisp.codekvast.shared.util.FileUtils;
@@ -33,7 +34,7 @@ public class Jvm {
     private String collectorVcsId;
     @NonNull
     private String collectorVersion;
-
+    @Wither
     private long dumpedAtMillis;
 
     public void saveTo(File file) {
