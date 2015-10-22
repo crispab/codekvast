@@ -114,20 +114,15 @@ public class LocalWarehouseDataProcessorImpl extends AbstractDataProcessorImpl {
         }
     }
 
-    private long getMethodId(final String signature) {
-
-        String visibility = signature.substring(0, signature.indexOf(' '));
-        int pos = signature.indexOf('(');
-        while (pos >= 0 && signature.charAt(pos) != '.') {
-            pos -= 1;
-        }
-        String package_ = pos < 0 ? "" : signature.substring(visibility.length() + 1, pos);
-
+    private long getMethodId(String signatureWithVisibility) {
+        int spacePos = signatureWithVisibility.indexOf(' ');
+        String visibility = signatureWithVisibility.substring(0, spacePos);
+        String signature = signatureWithVisibility.substring(spacePos + 1);
         Long methodId = queryForLong("SELECT id FROM methods WHERE signature = ? ", signature);
 
         if (methodId == null) {
             KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(new InsertMethodStatement(visibility, package_, signature), keyHolder);
+            jdbcTemplate.update(new InsertMethodStatement(visibility, signature), keyHolder);
             methodId = keyHolder.getKey().longValue();
             log.debug("Inserted method {}:{}...", methodId, signature);
         }
@@ -199,17 +194,15 @@ public class LocalWarehouseDataProcessorImpl extends AbstractDataProcessorImpl {
     @RequiredArgsConstructor
     private static class InsertMethodStatement implements PreparedStatementCreator {
         private final String visibility;
-        private final String package_;
         private final String signature;
 
         @SuppressWarnings("ValueOfIncrementOrDecrementUsed")
         @Override
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
             PreparedStatement ps =
-                    con.prepareStatement("INSERT INTO methods(visibility, package, signature, createdAtMillis) VALUES(?, ?, ?, ?)");
+                    con.prepareStatement("INSERT INTO methods(visibility, signature, createdAtMillis) VALUES(?, ?, ?)");
             int column = 0;
             ps.setString(++column, visibility);
-            ps.setString(++column, package_);
             ps.setString(++column, signature);
             ps.setLong(++column, System.currentTimeMillis());
             return ps;

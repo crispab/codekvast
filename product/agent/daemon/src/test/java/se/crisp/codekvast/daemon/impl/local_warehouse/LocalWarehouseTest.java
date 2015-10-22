@@ -47,8 +47,8 @@ public class LocalWarehouseTest {
     private DataProcessor dataProcessor;
 
     private final String[][] signatureParts = {
-            {"public", "pkg1.pkg2", "signature1()"},
-            {"private", "signature2()"}
+            {"public", "pkg1.pkg2.pkg3.Class1.method1(java.lang.String, int)"},
+            {"private", "Class2.method2()"}
     };
     private List<String> signatures = makeSignatures(signatureParts);
 
@@ -70,8 +70,7 @@ public class LocalWarehouseTest {
     private List<String> makeSignatures(String[][] signatureParts) {
         List<String> result = new ArrayList<String>();
         for (String[] parts : signatureParts) {
-            result.add(parts.length == 3 ? String.format("%s %s.%s", parts[0], parts[1], parts[2]) :
-                               String.format("%s %s", parts[0], parts[1]));
+            result.add(String.format("%s %s", parts[0], parts[1]));
         }
         return result;
     }
@@ -131,11 +130,11 @@ public class LocalWarehouseTest {
 
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM methods", Integer.class), is(2));
 
-        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM methods WHERE visibility = ? AND package = ? AND signature = ? ",
-                                               Integer.class, signatureParts[0][0], signatureParts[0][1], signatures.get(0)), is(1));
+        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM methods WHERE visibility = ? AND signature = ? ",
+                                               Integer.class, signatureParts[0][0], signatureParts[0][1]), is(1));
 
-        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM methods WHERE visibility = ? AND package = ? AND signature = ? ",
-                                               Integer.class, signatureParts[1][0], "", signatures.get(1)), is(1));
+        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM methods WHERE visibility = ? AND signature = ? ",
+                                               Integer.class, signatureParts[1][0], signatureParts[1][1]), is(1));
 
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM jvms WHERE uuid = ? AND startedAtMillis = ? AND dumpedAtMillis = ?",
                                                Integer.class, "jvm1", t1, t2), is(1));

@@ -11,7 +11,6 @@ CREATE UNIQUE INDEX ix_application_identity ON applications (name, version);
 CREATE TABLE methods (
   id              BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
   visibility      VARCHAR(20)           NOT NULL,
-  package         VARCHAR(255)          NOT NULL,
   signature       VARCHAR(4000)         NOT NULL UNIQUE,
   createdAtMillis BIGINT                NOT NULL
 );
