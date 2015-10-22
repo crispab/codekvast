@@ -2,7 +2,7 @@ package se.crisp.codekvast.daemon.impl.local_warehouse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Value;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -62,15 +62,15 @@ public class LocalWarehouseDataProcessorImpl extends AbstractDataProcessorImpl {
         long applicationId = storeApplication(jvm.getCollectorConfig().getAppName(), jvmState.getAppVersion(), jvm.getStartedAtMillis());
         long jvmId = storeJvm(jvmState);
 
-        jvmState.setProcessed(applicationId, jvmId, jvmState.getJvm().getDumpedAtMillis());
+        jvmState.setDatabaseAppId(applicationId);
+        jvmState.setDatabaseJvmId(jvmId);
     }
 
     @Override
-    protected void doProcessCodebase(long now, JvmState jvmState, CodeBase codeBase) {
+    protected void doProcessCodebase(JvmState jvmState, CodeBase codeBase) {
         for (String signature : codeBase.getSignatures()) {
             doStoreInvocation(jvmState, -1L, signature, null);
         }
-        jvmState.setCodebaseProcessedAt(now);
     }
 
     @Override
@@ -114,20 +114,22 @@ public class LocalWarehouseDataProcessorImpl extends AbstractDataProcessorImpl {
         }
     }
 
-    private long getMethodId(final String signatureWithVisibility) {
+    private long getMethodId(final String signature) {
 
-        int pos = signatureWithVisibility.indexOf(' ');
-        String visibility = signatureWithVisibility.substring(0, pos);
-        String signature = signatureWithVisibility.substring(pos + 1);
+        String visibility = signature.substring(0, signature.indexOf(' '));
+        int pos = signature.indexOf('(');
+        while (pos >= 0 && signature.charAt(pos) != '.') {
+            pos -= 1;
+        }
+        String package_ = pos < 0 ? "" : signature.substring(visibility.length() + 1, pos);
 
-        Long methodId = queryForLong("SELECT id FROM methods WHERE visibility = ? AND signature = ?", visibility, signature);
+        Long methodId = queryForLong("SELECT id FROM methods WHERE signature = ? ", signature);
 
         if (methodId == null) {
-
             KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(new InsertMethodStatement(visibility, signature), keyHolder);
+            jdbcTemplate.update(new InsertMethodStatement(visibility, package_, signature), keyHolder);
             methodId = keyHolder.getKey().longValue();
-            log.debug("Inserted method {}:{} {}...", methodId, visibility, signature);
+            log.debug("Inserted method {}:{}...", methodId, signature);
         }
         return methodId;
     }
@@ -176,7 +178,7 @@ public class LocalWarehouseDataProcessorImpl extends AbstractDataProcessorImpl {
         }
     }
 
-    @Value
+    @RequiredArgsConstructor
     private static class InsertApplicationStatement implements PreparedStatementCreator {
         private final String name;
         private final String version;
@@ -194,24 +196,27 @@ public class LocalWarehouseDataProcessorImpl extends AbstractDataProcessorImpl {
         }
     }
 
-    @Value
+    @RequiredArgsConstructor
     private static class InsertMethodStatement implements PreparedStatementCreator {
         private final String visibility;
+        private final String package_;
         private final String signature;
 
         @SuppressWarnings("ValueOfIncrementOrDecrementUsed")
         @Override
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-            PreparedStatement ps = con.prepareStatement("INSERT INTO methods(visibility, signature, createdAtMillis) VALUES(?, ?, ?)");
+            PreparedStatement ps =
+                    con.prepareStatement("INSERT INTO methods(visibility, package, signature, createdAtMillis) VALUES(?, ?, ?, ?)");
             int column = 0;
             ps.setString(++column, visibility);
+            ps.setString(++column, package_);
             ps.setString(++column, signature);
             ps.setLong(++column, System.currentTimeMillis());
             return ps;
         }
     }
 
-    @Value
+    @RequiredArgsConstructor
     private static class InsertJvmStatement implements PreparedStatementCreator {
         private final Jvm jvm;
         private final String jsonData;

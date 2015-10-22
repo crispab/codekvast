@@ -22,9 +22,4 @@ public class JvmState {
     private long databaseAppId;
     private long databaseJvmId;
 
-    public void setProcessed(long applicationId, long jvmId, long processedAt) {
-        this.databaseAppId = applicationId;
-        this.databaseJvmId = jvmId;
-        this.jvmDataProcessedAt = processedAt;
-    }
 }

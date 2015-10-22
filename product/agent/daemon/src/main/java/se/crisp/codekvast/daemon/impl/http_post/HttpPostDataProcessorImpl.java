@@ -9,7 +9,7 @@ import se.crisp.codekvast.daemon.beans.JvmState;
 import se.crisp.codekvast.daemon.codebase.CodeBase;
 import se.crisp.codekvast.daemon.codebase.CodeBaseScanner;
 import se.crisp.codekvast.daemon.impl.AbstractDataProcessorImpl;
-import se.crisp.codekvast.daemon.util.LogUtil;
+import se.crisp.codekvast.daemon.impl.DataProcessingException;
 import se.crisp.codekvast.server.daemon_api.DaemonApi;
 import se.crisp.codekvast.server.daemon_api.DaemonApiException;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence;
@@ -44,19 +44,17 @@ public class HttpPostDataProcessorImpl extends AbstractDataProcessorImpl {
     protected void doProcessJvmData(JvmState jvmState) {
         try {
             daemonApi.uploadJvmData(createUploadJvmData(jvmState));
-            jvmState.setJvmDataProcessedAt(jvmState.getJvm().getDumpedAtMillis());
         } catch (DaemonApiException e) {
-            LogUtil.logException(log, "Cannot upload JVM data to " + daemonApi.getServerUri(), e);
+            throw new DataProcessingException("Cannot upload JVM data to " + daemonApi.getServerUri(), e);
         }
     }
 
     @Override
-    protected void doProcessCodebase(long now, JvmState jvmState, CodeBase codeBase) {
+    protected void doProcessCodebase(JvmState jvmState, CodeBase codeBase) {
         try {
             daemonApi.uploadSignatureData(createUploadJvmData(jvmState), codeBase.getSignatures());
-            jvmState.setCodebaseProcessedAt(now);
         } catch (DaemonApiException e) {
-            LogUtil.logException(log, "Cannot upload signature data to " + daemonApi.getServerUri(), e);
+            throw new DataProcessingException("Cannot upload signature data to " + daemonApi.getServerUri(), e);
         }
     }
 
@@ -73,7 +71,7 @@ public class HttpPostDataProcessorImpl extends AbstractDataProcessorImpl {
                                            invocationsCollector.getNotUploadedInvocations(jvmState.getJvm().getJvmUuid()));
             invocationsCollector.clearNotUploadedSignatures(jvmState.getJvm().getJvmUuid());
         } catch (DaemonApiException e) {
-            LogUtil.logException(log, "Cannot upload invocation data to " + daemonApi.getServerUri(), e);
+            throw new DataProcessingException("Cannot upload invocation data to " + daemonApi.getServerUri(), e);
         }
     }
 

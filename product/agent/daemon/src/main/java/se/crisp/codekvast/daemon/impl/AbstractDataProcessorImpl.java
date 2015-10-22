@@ -10,6 +10,7 @@ import se.crisp.codekvast.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.daemon.beans.JvmState;
 import se.crisp.codekvast.daemon.codebase.CodeBase;
 import se.crisp.codekvast.daemon.codebase.CodeBaseScanner;
+import se.crisp.codekvast.daemon.util.LogUtil;
 import se.crisp.codekvast.server.daemon_api.model.v1.JvmData;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence;
 import se.crisp.codekvast.shared.model.Invocation;
@@ -41,17 +42,22 @@ public abstract class AbstractDataProcessorImpl implements DataProcessor {
     public void processData(long now, JvmState jvmState, CodeBase codeBase) throws DataProcessingException {
         appVersionResolver.resolveAppVersion(jvmState);
         processJvmData(jvmState);
-        processCodeBase(now, jvmState, codeBase);
+        processCodeBase(jvmState, codeBase);
         processInvocationsData(jvmState);
     }
 
     private void processJvmData(JvmState jvmState) throws DataProcessingException {
         if (jvmState.getJvmDataProcessedAt() < jvmState.getJvm().getDumpedAtMillis()) {
-            doProcessJvmData(jvmState);
+            try {
+                doProcessJvmData(jvmState);
+                jvmState.setJvmDataProcessedAt(jvmState.getJvm().getDumpedAtMillis());
+            } catch (Exception e) {
+                LogUtil.logException(log, "Cannot process JVM data", e);
+            }
         }
     }
 
-    private void processCodeBase(long now, JvmState jvmState, CodeBase codeBase) {
+    private void processCodeBase(JvmState jvmState, CodeBase codeBase) {
         if (jvmState.getCodebaseProcessedAt() == 0 || !codeBase.equals(jvmState.getCodeBase())) {
             if (jvmState.getCodebaseProcessedAt() == 0) {
                 log.debug("Codebase has not yet been processed");
@@ -63,7 +69,13 @@ public abstract class AbstractDataProcessorImpl implements DataProcessor {
             codeBaseScanner.scanSignatures(codeBase);
             jvmState.setCodeBase(codeBase);
 
-            doProcessCodebase(now, jvmState, codeBase);
+            try {
+                doProcessCodebase(jvmState, codeBase);
+                jvmState.setCodebaseProcessedAt(jvmState.getJvm().getDumpedAtMillis());
+            } catch (Exception e) {
+                LogUtil.logException(log, "Cannot process code base", e);
+                jvmState.setCodebaseProcessedAt(0);
+            }
         }
     }
 
@@ -77,7 +89,12 @@ public abstract class AbstractDataProcessorImpl implements DataProcessor {
 
     protected abstract void doProcessJvmData(JvmState jvmState) throws DataProcessingException;
 
-    protected abstract void doProcessCodebase(long now, JvmState jvmState, CodeBase codeBase);
+    protected abstract void doProcessCodebase(JvmState jvmState, CodeBase codeBase);
+
+    protected abstract void doProcessUnprocessedSignatures(JvmState jvmState);
+
+    protected abstract void doStoreNormalizedSignature(JvmState jvmState, long invokedAtMillis, String signature,
+                                                       SignatureConfidence confidence);
 
     private void normalizeAndProcessInvocations(JvmState jvmState, List<Invocation> invocations) {
         CodeBase codeBase = jvmState.getCodeBase();
@@ -130,11 +147,6 @@ public abstract class AbstractDataProcessorImpl implements DataProcessor {
             log.debug("{} signature invocations applied ({} overridden, {} ignored)", recognized, overridden, ignored);
         }
     }
-
-    protected abstract void doProcessUnprocessedSignatures(JvmState jvmState);
-
-    protected abstract void doStoreNormalizedSignature(JvmState jvmState, long invokedAtMillis, String signature,
-                                                       SignatureConfidence confidence);
 
     private String getHostName() {
         try {

@@ -20,10 +20,11 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
-import static java.util.Arrays.asList;
+import static java.util.Collections.singleton;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -45,11 +46,15 @@ public class LocalWarehouseTest {
     @Inject
     private DataProcessor dataProcessor;
 
-    private final String signature1 = "public signature1()";
-    private final String signature2 = "private signature2()";
-    private Set<String> signatures = new HashSet<String>(asList(signature1, signature2));
+    private final String[][] signatureParts = {
+            {"public", "pkg1.pkg2", "signature1()"},
+            {"private", "signature2()"}
+    };
+    private List<String> signatures = makeSignatures(signatureParts);
 
-    private long now1 = System.currentTimeMillis();
+    private long t1 = System.currentTimeMillis();
+    private long t2 = t1 + 20000L;
+    private long t3 = t1 + 60000L;
 
     private CollectorConfig collectorConfig1;
     private JvmState jvmState1;
@@ -58,8 +63,17 @@ public class LocalWarehouseTest {
     @Before
     public void before() throws Exception {
         collectorConfig1 = createCollectorConfig("appName1", "appVersion1");
-        jvmState1 = createJvmState(collectorConfig1, "jvm1", now1);
+        jvmState1 = createJvmState(collectorConfig1, "jvm1", t1);
         codeBase1 = mockCodeBase(collectorConfig1);
+    }
+
+    private List<String> makeSignatures(String[][] signatureParts) {
+        List<String> result = new ArrayList<String>();
+        for (String[] parts : signatureParts) {
+            result.add(parts.length == 3 ? String.format("%s %s.%s", parts[0], parts[1], parts[2]) :
+                               String.format("%s %s", parts[0], parts[1]));
+        }
+        return result;
     }
 
     private JvmState createJvmState(CollectorConfig collectorConfig, String jvmUuid, long startedAtMillis) throws IOException {
@@ -90,7 +104,7 @@ public class LocalWarehouseTest {
 
         when(codeBase.getUrls()).thenReturn(new URL[]{});
         when(codeBase.getConfig()).thenReturn(collectorConfig);
-        when(codeBase.getSignatures()).thenReturn(signatures);
+        when(codeBase.getSignatures()).thenReturn(new HashSet<String>(signatures));
         for (String s : signatures) {
             when(codeBase.normalizeSignature(s)).thenReturn(s);
             when(codeBase.getBaseSignature(s)).thenReturn(s);
@@ -102,45 +116,51 @@ public class LocalWarehouseTest {
 
     @Test
     public void testProcessData() {
-        // given
-        FileUtils.writeInvocationDataTo(jvmState1.getInvocationsFile(), 1, now1 + 20000, new HashSet<String>(asList(signature2)));
-        FileUtils.writeInvocationDataTo(jvmState1.getInvocationsFile(), 2, now1, new HashSet<String>(asList(signature2)));
+        // given (note that the invocation files are in reverse order!)
+        int dumpNumber = 0;
+        FileUtils.writeInvocationDataTo(jvmState1.getInvocationsFile(), ++dumpNumber, t2, singleton(signatures.get(1)));
+        FileUtils.writeInvocationDataTo(jvmState1.getInvocationsFile(), ++dumpNumber, t1, singleton(signatures.get(1)));
 
         // when
-        dataProcessor.processData(now1, jvmState1, codeBase1);
+        dataProcessor.processData(t1, jvmState1, codeBase1);
 
         // then
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM applications WHERE name = ? AND version = ? AND createdAtMillis = ? ",
-                                               Integer.class, collectorConfig1.getAppName(), collectorConfig1.getAppVersion(), now1),
+                                               Integer.class, collectorConfig1.getAppName(), collectorConfig1.getAppVersion(), t1),
                    is(1));
 
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM methods", Integer.class), is(2));
 
-        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM methods WHERE visibility = ? AND signature = ? ", Integer.class,
-                                               "public", "signature1()"), is(1));
+        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM methods WHERE visibility = ? AND package = ? AND signature = ? ",
+                                               Integer.class, signatureParts[0][0], signatureParts[0][1], signatures.get(0)), is(1));
+
+        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM methods WHERE visibility = ? AND package = ? AND signature = ? ",
+                                               Integer.class, signatureParts[1][0], "", signatures.get(1)), is(1));
 
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM jvms WHERE uuid = ? AND startedAtMillis = ? AND dumpedAtMillis = ?",
-                                               Integer.class, "jvm1", now1, now1 + 20000), is(1));
+                                               Integer.class, "jvm1", t1, t2), is(1));
 
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM invocations WHERE invokedAtMillis = ? AND invocationCount = ? ",
                                                Integer.class, -1L, 0L), is(1));
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM invocations WHERE invokedAtMillis = ? AND invocationCount = ? ",
-                                               Integer.class, now1 + 20000, 1L),
+                                               Integer.class, t2, 1L),
                    is(1));
 
+        // Simulate that the collector dumps again...
+
         // given
-        jvmState1.setJvm(jvmState1.getJvm().withDumpedAtMillis(now1 + 60000));
-        FileUtils.writeInvocationDataTo(jvmState1.getInvocationsFile(), 3, now1 + 60000, new HashSet<String>(asList(signature2)));
+        jvmState1.setJvm(jvmState1.getJvm().withDumpedAtMillis(t3));
+        FileUtils.writeInvocationDataTo(jvmState1.getInvocationsFile(), ++dumpNumber, t3, singleton(signatures.get(1)));
 
         // when
-        dataProcessor.processData(now1 + 60000, jvmState1, codeBase1);
+        dataProcessor.processData(t3 + 10000, jvmState1, codeBase1);
 
         // then
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM jvms WHERE uuid = ? AND startedAtMillis = ? AND dumpedAtMillis = ?",
-                                               Integer.class, "jvm1", now1, now1 + 60000), is(1));
+                                               Integer.class, "jvm1", t1, t3), is(1));
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM invocations WHERE invokedAtMillis = ? AND invocationCount = ? ",
                                                Integer.class, -1L, 0L), is(1));
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM invocations WHERE invokedAtMillis = ? AND invocationCount = ?  ",
-                                               Integer.class, now1 + 60000, 2), is(1));
+                                               Integer.class, t3, 2), is(1));
     }
 }
