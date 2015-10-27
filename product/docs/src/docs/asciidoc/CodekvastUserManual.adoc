@@ -41,11 +41,11 @@ Codekvast Daemon:: Analyses the application's <<application-binaries, binaries>>
 application. The
 inventory consists of all the method signatures that the collector potentially can record. The daemon combines the method inventory with the invocation data
  from the collector(s) and uploads it to the server. There is one daemon per server host. One daemon can collect invocation data from
- several JVMs that are executing in the same host. *The daemon requires Java 6 or higher.*
+ several JVMs that are executing in the same host. *The daemon requires Java 8 or higher.*
 
 Codekvast Server:: Receives inventory and invocation data from the daemon(s), stores it in a database and makes it available for browsing
 in a web
-interface. There is only one server. *The server requires Java 7 or higher.*
+interface. There is only one server. *The server requires Java 8 or higher.*
 
 ---
 

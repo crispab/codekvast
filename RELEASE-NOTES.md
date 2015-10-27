@@ -1,5 +1,10 @@
 # Codekvast Release Notes
 
+## 0.12.2
+
+1. Now all except codekvast-collector requires JDK 8
+1. Upgraded angular-ui-bootstrap.js to 0.14.3
+
 ## 0.12.1
 
 1. Upgraded to Spring Boot 1.2.7

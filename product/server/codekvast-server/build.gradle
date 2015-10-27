@@ -49,7 +49,7 @@ task integTest(type: Test) {
 check.dependsOn integTest
 
 def webjars = [
-        'org.webjars:angular-ui-bootstrap:0.14.0',
+        'org.webjars:angular-ui-bootstrap:0.14.3',
         'org.webjars:angularjs:1.4.7',
         'org.webjars:bootstrap:3.3.5',
         'org.webjars:jquery:2.1.4',

@@ -1,5 +1,5 @@
 apply plugin: 'spring-boot'
-apply from: "$rootDir/gradle/java-7.gradle"
+apply from: "$rootDir/gradle/java-8.gradle"
 
 description = "The agent-side business delegate of the Codekvast server"
 archivesBaseName = "codekvast-daemon-api"
