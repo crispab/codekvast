@@ -1,6 +1,6 @@
-description = "Support utilities that can be used anywhere in Codekvast"
+description = "Support utilities that can be used anywhere in Codekvast except in the collector"
 
-apply from: "$rootDir/gradle/java-6.gradle"
+apply from: "$rootDir/gradle/java-7.gradle"
 
 archivesBaseName = "codekvast-support-commons"
 

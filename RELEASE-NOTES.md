@@ -1,5 +1,12 @@
 # Codekvast Release Notes
 
+## 0.12.1
+
+1. Upgraded to Spring Boot 1.2.7
+1. Upgraded to Gradle 2.8
+1. Now requires JDK 1.7 for codekvast-daemon
+1. Improved logging
+
 ## 0.12.0
 
 1. Renamed codekvast-agent to codekvast-daemon

@@ -118,16 +118,16 @@ public abstract class AbstractDataProcessorImpl implements DataProcessor {
             } else if (baseSignature != null) {
                 overridden += 1;
                 confidence = SignatureConfidence.FOUND_IN_PARENT_CLASS;
-                log.debug("{} replaced by {}", normalizedSignature, baseSignature);
+                log.debug("Signature '{}' is replaced by '{}'", normalizedSignature, baseSignature);
                 normalizedSignature = baseSignature;
             } else if (normalizedSignature.equals(rawSignature)) {
                 unrecognized += 1;
                 confidence = SignatureConfidence.NOT_FOUND_IN_CODE_BASE;
-                log.debug("Unrecognized signature: {}", normalizedSignature);
+                log.debug("Unrecognized signature: '{}'", normalizedSignature);
             } else {
                 unrecognized += 1;
                 confidence = SignatureConfidence.NOT_FOUND_IN_CODE_BASE;
-                log.debug("Unrecognized signature: {} (was {})", normalizedSignature, rawSignature);
+                log.debug("Unrecognized signature: '{}' (was '{}')", normalizedSignature, rawSignature);
             }
 
             if (normalizedSignature != null) {
