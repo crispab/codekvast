@@ -1,28 +1,31 @@
 package se.crisp.codekvast.daemon.impl.local_warehouse;
 
+import com.opencsv.CSVWriter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import se.crisp.codekvast.daemon.DaemonConstants;
 import se.crisp.codekvast.daemon.DataExporter;
 import se.crisp.codekvast.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.daemon.impl.DataExportException;
 import se.crisp.codekvast.shared.util.FileUtils;
 
 import javax.inject.Inject;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import static java.time.Instant.now;
+import static java.util.Arrays.asList;
 
 /**
  * An implementation of DataExporter that exports invocation data from a local data warehouse. <p> It produces a self-contained zip file
@@ -63,21 +66,20 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
 
         File tmpFile = createTempFile(exportFile);
 
-        try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(tmpFile));
-        ) {
-            Charset charset = Charset.forName(FileUtils.UTF_8);
+        try (ZipOutputStream zos = new ZipOutputStream(
+                new BufferedOutputStream(
+                        new FileOutputStream(tmpFile)))) {
+            Charset charset = Charset.forName("UTF-8");
 
             zos.setComment("Export of Codekvast local warehouse at " + Instant.now());
 
-            ZipEntry zipEntry = new ZipEntry("daemon-config.properties");
-            zos.putNextEntry(zipEntry);
-            writeDaemonConfig(zos, config, charset);
-            zos.closeEntry();
-
-            zos.putNextEntry(new ZipEntry("jvms.dat"));
-            zos.write("Line1 räksmörgås\n".getBytes(charset));
-            zos.write("Line2\n".getBytes(charset));
-            zos.closeEntry();
+            writeDaemonConfig(zos, charset, config);
+            writeTable(zos, charset, "applications", asList("id", "name", "version", "createdAtMillis"));
+            writeTable(zos, charset, "methods", asList("id", "visibility", "signature", "createdAtMillis"));
+            writeTable(zos, charset, "jvms", asList("id", "uuid", "startedAtMillis", "dumpedAtMillis", "jsonData"));
+            writeTable(zos, charset, "invocations",
+                       asList("applicationId", "methodId", "jvmId", "invokedAtMillis", "invocationCount", "confidence",
+                              "exportedAtMillis"));
 
             zos.finish();
         } catch (Exception e) {
@@ -90,14 +92,35 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
         }
     }
 
-    private void writeDaemonConfig(OutputStream os, DaemonConfig config, Charset charset) throws IOException, IllegalAccessException {
+    private void writeTable(ZipOutputStream zos, Charset charset, final String tableName, List<String> columns) throws IOException {
+        zos.putNextEntry(new ZipEntry(tableName + ".csv"));
+
+        CSVWriter csvWriter = new CSVWriter(new OutputStreamWriter(zos, charset));
+        csvWriter.writeNext(columns.toArray(new String[columns.size()]), false);
+
+        jdbcTemplate.query("SELECT " + columns.stream().collect(Collectors.joining(",")) + " FROM " + tableName, rs -> {
+            List<String> values = new ArrayList<>();
+
+            for (int i = 0; i < columns.size(); i++) {
+                values.add(rs.getString(i + 1));
+            }
+
+            csvWriter.writeNext(values.toArray(new String[values.size()]), false);
+        });
+
+        csvWriter.flush();
+        zos.closeEntry();
+    }
+
+    private void writeDaemonConfig(ZipOutputStream zos, Charset charset, DaemonConfig config) throws IOException, IllegalAccessException {
+        zos.putNextEntry(new ZipEntry(DaemonConstants.DAEMON_CONFIG_FILE));
         Set<String> lines = new TreeSet<>();
         FileUtils.extractFieldValuesFrom(config, lines);
-        String NL = "\n";
         for (String line : lines) {
-            os.write(line.getBytes(charset));
-            os.write(NL.getBytes(charset));
+            zos.write(line.getBytes(charset));
+            zos.write('\n');
         }
+        zos.closeEntry();
     }
 
     private File createTempFile(File file) throws DataExportException {
