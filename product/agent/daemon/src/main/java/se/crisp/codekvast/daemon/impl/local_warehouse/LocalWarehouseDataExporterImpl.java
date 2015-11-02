@@ -16,16 +16,14 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import static java.time.Instant.now;
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.joining;
 
 /**
  * An implementation of DataExporter that exports invocation data from a local data warehouse. <p> It produces a self-contained zip file
@@ -66,20 +64,18 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
 
         File tmpFile = createTempFile(exportFile);
 
-        try (ZipOutputStream zos = new ZipOutputStream(
-                new BufferedOutputStream(
-                        new FileOutputStream(tmpFile)))) {
-            Charset charset = Charset.forName("UTF-8");
-
+        try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(tmpFile)))) {
             zos.setComment("Export of Codekvast local warehouse at " + Instant.now());
 
-            writeDaemonConfig(zos, charset, config);
-            writeTable(zos, charset, "applications", asList("id", "name", "version", "createdAtMillis"));
-            writeTable(zos, charset, "methods", asList("id", "visibility", "signature", "createdAtMillis"));
-            writeTable(zos, charset, "jvms", asList("id", "uuid", "startedAtMillis", "dumpedAtMillis", "jsonData"));
-            writeTable(zos, charset, "invocations",
-                       asList("applicationId", "methodId", "jvmId", "invokedAtMillis", "invocationCount", "confidence",
-                              "exportedAtMillis"));
+            Charset charset = Charset.forName("UTF-8");
+            doExportDaemonConfig(zos, charset, config);
+
+            CSVWriter csvWriter = new CSVWriter(new OutputStreamWriter(zos, charset));
+            doExportDatabaseTable(zos, csvWriter, "applications", "id", "name", "version", "createdAtMillis");
+            doExportDatabaseTable(zos, csvWriter, "methods", "id", "visibility", "signature", "createdAtMillis");
+            doExportDatabaseTable(zos, csvWriter, "jvms", "id", "uuid", "startedAtMillis", "dumpedAtMillis", "jsonData");
+            doExportDatabaseTable(zos, csvWriter, "invocations", "applicationId", "methodId", "jvmId", "invokedAtMillis", "invocationCount",
+                                  "confidence", "exportedAtMillis");
 
             zos.finish();
         } catch (Exception e) {
@@ -87,33 +83,31 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
         }
 
         if (!tmpFile.renameTo(exportFile)) {
-            log.error("Cannot rename {} to {}", tmpFile, exportFile);
             tmpFile.delete();
+            throw new DataExportException(String.format("Cannot rename %s to %s", tmpFile, exportFile));
         }
     }
 
-    private void writeTable(ZipOutputStream zos, Charset charset, final String tableName, List<String> columns) throws IOException {
-        zos.putNextEntry(new ZipEntry(tableName + ".csv"));
+    private void doExportDatabaseTable(ZipOutputStream zos, CSVWriter csvWriter, String table, String... columns) throws IOException {
+        zos.putNextEntry(new ZipEntry(table + ".csv"));
+        csvWriter.writeNext(columns, false);
 
-        CSVWriter csvWriter = new CSVWriter(new OutputStreamWriter(zos, charset));
-        csvWriter.writeNext(columns.toArray(new String[columns.size()]), false);
-
-        jdbcTemplate.query("SELECT " + columns.stream().collect(Collectors.joining(",")) + " FROM " + tableName, rs -> {
-            List<String> values = new ArrayList<>();
-
-            for (int i = 0; i < columns.size(); i++) {
-                values.add(rs.getString(i + 1));
+        String[] line = new String[columns.length];
+        jdbcTemplate.query("SELECT " + asList(columns).stream().collect(joining(", ")) + " FROM " + table, rs -> {
+            for (int i = 0; i < columns.length; i++) {
+                line[i] = rs.getString(i + 1);
             }
-
-            csvWriter.writeNext(values.toArray(new String[values.size()]), false);
+            csvWriter.writeNext(line, false);
         });
 
         csvWriter.flush();
         zos.closeEntry();
     }
 
-    private void writeDaemonConfig(ZipOutputStream zos, Charset charset, DaemonConfig config) throws IOException, IllegalAccessException {
+    private void doExportDaemonConfig(ZipOutputStream zos, Charset charset, DaemonConfig config)
+            throws IOException, IllegalAccessException {
         zos.putNextEntry(new ZipEntry(DaemonConstants.DAEMON_CONFIG_FILE));
+
         Set<String> lines = new TreeSet<>();
         FileUtils.extractFieldValuesFrom(config, lines);
         for (String line : lines) {
