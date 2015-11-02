@@ -141,7 +141,7 @@ public class LocalWarehouseDataProcessorImpl extends AbstractDataProcessorImpl {
         return appId;
     }
 
-    private long storeJvm(JvmState jvmState) {
+    private long storeJvm(JvmState jvmState) throws DataProcessingException {
         Jvm jvm = jvmState.getJvm();
         Long jvmId = queryForLong("SELECT id FROM jvms WHERE uuid = ? ", jvm.getJvmUuid());
 

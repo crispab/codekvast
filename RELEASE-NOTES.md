@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.12.3
+
+1. Implemented daemon data export
+
 ## 0.12.2
 
 1. Now all except codekvast-collector requires JDK 8

@@ -7,6 +7,7 @@ import se.crisp.codekvast.daemon.appversion.AppVersionResolver;
 import se.crisp.codekvast.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.daemon.beans.JvmState;
 import se.crisp.codekvast.daemon.codebase.CodeBase;
+import se.crisp.codekvast.daemon.impl.DataExportException;
 import se.crisp.codekvast.daemon.impl.DataProcessingException;
 import se.crisp.codekvast.daemon.util.LogUtil;
 import se.crisp.codekvast.shared.config.CollectorConfig;
@@ -34,12 +35,15 @@ public class DaemonWorker {
     private final DataProcessor dataProcessor;
 
     private final Map<String, JvmState> jvmStates = new HashMap<String, JvmState>();
+    private final DataExporter dataExporter;
 
     @Inject
-    public DaemonWorker(DaemonConfig config, AppVersionResolver appVersionResolver, DataProcessor dataProcessor) {
+    public DaemonWorker(DaemonConfig config, AppVersionResolver appVersionResolver, DataProcessor dataProcessor,
+                        DataExporter dataExporter) {
         this.config = config;
         this.appVersionResolver = appVersionResolver;
         this.dataProcessor = dataProcessor;
+        this.dataExporter = dataExporter;
 
         log.info("{} {} started", getClass().getSimpleName(), config.getDisplayVersion());
     }
@@ -49,18 +53,27 @@ public class DaemonWorker {
         log.info("{} {} shuts down", getClass().getSimpleName(), config.getDisplayVersion());
     }
 
-    @Scheduled(initialDelay = 10L, fixedDelayString = "${codekvast.serverUploadIntervalSeconds}000")
+    @Scheduled(initialDelay = 10L, fixedDelayString = "${codekvast.dataProcessingIntervalSeconds}000")
     public void analyseCollectorData() {
         String oldThreadName = Thread.currentThread().getName();
         Thread.currentThread().setName(getClass().getSimpleName());
         try {
-            doAnalyzeCollectorData(System.currentTimeMillis());
+            doAnalyzeCollectorData();
+            doExportData();
         } finally {
             Thread.currentThread().setName(oldThreadName);
         }
     }
 
-    private void doAnalyzeCollectorData(long now) {
+    private void doExportData() {
+        try {
+            dataExporter.exportData();
+        } catch (DataExportException e) {
+            LogUtil.logException(log, "Could not export data", e);
+        }
+    }
+
+    private void doAnalyzeCollectorData() {
         log.debug("Analyzing collector data");
 
         findJvmStates(config.getDataPath());
@@ -73,7 +86,7 @@ public class DaemonWorker {
                 jvmState.setFirstRun(false);
             }
             try {
-                dataProcessor.processData(now, jvmState, new CodeBase(jvmState.getJvm().getCollectorConfig()));
+                dataProcessor.processData(jvmState, new CodeBase(jvmState.getJvm().getCollectorConfig()));
             } catch (DataProcessingException e) {
                 LogUtil.logException(log, "Could not process data for " + jvmState.getJvm().getCollectorConfig().getAppName(), e);
             }

@@ -7,9 +7,13 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import se.crisp.codekvast.daemon.DataExporter;
 import se.crisp.codekvast.daemon.DataProcessor;
+import se.crisp.codekvast.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.daemon.beans.JvmState;
 import se.crisp.codekvast.daemon.codebase.CodeBase;
+import se.crisp.codekvast.daemon.impl.DataExportException;
+import se.crisp.codekvast.daemon.impl.DataProcessingException;
 import se.crisp.codekvast.daemon.main.LocalWarehouseIntegrationTest;
 import se.crisp.codekvast.shared.config.CollectorConfig;
 import se.crisp.codekvast.shared.config.CollectorConfigFactory;
@@ -46,15 +50,21 @@ public class LocalWarehouseTest {
     @Inject
     private DataProcessor dataProcessor;
 
-    private final String[][] signatureParts = {
+    @Inject
+    public DataExporter dataExporter;
+
+    @Inject
+    public DaemonConfig config;
+
+    private static final long T1 = System.currentTimeMillis();
+    private static final long T2 = T1 + 20000L;
+    private static final long T3 = T1 + 60000L;
+
+    private static final String[][] SIGNATURE_PARTS = {
             {"public", "pkg1.pkg2.pkg3.Class1.method1(java.lang.String, int)"},
             {"private", "Class2.method2()"}
     };
-    private List<String> signatures = makeSignatures(signatureParts);
-
-    private long t1 = System.currentTimeMillis();
-    private long t2 = t1 + 20000L;
-    private long t3 = t1 + 60000L;
+    private static final List<String> SIGNATURES = makeSignatures(SIGNATURE_PARTS);
 
     private CollectorConfig collectorConfig1;
     private JvmState jvmState1;
@@ -63,12 +73,12 @@ public class LocalWarehouseTest {
     @Before
     public void before() throws Exception {
         collectorConfig1 = createCollectorConfig("appName1", "appVersion1");
-        jvmState1 = createJvmState(collectorConfig1, "jvm1", t1);
+        jvmState1 = createJvmState(collectorConfig1, "jvm1", T1);
         codeBase1 = mockCodeBase(collectorConfig1);
     }
 
-    private List<String> makeSignatures(String[][] signatureParts) {
-        List<String> result = new ArrayList<String>();
+    private static List<String> makeSignatures(String[][] signatureParts) {
+        List<String> result = new ArrayList<>();
         for (String[] parts : signatureParts) {
             result.add(String.format("%s %s", parts[0], parts[1]));
         }
@@ -103,8 +113,8 @@ public class LocalWarehouseTest {
 
         when(codeBase.getUrls()).thenReturn(new URL[]{});
         when(codeBase.getConfig()).thenReturn(collectorConfig);
-        when(codeBase.getSignatures()).thenReturn(new HashSet<String>(signatures));
-        for (String s : signatures) {
+        when(codeBase.getSignatures()).thenReturn(new HashSet<>(SIGNATURES));
+        for (String s : SIGNATURES) {
             when(codeBase.normalizeSignature(s)).thenReturn(s);
             when(codeBase.getBaseSignature(s)).thenReturn(s);
             when(codeBase.hasSignature(s)).thenReturn(true);
@@ -114,52 +124,56 @@ public class LocalWarehouseTest {
     }
 
     @Test
-    public void testProcessData() {
+    public void testProcessData() throws DataProcessingException, DataExportException {
         // given (note that the invocation files are in reverse order!)
         int dumpNumber = 0;
-        FileUtils.writeInvocationDataTo(jvmState1.getInvocationsFile(), ++dumpNumber, t2, singleton(signatures.get(1)));
-        FileUtils.writeInvocationDataTo(jvmState1.getInvocationsFile(), ++dumpNumber, t1, singleton(signatures.get(1)));
+        FileUtils.writeInvocationDataTo(jvmState1.getInvocationsFile(), ++dumpNumber, T2, singleton(SIGNATURES.get(1)));
+        FileUtils.writeInvocationDataTo(jvmState1.getInvocationsFile(), ++dumpNumber, T1, singleton(SIGNATURES.get(1)));
 
         // when
-        dataProcessor.processData(t1, jvmState1, codeBase1);
+        dataProcessor.processData(jvmState1, codeBase1);
 
         // then
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM applications WHERE name = ? AND version = ? AND createdAtMillis = ? ",
-                                               Integer.class, collectorConfig1.getAppName(), collectorConfig1.getAppVersion(), t1),
+                                               Integer.class, collectorConfig1.getAppName(), collectorConfig1.getAppVersion(), T1),
                    is(1));
 
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM methods", Integer.class), is(2));
 
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM methods WHERE visibility = ? AND signature = ? ",
-                                               Integer.class, signatureParts[0][0], signatureParts[0][1]), is(1));
+                                               Integer.class, SIGNATURE_PARTS[0][0], SIGNATURE_PARTS[0][1]), is(1));
 
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM methods WHERE visibility = ? AND signature = ? ",
-                                               Integer.class, signatureParts[1][0], signatureParts[1][1]), is(1));
+                                               Integer.class, SIGNATURE_PARTS[1][0], SIGNATURE_PARTS[1][1]), is(1));
 
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM jvms WHERE uuid = ? AND startedAtMillis = ? AND dumpedAtMillis = ?",
-                                               Integer.class, "jvm1", t1, t2), is(1));
+                                               Integer.class, "jvm1", T1, T2), is(1));
 
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM invocations WHERE invokedAtMillis = ? AND invocationCount = ? ",
                                                Integer.class, -1L, 0L), is(1));
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM invocations WHERE invokedAtMillis = ? AND invocationCount = ? ",
-                                               Integer.class, t2, 1L),
+                                               Integer.class, T2, 1L),
                    is(1));
 
         // Simulate that the collector dumps again...
 
         // given
-        jvmState1.setJvm(jvmState1.getJvm().withDumpedAtMillis(t3));
-        FileUtils.writeInvocationDataTo(jvmState1.getInvocationsFile(), ++dumpNumber, t3, singleton(signatures.get(1)));
+        jvmState1.setJvm(jvmState1.getJvm().withDumpedAtMillis(T3));
+        FileUtils.writeInvocationDataTo(jvmState1.getInvocationsFile(), ++dumpNumber, T3, singleton(SIGNATURES.get(1)));
 
         // when
-        dataProcessor.processData(t3 + 10000, jvmState1, codeBase1);
+        dataProcessor.processData(jvmState1, codeBase1);
 
         // then
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM jvms WHERE uuid = ? AND startedAtMillis = ? AND dumpedAtMillis = ?",
-                                               Integer.class, "jvm1", t1, t3), is(1));
+                                               Integer.class, "jvm1", T1, T3), is(1));
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM invocations WHERE invokedAtMillis = ? AND invocationCount = ? ",
                                                Integer.class, -1L, 0L), is(1));
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM invocations WHERE invokedAtMillis = ? AND invocationCount = ?  ",
-                                               Integer.class, t3, 2), is(1));
+                                               Integer.class, T3, 2), is(1));
+
+        dataExporter.exportData();
+
+        assertThat(config.getExportFile().exists(), is(true));
     }
 }

@@ -62,7 +62,7 @@ ext.springProfiles = 'localWarehouse'
 run {
     jvmArgs = ['-ea', "-Dspring.profiles.active=$springProfiles"]
     args = [
-            "--codekvast.serverUploadIntervalSeconds=5",
+            "--codekvast.dataProcessingIntervalSeconds=5",
             "--codekvast.databasePath=$buildDir/database"
     ]
 }

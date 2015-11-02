@@ -39,7 +39,7 @@ public abstract class AbstractDataProcessorImpl implements DataProcessor {
 
     @Override
     @Transactional
-    public void processData(long now, JvmState jvmState, CodeBase codeBase) throws DataProcessingException {
+    public void processData(JvmState jvmState, CodeBase codeBase) throws DataProcessingException {
         appVersionResolver.resolveAppVersion(jvmState);
         processJvmData(jvmState);
         processCodeBase(jvmState, codeBase);
@@ -47,10 +47,10 @@ public abstract class AbstractDataProcessorImpl implements DataProcessor {
     }
 
     private void processJvmData(JvmState jvmState) throws DataProcessingException {
-        if (jvmState.getJvmDataProcessedAt() < jvmState.getJvm().getDumpedAtMillis()) {
+        if (jvmState.getJvmDataProcessedAt().isBefore(jvmState.getJvmDumpedAt())) {
             try {
                 doProcessJvmData(jvmState);
-                jvmState.setJvmDataProcessedAt(jvmState.getJvm().getDumpedAtMillis());
+                jvmState.setJvmDataProcessedAt(jvmState.getJvmDumpedAt());
             } catch (Exception e) {
                 LogUtil.logException(log, "Cannot process JVM data", e);
             }
@@ -58,8 +58,8 @@ public abstract class AbstractDataProcessorImpl implements DataProcessor {
     }
 
     private void processCodeBase(JvmState jvmState, CodeBase codeBase) {
-        if (jvmState.getCodebaseProcessedAt() == 0 || !codeBase.equals(jvmState.getCodeBase())) {
-            if (jvmState.getCodebaseProcessedAt() == 0) {
+        if (!codeBase.equals(jvmState.getCodeBase())) {
+            if (jvmState.getCodeBase() == null) {
                 log.debug("Codebase has not yet been processed");
             } else {
                 appVersionResolver.resolveAppVersion(jvmState);
@@ -67,19 +67,17 @@ public abstract class AbstractDataProcessorImpl implements DataProcessor {
             }
 
             codeBaseScanner.scanSignatures(codeBase);
-            jvmState.setCodeBase(codeBase);
 
             try {
                 doProcessCodebase(jvmState, codeBase);
-                jvmState.setCodebaseProcessedAt(jvmState.getJvm().getDumpedAtMillis());
+                jvmState.setCodeBase(codeBase);
             } catch (Exception e) {
                 LogUtil.logException(log, "Cannot process code base", e);
-                jvmState.setCodebaseProcessedAt(0);
             }
         }
     }
 
-    private void processInvocationsData(JvmState jvmState) {
+    private void processInvocationsData(JvmState jvmState) throws DataProcessingException {
         List<Invocation> invocations = FileUtils.consumeAllInvocationDataFiles(jvmState.getInvocationsFile());
         if (jvmState.getCodeBase() != null && !invocations.isEmpty()) {
             normalizeAndProcessInvocations(jvmState, invocations);
@@ -89,9 +87,9 @@ public abstract class AbstractDataProcessorImpl implements DataProcessor {
 
     protected abstract void doProcessJvmData(JvmState jvmState) throws DataProcessingException;
 
-    protected abstract void doProcessCodebase(JvmState jvmState, CodeBase codeBase);
+    protected abstract void doProcessCodebase(JvmState jvmState, CodeBase codeBase) throws DataProcessingException;
 
-    protected abstract void doProcessUnprocessedSignatures(JvmState jvmState);
+    protected abstract void doProcessUnprocessedSignatures(JvmState jvmState) throws DataProcessingException;
 
     protected abstract void doStoreNormalizedSignature(JvmState jvmState, long invokedAtMillis, String signature,
                                                        SignatureConfidence confidence);
@@ -171,7 +169,7 @@ public abstract class AbstractDataProcessorImpl implements DataProcessor {
                       .daemonComputerId(daemonComputerId)
                       .daemonHostName(daemonHostName)
                       .daemonTimeMillis(System.currentTimeMillis())
-                      .daemonUploadIntervalSeconds(daemonConfig.getServerUploadIntervalSeconds())
+                      .daemonUploadIntervalSeconds(daemonConfig.getDataProcessingIntervalSeconds())
                       .daemonVcsId(daemonConfig.getDaemonVcsId())
                       .daemonVersion(daemonConfig.getDaemonVersion())
                       .dumpedAtMillis(jvm.getDumpedAtMillis())

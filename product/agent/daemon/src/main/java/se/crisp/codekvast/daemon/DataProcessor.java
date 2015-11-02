@@ -8,5 +8,5 @@ import se.crisp.codekvast.daemon.impl.DataProcessingException;
  * Strategy for how to process data.
  */
 public interface DataProcessor {
-    void processData(long now, JvmState jvmState, CodeBase codeBase) throws DataProcessingException;
+    void processData(JvmState jvmState, CodeBase codeBase) throws DataProcessingException;
 }

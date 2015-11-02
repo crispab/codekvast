@@ -41,7 +41,7 @@ public class HttpPostDataProcessorImpl extends AbstractDataProcessorImpl {
     }
 
     @Override
-    protected void doProcessJvmData(JvmState jvmState) {
+    protected void doProcessJvmData(JvmState jvmState) throws DataProcessingException {
         try {
             daemonApi.uploadJvmData(createUploadJvmData(jvmState));
         } catch (DaemonApiException e) {
@@ -50,7 +50,7 @@ public class HttpPostDataProcessorImpl extends AbstractDataProcessorImpl {
     }
 
     @Override
-    protected void doProcessCodebase(JvmState jvmState, CodeBase codeBase) {
+    protected void doProcessCodebase(JvmState jvmState, CodeBase codeBase) throws DataProcessingException {
         try {
             daemonApi.uploadSignatureData(createUploadJvmData(jvmState), codeBase.getSignatures());
         } catch (DaemonApiException e) {
@@ -65,7 +65,7 @@ public class HttpPostDataProcessorImpl extends AbstractDataProcessorImpl {
     }
 
     @Override
-    protected void doProcessUnprocessedSignatures(JvmState jvmState) {
+    protected void doProcessUnprocessedSignatures(JvmState jvmState) throws DataProcessingException {
         try {
             daemonApi.uploadInvocationData(createUploadJvmData(jvmState),
                                            invocationsCollector.getNotUploadedInvocations(jvmState.getJvm().getJvmUuid()));

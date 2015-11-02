@@ -20,7 +20,7 @@ import java.util.*;
 @UtilityClass
 public final class FileUtils {
 
-    private static final String UTF_8 = "UTF-8";
+    public static final String UTF_8 = "UTF-8";
 
     static final String CONSUMED_SUFFIX = ".consumed";
 
@@ -175,7 +175,7 @@ public final class FileUtils {
         }
     }
 
-    static void extractFieldValuesFrom(Object object, Set<String> lines) throws IllegalAccessException {
+    public static void extractFieldValuesFrom(Object object, Set<String> lines) throws IllegalAccessException {
         Field[] fields = object.getClass().getDeclaredFields();
         for (Field field : fields) {
             if (!Modifier.isStatic(field.getModifiers())) {

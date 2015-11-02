@@ -22,7 +22,8 @@ import java.lang.annotation.*;
         "codekvast.apiAccessSecret=apiAccessSecret",
         "codekvast.serverUri=serverUri",
         "codekvast.dataPath=dataPath",
-        "codekvast.serverUploadIntervalSeconds=600"
+        "codekvast.dataProcessingIntervalSeconds=600",
+        "codekvast.exportFile=/tmp/codekvast-export.zip"
 })
 public @interface HttpPostIntegrationTest {
 }

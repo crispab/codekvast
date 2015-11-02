@@ -39,15 +39,18 @@ public class DaemonConfig {
     private URI serverUri;
 
     @Min(1)
-    private int serverUploadIntervalSeconds;
+    private int dataProcessingIntervalSeconds;
 
     @NotNull
     @Size(max = Constraints.MAX_CODEKVAST_VERSION_LENGTH)
-    String daemonVersion;
+    private String daemonVersion;
 
     @NotNull
     @Size(max = Constraints.MAX_CODEKVAST_VCS_ID_LENGTH)
-    String daemonVcsId;
+    private String daemonVcsId;
+
+    @NotNull
+    private File exportFile;
 
     public String getDisplayVersion() {
         return daemonVersion + "-" + daemonVcsId;
