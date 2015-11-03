@@ -38,12 +38,12 @@ public class CodeBase {
     private final CollectorConfig config;
 
     @Getter
-    private final Set<String> signatures = new TreeSet<String>();
+    private final Set<String> signatures = new TreeSet<>();
 
     @Getter
-    private final Map<String, String> overriddenSignatures = new HashMap<String, String>();
+    private final Map<String, String> overriddenSignatures = new HashMap<>();
 
-    private static final Set<String> strangeSignatures = new TreeSet<String>();
+    private static final Set<String> strangeSignatures = new TreeSet<>();
 
     private final CodeBaseFingerprint fingerprint;
 
@@ -52,7 +52,7 @@ public class CodeBase {
 
     private final Set<Pattern> bytecodeAddedPatterns;
     private final Set<Pattern> bytecodeEnhancedPatterns;
-    private final Set<Pattern> loggedBadPatterns = new HashSet<Pattern>();
+    private final Set<Pattern> loggedBadPatterns = new HashSet<>();
 
     public CodeBase(CollectorConfig config) {
         this.config = config;
@@ -63,7 +63,7 @@ public class CodeBase {
     }
 
     private Set<Pattern> readByteCodePatternsFrom(String resourceName) {
-        Set<Pattern> result = new HashSet<Pattern>();
+        Set<Pattern> result = new HashSet<>();
         URL resource = getClass().getResource(resourceName);
         try {
             List<String> lines = Files.readLines(new File(resource.toURI()), Charset.forName("UTF-8"));
@@ -138,7 +138,7 @@ public class CodeBase {
     private CodeBaseFingerprint initUrls() {
         long startedAt = System.currentTimeMillis();
 
-        urls = new ArrayList<URL>();
+        urls = new ArrayList<>();
         CodeBaseFingerprint.Builder builder = CodeBaseFingerprint.builder();
         for (File codeBaseFile : codeBaseFiles) {
             if (codeBaseFile.isDirectory()) {
@@ -192,7 +192,7 @@ public class CodeBase {
             if (!declaringNormalizedSignature.equals(thisNormalizedSignature) && thisNormalizedSignature != null) {
                 log.trace("  Adding {} -> {} to overridden signatures", thisNormalizedSignature, declaringNormalizedSignature);
                 overriddenSignatures.put(thisNormalizedSignature, declaringNormalizedSignature);
-            } else if (declaringNormalizedSignature != null && signatures.add(declaringNormalizedSignature)) {
+            } else if (signatures.add(declaringNormalizedSignature)) {
                 log.trace("  Found {}", declaringNormalizedSignature);
             }
         }

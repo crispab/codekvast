@@ -42,9 +42,7 @@ public class ManifestAppVersionStrategy extends AbstractAppVersionStrategy {
         String jarUri = args[1];
         String manifestAttribute = args.length > 2 ? args[2] : DEFAULT_MANIFEST_ATTRIBUTE;
         for (File codeBaseFile : codeBases) {
-            try {
-                File file = getJarFile(codeBaseFile, jarUri);
-                JarFile jarFile = new JarFile(file);
+            try (JarFile jarFile = new JarFile(getJarFile(codeBaseFile, jarUri))) {
                 Attributes attributes = jarFile.getManifest().getMainAttributes();
                 String resolvedVersion = attributes.getValue(manifestAttribute);
                 if (resolvedVersion != null) {
