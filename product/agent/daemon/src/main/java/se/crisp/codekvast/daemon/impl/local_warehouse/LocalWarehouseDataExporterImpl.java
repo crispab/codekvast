@@ -88,6 +88,19 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
         }
     }
 
+    private void doExportDaemonConfig(ZipOutputStream zos, Charset charset, DaemonConfig config)
+            throws IOException, IllegalAccessException {
+        zos.putNextEntry(new ZipEntry(DaemonConstants.DAEMON_CONFIG_FILE));
+
+        Set<String> lines = new TreeSet<>();
+        FileUtils.extractFieldValuesFrom(config, lines);
+        for (String line : lines) {
+            zos.write(line.getBytes(charset));
+            zos.write('\n');
+        }
+        zos.closeEntry();
+    }
+
     private void doExportDatabaseTable(ZipOutputStream zos, CSVWriter csvWriter, String table, String... columns) throws IOException {
         zos.putNextEntry(new ZipEntry(table + ".csv"));
         csvWriter.writeNext(columns, false);
@@ -101,19 +114,6 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
         });
 
         csvWriter.flush();
-        zos.closeEntry();
-    }
-
-    private void doExportDaemonConfig(ZipOutputStream zos, Charset charset, DaemonConfig config)
-            throws IOException, IllegalAccessException {
-        zos.putNextEntry(new ZipEntry(DaemonConstants.DAEMON_CONFIG_FILE));
-
-        Set<String> lines = new TreeSet<>();
-        FileUtils.extractFieldValuesFrom(config, lines);
-        for (String line : lines) {
-            zos.write(line.getBytes(charset));
-            zos.write('\n');
-        }
         zos.closeEntry();
     }
 
