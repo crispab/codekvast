@@ -7,8 +7,6 @@ import se.crisp.codekvast.daemon.appversion.AppVersionResolver;
 import se.crisp.codekvast.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.daemon.beans.JvmState;
 import se.crisp.codekvast.daemon.codebase.CodeBase;
-import se.crisp.codekvast.daemon.impl.DataExportException;
-import se.crisp.codekvast.daemon.impl.DataProcessingException;
 import se.crisp.codekvast.daemon.util.LogUtil;
 import se.crisp.codekvast.shared.config.CollectorConfig;
 import se.crisp.codekvast.shared.model.Jvm;
@@ -32,17 +30,17 @@ public class DaemonWorker {
 
     private final DaemonConfig config;
     private final AppVersionResolver appVersionResolver;
-    private final DataProcessor dataProcessor;
+    private final CollectorDataProcessor collectorDataProcessor;
 
     private final Map<String, JvmState> jvmStates = new HashMap<String, JvmState>();
     private final DataExporter dataExporter;
 
     @Inject
-    public DaemonWorker(DaemonConfig config, AppVersionResolver appVersionResolver, DataProcessor dataProcessor,
+    public DaemonWorker(DaemonConfig config, AppVersionResolver appVersionResolver, CollectorDataProcessor collectorDataProcessor,
                         DataExporter dataExporter) {
         this.config = config;
         this.appVersionResolver = appVersionResolver;
-        this.dataProcessor = dataProcessor;
+        this.collectorDataProcessor = collectorDataProcessor;
         this.dataExporter = dataExporter;
 
         log.info("{} {} started", getClass().getSimpleName(), config.getDisplayVersion());
@@ -86,7 +84,7 @@ public class DaemonWorker {
                 jvmState.setFirstRun(false);
             }
             try {
-                dataProcessor.processData(jvmState, new CodeBase(jvmState.getJvm().getCollectorConfig()));
+                collectorDataProcessor.processCollectorData(jvmState, new CodeBase(jvmState.getJvm().getCollectorConfig()));
             } catch (DataProcessingException e) {
                 LogUtil.logException(log, "Could not process data for " + jvmState.getJvm().getCollectorConfig().getAppName(), e);
             }

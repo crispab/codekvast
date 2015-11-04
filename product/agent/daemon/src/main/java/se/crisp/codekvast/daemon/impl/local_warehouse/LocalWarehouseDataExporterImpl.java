@@ -6,9 +6,9 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import se.crisp.codekvast.daemon.DaemonConstants;
+import se.crisp.codekvast.daemon.DataExportException;
 import se.crisp.codekvast.daemon.DataExporter;
 import se.crisp.codekvast.daemon.beans.DaemonConfig;
-import se.crisp.codekvast.daemon.impl.DataExportException;
 import se.crisp.codekvast.shared.util.FileUtils;
 
 import javax.inject.Inject;
@@ -52,6 +52,11 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
             return;
         }
 
+        if (!config.getExportFile().getName().toLowerCase().endsWith(".zip")) {
+            log.warn("Can only export to ZIP format");
+            return;
+        }
+
         Instant startedAt = now();
 
         doExportDataTo(config.getExportFile());
@@ -64,20 +69,20 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
 
         File tmpFile = createTempFile(exportFile);
 
-        try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(tmpFile)))) {
-            zos.setComment("Export of Codekvast local warehouse at " + Instant.now());
+        try (ZipOutputStream zip = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(tmpFile)))) {
+            zip.setComment("Export of Codekvast local warehouse for " + config.getEnvironment() + " at " + Instant.now());
 
             Charset charset = Charset.forName("UTF-8");
-            doExportDaemonConfig(zos, charset, config);
+            doExportDaemonConfig(zip, charset, config);
 
-            CSVWriter csvWriter = new CSVWriter(new OutputStreamWriter(zos, charset));
-            doExportDatabaseTable(zos, csvWriter, "applications", "id", "name", "version", "createdAtMillis");
-            doExportDatabaseTable(zos, csvWriter, "methods", "id", "visibility", "signature", "createdAtMillis");
-            doExportDatabaseTable(zos, csvWriter, "jvms", "id", "uuid", "startedAtMillis", "dumpedAtMillis", "jsonData");
-            doExportDatabaseTable(zos, csvWriter, "invocations", "applicationId", "methodId", "jvmId", "invokedAtMillis", "invocationCount",
+            CSVWriter csvWriter = new CSVWriter(new OutputStreamWriter(zip, charset));
+            doExportDatabaseTable(zip, csvWriter, "applications", "id", "name", "version", "createdAtMillis");
+            doExportDatabaseTable(zip, csvWriter, "methods", "id", "visibility", "signature", "createdAtMillis");
+            doExportDatabaseTable(zip, csvWriter, "jvms", "id", "uuid", "startedAtMillis", "dumpedAtMillis", "jsonData");
+            doExportDatabaseTable(zip, csvWriter, "invocations", "applicationId", "methodId", "jvmId", "invokedAtMillis", "invocationCount",
                                   "confidence", "exportedAtMillis");
 
-            zos.finish();
+            zip.finish();
         } catch (Exception e) {
             throw new DataExportException("Cannot create " + exportFile, e);
         }
@@ -88,21 +93,21 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
         }
     }
 
-    private void doExportDaemonConfig(ZipOutputStream zos, Charset charset, DaemonConfig config)
+    private void doExportDaemonConfig(ZipOutputStream zip, Charset charset, DaemonConfig config)
             throws IOException, IllegalAccessException {
-        zos.putNextEntry(new ZipEntry(DaemonConstants.DAEMON_CONFIG_FILE));
+        zip.putNextEntry(new ZipEntry(DaemonConstants.DAEMON_CONFIG_FILE));
 
         Set<String> lines = new TreeSet<>();
         FileUtils.extractFieldValuesFrom(config, lines);
         for (String line : lines) {
-            zos.write(line.getBytes(charset));
-            zos.write('\n');
+            zip.write(line.getBytes(charset));
+            zip.write('\n');
         }
-        zos.closeEntry();
+        zip.closeEntry();
     }
 
-    private void doExportDatabaseTable(ZipOutputStream zos, CSVWriter csvWriter, String table, String... columns) throws IOException {
-        zos.putNextEntry(new ZipEntry(table + ".csv"));
+    private void doExportDatabaseTable(ZipOutputStream zip, CSVWriter csvWriter, String table, String... columns) throws IOException {
+        zip.putNextEntry(new ZipEntry(table + ".csv"));
         csvWriter.writeNext(columns, false);
 
         String[] line = new String[columns.length];
@@ -114,7 +119,7 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
         });
 
         csvWriter.flush();
-        zos.closeEntry();
+        zip.closeEntry();
     }
 
     private File createTempFile(File file) throws DataExportException {

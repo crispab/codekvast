@@ -49,6 +49,7 @@ public class LocalWarehouseDataExporterImplTest {
                              .daemonVersion("daemonVersion")
                              .dataPath(new File("foobar"))
                              .dataProcessingIntervalSeconds(600)
+                             .environment(getClass().getSimpleName())
                              .exportFile(exportFile)
                              .serverUri(new URI("http://foobar"))
                              .build();

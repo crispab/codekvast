@@ -52,6 +52,10 @@ public class DaemonConfig {
     @NotNull
     private File exportFile;
 
+    @NotNull
+    @Size(max = Constraints.MAX_ENVIRONMENT_LENGTH)
+    private String environment;
+
     public String getDisplayVersion() {
         return daemonVersion + "-" + daemonVcsId;
     }

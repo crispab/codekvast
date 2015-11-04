@@ -4,7 +4,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
-import se.crisp.codekvast.daemon.DataProcessor;
+import se.crisp.codekvast.daemon.CollectorDataProcessor;
+import se.crisp.codekvast.daemon.DataProcessingException;
 import se.crisp.codekvast.daemon.appversion.AppVersionResolver;
 import se.crisp.codekvast.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.daemon.beans.JvmState;
@@ -29,7 +30,7 @@ import java.util.List;
  */
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class AbstractDataProcessorImpl implements DataProcessor {
+public abstract class AbstractCollectorDataProcessorImpl implements CollectorDataProcessor {
     private final DaemonConfig daemonConfig;
     private final AppVersionResolver appVersionResolver;
     private final CodeBaseScanner codeBaseScanner;
@@ -39,7 +40,7 @@ public abstract class AbstractDataProcessorImpl implements DataProcessor {
 
     @Override
     @Transactional
-    public void processData(JvmState jvmState, CodeBase codeBase) throws DataProcessingException {
+    public void processCollectorData(JvmState jvmState, CodeBase codeBase) throws DataProcessingException {
         appVersionResolver.resolveAppVersion(jvmState);
         processJvmData(jvmState);
         processCodeBase(jvmState, codeBase);

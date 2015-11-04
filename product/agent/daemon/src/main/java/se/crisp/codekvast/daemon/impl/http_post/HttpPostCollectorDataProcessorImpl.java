@@ -3,13 +3,13 @@ package se.crisp.codekvast.daemon.impl.http_post;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import se.crisp.codekvast.daemon.DataProcessingException;
 import se.crisp.codekvast.daemon.appversion.AppVersionResolver;
 import se.crisp.codekvast.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.daemon.beans.JvmState;
 import se.crisp.codekvast.daemon.codebase.CodeBase;
 import se.crisp.codekvast.daemon.codebase.CodeBaseScanner;
-import se.crisp.codekvast.daemon.impl.AbstractDataProcessorImpl;
-import se.crisp.codekvast.daemon.impl.DataProcessingException;
+import se.crisp.codekvast.daemon.impl.AbstractCollectorDataProcessorImpl;
 import se.crisp.codekvast.server.daemon_api.DaemonApi;
 import se.crisp.codekvast.server.daemon_api.DaemonApiException;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence;
@@ -17,23 +17,24 @@ import se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence;
 import javax.inject.Inject;
 
 /**
- * An implementation of DataProcessor that uploads all data to a remote server using the HTTP POST API that is embedded in {@link
+ * An implementation of CollectorDataProcessor that uploads all collected data to a remote server using the HTTP POST API that is
+ * embedded in {@link
  * DaemonApi}.
  */
 @Component
 @Profile("httpPost")
 @Slf4j
-public class HttpPostDataProcessorImpl extends AbstractDataProcessorImpl {
+public class HttpPostCollectorDataProcessorImpl extends AbstractCollectorDataProcessorImpl {
 
     private final DaemonApi daemonApi;
     private final InvocationsCollector invocationsCollector;
 
     @Inject
-    public HttpPostDataProcessorImpl(DaemonConfig config,
-                                     AppVersionResolver appVersionResolver,
-                                     CodeBaseScanner codeBaseScanner,
-                                     DaemonApi daemonApi,
-                                     InvocationsCollector invocationsCollector) {
+    public HttpPostCollectorDataProcessorImpl(DaemonConfig config,
+                                              AppVersionResolver appVersionResolver,
+                                              CodeBaseScanner codeBaseScanner,
+                                              DaemonApi daemonApi,
+                                              InvocationsCollector invocationsCollector) {
         super(config, appVersionResolver, codeBaseScanner);
         this.daemonApi = daemonApi;
         this.invocationsCollector = invocationsCollector;

@@ -1,4 +1,4 @@
-package se.crisp.codekvast.daemon.impl;
+package se.crisp.codekvast.daemon;
 
 /**
  * @author olle.hallin@crisp.se

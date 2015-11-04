@@ -7,13 +7,13 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import se.crisp.codekvast.daemon.CollectorDataProcessor;
+import se.crisp.codekvast.daemon.DataExportException;
 import se.crisp.codekvast.daemon.DataExporter;
-import se.crisp.codekvast.daemon.DataProcessor;
+import se.crisp.codekvast.daemon.DataProcessingException;
 import se.crisp.codekvast.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.daemon.beans.JvmState;
 import se.crisp.codekvast.daemon.codebase.CodeBase;
-import se.crisp.codekvast.daemon.impl.DataExportException;
-import se.crisp.codekvast.daemon.impl.DataProcessingException;
 import se.crisp.codekvast.daemon.main.LocalWarehouseIntegrationTest;
 import se.crisp.codekvast.shared.config.CollectorConfig;
 import se.crisp.codekvast.shared.config.CollectorConfigFactory;
@@ -48,7 +48,7 @@ public class LocalWarehouseTest {
     private JdbcTemplate jdbcTemplate;
 
     @Inject
-    private DataProcessor dataProcessor;
+    private CollectorDataProcessor collectorDataProcessor;
 
     @Inject
     public DataExporter dataExporter;
@@ -131,7 +131,7 @@ public class LocalWarehouseTest {
         FileUtils.writeInvocationDataTo(jvmState1.getInvocationsFile(), ++dumpNumber, T1, singleton(SIGNATURES.get(1)));
 
         // when
-        dataProcessor.processData(jvmState1, codeBase1);
+        collectorDataProcessor.processCollectorData(jvmState1, codeBase1);
 
         // then
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM applications WHERE name = ? AND version = ? AND createdAtMillis = ? ",
@@ -162,7 +162,7 @@ public class LocalWarehouseTest {
         FileUtils.writeInvocationDataTo(jvmState1.getInvocationsFile(), ++dumpNumber, T3, singleton(SIGNATURES.get(1)));
 
         // when
-        dataProcessor.processData(jvmState1, codeBase1);
+        collectorDataProcessor.processCollectorData(jvmState1, codeBase1);
 
         // then
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM jvms WHERE uuid = ? AND startedAtMillis = ? AND dumpedAtMillis = ?",

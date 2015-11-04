@@ -23,6 +23,7 @@ import java.lang.annotation.*;
         "codekvast.serverUri=serverUri",
         "codekvast.dataPath=dataPath",
         "codekvast.dataProcessingIntervalSeconds=600",
+        "codekvast.environment=httpPost-integration-test",
         "codekvast.exportFile=/tmp/codekvast-export.zip"
 })
 public @interface HttpPostIntegrationTest {
