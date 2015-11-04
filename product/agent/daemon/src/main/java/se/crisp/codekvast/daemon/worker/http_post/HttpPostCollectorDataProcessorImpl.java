@@ -16,13 +16,15 @@ import se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence;
 
 import javax.inject.Inject;
 
+import static se.crisp.codekvast.daemon.DaemonConstants.HTTP_POST_PROFILE;
+
 /**
  * An implementation of CollectorDataProcessor that uploads all collected data to a remote server using the HTTP POST API that is
  * embedded in {@link
  * DaemonApi}.
  */
 @Component
-@Profile(DaemonConstants.HTTP_POST_PROFILE)
+@Profile(HTTP_POST_PROFILE)
 @Slf4j
 public class HttpPostCollectorDataProcessorImpl extends AbstractCollectorDataProcessorImpl {
 

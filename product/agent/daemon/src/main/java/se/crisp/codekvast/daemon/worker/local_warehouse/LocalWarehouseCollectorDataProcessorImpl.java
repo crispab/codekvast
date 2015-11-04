@@ -29,6 +29,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkState;
+import static se.crisp.codekvast.daemon.DaemonConstants.LOCAL_WAREHOUSE_PROFILE;
 
 /**
  * An implementation of CollectorDataProcessor that stores collected data in a local data warehouse.
@@ -36,7 +37,7 @@ import static com.google.common.base.Preconditions.checkState;
  * @author olle.hallin@crisp.se
  */
 @Component
-@Profile(DaemonConstants.LOCAL_WAREHOUSE_PROFILE)
+@Profile(LOCAL_WAREHOUSE_PROFILE)
 @Slf4j
 public class LocalWarehouseCollectorDataProcessorImpl extends AbstractCollectorDataProcessorImpl {
 
