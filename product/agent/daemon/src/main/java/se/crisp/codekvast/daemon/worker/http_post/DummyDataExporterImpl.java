@@ -11,6 +11,8 @@ import static se.crisp.codekvast.daemon.DaemonConstants.HTTP_POST_PROFILE;
 /**
  * A dummy implementation of DataExporter that does nothing. In the HTTP POST profile, data is continuously uploaded to a central data
  * warehouse.
+ *
+ * @author olle.hallin@crisp.se
  */
 @Component
 @Profile(HTTP_POST_PROFILE)
