@@ -1,4 +1,4 @@
-package se.crisp.codekvast.daemon.impl.local_warehouse;
+package se.crisp.codekvast.daemon.worker.local_warehouse;
 
 import com.opencsv.CSVWriter;
 import lombok.extern.slf4j.Slf4j;
@@ -6,9 +6,9 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import se.crisp.codekvast.daemon.DaemonConstants;
-import se.crisp.codekvast.daemon.DataExportException;
-import se.crisp.codekvast.daemon.DataExporter;
 import se.crisp.codekvast.daemon.beans.DaemonConfig;
+import se.crisp.codekvast.daemon.worker.DataExportException;
+import se.crisp.codekvast.daemon.worker.DataExporter;
 import se.crisp.codekvast.shared.util.FileUtils;
 
 import javax.inject.Inject;
@@ -61,7 +61,17 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
 
         doExportDataTo(config.getExportFile());
 
-        log.info("Created {} in {} s", config.getExportFile(), Duration.between(startedAt, now()).getSeconds());
+        log.info("Created {} ({}) in {} s", config.getExportFile(), humanReadableByteCount(config.getExportFile().length()),
+                 Duration.between(startedAt, now()).getSeconds());
+    }
+
+    public static String humanReadableByteCount(long bytes) {
+        if (bytes < 1000) {
+            return bytes + " B";
+        }
+        int exponent = (int) (Math.log(bytes) / Math.log(1000));
+        String unit = " kMGTPE".charAt(exponent) + "B";
+        return String.format("%.1f %s", bytes / Math.pow(1000, exponent), unit);
     }
 
     private void doExportDataTo(File exportFile) throws DataExportException {

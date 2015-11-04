@@ -1,11 +1,9 @@
-package se.crisp.codekvast.daemon.impl;
+package se.crisp.codekvast.daemon.worker;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
-import se.crisp.codekvast.daemon.CollectorDataProcessor;
-import se.crisp.codekvast.daemon.DataProcessingException;
 import se.crisp.codekvast.daemon.appversion.AppVersionResolver;
 import se.crisp.codekvast.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.daemon.beans.JvmState;

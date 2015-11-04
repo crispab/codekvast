@@ -1,4 +1,4 @@
-package se.crisp.codekvast.daemon.impl.local_warehouse;
+package se.crisp.codekvast.daemon.worker.local_warehouse;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -8,8 +8,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.jdbc.core.JdbcTemplate;
-import se.crisp.codekvast.daemon.DataExporter;
 import se.crisp.codekvast.daemon.beans.DaemonConfig;
+import se.crisp.codekvast.daemon.worker.DataExporter;
 
 import java.io.File;
 import java.net.URI;

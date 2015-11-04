@@ -1,4 +1,4 @@
-package se.crisp.codekvast.daemon.impl.local_warehouse;
+package se.crisp.codekvast.daemon.worker.local_warehouse;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -7,14 +7,14 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import se.crisp.codekvast.daemon.CollectorDataProcessor;
-import se.crisp.codekvast.daemon.DataExportException;
-import se.crisp.codekvast.daemon.DataExporter;
-import se.crisp.codekvast.daemon.DataProcessingException;
 import se.crisp.codekvast.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.daemon.beans.JvmState;
 import se.crisp.codekvast.daemon.codebase.CodeBase;
 import se.crisp.codekvast.daemon.main.LocalWarehouseIntegrationTest;
+import se.crisp.codekvast.daemon.worker.CollectorDataProcessor;
+import se.crisp.codekvast.daemon.worker.DataExportException;
+import se.crisp.codekvast.daemon.worker.DataExporter;
+import se.crisp.codekvast.daemon.worker.DataProcessingException;
 import se.crisp.codekvast.shared.config.CollectorConfig;
 import se.crisp.codekvast.shared.config.CollectorConfigFactory;
 import se.crisp.codekvast.shared.model.Jvm;

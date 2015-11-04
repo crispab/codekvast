@@ -1,4 +1,4 @@
-package se.crisp.codekvast.daemon.impl.local_warehouse;
+package se.crisp.codekvast.daemon.worker.local_warehouse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,13 +10,13 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import se.crisp.codekvast.daemon.DataProcessingException;
 import se.crisp.codekvast.daemon.appversion.AppVersionResolver;
 import se.crisp.codekvast.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.daemon.beans.JvmState;
 import se.crisp.codekvast.daemon.codebase.CodeBase;
 import se.crisp.codekvast.daemon.codebase.CodeBaseScanner;
-import se.crisp.codekvast.daemon.impl.AbstractCollectorDataProcessorImpl;
+import se.crisp.codekvast.daemon.worker.AbstractCollectorDataProcessorImpl;
+import se.crisp.codekvast.daemon.worker.DataProcessingException;
 import se.crisp.codekvast.server.daemon_api.model.v1.JvmData;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence;
 import se.crisp.codekvast.shared.model.Jvm;

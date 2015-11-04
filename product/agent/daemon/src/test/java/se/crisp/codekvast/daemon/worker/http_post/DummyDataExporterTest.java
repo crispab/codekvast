@@ -1,11 +1,11 @@
-package se.crisp.codekvast.daemon.impl.http_post;
+package se.crisp.codekvast.daemon.worker.http_post;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import se.crisp.codekvast.daemon.DataExportException;
-import se.crisp.codekvast.daemon.DataExporter;
 import se.crisp.codekvast.daemon.main.HttpPostIntegrationTest;
+import se.crisp.codekvast.daemon.worker.DataExportException;
+import se.crisp.codekvast.daemon.worker.DataExporter;
 
 import javax.inject.Inject;
 
