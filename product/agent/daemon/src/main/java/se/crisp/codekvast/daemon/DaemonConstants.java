@@ -7,5 +7,8 @@ package se.crisp.codekvast.daemon;
  */
 public interface DaemonConstants {
     String DAEMON_CONFIG_FILE = "codekvast-daemon.properties";
+
+    String HTTP_POST_PROFILE = "httpPost";
+    String LOCAL_WAREHOUSE_PROFILE = "localWarehouse";
 }
 

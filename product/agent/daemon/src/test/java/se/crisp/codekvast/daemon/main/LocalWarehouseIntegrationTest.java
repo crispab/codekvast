@@ -6,6 +6,8 @@ import se.crisp.codekvast.daemon.CodekvastDaemon;
 
 import java.lang.annotation.*;
 
+import static se.crisp.codekvast.daemon.DaemonConstants.LOCAL_WAREHOUSE_PROFILE;
+
 /**
  * Meta annotation for integration tests against an embedded CodekvastDaemon application that uses a local warehouse as data processing
  * strategy.
@@ -17,14 +19,14 @@ import java.lang.annotation.*;
 @Documented
 @SpringApplicationConfiguration(classes = CodekvastDaemon.class)
 @IntegrationTest({
-        "spring.profiles.active=localWarehouse",
+        "spring.profiles.active=" + LOCAL_WAREHOUSE_PROFILE,
         "spring.datasource.url=jdbc:h2:mem:integrationTest",
         "codekvast.apiAccessID=apiAccessID",
         "codekvast.apiAccessSecret=apiAccessSecret",
         "codekvast.serverUri=serverUri",
         "codekvast.dataPath=dataPath",
         "codekvast.dataProcessingIntervalSeconds=600",
-        "codekvast.environment=localWarehouse-integration-test",
+        "codekvast.environment=" + LOCAL_WAREHOUSE_PROFILE + "-integration-test",
         "codekvast.exportFile=/tmp/codekvast-export.zip"
 })
 public @interface LocalWarehouseIntegrationTest {

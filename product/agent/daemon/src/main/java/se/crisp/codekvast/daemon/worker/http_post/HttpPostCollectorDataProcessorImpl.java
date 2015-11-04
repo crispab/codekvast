@@ -22,7 +22,7 @@ import javax.inject.Inject;
  * DaemonApi}.
  */
 @Component
-@Profile("httpPost")
+@Profile(DaemonConstants.HTTP_POST_PROFILE)
 @Slf4j
 public class HttpPostCollectorDataProcessorImpl extends AbstractCollectorDataProcessorImpl {
 

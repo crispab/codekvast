@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import se.crisp.codekvast.daemon.DaemonConstants;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureEntry;
 
@@ -15,7 +16,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Repository
-@Profile("httpPost")
+@Profile(DaemonConstants.HTTP_POST_PROFILE)
 @Slf4j
 class InvocationsCollector {
 

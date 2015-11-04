@@ -36,7 +36,7 @@ import static com.google.common.base.Preconditions.checkState;
  * @author olle.hallin@crisp.se
  */
 @Component
-@Profile("localWarehouse")
+@Profile(DaemonConstants.LOCAL_WAREHOUSE_PROFILE)
 @Slf4j
 public class LocalWarehouseCollectorDataProcessorImpl extends AbstractCollectorDataProcessorImpl {
 

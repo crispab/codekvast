@@ -32,7 +32,7 @@ import static java.util.stream.Collectors.joining;
  * @author olle.hallin@crisp.se
  */
 @Component
-@Profile("localWarehouse")
+@Profile(DaemonConstants.LOCAL_WAREHOUSE_PROFILE)
 @Slf4j
 public class LocalWarehouseDataExporterImpl implements DataExporter {
 
