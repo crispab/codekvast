@@ -31,13 +31,11 @@ public class LocalWarehouseDataExporterImplTest {
 
     private DaemonConfig config;
 
-    private File exportFile;
-
     private DataExporter dataExporter;
 
     @Before
     public void before() throws Exception {
-        exportFile = new File("/tmp", "codekvast-export.zip");
+        File exportFile = new File("/tmp", "codekvast-export.zip");
         exportFile.delete();
 
         // TODO exportFile = new File(temporaryFolder.getRoot(), "codekvast-export.zip");
@@ -58,12 +56,34 @@ public class LocalWarehouseDataExporterImplTest {
     }
 
     @Test
-    public void testExportData() throws Exception {
-        assertThat(exportFile.exists(), is(false));
+    public void should_exportData() throws Exception {
+        assertThat(config.getExportFile().exists(), is(false));
 
         dataExporter.exportData();
 
-        System.out.println("exportFile = " + exportFile);
-        assertThat(exportFile.exists(), is(true));
+        System.out.println("exportFile = " + config.getExportFile());
+        assertThat(config.getExportFile().exists(), is(true));
+    }
+
+    @Test
+    public void should_not_exportData_when_exportFile_is_null() throws Exception {
+        assertThat(config.getExportFile().exists(), is(false));
+
+        config = config.withExportFile(null);
+        dataExporter = new LocalWarehouseDataExporterImpl(jdbcTemplate, config);
+
+        dataExporter.exportData();
+    }
+
+    @Test
+    public void should_not_exportData_when_exportFile_is_not_ending_with_zip() throws Exception {
+        assertThat(config.getExportFile().exists(), is(false));
+
+        config = config.withExportFile(new File("foo.bar"));
+        dataExporter = new LocalWarehouseDataExporterImpl(jdbcTemplate, config);
+
+        dataExporter.exportData();
+
+        assertThat(config.getExportFile().exists(), is(false));
     }
 }

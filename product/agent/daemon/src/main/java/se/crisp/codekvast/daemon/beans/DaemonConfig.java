@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Wither;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import se.crisp.codekvast.server.daemon_api.model.v1.Constraints;
@@ -49,7 +50,7 @@ public class DaemonConfig {
     @Size(max = Constraints.MAX_CODEKVAST_VCS_ID_LENGTH)
     private String daemonVcsId;
 
-    @NotNull
+    @Wither
     private File exportFile;
 
     @NotNull
