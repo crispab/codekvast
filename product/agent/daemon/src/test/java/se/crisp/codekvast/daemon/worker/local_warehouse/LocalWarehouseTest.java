@@ -123,6 +123,7 @@ public class LocalWarehouseTest {
         return codeBase;
     }
 
+    @SuppressWarnings("ValueOfIncrementOrDecrementUsed")
     @Test
     public void testProcessData() throws DataProcessingException, DataExportException {
         // given (note that the invocation files are in reverse order!)
