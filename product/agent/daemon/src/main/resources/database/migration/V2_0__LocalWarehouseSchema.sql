@@ -12,7 +12,14 @@ CREATE TABLE methods (
   id              BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
   visibility      VARCHAR(20)           NOT NULL,
   signature       VARCHAR(4000)         NOT NULL UNIQUE,
-  createdAtMillis BIGINT                NOT NULL
+  createdAtMillis BIGINT                NOT NULL,
+  declaringType   VARCHAR(255)          NULL,
+  exceptionTypes  VARCHAR(255)          NULL,
+  methodName      VARCHAR(100)          NULL,
+  modifiers       VARCHAR(50)           NULL,
+  packageName     VARCHAR(255)          NULL,
+  parameterTypes  VARCHAR(255)          NULL,
+  returnType      VARCHAR(100)          NULL
 );
 
 // --- JVMs --------------------------------

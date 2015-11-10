@@ -223,11 +223,20 @@ public class LocalWarehouseCollectorDataProcessorImpl extends AbstractCollectorD
         @SuppressWarnings("ValueOfIncrementOrDecrementUsed")
         private PreparedStatement createInsertFatMethodStatement(Connection con) throws SQLException {
             PreparedStatement ps =
-                    con.prepareStatement("INSERT INTO methods(visibility, signature, createdAtMillis) VALUES(?, ?, ?)");
+                    con.prepareStatement(
+                            "INSERT INTO methods(visibility, signature, createdAtMillis, declaringType, exceptionTypes, " +
+                                    "methodName, modifiers, packageName, parameterTypes,returnType) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             int column = 0;
             ps.setString(++column, visibility);
             ps.setString(++column, signature);
             ps.setLong(++column, System.currentTimeMillis());
+            ps.setString(++column, methodSignature.getDeclaringType());
+            ps.setString(++column, methodSignature.getExceptionTypes());
+            ps.setString(++column, methodSignature.getMethodName());
+            ps.setString(++column, methodSignature.getModifiers());
+            ps.setString(++column, methodSignature.getPackageName());
+            ps.setString(++column, methodSignature.getParameterTypes());
+            ps.setString(++column, methodSignature.getReturnType());
             return ps;
         }
     }
