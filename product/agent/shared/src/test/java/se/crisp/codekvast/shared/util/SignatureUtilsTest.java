@@ -2,6 +2,7 @@ package se.crisp.codekvast.shared.util;
 
 import org.junit.Test;
 import se.crisp.codekvast.shared.config.MethodFilter;
+import se.crisp.codekvast.shared.model.MethodSignature;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -9,9 +10,9 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static se.crisp.codekvast.shared.util.SignatureUtils.makeSignature;
-import static se.crisp.codekvast.shared.util.SignatureUtils.signatureToString;
+import static se.crisp.codekvast.shared.util.SignatureUtils.*;
 
 public class SignatureUtilsTest {
 
@@ -64,13 +65,52 @@ public class SignatureUtilsTest {
         assertThat(s2, is(s));
     }
 
+    @SuppressWarnings("Duplicates")
+    @Test
+    public void testMakeMethodSignature2() throws Exception {
+        MethodSignature signature = makeMethodSignature(methodFilter, TestClass.class, findTestMethod("protectedMethod2"));
+        assertThat(signature, notNullValue());
+        assertThat(signature.getAspectjString(),
+                   is("protected se.crisp.codekvast.shared.util.SignatureUtilsTest.TestClass.protectedMethod2()"));
+        assertThat(signature.getDeclaringType(), is("se.crisp.codekvast.shared.util.SignatureUtilsTest$TestClass"));
+        assertThat(signature.getExceptionTypes(), is(""));
+        assertThat(signature.getMethodName(), is("protectedMethod2"));
+        assertThat(signature.getModifiers(), is("protected"));
+        assertThat(signature.getPackageName(), is("se.crisp.codekvast.shared.util"));
+        assertThat(signature.getParameterTypes(), is(""));
+        assertThat(signature.getReturnType(), is("java.lang.Integer"));
+    }
+
+    @SuppressWarnings("Duplicates")
+    @Test
+    public void testMakeMethodSignature5() throws Exception {
+        MethodSignature signature = makeMethodSignature(methodFilter, TestClass.class, findTestMethod("protectedMethod5"));
+        assertThat(signature, notNullValue());
+        assertThat(signature.getAspectjString(),
+                   is("protected se.crisp.codekvast.shared.util.SignatureUtilsTest.TestClass.protectedMethod5(java.lang.String, se.crisp" +
+                              ".codekvast.shared.util.SignatureUtilsTest.TestInterface)"));
+        assertThat(signature.getDeclaringType(), is("se.crisp.codekvast.shared.util.SignatureUtilsTest$TestClass"));
+        assertThat(signature.getExceptionTypes(), is("java.lang.UnsupportedOperationException"));
+        assertThat(signature.getMethodName(), is("protectedMethod5"));
+        assertThat(signature.getModifiers(), is("protected final strictfp"));
+        assertThat(signature.getPackageName(), is("se.crisp.codekvast.shared.util"));
+        assertThat(signature.getParameterTypes(), is("java.lang.String, se.crisp.codekvast.shared.util.SignatureUtilsTest$TestInterface"));
+        assertThat(signature.getReturnType(), is("int"));
+    }
+
+    @SuppressWarnings("unused")
+    public interface TestInterface {
+        void foo();
+    }
+
     @SuppressWarnings({"EmptyMethod", "unused"})
     public static class TestClass {
         public static Collection<List<String>> publicStaticMethod1(String p1, Collection<Integer> p2) {
             return null;
         }
 
-        protected void protectedMethod2() {
+        protected Integer protectedMethod2() {
+            return null;
         }
 
         private String privateMethod3(int p1, String... args) {
@@ -78,6 +118,11 @@ public class SignatureUtilsTest {
         }
 
         int packagePrivateMethod4(int p1) {
+            return 0;
+        }
+
+        @SuppressWarnings("FinalMethod")
+        final strictfp protected int protectedMethod5(String p1, TestInterface p2) throws UnsupportedOperationException {
             return 0;
         }
     }

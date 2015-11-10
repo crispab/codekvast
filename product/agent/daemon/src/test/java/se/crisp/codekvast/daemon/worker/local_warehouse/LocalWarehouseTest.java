@@ -18,6 +18,7 @@ import se.crisp.codekvast.daemon.worker.DataProcessingException;
 import se.crisp.codekvast.shared.config.CollectorConfig;
 import se.crisp.codekvast.shared.config.CollectorConfigFactory;
 import se.crisp.codekvast.shared.model.Jvm;
+import se.crisp.codekvast.shared.model.MethodSignature;
 import se.crisp.codekvast.shared.util.FileUtils;
 
 import javax.inject.Inject;
@@ -25,10 +26,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Collections.singleton;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -41,6 +44,16 @@ import static org.mockito.Mockito.when;
 @LocalWarehouseIntegrationTest
 public class LocalWarehouseTest {
 
+    private static final MethodSignature DUMMY_METHOD_SIGNATURE = MethodSignature.builder()
+                                                                                 .aspectjString("aspectjString")
+                                                                                 .methodName("methodName")
+                                                                                 .declaringType("declaringType")
+                                                                                 .exceptionTypes("exceptionTypes")
+                                                                                 .modifiers("public")
+                                                                                 .packageName("packageName")
+                                                                                 .parameterTypes("parameterTypes")
+                                                                                 .returnType("returnType")
+                                                                                 .build();
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
@@ -113,7 +126,7 @@ public class LocalWarehouseTest {
 
         when(codeBase.getUrls()).thenReturn(new URL[]{});
         when(codeBase.getConfig()).thenReturn(collectorConfig);
-        when(codeBase.getSignatures()).thenReturn(new HashSet<>(SIGNATURES));
+        when(codeBase.getSignatures()).thenReturn(createSignaturesMap());
         for (String s : SIGNATURES) {
             when(codeBase.normalizeSignature(s)).thenReturn(s);
             when(codeBase.getBaseSignature(s)).thenReturn(s);
@@ -121,6 +134,10 @@ public class LocalWarehouseTest {
         }
 
         return codeBase;
+    }
+
+    private Map<String, MethodSignature> createSignaturesMap() {
+        return SIGNATURES.stream().collect(toMap(identity(), s -> DUMMY_METHOD_SIGNATURE));
     }
 
     @SuppressWarnings("ValueOfIncrementOrDecrementUsed")

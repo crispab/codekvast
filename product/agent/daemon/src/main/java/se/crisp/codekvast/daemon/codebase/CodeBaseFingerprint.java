@@ -1,5 +1,7 @@
 package se.crisp.codekvast.daemon.codebase;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,6 +15,7 @@ import static java.lang.Math.max;
  * @author olle.hallin@crisp.se
  */
 @Value
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 class CodeBaseFingerprint {
     private final int count;

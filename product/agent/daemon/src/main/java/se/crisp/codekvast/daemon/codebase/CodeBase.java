@@ -7,6 +7,7 @@ import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import se.crisp.codekvast.shared.config.CollectorConfig;
+import se.crisp.codekvast.shared.model.MethodSignature;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +39,7 @@ public class CodeBase {
     private final CollectorConfig config;
 
     @Getter
-    private final Set<String> signatures = new TreeSet<>();
+    private final Map<String, MethodSignature> signatures = new TreeMap<>();
 
     @Getter
     private final Map<String, String> overriddenSignatures = new HashMap<>();
@@ -83,8 +84,12 @@ public class CodeBase {
         try {
             result.add(Pattern.compile(pattern));
         } catch (PatternSyntaxException e) {
-            log.error("Illegal regexp syntax in {}:{}", fileName, lineNumber);
+            log.error("Illegal regexp syntax in {}:{}: {}", fileName, lineNumber, e);
         }
+    }
+
+    public String normalizeSignature(MethodSignature methodSignature) {
+        return methodSignature == null ? null : normalizeSignature(methodSignature.getAspectjString());
     }
 
     public String normalizeSignature(String signature) {
@@ -184,7 +189,7 @@ public class CodeBase {
         }
     }
 
-    void addSignature(String thisSignature, String declaringSignature) {
+    void addSignature(MethodSignature thisSignature, MethodSignature declaringSignature) {
         String thisNormalizedSignature = normalizeSignature(thisSignature);
         String declaringNormalizedSignature = normalizeSignature(declaringSignature);
 
@@ -192,7 +197,7 @@ public class CodeBase {
             if (!declaringNormalizedSignature.equals(thisNormalizedSignature) && thisNormalizedSignature != null) {
                 log.trace("  Adding {} -> {} to overridden signatures", thisNormalizedSignature, declaringNormalizedSignature);
                 overriddenSignatures.put(thisNormalizedSignature, declaringNormalizedSignature);
-            } else if (signatures.add(declaringNormalizedSignature)) {
+            } else if (signatures.put(declaringNormalizedSignature, declaringSignature) == null) {
                 log.trace("  Found {}", declaringNormalizedSignature);
             }
         }
@@ -209,7 +214,7 @@ public class CodeBase {
             out = new PrintWriter(tmpFile, "UTF-8");
 
             out.println("# Signatures:");
-            for (String signature : signatures) {
+            for (String signature : signatures.keySet()) {
                 out.println(signature);
             }
 
@@ -242,7 +247,7 @@ public class CodeBase {
     }
 
     public boolean hasSignature(String signature) {
-        return signatures.contains(signature);
+        return signatures.containsKey(signature);
     }
 
     public String getBaseSignature(String signature) {

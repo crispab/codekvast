@@ -4,8 +4,10 @@ import lombok.experimental.UtilityClass;
 import org.aspectj.lang.Signature;
 import org.aspectj.runtime.reflect.Factory;
 import se.crisp.codekvast.shared.config.MethodFilter;
+import se.crisp.codekvast.shared.model.MethodSignature;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 /**
  * Utility class for dealing with signatures.
@@ -61,8 +63,8 @@ public class SignatureUtils {
      * Uses AspectJ for creating the same signature as AbstractCodekvastAspect.
      *
      * @param methodFilter A filter for which methods should be included
-     * @param clazz  The class containing the method
-     * @param method The method to make a signature of
+     * @param clazz        The class containing the method
+     * @param method       The method to make a signature of
      * @return The same signature object as an AspectJ execution pointcut will provide in JoinPoint.getSignature(). Returns null unless the
      * method passes the methodVisibilityFilter.
      */
@@ -82,16 +84,39 @@ public class SignatureUtils {
     }
 
     /**
-     * Convenience method.
+     * Converts a java.lang.reflect.Method to a MethodSignature object.
      *
      * @param methodFilter The method visibility filter
-     * @param clazz  The class containing the method
-     * @param method The method to make a signature of
+     * @param clazz        The class containing the method
+     * @param method       The method to make a signature of
+     * @return A MethodSignature or null if the methodFilter stops the method.
      * @see #makeSignature(MethodFilter, Class, java.lang.reflect.Method)
-     * @see #signatureToString(org.aspectj.lang.Signature, boolean)
-     * @return A String representation of the signature.
      */
-    public static String makeSignatureString(MethodFilter methodFilter, Class<?> clazz, Method method) {
-        return signatureToString(makeSignature(methodFilter, clazz, method), true);
+    public static MethodSignature makeMethodSignature(MethodFilter methodFilter, Class<?> clazz, Method method) {
+        org.aspectj.lang.reflect.MethodSignature aspectjSignature =
+                (org.aspectj.lang.reflect.MethodSignature) makeSignature(methodFilter, clazz, method);
+        return aspectjSignature == null ? null : MethodSignature.builder()
+                                                                .aspectjString(signatureToString(aspectjSignature, true))
+                                                                .declaringType(aspectjSignature.getDeclaringTypeName())
+                                                                .exceptionTypes(classArrayToString(aspectjSignature.getExceptionTypes()))
+                                                                .methodName(aspectjSignature.getName())
+                                                                .modifiers(Modifier.toString(aspectjSignature.getModifiers()))
+                                                                .packageName(aspectjSignature.getDeclaringType().getPackage().getName())
+                                                                .parameterTypes(classArrayToString(aspectjSignature.getParameterTypes()))
+                                                                .returnType(aspectjSignature.getReturnType().getName())
+                                                                .build();
+
+    }
+
+    private static String classArrayToString(Class[] classes) {
+        StringBuilder sb = new StringBuilder();
+        String delimiter = "";
+
+        for (Class clazz : classes) {
+            sb.append(delimiter).append(clazz.getName());
+            delimiter = ", ";
+        }
+
+        return sb.toString();
     }
 }

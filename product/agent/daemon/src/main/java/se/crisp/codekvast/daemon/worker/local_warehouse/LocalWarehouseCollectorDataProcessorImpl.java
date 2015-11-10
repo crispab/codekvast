@@ -20,6 +20,7 @@ import se.crisp.codekvast.daemon.worker.DataProcessingException;
 import se.crisp.codekvast.server.daemon_api.model.v1.JvmData;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence;
 import se.crisp.codekvast.shared.model.Jvm;
+import se.crisp.codekvast.shared.model.MethodSignature;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -27,6 +28,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkState;
 import static se.crisp.codekvast.daemon.DaemonConstants.LOCAL_WAREHOUSE_PROFILE;
@@ -69,24 +71,26 @@ public class LocalWarehouseCollectorDataProcessorImpl extends AbstractCollectorD
 
     @Override
     protected void doProcessCodebase(JvmState jvmState, CodeBase codeBase) {
-        for (String signature : codeBase.getSignatures()) {
-            doStoreInvocation(jvmState, -1L, signature, null);
+        for (Map.Entry<String, MethodSignature> entry : codeBase.getSignatures().entrySet()) {
+            doStoreInvocation(jvmState, -1L, entry.getKey(), null, entry.getValue());
         }
     }
 
     @Override
-    protected void doStoreNormalizedSignature(JvmState jvmState, long invokedAtMillis, String signature, SignatureConfidence confidence) {
-        doStoreInvocation(jvmState, invokedAtMillis, signature, confidence.ordinal());
+    protected void doStoreNormalizedSignature(JvmState jvmState, String normalizedSignature, long invokedAtMillis,
+                                              SignatureConfidence confidence) {
+        doStoreInvocation(jvmState, invokedAtMillis, normalizedSignature, confidence.ordinal(), null);
     }
 
     @Override
-    protected void doProcessUnprocessedSignatures(JvmState jvmState) {
+    protected void doProcessUnprocessedInvocations(JvmState jvmState) {
         // Nothing to do here
     }
 
-    private void doStoreInvocation(JvmState jvmState, long invokedAtMillis, final String signature, Integer confidence) {
+    private void doStoreInvocation(JvmState jvmState, long invokedAtMillis, String normalizedSignature, Integer confidence,
+                                   MethodSignature methodSignature) {
         long applicationId = jvmState.getDatabaseAppId();
-        long methodId = getMethodId(signature);
+        long methodId = getMethodId(normalizedSignature, methodSignature);
         long jvmId = jvmState.getDatabaseJvmId();
         long initialInvocationCount = invokedAtMillis > 0 ? 1 : 0;
         String what = invokedAtMillis > 0 ? "invocation" : "signature";
@@ -109,21 +113,21 @@ public class LocalWarehouseCollectorDataProcessorImpl extends AbstractCollectorD
                             invokedAtMillis, confidence, -1L, applicationId, methodId, jvmId);
             log.debug("Updated {} {}:{}:{}", what, applicationId, methodId, jvmId);
         } else if (invokedAtMillis == oldInvokedAtMillis) {
-            log.trace("Ignoring invocation of {}, same row exists in database", signature);
+            log.trace("Ignoring invocation of {}, same row exists in database", normalizedSignature);
         } else {
-            log.trace("Ignoring invocation of {}, a newer row exists in database", signature);
+            log.trace("Ignoring invocation of {}, a newer row exists in database", normalizedSignature);
         }
     }
 
-    private long getMethodId(String signatureWithVisibility) {
-        int spacePos = signatureWithVisibility.indexOf(' ');
-        String visibility = signatureWithVisibility.substring(0, spacePos);
-        String signature = signatureWithVisibility.substring(spacePos + 1);
+    private long getMethodId(String normalizedSignature, MethodSignature methodSignature) {
+        int spacePos = normalizedSignature.indexOf(' ');
+        String visibility = normalizedSignature.substring(0, spacePos);
+        String signature = normalizedSignature.substring(spacePos + 1);
         Long methodId = queryForLong("SELECT id FROM methods WHERE signature = ? ", signature);
 
         if (methodId == null) {
             KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(new InsertMethodStatement(visibility, signature), keyHolder);
+            jdbcTemplate.update(new InsertMethodStatement(visibility, signature, methodSignature), keyHolder);
             methodId = keyHolder.getKey().longValue();
             log.debug("Inserted method {}:{}...", methodId, signature);
         }
@@ -196,10 +200,28 @@ public class LocalWarehouseCollectorDataProcessorImpl extends AbstractCollectorD
     private static class InsertMethodStatement implements PreparedStatementCreator {
         private final String visibility;
         private final String signature;
+        private final MethodSignature methodSignature;
 
-        @SuppressWarnings("ValueOfIncrementOrDecrementUsed")
         @Override
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+            return methodSignature == null ? createInsertThinMethodStatement(con) : createInsertFatMethodStatement(con);
+        }
+
+        @Nonnull
+        @SuppressWarnings("ValueOfIncrementOrDecrementUsed")
+        private PreparedStatement createInsertThinMethodStatement(Connection con) throws SQLException {
+            PreparedStatement ps =
+                    con.prepareStatement("INSERT INTO methods(visibility, signature, createdAtMillis) VALUES(?, ?, ?)");
+            int column = 0;
+            ps.setString(++column, visibility);
+            ps.setString(++column, signature);
+            ps.setLong(++column, System.currentTimeMillis());
+            return ps;
+        }
+
+        @Nonnull
+        @SuppressWarnings("ValueOfIncrementOrDecrementUsed")
+        private PreparedStatement createInsertFatMethodStatement(Connection con) throws SQLException {
             PreparedStatement ps =
                     con.prepareStatement("INSERT INTO methods(visibility, signature, createdAtMillis) VALUES(?, ?, ?)");
             int column = 0;

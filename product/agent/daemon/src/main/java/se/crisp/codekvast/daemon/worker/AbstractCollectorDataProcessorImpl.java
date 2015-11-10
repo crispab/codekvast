@@ -79,8 +79,8 @@ public abstract class AbstractCollectorDataProcessorImpl implements CollectorDat
     private void processInvocationsData(JvmState jvmState) throws DataProcessingException {
         List<Invocation> invocations = FileUtils.consumeAllInvocationDataFiles(jvmState.getInvocationsFile());
         if (jvmState.getCodeBase() != null && !invocations.isEmpty()) {
-            normalizeAndProcessInvocations(jvmState, invocations);
-            doProcessUnprocessedSignatures(jvmState);
+            doProcessInvocations(jvmState, invocations);
+            doProcessUnprocessedInvocations(jvmState);
         }
     }
 
@@ -88,12 +88,12 @@ public abstract class AbstractCollectorDataProcessorImpl implements CollectorDat
 
     protected abstract void doProcessCodebase(JvmState jvmState, CodeBase codeBase) throws DataProcessingException;
 
-    protected abstract void doProcessUnprocessedSignatures(JvmState jvmState) throws DataProcessingException;
+    protected abstract void doProcessUnprocessedInvocations(JvmState jvmState) throws DataProcessingException;
 
-    protected abstract void doStoreNormalizedSignature(JvmState jvmState, long invokedAtMillis, String signature,
-                                                       SignatureConfidence confidence);
+    protected abstract void doStoreNormalizedSignature(JvmState jvmState, String normalizedSignature,
+                                                       long invokedAtMillis, SignatureConfidence confidence);
 
-    private void normalizeAndProcessInvocations(JvmState jvmState, List<Invocation> invocations) {
+    private void doProcessInvocations(JvmState jvmState, List<Invocation> invocations) {
         CodeBase codeBase = jvmState.getCodeBase();
 
         int recognized = 0;
@@ -128,7 +128,7 @@ public abstract class AbstractCollectorDataProcessorImpl implements CollectorDat
             }
 
             if (normalizedSignature != null) {
-                doStoreNormalizedSignature(jvmState, invocation.getInvokedAtMillis(), normalizedSignature, confidence);
+                doStoreNormalizedSignature(jvmState, normalizedSignature, invocation.getInvokedAtMillis(), confidence);
             }
         }
 

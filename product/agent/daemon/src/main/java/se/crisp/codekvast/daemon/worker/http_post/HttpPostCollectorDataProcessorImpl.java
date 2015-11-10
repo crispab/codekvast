@@ -19,9 +19,8 @@ import javax.inject.Inject;
 import static se.crisp.codekvast.daemon.DaemonConstants.HTTP_POST_PROFILE;
 
 /**
- * An implementation of CollectorDataProcessor that uploads all collected data to a remote server using the HTTP POST API that is
- * embedded in {@link
- * DaemonApi}.
+ * An implementation of CollectorDataProcessor that uploads all collected data to a remote server using the HTTP POST API that is embedded
+ * in {@link DaemonApi}.
  */
 @Component
 @Profile(HTTP_POST_PROFILE)
@@ -55,20 +54,23 @@ public class HttpPostCollectorDataProcessorImpl extends AbstractCollectorDataPro
     @Override
     protected void doProcessCodebase(JvmState jvmState, CodeBase codeBase) throws DataProcessingException {
         try {
-            daemonApi.uploadSignatureData(createUploadJvmData(jvmState), codeBase.getSignatures());
+            daemonApi.uploadSignatureData(createUploadJvmData(jvmState), codeBase.getSignatures().keySet());
         } catch (DaemonApiException e) {
             throw new DataProcessingException("Cannot upload signature data to " + daemonApi.getServerUri(), e);
         }
     }
 
     @Override
-    protected void doStoreNormalizedSignature(JvmState jvmState, long invokedAtMillis, String signature, SignatureConfidence confidence) {
+    protected void doStoreNormalizedSignature(JvmState jvmState, String normalizedSignature, long invokedAtMillis,
+                                              SignatureConfidence confidence) {
         invocationsCollector
-                .put(jvmState.getJvm().getJvmUuid(), jvmState.getJvm().getStartedAtMillis(), signature, invokedAtMillis, confidence);
+                .put(jvmState.getJvm().getJvmUuid(), jvmState.getJvm().getStartedAtMillis(), normalizedSignature, invokedAtMillis,
+                     confidence);
+
     }
 
     @Override
-    protected void doProcessUnprocessedSignatures(JvmState jvmState) throws DataProcessingException {
+    protected void doProcessUnprocessedInvocations(JvmState jvmState) throws DataProcessingException {
         try {
             daemonApi.uploadInvocationData(createUploadJvmData(jvmState),
                                            invocationsCollector.getNotUploadedInvocations(jvmState.getJvm().getJvmUuid()));
@@ -77,6 +79,4 @@ public class HttpPostCollectorDataProcessorImpl extends AbstractCollectorDataPro
             throw new DataProcessingException("Cannot upload invocation data to " + daemonApi.getServerUri(), e);
         }
     }
-
-
 }
