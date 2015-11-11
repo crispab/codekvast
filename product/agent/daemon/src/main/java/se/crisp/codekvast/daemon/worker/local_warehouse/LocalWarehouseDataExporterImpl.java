@@ -47,22 +47,38 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
 
     @Override
     public void exportData() throws DataExportException {
-        if (config.getExportFile() == null) {
+        File exportFile = expandPlaceholders(config.getExportFile());
+        if (exportFile == null) {
             log.info("No export file configured, data will not be exported");
             return;
         }
 
-        if (!config.getExportFile().getName().toLowerCase().endsWith(".zip")) {
-            log.warn("Can only export to ZIP format");
+        if (!exportFile.getName().toLowerCase().endsWith(".zip")) {
+            log.error("Can only export to ZIP format");
             return;
         }
 
         Instant startedAt = now();
 
-        doExportDataTo(config.getExportFile());
+        doExportDataTo(exportFile);
 
-        log.info("Created {} ({}) in {} s", config.getExportFile(), humanReadableByteCount(config.getExportFile().length()),
+        log.info("Created {} ({}) in {} s", exportFile, humanReadableByteCount(exportFile.length()),
                  Duration.between(startedAt, now()).getSeconds());
+    }
+
+    private File expandPlaceholders(File file) {
+        if (file == null) {
+            return null;
+        }
+
+        String timestamp = now().toString();
+
+        String name = file.getName()
+                          .replace("#{timestamp}", timestamp)
+                          .replace("#timestamp", timestamp)
+                          .replace("#{datetime}", timestamp)
+                          .replace("#datetime", timestamp);
+        return new File(file.getParentFile(), name);
     }
 
     public static String humanReadableByteCount(long bytes) {
