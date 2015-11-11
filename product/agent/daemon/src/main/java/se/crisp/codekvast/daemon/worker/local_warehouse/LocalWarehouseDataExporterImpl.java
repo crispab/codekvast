@@ -75,7 +75,7 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
     }
 
     private void doExportDataTo(File exportFile) throws DataExportException {
-        log.info("Exporting data to {}", exportFile);
+        log.debug("Exporting data to {} ...", exportFile);
 
         File tmpFile = createTempFile(exportFile);
 
@@ -134,10 +134,19 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
     }
 
     private File createTempFile(File file) throws DataExportException {
+        File directory = file.getParentFile();
+        if (directory.mkdirs()) {
+            log.info("Created {}", directory);
+        }
+
+        if (!directory.isDirectory()) {
+            log.warn("Could not create {}", directory);
+        }
+
         try {
-            return File.createTempFile("codekvast-export", ".tmp", file.getParentFile());
+            return File.createTempFile("codekvast-export", ".tmp", directory);
         } catch (IOException e) {
-            throw new DataExportException("Cannot create temporary file in " + file.getParentFile(), e);
+            throw new DataExportException("Cannot create temporary file in " + directory, e);
         }
     }
 }

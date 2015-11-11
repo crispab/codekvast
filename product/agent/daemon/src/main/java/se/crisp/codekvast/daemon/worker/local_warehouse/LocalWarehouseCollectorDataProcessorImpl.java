@@ -30,7 +30,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-import static com.google.common.base.Preconditions.checkState;
 import static se.crisp.codekvast.daemon.DaemonConstants.LOCAL_WAREHOUSE_PROFILE;
 
 /**
@@ -104,14 +103,14 @@ public class LocalWarehouseCollectorDataProcessorImpl extends AbstractCollectorD
                                         "confidence, exportedAtMillis) " +
                                         "VALUES(?, ?, ?, ?, ?, ?, ?) ",
                                 applicationId, methodId, jvmId, invokedAtMillis, initialInvocationCount, confidence, -1L);
-            log.debug("Stored {} {}:{}:{}", what, applicationId, methodId, jvmId);
+            log.trace("Stored {} {}:{}:{} {}", what, applicationId, methodId, jvmId, invokedAtMillis);
         } else if (invokedAtMillis > oldInvokedAtMillis) {
             jdbcTemplate
                     .update("UPDATE invocations SET invokedAtMillis = ?, invocationCount = invocationCount + 1, confidence = ?, " +
                                     "exportedAtMillis = ? " +
                                     "WHERE applicationId = ? AND methodId = ? AND jvmId = ? ",
                             invokedAtMillis, confidence, -1L, applicationId, methodId, jvmId);
-            log.debug("Updated {} {}:{}:{}", what, applicationId, methodId, jvmId);
+            log.trace("Updated {} {}:{}:{} {}", what, applicationId, methodId, jvmId, invokedAtMillis);
         } else if (invokedAtMillis == oldInvokedAtMillis) {
             log.trace("Ignoring invocation of {}, same row exists in database", normalizedSignature);
         } else {
@@ -129,7 +128,7 @@ public class LocalWarehouseCollectorDataProcessorImpl extends AbstractCollectorD
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(new InsertMethodStatement(visibility, signature, methodSignature), keyHolder);
             methodId = keyHolder.getKey().longValue();
-            log.debug("Inserted method {}:{}...", methodId, signature);
+            log.trace("Inserted method {}:{}...", methodId, signature);
         }
         return methodId;
     }
@@ -169,10 +168,7 @@ public class LocalWarehouseCollectorDataProcessorImpl extends AbstractCollectorD
 
     private String toJson(JvmData jvmData) throws DataProcessingException {
         try {
-            String json = objectMapper.writeValueAsString(jvmData);
-            checkState(json.length() <= 2000, "JvmData as JSON string is longer than 2000 characters");
-            log.debug("JSON length = {}", json.length());
-            return json;
+            return objectMapper.writeValueAsString(jvmData);
         } catch (JsonProcessingException e) {
             throw new DataProcessingException("Cannot convert JvmData to JSON", e);
         }

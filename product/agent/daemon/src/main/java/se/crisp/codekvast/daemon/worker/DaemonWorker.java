@@ -123,7 +123,7 @@ public class DaemonWorker {
         try {
             dataExporter.exportData();
         } catch (DataExportException e) {
-            LogUtil.logException(log, "Could not export data", e);
+            LogUtil.logException(log, "Could not export data: " + e, e);
         }
     }
 

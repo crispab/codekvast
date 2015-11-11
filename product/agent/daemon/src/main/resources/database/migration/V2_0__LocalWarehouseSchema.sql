@@ -1,8 +1,8 @@
 // --- applications --------------------------------
 CREATE TABLE applications (
   id              BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
-  name            VARCHAR(100)          NOT NULL,
-  version         VARCHAR(100)          NOT NULL,
+  name            VARCHAR               NOT NULL,
+  version         VARCHAR               NOT NULL,
   createdAtMillis BIGINT                NOT NULL
 );
 CREATE UNIQUE INDEX ix_application_identity ON applications (name, version);
@@ -10,25 +10,25 @@ CREATE UNIQUE INDEX ix_application_identity ON applications (name, version);
 // --- methods --------------------------------
 CREATE TABLE methods (
   id              BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
-  visibility      VARCHAR(20)           NOT NULL,
-  signature       VARCHAR(4000)         NOT NULL UNIQUE,
+  visibility      VARCHAR               NOT NULL,
+  signature       VARCHAR               NOT NULL UNIQUE,
   createdAtMillis BIGINT                NOT NULL,
-  declaringType   VARCHAR(255)          NULL,
-  exceptionTypes  VARCHAR(1000)         NULL,
-  methodName      VARCHAR(255)          NULL,
-  modifiers       VARCHAR(50)           NULL,
-  packageName     VARCHAR(1000)         NULL,
-  parameterTypes  VARCHAR(2000)         NULL,
-  returnType      VARCHAR(255)          NULL
+  declaringType   VARCHAR               NULL,
+  exceptionTypes  VARCHAR               NULL,
+  methodName      VARCHAR               NULL,
+  modifiers       VARCHAR               NULL,
+  packageName     VARCHAR               NULL,
+  parameterTypes  VARCHAR               NULL,
+  returnType      VARCHAR               NULL
 );
 
 // --- JVMs --------------------------------
 CREATE TABLE jvms (
   id              BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
-  uuid            VARCHAR(50)           NOT NULL UNIQUE,
+  uuid            VARCHAR               NOT NULL UNIQUE,
   startedAtMillis BIGINT                NOT NULL,
   dumpedAtMillis  BIGINT                NOT NULL,
-  jsonData        VARCHAR(2000)         NOT NULL
+  jsonData        VARCHAR               NOT NULL
 );
 
 // --- invocations --------------------------------
