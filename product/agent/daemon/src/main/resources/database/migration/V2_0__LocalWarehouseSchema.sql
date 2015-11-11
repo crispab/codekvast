@@ -14,12 +14,12 @@ CREATE TABLE methods (
   signature       VARCHAR(4000)         NOT NULL UNIQUE,
   createdAtMillis BIGINT                NOT NULL,
   declaringType   VARCHAR(255)          NULL,
-  exceptionTypes  VARCHAR(255)          NULL,
-  methodName      VARCHAR(100)          NULL,
+  exceptionTypes  VARCHAR(1000)         NULL,
+  methodName      VARCHAR(255)          NULL,
   modifiers       VARCHAR(50)           NULL,
-  packageName     VARCHAR(255)          NULL,
-  parameterTypes  VARCHAR(255)          NULL,
-  returnType      VARCHAR(100)          NULL
+  packageName     VARCHAR(1000)         NULL,
+  parameterTypes  VARCHAR(2000)         NULL,
+  returnType      VARCHAR(255)          NULL
 );
 
 // --- JVMs --------------------------------

@@ -38,8 +38,11 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+
+import static java.time.Instant.now;
 
 /**
  * This is the meat of the codekvast-daemon. It contains a scheduled method that periodically processes data from the collector.
@@ -56,6 +59,7 @@ public class DaemonWorker {
 
     private final Map<String, JvmState> jvmStates = new HashMap<String, JvmState>();
     private final DataExporter dataExporter;
+    private Instant exportedAt = Instant.MIN;
 
     @Inject
     public DaemonWorker(DaemonConfig config, AppVersionResolver appVersionResolver, CollectorDataProcessor collectorDataProcessor,
@@ -78,22 +82,14 @@ public class DaemonWorker {
         String oldThreadName = Thread.currentThread().getName();
         Thread.currentThread().setName(getClass().getSimpleName());
         try {
-            doAnalyzeCollectorData();
-            doExportData();
+            findAndAnalyzeCollectorData();
+            exportDataIfNeeded();
         } finally {
             Thread.currentThread().setName(oldThreadName);
         }
     }
 
-    private void doExportData() {
-        try {
-            dataExporter.exportData();
-        } catch (DataExportException e) {
-            LogUtil.logException(log, "Could not export data", e);
-        }
-    }
-
-    private void doAnalyzeCollectorData() {
+    private void findAndAnalyzeCollectorData() {
         log.debug("Analyzing collector data");
 
         findJvmStates(config.getDataPath());
@@ -110,6 +106,24 @@ public class DaemonWorker {
             } catch (DataProcessingException e) {
                 LogUtil.logException(log, "Could not process data for " + jvmState.getJvm().getCollectorConfig().getAppName(), e);
             }
+        }
+    }
+
+    private void exportDataIfNeeded() {
+        Instant lastCollectorDataProcessedAt = collectorDataProcessor.getLastCollectorDataProcessedAt();
+        log.debug("lastCollectorDataProcessedAt={}, exportedAt={}", lastCollectorDataProcessedAt, exportedAt);
+
+        if (lastCollectorDataProcessedAt.isAfter(exportedAt)) {
+            doExportData();
+            exportedAt = now();
+        }
+    }
+
+    private void doExportData() {
+        try {
+            dataExporter.exportData();
+        } catch (DataExportException e) {
+            LogUtil.logException(log, "Could not export data", e);
         }
     }
 

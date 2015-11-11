@@ -1,6 +1,7 @@
 package se.crisp.codekvast.daemon.worker;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +20,10 @@ import se.crisp.codekvast.shared.util.FileUtils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.Instant;
 import java.util.List;
+
+import static java.time.Instant.now;
 
 /**
  * Common behaviour for all data processors.
@@ -36,6 +40,9 @@ public abstract class AbstractCollectorDataProcessorImpl implements CollectorDat
     private final String daemonComputerId = ComputerID.compute().toString();
     private final String daemonHostName = getHostName();
 
+    @Getter
+    private Instant lastCollectorDataProcessedAt = Instant.MIN;
+
     @Override
     @Transactional
     public void processCollectorData(JvmState jvmState, CodeBase codeBase) throws DataProcessingException {
@@ -46,10 +53,12 @@ public abstract class AbstractCollectorDataProcessorImpl implements CollectorDat
     }
 
     private void processJvmData(JvmState jvmState) throws DataProcessingException {
-        if (jvmState.getJvmDataProcessedAt().isBefore(jvmState.getJvmDumpedAt())) {
+        if (jvmState.getJvmDumpedAt().isAfter(jvmState.getJvmDataProcessedAt())) {
             try {
                 doProcessJvmData(jvmState);
                 jvmState.setJvmDataProcessedAt(jvmState.getJvmDumpedAt());
+
+                recordLastCollectorDataProcessed("JVM data");
             } catch (Exception e) {
                 LogUtil.logException(log, "Cannot process JVM data", e);
             }
@@ -70,6 +79,8 @@ public abstract class AbstractCollectorDataProcessorImpl implements CollectorDat
             try {
                 doProcessCodebase(jvmState, codeBase);
                 jvmState.setCodeBase(codeBase);
+
+                recordLastCollectorDataProcessed("Codebase");
             } catch (Exception e) {
                 LogUtil.logException(log, "Cannot process code base", e);
             }
@@ -81,7 +92,14 @@ public abstract class AbstractCollectorDataProcessorImpl implements CollectorDat
         if (jvmState.getCodeBase() != null && !invocations.isEmpty()) {
             doProcessInvocations(jvmState, invocations);
             doProcessUnprocessedInvocations(jvmState);
+
+            recordLastCollectorDataProcessed("Invocation data");
         }
+    }
+
+    private void recordLastCollectorDataProcessed(String what) {
+        lastCollectorDataProcessedAt = now();
+        log.debug("{} processed at {}", what, lastCollectorDataProcessedAt);
     }
 
     protected abstract void doProcessJvmData(JvmState jvmState) throws DataProcessingException;
