@@ -87,7 +87,8 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
 
             CSVWriter csvWriter = new CSVWriter(new OutputStreamWriter(zip, charset));
             doExportDatabaseTable(zip, csvWriter, "applications", "id", "name", "version", "createdAtMillis");
-            doExportDatabaseTable(zip, csvWriter, "methods", "id", "visibility", "signature", "createdAtMillis");
+            doExportDatabaseTable(zip, csvWriter, "methods", "id", "visibility", "signature", "createdAtMillis", "declaringType",
+                                  "exceptionTypes", "methodName", "modifiers", "packageName", "parameterTypes", "returnType");
             doExportDatabaseTable(zip, csvWriter, "jvms", "id", "uuid", "startedAtMillis", "dumpedAtMillis", "jsonData");
             doExportDatabaseTable(zip, csvWriter, "invocations", "applicationId", "methodId", "jvmId", "invokedAtMillis", "invocationCount",
                                   "confidence", "exportedAtMillis");
