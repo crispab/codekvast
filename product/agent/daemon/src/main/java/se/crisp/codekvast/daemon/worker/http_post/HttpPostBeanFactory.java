@@ -16,7 +16,7 @@ import static se.crisp.codekvast.daemon.DaemonConstants.HTTP_POST_PROFILE;
  */
 @Configuration
 @Profile(HTTP_POST_PROFILE)
-public class DaemonApiConfiguration {
+public class HttpPostBeanFactory {
     /**
      * Converts an DaemonConfig to a DaemonApiConfig
      *
