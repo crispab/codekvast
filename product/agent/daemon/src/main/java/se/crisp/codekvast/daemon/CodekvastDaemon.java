@@ -3,12 +3,8 @@ package se.crisp.codekvast.daemon;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-import se.crisp.codekvast.daemon.beans.DaemonConfig;
-import se.crisp.codekvast.server.daemon_api.DaemonApiConfig;
 import se.crisp.codekvast.support.common.LoggingConfig;
 
 import java.io.IOException;
@@ -33,24 +29,4 @@ public class CodekvastDaemon {
         SpringApplication application = new SpringApplication(CodekvastDaemon.class);
         application.run(args);
     }
-    /**
-     * Converts an DaemonConfig to a DaemonApiConfig
-     *
-     * @param daemonConfig The daemon configuration object.
-     * @return A server delegate config object.
-     */
-    @Bean
-    public DaemonApiConfig serverDelegateConfig(DaemonConfig daemonConfig) {
-        return DaemonApiConfig.builder()
-                                   .serverUri(daemonConfig.getServerUri())
-                                   .apiAccessID(daemonConfig.getApiAccessID())
-                                   .apiAccessSecret(daemonConfig.getApiAccessSecret())
-                                   .build();
-    }
-
-    @Bean
-    public LocalValidatorFactoryBean validator() {
-        return new LocalValidatorFactoryBean();
-    }
-
 }

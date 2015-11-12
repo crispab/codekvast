@@ -14,6 +14,11 @@ import java.util.List;
  */
 public interface DaemonApi {
     /**
+     * The name of the Spring profile that must be active for the DaemonApiImpl to be included.
+     */
+    String SPRING_PROFILE_NAME = "httpPost";
+
+    /**
      * Uploads data about a JVM run to the server.
      *
      * @param jvmData Data about the JVM

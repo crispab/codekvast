@@ -1,17 +1,10 @@
 package se.crisp.codekvast.daemon.beans;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.Wither;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
-import se.crisp.codekvast.server.daemon_api.model.v1.Constraints;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.io.File;
 import java.net.URI;
 
@@ -27,34 +20,31 @@ import java.net.URI;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DaemonConfig {
-    @NotNull
+    @NonNull
     private File dataPath;
 
-    @NotNull
+    @NonNull
     private String apiAccessID;
 
-    @NotNull
+    @NonNull
     private String apiAccessSecret;
 
-    @NotNull
+    @NonNull
     private URI serverUri;
 
-    @Min(1)
-    private int dataProcessingIntervalSeconds;
+    @NonNull
+    private Integer dataProcessingIntervalSeconds;
 
-    @NotNull
-    @Size(max = Constraints.MAX_CODEKVAST_VERSION_LENGTH)
+    @NonNull
     private String daemonVersion;
 
-    @NotNull
-    @Size(max = Constraints.MAX_CODEKVAST_VCS_ID_LENGTH)
+    @NonNull
     private String daemonVcsId;
 
     @Wither
     private File exportFile;
 
-    @NotNull
-    @Size(max = Constraints.MAX_ENVIRONMENT_LENGTH)
+    @NonNull
     private String environment;
 
     public String getDisplayVersion() {

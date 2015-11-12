@@ -8,6 +8,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClients;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
@@ -42,6 +43,7 @@ import java.util.Set;
  */
 @Slf4j
 @Component
+@Profile(DaemonApi.SPRING_PROFILE_NAME)
 public class DaemonApiImpl implements DaemonApi {
 
     private static final int UPLOAD_CHUNK_SIZE = 1000;
