@@ -10,9 +10,9 @@ import se.crisp.codekvast.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.daemon.beans.JvmState;
 import se.crisp.codekvast.daemon.codebase.CodeBase;
 import se.crisp.codekvast.daemon.codebase.CodeBaseScanner;
+import se.crisp.codekvast.daemon.model.v1.JvmData;
+import se.crisp.codekvast.daemon.model.v1.SignatureConfidence;
 import se.crisp.codekvast.daemon.util.LogUtil;
-import se.crisp.codekvast.server.daemon_api.model.v1.JvmData;
-import se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence;
 import se.crisp.codekvast.shared.model.Invocation;
 import se.crisp.codekvast.shared.model.Jvm;
 import se.crisp.codekvast.shared.util.ComputerID;
@@ -172,7 +172,7 @@ public abstract class AbstractCollectorDataProcessorImpl implements CollectorDat
         }
     }
 
-    protected JvmData createUploadJvmData(JvmState jvmState) {
+    protected JvmData createJvmData(JvmState jvmState) {
         Jvm jvm = jvmState.getJvm();
 
         return JvmData.builder()
@@ -185,10 +185,9 @@ public abstract class AbstractCollectorDataProcessorImpl implements CollectorDat
                       .collectorVersion(jvm.getCollectorVersion())
                       .daemonComputerId(daemonComputerId)
                       .daemonHostName(daemonHostName)
-                      .daemonTimeMillis(System.currentTimeMillis())
-                      .daemonUploadIntervalSeconds(daemonConfig.getDataProcessingIntervalSeconds())
                       .daemonVcsId(daemonConfig.getDaemonVcsId())
                       .daemonVersion(daemonConfig.getDaemonVersion())
+                      .dataProcessingIntervalSeconds(daemonConfig.getDataProcessingIntervalSeconds())
                       .dumpedAtMillis(jvm.getDumpedAtMillis())
                       .jvmUuid(jvm.getJvmUuid())
                       .methodVisibility(jvm.getCollectorConfig().getMethodFilter().toString())

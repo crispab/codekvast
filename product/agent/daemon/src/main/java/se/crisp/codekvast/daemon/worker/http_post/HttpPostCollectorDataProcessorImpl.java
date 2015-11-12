@@ -8,11 +8,12 @@ import se.crisp.codekvast.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.daemon.beans.JvmState;
 import se.crisp.codekvast.daemon.codebase.CodeBase;
 import se.crisp.codekvast.daemon.codebase.CodeBaseScanner;
+import se.crisp.codekvast.daemon.model.v1.JvmData;
+import se.crisp.codekvast.daemon.model.v1.SignatureConfidence;
 import se.crisp.codekvast.daemon.worker.AbstractCollectorDataProcessorImpl;
 import se.crisp.codekvast.daemon.worker.DataProcessingException;
 import se.crisp.codekvast.server.daemon_api.DaemonApi;
 import se.crisp.codekvast.server.daemon_api.DaemonApiException;
-import se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence;
 
 import javax.inject.Inject;
 
@@ -45,16 +46,42 @@ public class HttpPostCollectorDataProcessorImpl extends AbstractCollectorDataPro
     @Override
     protected void doProcessJvmData(JvmState jvmState) throws DataProcessingException {
         try {
-            daemonApi.uploadJvmData(createUploadJvmData(jvmState));
+            daemonApi.uploadJvmData(createUploadJvmData(createJvmData(jvmState)));
         } catch (DaemonApiException e) {
             throw new DataProcessingException("Cannot upload JVM data to " + daemonApi.getServerUri(), e);
         }
     }
 
+    private se.crisp.codekvast.server.daemon_api.model.v1.JvmData createUploadJvmData(JvmData jvmData) {
+        //@formatter:off
+        return se.crisp.codekvast.server.daemon_api.model.v1.JvmData
+                .builder()
+                .appName(jvmData.getAppName())
+                .appVersion(jvmData.getAppVersion())
+                .collectorComputerId(jvmData.getCollectorComputerId())
+                .collectorHostName(jvmData.getCollectorHostName())
+                .collectorResolutionSeconds(jvmData.getCollectorResolutionSeconds())
+                .collectorVcsId(jvmData.getCollectorVcsId())
+                .collectorVersion(jvmData.getCollectorVersion())
+                .daemonComputerId(jvmData.getDaemonComputerId())
+                .daemonHostName(jvmData.getDaemonHostName())
+                .daemonTimeMillis(System.currentTimeMillis())
+                .daemonUploadIntervalSeconds(jvmData.getDataProcessingIntervalSeconds())
+                .daemonVcsId(jvmData.getDaemonVcsId())
+                .daemonVersion(jvmData.getDaemonVersion())
+                .dumpedAtMillis(jvmData.getDumpedAtMillis())
+                .jvmUuid(jvmData.getJvmUuid())
+                .methodVisibility(jvmData.getMethodVisibility())
+                .startedAtMillis(jvmData.getStartedAtMillis())
+                .tags(jvmData.getTags())
+                .build();
+        //@formatter:on
+    }
+
     @Override
     protected void doProcessCodebase(JvmState jvmState, CodeBase codeBase) throws DataProcessingException {
         try {
-            daemonApi.uploadSignatureData(createUploadJvmData(jvmState), codeBase.getSignatures().keySet());
+            daemonApi.uploadSignatureData(createUploadJvmData(createJvmData(jvmState)), codeBase.getSignatures().keySet());
         } catch (DaemonApiException e) {
             throw new DataProcessingException("Cannot upload signature data to " + daemonApi.getServerUri(), e);
         }
@@ -72,7 +99,7 @@ public class HttpPostCollectorDataProcessorImpl extends AbstractCollectorDataPro
     @Override
     protected void doProcessUnprocessedInvocations(JvmState jvmState) throws DataProcessingException {
         try {
-            daemonApi.uploadInvocationData(createUploadJvmData(jvmState),
+            daemonApi.uploadInvocationData(createUploadJvmData(createJvmData(jvmState)),
                                            invocationsCollector.getNotUploadedInvocations(jvmState.getJvm().getJvmUuid()));
             invocationsCollector.clearNotUploadedSignatures(jvmState.getJvm().getJvmUuid());
         } catch (DaemonApiException e) {

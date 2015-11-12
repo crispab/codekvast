@@ -15,10 +15,9 @@ import se.crisp.codekvast.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.daemon.beans.JvmState;
 import se.crisp.codekvast.daemon.codebase.CodeBase;
 import se.crisp.codekvast.daemon.codebase.CodeBaseScanner;
+import se.crisp.codekvast.daemon.model.v1.SignatureConfidence;
 import se.crisp.codekvast.daemon.worker.AbstractCollectorDataProcessorImpl;
 import se.crisp.codekvast.daemon.worker.DataProcessingException;
-import se.crisp.codekvast.server.daemon_api.model.v1.JvmData;
-import se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence;
 import se.crisp.codekvast.shared.model.Jvm;
 import se.crisp.codekvast.shared.model.MethodSignature;
 
@@ -151,7 +150,7 @@ public class LocalWarehouseCollectorDataProcessorImpl extends AbstractCollectorD
 
         if (jvmId == null) {
             KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(new InsertJvmStatement(jvm, toJson(createUploadJvmData(jvmState))), keyHolder);
+            jdbcTemplate.update(new InsertJvmStatement(jvm, toJson(createJvmData(jvmState))), keyHolder);
             jvmId = keyHolder.getKey().longValue();
             log.debug("Stored JVM {}:{}", jvmId, jvm.getJvmUuid());
         } else {
@@ -166,11 +165,11 @@ public class LocalWarehouseCollectorDataProcessorImpl extends AbstractCollectorD
         return list.isEmpty() ? null : list.get(0);
     }
 
-    private String toJson(JvmData jvmData) throws DataProcessingException {
+    private String toJson(Object object) throws DataProcessingException {
         try {
-            return objectMapper.writeValueAsString(jvmData);
+            return objectMapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
-            throw new DataProcessingException("Cannot convert JvmData to JSON", e);
+            throw new DataProcessingException("Cannot convert to JSON", e);
         }
     }
 
@@ -240,18 +239,18 @@ public class LocalWarehouseCollectorDataProcessorImpl extends AbstractCollectorD
     @RequiredArgsConstructor
     private static class InsertJvmStatement implements PreparedStatementCreator {
         private final Jvm jvm;
-        private final String jsonData;
+        private final String jvmDataJson;
 
         @SuppressWarnings("ValueOfIncrementOrDecrementUsed")
         @Override
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
             PreparedStatement ps =
-                    con.prepareStatement("INSERT INTO jvms(uuid, startedAtMillis, dumpedAtMillis, jsonData) VALUES(?, ?, ?, ?)");
+                    con.prepareStatement("INSERT INTO jvms(uuid, startedAtMillis, dumpedAtMillis, jvmDataJson) VALUES(?, ?, ?, ?)");
             int column = 0;
             ps.setString(++column, jvm.getJvmUuid());
             ps.setLong(++column, jvm.getStartedAtMillis());
             ps.setLong(++column, jvm.getDumpedAtMillis());
-            ps.setString(++column, jsonData);
+            ps.setString(++column, jvmDataJson);
             return ps;
         }
     }

@@ -31,7 +31,7 @@ public interface DataExporter {
     /**
      * Export data from the local datastore.
      *
-     * @throws DataExportException
+     * @throws DataExportException If failure to export data.
      */
     void exportData() throws DataExportException;
 }

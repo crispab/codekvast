@@ -6,14 +6,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import se.crisp.codekvast.daemon.main.HttpPostIntegrationTest;
+import se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureEntry;
 
 import javax.inject.Inject;
 import java.util.List;
 import java.util.UUID;
 
-import static se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence.EXACT_MATCH;
-import static se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence.FOUND_IN_PARENT_CLASS;
+import static se.crisp.codekvast.daemon.model.v1.SignatureConfidence.EXACT_MATCH;
+import static se.crisp.codekvast.daemon.model.v1.SignatureConfidence.FOUND_IN_PARENT_CLASS;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @HttpPostIntegrationTest
@@ -70,7 +71,7 @@ public class InvocationsCollectorTest {
         invocationsCollector.put(jvmUuid1, now - 100L, "sig", now, FOUND_IN_PARENT_CLASS);
         List<SignatureEntry> signatures = invocationsCollector.getNotUploadedInvocations(jvmUuid1);
         Assert.assertThat(signatures, Matchers.hasSize(1));
-        Assert.assertThat(signatures.get(0).getConfidence(), Matchers.is(FOUND_IN_PARENT_CLASS));
+        Assert.assertThat(signatures.get(0).getConfidence(), Matchers.is(SignatureConfidence.FOUND_IN_PARENT_CLASS));
     }
 
     @Test

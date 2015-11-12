@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDataSourceStorage">
+    <option name="dataSources">
+      <list>
+        <State>
+          <option name="id" value="0f38a146-4fb1-460b-baca-675dd433641f" />
+          <option name="name" value="LocalWarehouseSchema" />
+          <option name="urls">
+            <array>
+              <option value="file://$PROJECT_DIR$/product/agent/daemon/src/main/resources/database/migration/V2_0__LocalWarehouseSchema.sql" />
+            </array>
+          </option>
+        </State>
+      </list>
+    </option>
+  </component>
+</project>

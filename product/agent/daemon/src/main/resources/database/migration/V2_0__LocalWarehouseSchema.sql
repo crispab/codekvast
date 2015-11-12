@@ -28,8 +28,9 @@ CREATE TABLE jvms (
   uuid            VARCHAR               NOT NULL UNIQUE,
   startedAtMillis BIGINT                NOT NULL,
   dumpedAtMillis  BIGINT                NOT NULL,
-  jsonData        VARCHAR               NOT NULL
+  jvmDataJson     VARCHAR               NOT NULL
 );
+COMMENT ON COLUMN jvms.jvmDataJson IS 'An instance of se.crisp.codekvast.daemon.model.v1.JvmData as JSON';
 
 // --- invocations --------------------------------
 CREATE TABLE invocations (

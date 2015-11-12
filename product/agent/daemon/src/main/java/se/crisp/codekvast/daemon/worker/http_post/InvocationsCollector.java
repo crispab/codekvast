@@ -3,16 +3,13 @@ package se.crisp.codekvast.daemon.worker.http_post;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.daemon.DaemonConstants;
-import se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence;
+import se.crisp.codekvast.daemon.model.v1.SignatureConfidence;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureEntry;
 
 import javax.inject.Inject;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 @Repository
@@ -66,16 +63,14 @@ class InvocationsCollector {
         return jdbcTemplate.query("SELECT signature, invoked_at_millis, millis_since_jvm_start, confidence " +
                                           "FROM signatures " +
                                           "WHERE jvm_uuid = ?",
-                                  new RowMapper<SignatureEntry>() {
-                                      @Override
-                                      public SignatureEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
-                                          Integer confidence = rs.getInt(4);
-                                          return new SignatureEntry(
-                                                  rs.getString(1),
-                                                  rs.getLong(2),
-                                                  rs.getLong(3),
-                                                  confidence == -1 ? null : SignatureConfidence.fromOrdinal(confidence));
-                                      }
+                                  (rs, rowNum) -> {
+                                      Integer confidence = rs.getInt(4);
+                                      return new SignatureEntry(
+                                              rs.getString(1),
+                                              rs.getLong(2),
+                                              rs.getLong(3),
+                                              confidence == -1 ? null : se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence
+                                                      .fromOrdinal(confidence));
                                   },
                                   jvmUuid);
     }
