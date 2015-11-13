@@ -1,0 +1,21 @@
+apply from: "$rootDir/gradle/java-6.gradle"
+apply from: "$rootDir/gradle/sources-javadoc.gradle"
+
+description = "Code that is collector_lib between the Codekvast daemon and collector"
+archivesBaseName = "codekvast-agent-collector_lib"
+version = project.parent.parent.version
+
+dependencies {
+    compile lombok
+    compile aspectjWeaver
+    compile "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
+
+    // Absolutely NO other compile or runtime dependencies are allowed here!
+
+    // All transitive compile and runtime dependencies will end up in the collected app's system
+    // class path. (Lombok will be excluded when assembling codekvast-collector jar).
+
+    testCompile junit
+    testCompile mockito
+    testCompile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+}

@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.12.4
+
+1. Renamed modules and packages below product/agent
+
 ## 0.12.3
 
 1. Implemented daemon data export

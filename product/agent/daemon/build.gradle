@@ -6,7 +6,7 @@ apply from: "$rootDir/gradle/standalone-h2server.gradle"
 description = "The Codekvast agent daemon"
 archivesBaseName = "codekvast-daemon"
 version = project.parent.parent.version
-mainClassName = "se.crisp.codekvast.daemon.CodekvastDaemon"
+mainClassName = "CodekvastDaemon"
 
 import org.apache.tools.ant.filters.ReplaceTokens
 
@@ -17,7 +17,7 @@ configurations {
 dependencies {
     compile lombok
     compile project(':product:support:commons')
-    compile project(':product:agent:shared')
+    compile project(':product:agent:agent-lib')
     compile project(':product:server:daemon-api')
     compile 'javax.inject:javax.inject:1'
     compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
@@ -86,7 +86,7 @@ bootRun {
 }
 bootRun.dependsOn startDatabase
 
-jar.dependsOn tasks.getByPath(":product:agent:shared:test")
+jar.dependsOn tasks.getByPath(":product:agent:agent-lib:test")
 
 applicationDefaultJvmArgs = ["-Dspring.profiles.active=$springProfiles"]
 

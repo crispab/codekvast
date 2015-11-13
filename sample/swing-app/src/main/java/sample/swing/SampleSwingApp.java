@@ -1,10 +1,10 @@
 package sample.swing;
 
-import se.crisp.codekvast.collector.CodekvastCollector;
-import se.crisp.codekvast.shared.config.CollectorConfig;
-import se.crisp.codekvast.shared.config.CollectorConfigFactory;
-import se.crisp.codekvast.shared.io.FileSystemInvocationDataDumper;
-import se.crisp.codekvast.shared.util.ConfigUtils;
+import se.crisp.codekvast.agent.collector.CodekvastCollector;
+import se.crisp.codekvast.agent.lib.config.CollectorConfig;
+import se.crisp.codekvast.agent.lib.config.CollectorConfigFactory;
+import se.crisp.codekvast.agent.lib.io.FileSystemInvocationDataDumper;
+import se.crisp.codekvast.agent.lib.util.ConfigUtils;
 
 import javax.swing.*;
 

@@ -30,7 +30,7 @@ CREATE TABLE jvms (
   dumpedAtMillis  BIGINT                NOT NULL,
   jvmDataJson     VARCHAR               NOT NULL
 );
-COMMENT ON COLUMN jvms.jvmDataJson IS 'An instance of se.crisp.codekvast.daemon.model.v1.JvmData as JSON';
+COMMENT ON COLUMN jvms.jvmDataJson IS 'An instance of JvmData as JSON';
 
 // --- invocations --------------------------------
 CREATE TABLE invocations (

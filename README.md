@@ -12,7 +12,7 @@ Development tools live under `tools/`.
 
 ### JDK
 
-Java 8 is required. OpenJDK is recommended.
+Java 8 **and** Java 6 is required. OpenJDK is recommended.
 
 ### Build tool
 

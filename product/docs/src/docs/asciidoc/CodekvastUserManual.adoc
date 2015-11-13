@@ -96,34 +96,38 @@ interface. There is only one server. *The server requires Java 8 or higher.*
 |                     | cYEL                       |---->|cGRE              |  |         |  | cYEL               |   |
 |                     |                            |--\  \------------------/  |         |  |                    |   |
 |                     |                            |  |          :             |         |  |                    |   |
-|                     +-------------+--------------+  |          |             |         |  +---------+----------+   |
-|                                   |                 |  /------------------\  |         |            |              |
-|                                   |                 |  |app_m binaries    |  |         |            |              |
-|                                   |                 \->|cGRE              |  |         |            |              |
-|                                   |                    \------------------/  |         |            |              |
-|                                   |                                          |         |            |              |
-+-----------------------------------|------------------------------------------+         +------------|--------------+
-                                    | <-=--HTTP POSTs JSON                                            |
-                                    \------------\                        /---------------------------/
-                                                 |                        |
-                                                 v                        v
-                                      +----------------------------------------+
-                                      | Codekvast Server                       |
-                                      |                          /----------\  |
-                                      | o Daemon API             | Embedded |  |
-                                      | o Persistence layer <--->| database |  |
-                                      | o Service layer          |          |  |
-                                      | o Messaging              |          |  |
-                                      |                          \----------/  |
-                                      | cYEL                                   |
-                                      +----------------------------------------+
-                                                      ^
-                                                      |<-=--Web socket
-                                                      v
-                                                 /---------------\
-                                                 | HTML5         |<-=--Visualisation layer (AngularJS)
-                                                 | browser       |
-                                                 \---------------/
+|                     +---+-----------------+------+  |          |             |         |  +-----+-----------+--+   |
+|                         |<-=produces      |         |  /------------------\  |         |        |           :      |
+|                         v                 |         |  |app_m binaries    |  |         |        v           |      |
+|                     +------------+        |         \->|cGRE              |  |         |  +-=----------+    |      |
+|                     | aggregated |        |            \------------------/  |         |  | aggregated |    |      |
+|                     | data (zip) |        |                                  |         |  | data (zip) |    |      |
+|                     | {d}        |        |                                  |         |  | {d}        |    |      |
+|                     +---+--------+        |                                  |         |  +--+---------+    |      |
+|                         |                 |                                  |         |     :              |      |
++-------------------------|-----------------|----------------------------------+         +-----|--------------|------+
+                          |                 |  <-=--HTTP POST/JSON (deprecated)                |              |
+                          |                 \---------------------------------------------\    |         /----/
+                          |                                                               |    |         |
+                          |<-=--Manual file transfer                /-=-------------------|----/         |
+                          v                                         |                     v              v
+                +----------------------------------------+          |       +----------------------------------------+
+                | Codekvast Warehouse                    |          |       | Codekvast Server (deprecated)          |
+                |                          /----------\  |<---------/       |                          /----------\  |
+                | o File import            | MariaDB  |  |                  | o Daemon API             | Embedded |  |
+                | o Persistence layer <--->| database |  |                  | o Persistence layer <--->| database |  |
+                | o Service layer          |          |  |                  | o Service layer          |          |  |
+                | o IDE API                |          |  |                  | o Messaging              |          |  |
+                | o Reporting              \----------/  |                  |                          \----------/  |
+                | cYEL                                   |                  | cYEL                                   |
+                +----------------------------------------+                  +----------------------------------------+
+                         ^                     ^                                           ^
+                         |<-=-- HTTP           |<-=-- REST                                 |<-=--Web socket
+                         v                     v                                           v
+                    /---------------\     /---------------\                           /---------------\
+                    | HTML5         |     | IDE           |                           | HTML5         |<-=--Visualisation layer (AngularJS)
+                    | browser       |     |               |                           | browser       |
+                    \---------------/     \---------------/                           \---------------/
 
             +---------------------+   +----------------------+    +--------------------+
  Legend:    |Your application cGRE|   |Part of Codekvast cYEL|    |Part of AspectJ c999|
@@ -220,7 +224,7 @@ No data in /tmp/codekvast::
 
 === Install Codekvast Server
 
-. Make sure Java 7 or higher is installed.
+. Make sure Java 8 or higher is installed.
 . Execute the following commands in a shell:
 
 [source,bash,subs="attributes,verbatim"]
@@ -323,7 +327,7 @@ dataDir = $HOME/codekvast
 
 |*appName*
 |What is my application's name?
-|A string
+|A string.
 |Jenkins
 |
 
@@ -339,7 +343,7 @@ See <<about-app-version-strategy>>
 
 |*packagePrefixes*
 |What packages shall be tracked?
-|A comma-separated list of strings
+|A comma-separated list of strings.
 |packagePrefixes = com.acme, foo.bar
 |
 
@@ -353,20 +357,20 @@ See <<about-specifying-method-visibility>>.
 |collectorResolutionSeconds
 |Controls how often invocation data is exported from the Codekvast collector.
 A higher value means less CPU overhead but higher memory demand.
-A higher value also means less precision
-| A positive integer
+A higher value also means less precision.
+| A positive integer.
 | collectorResolutionSeconds=3600
 | 600
 
 |dataPath
 |Which part of the file system shall Codekvast Collector dump the invocation data to?
-|A file system path
+|A file system path.
 |dataPath=/var/lib/codekvast
 |/tmp/codekvast
 
 |verbose
 |Should Codekvast Collector say something on standard output upon start? Useful for trouble shooting.
-|*true* or *false*
+|*true* or *false*.
 |verbose=true
 |false
 
@@ -374,7 +378,7 @@ A higher value also means less precision
 |Should Codekvast Collector configure logging for Aspectj Weaver?
 Useful for trouble shooting.
 See also {aspectj-ltw-config}.
-|A string
+|A string.
 |aspectjOptions = \ +
 {nbsp}{nbsp}-verbose -showWeaveInfo
 |
@@ -382,9 +386,9 @@ See also {aspectj-ltw-config}.
 |clobberAopXml
 |Should $dataPath/$appName/aop.xml be overwritten when collector is restarted?
 See <<about-clobberAopXml>>
-|*true* or *false*
+|*true* or *false*.
 |
-|false
+|true
 
 |===
 
@@ -419,7 +423,7 @@ Example 1 and 2 yields the same result.
 | The value of the manifest attribute
 
 |*filename*
-|Locates a jar file within the codeBase with a name that matches a regular expression and extracts the version within the parenthesis from
+|Locates a jar file within the codeBase with a name that matches a regular expression and extracts the version from the part within parenthesis from
 the file name.
 |`appVersion = filename myapp-(.*).jar`
 |The part within parenthesis.

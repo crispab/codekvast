@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/product/agent/agent.iml" filepath="$PROJECT_DIR$/product/agent/agent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/product/agent/agent-lib/collector-lib.iml" filepath="$PROJECT_DIR$/product/agent/agent-lib/collector-lib.iml" />
       <module fileurl="file://$PROJECT_DIR$/codekvast.iml" filepath="$PROJECT_DIR$/codekvast.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/server/codekvast-server/codekvast-server.iml" filepath="$PROJECT_DIR$/product/server/codekvast-server/codekvast-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/agent/collector/collector.iml" filepath="$PROJECT_DIR$/product/agent/collector/collector.iml" />
@@ -19,7 +20,6 @@
       <module fileurl="file://$PROJECT_DIR$/sample/sample-lib/sample-lib.iml" filepath="$PROJECT_DIR$/sample/sample-lib/sample-lib.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/sample-ltw/sample-ltw.iml" filepath="$PROJECT_DIR$/sample/sample-ltw/sample-ltw.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/server/server.iml" filepath="$PROJECT_DIR$/product/server/server.iml" />
-      <module fileurl="file://$PROJECT_DIR$/product/agent/shared/shared.iml" filepath="$PROJECT_DIR$/product/agent/shared/shared.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/support/support.iml" filepath="$PROJECT_DIR$/product/support/support.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/swing-app/swing-app.iml" filepath="$PROJECT_DIR$/sample/swing-app/swing-app.iml" />
       <module fileurl="file://$PROJECT_DIR$/tools/tools.iml" filepath="$PROJECT_DIR$/tools/tools.iml" />

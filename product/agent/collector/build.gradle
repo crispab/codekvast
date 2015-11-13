@@ -18,7 +18,7 @@ configurations {
 }
 
 dependencies {
-    compile project(":product:agent:shared"), { transitive = false }
+    compile project(":product:agent:agent-lib"), { transitive = false }
     compile aspectjWeaver
 
     aspectjweaver aspectjWeaver
@@ -35,7 +35,7 @@ shadowJar {
     classifier = 'all'
     manifest {
         attributes(
-                "Premain-Class": "se.crisp.codekvast.collector.CodekvastCollector",
+                "Premain-Class": "CodekvastCollector",
                 "Implementation-Title": archivesBaseName,
                 "Implementation-Version": codekvastDisplayVersion
         )
