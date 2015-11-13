@@ -25,7 +25,7 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter'
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
     compile 'org.flywaydb:flyway-core'
-    compile 'com.opencsv:opencsv:3.5'
+    compile 'com.opencsv:opencsv:3.6'
 
     runtime h2database
     runtime 'ch.qos.logback:logback-classic'
