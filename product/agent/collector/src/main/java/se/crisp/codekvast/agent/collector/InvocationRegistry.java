@@ -1,6 +1,5 @@
 package se.crisp.codekvast.agent.collector;
 
-import com.sun.istack.internal.Nullable;
 import org.aspectj.lang.Signature;
 import se.crisp.codekvast.agent.lib.config.CollectorConfig;
 import se.crisp.codekvast.agent.lib.io.InvocationDataDumper;
@@ -24,7 +23,6 @@ import java.util.concurrent.ConcurrentSkipListSet;
 @SuppressWarnings("Singleton")
 public class InvocationRegistry {
 
-    @Nullable
     public static InvocationRegistry instance;
 
     private final Jvm jvm;

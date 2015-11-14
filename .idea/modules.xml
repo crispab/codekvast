@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/product/agent/agent.iml" filepath="$PROJECT_DIR$/product/agent/agent.iml" />
-      <module fileurl="file://$PROJECT_DIR$/product/agent/agent-lib/collector-lib.iml" filepath="$PROJECT_DIR$/product/agent/agent-lib/collector-lib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/product/agent/agent-lib/agent-lib.iml" filepath="$PROJECT_DIR$/product/agent/agent-lib/agent-lib.iml" />
       <module fileurl="file://$PROJECT_DIR$/codekvast.iml" filepath="$PROJECT_DIR$/codekvast.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/server/codekvast-server/codekvast-server.iml" filepath="$PROJECT_DIR$/product/server/codekvast-server/codekvast-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/agent/collector/collector.iml" filepath="$PROJECT_DIR$/product/agent/collector/collector.iml" />

@@ -78,6 +78,7 @@ public class CodekvastCollector {
      * @param config     The configuration object. May be null, in which case Codekvast is disabled.
      * @param dataDumper The strategy for how to dump data.
      */
+    @SuppressWarnings("UseOfSystemOutOrSystemErr")
     public static void initialize(CollectorConfig config, InvocationDataDumper dataDumper) {
         if (InvocationRegistry.instance != null && config != null) {
             // Already initialized from -javaagent. Let it be.

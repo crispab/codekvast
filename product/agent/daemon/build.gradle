@@ -52,7 +52,7 @@ flyway {
     url = "jdbc:h2:tcp://localhost/$buildDir/database/codekvast-daemon"
     user = 'codekvast'
     password = 'codekvast'
-    locations = ['classpath:/database/migration', 'classpath:/se/crisp/codekvast/daemon/database/migration']
+    locations = ['classpath:/database/migration', 'classpath:/se/crisp/codekvast/agent/daemon/database/migration']
 }
 
 jar {
