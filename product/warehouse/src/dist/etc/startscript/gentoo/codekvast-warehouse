@@ -1,0 +1,20 @@
+#!/sbin/runscript
+
+depend() {
+    need net
+    need mariadb-server
+}
+
+start() {
+    ebegin "Starting codekvast_warehouse"
+    start-stop-daemon --start --exec /opt/codekvast-warehouse/bin/codekvast-warehouse \
+        --background --make-pidfile --pidfile /var/run/codekvast-warehouse.pid \
+        --stdout /var/log/codekvast/codekvast-warehouse.out --stderr /var/log/codekvast/codekvast-warehouse.out
+    eend $?
+}
+
+stop() {
+    ebegin "Stopping codekvast_warehouse"
+    start-stop-daemon --stop --exec /opt/codekvast-warehouse/bin/codekvast-warehouse --pidfile /var/run/codekvast-warehouse.pid
+    eend $?
+}

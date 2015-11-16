@@ -28,7 +28,7 @@ production>> but not used by any real users for a <<usage-cycle, usage cycle>>.
 Codekvast works for Java and other languages that execute in a JVM.
 
 == Architecture
-Codekvast consists of three parts: the *Collector*, the *Daemon* and the *Server*.
+Codekvast consists of three parts: the *Collector*, the *Daemon* and the *Warehouse*.
 
 .Responsibilities
 Codekvast Collector:: The collector is attached to the JVM that runs your application. It records the invocations of the methods of
@@ -40,12 +40,11 @@ for hooking into your application. *The collector requires Java 6 or higher.*
 Codekvast Daemon:: Analyses the application's <<application-binaries, binaries>> to produce an <<method-inventory, inventory>> of the
 application. The
 inventory consists of all the method signatures that the collector potentially can record. The daemon combines the method inventory with the invocation data
- from the collector(s) and uploads it to the server. There is one daemon per server host. One daemon can collect invocation data from
+ from the collector(s) and uploads it to the warehouse. There is one daemon per server host. One daemon can collect invocation data from
  several JVMs that are executing in the same host. *The daemon requires Java 8 or higher.*
 
-Codekvast Server:: Receives inventory and invocation data from the daemon(s), stores it in a database and makes it available for browsing
-in a web
-interface. There is only one server. *The server requires Java 8 or higher.*
+Codekvast Warehouse:: Receives inventory and invocation data from the daemon(s), stores it in a database and makes it available for browsing
+in a web interface. It also offers a REST interface to facilitate IDE plugin development. There is only one warehouse. *The warehouse requires Java 8 or higher plus MariaDB server 10 or higher*
 
 ---
 
@@ -96,38 +95,39 @@ interface. There is only one server. *The server requires Java 8 or higher.*
 |                     | cYEL                       |---->|cGRE              |  |         |  | cYEL               |   |
 |                     |                            |--\  \------------------/  |         |  |                    |   |
 |                     |                            |  |          :             |         |  |                    |   |
-|                     +---+-----------------+------+  |          |             |         |  +-----+-----------+--+   |
-|                         |<-=produces      |         |  /------------------\  |         |        |           :      |
-|                         v                 |         |  |app_m binaries    |  |         |        v           |      |
-|                     +------------+        |         \->|cGRE              |  |         |  +-=----------+    |      |
-|                     | aggregated |        |            \------------------/  |         |  | aggregated |    |      |
-|                     | data (zip) |        |                                  |         |  | data (zip) |    |      |
-|                     | {d}        |        |                                  |         |  | {d}        |    |      |
-|                     +---+--------+        |                                  |         |  +--+---------+    |      |
-|                         |                 |                                  |         |     :              |      |
-+-------------------------|-----------------|----------------------------------+         +-----|--------------|------+
-                          |                 |  <-=--HTTP POST/JSON (deprecated)                |              |
-                          |                 \---------------------------------------------\    |         /----/
-                          |                                                               |    |         |
-                          |<-=--Manual file transfer                /-=-------------------|----/         |
-                          v                                         |                     v              v
-                +----------------------------------------+          |       +----------------------------------------+
-                | Codekvast Warehouse                    |          |       | Codekvast Server (deprecated)          |
-                |                          /----------\  |<---------/       |                          /----------\  |
-                | o File import            | MariaDB  |  |                  | o Daemon API             | Embedded |  |
-                | o Persistence layer <--->| database |  |                  | o Persistence layer <--->| database |  |
-                | o Service layer          |          |  |                  | o Service layer          |          |  |
-                | o IDE API                |          |  |                  | o Messaging              |          |  |
-                | o Reporting              \----------/  |                  |                          \----------/  |
-                | cYEL                                   |                  | cYEL                                   |
-                +----------------------------------------+                  +----------------------------------------+
-                         ^                     ^                                           ^
-                         |<-=-- HTTP           |<-=-- REST                                 |<-=--Web socket
-                         v                     v                                           v
-                    /---------------\     /---------------\                           /---------------\
-                    | HTML5         |     | IDE           |                           | HTML5         |<-=--Visualisation layer (AngularJS)
-                    | browser       |     |               |                           | browser       |
-                    \---------------/     \---------------/                           \---------------/
+|                     +---+------------------------+  |          |             |         |  +-----+--------------+   |
+|                         |<-=produces                |  /------------------\  |         |        |                  |
+|                         v                           |  |app_m binaries    |  |         |        v                  |
+|                     +------------+                  \->|cGRE              |  |         |  +-=----------+           |
+|                     | aggregated |                     \------------------/  |         |  | aggregated |           |
+|                     | data (zip) |                                           |         |  | data (zip) |           |
+|                     | {d}        |                                           |         |  | {d}        |           |
+|                     +---+--------+                                           |         |  +--+---------+           |
+|                         |                                                    |         |     :                     |
++-------------------------|----------------------------------------------------+         +-----|---------------------+
+                          |                                                                    |
+                          |<-=------------Manual file transfer/HTTP file upload-------------=->|
+                          |                                                                    |
+                          \----------------\                                /------------------/
+                                           |                                |
+                                           v                                v
+                                       +----------------------------------------+
+                                       | Codekvast Warehouse                    |
+                                       |                          /----------\  |
+                                       | o Data aggregation       | MariaDB  |  |
+                                       | o Persistence layer <--->| database |  |
+                                       | o IDE API                |          |  |
+                                       | o Reporting              |          |  |
+                                       |                          \----------/  |
+                                       | cYEL                                   |
+                                       +----------------------------------------+
+                                                ^                     ^
+                                                |<-=-- HTTP           |<-=-- REST
+                                                v                     v
+                                           /---------------\     /---------------\
+                                           | HTML5         |     | IDE           |
+                                           | browser       |     |               |
+                                           \---------------/     \---------------/
 
             +---------------------+   +----------------------+    +--------------------+
  Legend:    |Your application cGRE|   |Part of Codekvast cYEL|    |Part of AspectJ c999|
@@ -150,7 +150,7 @@ ln -s /opt/codekvast-daemon-{codekvast-version} /opt/codekvast-daemon
 cd /opt/codekvast-daemon/conf
 cp codekvast-daemon.properties.sample.{codekvast-version} codekvast-daemon.properties # <1>
 rm /etc/init.d/codekvast-daemon
-ln -s /opt/codekvast-daemon/etc/startscript/debian/codekvast-daemon /etc/init.d
+ln -s /opt/codekvast-daemon/etc/startscript/debian/codekvast-daemon /etc/init.d #<2>
 mkdir -p /var/log/codekvast
 update-rc.d codekvast-daemon defaults # <2>
 ----
@@ -222,33 +222,39 @@ No data in /tmp/codekvast::
 . restart your application
 . Use the logging on standard output and standard error for determining the problem
 
-=== Install Codekvast Server
+=== Install Codekvast Warehouse
 
 . Make sure Java 8 or higher is installed.
+. Make sure MariaDB server 10 or higher is installed.
 . Execute the following commands in a shell:
 
 [source,bash,subs="attributes,verbatim"]
 ----
 sudo -s
-wget {bintrayDownloadPrefix}/codekvast-server-{codekvast-version}.zip
-unzip codekvast-server-{codekvast-version}.zip -d /opt
-rm /opt/codekvast-server
-ln -s /opt/codekvast-server-{codekvast-version} /opt/codekvast-server
-cd /opt/codekvast-server/conf
-cp codekvast-server.properties.sample.{codekvast-version} codekvast-server.properties # <1>
+
+mysql
+create database codekvast_warehouse;
+grant all on codekvast_warehouse.* to 'codekvast'@'localhost' identified by 'codekvast';
+quit
+
+wget {bintrayDownloadPrefix}/codekvast-warehouse-{codekvast-version}.zip
+unzip codekvast-warehouse-{codekvast-version}.zip -d /opt
+rm /opt/codekvast-warehouse
+ln -s /opt/codekvast-warehouse-{codekvast-version} /opt/codekvast-warehouse
+cd /opt/codekvast-warehouse/conf
+cp codekvast-warehouse.properties.sample.{codekvast-version} codekvast-warehouse.properties # <1>
 mkdir -p /var/log/codekvast
-mkdir -p /var/backups/codekvast
-rm /etc/init.d/codekvast-server
-ln -s /opt/codekvast-server/etc/startscript/debian/codekvast-server /etc/init.d <2>
-update-rc.d codekvast-server defaults # <2>
+rm /etc/init.d/codekvast-warehouse
+ln -s /opt/codekvast-warehouse/etc/startscript/debian/codekvast-warehouse /etc/init.d # <2>
+update-rc.d codekvast-warehouse defaults # <2>
 ----
-<1> Edit codekvast-server.properties to suit your needs. See <<configuring-codekvast-server, Configuring Codekvast Server>>.
-<2> This works for Debian-based Linux distros. For Redhat-based distros, use `chkconfig --add /etc/init.d/codekvast-server` instead.
+<1> Edit codekvast-warehouse.properties to suit your needs. See <<configuring-codekvast-warehouse, Configuring Codekvast Warehouse>>.
+<2> This works for Debian-based Linux distros. For Redhat-based distros, use `chkconfig --add /etc/init.d/codekvast-warehouse` instead.
 
-Once you have finished editing codekvast-server.properties, execute
+Once you have finished editing codekvast-warehouse.properties, execute
 
 ----
-/etc/init.d/codekvast-server start
+/etc/init.d/codekvast-warehouse start
 ----
 
 == Configuration
@@ -479,15 +485,13 @@ Use at your own risk.
 === Codekvast Daemon
 The daemon reads it configuration from /opt/codekvast-daemon/conf/codekvast-daemon.properties.
 
-The sample configuration file /opt/codekvast-daemon/conf/codekvast-daemon.properties.sample.{codekvast-version} is self
-documenting.
+The sample configuration file /opt/codekvast-daemon/conf/codekvast-daemon.properties.sample.{codekvast-version} is self-documenting.
 
-[[configuring-codekvast-server]]
-=== Codekvast Server
-The server reads it configuration from /opt/codekvast-server/conf/codekvast-server.properties.
+[[configuring-codekvast-warehouse]]
+=== Codekvast Warehouse
+The warehouse reads it configuration from /opt/codekvast-warehouse/conf/codekvast-warehouse.properties.
 
-The sample configuration file /opt/codekvast-server/conf/codekvast-server.properties.sample.{codekvast-version} is self
-documenting.
+The sample configuration file /opt/codekvast-warehouse/conf/codekvast-warehouse.properties.sample.{codekvast-version} is self-documenting.
 
 == Usage hints
 [[use-in-production]]
