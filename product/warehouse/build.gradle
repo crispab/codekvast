@@ -104,7 +104,10 @@ run {
             '-ea',
             '-Dcodekvast.log.consoleThreshold=DEBUG'
     ]
-    args = ["--codekvast.databasePath=tcp://localhost/$buildDir/database"]
+    args = [
+            "--codekvast.importPath=/tmp/.codekvast/export", // same as daemon export to when started from Gradle
+            "--codekvast.importPollIntervalSeconds=10"
+    ]
 }
 
 bootRun {

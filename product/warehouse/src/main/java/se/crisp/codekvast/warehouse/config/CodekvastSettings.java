@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
 
 /**
  * Wrapper for environment properties codekvast.*
@@ -22,6 +23,9 @@ public class CodekvastSettings {
     private String committer;
     private String commitDate;
     private String commitMessage;
+
+    private int importPollIntervalSeconds = 30;
+    private File importPath;
 
     @PostConstruct
     public void logStartup() {
