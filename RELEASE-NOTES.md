@@ -1,5 +1,10 @@
 # Codekvast Release Notes
 
+## 0.13.0
+
+1. Created module product/warehouse, which has a dependency on mariadb-server. See README for installation
+instructions.
+
 ## 0.12.4
 
 1. Renamed modules and packages below product/agent

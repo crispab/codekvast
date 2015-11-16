@@ -9,6 +9,7 @@ include ':product:server:codekvast-server'
 include ':product:server:daemon-api'
 include ':product:support:commons'
 include ':product:support:websupport'
+include ':product:warehouse'
 include ':product:web'
 
 include ':tools'

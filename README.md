@@ -14,6 +14,21 @@ Development tools live under `tools/`.
 
 Java 8 **and** Java 6 is required. OpenJDK is recommended.
 
+### Database
+
+MariaDB v10.0 is required for Codekvast Warehouse.
+
+Use the following command to install MariaDB (Ubuntu, Debian):
+
+    sudo apt-get install mariadb-server
+    
+Then the following commands must be executed once:
+    
+    $ sudo mysql
+    create database codekvast_warehouse;
+    grant all on codekvast_warehouse.* to 'codekvast'@'localhost' identified by 'codekvast';
+    Ctrl-D
+    
 ### Build tool
 
 Codekvast uses **Gradle** as build tool. It uses the Gradle Wrapper, `gradlew`, which is checked in at the root of the workspace.
