@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package se.crisp.codekvast.agent.daemon.model.v1;
+package se.crisp.codekvast.agent.lib.model.v1;
 
 /**
  * @author olle.hallin@crisp.se

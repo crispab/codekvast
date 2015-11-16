@@ -12,8 +12,8 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.UUID;
 
-import static se.crisp.codekvast.agent.daemon.model.v1.SignatureConfidence.EXACT_MATCH;
-import static se.crisp.codekvast.agent.daemon.model.v1.SignatureConfidence.FOUND_IN_PARENT_CLASS;
+import static se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence.EXACT_MATCH;
+import static se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence.FOUND_IN_PARENT_CLASS;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @HttpPostIntegrationTest

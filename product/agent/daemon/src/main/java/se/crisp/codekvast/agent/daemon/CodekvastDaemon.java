@@ -25,7 +25,7 @@ public class CodekvastDaemon {
         System.setProperty("spring.config.location",
                            "classpath:/application.properties," +
                                    "classpath:/default.properties," +
-                                   "classpath:/" + DaemonConstants.DAEMON_CONFIG_FILE);
+                                   "classpath:/codekvast-daemon.properties");
         SpringApplication application = new SpringApplication(CodekvastDaemon.class);
         application.run(args);
     }

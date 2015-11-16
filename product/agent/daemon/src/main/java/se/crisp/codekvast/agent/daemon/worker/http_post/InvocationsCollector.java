@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.agent.daemon.DaemonConstants;
-import se.crisp.codekvast.agent.daemon.model.v1.SignatureConfidence;
+import se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureEntry;
 
 import javax.inject.Inject;

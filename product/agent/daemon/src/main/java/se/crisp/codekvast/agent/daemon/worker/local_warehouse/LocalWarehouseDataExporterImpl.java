@@ -9,6 +9,8 @@ import se.crisp.codekvast.agent.daemon.DaemonConstants;
 import se.crisp.codekvast.agent.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.agent.daemon.worker.DataExportException;
 import se.crisp.codekvast.agent.daemon.worker.DataExporter;
+import se.crisp.codekvast.agent.lib.model.v1.ExportFileEntry;
+import se.crisp.codekvast.agent.lib.model.v1.ExportFileFormat;
 import se.crisp.codekvast.agent.lib.util.FileUtils;
 
 import javax.inject.Inject;
@@ -19,7 +21,6 @@ import java.time.Instant;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import static java.time.Instant.now;
@@ -54,8 +55,8 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
             return;
         }
 
-        if (!exportFile.getName().toLowerCase().endsWith(".zip")) {
-            log.error("Can only export to ZIP format");
+        if (!exportFile.getName().toLowerCase().endsWith(ExportFileFormat.ZIP.getSuffix())) {
+            log.error("Can only export to " + ExportFileFormat.ZIP + " format");
             return;
         }
 
@@ -126,7 +127,7 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
 
     private void doExportDaemonConfig(ZipOutputStream zip, Charset charset, DaemonConfig config)
             throws IOException, IllegalAccessException {
-        zip.putNextEntry(new ZipEntry(DaemonConstants.DAEMON_CONFIG_FILE));
+        zip.putNextEntry(ExportFileEntry.DAEMON_CONFIG.toZipEntry());
 
         Set<String> lines = new TreeSet<>();
         FileUtils.extractFieldValuesFrom(config, lines);
@@ -138,7 +139,7 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
     }
 
     private void doExportDatabaseTable(ZipOutputStream zip, CSVWriter csvWriter, String table, String... columns) throws IOException {
-        zip.putNextEntry(new ZipEntry(table + ".csv"));
+        zip.putNextEntry(ExportFileEntry.fromString(table + ".csv").toZipEntry());
         csvWriter.writeNext(columns, false);
 
         String[] line = new String[columns.length];

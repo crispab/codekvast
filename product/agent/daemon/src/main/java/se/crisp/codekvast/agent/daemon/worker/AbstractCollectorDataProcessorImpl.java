@@ -10,11 +10,11 @@ import se.crisp.codekvast.agent.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.agent.daemon.beans.JvmState;
 import se.crisp.codekvast.agent.daemon.codebase.CodeBase;
 import se.crisp.codekvast.agent.daemon.codebase.CodeBaseScanner;
-import se.crisp.codekvast.agent.daemon.model.v1.JvmData;
-import se.crisp.codekvast.agent.daemon.model.v1.SignatureConfidence;
 import se.crisp.codekvast.agent.daemon.util.LogUtil;
 import se.crisp.codekvast.agent.lib.model.Invocation;
 import se.crisp.codekvast.agent.lib.model.Jvm;
+import se.crisp.codekvast.agent.lib.model.v1.JvmData;
+import se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence;
 import se.crisp.codekvast.agent.lib.util.ComputerID;
 import se.crisp.codekvast.agent.lib.util.FileUtils;
 

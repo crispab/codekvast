@@ -8,10 +8,10 @@ import se.crisp.codekvast.agent.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.agent.daemon.beans.JvmState;
 import se.crisp.codekvast.agent.daemon.codebase.CodeBase;
 import se.crisp.codekvast.agent.daemon.codebase.CodeBaseScanner;
-import se.crisp.codekvast.agent.daemon.model.v1.JvmData;
-import se.crisp.codekvast.agent.daemon.model.v1.SignatureConfidence;
 import se.crisp.codekvast.agent.daemon.worker.AbstractCollectorDataProcessorImpl;
 import se.crisp.codekvast.agent.daemon.worker.DataProcessingException;
+import se.crisp.codekvast.agent.lib.model.v1.JvmData;
+import se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence;
 import se.crisp.codekvast.server.daemon_api.DaemonApi;
 import se.crisp.codekvast.server.daemon_api.DaemonApiException;
 

@@ -46,7 +46,7 @@ CREATE TABLE jvms (
   startedAt   TIMESTAMP             NOT NULL,
   dumpedAt    TIMESTAMP             NOT NULL,
   jvmDataJson VARCHAR(1000)         NOT NULL
-  COMMENT 'jvmDataJson is an instance of se.crisp.codekvast.agent.daemon.model.v1.JvmData as JSON'
+  COMMENT 'jvmDataJson is an instance of se.crisp.codekvast.agent.lib.model.v1.JvmData as JSON'
 )
   ENGINE = innodb, CHARACTER SET = utf8, COLLATE = utf8_general_ci;
 

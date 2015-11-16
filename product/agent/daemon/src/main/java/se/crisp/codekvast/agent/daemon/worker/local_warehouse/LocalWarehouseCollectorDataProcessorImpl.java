@@ -16,11 +16,11 @@ import se.crisp.codekvast.agent.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.agent.daemon.beans.JvmState;
 import se.crisp.codekvast.agent.daemon.codebase.CodeBase;
 import se.crisp.codekvast.agent.daemon.codebase.CodeBaseScanner;
-import se.crisp.codekvast.agent.daemon.model.v1.SignatureConfidence;
 import se.crisp.codekvast.agent.daemon.worker.AbstractCollectorDataProcessorImpl;
 import se.crisp.codekvast.agent.daemon.worker.DataProcessingException;
 import se.crisp.codekvast.agent.lib.model.Jvm;
 import se.crisp.codekvast.agent.lib.model.MethodSignature;
+import se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
