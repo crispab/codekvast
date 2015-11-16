@@ -18,6 +18,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -96,10 +97,13 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
         File tmpFile = createTempFile(exportFile);
 
         try (ZipOutputStream zip = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(tmpFile)))) {
-            zip.setComment("Export of Codekvast local warehouse for " + config.getEnvironment() + " at " + Instant.now());
+            String exportUuid = UUID.randomUUID().toString();
+
+            zip.setComment(
+                    "Export of Codekvast local warehouse for " + config.getEnvironment() + " at " + Instant.now() + ", uuid=" + exportUuid);
 
             Charset charset = Charset.forName("UTF-8");
-            doExportDaemonConfig(zip, charset, config);
+            doExportDaemonConfig(zip, charset, config.withExportUuid(exportUuid));
 
             CSVWriter csvWriter = new CSVWriter(new OutputStreamWriter(zip, charset));
             doExportDatabaseTable(zip, csvWriter, "applications", "id", "name", "version", "createdAtMillis");

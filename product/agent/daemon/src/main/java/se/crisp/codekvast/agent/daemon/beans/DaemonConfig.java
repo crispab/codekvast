@@ -41,11 +41,14 @@ public class DaemonConfig {
     @NonNull
     private String daemonVcsId;
 
+    @NonNull
+    private String environment;
+
     @Wither
     private File exportFile;
 
-    @NonNull
-    private String environment;
+    @Wither
+    private String exportUuid;
 
     public String getDisplayVersion() {
         return daemonVersion + "-" + daemonVcsId;
