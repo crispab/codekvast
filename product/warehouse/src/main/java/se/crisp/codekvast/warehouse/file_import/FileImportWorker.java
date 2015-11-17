@@ -10,6 +10,7 @@ import se.crisp.codekvast.agent.lib.model.ExportFileMetaInfo;
 import se.crisp.codekvast.agent.lib.model.v1.ExportFileEntry;
 import se.crisp.codekvast.agent.lib.model.v1.ExportFileFormat;
 import se.crisp.codekvast.warehouse.config.CodekvastSettings;
+import se.crisp.codekvast.warehouse.file_import.impl.ImportContext;
 
 import javax.inject.Inject;
 import java.io.*;
@@ -24,14 +25,14 @@ import java.util.zip.ZipInputStream;
  */
 @Service
 @Slf4j
-public class FileImporterImpl {
+public class FileImportWorker {
 
     private final CodekvastSettings codekvastSettings;
     private final ImportService importService;
     private final Charset charset = Charset.forName("UTF-8");
 
     @Inject
-    public FileImporterImpl(CodekvastSettings codekvastSettings, ImportService importService) {
+    public FileImportWorker(CodekvastSettings codekvastSettings, ImportService importService) {
         this.codekvastSettings = codekvastSettings;
         this.importService = importService;
         log.info("Created");
@@ -129,7 +130,7 @@ public class FileImporterImpl {
         for (String[] columns : csvReader) {
             int col = 0;
             Application app = Application.builder()
-                                         .id(Long.valueOf(columns[col++]))
+                                         .localId(Long.valueOf(columns[col++]))
                                          .name(columns[col++])
                                          .version(columns[col++])
                                          .createdAtMillis(Long.valueOf(columns[col++]))

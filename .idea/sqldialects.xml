@@ -11,7 +11,7 @@
     <file url="file://$PROJECT_DIR$/product/server/codekvast-server/src/main/java/se/crisp/codekvast/server/codekvast_server/dao/impl/DaemonDAOImpl.java" dialect="H2" />
     <file url="file://$PROJECT_DIR$/product/server/codekvast-server/src/main/java/se/crisp/codekvast/server/codekvast_server/dao/impl/UserDAOImpl.java" dialect="H2" />
     <file url="file://$PROJECT_DIR$/product/server/codekvast-server/src/main/resources/database/migration" dialect="H2" />
-    <file url="file://$PROJECT_DIR$/product/warehouse/src/main/java/se/crisp/codekvast/warehouse/file_import/ImportServiceImpl.java" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/product/warehouse/src/main/java/se/crisp/codekvast/warehouse/file_import/impl/ImportServiceImpl.java" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/product/warehouse/src/main/resources/database/migration/V1_1__DummySqlMigration.sql" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/product/warehouse/src/main/resources/database/migration/V2_0__CentralWarehouseSchema.sql" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/product/web/src/main/java/se/crisp/codekvast/web/service/impl/DatabaseMaintenanceImpl.java" dialect="H2" />

@@ -1,6 +1,7 @@
 package se.crisp.codekvast.warehouse.file_import;
 
 import se.crisp.codekvast.agent.lib.model.ExportFileMetaInfo;
+import se.crisp.codekvast.warehouse.file_import.impl.ImportContext;
 
 /**
  * Service for data import.

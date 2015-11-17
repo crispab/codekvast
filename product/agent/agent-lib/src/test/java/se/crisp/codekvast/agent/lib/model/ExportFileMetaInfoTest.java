@@ -17,7 +17,7 @@ public class ExportFileMetaInfoTest {
     @Test
     public void testConvertToLines() throws Exception {
 
-        Set<String> lines = new HashSet<>();
+        Set<String> lines = new HashSet<String>();
 
         FileUtils.extractFieldValuesFrom(ExportFileMetaInfo.builder()
                                                            .daemonHostname("some-hostname")

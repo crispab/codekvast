@@ -1,4 +1,4 @@
-package se.crisp.codekvast.warehouse.file_import;
+package se.crisp.codekvast.warehouse.file_import.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +8,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Service;
 import se.crisp.codekvast.agent.lib.model.ExportFileMetaInfo;
+import se.crisp.codekvast.warehouse.file_import.Application;
+import se.crisp.codekvast.warehouse.file_import.ImportService;
 
 import javax.inject.Inject;
 import java.sql.*;

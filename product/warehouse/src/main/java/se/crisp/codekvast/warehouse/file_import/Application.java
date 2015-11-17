@@ -9,7 +9,7 @@ import lombok.Value;
 @Value
 @Builder
 public class Application {
-    private final Long id;
+    private final Long localId;
     private final String name;
     private final String version;
     private final Long createdAtMillis;
