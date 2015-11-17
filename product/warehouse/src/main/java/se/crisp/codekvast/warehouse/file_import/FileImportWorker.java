@@ -60,7 +60,7 @@ public class FileImportWorker {
                     } else if (!file.getName().endsWith(ExportFileFormat.ZIP.getSuffix())) {
                         log.debug("Ignoring {}, can only handle {} files", file, ExportFileFormat.ZIP);
                     } else {
-                        tryToImportZipFile(file);
+                        importZipFile(file);
                         deleteFile(file);
                     }
                 }
@@ -78,8 +78,8 @@ public class FileImportWorker {
     }
 
     @Transactional
-    protected void tryToImportZipFile(File file) {
-        log.debug("Trying to import {}", file);
+    protected void importZipFile(File file) {
+        log.debug("Importing {}", file);
 
         ExportFileMetaInfo metaInfo = null;
         ImportContext context = new ImportContext();
@@ -142,8 +142,22 @@ public class FileImportWorker {
 
     private void readMethodsCsv(InputStreamReader reader, ImportContext context) {
         CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
-        for (String[] strings : csvReader) {
-            int i = 17;
+        for (String[] columns : csvReader) {
+            int col = 0;
+            Method method = Method.builder()
+                                  .localId(Long.valueOf(columns[col++]))
+                                  .visibility(columns[col++])
+                                  .signature(columns[col++])
+                                  .createdAtMillis(Long.valueOf(columns[col++]))
+                                  .declaringType(columns[col++])
+                                  .exceptionTypes(columns[col++])
+                                  .methodName(columns[col++])
+                                  .modifiers(columns[col++])
+                                  .packageName(columns[col++])
+                                  .parameterTypes(columns[col++])
+                                  .returnType(columns[col++])
+                                  .build();
+            importService.saveMethod(method, context);
         }
     }
 

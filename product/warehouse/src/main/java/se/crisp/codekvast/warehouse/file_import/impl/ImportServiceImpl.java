@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import se.crisp.codekvast.agent.lib.model.ExportFileMetaInfo;
 import se.crisp.codekvast.warehouse.file_import.Application;
 import se.crisp.codekvast.warehouse.file_import.ImportService;
+import se.crisp.codekvast.warehouse.file_import.Method;
 
 import javax.inject.Inject;
 import java.sql.*;
@@ -49,6 +50,11 @@ public class ImportServiceImpl implements ImportService {
         context.putApplication(getCentralApplicationId(application), application);
     }
 
+    @Override
+    public void saveMethod(Method method, ImportContext context) {
+        context.putMethod(getCentralMethodId(method), method);
+    }
+
     private long getCentralApplicationId(Application app) {
         Long appId = queryForLong("SELECT id FROM applications WHERE name = ? AND version = ? ",
                                   app.getName(), app.getVersion());
@@ -63,6 +69,19 @@ public class ImportServiceImpl implements ImportService {
         return appId;
     }
 
+    private long getCentralMethodId(Method method) {
+        Long methodId = queryForLong("SELECT id FROM methods WHERE signature = ? ", method.getSignature());
+
+        //noinspection Duplicates
+        if (methodId == null) {
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            jdbcTemplate.update(new InsertMethodStatement(method), keyHolder);
+            methodId = keyHolder.getKey().longValue();
+            log.debug("Stored method {}:{}", methodId, method.getSignature());
+        }
+        return methodId;
+    }
+
     @RequiredArgsConstructor
     private static class InsertApplicationStatement implements PreparedStatementCreator {
         private final Application app;
@@ -70,13 +89,40 @@ public class ImportServiceImpl implements ImportService {
         @SuppressWarnings("ValueOfIncrementOrDecrementUsed")
         @Override
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-            PreparedStatement ps = con.prepareStatement("INSERT INTO applications(name, version, createdAt) VALUES(?, ?, ?)",
+            PreparedStatement ps = con.prepareStatement("INSERT INTO applications(name, version, createdAt) " +
+                                                                "VALUES(?, ?, ?)",
                                                         Statement.RETURN_GENERATED_KEYS);
             int column = 0;
             ps.setString(++column, app.getName());
             ps.setString(++column, app.getVersion());
             ps.setTimestamp(++column, new Timestamp(app.getCreatedAtMillis()));
+            return ps;
+        }
+    }
 
+    @RequiredArgsConstructor
+    private static class InsertMethodStatement implements PreparedStatementCreator {
+        private final Method method;
+
+        @SuppressWarnings({"ValueOfIncrementOrDecrementUsed", "Duplicates"})
+        @Override
+        public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+            PreparedStatement ps = con.prepareStatement("INSERT INTO methods(visibility, signature, createdAt, declaringType, " +
+                                                                "exceptionTypes, methodName, modifiers, packageName, parameterTypes, " +
+                                                                "returnType) " +
+                                                                "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                                                        Statement.RETURN_GENERATED_KEYS);
+            int column = 0;
+            ps.setString(++column, method.getVisibility());
+            ps.setString(++column, method.getSignature());
+            ps.setTimestamp(++column, new Timestamp(method.getCreatedAtMillis()));
+            ps.setString(++column, method.getDeclaringType());
+            ps.setString(++column, method.getExceptionTypes());
+            ps.setString(++column, method.getMethodName());
+            ps.setString(++column, method.getModifiers());
+            ps.setString(++column, method.getPackageName());
+            ps.setString(++column, method.getParameterTypes());
+            ps.setString(++column, method.getReturnType());
             return ps;
         }
     }

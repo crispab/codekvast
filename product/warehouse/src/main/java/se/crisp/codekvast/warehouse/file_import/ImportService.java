@@ -15,4 +15,6 @@ public interface ImportService {
     void recordFileAsImported(ExportFileMetaInfo metaInfo);
 
     void saveApplication(Application application, ImportContext context);
+
+    void saveMethod(Method method, ImportContext context);
 }
