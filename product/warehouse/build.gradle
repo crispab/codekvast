@@ -27,6 +27,7 @@ dependencies {
     compile project(':product:support:commons')
     compile project(':product:agent:agent-lib')
 
+    compile "javax.inject:javax.inject:1"
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
     compile 'org.flywaydb:flyway-core'
 
