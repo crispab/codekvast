@@ -9,9 +9,9 @@ import se.crisp.codekvast.agent.daemon.DaemonConstants;
 import se.crisp.codekvast.agent.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.agent.daemon.worker.DataExportException;
 import se.crisp.codekvast.agent.daemon.worker.DataExporter;
+import se.crisp.codekvast.agent.lib.model.ExportFileMetaInfo;
 import se.crisp.codekvast.agent.lib.model.v1.ExportFileEntry;
 import se.crisp.codekvast.agent.lib.model.v1.ExportFileFormat;
-import se.crisp.codekvast.agent.lib.model.v1.ExportFileMetaInfo;
 import se.crisp.codekvast.agent.lib.util.FileUtils;
 
 import javax.inject.Inject;
@@ -41,6 +41,8 @@ import static java.util.stream.Collectors.joining;
 @Profile(DaemonConstants.LOCAL_WAREHOUSE_PROFILE)
 @Slf4j
 public class LocalWarehouseDataExporterImpl implements DataExporter {
+
+    public static final String SCHEMA_VERSION = "V1";
 
     private final JdbcTemplate jdbcTemplate;
     private final DaemonConfig config;
@@ -110,6 +112,9 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
             Charset charset = Charset.forName("UTF-8");
             doExportMetaInfo(zip, charset, ExportFileMetaInfo.builder()
                                                              .uuid(uuid)
+                                                             .schemaVersion(SCHEMA_VERSION)
+                                                             .daemonVersion(config.getDaemonVersion())
+                                                             .daemonVcsId(config.getDaemonVcsId())
                                                              .daemonHostname(getHostname())
                                                              .build());
 

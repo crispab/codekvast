@@ -4,6 +4,9 @@
 CREATE TABLE file_meta_info (
   id                         BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
   uuid                       VARCHAR(40)           NOT NULL UNIQUE,
+  daemonVersion              VARCHAR(20)           NOT NULL,
+  daemonVcsId                VARCHAR(30)           NOT NULL,
+  fileSchemaVersion          VARCHAR(10)           NOT NULL,
   fileName                   VARCHAR(255)          NOT NULL,
   fileLengthBytes            BIGINT                NOT NULL,
   importedFromDaemonHostname VARCHAR(80)           NOT NULL,

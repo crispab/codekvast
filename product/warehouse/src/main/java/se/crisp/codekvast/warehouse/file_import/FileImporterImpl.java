@@ -1,19 +1,19 @@
 package se.crisp.codekvast.warehouse.file_import;
 
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import se.crisp.codekvast.agent.lib.model.ExportFileMetaInfo;
 import se.crisp.codekvast.agent.lib.model.v1.ExportFileEntry;
 import se.crisp.codekvast.agent.lib.model.v1.ExportFileFormat;
-import se.crisp.codekvast.agent.lib.model.v1.ExportFileMetaInfo;
 import se.crisp.codekvast.warehouse.config.CodekvastSettings;
 
 import javax.inject.Inject;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -28,6 +28,7 @@ public class FileImporterImpl {
 
     private final CodekvastSettings codekvastSettings;
     private final ImportService importService;
+    private final Charset charset = Charset.forName("UTF-8");
 
     @Inject
     public FileImporterImpl(CodekvastSettings codekvastSettings, ImportService importService) {
@@ -80,8 +81,10 @@ public class FileImporterImpl {
         log.debug("Trying to import {}", file);
 
         ExportFileMetaInfo metaInfo = null;
+        ImportContext context = new ImportContext();
 
-        try (ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)))) {
+        try (ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)));
+             InputStreamReader reader = new InputStreamReader(zipInputStream, charset)) {
 
             ZipEntry zipEntry;
             while ((zipEntry = zipInputStream.getNextEntry()) != null) {
@@ -97,24 +100,63 @@ public class FileImporterImpl {
                     }
                     break;
                 case APPLICATIONS:
+                    readApplicationsCsv(reader, context);
                     break;
                 case METHODS:
+                    readMethodsCsv(reader, context);
                     break;
                 case JVMS:
+                    readJvmsCsv(reader, context);
                     break;
                 case INVOCATIONS:
+                    readInvocationsCsv(reader, context);
                     break;
                 }
             }
             if (metaInfo != null) {
-                importService.recordFileAsImported(metaInfo
-                                                           .withFileLengthBytes(file.length())
+                importService.recordFileAsImported(metaInfo.withFileLengthBytes(file.length())
                                                            .withFileName(file.getPath()));
             }
         } catch (IllegalArgumentException e) {
             log.error("Cannot import " + file, e);
         } catch (IOException e) {
             log.error("Cannot import " + file, e);
+        }
+    }
+
+    private void readApplicationsCsv(InputStreamReader reader, ImportContext context) {
+        CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
+        for (String[] columns : csvReader) {
+            int col = 0;
+            Application app = Application.builder()
+                                         .id(Long.valueOf(columns[col++]))
+                                         .name(columns[col++])
+                                         .version(columns[col++])
+                                         .createdAtMillis(Long.valueOf(columns[col++]))
+                                         .build();
+
+            importService.saveApplication(app, context);
+        }
+    }
+
+    private void readMethodsCsv(InputStreamReader reader, ImportContext context) {
+        CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
+        for (String[] strings : csvReader) {
+            int i = 17;
+        }
+    }
+
+    private void readJvmsCsv(InputStreamReader reader, ImportContext context) {
+        CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
+        for (String[] strings : csvReader) {
+            int i = 17;
+        }
+    }
+
+    private void readInvocationsCsv(InputStreamReader reader, ImportContext context) {
+        CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
+        for (String[] strings : csvReader) {
+            int i = 17;
         }
     }
 

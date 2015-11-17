@@ -1,6 +1,6 @@
 package se.crisp.codekvast.warehouse.file_import;
 
-import se.crisp.codekvast.agent.lib.model.v1.ExportFileMetaInfo;
+import se.crisp.codekvast.agent.lib.model.ExportFileMetaInfo;
 
 /**
  * Service for data import.
@@ -12,4 +12,6 @@ public interface ImportService {
     boolean isFileImported(ExportFileMetaInfo metaInfo);
 
     void recordFileAsImported(ExportFileMetaInfo metaInfo);
+
+    void saveApplication(Application application, ImportContext context);
 }

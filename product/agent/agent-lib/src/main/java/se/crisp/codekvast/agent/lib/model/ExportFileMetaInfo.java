@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.lib.model.v1;
+package se.crisp.codekvast.agent.lib.model;
 
 import lombok.Builder;
 import lombok.NonNull;
@@ -20,6 +20,15 @@ public class ExportFileMetaInfo {
     private final String uuid;
 
     @NonNull
+    private final String schemaVersion;
+
+    @NonNull
+    private final String daemonVersion;
+
+    @NonNull
+    private final String daemonVcsId;
+
+    @NonNull
     private final String daemonHostname;
 
     @Wither
@@ -34,6 +43,9 @@ public class ExportFileMetaInfo {
 
         return ExportFileMetaInfo.builder()
                                  .uuid(props.getProperty("uuid"))
+                                 .schemaVersion(props.getProperty("schemaVersion"))
+                                 .daemonVersion(props.getProperty("daemonVersion"))
+                                 .daemonVcsId(props.getProperty("daemonVcsId"))
                                  .daemonHostname(props.getProperty("daemonHostname"))
                                  .build();
     }
