@@ -1,4 +1,4 @@
-package se.crisp.codekvast.warehouse.file_import.impl;
+package se.crisp.codekvast.warehouse.file_import;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,10 +8,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Service;
 import se.crisp.codekvast.agent.lib.model.ExportFileMetaInfo;
-import se.crisp.codekvast.warehouse.file_import.Application;
-import se.crisp.codekvast.warehouse.file_import.ImportService;
-import se.crisp.codekvast.warehouse.file_import.Jvm;
-import se.crisp.codekvast.warehouse.file_import.Method;
 
 import javax.inject.Inject;
 import java.sql.*;
@@ -59,6 +55,39 @@ public class ImportServiceImpl implements ImportService {
     @Override
     public void saveJvm(Jvm jvm, ImportContext context) {
         context.putJvm(getCentralJvmId(jvm), jvm);
+    }
+
+    @Override
+    public void saveInvocation(Invocation invocation, ImportContext context) {
+        long applicationId = context.getApplicationId(invocation.getLocalApplicationId());
+        long methodId = context.getMethodId(invocation.getLocalMethodId());
+        long jvmId = context.getJvmId(invocation.getLocalJvmId());
+
+        Timestamp invokedAt = invocation.getInvokedAtMillis() == null ? null : new Timestamp(invocation.getInvokedAtMillis());
+
+        Timestamp oldInvokedAt =
+                queryForTimestamp("SELECT invokedAt FROM invocations WHERE applicationId = ? AND methodId = ? AND jvmId = ? ",
+                                  applicationId, methodId, jvmId);
+
+        if (oldInvokedAt == null) {
+            jdbcTemplate.update("INSERT INTO invocations(applicationId, methodId, jvmId, invokedAt, invocationCount, " +
+                                        "confidence) " +
+                                        "VALUES(?, ?, ?, ?, ?, ?) ",
+                                applicationId, methodId, jvmId, invokedAt,
+                                invocation.getInvocationCount(), invocation.getConfidence());
+            log.trace("Inserted invocation {}:{}:{} {}", applicationId, methodId, jvmId, invokedAt);
+        } else if (invokedAt != null && invokedAt.after(oldInvokedAt)) {
+            jdbcTemplate
+                    .update("UPDATE invocations SET invokedAt = ?, invocationCount = invocationCount + ?, confidence = ? " +
+                                    "WHERE applicationId = ? AND methodId = ? AND jvmId = ? ",
+                            invokedAt, invocation.getInvocationCount(), invocation.getConfidence(), applicationId, methodId, jvmId);
+            log.trace("Updated invocation {}:{}:{} {}", applicationId, methodId, jvmId, invokedAt);
+        } else if (oldInvokedAt.equals(invokedAt)) {
+            log.trace("Ignoring invocation, same row exists in database");
+        } else {
+            log.trace("Ignoring invocation, a newer row exists in database");
+        }
+
     }
 
     private long getCentralApplicationId(Application app) {
@@ -167,6 +196,11 @@ public class ImportServiceImpl implements ImportService {
 
     private Long queryForLong(String sql, Object... args) {
         List<Long> list = jdbcTemplate.queryForList(sql, Long.class, args);
+        return list.isEmpty() ? null : list.get(0);
+    }
+
+    private Timestamp queryForTimestamp(String sql, Object... args) {
+        List<Timestamp> list = jdbcTemplate.queryForList(sql, Timestamp.class, args);
         return list.isEmpty() ? null : list.get(0);
     }
 }

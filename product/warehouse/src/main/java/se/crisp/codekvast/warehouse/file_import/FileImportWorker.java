@@ -10,13 +10,14 @@ import se.crisp.codekvast.agent.lib.model.ExportFileMetaInfo;
 import se.crisp.codekvast.agent.lib.model.v1.ExportFileEntry;
 import se.crisp.codekvast.agent.lib.model.v1.ExportFileFormat;
 import se.crisp.codekvast.warehouse.config.CodekvastSettings;
-import se.crisp.codekvast.warehouse.file_import.impl.ImportContext;
 
 import javax.inject.Inject;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import static se.crisp.codekvast.warehouse.file_import.ImportService.*;
 
 /**
  * Scans a certain directory for files produced by the Codekvast daemon, and attempts to import them to the database.
@@ -118,9 +119,7 @@ public class FileImportWorker {
                 importService.recordFileAsImported(metaInfo.withFileLengthBytes(file.length())
                                                            .withFileName(file.getPath()));
             }
-        } catch (IllegalArgumentException e) {
-            log.error("Cannot import " + file, e);
-        } catch (IOException e) {
+        } catch (IllegalArgumentException | IOException e) {
             log.error("Cannot import " + file, e);
         }
     }
@@ -178,9 +177,30 @@ public class FileImportWorker {
 
     private void readInvocationsCsv(InputStreamReader reader, ImportContext context) {
         CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
-        for (String[] strings : csvReader) {
-            int i = 17;
+        for (String[] columns : csvReader) {
+            int col = 0;
+            Invocation invocation = Invocation.builder()
+                                              .localApplicationId(Long.valueOf(columns[col++]))
+                                              .localMethodId(Long.valueOf(columns[col++]))
+                                              .localJvmId(Long.valueOf(columns[col++]))
+                                              .invokedAtMillis(getInvokedAtMillis(columns[col++]))
+                                              .invocationCount(getInvocationCount(columns[col++]))
+                                              .confidence(getConfidence(columns[col++]))
+                                              .build();
+            importService.saveInvocation(invocation, context);
         }
+    }
+
+    private Long getInvocationCount(String value) {
+        return value == null || value.isEmpty() || value.equals("0") ? null : Long.valueOf(value);
+    }
+
+    private Long getInvokedAtMillis(String value) {
+        return value == null || value.isEmpty() || value.equals("-1") ? null : Long.valueOf(value);
+    }
+
+    private Byte getConfidence(String value) {
+        return value == null || value.isEmpty() ? null : Byte.valueOf(value);
     }
 
 }

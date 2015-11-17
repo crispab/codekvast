@@ -72,6 +72,7 @@ run {
     args = [
             "--codekvast.dataProcessingIntervalSeconds=5",
             "--codekvast.databasePath=tcp://localhost/$buildDir/database",
+            "--codekvast.exportFile=/tmp/.codekvast/export/codekvast-export-#timestamp.zip",
             "--h2database.options=TRACE_LEVEL_FILE=4;AUTO_SERVER=FALSE;DB_CLOSE_ON_EXIT=FALSE"
     ]
 }
