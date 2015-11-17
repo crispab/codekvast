@@ -12,6 +12,15 @@
             </array>
           </option>
         </State>
+        <State>
+          <option name="id" value="5b4b19b3-178c-49b0-aa2e-44cc3589ceae" />
+          <option name="name" value="V2_0__CentralWarehouseSchema" />
+          <option name="urls">
+            <array>
+              <option value="file://$PROJECT_DIR$/product/warehouse/src/main/resources/database/migration/V2_0__CentralWarehouseSchema.sql" />
+            </array>
+          </option>
+        </State>
       </list>
     </option>
   </component>

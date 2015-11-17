@@ -9,10 +9,9 @@ import se.crisp.codekvast.agent.lib.model.v1.ExportFileFormat;
 import se.crisp.codekvast.warehouse.config.CodekvastSettings;
 
 import javax.inject.Inject;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
+import java.util.IllegalFormatException;
+import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -23,22 +22,22 @@ import java.util.zip.ZipInputStream;
  */
 @Service
 @Slf4j
-public class FileImporter {
+public class FileImporterImpl {
 
     private final CodekvastSettings codekvastSettings;
-    private final JdbcTemplate jdbcTemplate;
+    private final ImportService importService;
 
     @Inject
-    public FileImporter(CodekvastSettings codekvastSettings, JdbcTemplate jdbcTemplate) {
+    public FileImporterImpl(CodekvastSettings codekvastSettings, ImportService importService) {
         this.codekvastSettings = codekvastSettings;
-        this.jdbcTemplate = jdbcTemplate;
+        this.importService = importService;
         log.info("Created");
     }
 
     @Scheduled(fixedDelayString = "${codekvast.importPollIntervalSeconds}000")
     public void importDaemonFiles() {
         String oldThreadName = Thread.currentThread().getName();
-        Thread.currentThread().setName(FileImporter.class.getSimpleName());
+        Thread.currentThread().setName("FileImport");
         try {
             log.debug("Looking for import files in {}", codekvastSettings.getImportPath());
             walkDirectory(codekvastSettings.getImportPath());
@@ -69,14 +68,51 @@ public class FileImporter {
             return;
         }
 
+        Properties daemonProperties = null;
+        String uuid;
+
         try (ZipInputStream zin = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)))) {
             ZipEntry zipEntry;
             while ((zipEntry = zin.getNextEntry()) != null) {
                 ExportFileEntry exportFileEntry = ExportFileEntry.fromString(zipEntry.getName());
-                log.debug("Parsing {}...", exportFileEntry);
+                log.debug("Reading {}...", exportFileEntry);
+
+                switch (exportFileEntry) {
+                case DAEMON_CONFIG:
+                    daemonProperties = loadDaemonProperties(zin);
+                    uuid = daemonProperties.getProperty("exportUuid");
+                    if (importService.isFileImported(uuid)) {
+                        log.debug("{} with uuid {} has already been imported", file, uuid);
+                        return;
+                    }
+                    break;
+                case APPLICATIONS:
+                    assertDaemonConfigEntry(file, daemonProperties);
+                    break;
+                case METHODS:
+                    break;
+                case JVMS:
+                    break;
+                case INVOCATIONS:
+                    break;
+                }
             }
+        } catch (IllegalArgumentException e) {
+            log.error("Cannot import " + file, e);
         } catch (IOException e) {
             log.error("Cannot import " + file, e);
         }
+    }
+
+    private void assertDaemonConfigEntry(File file, Properties daemonProperties) {
+        if (daemonProperties == null) {
+            throw new IllegalArgumentException(String.format("Missing %s in %s", ExportFileEntry.DAEMON_CONFIG.getEntryName(), file));
+        }
+    }
+
+    private Properties loadDaemonProperties(InputStream inputStream) throws IOException {
+        Properties props = new Properties();
+        props.load(inputStream);
+        return props;
     }
 }
