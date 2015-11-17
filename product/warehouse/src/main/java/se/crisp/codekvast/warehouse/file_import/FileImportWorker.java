@@ -163,8 +163,16 @@ public class FileImportWorker {
 
     private void readJvmsCsv(InputStreamReader reader, ImportContext context) {
         CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
-        for (String[] strings : csvReader) {
-            int i = 17;
+        for (String[] columns : csvReader) {
+            int col = 0;
+            Jvm jvm = Jvm.builder()
+                         .localId(Long.valueOf(columns[col++]))
+                         .uuid(columns[col++])
+                         .startedAtMillis(Long.valueOf(columns[col++]))
+                         .dumpedAtMillis(Long.valueOf(columns[col++]))
+                         .jvmDataJson(columns[col++])
+                         .build();
+            importService.saveJvm(jvm, context);
         }
     }
 

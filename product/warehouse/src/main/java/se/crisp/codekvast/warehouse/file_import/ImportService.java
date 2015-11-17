@@ -17,4 +17,6 @@ public interface ImportService {
     void saveApplication(Application application, ImportContext context);
 
     void saveMethod(Method method, ImportContext context);
+
+    void saveJvm(Jvm jvm, ImportContext context);
 }
