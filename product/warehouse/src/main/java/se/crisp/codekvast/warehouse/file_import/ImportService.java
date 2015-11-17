@@ -1,5 +1,7 @@
 package se.crisp.codekvast.warehouse.file_import;
 
+import se.crisp.codekvast.agent.lib.model.v1.ExportFileMetaInfo;
+
 /**
  * Service for data import.
  *
@@ -7,7 +9,7 @@ package se.crisp.codekvast.warehouse.file_import;
  */
 public interface ImportService {
 
-    boolean isFileImported(String uuid);
+    boolean isFileImported(ExportFileMetaInfo metaInfo);
 
-    void recordFileAsImported(String uuid, long lengthBytes, String importedFromHostname);
+    void recordFileAsImported(ExportFileMetaInfo metaInfo);
 }

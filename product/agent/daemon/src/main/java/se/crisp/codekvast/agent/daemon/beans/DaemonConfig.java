@@ -47,9 +47,6 @@ public class DaemonConfig {
     @Wither
     private File exportFile;
 
-    @Wither
-    private String exportUuid;
-
     public String getDisplayVersion() {
         return daemonVersion + "-" + daemonVcsId;
     }

@@ -1,17 +1,19 @@
 package se.crisp.codekvast.warehouse.file_import;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.agent.lib.model.v1.ExportFileEntry;
 import se.crisp.codekvast.agent.lib.model.v1.ExportFileFormat;
+import se.crisp.codekvast.agent.lib.model.v1.ExportFileMetaInfo;
 import se.crisp.codekvast.warehouse.config.CodekvastSettings;
 
 import javax.inject.Inject;
-import java.io.*;
-import java.util.IllegalFormatException;
-import java.util.Properties;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -53,41 +55,48 @@ public class FileImporterImpl {
                 for (File file : files) {
                     if (file.isDirectory()) {
                         walkDirectory(file);
+                    } else if (!file.getName().endsWith(ExportFileFormat.ZIP.getSuffix())) {
+                        log.debug("Ignoring {}, can only handle {} files", file, ExportFileFormat.ZIP);
                     } else {
-                        tryToImport(file);
+                        tryToImportZipFile(file);
+                        deleteFile(file);
                     }
                 }
             }
         }
     }
 
-    private void tryToImport(File file) {
-        log.debug("Trying to import {}", file);
-        if (!file.getName().endsWith(ExportFileFormat.ZIP.getSuffix())) {
-            log.debug("Ignoring {}, can only handle {} files", file, ExportFileFormat.ZIP);
-            return;
+    private void deleteFile(File file) {
+        boolean deleted = file.delete();
+        if (deleted) {
+            log.info("Deleted {}", file);
+        } else {
+            log.warn("Could not delete {}", file);
         }
+    }
 
-        Properties daemonProperties = null;
-        String uuid;
+    @Transactional
+    protected void tryToImportZipFile(File file) {
+        log.debug("Trying to import {}", file);
 
-        try (ZipInputStream zin = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)))) {
+        ExportFileMetaInfo metaInfo = null;
+
+        try (ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)))) {
+
             ZipEntry zipEntry;
-            while ((zipEntry = zin.getNextEntry()) != null) {
+            while ((zipEntry = zipInputStream.getNextEntry()) != null) {
                 ExportFileEntry exportFileEntry = ExportFileEntry.fromString(zipEntry.getName());
                 log.debug("Reading {}...", exportFileEntry);
 
                 switch (exportFileEntry) {
-                case DAEMON_CONFIG:
-                    daemonProperties = loadDaemonProperties(zin);
-                    uuid = daemonProperties.getProperty("exportUuid");
-                    if (importService.isFileImported(uuid)) {
-                        log.debug("{} with uuid {} has already been imported", file, uuid);
+                case META_INFO:
+                    metaInfo = ExportFileMetaInfo.fromInputStream(zipInputStream);
+                    if (importService.isFileImported(metaInfo)) {
+                        log.debug("{} with uuid {} has already been imported", file, metaInfo.getUuid());
                         return;
                     }
                     break;
                 case APPLICATIONS:
-                    assertDaemonConfigEntry(file, daemonProperties);
                     break;
                 case METHODS:
                     break;
@@ -97,6 +106,11 @@ public class FileImporterImpl {
                     break;
                 }
             }
+            if (metaInfo != null) {
+                importService.recordFileAsImported(metaInfo
+                                                           .withFileLengthBytes(file.length())
+                                                           .withFileName(file.getPath()));
+            }
         } catch (IllegalArgumentException e) {
             log.error("Cannot import " + file, e);
         } catch (IOException e) {
@@ -104,15 +118,4 @@ public class FileImporterImpl {
         }
     }
 
-    private void assertDaemonConfigEntry(File file, Properties daemonProperties) {
-        if (daemonProperties == null) {
-            throw new IllegalArgumentException(String.format("Missing %s in %s", ExportFileEntry.DAEMON_CONFIG.getEntryName(), file));
-        }
-    }
-
-    private Properties loadDaemonProperties(InputStream inputStream) throws IOException {
-        Properties props = new Properties();
-        props.load(inputStream);
-        return props;
-    }
 }

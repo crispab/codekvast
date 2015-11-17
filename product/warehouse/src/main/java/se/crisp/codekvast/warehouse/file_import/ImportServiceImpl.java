@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import se.crisp.codekvast.agent.lib.model.v1.ExportFileMetaInfo;
 
 import javax.inject.Inject;
 
@@ -23,15 +24,15 @@ public class ImportServiceImpl implements ImportService {
 
     @Override
     @Transactional
-    public boolean isFileImported(String uuid) {
-        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM file_imports WHERE uuid = ? ", Integer.class, uuid) > 0;
+    public boolean isFileImported(ExportFileMetaInfo metaInfo) {
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM file_meta_info WHERE uuid = ? ", Integer.class, metaInfo.getUuid()) > 0;
     }
 
     @Override
     @Transactional
-    public void recordFileAsImported(String uuid, long lengthBytes, String importedFromHostname) {
-        jdbcTemplate.update("INSERT INTO file_imports(uuid, lengthBytes, importedFromDaemonHostname) VALUES (?, ?, ?)",
-                            uuid, lengthBytes, importedFromHostname);
-        log.info("File with uuid {} from {} imported", uuid, importedFromHostname);
+    public void recordFileAsImported(ExportFileMetaInfo metaInfo) {
+        jdbcTemplate.update("INSERT INTO file_meta_info(uuid, fileName, fileLengthBytes, importedFromDaemonHostname) VALUES (?, ?, ?, ?)",
+                            metaInfo.getUuid(), metaInfo.getFileName(), metaInfo.getFileLengthBytes(), metaInfo.getDaemonHostname());
+        log.info("Imported {}", metaInfo);
     }
 }

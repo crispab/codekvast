@@ -11,10 +11,13 @@ import se.crisp.codekvast.agent.daemon.worker.DataExportException;
 import se.crisp.codekvast.agent.daemon.worker.DataExporter;
 import se.crisp.codekvast.agent.lib.model.v1.ExportFileEntry;
 import se.crisp.codekvast.agent.lib.model.v1.ExportFileFormat;
+import se.crisp.codekvast.agent.lib.model.v1.ExportFileMetaInfo;
 import se.crisp.codekvast.agent.lib.util.FileUtils;
 
 import javax.inject.Inject;
 import java.io.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.time.Instant;
@@ -23,6 +26,7 @@ import java.util.TreeSet;
 import java.util.UUID;
 import java.util.zip.ZipOutputStream;
 
+import static java.lang.String.format;
 import static java.time.Instant.now;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
@@ -80,6 +84,7 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
                           .replace("#timestamp", timestamp)
                           .replace("#{datetime}", timestamp)
                           .replace("#datetime", timestamp);
+
         return new File(file.getParentFile(), name);
     }
 
@@ -89,7 +94,7 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
         }
         int exponent = (int) (Math.log(bytes) / Math.log(1000));
         String unit = " kMGTPE".charAt(exponent) + "B";
-        return String.format("%.1f %s", bytes / Math.pow(1000, exponent), unit);
+        return format("%.1f %s", bytes / Math.pow(1000, exponent), unit);
     }
 
     private void doExportDataTo(File exportFile) throws DataExportException {
@@ -98,13 +103,15 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
         File tmpFile = createTempFile(exportFile);
 
         try (ZipOutputStream zip = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(tmpFile)))) {
-            String exportUuid = UUID.randomUUID().toString();
-
-            zip.setComment(
-                    "Export of Codekvast local warehouse for " + config.getEnvironment() + " at " + Instant.now() + ", uuid=" + exportUuid);
+            String uuid = UUID.randomUUID().toString();
+            zip.setComment(format("Export of Codekvast local warehouse for %s at %s, uuid=%s", config.getEnvironment(), Instant.now(),
+                                  uuid));
 
             Charset charset = Charset.forName("UTF-8");
-            doExportDaemonConfig(zip, charset, config.withExportUuid(exportUuid));
+            doExportMetaInfo(zip, charset, ExportFileMetaInfo.builder()
+                                                             .uuid(uuid)
+                                                             .daemonHostname(getHostname())
+                                                             .build());
 
             CSVWriter csvWriter = new CSVWriter(new OutputStreamWriter(zip, charset));
             doExportDatabaseTable(zip, csvWriter, "applications", "id", "name", "version", "createdAtMillis");
@@ -121,16 +128,24 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
 
         if (!tmpFile.renameTo(exportFile)) {
             tmpFile.delete();
-            throw new DataExportException(String.format("Cannot rename %s to %s", tmpFile, exportFile));
+            throw new DataExportException(format("Cannot rename %s to %s", tmpFile, exportFile));
         }
     }
 
-    private void doExportDaemonConfig(ZipOutputStream zip, Charset charset, DaemonConfig config)
+    private String getHostname() {
+        try {
+            return InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            return "-unknown-";
+        }
+    }
+
+    private void doExportMetaInfo(ZipOutputStream zip, Charset charset, ExportFileMetaInfo metaInfo)
             throws IOException, IllegalAccessException {
-        zip.putNextEntry(ExportFileEntry.DAEMON_CONFIG.toZipEntry());
+        zip.putNextEntry(ExportFileEntry.META_INFO.toZipEntry());
 
         Set<String> lines = new TreeSet<>();
-        FileUtils.extractFieldValuesFrom(config, lines);
+        FileUtils.extractFieldValuesFrom(metaInfo, lines);
         for (String line : lines) {
             zip.write(line.getBytes(charset));
             zip.write('\n');
