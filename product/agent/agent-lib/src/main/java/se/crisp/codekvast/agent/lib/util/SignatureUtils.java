@@ -95,16 +95,28 @@ public class SignatureUtils {
     public static MethodSignature makeMethodSignature(MethodFilter methodFilter, Class<?> clazz, Method method) {
         org.aspectj.lang.reflect.MethodSignature aspectjSignature =
                 (org.aspectj.lang.reflect.MethodSignature) makeSignature(methodFilter, clazz, method);
-        return aspectjSignature == null ? null : MethodSignature.builder()
-                                                                .aspectjString(signatureToString(aspectjSignature, true))
-                                                                .declaringType(aspectjSignature.getDeclaringTypeName())
-                                                                .exceptionTypes(classArrayToString(aspectjSignature.getExceptionTypes()))
-                                                                .methodName(aspectjSignature.getName())
-                                                                .modifiers(Modifier.toString(aspectjSignature.getModifiers()))
-                                                                .packageName(aspectjSignature.getDeclaringType().getPackage().getName())
-                                                                .parameterTypes(classArrayToString(aspectjSignature.getParameterTypes()))
-                                                                .returnType(aspectjSignature.getReturnType().getName())
-                                                                .build();
+
+        if (aspectjSignature == null) {
+            return null;
+        }
+
+        MethodSignature methodSignature = MethodSignature.builder()
+                                                         .aspectjString(signatureToString(aspectjSignature, true))
+                                                         .declaringType(aspectjSignature.getDeclaringTypeName())
+                                                         .exceptionTypes(classArrayToString(aspectjSignature.getExceptionTypes()))
+                                                         .methodName(aspectjSignature.getName())
+                                                         .modifiers(Modifier.toString(aspectjSignature.getModifiers()))
+                                                         .packageName(aspectjSignature.getDeclaringType().getPackage().getName())
+                                                         .parameterTypes(classArrayToString(aspectjSignature.getParameterTypes()))
+                                                         .returnType(aspectjSignature.getReturnType().getName())
+                                                         .build();
+
+        // DEBUG
+        if (methodSignature.getPackageName().isEmpty()) {
+            int i = 17;
+        }
+
+        return methodSignature;
 
     }
 

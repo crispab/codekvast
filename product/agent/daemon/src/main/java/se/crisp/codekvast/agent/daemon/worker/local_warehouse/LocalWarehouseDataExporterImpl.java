@@ -157,7 +157,8 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
         csvWriter.writeNext(columns, false);
 
         String[] line = new String[columns.length];
-        jdbcTemplate.query("SELECT " + asList(columns).stream().collect(joining(", ")) + " FROM " + table, rs -> {
+        String sql = asList(columns).stream().collect(joining(", ", "SELECT ", " FROM " + table));
+        jdbcTemplate.query(sql, rs -> {
             for (int i = 0; i < columns.length; i++) {
                 line[i] = rs.getString(i + 1);
             }
