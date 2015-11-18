@@ -3,6 +3,7 @@ package se.crisp.codekvast.server.codekvast_server.service.impl;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
+import se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureEntry;
 import se.crisp.codekvast.server.codekvast_server.dao.DaemonDAO;
@@ -47,10 +48,10 @@ public class ReportDAOIntegTest extends AbstractServiceIntegTest {
     private final long t3 = now - 7 * hour;
 
     private final List<SignatureEntry> deadSignatures = asList(
-            new SignatureEntry("dead1", 0L, 0L, null),
-            new SignatureEntry("dead2", 0L, 0L, null),
-            new SignatureEntry("dead3", 0L, 0L, null),
-            new SignatureEntry("dead4", 0L, 0L, null));
+            new SignatureEntry("dead1", 0L, 0L, SignatureConfidence.NOT_INVOKED),
+            new SignatureEntry("dead2", 0L, 0L, SignatureConfidence.NOT_INVOKED),
+            new SignatureEntry("dead3", 0L, 0L, SignatureConfidence.NOT_INVOKED),
+            new SignatureEntry("dead4", 0L, 0L, SignatureConfidence.NOT_INVOKED));
 
     @Before
     public void beforeTest() throws CodekvastException {
@@ -135,10 +136,10 @@ public class ReportDAOIntegTest extends AbstractServiceIntegTest {
     public void testGet_PossiblyDead_Bootstrap_Live_Methods_app1_v1_1() throws CodekvastException {
 
         List<SignatureEntry> signatures = asList(
-                new SignatureEntry("possiblyDead1", t3 - usageCycleMillis - 2, bootstrapMillis + 1, null),
-                new SignatureEntry("possiblyDead2", t3 - usageCycleMillis - 1, bootstrapMillis + 1, null),
-                new SignatureEntry("live1", t3 - usageCycleMillis + 0, bootstrapMillis + 1, null),
-                new SignatureEntry("live2", t3 - usageCycleMillis + 1, bootstrapMillis + 1, null));
+                new SignatureEntry("possiblyDead1", t3 - usageCycleMillis - 2, bootstrapMillis + 1, SignatureConfidence.NOT_INVOKED),
+                new SignatureEntry("possiblyDead2", t3 - usageCycleMillis - 1, bootstrapMillis + 1, SignatureConfidence.NOT_INVOKED),
+                new SignatureEntry("live1", t3 - usageCycleMillis + 0, bootstrapMillis + 1, SignatureConfidence.NOT_INVOKED),
+                new SignatureEntry("live2", t3 - usageCycleMillis + 1, bootstrapMillis + 1, SignatureConfidence.NOT_INVOKED));
 
         daemonService.storeSignatureData(SignatureData.builder().jvmUuid("jvm2").signatures(signatures).build());
 

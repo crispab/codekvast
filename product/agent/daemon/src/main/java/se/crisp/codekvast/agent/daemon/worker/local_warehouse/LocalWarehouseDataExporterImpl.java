@@ -112,7 +112,7 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
                                   "exceptionTypes", "methodName", "modifiers", "packageName", "parameterTypes", "returnType");
             doExportDatabaseTable(zip, csvWriter, "jvms", "id", "uuid", "startedAtMillis", "dumpedAtMillis", "jvmDataJson");
             doExportDatabaseTable(zip, csvWriter, "invocations", "applicationId", "methodId", "jvmId", "invokedAtMillis", "invocationCount",
-                                  "confidence", "exportedAtMillis");
+                                  "confidence");
 
             zip.finish();
         } catch (Exception e) {

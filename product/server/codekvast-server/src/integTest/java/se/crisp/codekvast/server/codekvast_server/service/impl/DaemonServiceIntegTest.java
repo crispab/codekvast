@@ -157,7 +157,7 @@ public class DaemonServiceIntegTest extends AbstractServiceIntegTest {
         assertThat(events, hasSize(4));
 
         List<SignatureEntry> signatures = new ArrayList<>();
-        signatures.add(new SignatureEntry("sig1", 0L, 0L, null));
+        signatures.add(new SignatureEntry("sig1", 0L, 0L, SignatureConfidence.NOT_INVOKED));
         signatures.add(new SignatureEntry("sig2", 100L, 100L, SignatureConfidence.EXACT_MATCH));
         signatures.add(new SignatureEntry("sig1", 200L, 200L, SignatureConfidence.EXACT_MATCH));
 

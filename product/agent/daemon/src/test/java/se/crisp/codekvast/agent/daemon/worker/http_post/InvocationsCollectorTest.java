@@ -12,8 +12,10 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.UUID;
 
+import static org.hamcrest.Matchers.is;
 import static se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence.EXACT_MATCH;
 import static se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence.FOUND_IN_PARENT_CLASS;
+import static se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence.NOT_INVOKED;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @HttpPostIntegrationTest
@@ -61,7 +63,7 @@ public class InvocationsCollectorTest {
         invocationsCollector.put(jvmUuid1, now - 100L, "sig", now - 2, EXACT_MATCH);
         List<SignatureEntry> signatures = invocationsCollector.getNotUploadedInvocations(jvmUuid1);
         Assert.assertThat(signatures, Matchers.hasSize(1));
-        Assert.assertThat(signatures.get(0).getInvokedAtMillis(), Matchers.is(now));
+        Assert.assertThat(signatures.get(0).getInvokedAtMillis(), is(now));
     }
 
     @Test
@@ -70,7 +72,7 @@ public class InvocationsCollectorTest {
         invocationsCollector.put(jvmUuid1, now - 100L, "sig", now, FOUND_IN_PARENT_CLASS);
         List<SignatureEntry> signatures = invocationsCollector.getNotUploadedInvocations(jvmUuid1);
         Assert.assertThat(signatures, Matchers.hasSize(1));
-        Assert.assertThat(signatures.get(0).getConfidence(), Matchers.is(SignatureConfidence.FOUND_IN_PARENT_CLASS));
+        Assert.assertThat(signatures.get(0).getConfidence(), is(SignatureConfidence.FOUND_IN_PARENT_CLASS));
     }
 
     @Test
@@ -88,24 +90,29 @@ public class InvocationsCollectorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testPutNullSignature() throws Exception {
-        invocationsCollector.put(jvmUuid1, now - 100L, null, 0, null);
+        invocationsCollector.put(jvmUuid1, now - 100L, null, 0, NOT_INVOKED);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testPutNegativeSignature() throws Exception {
-        invocationsCollector.put(jvmUuid1, now, "sig", -1L, null);
+    public void testPutNegativeInvokedAtMillis() throws Exception {
+        invocationsCollector.put(jvmUuid1, now, "sig", -1L, NOT_INVOKED);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testPutNullConfidence() throws Exception {
+        invocationsCollector.put(jvmUuid1, now, "sig", 0L, null);
     }
 
     @Test
     public void testPutBeforeJvmStarted() throws Exception {
-        invocationsCollector.put(jvmUuid1, now, "sig", now - 1L, null);
+        invocationsCollector.put(jvmUuid1, now, "sig", now - 1L, NOT_INVOKED);
     }
 
     @Test
     public void testPutZeroSignature() throws Exception {
-        invocationsCollector.put(jvmUuid1, now, "sig", 0L, null);
+        invocationsCollector.put(jvmUuid1, now, "sig", 0L, NOT_INVOKED);
         List<SignatureEntry> notUploadedInvocations = invocationsCollector.getNotUploadedInvocations(jvmUuid1);
         Assert.assertThat(notUploadedInvocations, Matchers.hasSize(1));
-        Assert.assertThat(notUploadedInvocations.get(0).getConfidence(), Matchers.is(Matchers.nullValue()));
+        Assert.assertThat(notUploadedInvocations.get(0).getConfidence(), is(se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence.NOT_INVOKED));
     }
 }

@@ -137,7 +137,7 @@ public class DaemonDAOImpl extends AbstractDAOImpl implements DaemonDAO {
                     entry.getSignature(),
                     compensateForClockSkew(entry.getInvokedAtMillis(), daemonClockSkewMillis),
                     entry.getMillisSinceJvmStart(),
-                    entry.getConfidence() == null ? null : entry.getConfidence().ordinal()
+                    entry.getConfidence().ordinal()
             });
         }
 

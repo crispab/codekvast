@@ -167,7 +167,7 @@ public class LocalWarehouseTest {
                                                Integer.class, "jvm1", T1, T2), is(1));
 
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM invocations WHERE invokedAtMillis = ? AND invocationCount = ? ",
-                                               Integer.class, -1L, 0L), is(1));
+                                               Integer.class, 0L, 0L), is(1));
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM invocations WHERE invokedAtMillis = ? AND invocationCount = ? ",
                                                Integer.class, T2, 1L),
                    is(1));
@@ -185,7 +185,7 @@ public class LocalWarehouseTest {
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM jvms WHERE uuid = ? AND startedAtMillis = ? AND dumpedAtMillis = ?",
                                                Integer.class, "jvm1", T1, T3), is(1));
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM invocations WHERE invokedAtMillis = ? AND invocationCount = ? ",
-                                               Integer.class, -1L, 0L), is(1));
+                                               Integer.class, 0L, 0L), is(1));
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM invocations WHERE invokedAtMillis = ? AND invocationCount = ?  ",
                                                Integer.class, T3, 2), is(1));
 

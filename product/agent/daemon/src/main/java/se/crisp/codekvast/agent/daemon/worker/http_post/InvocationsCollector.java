@@ -25,8 +25,7 @@ class InvocationsCollector {
     }
 
     @Transactional
-    public void put(String jvmUuid, long jvmStartedAtMillis, String signature, long invokedAtMillis,
-                    SignatureConfidence confidence) {
+    public void put(String jvmUuid, long jvmStartedAtMillis, String signature, long invokedAtMillis, SignatureConfidence confidence) {
         if (jvmUuid == null) {
             throw new IllegalArgumentException("jvmUuid is null");
         }
@@ -43,6 +42,10 @@ class InvocationsCollector {
             throw new IllegalArgumentException("invokedAtMillis cannot be negative");
         }
 
+        if (confidence == null) {
+            throw new IllegalArgumentException("confidence is null");
+        }
+
         if (invokedAtMillis > 0 && invokedAtMillis < jvmStartedAtMillis) {
             log.debug("Ignoring invocation with invokedAtMillis {} before jvmStartedAtMillis {}", invokedAtMillis, jvmStartedAtMillis);
             return;
@@ -55,22 +58,19 @@ class InvocationsCollector {
             long millisSinceJvmStart = invokedAtMillis == 0L ? 0L : invokedAtMillis - jvmStartedAtMillis;
             jdbcTemplate.update("MERGE INTO signatures (jvm_uuid, signature, invoked_at_millis, millis_since_jvm_start, confidence) " +
                                         "VALUES(?, ?, ?, ?, ?)",
-                                jvmUuid, signature, invokedAtMillis, millisSinceJvmStart, confidence == null ? -1 : confidence.ordinal());
+                                jvmUuid, signature, invokedAtMillis, millisSinceJvmStart, confidence.ordinal());
         }
     }
 
     public List<SignatureEntry> getNotUploadedInvocations(String jvmUuid) {
         return jdbcTemplate.query("SELECT signature, invoked_at_millis, millis_since_jvm_start, confidence " +
-                                          "FROM signatures " +
-                                          "WHERE jvm_uuid = ?",
+                                          "FROM signatures WHERE jvm_uuid = ?",
                                   (rs, rowNum) -> {
-                                      Integer confidence = rs.getInt(4);
                                       return new SignatureEntry(
                                               rs.getString(1),
                                               rs.getLong(2),
                                               rs.getLong(3),
-                                              confidence == -1 ? null : se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence
-                                                      .fromOrdinal(confidence));
+                                              se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence.fromOrdinal(rs.getInt(4)));
                                   },
                                   jvmUuid);
     }

@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ContextConfiguration;
 import se.crisp.codekvast.server.codekvast_server.service.DaemonService;
+import se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureEntry;
 import se.crisp.codekvast.server.codekvast_server.dao.DaemonDAO;
@@ -126,6 +127,7 @@ public class DaemonDAOIntegTest extends AbstractServiceIntegTest {
                                                                                .signature(s)
                                                                                .invokedAtMillis(0L)
                                                                                .millisSinceJvmStart(0L)
+                                                                               .confidence(SignatureConfidence.NOT_INVOKED)
                                                                                .build())
                                               .collect(toList())).build();
     }

@@ -27,6 +27,11 @@ package se.crisp.codekvast.agent.lib.model.v1;
  */
 public enum SignatureConfidence {
     /**
+     * The signature has been detected in the codebase, but it has never been invoked.
+     */
+    NOT_INVOKED,
+
+    /**
      * The used signature was found as-is in the scanned code base.
      */
     EXACT_MATCH,

@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/product/agent/agent.iml" filepath="$PROJECT_DIR$/product/agent/agent.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/agent/agent-lib/agent-lib.iml" filepath="$PROJECT_DIR$/product/agent/agent-lib/agent-lib.iml" />
-      <module fileurl="file://$PROJECT_DIR$/product/agent/agent-lib/agent-lib.iml" filepath="$PROJECT_DIR$/product/agent/agent-lib/agent-lib.iml" />
       <module fileurl="file://$PROJECT_DIR$/codekvast.iml" filepath="$PROJECT_DIR$/codekvast.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/server/codekvast-server/codekvast-server.iml" filepath="$PROJECT_DIR$/product/server/codekvast-server/codekvast-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/agent/collector/collector.iml" filepath="$PROJECT_DIR$/product/agent/collector/collector.iml" />
@@ -24,7 +23,6 @@
       <module fileurl="file://$PROJECT_DIR$/product/support/support.iml" filepath="$PROJECT_DIR$/product/support/support.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/swing-app/swing-app.iml" filepath="$PROJECT_DIR$/sample/swing-app/swing-app.iml" />
       <module fileurl="file://$PROJECT_DIR$/tools/tools.iml" filepath="$PROJECT_DIR$/tools/tools.iml" />
-      <module fileurl="file://$PROJECT_DIR$/product/warehouse/warehouse.iml" filepath="$PROJECT_DIR$/product/warehouse/warehouse.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/warehouse/warehouse.iml" filepath="$PROJECT_DIR$/product/warehouse/warehouse.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/web/web.iml" filepath="$PROJECT_DIR$/product/web/web.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/webstart-swing-app/webstart-swing-app.iml" filepath="$PROJECT_DIR$/sample/webstart-swing-app/webstart-swing-app.iml" />

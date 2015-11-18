@@ -21,6 +21,7 @@ import se.crisp.codekvast.server.daemon_api.DaemonRestEndpoints;
 import se.crisp.codekvast.server.daemon_api.model.test.Ping;
 import se.crisp.codekvast.server.daemon_api.model.test.Pong;
 import se.crisp.codekvast.server.daemon_api.model.v1.JvmData;
+import se.crisp.codekvast.server.daemon_api.model.v1.SignatureConfidence;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureEntry;
 
@@ -94,7 +95,7 @@ public class DaemonApiImpl implements DaemonApi {
 
         List<SignatureEntry> signatureEntries = new ArrayList<SignatureEntry>(signatures.size());
         for (String s : signatures) {
-            signatureEntries.add(new SignatureEntry(s, 0L, 0L, null));
+            signatureEntries.add(new SignatureEntry(s, 0L, 0L, SignatureConfidence.NOT_INVOKED));
         }
 
         uploadInvocationData(jvmData, signatureEntries);

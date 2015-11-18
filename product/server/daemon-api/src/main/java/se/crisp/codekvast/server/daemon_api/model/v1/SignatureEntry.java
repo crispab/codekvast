@@ -40,5 +40,6 @@ public class SignatureEntry {
         return ((invokedAtMillis == 0L) && (millisSinceJvmStart == 0L)) || ((invokedAtMillis > 0L) && (millisSinceJvmStart > 0L));
     }
 
+    @NonNull
     private SignatureConfidence confidence;
 }

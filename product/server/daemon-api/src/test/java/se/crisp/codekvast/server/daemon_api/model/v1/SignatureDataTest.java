@@ -19,8 +19,8 @@ public class SignatureDataTest {
         SignatureData data1 = SignatureData.builder()
                                            .jvmUuid("jvmUuid")
                                            .signatures(asList(
-                                                   new SignatureEntry("sig1", 0L, 0L, null),
-                                                   new SignatureEntry("sig2", 0L, 0L, null)))
+                                                   new SignatureEntry("sig1", 0L, 0L, SignatureConfidence.NOT_INVOKED),
+                                                   new SignatureEntry("sig2", 0L, 0L, SignatureConfidence.NOT_INVOKED)))
                                            .build();
 
         // when

@@ -69,14 +69,14 @@ public class LocalWarehouseCollectorDataProcessorImpl extends AbstractCollectorD
     @Override
     protected void doProcessCodebase(JvmState jvmState, CodeBase codeBase) {
         for (Map.Entry<String, MethodSignature> entry : codeBase.getSignatures().entrySet()) {
-            doStoreInvocation(jvmState, -1L, entry.getKey(), null, entry.getValue());
+            doStoreInvocation(jvmState, 0L, entry.getKey(), SignatureConfidence.NOT_INVOKED, entry.getValue());
         }
     }
 
     @Override
     protected void doStoreNormalizedSignature(JvmState jvmState, String normalizedSignature, long invokedAtMillis,
                                               SignatureConfidence confidence) {
-        doStoreInvocation(jvmState, invokedAtMillis, normalizedSignature, confidence.ordinal(), null);
+        doStoreInvocation(jvmState, invokedAtMillis, normalizedSignature, confidence, null);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class LocalWarehouseCollectorDataProcessorImpl extends AbstractCollectorD
         // Nothing to do here
     }
 
-    private void doStoreInvocation(JvmState jvmState, long invokedAtMillis, String normalizedSignature, Integer confidence,
+    private void doStoreInvocation(JvmState jvmState, long invokedAtMillis, String normalizedSignature, SignatureConfidence confidence,
                                    MethodSignature methodSignature) {
         long applicationId = jvmState.getDatabaseAppId();
         long methodId = getMethodId(normalizedSignature, methodSignature);
@@ -98,16 +98,15 @@ public class LocalWarehouseCollectorDataProcessorImpl extends AbstractCollectorD
 
         if (oldInvokedAtMillis == null) {
             jdbcTemplate.update("INSERT INTO invocations(applicationId, methodId, jvmId, invokedAtMillis, invocationCount, " +
-                                        "confidence, exportedAtMillis) " +
-                                        "VALUES(?, ?, ?, ?, ?, ?, ?) ",
-                                applicationId, methodId, jvmId, invokedAtMillis, initialInvocationCount, confidence, -1L);
+                                        "confidence) " +
+                                        "VALUES(?, ?, ?, ?, ?, ?) ",
+                                applicationId, methodId, jvmId, invokedAtMillis, initialInvocationCount, confidence.ordinal());
             log.trace("Stored {} {}:{}:{} {}", what, applicationId, methodId, jvmId, invokedAtMillis);
         } else if (invokedAtMillis > oldInvokedAtMillis) {
             jdbcTemplate
-                    .update("UPDATE invocations SET invokedAtMillis = ?, invocationCount = invocationCount + 1, confidence = ?, " +
-                                    "exportedAtMillis = ? " +
+                    .update("UPDATE invocations SET invokedAtMillis = ?, invocationCount = invocationCount + 1, confidence = ? " +
                                     "WHERE applicationId = ? AND methodId = ? AND jvmId = ? ",
-                            invokedAtMillis, confidence, -1L, applicationId, methodId, jvmId);
+                            invokedAtMillis, confidence.ordinal(), applicationId, methodId, jvmId);
             log.trace("Updated {} {}:{}:{} {}", what, applicationId, methodId, jvmId, invokedAtMillis);
         } else if (invokedAtMillis == oldInvokedAtMillis) {
             log.trace("Ignoring invocation of {}, same row exists in database", normalizedSignature);

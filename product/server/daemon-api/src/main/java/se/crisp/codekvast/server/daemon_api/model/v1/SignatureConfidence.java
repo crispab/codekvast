@@ -4,6 +4,12 @@ package se.crisp.codekvast.server.daemon_api.model.v1;
  * @author olle.hallin@crisp.se
  */
 public enum SignatureConfidence {
+
+    /**
+     * The signature has never been invoked.
+     */
+    NOT_INVOKED,
+
     /**
      * The used signature was found as-is in the scanned code base.
      */

@@ -39,8 +39,7 @@ CREATE TABLE invocations (
   jvmId            BIGINT  NOT NULL,
   invokedAtMillis  BIGINT  NOT NULL,
   invocationCount  BIGINT  NOT NULL,
-  confidence       TINYINT NULL,
-  exportedAtMillis BIGINT  NULL,
+  confidence       TINYINT NOT NULL,
 
   FOREIGN KEY (applicationId) REFERENCES applications (id),
   FOREIGN KEY (methodId) REFERENCES methods (id),
