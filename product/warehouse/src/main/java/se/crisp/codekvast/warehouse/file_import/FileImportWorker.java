@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.agent.lib.model.ExportFileMetaInfo;
 import se.crisp.codekvast.agent.lib.model.v1.ExportFileEntry;
 import se.crisp.codekvast.agent.lib.model.v1.ExportFileFormat;
+import se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence;
 import se.crisp.codekvast.warehouse.config.CodekvastSettings;
 
 import javax.inject.Inject;
@@ -44,7 +45,7 @@ public class FileImportWorker {
         String oldThreadName = Thread.currentThread().getName();
         Thread.currentThread().setName("FileImport");
         try {
-            log.debug("Looking for import files in {}", codekvastSettings.getImportPath());
+            log.trace("Looking for import files in {}", codekvastSettings.getImportPath());
             walkDirectory(codekvastSettings.getImportPath());
         } finally {
             Thread.currentThread().setName(oldThreadName);
@@ -178,14 +179,13 @@ public class FileImportWorker {
     private void readInvocationsCsv(InputStreamReader reader, ImportContext context) {
         CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
         for (String[] columns : csvReader) {
-            int col = 0;
             Invocation invocation = Invocation.builder()
-                                              .localApplicationId(Long.valueOf(columns[col++]))
-                                              .localMethodId(Long.valueOf(columns[col++]))
-                                              .localJvmId(Long.valueOf(columns[col++]))
-                                              .invokedAtMillis(Long.valueOf(columns[col++]))
-                                              .invocationCount(Long.valueOf(columns[col++]))
-                                              .confidence(Byte.valueOf(columns[col++]))
+                                              .localApplicationId(Long.valueOf(columns[0]))
+                                              .localMethodId(Long.valueOf(columns[1]))
+                                              .localJvmId(Long.valueOf(columns[2]))
+                                              .invokedAtMillis(Long.valueOf(columns[3]))
+                                              .invocationCount(Long.valueOf(columns[4]))
+                                              .confidence(SignatureConfidence.fromOrdinal(Integer.valueOf(columns[5])))
                                               .build();
             importService.saveInvocation(invocation, context);
         }

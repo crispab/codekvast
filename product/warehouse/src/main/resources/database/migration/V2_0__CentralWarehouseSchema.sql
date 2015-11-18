@@ -56,12 +56,16 @@ CREATE TABLE jvms (
 
 --- invocations --------------------------------
 CREATE TABLE invocations (
-  applicationId   BIGINT    NOT NULL,
-  methodId        BIGINT    NOT NULL,
-  jvmId           BIGINT    NOT NULL,
-  invokedAt       TIMESTAMP NOT NULL,
-  invocationCount BIGINT    NOT NULL,
-  confidence      TINYINT   NOT NULL,
+  applicationId   BIGINT                         NOT NULL,
+  methodId        BIGINT                         NOT NULL,
+  jvmId           BIGINT                         NOT NULL,
+  invokedAtMillis BIGINT                         NOT NULL,
+  invocationCount BIGINT                         NOT NULL,
+  confidence      ENUM('NOT_INVOKED',
+                       'EXACT_MATCH',
+                       'FOUND_IN_PARENT_CLASS',
+                       'NOT_FOUND_IN_CODE_BASE') NOT NULL
+  COMMENT 'Same values as se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence',
 
   CONSTRAINT ix_invocation_applicationId FOREIGN KEY (applicationId) REFERENCES applications (id),
   CONSTRAINT ix_invocation_methodId FOREIGN KEY (methodId) REFERENCES methods (id),

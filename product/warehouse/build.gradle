@@ -6,10 +6,10 @@ apply plugin: 'application'
 apply plugin: 'spring-boot'
 apply plugin: 'jacoco'
 
-description = "The central Codekvast warehouse"
-archivesBaseName = "codekvast-warehouse"
+description = 'The central Codekvast warehouse'
+archivesBaseName = 'codekvast-warehouse'
 version = project.parent.parent.version
-mainClassName = "se.crisp.codekvast.warehouse.CodekvastWarehouseApplication"
+mainClassName = 'se.crisp.codekvast.warehouse.CodekvastWarehouseApplication'
 
 configurations {
     springLoaded
@@ -27,7 +27,7 @@ dependencies {
     compile project(':product:support:commons')
     compile project(':product:agent:agent-lib')
 
-    compile "javax.inject:javax.inject:1"
+    compile 'javax.inject:javax.inject:1'
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
     compile 'org.flywaydb:flyway-core'
     compile "com.opencsv:opencsv:$opencsvVersion"
@@ -57,30 +57,30 @@ processResources {
 }
 
 task integTest(type: Test) {
-    group = "Verification"
-    description = "Runs all integration tests"
+    group = 'Verification'
+    description = 'Runs all integration tests'
     dependsOn test
 
     testClassesDir = sourceSets.integTest.output.classesDir
     classpath = sourceSets.integTest.runtimeClasspath
 
-    reports.html.destination file("build/reports/integTest")
+    reports.html.destination file('build/reports/integTest')
 }
 
 check.dependsOn integTest
 
-applicationDistribution.from("src/main/resources") {
-    into "conf"
-    include "logback.xml", "default.properties"
+applicationDistribution.from('src/main/resources') {
+    into 'conf'
+    include 'logback.xml', 'default.properties'
     rename {
-        def name = it == "default.properties" ? "codekvast-warehouse.properties" : it
+        def name = it == 'default.properties' ? 'codekvast-warehouse.properties' : it
         "${name}.sample.${version}"
     }
 }
 
 startScripts {
     doLast {
-        logger.info "Adjusting start scripts..."
+        logger.info 'Adjusting start scripts...'
         windowsScript.text = windowsScript.text
                 .replace('CLASSPATH=%APP_HOME%\\lib', 'CLASSPATH=%APP_HOME%\\conf\\;%APP_HOME%\\lib')
         unixScript.text = unixScript.text
@@ -90,20 +90,23 @@ startScripts {
 }
 
 flyway {
-    url = "jdbc:mysql://localhost/codekvast_warehouse"
+    url = 'jdbc:mysql://localhost/codekvast_warehouse'
     user = 'codekvast'
     password = 'codekvast'
-    locations = ['classpath:/database/migration', 'classpath:/se/crisp/codekvast/warehouse/migration']
+    locations = [
+            'classpath:/database/migration',
+            'classpath:/se/crisp/codekvast/warehouse/migration',
+    ]
 }
 
 run {
     jvmArgs = [
             '-ea',
-            '-Dcodekvast.log.consoleThreshold=DEBUG'
+            '-Dcodekvast.log.consoleThreshold=DEBUG',
     ]
     args = [
-            "--codekvast.importPath=/tmp/.codekvast/export", // same as daemon export to when started from Gradle
-            "--codekvast.importPollIntervalSeconds=10"
+            '--codekvast.importPath=/tmp/codekvast/.export', // same as daemon export to when started from Gradle
+            '--codekvast.importPollIntervalSeconds=10',
     ]
 }
 
@@ -123,8 +126,8 @@ jacoco {
 }
 
 task coverageReport(type: JacocoReport) {
-    group "Documentation"
-    description "Generates a test coverage report"
+    group 'Documentation'
+    description 'Generates a test coverage report'
     sourceSets sourceSets.main
 
     // One could do
@@ -133,7 +136,7 @@ task coverageReport(type: JacocoReport) {
     // Instead, build a report on what execution data we happen to have.
 
     enabled = false
-    def jacocoDir = file("build/jacoco")
+    def jacocoDir = file('build/jacoco')
     if (jacocoDir.exists()) {
         jacocoDir.eachFileMatch(~/.*\.exec/) { executionData it; enabled = true }
     }

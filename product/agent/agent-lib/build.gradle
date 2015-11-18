@@ -1,8 +1,8 @@
 apply from: "$rootDir/gradle/java-6.gradle"
 apply from: "$rootDir/gradle/sources-javadoc.gradle"
 
-description = "Code that is collector_lib between the Codekvast daemon and collector"
-archivesBaseName = "codekvast-agent-collector_lib"
+description = "Code that is shared between the Codekvast daemon and collector"
+archivesBaseName = "codekvast-agent-lib"
 version = project.parent.parent.version
 
 dependencies {

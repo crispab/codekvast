@@ -79,15 +79,9 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
             return null;
         }
 
-        String timestamp = now().toString();
-
-        String name = file.getName()
-                          .replace("#{timestamp}", timestamp)
-                          .replace("#timestamp", timestamp)
-                          .replace("#{datetime}", timestamp)
-                          .replace("#datetime", timestamp);
-
-        return new File(file.getParentFile(), name);
+        String name = file.getName().replace("#timestamp#", now().toString());
+        File parentFile = file.getParentFile();
+        return parentFile == null ? new File(name) : new File(parentFile, name);
     }
 
     public static String humanReadableByteCount(long bytes) {

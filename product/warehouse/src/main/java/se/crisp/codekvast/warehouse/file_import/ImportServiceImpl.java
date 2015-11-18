@@ -65,27 +65,26 @@ public class ImportServiceImpl implements ImportService {
         Timestamp invokedAt = new Timestamp(invocation.getInvokedAtMillis());
 
         Timestamp oldInvokedAt =
-                queryForTimestamp("SELECT invokedAt FROM invocations WHERE applicationId = ? AND methodId = ? AND jvmId = ? ",
+                queryForTimestamp("SELECT invokedAtMillis FROM invocations WHERE applicationId = ? AND methodId = ? AND jvmId = ? ",
                                   applicationId, methodId, jvmId);
 
         if (oldInvokedAt == null) {
-            jdbcTemplate.update("INSERT INTO invocations(applicationId, methodId, jvmId, invokedAt, invocationCount, confidence) " +
+            jdbcTemplate.update("INSERT INTO invocations(applicationId, methodId, jvmId, invokedAtMillis, invocationCount, confidence) " +
                                         "VALUES(?, ?, ?, ?, ?, ?) ",
-                                applicationId, methodId, jvmId, invokedAt,
-                                invocation.getInvocationCount(), invocation.getConfidence());
+                                applicationId, methodId, jvmId, invokedAt.getTime(),
+                                invocation.getInvocationCount(), invocation.getConfidence().getDbNumber());
             log.trace("Inserted invocation {}:{}:{} {}", applicationId, methodId, jvmId, invokedAt);
         } else if (invokedAt.after(oldInvokedAt)) {
-            jdbcTemplate
-                    .update("UPDATE invocations SET invokedAt = ?, invocationCount = invocationCount + ?, confidence = ? " +
+            jdbcTemplate.update("UPDATE invocations SET invokedAtMillis = ?, invocationCount = invocationCount + ?, confidence = ? " +
                                     "WHERE applicationId = ? AND methodId = ? AND jvmId = ? ",
-                            invokedAt, invocation.getInvocationCount(), invocation.getConfidence(), applicationId, methodId, jvmId);
+                                invokedAt.getTime(), invocation.getInvocationCount(), invocation.getConfidence().getDbNumber(),
+                                applicationId, methodId, jvmId);
             log.trace("Updated invocation {}:{}:{} {}", applicationId, methodId, jvmId, invokedAt);
         } else if (oldInvokedAt.equals(invokedAt)) {
             log.trace("Ignoring invocation, same row exists in database");
         } else {
             log.trace("Ignoring invocation, a newer row exists in database");
         }
-
     }
 
     private long getCentralApplicationId(Application app) {
@@ -110,7 +109,7 @@ public class ImportServiceImpl implements ImportService {
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(new InsertMethodStatement(method), keyHolder);
             methodId = keyHolder.getKey().longValue();
-            log.debug("Stored method {}:{}", methodId, method.getSignature());
+            log.trace("Stored method {}:{}", methodId, method.getSignature());
         }
         return methodId;
     }
@@ -123,7 +122,7 @@ public class ImportServiceImpl implements ImportService {
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(new InsertJvmStatement(jvm), keyHolder);
             jvmId = keyHolder.getKey().longValue();
-            log.debug("Stored JVM {}:{}", jvmId, jvm);
+            log.trace("Stored JVM {}:{}", jvmId, jvm);
         }
         return jvmId;
     }
@@ -198,7 +197,7 @@ public class ImportServiceImpl implements ImportService {
     }
 
     private Timestamp queryForTimestamp(String sql, Object... args) {
-        List<Timestamp> list = jdbcTemplate.queryForList(sql, Timestamp.class, args);
-        return list.isEmpty() ? null : list.get(0);
+        List<Long> list = jdbcTemplate.queryForList(sql, Long.class, args);
+        return list.isEmpty() ? null : new Timestamp(list.get(0));
     }
 }

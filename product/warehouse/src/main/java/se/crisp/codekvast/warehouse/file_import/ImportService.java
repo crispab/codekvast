@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import se.crisp.codekvast.agent.lib.model.ExportFileMetaInfo;
+import se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -91,9 +92,12 @@ public interface ImportService {
         private final Long localMethodId;
         @NonNull
         private final Long localJvmId;
+        @NonNull
         private final Long invokedAtMillis;
+        @NonNull
         private final Long invocationCount;
-        private final Byte confidence;
+        @NonNull
+        private final SignatureConfidence confidence;
     }
 
     class ImportContext {

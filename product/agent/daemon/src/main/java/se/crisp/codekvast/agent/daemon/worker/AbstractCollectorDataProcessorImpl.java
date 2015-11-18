@@ -24,6 +24,7 @@ import java.time.Instant;
 import java.util.List;
 
 import static java.time.Instant.now;
+import static se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence.*;
 
 /**
  * Common behaviour for all data processors.
@@ -129,19 +130,19 @@ public abstract class AbstractCollectorDataProcessorImpl implements CollectorDat
                 ignored += 1;
             } else if (codeBase.hasSignature(normalizedSignature)) {
                 recognized += 1;
-                confidence = SignatureConfidence.EXACT_MATCH;
+                confidence = EXACT_MATCH;
             } else if (baseSignature != null) {
                 overridden += 1;
-                confidence = SignatureConfidence.FOUND_IN_PARENT_CLASS;
+                confidence = FOUND_IN_PARENT_CLASS;
                 log.debug("Signature '{}' is replaced by '{}'", normalizedSignature, baseSignature);
                 normalizedSignature = baseSignature;
             } else if (normalizedSignature.equals(rawSignature)) {
                 unrecognized += 1;
-                confidence = SignatureConfidence.NOT_FOUND_IN_CODE_BASE;
+                confidence = NOT_FOUND_IN_CODE_BASE;
                 log.debug("Unrecognized signature: '{}'", normalizedSignature);
             } else {
                 unrecognized += 1;
-                confidence = SignatureConfidence.NOT_FOUND_IN_CODE_BASE;
+                confidence = NOT_FOUND_IN_CODE_BASE;
                 log.debug("Unrecognized signature: '{}' (was '{}')", normalizedSignature, rawSignature);
             }
 

@@ -22,49 +22,63 @@
 
 package se.crisp.codekvast.agent.lib.model.v1;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
+ * The confidence that an invoked could be located in the codebase.
+ *
+ * NOTE: Is also defined as an ENUM in the central warehouse's invocations table!
+ *
  * @author olle.hallin@crisp.se
  */
+@RequiredArgsConstructor
+@Getter
 public enum SignatureConfidence {
     /**
      * The signature has been detected in the codebase, but it has never been invoked.
      */
-    NOT_INVOKED,
+    NOT_INVOKED(1),
 
     /**
      * The used signature was found as-is in the scanned code base.
      */
-    EXACT_MATCH,
+    EXACT_MATCH(2),
 
     /**
      * The used signature was <em>not</em> found as-is in the scanned code base. It was found however, when searching upwards in the class
      * hierarchy. The reason for not finding it in the first place could be that the method was synthesized at runtime by some byte code
      * manipulating AOP framework (like Spring or Guice).
      */
-    FOUND_IN_PARENT_CLASS,
+    FOUND_IN_PARENT_CLASS(3),
 
     /**
      * The used signature was <em>not</em> found at all in the scanned code base. This indicates a problem with the code base scanner.
      * Access to the source code is required in order to resolve the problem.
      */
-    NOT_FOUND_IN_CODE_BASE;
+    NOT_FOUND_IN_CODE_BASE(4);
 
-    /**
-     * Converts a SignatureConfidence.ordinal() back to the enum constant.
-     *
-     * @param ordinal An Integer returned by SignatureConfidence.ordinal(). May be null.
-     * @return The proper enum constant or null if {@code ordinal} is null.
-     * @throws IllegalArgumentException If invalid ordinal value other than null.
+    /*
+     * The database representation of the value. It is 1-based to make it easyy to use with MariaDB's ENUM column type.
+     * MariaDB reserves 0 for the special value ''.
      */
-    public static SignatureConfidence fromOrdinal(Integer ordinal) {
-        if (ordinal == null) {
-            return null;
-        }
-        for (SignatureConfidence confidence : SignatureConfidence.values()) {
+    private final int dbNumber;
+
+    public static SignatureConfidence fromOrdinal(int ordinal) {
+        for (SignatureConfidence confidence : values()) {
             if (confidence.ordinal() == ordinal) {
                 return confidence;
             }
         }
-        throw new IllegalArgumentException("Unknown " + SignatureConfidence.class.getSimpleName() + " ordinal: " + ordinal);
+        throw new IllegalArgumentException("Illegal ordinal for a " + SignatureConfidence.class.getSimpleName() + ": " + ordinal);
+    }
+
+    public static SignatureConfidence fromDbNumber(int dbNumber) {
+        for (SignatureConfidence confidence : values()) {
+            if (confidence.getDbNumber() == dbNumber) {
+                return confidence;
+            }
+        }
+        throw new IllegalArgumentException("Illegal dbNumber for a " + SignatureConfidence.class.getSimpleName() + ": " + dbNumber);
     }
 }
