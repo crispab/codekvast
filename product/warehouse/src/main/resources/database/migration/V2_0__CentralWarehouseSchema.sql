@@ -1,10 +1,14 @@
---- file imports --------------------------------
+--- file meta info --------------------------------
 --- Used for making file import idempotent as well as providing some
 --- statistics
-CREATE TABLE file_imports (
+CREATE TABLE file_meta_info (
   id                         BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
   uuid                       VARCHAR(40)           NOT NULL UNIQUE,
-  lengthBytes                BIGINT                NOT NULL,
+  daemonVersion              VARCHAR(20)           NOT NULL,
+  daemonVcsId                VARCHAR(30)           NOT NULL,
+  fileSchemaVersion          VARCHAR(10)           NOT NULL,
+  fileName                   VARCHAR(255)          NOT NULL,
+  fileLengthBytes            BIGINT                NOT NULL,
   importedFromDaemonHostname VARCHAR(80)           NOT NULL,
   importedAt                 TIMESTAMP             NOT NULL
 )
@@ -55,8 +59,8 @@ CREATE TABLE invocations (
   applicationId   BIGINT    NOT NULL,
   methodId        BIGINT    NOT NULL,
   jvmId           BIGINT    NOT NULL,
-  invokedAt       TIMESTAMP NOT NULL,
-  invocationCount BIGINT    NOT NULL,
+  invokedAt       TIMESTAMP NULL,
+  invocationCount BIGINT    NULL,
   confidence      TINYINT   NULL,
 
   CONSTRAINT ix_invocation_applicationId FOREIGN KEY (applicationId) REFERENCES applications (id),

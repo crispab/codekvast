@@ -13,7 +13,7 @@ import java.util.zip.ZipEntry;
 @RequiredArgsConstructor
 @Getter
 public enum ExportFileEntry {
-    DAEMON_CONFIG("codekvast-daemon.properties"),
+    META_INFO("meta-info.properties"),
     APPLICATIONS("applications.csv"),
     METHODS("methods.csv"),
     JVMS("jvms.csv"),
