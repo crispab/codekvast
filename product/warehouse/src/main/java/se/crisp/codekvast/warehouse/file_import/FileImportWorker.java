@@ -183,24 +183,12 @@ public class FileImportWorker {
                                               .localApplicationId(Long.valueOf(columns[col++]))
                                               .localMethodId(Long.valueOf(columns[col++]))
                                               .localJvmId(Long.valueOf(columns[col++]))
-                                              .invokedAtMillis(getInvokedAtMillis(columns[col++]))
-                                              .invocationCount(getInvocationCount(columns[col++]))
-                                              .confidence(getConfidence(columns[col++]))
+                                              .invokedAtMillis(Long.valueOf(columns[col++]))
+                                              .invocationCount(Long.valueOf(columns[col++]))
+                                              .confidence(Byte.valueOf(columns[col++]))
                                               .build();
             importService.saveInvocation(invocation, context);
         }
-    }
-
-    private Long getInvocationCount(String value) {
-        return value == null || value.isEmpty() || value.equals("0") ? null : Long.valueOf(value);
-    }
-
-    private Long getInvokedAtMillis(String value) {
-        return value == null || value.isEmpty() || value.equals("-1") ? null : Long.valueOf(value);
-    }
-
-    private Byte getConfidence(String value) {
-        return value == null || value.isEmpty() ? null : Byte.valueOf(value);
     }
 
 }

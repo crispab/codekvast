@@ -62,21 +62,19 @@ public class ImportServiceImpl implements ImportService {
         long applicationId = context.getApplicationId(invocation.getLocalApplicationId());
         long methodId = context.getMethodId(invocation.getLocalMethodId());
         long jvmId = context.getJvmId(invocation.getLocalJvmId());
-
-        Timestamp invokedAt = invocation.getInvokedAtMillis() == null ? null : new Timestamp(invocation.getInvokedAtMillis());
+        Timestamp invokedAt = new Timestamp(invocation.getInvokedAtMillis());
 
         Timestamp oldInvokedAt =
                 queryForTimestamp("SELECT invokedAt FROM invocations WHERE applicationId = ? AND methodId = ? AND jvmId = ? ",
                                   applicationId, methodId, jvmId);
 
         if (oldInvokedAt == null) {
-            jdbcTemplate.update("INSERT INTO invocations(applicationId, methodId, jvmId, invokedAt, invocationCount, " +
-                                        "confidence) " +
+            jdbcTemplate.update("INSERT INTO invocations(applicationId, methodId, jvmId, invokedAt, invocationCount, confidence) " +
                                         "VALUES(?, ?, ?, ?, ?, ?) ",
                                 applicationId, methodId, jvmId, invokedAt,
                                 invocation.getInvocationCount(), invocation.getConfidence());
             log.trace("Inserted invocation {}:{}:{} {}", applicationId, methodId, jvmId, invokedAt);
-        } else if (invokedAt != null && invokedAt.after(oldInvokedAt)) {
+        } else if (invokedAt.after(oldInvokedAt)) {
             jdbcTemplate
                     .update("UPDATE invocations SET invokedAt = ?, invocationCount = invocationCount + ?, confidence = ? " +
                                     "WHERE applicationId = ? AND methodId = ? AND jvmId = ? ",

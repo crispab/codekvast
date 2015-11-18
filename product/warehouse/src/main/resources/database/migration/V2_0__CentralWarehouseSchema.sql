@@ -59,9 +59,9 @@ CREATE TABLE invocations (
   applicationId   BIGINT    NOT NULL,
   methodId        BIGINT    NOT NULL,
   jvmId           BIGINT    NOT NULL,
-  invokedAt       TIMESTAMP NULL,
-  invocationCount BIGINT    NULL,
-  confidence      TINYINT   NULL,
+  invokedAt       TIMESTAMP NOT NULL,
+  invocationCount BIGINT    NOT NULL,
+  confidence      TINYINT   NOT NULL,
 
   CONSTRAINT ix_invocation_applicationId FOREIGN KEY (applicationId) REFERENCES applications (id),
   CONSTRAINT ix_invocation_methodId FOREIGN KEY (methodId) REFERENCES methods (id),
