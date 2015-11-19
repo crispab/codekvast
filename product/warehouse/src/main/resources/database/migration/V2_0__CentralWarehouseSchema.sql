@@ -9,6 +9,7 @@ CREATE TABLE file_meta_info (
   fileSchemaVersion          VARCHAR(10)           NOT NULL,
   fileName                   VARCHAR(255)          NOT NULL,
   fileLengthBytes            BIGINT                NOT NULL,
+  importTimeMillis           BIGINT                NOT NULL,
   importedFromDaemonHostname VARCHAR(80)           NOT NULL,
   importedAt                 TIMESTAMP             NOT NULL
 )

@@ -20,7 +20,7 @@ public interface ImportService {
 
     boolean isFileImported(ExportFileMetaInfo metaInfo);
 
-    void recordFileAsImported(ExportFileMetaInfo metaInfo, FileImportStatistics fileImportStatistics);
+    void recordFileAsImported(ExportFileMetaInfo metaInfo, ImportStatistics importStatistics);
 
     void saveApplication(Application application, ImportContext context);
 
@@ -104,7 +104,7 @@ public interface ImportService {
 
     @Value
     @Builder
-    class FileImportStatistics {
+    class ImportStatistics {
         @NonNull
         private File importFile;
         @NonNull

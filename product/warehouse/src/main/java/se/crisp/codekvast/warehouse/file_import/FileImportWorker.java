@@ -122,10 +122,10 @@ public class FileImportWorker {
             }
             if (metaInfo != null) {
                 importService.recordFileAsImported(metaInfo,
-                                                   FileImportStatistics.builder()
-                                                                       .importFile(file)
-                                                                       .processingTime(Duration.between(startedAt, now()))
-                                                                       .build());
+                                                   ImportStatistics.builder()
+                                                                   .importFile(file)
+                                                                   .processingTime(Duration.between(startedAt, now()))
+                                                                   .build());
 
             }
         } catch (IllegalArgumentException | IOException e) {
