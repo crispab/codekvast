@@ -6,6 +6,8 @@ import lombok.Value;
 import se.crisp.codekvast.agent.lib.model.ExportFileMetaInfo;
 import se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence;
 
+import java.io.File;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,7 +20,7 @@ public interface ImportService {
 
     boolean isFileImported(ExportFileMetaInfo metaInfo);
 
-    void recordFileAsImported(ExportFileMetaInfo metaInfo);
+    void recordFileAsImported(ExportFileMetaInfo metaInfo, FileImportStatistics fileImportStatistics);
 
     void saveApplication(Application application, ImportContext context);
 
@@ -98,6 +100,15 @@ public interface ImportService {
         private final Long invocationCount;
         @NonNull
         private final SignatureConfidence confidence;
+    }
+
+    @Value
+    @Builder
+    class FileImportStatistics {
+        @NonNull
+        private File importFile;
+        @NonNull
+        private Duration processingTime;
     }
 
     class ImportContext {

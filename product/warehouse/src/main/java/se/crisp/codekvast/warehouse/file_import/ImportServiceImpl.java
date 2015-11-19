@@ -33,11 +33,12 @@ public class ImportServiceImpl implements ImportService {
     }
 
     @Override
-    public void recordFileAsImported(ExportFileMetaInfo metaInfo) {
+    public void recordFileAsImported(ExportFileMetaInfo metaInfo, FileImportStatistics fileImportStatistics) {
         jdbcTemplate
                 .update("INSERT INTO file_meta_info(uuid, fileSchemaVersion, fileName, fileLengthBytes, importedFromDaemonHostname) " +
                                 "VALUES (?, ?, ?, ?, ?)",
-                        metaInfo.getUuid(), metaInfo.getSchemaVersion(), metaInfo.getFileName(), metaInfo.getFileLengthBytes(),
+                        metaInfo.getUuid(), metaInfo.getSchemaVersion(),
+                        fileImportStatistics.getImportFile().getPath(), fileImportStatistics.getImportFile().length(),
                         metaInfo.getDaemonHostname());
         log.info("Imported {}", metaInfo);
     }

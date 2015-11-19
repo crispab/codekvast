@@ -15,9 +15,12 @@ import se.crisp.codekvast.warehouse.config.CodekvastSettings;
 import javax.inject.Inject;
 import java.io.*;
 import java.nio.charset.Charset;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import static java.time.Instant.now;
 import static se.crisp.codekvast.warehouse.file_import.ImportService.*;
 
 /**
@@ -82,6 +85,7 @@ public class FileImportWorker {
     @Transactional
     protected void importZipFile(File file) {
         log.debug("Importing {}", file);
+        Instant startedAt = now();
 
         ExportFileMetaInfo metaInfo = null;
         ImportContext context = new ImportContext();
@@ -117,8 +121,12 @@ public class FileImportWorker {
                 }
             }
             if (metaInfo != null) {
-                importService.recordFileAsImported(metaInfo.withFileLengthBytes(file.length())
-                                                           .withFileName(file.getPath()));
+                importService.recordFileAsImported(metaInfo,
+                                                   FileImportStatistics.builder()
+                                                                       .importFile(file)
+                                                                       .processingTime(Duration.between(startedAt, now()))
+                                                                       .build());
+
             }
         } catch (IllegalArgumentException | IOException e) {
             log.error("Cannot import " + file, e);

@@ -31,12 +31,6 @@ public class ExportFileMetaInfo {
     @NonNull
     private final String daemonHostname;
 
-    @Wither
-    private String fileName;
-
-    @Wither
-    private final Long fileLengthBytes;
-
     public static ExportFileMetaInfo fromInputStream(InputStream is) throws IOException {
         Properties props = new Properties();
         props.load(is);

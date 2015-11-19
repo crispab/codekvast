@@ -18,6 +18,7 @@
           <option name="urls">
             <array>
               <option value="file://$PROJECT_DIR$/product/warehouse/src/main/resources/database/migration/V2_0__CentralWarehouseSchema.sql" />
+              <option value="file://$PROJECT_DIR$/product/warehouse/src/main/resources/database/migration/V2_1__AlterTable_file_meta_info.sql" />
             </array>
           </option>
         </State>
