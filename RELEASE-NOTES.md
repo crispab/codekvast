@@ -1,5 +1,10 @@
 # Codekvast Release Notes
 
+## 0.13.1
+
+1. Improved logging.
+1. Made deletion of imported zip file optional.
+
 ## 0.13.0
 
 1. Created module product/warehouse, which has a dependency on mariadb-server. See README for installation
