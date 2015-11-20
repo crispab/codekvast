@@ -100,7 +100,7 @@ public class FileImportWorker {
             ZipEntry zipEntry;
             while ((zipEntry = zipInputStream.getNextEntry()) != null) {
                 ExportFileEntry exportFileEntry = ExportFileEntry.fromString(zipEntry.getName());
-                log.debug("Reading {}...", exportFileEntry);
+                log.debug("Reading {} ...", zipEntry.getName());
 
                 switch (exportFileEntry) {
                 case META_INFO:
