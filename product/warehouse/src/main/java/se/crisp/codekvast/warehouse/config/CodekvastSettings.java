@@ -26,6 +26,7 @@ public class CodekvastSettings {
 
     private int importPollIntervalSeconds = 30;
     private File importPath;
+    private boolean deleteImportedFiles;
 
     @PostConstruct
     public void logStartup() {

@@ -17,6 +17,7 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.function.Function;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -66,7 +67,10 @@ public class FileImportWorker {
                         log.debug("Ignoring {}, can only handle {} files", file, ExportFileFormat.ZIP);
                     } else {
                         importZipFile(file);
-                        deleteFile(file);
+
+                        if (codekvastSettings.isDeleteImportedFiles()) {
+                            deleteFile(file);
+                        }
                     }
                 }
             }
@@ -107,16 +111,16 @@ public class FileImportWorker {
                     }
                     break;
                 case APPLICATIONS:
-                    readApplicationsCsv(reader, context);
+                    readApplications(reader, context);
                     break;
                 case METHODS:
-                    readMethodsCsv(reader, context);
+                    readMethods(reader, context);
                     break;
                 case JVMS:
-                    readJvmsCsv(reader, context);
+                    readJvms(reader, context);
                     break;
                 case INVOCATIONS:
-                    readInvocationsCsv(reader, context);
+                    readInvocations(reader, context);
                     break;
                 }
             }
@@ -126,67 +130,73 @@ public class FileImportWorker {
                                                                    .importFile(file)
                                                                    .processingTime(Duration.between(startedAt, now()))
                                                                    .build());
-
             }
         } catch (IllegalArgumentException | IOException e) {
             log.error("Cannot import " + file, e);
         }
     }
 
-    private void readApplicationsCsv(InputStreamReader reader, ImportContext context) {
+    private void doReadCsv(InputStreamReader reader, String what, Function<String[], Void> lineProcessor) {
         CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
+        int count = 0;
+        Instant startedAt = now();
         for (String[] columns : csvReader) {
-            int col = 0;
+            lineProcessor.apply(columns);
+            count += 1;
+        }
+        log.debug("Imported {} {} in {} ms", count, what, Duration.between(startedAt, now()).toMillis());
+    }
+
+    private void readApplications(InputStreamReader reader, ImportContext context) {
+        doReadCsv(reader, "applications", (String[] columns) -> {
             Application app = Application.builder()
-                                         .localId(Long.valueOf(columns[col++]))
-                                         .name(columns[col++])
-                                         .version(columns[col++])
-                                         .createdAtMillis(Long.valueOf(columns[col++]))
+                                         .localId(Long.valueOf(columns[0]))
+                                         .name(columns[1])
+                                         .version(columns[2])
+                                         .createdAtMillis(Long.valueOf(columns[3]))
                                          .build();
 
             importService.saveApplication(app, context);
-        }
+            return null;
+        });
     }
 
-    private void readMethodsCsv(InputStreamReader reader, ImportContext context) {
-        CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
-        for (String[] columns : csvReader) {
-            int col = 0;
+    private void readMethods(InputStreamReader reader, ImportContext context) {
+        doReadCsv(reader, "methods", (String[] columns) -> {
             Method method = Method.builder()
-                                  .localId(Long.valueOf(columns[col++]))
-                                  .visibility(columns[col++])
-                                  .signature(columns[col++])
-                                  .createdAtMillis(Long.valueOf(columns[col++]))
-                                  .declaringType(columns[col++])
-                                  .exceptionTypes(columns[col++])
-                                  .methodName(columns[col++])
-                                  .modifiers(columns[col++])
-                                  .packageName(columns[col++])
-                                  .parameterTypes(columns[col++])
-                                  .returnType(columns[col++])
+                                  .localId(Long.valueOf(columns[0]))
+                                  .visibility(columns[1])
+                                  .signature(columns[2])
+                                  .createdAtMillis(Long.valueOf(columns[3]))
+                                  .declaringType(columns[4])
+                                  .exceptionTypes(columns[5])
+                                  .methodName(columns[6])
+                                  .modifiers(columns[7])
+                                  .packageName(columns[8])
+                                  .parameterTypes(columns[9])
+                                  .returnType(columns[10])
                                   .build();
             importService.saveMethod(method, context);
-        }
+            return null;
+        });
     }
 
-    private void readJvmsCsv(InputStreamReader reader, ImportContext context) {
-        CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
-        for (String[] columns : csvReader) {
-            int col = 0;
+    private void readJvms(InputStreamReader reader, ImportContext context) {
+        doReadCsv(reader, "JVMs", (String[] columns) -> {
             Jvm jvm = Jvm.builder()
-                         .localId(Long.valueOf(columns[col++]))
-                         .uuid(columns[col++])
-                         .startedAtMillis(Long.valueOf(columns[col++]))
-                         .dumpedAtMillis(Long.valueOf(columns[col++]))
-                         .jvmDataJson(columns[col++])
+                         .localId(Long.valueOf(columns[0]))
+                         .uuid(columns[1])
+                         .startedAtMillis(Long.valueOf(columns[2]))
+                         .dumpedAtMillis(Long.valueOf(columns[3]))
+                         .jvmDataJson(columns[4])
                          .build();
             importService.saveJvm(jvm, context);
-        }
+            return null;
+        });
     }
 
-    private void readInvocationsCsv(InputStreamReader reader, ImportContext context) {
-        CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
-        for (String[] columns : csvReader) {
+    private void readInvocations(InputStreamReader reader, ImportContext context) {
+        doReadCsv(reader, "invocations", (String[] columns) -> {
             Invocation invocation = Invocation.builder()
                                               .localApplicationId(Long.valueOf(columns[0]))
                                               .localMethodId(Long.valueOf(columns[1]))
@@ -196,7 +206,8 @@ public class FileImportWorker {
                                               .confidence(SignatureConfidence.fromOrdinal(Integer.valueOf(columns[5])))
                                               .build();
             importService.saveInvocation(invocation, context);
-        }
+            return null;
+        });
     }
 
 }

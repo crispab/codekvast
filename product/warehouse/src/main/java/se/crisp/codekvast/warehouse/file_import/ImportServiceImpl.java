@@ -40,7 +40,7 @@ public class ImportServiceImpl implements ImportService {
                         metaInfo.getUuid(), metaInfo.getSchemaVersion(),
                         importStatistics.getImportFile().getPath(), importStatistics.getImportFile().length(),
                         importStatistics.getProcessingTime().toMillis(), metaInfo.getDaemonHostname());
-        log.info("Imported {}", metaInfo);
+        log.info("Imported {} {}", metaInfo, importStatistics);
     }
 
     @Override

@@ -180,7 +180,8 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
         }
 
         try {
-            return File.createTempFile("codekvast-export", ".tmp", directory);
+            File tempFile = File.createTempFile("codekvast-export", ".tmp", directory);
+            return tempFile;
         } catch (IOException e) {
             throw new DataExportException("Cannot create temporary file in " + directory, e);
         }
