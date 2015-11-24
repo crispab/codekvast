@@ -1,5 +1,5 @@
 /**
- * Model objects collector_lib between collector and daemon.
+ * Model objects shared between the codekvast collector and the daemon.
  *
  * @author olle.hallin@crisp.se
  */

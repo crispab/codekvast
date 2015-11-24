@@ -1,5 +1,5 @@
 /**
- * Utility classes used by both codekvast-collector_lib and the collector.
+ * Utility classes used by both the codekvast daemon and the collector.
  *
  * @author olle.hallin@crisp.se
  */

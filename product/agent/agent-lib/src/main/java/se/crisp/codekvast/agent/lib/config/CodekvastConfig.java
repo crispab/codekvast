@@ -1,7 +1,7 @@
 package se.crisp.codekvast.agent.lib.config;
 
 /**
- * This is a marker interface for all configuration classes in Codekvast collector_lib.
+ * This is a marker interface for configuration classes in Codekvast agent-lib.
  *
  * @author olle.hallin@crisp.se
  */

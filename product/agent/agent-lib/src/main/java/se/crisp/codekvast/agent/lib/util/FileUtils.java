@@ -12,7 +12,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 
 /**
- * Low-level file utilities used by the codekvast collector_lib and collector.
+ * Low-level file utilities used by the codekvast daemon and the collector.
  *
  * @author olle.hallin@crisp.se
  */
