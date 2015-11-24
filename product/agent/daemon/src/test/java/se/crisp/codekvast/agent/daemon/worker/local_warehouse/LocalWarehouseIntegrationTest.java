@@ -26,7 +26,7 @@ import java.lang.annotation.*;
         "codekvast.dataPath=dataPath",
         "codekvast.dataProcessingIntervalSeconds=600",
         "codekvast.environment=" + DaemonConstants.LOCAL_WAREHOUSE_PROFILE + "-integration-test",
-        "codekvast.exportFile=/tmp/codekvast-export.zip"
+        "codekvast.exportFile=/tmp/codekvast-data.zip"
 })
 public @interface LocalWarehouseIntegrationTest {
 }

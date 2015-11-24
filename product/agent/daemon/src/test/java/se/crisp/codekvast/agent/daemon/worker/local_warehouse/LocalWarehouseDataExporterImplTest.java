@@ -35,11 +35,6 @@ public class LocalWarehouseDataExporterImplTest {
 
     @Before
     public void before() throws Exception {
-        File exportFile = new File("/tmp", "codekvast-export.zip");
-        exportFile.delete();
-
-        // TODO exportFile = new File(temporaryFolder.getRoot(), "codekvast-export.zip");
-
         config = DaemonConfig.builder()
                              .apiAccessID("apiAccessID")
                              .apiAccessSecret("apiSecret")
@@ -48,7 +43,7 @@ public class LocalWarehouseDataExporterImplTest {
                              .dataPath(new File("foobar"))
                              .dataProcessingIntervalSeconds(600)
                              .environment(getClass().getSimpleName())
-                             .exportFile(exportFile)
+                             .exportFile(new File(temporaryFolder.getRoot(), "codekvast-data.zip"))
                              .serverUri(new URI("http://foobar"))
                              .build();
 
