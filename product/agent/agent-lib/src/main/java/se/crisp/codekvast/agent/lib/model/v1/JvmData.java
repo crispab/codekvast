@@ -25,10 +25,12 @@ public class JvmData {
     @NonNull private String daemonHostName;
     @NonNull private String daemonVcsId;
     @NonNull private String daemonVersion;
-    @NonNull private Integer dataProcessingIntervalSeconds;
     @NonNull private Long   dumpedAtMillis;
+    private String environment;
     @NonNull private String jvmUuid;
     @NonNull private String methodVisibility;
+    @NonNull
+    private String packagePrefixes;
     @NonNull private Long   startedAtMillis;
     @NonNull private String tags;
     //@formatter:on

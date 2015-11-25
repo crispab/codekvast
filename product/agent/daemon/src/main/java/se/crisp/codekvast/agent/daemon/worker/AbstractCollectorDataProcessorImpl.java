@@ -22,6 +22,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.time.Instant.now;
 import static se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence.*;
@@ -34,7 +35,7 @@ import static se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence.*;
 @Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class AbstractCollectorDataProcessorImpl implements CollectorDataProcessor {
-    private final DaemonConfig daemonConfig;
+    protected final DaemonConfig daemonConfig;
     private final AppVersionResolver appVersionResolver;
     private final CodeBaseScanner codeBaseScanner;
 
@@ -188,10 +189,11 @@ public abstract class AbstractCollectorDataProcessorImpl implements CollectorDat
                       .daemonHostName(daemonHostName)
                       .daemonVcsId(daemonConfig.getDaemonVcsId())
                       .daemonVersion(daemonConfig.getDaemonVersion())
-                      .dataProcessingIntervalSeconds(daemonConfig.getDataProcessingIntervalSeconds())
                       .dumpedAtMillis(jvm.getDumpedAtMillis())
+                      .environment(daemonConfig.getEnvironment())
                       .jvmUuid(jvm.getJvmUuid())
                       .methodVisibility(jvm.getCollectorConfig().getMethodFilter().toString())
+                      .packagePrefixes(jvm.getCollectorConfig().getNormalizedPackagePrefixes().stream().collect(Collectors.joining(", ")))
                       .startedAtMillis(jvm.getStartedAtMillis())
                       .tags(jvm.getCollectorConfig().getTags())
                       .build();

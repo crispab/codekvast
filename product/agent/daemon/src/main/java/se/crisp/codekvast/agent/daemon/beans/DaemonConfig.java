@@ -22,26 +22,18 @@ import java.net.URI;
 public class DaemonConfig {
     @NonNull
     private File dataPath;
-
     @NonNull
     private String apiAccessID;
-
     @NonNull
     private String apiAccessSecret;
-
     @NonNull
     private URI serverUri;
-
     @NonNull
     private Integer dataProcessingIntervalSeconds;
-
     @NonNull
     private String daemonVersion;
-
     @NonNull
     private String daemonVcsId;
-
-    @NonNull
     private String environment;
 
     @Wither

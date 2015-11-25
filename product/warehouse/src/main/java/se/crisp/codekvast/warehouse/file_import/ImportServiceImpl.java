@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Service;
 import se.crisp.codekvast.agent.lib.model.ExportFileMetaInfo;
+import se.crisp.codekvast.agent.lib.model.v1.JvmData;
 
 import javax.inject.Inject;
 import java.sql.*;
@@ -36,10 +37,10 @@ public class ImportServiceImpl implements ImportService {
     public void recordFileAsImported(ExportFileMetaInfo metaInfo, ImportStatistics importStatistics) {
         jdbcTemplate
                 .update("INSERT INTO file_meta_info(uuid, fileSchemaVersion, fileName, fileLengthBytes, importTimeMillis, " +
-                                "importedFromDaemonHostname) VALUES (?, ?, ?, ?, ?, ?)",
+                                "importedFromDaemonHostname, importedFromEnvironment) VALUES (?, ?, ?, ?, ?, ?, ?)",
                         metaInfo.getUuid(), metaInfo.getSchemaVersion(),
                         importStatistics.getImportFile().getPath(), importStatistics.getImportFile().length(),
-                        importStatistics.getProcessingTime().toMillis(), metaInfo.getDaemonHostname());
+                        importStatistics.getProcessingTime().toMillis(), metaInfo.getDaemonHostname(), metaInfo.getEnvironment());
         log.info("Imported {} {}", metaInfo, importStatistics);
     }
 
@@ -54,8 +55,8 @@ public class ImportServiceImpl implements ImportService {
     }
 
     @Override
-    public void saveJvm(Jvm jvm, ImportContext context) {
-        context.putJvm(getCentralJvmId(jvm), jvm);
+    public void saveJvm(Jvm jvm, JvmData jvmData, ImportContext context) {
+        context.putJvm(getCentralJvmId(jvm, jvmData), jvm);
     }
 
     @Override
@@ -125,13 +126,13 @@ public class ImportServiceImpl implements ImportService {
         return methodId;
     }
 
-    private long getCentralJvmId(Jvm jvm) {
+    private long getCentralJvmId(Jvm jvm, JvmData jvmData) {
         Long jvmId = queryForLong("SELECT id FROM jvms WHERE uuid = ? ", jvm.getUuid());
 
         //noinspection Duplicates
         if (jvmId == null) {
             KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(new InsertJvmStatement(jvm), keyHolder);
+            jdbcTemplate.update(new InsertJvmStatement(jvm, jvmData), keyHolder);
             jvmId = keyHolder.getKey().longValue();
             log.trace("Stored JVM {}:{}", jvmId, jvm);
         }
@@ -186,18 +187,38 @@ public class ImportServiceImpl implements ImportService {
     @RequiredArgsConstructor
     private static class InsertJvmStatement implements PreparedStatementCreator {
         private final Jvm jvm;
+        private final JvmData jvmData;
 
         @SuppressWarnings("ValueOfIncrementOrDecrementUsed")
         @Override
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-            PreparedStatement ps = con.prepareStatement("INSERT INTO jvms(uuid, startedAt, dumpedAt, jvmDataJson) " +
-                                                                "VALUES(?, ?, ?, ?)",
+            PreparedStatement ps = con.prepareStatement("INSERT INTO jvms(uuid, " +
+                                                                "startedAt, " +
+                                                                "dumpedAt, " +
+                                                                "collectorResolutionSeconds, " +
+                                                                "methodVisibility, " +
+                                                                "packagePrefixes, " +
+                                                                "environment, " +
+                                                                "collectorComputerId, " +
+                                                                "collectorHostName, " +
+                                                                "collectorVersion, " +
+                                                                "collectorVcsId, " +
+                                                                "tags) " +
+                                                                "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                                                         Statement.RETURN_GENERATED_KEYS);
             int column = 0;
             ps.setString(++column, jvm.getUuid());
             ps.setTimestamp(++column, new Timestamp(jvm.getStartedAtMillis()));
             ps.setTimestamp(++column, new Timestamp(jvm.getDumpedAtMillis()));
-            ps.setString(++column, jvm.getJvmDataJson());
+            ps.setInt(++column, jvmData.getCollectorResolutionSeconds());
+            ps.setString(++column, jvmData.getMethodVisibility());
+            ps.setString(++column, jvmData.getPackagePrefixes());
+            ps.setString(++column, jvmData.getEnvironment());
+            ps.setString(++column, jvmData.getCollectorComputerId());
+            ps.setString(++column, jvmData.getCollectorHostName());
+            ps.setString(++column, jvmData.getCollectorVersion());
+            ps.setString(++column, jvmData.getCollectorVcsId());
+            ps.setString(++column, jvmData.getTags());
             return ps;
         }
     }

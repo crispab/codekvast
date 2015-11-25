@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import se.crisp.codekvast.agent.lib.model.ExportFileMetaInfo;
+import se.crisp.codekvast.agent.lib.model.v1.JvmData;
 import se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence;
 
 import java.io.File;
@@ -26,7 +27,7 @@ public interface ImportService {
 
     void saveMethod(Method method, ImportContext context);
 
-    void saveJvm(Jvm jvm, ImportContext context);
+    void saveJvm(Jvm jvm, JvmData jvmData, ImportContext context);
 
     void saveInvocation(Invocation invocation, ImportContext context);
 

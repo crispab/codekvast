@@ -1,7 +1,9 @@
 package se.crisp.codekvast.warehouse.file_import;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -9,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.agent.lib.model.ExportFileMetaInfo;
 import se.crisp.codekvast.agent.lib.model.v1.ExportFileEntry;
 import se.crisp.codekvast.agent.lib.model.v1.ExportFileFormat;
+import se.crisp.codekvast.agent.lib.model.v1.JvmData;
 import se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence;
 import se.crisp.codekvast.warehouse.config.CodekvastSettings;
 
@@ -36,11 +39,13 @@ public class FileImportWorker {
     private final CodekvastSettings codekvastSettings;
     private final ImportService importService;
     private final Charset charset = Charset.forName("UTF-8");
+    private final ObjectMapper objectMapper;
 
     @Inject
-    public FileImportWorker(CodekvastSettings codekvastSettings, ImportService importService) {
+    public FileImportWorker(CodekvastSettings codekvastSettings, ImportService importService, ObjectMapper objectMapper) {
         this.codekvastSettings = codekvastSettings;
         this.importService = importService;
+        this.objectMapper = objectMapper;
         log.info("Created, looking for files in {} every {} seconds", codekvastSettings.getImportPath(),
                  codekvastSettings.getImportPollIntervalSeconds());
     }
@@ -191,16 +196,22 @@ public class FileImportWorker {
 
     private void readJvms(InputStreamReader reader, ImportContext context) {
         doReadCsv(reader, "JVMs", (String[] columns) -> {
-            Jvm jvm = Jvm.builder()
-                         .localId(Long.valueOf(columns[0]))
-                         .uuid(columns[1])
-                         .startedAtMillis(Long.valueOf(columns[2]))
-                         .dumpedAtMillis(Long.valueOf(columns[3]))
-                         .jvmDataJson(columns[4])
-                         .build();
-            importService.saveJvm(jvm, context);
+            doProcessJvm(context, columns);
             return null;
         });
+    }
+
+    @SneakyThrows(IOException.class)
+    private void doProcessJvm(ImportContext context, String[] columns) {
+        Jvm jvm = Jvm.builder()
+                     .localId(Long.valueOf(columns[0]))
+                     .uuid(columns[1])
+                     .startedAtMillis(Long.valueOf(columns[2]))
+                     .dumpedAtMillis(Long.valueOf(columns[3]))
+                     .jvmDataJson(columns[4])
+                     .build();
+        JvmData jvmData = objectMapper.readValue(jvm.getJvmDataJson(), JvmData.class);
+        importService.saveJvm(jvm, jvmData, context);
     }
 
     private void readInvocations(InputStreamReader reader, ImportContext context) {

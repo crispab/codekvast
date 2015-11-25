@@ -110,6 +110,7 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
                                                              .daemonVersion(config.getDaemonVersion())
                                                              .daemonVcsId(config.getDaemonVcsId())
                                                              .daemonHostname(getHostname())
+                                                             .environment(config.getEnvironment())
                                                              .build());
 
             CSVWriter csvWriter = new CSVWriter(new OutputStreamWriter(zip, charset));

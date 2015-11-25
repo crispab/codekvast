@@ -11,7 +11,8 @@ CREATE TABLE file_meta_info (
   fileLengthBytes            BIGINT                NOT NULL,
   importTimeMillis           BIGINT                NOT NULL,
   importedFromDaemonHostname VARCHAR(80)           NOT NULL,
-  importedAt                 TIMESTAMP             NOT NULL
+  importedAt                 TIMESTAMP             NOT NULL,
+  importedFromEnvironment    VARCHAR(255)          NULL
 )
   ENGINE = innodb, CHARACTER SET = utf8, COLLATE = utf8_general_ci;
 
@@ -46,12 +47,19 @@ CREATE TABLE methods (
 
 --- JVMs --------------------------------
 CREATE TABLE jvms (
-  id          BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
-  uuid        VARCHAR(40)           NOT NULL UNIQUE,
-  startedAt   TIMESTAMP             NOT NULL,
-  dumpedAt    TIMESTAMP             NOT NULL,
-  jvmDataJson VARCHAR(1000)         NOT NULL
-  COMMENT 'jvmDataJson is an instance of se.crisp.codekvast.agent.lib.model.v1.JvmData as JSON'
+  id                         BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+  uuid                       VARCHAR(40)           NOT NULL UNIQUE,
+  startedAt                  TIMESTAMP             NOT NULL,
+  dumpedAt                   TIMESTAMP             NOT NULL,
+  collectorResolutionSeconds INT                   NOT NULL,
+  methodVisibility           VARCHAR(20)           NOT NULL,
+  packagePrefixes            VARCHAR(255)          NOT NULL,
+  environment                VARCHAR(255)          NULL,
+  collectorComputerId        VARCHAR(40)           NOT NULL,
+  collectorHostName          VARCHAR(255)          NOT NULL,
+  collectorVersion           VARCHAR(40)           NOT NULL,
+  collectorVcsId             VARCHAR(40)           NOT NULL,
+  tags                       VARCHAR(1000)         NOT NULL
 )
   ENGINE = innodb, CHARACTER SET = utf8, COLLATE = utf8_general_ci;
 

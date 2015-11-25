@@ -23,6 +23,7 @@ public class ExportFileMetaInfoTest {
                                                            .daemonHostname("some-hostname")
                                                            .daemonVcsId("daemon Vcs:Id")
                                                            .daemonVersion("daemon V1")
+                                                           .environment("some environment")
                                                            .schemaVersion("V1")
                                                            .uuid("uuid-value")
                                                            .build(),
@@ -33,6 +34,7 @@ public class ExportFileMetaInfoTest {
                 "daemonVcsId = daemon Vcs\\:Id",
                 "daemonVersion = daemon V1",
                 "schemaVersion = V1",
+                "environment = some environment",
                 "uuid = uuid-value"));
     }
 }

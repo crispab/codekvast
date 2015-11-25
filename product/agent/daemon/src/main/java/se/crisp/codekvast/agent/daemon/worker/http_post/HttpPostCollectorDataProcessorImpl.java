@@ -66,7 +66,7 @@ public class HttpPostCollectorDataProcessorImpl extends AbstractCollectorDataPro
                 .daemonComputerId(jvmData.getDaemonComputerId())
                 .daemonHostName(jvmData.getDaemonHostName())
                 .daemonTimeMillis(System.currentTimeMillis())
-                .daemonUploadIntervalSeconds(jvmData.getDataProcessingIntervalSeconds())
+                .daemonUploadIntervalSeconds(daemonConfig.getDataProcessingIntervalSeconds())
                 .daemonVcsId(jvmData.getDaemonVcsId())
                 .daemonVersion(jvmData.getDaemonVersion())
                 .dumpedAtMillis(jvmData.getDumpedAtMillis())

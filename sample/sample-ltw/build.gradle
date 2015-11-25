@@ -34,13 +34,13 @@ task generateCodekvastConfig {
         configFile.text = """# Run Codekvast against Crisp Benchmark App
 appName = $archivesBaseName
 appVersion = from load-time-weaving
-tags = development, sample
-codeBase = ${file("build/install/${project.name}/lib/")}
-packagePrefixes = sample. , foo.bar.
-methodVisibility = all
-collectorResolutionSeconds = 2
 aspectjOptions = -verbose -showWeaveInfo
 clobberAopXml = true
+codeBase = ${file("build/install/${project.name}/lib/")}
+collectorResolutionSeconds = 2
+methodVisibility = all
+packagePrefixes = sample. , foo.bar.
+tags = development, sample
 verbose = true
 """
     }

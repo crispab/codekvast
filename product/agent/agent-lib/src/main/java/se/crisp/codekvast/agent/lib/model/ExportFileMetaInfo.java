@@ -3,7 +3,6 @@ package se.crisp.codekvast.agent.lib.model;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
-import lombok.experimental.Wither;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,20 +15,12 @@ import java.util.Properties;
 @Builder
 public class ExportFileMetaInfo {
 
-    @NonNull
-    private final String uuid;
-
-    @NonNull
-    private final String schemaVersion;
-
-    @NonNull
-    private final String daemonVersion;
-
-    @NonNull
-    private final String daemonVcsId;
-
-    @NonNull
-    private final String daemonHostname;
+    @NonNull private final String uuid;
+    @NonNull private final String schemaVersion;
+    @NonNull private final String daemonVersion;
+    @NonNull private final String daemonVcsId;
+    @NonNull private final String daemonHostname;
+    private final String environment;
 
     public static ExportFileMetaInfo fromInputStream(InputStream is) throws IOException {
         Properties props = new Properties();
@@ -41,6 +32,7 @@ public class ExportFileMetaInfo {
                                  .daemonVersion(props.getProperty("daemonVersion"))
                                  .daemonVcsId(props.getProperty("daemonVcsId"))
                                  .daemonHostname(props.getProperty("daemonHostname"))
+                                 .environment(props.getProperty("environment"))
                                  .build();
     }
 }
