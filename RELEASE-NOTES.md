@@ -1,5 +1,11 @@
 # Codekvast Release Notes
 
+## 0.13.2
+
+1. Changed Central warehouse schema: replaced jvms.jvmDataJson with discrete fields.
+1. Added jvms.environment to central warehouse schema.
+1. Improved import performance.
+ 
 ## 0.13.1
 
 1. Improved logging.
