@@ -87,8 +87,6 @@ public class MethodFilterNameTest {
         };
     }
 
-    ;
-
     @Parameterized.Parameter(0)
     public String name;
 
