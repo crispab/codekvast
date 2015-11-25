@@ -41,7 +41,8 @@ public class FileImportWorker {
     public FileImportWorker(CodekvastSettings codekvastSettings, ImportService importService) {
         this.codekvastSettings = codekvastSettings;
         this.importService = importService;
-        log.info("Created");
+        log.info("Created, looking for files in {} every {} seconds", codekvastSettings.getImportPath(),
+                 codekvastSettings.getImportPollIntervalSeconds());
     }
 
     @Scheduled(fixedDelayString = "${codekvast.importPollIntervalSeconds}000")
@@ -140,10 +141,17 @@ public class FileImportWorker {
         CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
         int count = 0;
         Instant startedAt = now();
+        importService.beginInsert();
         for (String[] columns : csvReader) {
             lineProcessor.apply(columns);
             count += 1;
+            if (count % 1000 == 0) {
+                importService.endInsert();
+                importService.beginInsert();
+                log.debug("Imported {} {}...", count, what);
+            }
         }
+        importService.endInsert();
         log.debug("Imported {} {} in {} ms", count, what, Duration.between(startedAt, now()).toMillis());
     }
 

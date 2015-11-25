@@ -30,6 +30,11 @@ public interface ImportService {
 
     void saveInvocation(Invocation invocation, ImportContext context);
 
+    void beginInsert();
+
+    void endInsert();
+
+
     @Value
     @Builder
     class Application {
@@ -58,6 +63,7 @@ public interface ImportService {
         private final String jvmDataJson;
     }
 
+    @SuppressWarnings("ClassWithTooManyFields")
     @Value
     @Builder
     class Method {
@@ -139,5 +145,6 @@ public interface ImportService {
         public long getJvmId(Long localId) {
             return centralJvmIdByLocalId.get(localId);
         }
+
     }
 }

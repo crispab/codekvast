@@ -77,7 +77,7 @@ public class ImportServiceImpl implements ImportService {
             log.trace("Inserted invocation {}:{}:{} {}", applicationId, methodId, jvmId, invokedAt);
         } else if (invokedAt.after(oldInvokedAt)) {
             jdbcTemplate.update("UPDATE invocations SET invokedAtMillis = ?, invocationCount = invocationCount + ?, confidence = ? " +
-                                    "WHERE applicationId = ? AND methodId = ? AND jvmId = ? ",
+                                        "WHERE applicationId = ? AND methodId = ? AND jvmId = ? ",
                                 invokedAt.getTime(), invocation.getInvocationCount(), invocation.getConfidence().name(),
                                 applicationId, methodId, jvmId);
             log.trace("Updated invocation {}:{}:{} {}", applicationId, methodId, jvmId, invokedAt);
@@ -86,6 +86,16 @@ public class ImportServiceImpl implements ImportService {
         } else {
             log.trace("Ignoring invocation, a newer row exists in database");
         }
+    }
+
+    @Override
+    public void beginInsert() {
+        jdbcTemplate.execute("BEGIN");
+    }
+
+    @Override
+    public void endInsert() {
+        jdbcTemplate.execute("COMMIT");
     }
 
     private long getCentralApplicationId(Application app) {
