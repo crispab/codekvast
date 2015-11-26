@@ -11,4 +11,5 @@
 .*\.\.FastClassByGuice.*\.newInstance\(int, java\.lang\.Object\[\]\)$
 .*\.\.FastClassByGuice.*\.invoke\(int, java\.lang\.Object, java\.lang\.Object\[\]\)$
 .*\.\.EnhancerByGuice\.\.[a-f0-9]+\.CGLIB\$STATICHOOK[0-9]+\(\)
+.*\.\.EnhancerByGuice\.\.[a-f0-9]+\.CGLIB\$BIND_CALLBACKS\(java\.lang\.Object\)
 .*\(com\.google\.inject\.internal\.cglib.*\)$

@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 /**
- * Handles a code base, i.e., the set of public methods of an application.
+ * Handles a code base, i.e., the set of methods in an application.
  *
  * @author olle.hallin@crisp.se
  */
@@ -32,6 +32,11 @@ public class CodeBase {
 
     public static final String ADDED_PATTERNS_FILENAME = "/byte-code-added-methods.txt";
     public static final String ENHANCED_PATTERNS_FILENAME = "/byte-code-enhanced-methods.txt";
+
+    static final String SIGNATURES_SECTION = "# Signatures:";
+    static final String OVERRIDDEN_SIGNATURES_SECTION = "# Overridden signatures:";
+    static final String RAW_STRANGE_SIGNATURES_SECTION = "# Raw strange signatures:";
+    static final String NORMALIZED_STRANGE_SIGNATURES_SECTION = "# Normalized strange signatures:";
 
     private final List<File> codeBaseFiles;
 
@@ -51,8 +56,8 @@ public class CodeBase {
     private List<URL> urls;
     private boolean needsExploding = false;
 
-    private final Set<Pattern> bytecodeAddedPatterns;
-    private final Set<Pattern> bytecodeEnhancedPatterns;
+    private final List<Pattern> bytecodeAddedPatterns;
+    private final List<Pattern> bytecodeEnhancedPatterns;
     private final Set<Pattern> loggedBadPatterns = new HashSet<>();
 
     public CodeBase(CollectorConfig config) {
@@ -63,8 +68,8 @@ public class CodeBase {
         this.bytecodeEnhancedPatterns = readByteCodePatternsFrom(ENHANCED_PATTERNS_FILENAME);
     }
 
-    private Set<Pattern> readByteCodePatternsFrom(String resourceName) {
-        Set<Pattern> result = new HashSet<>();
+    private List<Pattern> readByteCodePatternsFrom(String resourceName) {
+        List<Pattern> result = new ArrayList<>();
         URL resource = getClass().getResource(resourceName);
         try {
             List<String> lines = Files.readLines(new File(resource.toURI()), Charset.forName("UTF-8"));
@@ -97,7 +102,7 @@ public class CodeBase {
             return null;
         }
 
-        if (signature.contains("..")) {
+        if (isStrangeSignature(signature)) {
             strangeSignatures.add(signature);
         }
 
@@ -116,14 +121,20 @@ public class CodeBase {
                 } else {
                     result = matcher.group(1) + "." + matcher.group(2) + matcher.group(3);
                     log.trace("Normalized {} to {}", signature, result);
+                    break;
                 }
             }
         }
 
-        if (result.contains("..")) {
+        if (isStrangeSignature(result)) {
             log.warn("Could not normalize {}: {}", signature, result);
         }
         return result;
+    }
+
+    boolean isStrangeSignature(String signature) {
+        return signature.contains("..") || signature.contains("$$") || signature.contains("CGLIB")
+                || signature.contains("EnhancerByGuice") || signature.contains("FastClassByGuice");
     }
 
     private void logBadPattern(Pattern pattern) {
@@ -213,14 +224,14 @@ public class CodeBase {
             File tmpFile = File.createTempFile("codekvast", ".tmp", directory);
             out = new PrintWriter(tmpFile, "UTF-8");
 
-            out.println("# Signatures:");
+            out.println(SIGNATURES_SECTION);
             for (String signature : signatures.keySet()) {
                 out.println(signature);
             }
 
             out.println();
             out.println("------------------------------------------------------------------------------------------------");
-            out.println("# Overridden signatures:");
+            out.println(OVERRIDDEN_SIGNATURES_SECTION);
             out.println("# child() -> base()");
             for (Map.Entry<String, String> entry : overriddenSignatures.entrySet()) {
                 out.printf("%s -> %s%n", entry.getKey(), entry.getValue());
@@ -228,9 +239,19 @@ public class CodeBase {
 
             out.println();
             out.println("------------------------------------------------------------------------------------------------");
-            out.println("# Strange signatures:");
+            out.println(RAW_STRANGE_SIGNATURES_SECTION);
             for (String signature : strangeSignatures) {
                 out.println(signature);
+            }
+
+            out.println();
+            out.println("------------------------------------------------------------------------------------------------");
+            out.println(NORMALIZED_STRANGE_SIGNATURES_SECTION);
+            for (String signature : strangeSignatures) {
+                String normalized = normalizeSignature(signature);
+                if (normalized != null) {
+                    out.println(normalized);
+                }
             }
 
             if (!tmpFile.renameTo(file)) {

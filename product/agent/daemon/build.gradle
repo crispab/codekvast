@@ -76,6 +76,7 @@ run {
             "--codekvast.exportFile=/tmp/codekvast/.export/codekvast-data-#timestamp#.zip",
             // During test
             // "--codekvast.exportFile=/home/qolha/Dropbox/Kund/Transmode/codekvast/codekvast-data.zip",
+            // "--codekvast.dataProcessingIntervalSeconds=60",
     ]
 }
 run.dependsOn startDatabase

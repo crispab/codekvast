@@ -26,7 +26,7 @@ public class CodeBaseTest {
                     ".FastClassByGuice..96f9109e.getIndex(com.google.inject.internal.cglib.core..Signature)",
             "public int se.customer.module.l1mgr.connectivity.persistence.TrailEAO..EnhancerByGuice..a219ec4a..FastClassByGuice." +
                     ".2d349e96.getIndex(java.lang.Class[])",
-    };
+            };
 
     @Test
     public void guiceGeneratedSignaturesShouldBeIgnored() throws URISyntaxException {
@@ -49,13 +49,18 @@ public class CodeBaseTest {
     public void testNormalizeStrangeSignatures() throws URISyntaxException, IOException {
         codeBase = getCodeBase(SAMPLE_APP_JAR);
         List<String> signatures =
-                Files.readLines(new File(getClass().getResource("/customer1/strange-signatures1.dat").toURI()), Charset.forName("UTF-8"));
+                Files.readLines(new File(getClass().getResource("/customer1/signatures1.dat").toURI()), Charset.forName("UTF-8"));
+
+        boolean inStrangeSignaturesSection = false;
         for (String signature : signatures) {
-            String normalized = codeBase.normalizeSignature(signature);
-            if (normalized != null) {
-                assertThat("Could not normalize " + signature, normalized.contains(".."), is(false));
-                assertThat("Could not normalize " + signature + ", result contains Guice-generated hash: " + normalized,
-                           normalized.matches(".*\\.[a-f0-9]{7,8}\\..*"), is(false));
+            if (signature.equals(CodeBase.RAW_STRANGE_SIGNATURES_SECTION)) {
+                inStrangeSignaturesSection = true;
+            } else if (inStrangeSignaturesSection) {
+                String normalized = codeBase.normalizeSignature(signature);
+                if (normalized != null) {
+                    assertThat(String.format("Could not normalize%n%n   %s%n%nresult is%n%n   %s%n", signature, normalized),
+                                             codeBase.isStrangeSignature(normalized), is(false));
+                }
             }
         }
     }
