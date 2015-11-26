@@ -12,4 +12,15 @@
 .*\.\.FastClassByGuice.*\.invoke\(int, java\.lang\.Object, java\.lang\.Object\[\]\)$
 .*\.\.EnhancerByGuice\.\.[a-f0-9]+\.CGLIB\$STATICHOOK[0-9]+\(\)
 .*\.\.EnhancerByGuice\.\.[a-f0-9]+\.CGLIB\$BIND_CALLBACKS\(java\.lang\.Object\)
+
 .*\(com\.google\.inject\.internal\.cglib.*\)$
+
+.*\.\.EnhancerBySpringCGLIB\.\.[a-z0-9]+\.CGLIB\$STATICHOOK\d+\(\)
+.*\.\.EnhancerBySpringCGLIB\.\.[a-z0-9]+\.CGLIB\$(guavaModule|jdk8Module)\$\d+\(\)
+.*\.\.EnhancerBySpringCGLIB\.\.[a-z0-9]+\.(guavaModule|jdk8Module)\(\)
+.*\.\.EnhancerBySpringCGLIB\.\.[a-z0-9]+\.CGLIB\$BIND_CALLBACKS\(java\.lang\.Object\)
+.*\.\.EnhancerBySpringCGLIB\.\.[a-z0-9]+\.CGLIB\$SET_STATIC_CALLBACKS\(org\.springframework\.cglib\.proxy\.Callback\[\]\)
+.*\.\.FastClassBySpringCGLIB\.\.[a-z0-9]+\.getIndex\(org\.springframework\.cglib\.core\.Signature\)
+.*\.\.EnhancerBySpringCGLIB\.\.[a-z0-9]+\.\.FastClassBySpringCGLIB\.\.[a-z0-9]+\.invoke\(int,\s*java\.lang\.Object,\s*java\.lang\.Object\[\]\)
+.*\.\.EnhancerBySpringCGLIB\.\.[a-z0-9]+\.addAdvisor\(int,\s*org\.springframework\.aop\.Advisor\)
+.*\.\.EnhancerBySpringCGLIB\.\.[a-z0-9]+\.isFrozen\(\)
