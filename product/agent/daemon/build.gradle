@@ -74,6 +74,7 @@ run {
             "--codekvast.dataProcessingIntervalSeconds=600",
             "--codekvast.databasePath=tcp://localhost/$buildDir/database",
             "--codekvast.exportFile=/tmp/codekvast/.export/codekvast-data-#timestamp#.zip",
+            "--codekvast.environment=Gradle",
             // During test
             // "--codekvast.exportFile=/home/qolha/Dropbox/Kund/Transmode/codekvast/codekvast-data.zip",
             // "--codekvast.dataProcessingIntervalSeconds=60",
