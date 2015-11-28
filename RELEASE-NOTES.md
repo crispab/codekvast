@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.13.3
+
+1. Applied some Intellij inspections.
+
 ## 0.13.2
 
 1. Changed Central warehouse schema: replaced jvms.jvmDataJson with discrete fields.
