@@ -8,7 +8,7 @@ import org.aopalliance.intercept.MethodInvocation;
  * @author Per Huss, Diabol (qpehu)
  */
 @Slf4j
-public class TimedInterceptor implements MethodInterceptor {
+class TimedInterceptor implements MethodInterceptor {
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {

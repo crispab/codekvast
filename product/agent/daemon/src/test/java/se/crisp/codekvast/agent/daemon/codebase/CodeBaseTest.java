@@ -16,8 +16,8 @@ import static org.junit.Assert.assertThat;
 
 public class CodeBaseTest {
 
-    public static final String SAMPLE_APP_LIB = "src/test/resources/sample-app/lib";
-    public static final String SAMPLE_APP_JAR = SAMPLE_APP_LIB + "/sample-app.jar";
+    private static final String SAMPLE_APP_LIB = "src/test/resources/sample-app/lib";
+    private static final String SAMPLE_APP_JAR = SAMPLE_APP_LIB + "/sample-app.jar";
 
     private CodeBase codeBase;
 
@@ -37,7 +37,7 @@ public class CodeBaseTest {
         }
     }
 
-    private CodeBase getCodeBase(String codeBase) throws URISyntaxException {
+    private CodeBase getCodeBase(String codeBase) {
         return new CodeBase(CollectorConfigFactory.builder()
                                                   .codeBase(new File(codeBase).getAbsolutePath())
                                                   .packagePrefixes("se.crisp")

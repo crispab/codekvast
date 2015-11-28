@@ -28,7 +28,7 @@ public class DatabaseUtilsTest {
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     private TimeZone savedTimeZone;
-    private CodekvastSettings settings = new CodekvastSettings();
+    private final CodekvastSettings settings = new CodekvastSettings();
     private Date date;
 
     private final String schemaVersion = "2.0";

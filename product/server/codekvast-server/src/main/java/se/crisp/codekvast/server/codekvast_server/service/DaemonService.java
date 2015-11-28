@@ -1,8 +1,8 @@
 package se.crisp.codekvast.server.codekvast_server.service;
 
+import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.daemon_api.model.v1.JvmData;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureData;
-import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 
 /**
  * Responsible for the daemon-facing business logic.
@@ -24,6 +24,6 @@ public interface DaemonService {
      *
      * @param data The received invocation data
      */
-    void storeSignatureData(SignatureData data) throws CodekvastException;
+    void storeSignatureData(SignatureData data);
 
 }

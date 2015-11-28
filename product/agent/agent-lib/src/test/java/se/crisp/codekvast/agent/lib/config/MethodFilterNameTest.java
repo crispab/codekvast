@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
 
 import java.lang.reflect.Method;
 
@@ -87,34 +88,34 @@ public class MethodFilterNameTest {
         };
     }
 
-    @Parameterized.Parameter(0)
+    @Parameter(0)
     public String name;
 
-    @Parameterized.Parameter(1)
+    @Parameter(1)
     public String prettyArgs;
 
-    @Parameterized.Parameter(2)
+    @Parameter(2)
     public Class<?> parameterTypes[];
 
-    @Parameterized.Parameter(3)
+    @Parameter(3)
     public boolean expectedGetter;
 
-    @Parameterized.Parameter(4)
+    @Parameter(4)
     public boolean expectedSetter;
 
-    @Parameterized.Parameter(5)
+    @Parameter(5)
     public boolean expectedEquals;
 
-    @Parameterized.Parameter(6)
+    @Parameter(6)
     public boolean expectedHashCode;
 
-    @Parameterized.Parameter(7)
+    @Parameter(7)
     public boolean expectedCompareTo;
 
-    @Parameterized.Parameter(8)
+    @Parameter(8)
     public boolean expectedToString;
 
-    MethodFilter filter = new MethodFilter("all");
+    final MethodFilter filter = new MethodFilter("all");
 
     @Test
     public void testIsMethod() throws Exception {

@@ -11,9 +11,9 @@ import org.springframework.validation.Validator;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import se.crisp.codekvast.server.daemon_api.model.v1.Constraints;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.service.RegistrationService;
+import se.crisp.codekvast.server.daemon_api.model.v1.Constraints;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -30,7 +30,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Slf4j
 public class RegistrationController extends AbstractThymeleafController {
 
-    public static final String IS_UNIQUE_PATH = "/register/isUnique";
+    private static final String IS_UNIQUE_PATH = "/register/isUnique";
     public static final String REGISTER_PATH = "/register";
     public static final int MAX_ORGANISATION_NAME_LENGTH = 100;
 
@@ -83,9 +83,7 @@ public class RegistrationController extends AbstractThymeleafController {
     @RequestMapping(value = IS_UNIQUE_PATH, method = RequestMethod.POST)
     @ResponseBody
     public IsNameUniqueResponse isUnique(@RequestBody @Valid IsNameUniqueRequest request) {
-        IsNameUniqueResponse response =
-                IsNameUniqueResponse.builder().isUnique(registrationService.isUnique(toKind(request.getKind()), request.getName())).build();
-        return response;
+        return IsNameUniqueResponse.builder().isUnique(registrationService.isUnique(toKind(request.getKind()), request.getName())).build();
     }
 
     private RegistrationService.UniqueKind toKind(String kind) {

@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class SampleSwingPanel extends JPanel implements ActionListener {
+class SampleSwingPanel extends JPanel implements ActionListener {
     private int newNodeSuffix = 1;
     private static String ADD_COMMAND = "add";
     private static String REMOVE_COMMAND = "remove";

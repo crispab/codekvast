@@ -37,7 +37,7 @@ public class ReportServiceImpl implements ReportService {
     private final DaemonDAO daemonDAO;
     private final ReportDAO reportDAO;
 
-    private AtomicInteger nextReportId = new AtomicInteger();
+    private final AtomicInteger nextReportId = new AtomicInteger();
     private final Map<Integer, MethodUsageReport> reports = new HashMap<>();
     private final Map<Format, ReportFormatter> reportFormatterMap = new HashMap<>();
 

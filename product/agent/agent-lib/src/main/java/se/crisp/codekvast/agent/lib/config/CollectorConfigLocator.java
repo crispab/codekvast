@@ -14,13 +14,13 @@ import java.net.URISyntaxException;
  */
 public class CollectorConfigLocator {
 
-    public static final String ENVVAR_CATALINA_BASE = "CATALINA_BASE";
-    public static final String ENVVAR_CATALINA_HOME = "CATALINA_HOME";
-    public static final String ENVVAR_CONFIG = "CODEKVAST_CONFIG";
-    public static final String ENVVAR_HOME = "CODEKVAST_HOME";
+    private static final String ENVVAR_CATALINA_BASE = "CATALINA_BASE";
+    private static final String ENVVAR_CATALINA_HOME = "CATALINA_HOME";
+    private static final String ENVVAR_CONFIG = "CODEKVAST_CONFIG";
+    private static final String ENVVAR_HOME = "CODEKVAST_HOME";
     public static final String ENVVAR_VERBOSE = "CODEKVAST_VERBOSE";
-    public static final String SYSPROP_CATALINA_BASE = "catalina.base";
-    public static final String SYSPROP_CATALINA_HOME = "catalina.home";
+    private static final String SYSPROP_CATALINA_BASE = "catalina.base";
+    private static final String SYSPROP_CATALINA_HOME = "catalina.home";
     public static final String SYSPROP_CONFIG = "codekvast.configuration";
     public static final String SYSPROP_HOME = "codekvast.home";
     public static final String SYSPROP_OPTS = "codekvast.options";

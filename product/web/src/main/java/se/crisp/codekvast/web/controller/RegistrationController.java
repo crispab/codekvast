@@ -25,7 +25,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @RestController
 @Slf4j
 public class RegistrationController {
-    public static final String REGISTER_PATH = "/register";
+    private static final String REGISTER_PATH = "/register";
 
     @NonNull
     private final Validator validator;

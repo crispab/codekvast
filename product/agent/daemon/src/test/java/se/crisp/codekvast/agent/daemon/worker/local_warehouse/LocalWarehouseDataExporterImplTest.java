@@ -56,6 +56,7 @@ public class LocalWarehouseDataExporterImplTest {
 
         dataExporter.exportData();
 
+        //noinspection UseOfSystemOutOrSystemErr
         System.out.println("exportFile = " + config.getExportFile());
         assertThat(config.getExportFile().exists(), is(true));
     }

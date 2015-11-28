@@ -16,11 +16,11 @@ import static org.junit.Assert.assertThat;
 
 public class FileUtilsTest {
 
-    public static final String COMMENT = "some comment";
-    public static final String SOME_URI = "file://go/figure";
-    public static final String SOME_FILE_PATH = "/some/file/path";
-    public static final int URI_LINE_NO = 3;
-    public static final int FILE_LINE_NO = 2;
+    private static final String COMMENT = "some comment";
+    private static final String SOME_URI = "file://go/figure";
+    private static final String SOME_FILE_PATH = "/some/file/path";
+    private static final int URI_LINE_NO = 3;
+    private static final int FILE_LINE_NO = 2;
 
     @Rule
     public final TemporaryFolder temporaryFolder = new TemporaryFolder();

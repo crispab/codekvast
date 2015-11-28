@@ -68,6 +68,7 @@ public final class ConfigUtils {
                 String prefix = key1 != null ? "\\$\\{" : "\\$";
                 String suffix = key1 != null ? "\\}" : "";
                 replacement = String.format("%s%s%s", prefix, key, suffix);
+                //noinspection UseOfSystemOutOrSystemErr
                 System.err.printf("Warning: unrecognized variable: %s%n", replacement.replace("\\", ""));
             }
 

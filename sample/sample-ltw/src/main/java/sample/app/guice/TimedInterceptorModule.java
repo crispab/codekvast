@@ -8,7 +8,7 @@ import static com.google.inject.matcher.Matchers.any;
 /**
  * @author olle.hallin@crisp.se
  */
-public class TimedInterceptorModule extends AbstractModule {
+class TimedInterceptorModule extends AbstractModule {
 
     @Override
     protected void configure() {

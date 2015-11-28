@@ -61,6 +61,7 @@ public class MethodFilter {
 
         if (!recognized) {
             if (!value.isEmpty()) {
+                //noinspection UseOfSystemOutOrSystemErr
                 System.err.println("Unrecognized value for methodVisibility: \"" + value + "\", assuming \"public\"");
             }
             _public = true;

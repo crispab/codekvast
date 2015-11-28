@@ -25,6 +25,7 @@ import static org.junit.Assert.fail;
  *
  * @author olle.hallin@crisp.se
  */
+@SuppressWarnings("UseOfSystemOutOrSystemErr")
 @RunWith(Parameterized.class)
 public class MethodFilterVisibilityTest {
 
@@ -72,7 +73,7 @@ public class MethodFilterVisibilityTest {
     public String expectedToString;
 
     private PrintStream savedSystemErr;
-    private ByteArrayOutputStream capturedSystemErr = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream capturedSystemErr = new ByteArrayOutputStream();
 
     @Rule
     public Verifier verifier = new Verifier() {
@@ -111,8 +112,8 @@ public class MethodFilterVisibilityTest {
         assertThat("Should include public", filter.shouldIncludeByModifiers(Modifier.SYNCHRONIZED | Modifier.PUBLIC), is(selectsPublic));
         assertThat("Should include protected", filter.shouldIncludeByModifiers(Modifier.SYNCHRONIZED | Modifier.PROTECTED),
                    is(selectsProtected));
-        assertThat("Should include package private", filter.shouldIncludeByModifiers(Modifier.SYNCHRONIZED | 0), is(selectsPackagePrivate));
-        assertThat("Should include static package private", filter.shouldIncludeByModifiers(Modifier.STATIC | 0),
+        assertThat("Should include package private", filter.shouldIncludeByModifiers(Modifier.SYNCHRONIZED), is(selectsPackagePrivate));
+        assertThat("Should include static package private", filter.shouldIncludeByModifiers(Modifier.STATIC),
                    is(selectsPackagePrivate));
         assertThat("Should include private", filter.shouldIncludeByModifiers(Modifier.SYNCHRONIZED | Modifier.PRIVATE), is(selectsPrivate));
 

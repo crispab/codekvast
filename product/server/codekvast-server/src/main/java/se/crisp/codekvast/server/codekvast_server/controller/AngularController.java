@@ -164,7 +164,7 @@ public class AngularController extends AbstractEventBusSubscriber {
     /**
      * Spring converter to support lower case enum parameter
      */
-    public static class ReportFormatEnumConverter extends PropertyEditorSupport {
+    private static class ReportFormatEnumConverter extends PropertyEditorSupport {
 
         @Override
         public void setAsText(String text) throws IllegalArgumentException {

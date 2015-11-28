@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @author olle.hallin@crisp.se
  */
-@SuppressWarnings("UnusedDeclaration")
+@SuppressWarnings({"UnusedDeclaration", "UseOfSystemOutOrSystemErr"})
 @Slf4j
 public class ScannerTest4 extends java.util.Date {
     @Override
@@ -23,6 +23,11 @@ public class ScannerTest4 extends java.util.Date {
 
     public void m4(String s) {
         System.out.printf("m4(String)");
+    }
+
+    @Override
+    public ScannerTest4 clone() {
+        return (ScannerTest4) super.clone();
     }
 
     public class Inner {

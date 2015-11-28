@@ -42,7 +42,7 @@ import static java.util.stream.Collectors.joining;
 @Slf4j
 public class LocalWarehouseDataExporterImpl implements DataExporter {
 
-    public static final String SCHEMA_VERSION = "V1";
+    private static final String SCHEMA_VERSION = "V1";
 
     private final JdbcTemplate jdbcTemplate;
     private final DaemonConfig config;
@@ -84,7 +84,7 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
         return parentFile == null ? new File(name) : new File(parentFile, name);
     }
 
-    public static String humanReadableByteCount(long bytes) {
+    private static String humanReadableByteCount(long bytes) {
         if (bytes < 1000) {
             return bytes + " B";
         }
@@ -181,8 +181,7 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
         }
 
         try {
-            File tempFile = File.createTempFile("codekvast-data", ".tmp", directory);
-            return tempFile;
+            return File.createTempFile("codekvast-data", ".tmp", directory);
         } catch (IOException e) {
             throw new DataExportException("Cannot create temporary file in " + directory, e);
         }

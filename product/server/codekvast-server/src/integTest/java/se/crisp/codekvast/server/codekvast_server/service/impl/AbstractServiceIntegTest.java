@@ -14,13 +14,13 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
-import se.crisp.codekvast.server.daemon_api.model.v1.JvmData;
 import se.crisp.codekvast.server.codekvast_server.config.CodekvastSettings;
 import se.crisp.codekvast.server.codekvast_server.config.DatabaseConfig;
 import se.crisp.codekvast.server.codekvast_server.config.EventBusConfig;
 import se.crisp.codekvast.server.codekvast_server.dao.impl.DaemonDAOImpl;
 import se.crisp.codekvast.server.codekvast_server.dao.impl.ReportDAOImpl;
 import se.crisp.codekvast.server.codekvast_server.dao.impl.UserDAOImpl;
+import se.crisp.codekvast.server.daemon_api.model.v1.JvmData;
 
 import javax.inject.Inject;
 import java.time.Instant;
@@ -40,9 +40,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @TestExecutionListeners({TransactionalTestExecutionListener.class, SqlScriptsTestExecutionListener.class})
 @Transactional
 public abstract class AbstractServiceIntegTest extends AbstractJUnit4SpringContextTests {
-    protected final List<Object> events = new CopyOnWriteArrayList<>();
+    final List<Object> events = new CopyOnWriteArrayList<>();
 
-    protected final long now = Instant.parse("2015-05-10T10:11:12.456Z").toEpochMilli();
+    final long now = Instant.parse("2015-05-10T10:11:12.456Z").toEpochMilli();
 
     @Inject
     protected PlatformTransactionManager transactionManager;
@@ -53,6 +53,7 @@ public abstract class AbstractServiceIntegTest extends AbstractJUnit4SpringConte
     @Inject
     private EventBus eventBus;
 
+    @SuppressWarnings("FinalMethod")
     @Before
     public final void before() throws Exception {
         events.clear();
@@ -62,6 +63,7 @@ public abstract class AbstractServiceIntegTest extends AbstractJUnit4SpringConte
         jdbcTemplate.update("ALTER TABLE jvm_info ALTER COLUMN id RESTART WITH 1");
     }
 
+    @SuppressWarnings("FinalMethod")
     @After
     public final void after() throws Exception {
         try {
@@ -72,12 +74,12 @@ public abstract class AbstractServiceIntegTest extends AbstractJUnit4SpringConte
         }
     }
 
-    protected Integer countRows(String table, Object... args) {
+    Integer countRows(String table, Object... args) {
         return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM " + table, Integer.class, args);
     }
 
-    protected JvmData createJvmData(long startedAtMillis, long reportedAtMillis, String appName, String appVersion, String jvmUuid,
-                                    String hostName) {
+    JvmData createJvmData(long startedAtMillis, long reportedAtMillis, String appName, String appVersion, String jvmUuid,
+                          String hostName) {
 
         return JvmData.builder()
                       .daemonHostName(hostName)

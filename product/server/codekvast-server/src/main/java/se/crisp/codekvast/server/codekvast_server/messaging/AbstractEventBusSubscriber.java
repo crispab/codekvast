@@ -12,7 +12,7 @@ import javax.annotation.PreDestroy;
  * @author olle.hallin@crisp.se
  */
 public abstract class AbstractEventBusSubscriber {
-    protected final EventBus eventBus;
+    final EventBus eventBus;
     protected final SimpMessagingTemplate messagingTemplate;
 
     protected AbstractEventBusSubscriber(EventBus eventBus, SimpMessagingTemplate messagingTemplate) {

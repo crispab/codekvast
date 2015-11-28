@@ -1,5 +1,6 @@
 package se.crisp.codekvast.server.codekvast_server.util;
 
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.jdbc.pool.PoolConfiguration;
 import org.springframework.dao.DataAccessException;
@@ -8,7 +9,6 @@ import se.crisp.codekvast.server.codekvast_server.config.CodekvastSettings;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -19,6 +19,7 @@ import java.util.Locale;
  * @author olle.hallin@crisp.se
  */
 @Slf4j
+@UtilityClass
 public class DatabaseUtils {
 
     private static final String CHARSET = "UTF-8";
@@ -27,9 +28,9 @@ public class DatabaseUtils {
     /**
      * If found in ${codekvast.backupPath}, it will be used for restoring the database.
      */
-    public static final String RESTORE_ME_FILE = "restore-me." + COMPRESSION.toLowerCase();
+    private static final String RESTORE_ME_FILE = "restore-me." + COMPRESSION.toLowerCase();
 
-    public static void backupDatabase(JdbcTemplate jdbcTemplate, String backupFile) throws SQLException {
+    public static void backupDatabase(JdbcTemplate jdbcTemplate, String backupFile) {
         String sql = String.format("SCRIPT NOPASSWORDS DROP TO '%s' COMPRESSION %s CHARSET '%s' ", backupFile, COMPRESSION, CHARSET);
         jdbcTemplate.execute(sql);
     }
@@ -137,7 +138,7 @@ public class DatabaseUtils {
                 new IOException("Cannot create backup file in any of " + Arrays.toString(settings.getBackupPaths())));
     }
 
-    public static String getSchemaVersion(JdbcTemplate jdbcTemplate) {
+    private static String getSchemaVersion(JdbcTemplate jdbcTemplate) {
         return jdbcTemplate.queryForObject(
                 "SELECT TOP 1 \"version\" FROM \"schema_version\" ORDER BY \"version_rank\" DESC", String.class);
     }

@@ -15,6 +15,7 @@ import java.util.concurrent.CountDownLatch;
  *
  * @author olle.hallin@crisp.se
  */
+@SuppressWarnings("UseOfSystemOutOrSystemErr")
 @RunWith(Parameterized.class)
 public class ConcurrentSetPerformanceTest {
 
@@ -81,7 +82,7 @@ public class ConcurrentSetPerformanceTest {
     }
 
     static class ManuallySynchronizedHashSetStrategy implements Strategy {
-        private Set<String> set = new HashSet<String>();
+        private final Set<String> set = new HashSet<String>();
 
         @Override
         public void add(String s) {
@@ -99,7 +100,7 @@ public class ConcurrentSetPerformanceTest {
     }
 
     static class WrappedSynchronizedHashSetStrategy implements Strategy {
-        private Set<String> set = Collections.synchronizedSet(new HashSet<String>());
+        private final Set<String> set = Collections.synchronizedSet(new HashSet<String>());
 
         @Override
         public void add(String s) {
@@ -150,9 +151,9 @@ public class ConcurrentSetPerformanceTest {
     }
 
     @Parameterized.Parameter(0)
-    public int numThreads;
+    private int numThreads;
 
-    private SortedSet<String> result = new TreeSet<String>();
+    private final SortedSet<String> result = new TreeSet<String>();
 
     @BeforeClass
     public static void warmUpJitCompiler() throws Exception {
@@ -204,7 +205,7 @@ public class ConcurrentSetPerformanceTest {
                         for (int i = 0; i < count; i++) {
                             strategy.add(RANDOM_STRINGS[i % RANDOM_STRINGS.length]);
                         }
-                    } catch (InterruptedException e) {
+                    } catch (InterruptedException ignored) {
                     } finally {
                         allThreadsFinished.countDown();
                     }

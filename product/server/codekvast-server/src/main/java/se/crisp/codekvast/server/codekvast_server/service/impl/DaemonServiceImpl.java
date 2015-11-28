@@ -3,14 +3,14 @@ package se.crisp.codekvast.server.codekvast_server.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import se.crisp.codekvast.server.daemon_api.model.v1.JvmData;
-import se.crisp.codekvast.server.daemon_api.model.v1.SignatureData;
 import se.crisp.codekvast.server.codekvast_server.dao.DaemonDAO;
 import se.crisp.codekvast.server.codekvast_server.dao.UserDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.CodekvastException;
 import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import se.crisp.codekvast.server.codekvast_server.service.DaemonService;
 import se.crisp.codekvast.server.codekvast_server.service.StatisticsService;
+import se.crisp.codekvast.server.daemon_api.model.v1.JvmData;
+import se.crisp.codekvast.server.daemon_api.model.v1.SignatureData;
 
 import javax.inject.Inject;
 
@@ -46,7 +46,7 @@ public class DaemonServiceImpl implements DaemonService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void storeSignatureData(SignatureData data) throws CodekvastException {
+    public void storeSignatureData(SignatureData data) {
         if (log.isTraceEnabled()) {
             log.trace("Storing {}", data.toLongString());
         } else {

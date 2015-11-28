@@ -77,7 +77,7 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
 
         protected abstract Collection<MethodUsageEntry> doGetMethods(ReportParameters reportParameters);
 
-        protected List<Object> generateParams(ReportParameters reportParameters) {
+        List<Object> generateParams(ReportParameters reportParameters) {
             List<Object> params = new ArrayList<>();
             params.add(reportParameters.getOrganisationId());
             params.addAll(reportParameters.getApplicationIds().stream().distinct().collect(Collectors.toList()));
@@ -85,7 +85,7 @@ public class ReportDAOImpl extends AbstractDAOImpl implements ReportDAO {
             return params;
         }
 
-        protected String generateSql(ReportParameters reportParameters) {
+        String generateSql(ReportParameters reportParameters) {
             String appIds = reportParameters.getApplicationIds().stream().distinct().map(s -> "?").collect(Collectors.joining(","));
             String jvmIds = reportParameters.getJvmIds().stream().distinct().map(s -> "?").collect(Collectors.joining(","));
 

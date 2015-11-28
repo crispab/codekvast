@@ -13,18 +13,18 @@ import java.util.Properties;
  */
 public class CollectorConfigFactory {
 
-    public static final boolean DEFAULT_CLOBBER_AOP_XML = true;
-    public static final String DEFAULT_ASPECTJ_OPTIONS = "";
-    public static final String DEFAULT_METHOD_VISIBILITY = SignatureUtils.PUBLIC;
-    public static final int DEFAULT_COLLECTOR_RESOLUTION_SECONDS = 600;
-    public static final boolean DEFAULT_VERBOSE = false;
-    public static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
-    public static final String SAMPLE_CODEBASE_URI1 = "/path/to/codebase1/";
-    public static final String SAMPLE_CODEBASE_URI2 = "/path/to/codebase2/";
-    public static final File SAMPLE_DATA_PATH = new File("/tmp/codekvast");
-    public static final String SAMPLE_TAGS = "key1=value1, key2=value2";
-    public static final String OVERRIDE_SEPARATOR = ";";
-    public static final String UNSPECIFIED_VERSION = "unspecified";
+    private static final boolean DEFAULT_CLOBBER_AOP_XML = true;
+    private static final String DEFAULT_ASPECTJ_OPTIONS = "";
+    private static final String DEFAULT_METHOD_VISIBILITY = SignatureUtils.PUBLIC;
+    private static final int DEFAULT_COLLECTOR_RESOLUTION_SECONDS = 600;
+    private static final boolean DEFAULT_VERBOSE = false;
+    private static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
+    private static final String SAMPLE_CODEBASE_URI1 = "/path/to/codebase1/";
+    private static final String SAMPLE_CODEBASE_URI2 = "/path/to/codebase2/";
+    private static final File SAMPLE_DATA_PATH = new File("/tmp/codekvast");
+    private static final String SAMPLE_TAGS = "key1=value1, key2=value2";
+    private static final String OVERRIDE_SEPARATOR = ";";
+    private static final String UNSPECIFIED_VERSION = "unspecified";
 
     private static final String TAGS_KEY = "tags";
 
@@ -55,7 +55,7 @@ public class CollectorConfigFactory {
         }
     }
 
-    static void parseOverrides(Properties props, String args) {
+    private static void parseOverrides(Properties props, String args) {
         if (args != null) {
             String overrides[] = args.split(OVERRIDE_SEPARATOR);
             for (String override : overrides) {

@@ -20,7 +20,7 @@ public interface MailChimpService {
     SubscribeToNewsletterResult subscribeToNewsletter(Collection<String> emailAddresses) throws MailChimpException;
 
     @Data
-    public static class SubscribeToNewsletterResult {
+    class SubscribeToNewsletterResult {
         private Set<String> subscribed = new TreeSet<>();
         private Set<String> failed = new TreeSet<>();
     }

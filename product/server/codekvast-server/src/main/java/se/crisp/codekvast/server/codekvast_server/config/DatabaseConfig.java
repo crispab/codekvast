@@ -33,8 +33,8 @@ import java.util.stream.Collectors;
 @Configuration
 @Slf4j
 public class DatabaseConfig {
-    public static final String JAVA_MIGRATION_LOCATION = V1_1__DummyJavaMigration.class.getPackage().getName();
-    public static final String SQL_MIGRATION_LOCATION = "database.migration";
+    private static final String JAVA_MIGRATION_LOCATION = V1_1__DummyJavaMigration.class.getPackage().getName();
+    private static final String SQL_MIGRATION_LOCATION = "database.migration";
 
     @Bean
     PasswordEncoder passwordEncoder() {

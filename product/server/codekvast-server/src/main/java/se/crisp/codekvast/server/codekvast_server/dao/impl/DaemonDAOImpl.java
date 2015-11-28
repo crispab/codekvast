@@ -8,9 +8,6 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import se.crisp.codekvast.server.daemon_api.model.v1.JvmData;
-import se.crisp.codekvast.server.daemon_api.model.v1.SignatureData;
-import se.crisp.codekvast.server.daemon_api.model.v1.SignatureEntry;
 import se.crisp.codekvast.server.codekvast_server.config.CodekvastSettings;
 import se.crisp.codekvast.server.codekvast_server.dao.DaemonDAO;
 import se.crisp.codekvast.server.codekvast_server.exception.UndefinedApplicationException;
@@ -18,6 +15,9 @@ import se.crisp.codekvast.server.codekvast_server.model.AppId;
 import se.crisp.codekvast.server.codekvast_server.model.event.display.*;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.ApplicationSettingsEntry;
 import se.crisp.codekvast.server.codekvast_server.model.event.rest.OrganisationSettings;
+import se.crisp.codekvast.server.daemon_api.model.v1.JvmData;
+import se.crisp.codekvast.server.daemon_api.model.v1.SignatureData;
+import se.crisp.codekvast.server.daemon_api.model.v1.SignatureEntry;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
@@ -50,8 +50,7 @@ public class DaemonDAOImpl extends AbstractDAOImpl implements DaemonDAO {
         return doGetOrCreateApp(organisationId, appName);
     }
 
-    private Long doGetOrCreateApp(long organisationId, String appName)
-            throws UndefinedApplicationException {
+    private Long doGetOrCreateApp(long organisationId, String appName) {
         try {
             return jdbcTemplate.queryForObject("SELECT id FROM applications WHERE organisation_id = ? AND name = ? ",
                                                Long.class, organisationId, appName);
@@ -207,7 +206,7 @@ public class DaemonDAOImpl extends AbstractDAOImpl implements DaemonDAO {
         return daemonTimeMillis <= 0L ? 0L : System.currentTimeMillis() - daemonTimeMillis;
     }
 
-    String normalizeTags(String tags) {
+    private String normalizeTags(String tags) {
         String normalizedTags = tags == null ? null : tags.trim();
         return normalizedTags == null || normalizedTags.isEmpty() ? null : normalizedTags;
     }
@@ -513,7 +512,6 @@ public class DaemonDAOImpl extends AbstractDAOImpl implements DaemonDAO {
             long firstStartedAtMillis = rs.getLong(10);
             long lastDataReceivedAtMillis = rs.getLong(11);
             long sumUpTimeMillis = rs.getLong(12);
-            long avgUpTimeMillis = rs.getLong(13);
 
             Integer percentDeadSignatures = numSignatures == 0 ? null : Math.round(numNeverInvokedSignatures * 100f / numSignatures);
             Integer percentPossiblyDeadSignatures = numSignatures == 0 ? null : Math.round(numPossiblyDead * 100f / numSignatures);

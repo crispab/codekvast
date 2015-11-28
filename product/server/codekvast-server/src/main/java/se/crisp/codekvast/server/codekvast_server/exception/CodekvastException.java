@@ -5,7 +5,7 @@ package se.crisp.codekvast.server.codekvast_server.exception;
  */
 public class CodekvastException extends Exception {
 
-    public CodekvastException(String message) {
+    CodekvastException(String message) {
         super(message);
     }
 

@@ -37,8 +37,7 @@ a:hover {
 }
 
 #banner {
-    background-image: url("../img/java-code.png");
-    background-repeat: repeat-x;
+    background: url("../img/java-code.png") repeat-x;
     height: 15em;
 }
 

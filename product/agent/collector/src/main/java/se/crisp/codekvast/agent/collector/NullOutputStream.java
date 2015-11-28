@@ -7,7 +7,7 @@ import java.io.IOException;
  *
  * @author olle.hallin@crisp.se
  */
-public class NullOutputStream extends java.io.OutputStream {
+class NullOutputStream extends java.io.OutputStream {
 
     @Override
     public void write(int b) throws IOException {

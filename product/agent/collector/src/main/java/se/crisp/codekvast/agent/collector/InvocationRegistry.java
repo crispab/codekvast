@@ -33,7 +33,7 @@ public class InvocationRegistry {
     private volatile int currentInvocationIndex = 0;
     private long recordingIntervalStartedAtMillis = System.currentTimeMillis();
 
-    public InvocationRegistry(Jvm jvm, InvocationDataDumper invocationDataDumper) {
+    private InvocationRegistry(Jvm jvm, InvocationDataDumper invocationDataDumper) {
         this.jvm = jvm;
         this.invocationDataDumper = invocationDataDumper;
 

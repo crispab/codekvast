@@ -1,5 +1,7 @@
 package se.crisp.codekvast.support.common;
 
+import lombok.experimental.UtilityClass;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -13,12 +15,13 @@ import java.io.IOException;
  * @author olle.hallin@crisp.se
  */
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
+@UtilityClass
 public class LoggingConfig {
 
-    public static final String CODEKVAST_LOG_PATH = "codekvast.logPath";
-    public static final String CODEKVAST_LOG_PATH_AS_ENVVAR = "CODEKVAST_LOGPATH";
-    public static final String CODEKVAST_LOG_BASENAME = "codekvast.log.baseName";
-    public static final String CODEKVAST_LOG_CONSOLE_THRESHOLD = "codekvast.log.consoleThreshold";
+    private static final String CODEKVAST_LOG_PATH = "codekvast.logPath";
+    private static final String CODEKVAST_LOG_PATH_AS_ENVVAR = "CODEKVAST_LOGPATH";
+    private static final String CODEKVAST_LOG_BASENAME = "codekvast.log.baseName";
+    private static final String CODEKVAST_LOG_CONSOLE_THRESHOLD = "codekvast.log.consoleThreshold";
 
     public static void configure(Class<?> mainClass, String appName) {
         File varLogCodekvast = new File("/var/log/codekvast");

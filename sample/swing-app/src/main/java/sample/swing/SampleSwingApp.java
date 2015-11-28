@@ -8,6 +8,7 @@ import se.crisp.codekvast.agent.lib.util.ConfigUtils;
 
 import javax.swing.*;
 
+@SuppressWarnings("UseOfSystemOutOrSystemErr")
 public class SampleSwingApp extends JFrame {
     public static void main(String[] args) {
         initializeCodekvast();

@@ -47,7 +47,6 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             }
             if (age >= second) {
                 var seconds = Math.floor(age / second);
-                age = age - seconds * second;
                 result = result + seconds + "s";
             }
             return result.trim();
@@ -79,7 +78,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
         };
 
         var getLastData = function (what) {
-            var data = lastMessages['data']
+            var data = lastMessages['data'];
             return data ? data[what] : undefined;
         };
 
@@ -101,11 +100,11 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                 .value();
 
             broadcast('data', data);
-        }
+        };
 
         var onWebSocketMessage = function (message) {
             handleWebSocketMessage(JSON.parse(message.body))
-        }
+        };
 
         var onConnected = function () {
             console.log("Connected");
@@ -261,7 +260,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
 
         $scope.preloaderImage = function () {
             return $scope.progressMessage && $scope.progressMessage.endsWith(".gif");
-        }
+        };
 
         $scope.setUnit = function (a, code) {
             if (!a.usageCycleValue) {
@@ -363,17 +362,17 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
                         a.usageCycleMultiple = Math.round(a.upTimeSeconds / a.usageCycleSeconds);
                     }
                     if (a.fullUsageCycleCompleted) {
-                        a.percentPossiblyDead = a.percentPossiblyDeadSignatures + "%"
+                        a.percentPossiblyDead = a.percentPossiblyDeadSignatures + "%";
                         a.possiblyDeadTooltip = "This is possibly dead code";
                     } else {
-                        a.percentPossiblyDead = undefined
+                        a.percentPossiblyDead = undefined;
                         a.possiblyDeadTooltip = "Be patient for another " + a.timeToFullUsageCycle + " ...";
                     }
                     a.dataAge = DateService.prettyAge(a.lastDataReceivedAtMillis);
                     a.collectorsWorkingType = a.collectorsWorking === "all" ? "success" : a.collectorsWorking === "some" ? 'warning' : 'danger';
                 }
             }
-        }
+        };
 
         $scope.$on('stompDisconnected', function (event, message) {
             $scope.applicationStatistics = undefined;
@@ -538,8 +537,7 @@ var codekvastApp = angular.module('codekvastApp', ['ngRoute', 'ui.bootstrap'])
             var anyVersion = _($scope.formData.versions).any({selected: true});
             var anyScope = _($scope.formData.scopes).any({selected: true});
             return anyApp && anyVersion && anyScope && !$scope.reportInProgress;
-            ;
-        }
+        };
 
         $scope.getReportData = function () {
             var getMethodUsageRequest = {

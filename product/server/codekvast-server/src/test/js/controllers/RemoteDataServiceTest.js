@@ -26,7 +26,7 @@ describe('RemoteDataService', function () {
                     { name: 'n7', version: '2.10-alpha'}
                 ]
             }
-        )
+        );
         expect(RemoteDataService.getLastData('versions')).toEqual([{name: '2.2'}, {name: '2.2-beta'}, {name: '2.10'}, {name: '2.10-alpha'}, {name: '10.2'}, {name: '10.11'}])
     });
 

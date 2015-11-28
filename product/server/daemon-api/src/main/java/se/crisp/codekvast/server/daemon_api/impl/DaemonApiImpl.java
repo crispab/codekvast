@@ -62,7 +62,7 @@ public class DaemonApiImpl implements DaemonApi {
         this.restTemplate = new RestTemplate(createBasicAuthHttpClient(config.getApiAccessID(), config.getApiAccessSecret()));
     }
 
-    HttpComponentsClientHttpRequestFactory createBasicAuthHttpClient(final String username, final String password) {
+    private HttpComponentsClientHttpRequestFactory createBasicAuthHttpClient(final String username, final String password) {
         CredentialsProvider cp = new BasicCredentialsProvider();
         cp.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
         return new HttpComponentsClientHttpRequestFactory(HttpClients.custom().setDefaultCredentialsProvider(cp).build());
@@ -129,7 +129,7 @@ public class DaemonApiImpl implements DaemonApi {
         }
     }
 
-    public void uploadSignatureChunk(URI uri, String jvmUuid, int chunkNumber, List<SignatureEntry> chunk) throws DaemonApiException {
+    private void uploadSignatureChunk(URI uri, String jvmUuid, int chunkNumber, List<SignatureEntry> chunk) throws DaemonApiException {
         try {
             long startedAt = System.currentTimeMillis();
             log.debug("Uploading chunk #{} of size {}", chunkNumber, chunk.size());

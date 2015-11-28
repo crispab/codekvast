@@ -3,6 +3,6 @@ package sample.app;
 /**
  * @author olle.hallin@crisp.se
  */
-public interface Tracked {
+interface Tracked {
     int publicMethod();
 }

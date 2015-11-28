@@ -23,7 +23,7 @@ public class CodeBaseScannerTest {
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-    public static final String TEST_CLASSES_DIR = "build/classes/test";
+    private static final String TEST_CLASSES_DIR = "build/classes/test";
 
     private final CodeBaseScanner scanner = new CodeBaseScanner();
     private CodeBase codeBase;
@@ -48,7 +48,7 @@ public class CodeBaseScannerTest {
         int numClasses = scanner.scanSignatures(codeBase);
         assertThat(codeBase.getSignatures(), notNullValue());
         assertThat(numClasses, is(9));
-        assertThat(codeBase.getSignatures().size(), is(10));
+        assertThat(codeBase.getSignatures().size(), is(11));
     }
 
     @Test
@@ -76,7 +76,7 @@ public class CodeBaseScannerTest {
     @Test
     public void testFindBaseMethodForScannerTest4() throws URISyntaxException {
         scanner.findTrackedMethods(codeBase, of("se."), ScannerTest4.class);
-        assertThat(codeBase.getSignatures().size(), is(5));
+        assertThat(codeBase.getSignatures().size(), is(6));
     }
 
 }

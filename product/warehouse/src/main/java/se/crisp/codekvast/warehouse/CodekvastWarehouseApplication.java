@@ -30,7 +30,7 @@ public class CodekvastWarehouseApplication {
         application.run(args);
     }
 
-    private static Properties loadDefaultProperties() throws IOException {
+    private static Properties loadDefaultProperties() {
         Properties result = new Properties();
         result.setProperty("tmpDir", System.getProperty("java.io.tmpdir"));
         return result;

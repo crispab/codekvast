@@ -25,6 +25,7 @@ public abstract class AbstractMethodExecutionAspect {
     @Pointcut
     public abstract void methodExecution();
 
+    @SuppressWarnings("NoopMethodInAbstractClass")
     @Pointcut("execution(int compareTo(Object)) " +
             "|| execution(boolean equals(Object)) " +
             "|| execution(* get*()) " +

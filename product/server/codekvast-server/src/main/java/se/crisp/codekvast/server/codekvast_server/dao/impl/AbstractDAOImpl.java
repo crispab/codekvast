@@ -14,13 +14,13 @@ import static com.google.common.base.Preconditions.checkArgument;
  */
 public abstract class AbstractDAOImpl {
 
-    protected final JdbcTemplate jdbcTemplate;
+    final JdbcTemplate jdbcTemplate;
 
     public AbstractDAOImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    protected long doInsertRow(String sql, Object... args) {
+    long doInsertRow(String sql, Object... args) {
         checkArgument(sql.toUpperCase().startsWith("INSERT INTO "));
         jdbcTemplate.update(sql, args);
         return jdbcTemplate.queryForObject("SELECT IDENTITY()", Long.class);

@@ -47,7 +47,7 @@ import java.util.TimerTask;
  */
 public class CodekvastCollector {
 
-    public static final String NAME = "Codekvast";
+    private static final String NAME = "Codekvast";
 
     // AspectJ uses this system property for defining the list of names of load-time weaving config files to locate...
     private static final String ASPECTJ_WEAVER_CONFIGURATION = "org.aspectj.weaver.loadtime.configuration";

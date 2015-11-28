@@ -26,15 +26,11 @@ import java.util.stream.Collectors;
 @Configuration
 @Slf4j
 public class DatabaseConfig {
-    public static final String JAVA_MIGRATION_LOCATION = V1_0__DummyJavaMigration.class.getPackage().getName();
-    public static final String SQL_MIGRATION_LOCATION = "database.migration";
+    private static final String JAVA_MIGRATION_LOCATION = V1_0__DummyJavaMigration.class.getPackage().getName();
+    private static final String SQL_MIGRATION_LOCATION = "database.migration";
 
     @Bean
     public Flyway flyway(DataSource dataSource, CodekvastSettings codekvastSettings) throws SQLException {
-        // Cannot use the jdbcTemplate bean, since it has not yet been constructed.
-        // The method {@code @Bean jdbcTemplate(DataSource)} depends on the currently executing method.
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-
         log.info("Applying Flyway to {}", dataSource.getConnection().getMetaData().getURL());
         Flyway flyway = new Flyway();
         flyway.setDataSource(dataSource);
