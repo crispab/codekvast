@@ -7,7 +7,7 @@
 # Each pattern should have three groups: 1: the class name, 2: the method name and 3: the parameter list
 # Charset: UTF-8
 
-(.*)\.\.EnhancerByGuice\.\.[a-z0-9.]\.(\w+\$\d+)(.*)
-(.*)\.\.EnhancerByGuice\.\.[a-z0-9.]+CGLIB\$(\w+\$\d+)(.*)
-(.*)\.\.EnhancerByGuice\.\.[a-f0-9]+\.(\w+)(.*)
+(.*)\.\.EnhancerByGuice\.\.[0-9a-f]\.(\w+\$\d+)(.*)
+(.*)\.\.EnhancerByGuice\.\.[0-9a-f]+\.CGLIB\$(\w+\$\d+)(.*)
+(.*)\.\.EnhancerByGuice\.\.[0-9a-f]+\.(\w+)(.*)
 
