@@ -30,13 +30,13 @@ public class ImportServiceImpl implements ImportService {
 
     @Override
     public boolean isFileImported(ExportFileMetaInfo metaInfo) {
-        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM file_meta_info WHERE uuid = ? ", Integer.class, metaInfo.getUuid()) > 0;
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM import_file_info WHERE uuid = ? ", Integer.class, metaInfo.getUuid()) > 0;
     }
 
     @Override
     public void recordFileAsImported(ExportFileMetaInfo metaInfo, ImportStatistics importStatistics) {
         jdbcTemplate
-                .update("INSERT INTO file_meta_info(uuid, fileSchemaVersion, fileName, fileLengthBytes, importTimeMillis, " +
+                .update("INSERT INTO import_file_info(uuid, fileSchemaVersion, fileName, fileLengthBytes, importTimeMillis, " +
                                 "importedFromDaemonHostname, importedFromEnvironment) VALUES (?, ?, ?, ?, ?, ?, ?)",
                         metaInfo.getUuid(), metaInfo.getSchemaVersion(),
                         importStatistics.getImportFile().getPath(), importStatistics.getImportFile().length(),
@@ -99,15 +99,18 @@ public class ImportServiceImpl implements ImportService {
         jdbcTemplate.execute("COMMIT");
     }
 
+    private Long doInsertRow(PreparedStatementCreator psc) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(psc, keyHolder);
+        return keyHolder.getKey().longValue();
+    }
+
     private long getCentralApplicationId(Application app) {
         Long appId = queryForLong("SELECT id FROM applications WHERE name = ? AND version = ? ",
                                   app.getName(), app.getVersion());
 
-        //noinspection Duplicates
         if (appId == null) {
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(new InsertApplicationStatement(app), keyHolder);
-            appId = keyHolder.getKey().longValue();
+            appId = doInsertRow(new InsertApplicationStatement(app));
             log.debug("Stored application {}:{}", appId, app);
         }
         return appId;
@@ -116,11 +119,8 @@ public class ImportServiceImpl implements ImportService {
     private long getCentralMethodId(Method method) {
         Long methodId = queryForLong("SELECT id FROM methods WHERE signature = ? ", method.getSignature());
 
-        //noinspection Duplicates
         if (methodId == null) {
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(new InsertMethodStatement(method), keyHolder);
-            methodId = keyHolder.getKey().longValue();
+            methodId = doInsertRow(new InsertMethodStatement(method));
             log.trace("Stored method {}:{}", methodId, method.getSignature());
         }
         return methodId;
@@ -129,11 +129,8 @@ public class ImportServiceImpl implements ImportService {
     private long getCentralJvmId(Jvm jvm, JvmData jvmData) {
         Long jvmId = queryForLong("SELECT id FROM jvms WHERE uuid = ? ", jvm.getUuid());
 
-        //noinspection Duplicates
         if (jvmId == null) {
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(new InsertJvmStatement(jvm, jvmData), keyHolder);
-            jvmId = keyHolder.getKey().longValue();
+            jvmId = doInsertRow(new InsertJvmStatement(jvm, jvmData));
             log.trace("Stored JVM {}:{}", jvmId, jvm);
         }
         return jvmId;

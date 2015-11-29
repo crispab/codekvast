@@ -1,7 +1,7 @@
---- file meta info --------------------------------
+--- Import file info --------------------------------
 --- Used for making file import idempotent as well as providing some
 --- statistics
-CREATE TABLE file_meta_info (
+CREATE TABLE import_file_info (
   id                         BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
   uuid                       VARCHAR(40)           NOT NULL UNIQUE,
   daemonVersion              VARCHAR(20)           NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE file_meta_info (
 )
   ENGINE = innodb, CHARACTER SET = utf8, COLLATE = utf8_general_ci;
 
---- applications --------------------------------
+--- Applications --------------------------------
 CREATE TABLE applications (
   id        BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
   name      VARCHAR(255)          NOT NULL,
@@ -27,7 +27,7 @@ CREATE TABLE applications (
 )
   ENGINE = innodb, CHARACTER SET = utf8, COLLATE = utf8_general_ci;
 
---- methods --------------------------------
+--- Methods --------------------------------
 CREATE TABLE methods (
   id             BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
   visibility     VARCHAR(20)           NOT NULL,
@@ -41,7 +41,9 @@ CREATE TABLE methods (
   parameterTypes TEXT                  NULL,
   returnType     TEXT                  NULL,
 
-  INDEX ix_method_signature (signature(255))
+  INDEX ix_method_signature (signature(255)),
+  INDEX ix_method_declaring_type (declaringType(255)),
+  INDEX ix_method_package (packageName(255))
 )
   ENGINE = innodb, CHARACTER SET = utf8, COLLATE = utf8_general_ci;
 
