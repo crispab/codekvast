@@ -115,6 +115,6 @@ A User Manual located in product/docs/src/asciidoc.
 
 The source is in AsciiDoctor format.
 
-It is built by doing `./gradlew product:docs:build`.
+It is built by doing `./gradlew product:docs:asciidoctor`.
 
 The result is a self-contained HTML5 file located at [file:product/docs/build/asciidoc/html5/CodekvastUserManual.html]()

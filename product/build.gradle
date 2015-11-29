@@ -21,11 +21,13 @@ distributions {
         baseName = 'codekvast-daemon'
         contents {
             from tasks.getByPath(":product:agent:daemon:installDist")
+            from tasks.getByPath(":product:agent:agent-lib:javadocJar"), { into "src" }
+            from tasks.getByPath(":product:agent:agent-lib:sourcesJar"), { into "src" }
             from tasks.getByPath(":product:agent:collector:javaagents"), { into "javaagents" }
             from tasks.getByPath(":product:agent:collector:javadocJar"), { into "src" }
             from tasks.getByPath(":product:agent:collector:sourcesJar"), { into "src" }
-            from tasks.getByPath(":product:agent:agent-lib:javadocJar"), { into "src" }
-            from tasks.getByPath(":product:agent:agent-lib:sourcesJar"), { into "src" }
+            from tasks.getByPath(":product:agent:daemon:javadocJar"), { into "src" }
+            from tasks.getByPath(":product:agent:daemon:sourcesJar"), { into "src" }
             from tasks.getByPath(":product:docs:asciidoctor"), {
                 exclude "html5/**"
                 into "doc"
@@ -36,15 +38,15 @@ distributions {
             }
             from file("$rootDir/RELEASE-NOTES.md")
 
-            // from tasks.getByPath(":product:agent:daemon:javadocJar"), { into "src" }
-            // from tasks.getByPath(":product:agent:daemon:sourcesJar"), { into "src" }
         }
     }
 
-    server {
-        baseName = 'codekvast-server'
+    warehouse {
+        baseName = 'codekvast-warehouse'
         contents {
-            from tasks.getByPath(":product:server:codekvast-server:installDist")
+            from tasks.getByPath(":product:warehouse:installDist")
+            from tasks.getByPath(":product:warehouse:javadocJar"), { into "src" }
+            from tasks.getByPath(":product:warehouse:sourcesJar"), { into "src" }
             from file("$rootDir/RELEASE-NOTES.md")
         }
     }
@@ -64,7 +66,7 @@ bintray {
 
     filesSpec {
         from tasks.getByPath(":product:daemonDistZip")
-        from tasks.getByPath(":product:serverDistZip")
+        from tasks.getByPath(":product:warehouseDistZip")
         from tasks.getByPath(":product:docs:asciidoctor"), {
             include "CodekvastUserManual.html"
             rename { "CodekvastUserManual-${version}.html" }
