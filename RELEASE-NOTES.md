@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.13.4
+
+1. Renamed warehouse table file_meta_info to import_file_info.
+
 ## 0.13.3
 
 1. Applied some Intellij inspections.
