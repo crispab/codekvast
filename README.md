@@ -16,7 +16,7 @@ Java 8 **and** Java 6 is required. OpenJDK is recommended.
 
 ### Database
 
-MariaDB v10.0 is required for Codekvast Warehouse.
+MariaDB v10.0 or later is **required** for Codekvast **Warehouse**.
 
 Use the following command to install MariaDB (Ubuntu, Debian):
 
@@ -36,7 +36,7 @@ There is the convenience script `tools/src/script/gradle` which simplifies invoc
 and use that script instead of `path/to/gradlew`
 
 ### Software publishing
-The daemon part of Codekvast is published to Bintray. To be able to upload to Bintray you need the following lines in your `~/.gradle/gradle
+Codekvast is published to Bintray. To be able to upload to Bintray you need the following lines in your `~/.gradle/gradle
 .properties`:
 
     bintrayUser=my-bintray-user
@@ -49,12 +49,11 @@ You also need to be member of the Crisp organisation in Bintray.
 **Intellij Ultimate Edition 14+** is the recommended IDE with the following plugins:
 
 1. **Lombok Support** (required)
+1. **Git** (required)
 1. Github (optional)
 1. AspectJ Support (optional)
 1. AngularJS (optional)
 1. Karma (optional)
-
-_TODO: fill out this section together with Per_
 
 ## How to build the product
     cd <root>/product
@@ -90,24 +89,25 @@ Terminate with `Ctrl-C`.
 
 You can access Jenkins at [http://localhost:8082/jenkins](http://localhost:8082/jenkins)
 
-### Start codekvast-daemon in terminal 3
+### Start Codekvast daemon in terminal 3
 
-    gradle :product:agent:codekvast-daemon:run
+    gradle :product:agent:daemon:run
 
-This will launch **codekvast-daemon**, that will process output from all collectors. The daemon will try to upload the
-data to http://localhost:8090, which is the default URL for the **codekvast-server**.
+This will launch the Codekvast **daemon**, that will process output from the collectors attached to the two Jenkins instances.
+The daemon will regularly produce data files in /tmp/codekvast/.export.
+Terminate the daemon with `Ctrl-C`.
+
+### Start Codekvast Warehouse in terminal 4
+
+    gradle :product:warehouse:run
+
+This will start Codekvast Warehouse. It will look for the data files produced by codekvast-daemon and import them to the
+local MariaDB database **codekvast_warehouse** (username/password: `codekvast/codekvast`).
 Terminate with `Ctrl-C`.
 
-### Start codekvast-server in terminal 4
+Log in to MariaDB with `mysql -ucodekvast -pcodekvast codekvast_warehouse`.
 
-    gradle :product:server:codekvast-server:run
-
-This will start **codekvast-server** on [http://localhost:8090](http://localhost:8090).
-Terminate with `Ctrl-C`.
-
-### Open a browser at [http://localhost:8090](http://localhost:8090)
-
-Log in with `user` / `0000`
+Examine the collected data by means of `SELECT * FROM MethodInvocations1`
 
 ## User Manual
 
@@ -115,6 +115,6 @@ A User Manual located in product/docs/src/asciidoc.
 
 The source is in AsciiDoctor format.
 
-It is built by doing `gradle product:docs:build`.
+It is built by doing `./gradlew product:docs:build`.
 
 The result is a self-contained HTML5 file located at [file:product/docs/build/asciidoc/html5/CodekvastUserManual.html]()
