@@ -47,6 +47,14 @@ distributions {
             from tasks.getByPath(":product:warehouse:installDist")
             from tasks.getByPath(":product:warehouse:javadocJar"), { into "src" }
             from tasks.getByPath(":product:warehouse:sourcesJar"), { into "src" }
+            from tasks.getByPath(":product:docs:asciidoctor"), {
+                exclude "html5/**"
+                into "doc"
+            }
+            from "$rootDir/product/docs/src/docs/asciidoc", {
+                include "**.adoc"
+                into "doc"
+            }
             from file("$rootDir/RELEASE-NOTES.md")
         }
     }
