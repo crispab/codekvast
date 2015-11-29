@@ -4,13 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import se.crisp.codekvast.agent.daemon.DaemonConstants;
 import se.crisp.codekvast.agent.daemon.appversion.AppVersionResolver;
 import se.crisp.codekvast.agent.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.agent.daemon.beans.JvmState;
@@ -36,7 +34,6 @@ import java.util.Map;
  * @author olle.hallin@crisp.se
  */
 @Component
-@Profile(DaemonConstants.LOCAL_WAREHOUSE_PROFILE)
 @Slf4j
 public class LocalWarehouseCollectorDataProcessorImpl extends AbstractCollectorDataProcessorImpl {
 

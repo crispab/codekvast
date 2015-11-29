@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.daemon.worker.http_post;
+package se.crisp.codekvast.agent.daemon.worker.http_post.http_post;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;

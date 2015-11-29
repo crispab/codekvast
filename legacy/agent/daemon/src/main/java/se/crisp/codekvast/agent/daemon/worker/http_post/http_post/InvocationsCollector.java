@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.daemon.worker.http_post;
+package se.crisp.codekvast.agent.daemon.worker.http_post.http_post;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;

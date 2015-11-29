@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.daemon.worker.http_post;
+package se.crisp.codekvast.agent.daemon.worker.http_post.http_post;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +15,7 @@ import static se.crisp.codekvast.agent.daemon.DaemonConstants.HTTP_POST_PROFILE;
  * @author olle.hallin@crisp.se
  */
 @Configuration
-@Profile(HTTP_POST_PROFILE)
+@Profile(DaemonConstants.HTTP_POST_PROFILE)
 public class HttpPostBeanFactory {
     /**
      * Converts an DaemonConfig to a DaemonApiConfig

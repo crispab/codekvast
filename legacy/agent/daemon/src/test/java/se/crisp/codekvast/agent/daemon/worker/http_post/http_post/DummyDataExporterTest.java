@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.daemon.worker.http_post;
+package se.crisp.codekvast.agent.daemon.worker.http_post.http_post;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

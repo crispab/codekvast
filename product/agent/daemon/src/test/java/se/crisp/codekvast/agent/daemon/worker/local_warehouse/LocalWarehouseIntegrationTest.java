@@ -3,7 +3,6 @@ package se.crisp.codekvast.agent.daemon.worker.local_warehouse;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import se.crisp.codekvast.agent.daemon.CodekvastDaemon;
-import se.crisp.codekvast.agent.daemon.DaemonConstants;
 
 import java.lang.annotation.*;
 
@@ -18,14 +17,13 @@ import java.lang.annotation.*;
 @Documented
 @SpringApplicationConfiguration(classes = CodekvastDaemon.class)
 @IntegrationTest({
-        "spring.profiles.active=" + DaemonConstants.LOCAL_WAREHOUSE_PROFILE,
         "spring.datasource.url=jdbc:h2:mem:integrationTest",
         "codekvast.apiAccessID=apiAccessID",
         "codekvast.apiAccessSecret=apiAccessSecret",
         "codekvast.serverUri=serverUri",
         "codekvast.dataPath=dataPath",
         "codekvast.dataProcessingIntervalSeconds=600",
-        "codekvast.environment=" + DaemonConstants.LOCAL_WAREHOUSE_PROFILE + "-integration-test",
+        "codekvast.environment=integration-test",
         "codekvast.exportFile=/tmp/codekvast-data.zip"
 })
 public @interface LocalWarehouseIntegrationTest {

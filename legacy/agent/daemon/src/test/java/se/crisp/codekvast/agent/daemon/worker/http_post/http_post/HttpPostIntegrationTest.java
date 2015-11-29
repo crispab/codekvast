@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.daemon.worker.http_post;
+package se.crisp.codekvast.agent.daemon.worker.http_post.http_post;
 
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -18,14 +18,14 @@ import static se.crisp.codekvast.agent.daemon.DaemonConstants.HTTP_POST_PROFILE;
 @Documented
 @SpringApplicationConfiguration(classes = CodekvastDaemon.class)
 @IntegrationTest({
-        "spring.profiles.active=" + HTTP_POST_PROFILE,
+        "spring.profiles.active=" + DaemonConstants.HTTP_POST_PROFILE,
         "spring.datasource.url=jdbc:h2:mem:integrationTest",
         "codekvast.apiAccessID=apiAccessID",
         "codekvast.apiAccessSecret=apiAccessSecret",
         "codekvast.serverUri=serverUri",
         "codekvast.dataPath=dataPath",
         "codekvast.dataProcessingIntervalSeconds=600",
-        "codekvast.environment=" + HTTP_POST_PROFILE + "-integration-test"
+        "codekvast.environment=" + DaemonConstants.HTTP_POST_PROFILE + "-integration-test"
 })
 public @interface HttpPostIntegrationTest {
 }

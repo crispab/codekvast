@@ -2,10 +2,8 @@ package se.crisp.codekvast.agent.daemon.worker.local_warehouse;
 
 import com.opencsv.CSVWriter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import se.crisp.codekvast.agent.daemon.DaemonConstants;
 import se.crisp.codekvast.agent.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.agent.daemon.worker.DataExportException;
 import se.crisp.codekvast.agent.daemon.worker.DataExporter;
@@ -38,7 +36,6 @@ import static java.util.stream.Collectors.joining;
  * @author olle.hallin@crisp.se
  */
 @Component
-@Profile(DaemonConstants.LOCAL_WAREHOUSE_PROFILE)
 @Slf4j
 public class LocalWarehouseDataExporterImpl implements DataExporter {
 

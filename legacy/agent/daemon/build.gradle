@@ -1,11 +1,9 @@
 apply from: "$rootDir/gradle/java-8.gradle"
-apply from: "$rootDir/gradle/sources-javadoc.gradle"
 apply plugin: 'application'
 apply plugin: 'spring-boot'
 apply from: "$rootDir/gradle/standalone-h2server.gradle"
 
 description = "The Codekvast agent daemon"
-applicationName = "codekvast-daemon"
 archivesBaseName = "codekvast-daemon"
 version = project.parent.parent.version
 mainClassName = "se.crisp.codekvast.agent.daemon.CodekvastDaemon"
@@ -20,13 +18,10 @@ dependencies {
     compile lombok
     compile project(':product:support:commons')
     compile project(':product:agent:agent-lib')
+    compile project(':product:agent:daemon')
+    compile project(':legacy:server:daemon-api')
     compile 'javax.inject:javax.inject:1'
-    compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
-    compile 'org.reflections:reflections:0.9.10'
     compile 'org.springframework.boot:spring-boot-starter'
-    compile 'org.springframework.boot:spring-boot-starter-jdbc'
-    compile 'org.flywaydb:flyway-core'
-    compile "com.opencsv:opencsv:$opencsvVersion"
 
     runtime h2database
     runtime 'ch.qos.logback:logback-classic'
@@ -60,9 +55,13 @@ jar {
     exclude "lombok"
 }
 
+// ext.springProfiles = 'httpPost'
+ext.springProfiles = 'localWarehouse'
+
 run {
     jvmArgs = [
             '-ea',
+            "-Dspring.profiles.active=$springProfiles",
             '-Dcodekvast.log.consoleThreshold=DEBUG',
     ]
 
@@ -90,6 +89,8 @@ bootRun.dependsOn startDatabase
 
 jar.dependsOn tasks.getByPath(":product:agent:agent-lib:test")
 
+applicationDefaultJvmArgs = ["-Dspring.profiles.active=$springProfiles"]
+
 applicationDistribution.from("src/main/resources") {
     into "conf"
     include "logback.xml", "default.properties"
@@ -101,7 +102,7 @@ applicationDistribution.from("src/main/resources") {
 
 applicationDistribution.from("src/main/resources") {
     into "conf"
-    include "codekvast-collector.conf.sample", "byte-code-added-methods.txt", "byte-code-enhanced-methods.txt"
+    include "codekvast-collector.conf.sample", "byte-code-added-methods.txt", "byte-code-decorated-methods.txt"
     rename {
         "${it}.${version}"
     }
@@ -111,6 +112,8 @@ applicationDistribution.from("src/dist") {
     into "/"
     filter { it.replace("@CODEKVAST_VERSION@", project.version).replace("@ASPECTJ_VERSION@", aspectjVersion) }
 }
+
+apply from: "$rootDir/gradle/sources-javadoc.gradle"
 
 startScripts {
     doLast {

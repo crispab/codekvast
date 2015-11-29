@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.daemon.worker.http_post;
+package se.crisp.codekvast.agent.daemon.worker.http_post.http_post;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -24,7 +24,7 @@ import static se.crisp.codekvast.agent.daemon.DaemonConstants.HTTP_POST_PROFILE;
  * in {@link DaemonApi}.
  */
 @Component
-@Profile(HTTP_POST_PROFILE)
+@Profile(DaemonConstants.HTTP_POST_PROFILE)
 @Slf4j
 public class HttpPostCollectorDataProcessorImpl extends AbstractCollectorDataProcessorImpl {
 
