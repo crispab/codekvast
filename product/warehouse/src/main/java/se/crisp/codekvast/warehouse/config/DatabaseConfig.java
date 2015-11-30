@@ -30,7 +30,7 @@ public class DatabaseConfig {
     private static final String SQL_MIGRATION_LOCATION = "database.migration";
 
     @Bean
-    public Flyway flyway(DataSource dataSource, CodekvastSettings codekvastSettings) throws SQLException {
+    public Flyway flyway(DataSource dataSource) throws SQLException {
         log.info("Applying Flyway to {}", dataSource.getConnection().getMetaData().getURL());
         Flyway flyway = new Flyway();
         flyway.setDataSource(dataSource);
@@ -61,7 +61,7 @@ public class DatabaseConfig {
         log.info("Will apply the following pending migrations:\n    {}", pending);
     }
 
-    /**
+    /*
      * Override the default JdbcTemplate created by Spring Boot, to make sure that Flyway.migrate() has run first.
      */
     @Bean
@@ -71,7 +71,7 @@ public class DatabaseConfig {
         return new JdbcTemplate(dataSource);
     }
 
-    /**
+    /*
      * Override the default NamedParameterJdbcTemplate created by Spring Boot, to make sure that Flyway.migrate() has run first.
      */
     @Bean
