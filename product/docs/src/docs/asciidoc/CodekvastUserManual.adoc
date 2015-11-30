@@ -147,8 +147,9 @@ wget {bintrayDownloadPrefix}/codekvast-daemon-{codekvast-version}.zip
 unzip codekvast-daemon-{codekvast-version}.zip -d /opt
 rm -f /opt/codekvast-daemon
 ln -s /opt/codekvast-daemon-{codekvast-version} /opt/codekvast-daemon
-cd /opt/codekvast-daemon/conf
+pushd /opt/codekvast-daemon/conf
 cp codekvast-daemon.properties.sample.{codekvast-version} codekvast-daemon.properties # <1>
+popd
 rm -f /etc/init.d/codekvast-daemon
 ln -s /opt/codekvast-daemon/etc/startscript/debian/codekvast-daemon /etc/init.d/ #<2>
 mkdir -p /var/log/codekvast
@@ -237,8 +238,9 @@ wget {bintrayDownloadPrefix}/codekvast-warehouse-{codekvast-version}.zip # <1>
 unzip codekvast-warehouse-{codekvast-version}.zip -d /opt
 rm -f /opt/codekvast-warehouse
 ln -s /opt/codekvast-warehouse-{codekvast-version} /opt/codekvast-warehouse
-cd /opt/codekvast-warehouse/conf
+pushd /opt/codekvast-warehouse/conf
 cp codekvast-warehouse.properties.sample.{codekvast-version} codekvast-warehouse.properties # <2>
+popd
 mkdir -p /var/log/codekvast
 rm -f /etc/init.d/codekvast-warehouse
 ln -s /opt/codekvast-warehouse/etc/startscript/debian/codekvast-warehouse /etc/init.d/ # <3>

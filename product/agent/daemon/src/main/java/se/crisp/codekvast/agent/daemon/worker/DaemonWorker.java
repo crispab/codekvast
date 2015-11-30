@@ -69,7 +69,7 @@ public class DaemonWorker {
         this.collectorDataProcessor = collectorDataProcessor;
         this.dataExporter = dataExporter;
 
-        log.info("{} {} started", getClass().getSimpleName(), config.getDisplayVersion());
+        log.info("{} {} started using {}", getClass().getSimpleName(), config.getDisplayVersion(), config);
     }
 
     @PreDestroy
