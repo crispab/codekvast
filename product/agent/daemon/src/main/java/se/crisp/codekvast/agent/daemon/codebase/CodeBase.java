@@ -88,7 +88,7 @@ public class CodeBase {
         try {
             result.add(Pattern.compile(pattern));
         } catch (PatternSyntaxException e) {
-            log.error("Illegal regexp syntax in {}:{}: {}", fileName, lineNumber, e);
+            log.error("Illegal regexp syntax in {}:{}: {}", fileName, lineNumber, e.toString());
         }
     }
 

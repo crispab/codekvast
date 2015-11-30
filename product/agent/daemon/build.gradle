@@ -70,10 +70,10 @@ run {
             "--h2database.options=TRACE_LEVEL_FILE=4;AUTO_SERVER=FALSE;DB_CLOSE_ON_EXIT=FALSE",
             "--codekvast.dataProcessingIntervalSeconds=600",
             "--codekvast.databasePath=tcp://localhost/$buildDir/database",
-            "--codekvast.exportFile=/tmp/codekvast/.export/codekvast-data-#timestamp#.zip",
+            "--codekvast.exportFile=/tmp/codekvast/.export/codekvast-data-#hostname#-#timestamp#.zip",
             "--codekvast.environment=Gradle",
             // During test
-            // "--codekvast.exportFile=/home/qolha/Dropbox/Kund/Transmode/codekvast/codekvast-data.zip",
+            // "--codekvast.exportFile=/home/qolha/Dropbox/Kund/Transmode/codekvast/codekvast-data-#hostname#.zip",
             // "--codekvast.dataProcessingIntervalSeconds=60",
     ]
 }

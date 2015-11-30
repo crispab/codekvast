@@ -76,7 +76,8 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
             return null;
         }
 
-        String name = file.getName().replace("#timestamp#", now().toString());
+        String name = file.getName().replace("#hostname#", getHostname()).replace("#timestamp#", now().toString());
+
         File parentFile = file.getParentFile();
         return parentFile == null ? new File(name) : new File(parentFile, name);
     }
