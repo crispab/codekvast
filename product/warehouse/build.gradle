@@ -8,6 +8,7 @@ apply plugin: 'spring-boot'
 apply plugin: 'jacoco'
 
 description = 'The central Codekvast warehouse'
+applicationName = 'codekvast-warehouse'
 archivesBaseName = 'codekvast-warehouse'
 version = project.parent.parent.version
 mainClassName = 'se.crisp.codekvast.warehouse.CodekvastWarehouseApplication'

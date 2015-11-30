@@ -232,24 +232,21 @@ No data in /tmp/codekvast::
 ----
 sudo -s
 
-mysql
-create database codekvast_warehouse;
-grant all on codekvast_warehouse.* to 'codekvast'@'localhost' identified by 'codekvast';
-quit
-
-wget {bintrayDownloadPrefix}/codekvast-warehouse-{codekvast-version}.zip
+mysql -e "create database if not exists codekvast_warehouse;grant all on codekvast_warehouse.* to 'codekvast'@'localhost' identified by 'codekvast';"
+wget {bintrayDownloadPrefix}/codekvast-warehouse-{codekvast-version}.zip # <1>
 unzip codekvast-warehouse-{codekvast-version}.zip -d /opt
 rm /opt/codekvast-warehouse
 ln -s /opt/codekvast-warehouse-{codekvast-version} /opt/codekvast-warehouse
 cd /opt/codekvast-warehouse/conf
-cp codekvast-warehouse.properties.sample.{codekvast-version} codekvast-warehouse.properties # <1>
+cp codekvast-warehouse.properties.sample.{codekvast-version} codekvast-warehouse.properties # <2>
 mkdir -p /var/log/codekvast
 rm /etc/init.d/codekvast-warehouse
-ln -s /opt/codekvast-warehouse/etc/startscript/debian/codekvast-warehouse /etc/init.d # <2>
-update-rc.d codekvast-warehouse defaults # <2>
+ln -s /opt/codekvast-warehouse/etc/startscript/debian/codekvast-warehouse /etc/init.d # <3>
+update-rc.d codekvast-warehouse defaults # <3>
 ----
-<1> Edit codekvast-warehouse.properties to suit your needs. See <<configuring-codekvast-warehouse, Configuring Codekvast Warehouse>>.
-<2> This works for Debian-based Linux distros. For Redhat-based distros, use `chkconfig --add /etc/init.d/codekvast-warehouse` instead.
+<1> You might need to add the options -u<username> and -p<password> to the mysql command.
+<2> Edit codekvast-warehouse.properties to suit your needs. See <<configuring-codekvast-warehouse, Configuring Codekvast Warehouse>>.
+<3> This works for Debian-based Linux distros. For Redhat-based distros, use `chkconfig --add /etc/init.d/codekvast-warehouse` instead.
 
 Once you have finished editing codekvast-warehouse.properties, execute
 

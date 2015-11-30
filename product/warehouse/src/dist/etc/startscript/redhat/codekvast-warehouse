@@ -1,21 +1,21 @@
 #!/bin/bash
 #
-# codekvast-daemon     This shell script controls the codekvast daemon.
+# codekvast-warehouse     This shell script controls the codekvast warehouse.
 #
 # Author:       Olle Hallin <olle.hallin@crisp.se>
 #
 # chkconfig:    345 97 2
 #
 # description:  Processes data from the Codekvast collectors
-# processname:  codekvast-daemon
+# processname:  codekvast-warehouse
 #
 
 # source function library
 . /etc/rc.d/init.d/functions
 
-BINDIR=/opt/codekvast-daemon/bin
+BINDIR=/opt/codekvast-warehouse/bin
 LOGDIR=/var/log/codekvast
-PROG=codekvast-daemon
+PROG=codekvast-warehouse
 LOCK=/var/lock/subsys/$PROG
 PIDFILE=/var/run/$PROG.pid
 

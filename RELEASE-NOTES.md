@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.13.6
+
+1. Corrected the names of the generated start scripts for daemon and warehouse.
+
 ## 0.13.5
 
 1. codekvast-warehouse-x.x.x.zip now uploads to bintray.

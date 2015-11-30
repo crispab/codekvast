@@ -1,9 +1,11 @@
 apply from: "$rootDir/gradle/java-8.gradle"
+apply from: "$rootDir/gradle/sources-javadoc.gradle"
 apply plugin: 'application'
 apply plugin: 'spring-boot'
 apply from: "$rootDir/gradle/standalone-h2server.gradle"
 
 description = "The Codekvast agent daemon"
+applicationName = "codekvast-daemon"
 archivesBaseName = "codekvast-daemon"
 version = project.parent.parent.version
 mainClassName = "se.crisp.codekvast.agent.daemon.CodekvastDaemon"
@@ -116,8 +118,6 @@ applicationDistribution.from("src/dist") {
     into "/"
     filter { it.replace("@CODEKVAST_VERSION@", project.version).replace("@ASPECTJ_VERSION@", aspectjVersion) }
 }
-
-apply from: "$rootDir/gradle/sources-javadoc.gradle"
 
 startScripts {
     doLast {
