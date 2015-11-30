@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.13.8
+
+1. Corrected bug in CodeBase.readByteCodePatternsFrom()
+
 ## 0.13.7
 
 1. Corrected warehouse's application.properties: added missing "codekvast.importPathPollIntervalSeconds = 30"
