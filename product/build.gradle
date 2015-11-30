@@ -96,3 +96,9 @@ bintrayUpload {
         }
     }
 }
+
+task shipIt {
+    description "Builds and uploads to bintray"
+    group = "publishing"
+    dependsOn build, bintrayUpload
+}
