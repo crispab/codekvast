@@ -1,6 +1,5 @@
 package se.crisp.codekvast.agent.daemon.codebase;
 
-import com.google.common.io.Files;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -9,9 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import se.crisp.codekvast.agent.lib.config.CollectorConfig;
 import se.crisp.codekvast.agent.lib.model.MethodSignature;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -70,13 +67,15 @@ public class CodeBase {
 
     private List<Pattern> readByteCodePatternsFrom(String resourceName) {
         List<Pattern> result = new ArrayList<>();
-        URL resource = getClass().getResource(resourceName);
+        log.debug("Reading byte code patterns from {}", resourceName);
         try {
-            List<String> lines = Files.readLines(new File(resource.toURI()), Charset.forName("UTF-8"));
-            for (int i = 0; i < lines.size(); i++) {
-                String line = lines.get(i).trim();
+            LineNumberReader reader = new LineNumberReader(
+                    new InputStreamReader(getClass().getResource(resourceName).openStream(), Charset.forName("UTF-8")));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
                 if (!line.isEmpty() && !line.startsWith("#")) {
-                    addPatternTo(result, resourceName, i + 1, line);
+                    addPatternTo(result, resourceName, reader.getLineNumber(), line);
                 }
             }
         } catch (Exception e) {
