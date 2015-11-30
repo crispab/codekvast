@@ -59,15 +59,17 @@ public class DaemonWorker {
 
     private final Map<String, JvmState> jvmStates = new HashMap<String, JvmState>();
     private final DataExporter dataExporter;
+    private final FileUploader fileUploader;
     private Instant exportedAt = Instant.MIN;
 
     @Inject
     public DaemonWorker(DaemonConfig config, AppVersionResolver appVersionResolver, CollectorDataProcessor collectorDataProcessor,
-                        DataExporter dataExporter) {
+                        DataExporter dataExporter, FileUploader fileUploader) {
         this.config = config;
         this.appVersionResolver = appVersionResolver;
         this.collectorDataProcessor = collectorDataProcessor;
         this.dataExporter = dataExporter;
+        this.fileUploader = fileUploader;
 
         log.info("{} {} started using {}", getClass().getSimpleName(), config.getDisplayVersion(), config);
     }
@@ -121,9 +123,17 @@ public class DaemonWorker {
 
     private void doExportData() {
         try {
-            dataExporter.exportData();
+            dataExporter.exportData().ifPresent(this::doUploadFile);
         } catch (DataExportException e) {
             LogUtil.logException(log, "Could not export data: " + e, e);
+        }
+    }
+
+    private void doUploadFile(File file) {
+        try {
+            fileUploader.uploadFile(file);
+        } catch (FileUploadException e) {
+            LogUtil.logException(log, "Could not upload " + file + ": " + e, e);
         }
     }
 

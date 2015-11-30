@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import se.crisp.codekvast.agent.daemon.beans.DaemonConfig;
+import se.crisp.codekvast.agent.daemon.util.LogUtil;
 import se.crisp.codekvast.agent.daemon.worker.DataExportException;
 import se.crisp.codekvast.agent.daemon.worker.DataExporter;
 import se.crisp.codekvast.agent.lib.model.ExportFileMetaInfo;
@@ -19,6 +20,7 @@ import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -51,24 +53,25 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
     }
 
     @Override
-    public void exportData() throws DataExportException {
+    public Optional<File> exportData() throws DataExportException {
         File exportFile = expandPlaceholders(config.getExportFile());
         if (exportFile == null) {
             log.info("No export file configured, data will not be exported");
-            return;
+            return Optional.empty();
         }
 
         if (!exportFile.getName().toLowerCase().endsWith(ExportFileFormat.ZIP.getSuffix())) {
             log.error("Can only export to " + ExportFileFormat.ZIP + " format");
-            return;
+            return Optional.empty();
         }
 
         Instant startedAt = now();
 
         doExportDataTo(exportFile);
 
-        log.info("Created {} ({}) in {} s", exportFile, humanReadableByteCount(exportFile.length()),
+        log.info("Created {} ({}) in {} s", exportFile, LogUtil.humanReadableByteCount(exportFile.length()),
                  Duration.between(startedAt, now()).getSeconds());
+        return Optional.of(exportFile);
     }
 
     private File expandPlaceholders(File file) {
@@ -80,15 +83,6 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
 
         File parentFile = file.getParentFile();
         return parentFile == null ? new File(name) : new File(parentFile, name);
-    }
-
-    private static String humanReadableByteCount(long bytes) {
-        if (bytes < 1000) {
-            return bytes + " B";
-        }
-        int exponent = (int) (Math.log(bytes) / Math.log(1000));
-        String unit = " kMGTPE".charAt(exponent) + "B";
-        return format("%.1f %s", bytes / Math.pow(1000, exponent), unit);
     }
 
     private void doExportDataTo(File exportFile) throws DataExportException {

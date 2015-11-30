@@ -3,7 +3,6 @@ package se.crisp.codekvast.agent.daemon;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import se.crisp.codekvast.support.common.LoggingConfig;
 
@@ -16,7 +15,6 @@ import java.net.URISyntaxException;
  * @author olle.hallin@crisp.se
  */
 @SpringBootApplication
-@ComponentScan("se.crisp.codekvast")
 @EnableScheduling
 public class CodekvastDaemon {
 

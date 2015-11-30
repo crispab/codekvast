@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.14.1
+
+1. Added support for SCP upload of daemon export files.
+
 ## 0.14.0
 
 1. Moved legacy server and daemon parts to new legacy folder.

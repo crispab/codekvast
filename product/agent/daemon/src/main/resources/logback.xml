@@ -5,6 +5,8 @@
     <logger name="se.crisp.codekvast" level="INFO"/>
     <logger name="se.crisp.codekvast.daemon.worker" level="DEBUG"/>
 
+    <logger name="net.schmizz.sshj.DefaultConfig" level="ERROR"/>
+
     <root level="WARN">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>

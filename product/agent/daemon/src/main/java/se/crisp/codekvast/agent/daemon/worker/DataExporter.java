@@ -22,6 +22,9 @@
 
 package se.crisp.codekvast.agent.daemon.worker;
 
+import java.io.File;
+import java.util.Optional;
+
 /**
  * Strategy for how to export data from the daemon.
  *
@@ -29,9 +32,10 @@ package se.crisp.codekvast.agent.daemon.worker;
  */
 public interface DataExporter {
     /**
-     * Export data from the local datastore.
+     * Export data from the local data store.
      *
-     * @throws DataExportException If failure to export data.
+     * @return the optional produced export file. Does never return null.
+     * @throws DataExportException If failed to export data.
      */
-    void exportData() throws DataExportException;
+    Optional<File> exportData() throws DataExportException;
 }

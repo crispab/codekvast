@@ -26,11 +26,17 @@ public class DaemonConfig {
     private String daemonVersion;
     @NonNull
     private String daemonVcsId;
-
+    @NonNull
     private String environment;
-
     @NonNull
     private File exportFile;
+
+    private String uploadToHost;
+    private String uploadToPath;
+
+    public boolean isUploadEnabled() {
+        return uploadToHost != null && !uploadToHost.isEmpty() && uploadToPath != null && !uploadToPath.isEmpty();
+    }
 
     public String getDisplayVersion() {
         return daemonVersion + "-" + daemonVcsId;

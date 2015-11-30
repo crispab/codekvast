@@ -6,6 +6,9 @@ import org.springframework.stereotype.Component;
 import se.crisp.codekvast.agent.daemon.worker.DataExportException;
 import se.crisp.codekvast.agent.daemon.worker.DataExporter;
 
+import java.io.File;
+import java.util.Optional;
+
 /**
  * A dummy implementation of DataExporter that does nothing. In the HTTP POST profile, data is continuously uploaded to a central data
  * warehouse.
@@ -18,7 +21,8 @@ import se.crisp.codekvast.agent.daemon.worker.DataExporter;
 public class DummyDataExporterImpl implements DataExporter {
 
     @Override
-    public void exportData() throws DataExportException {
+    public Optional<File> exportData() throws DataExportException {
         log.trace("Data export not supported in {} profile", "httpPost");
+        return Optional.empty();
     }
 }
