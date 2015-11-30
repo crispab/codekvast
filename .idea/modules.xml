@@ -15,11 +15,9 @@
       <module fileurl="file://$PROJECT_DIR$/sample/jenkins2/jenkins2.iml" filepath="$PROJECT_DIR$/sample/jenkins2/jenkins2.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/jenkins3/jenkins3.iml" filepath="$PROJECT_DIR$/sample/jenkins3/jenkins3.iml" />
       <module fileurl="file://$PROJECT_DIR$/legacy/legacy.iml" filepath="$PROJECT_DIR$/legacy/legacy.iml" />
-      <module fileurl="file://$PROJECT_DIR$/legacy/agent/legacy-agent.iml" filepath="$PROJECT_DIR$/legacy/agent/legacy-agent.iml" />
-      <module fileurl="file://$PROJECT_DIR$/legacy/agent/daemon/legacy-agent-daemon.iml" filepath="$PROJECT_DIR$/legacy/agent/daemon/legacy-agent-daemon.iml" />
+      <module fileurl="file://$PROJECT_DIR$/legacy/legacy-agent/legacy-agent.iml" filepath="$PROJECT_DIR$/legacy/legacy-agent/legacy-agent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/legacy/legacy-agent/legacy-daemon/legacy-daemon.iml" filepath="$PROJECT_DIR$/legacy/legacy-agent/legacy-daemon/legacy-daemon.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/product.iml" filepath="$PROJECT_DIR$/product/product.iml" />
-      <module fileurl="file://$PROJECT_DIR$/product/agent/product-agent.iml" filepath="$PROJECT_DIR$/product/agent/product-agent.iml" />
-      <module fileurl="file://$PROJECT_DIR$/product/agent/daemon/product-agent-daemon.iml" filepath="$PROJECT_DIR$/product/agent/daemon/product-agent-daemon.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/sample.iml" filepath="$PROJECT_DIR$/sample/sample.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/sample-concrete-aspect/sample-concrete-aspect.iml" filepath="$PROJECT_DIR$/sample/sample-concrete-aspect/sample-concrete-aspect.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/sample-lib/sample-lib.iml" filepath="$PROJECT_DIR$/sample/sample-lib/sample-lib.iml" />

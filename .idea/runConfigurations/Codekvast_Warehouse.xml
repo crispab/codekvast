@@ -17,7 +17,7 @@
     <option name="MAIN_CLASS_NAME" value="se.crisp.codekvast.warehouse.CodekvastWarehouseApplication" />
     <option name="VM_PARAMETERS" value="-Dcodekvast.log.consoleThreshold=DEBUG" />
     <option name="PROGRAM_PARAMETERS" value="--codekvast.importPollIntervalSeconds=10 --codekvast.importPath=/tmp/codekvast/.export" />
-    <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
+    <option name="WORKING_DIRECTORY" value="file://$MODULE_DIR$" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <option name="ENABLE_SWING_INSPECTOR" value="false" />

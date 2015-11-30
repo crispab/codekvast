@@ -26,8 +26,6 @@
         <entry key="property.minPriorityToReport" value="Medium" />
         <entry key="property.runAnalysisInBackground" value="false" />
         <entry key="property.showHiddenDetectors" value="false" />
-        <entry key="property.toolWindowEditorPreview" value="true" />
-        <entry key="property.toolWindowGroupBy" value="BugRank" />
         <entry key="property.toolWindowToFront" value="true" />
       </map>
     </option>
@@ -43,6 +41,7 @@
         <entry key="BooleanReturnNull" value="true" />
         <entry key="BuildInterproceduralCallGraph" value="false" />
         <entry key="BuildObligationPolicyDatabase" value="true" />
+        <entry key="BuildStringPassthruGraph" value="true" />
         <entry key="CallToUnsupportedMethod" value="false" />
         <entry key="CalledMethods" value="true" />
         <entry key="CheckCalls" value="false" />
@@ -54,6 +53,7 @@
         <entry key="ComparatorIdiom" value="true" />
         <entry key="ConfusedInheritance" value="true" />
         <entry key="ConfusionBetweenInheritedAndOuterMethod" value="true" />
+        <entry key="CovariantArrayAssignment" value="false" />
         <entry key="CrossSiteScripting" value="true" />
         <entry key="DefaultEncodingDetector" value="true" />
         <entry key="DoInsideDoPrivileged" value="true" />
@@ -73,6 +73,7 @@
         <entry key="FindBadForLoop" value="true" />
         <entry key="FindBugsSummaryStats" value="true" />
         <entry key="FindCircularDependencies" value="false" />
+        <entry key="FindComparatorProblems" value="true" />
         <entry key="FindDeadLocalStores" value="true" />
         <entry key="FindDoubleCheck" value="true" />
         <entry key="FindEmptySynchronizedBlock" value="true" />
@@ -87,6 +88,7 @@
         <entry key="FindMaskedFields" value="true" />
         <entry key="FindMismatchedWaitOrNotify" value="true" />
         <entry key="FindNakedNotify" value="true" />
+        <entry key="FindNoSideEffectMethods" value="true" />
         <entry key="FindNonSerializableStoreIntoSession" value="false" />
         <entry key="FindNonSerializableValuePassedToWriteObject" value="false" />
         <entry key="FindNonShortCircuit" value="true" />
@@ -96,6 +98,7 @@
         <entry key="FindPuzzlers" value="true" />
         <entry key="FindRefComparison" value="true" />
         <entry key="FindReturnRef" value="true" />
+        <entry key="FindRoughConstants" value="true" />
         <entry key="FindRunInvocations" value="true" />
         <entry key="FindSelfComparison" value="true" />
         <entry key="FindSelfComparison2" value="true" />
@@ -112,14 +115,17 @@
         <entry key="FindUnsyncGet" value="true" />
         <entry key="FindUseOfNonSerializableValue" value="true" />
         <entry key="FindUselessControlFlow" value="true" />
+        <entry key="FindUselessObjects" value="true" />
         <entry key="FormatStringChecker" value="true" />
         <entry key="FunctionsThatMightBeMistakenForProcedures" value="true" />
         <entry key="HugeSharedStringConstants" value="true" />
         <entry key="IDivResultCastToDouble" value="true" />
         <entry key="IncompatMask" value="true" />
         <entry key="InconsistentAnnotations" value="true" />
+        <entry key="InefficientIndexOf" value="false" />
+        <entry key="InefficientInitializationInsideLoop" value="false" />
         <entry key="InefficientMemberAccess" value="false" />
-        <entry key="InefficientToArray" value="true" />
+        <entry key="InefficientToArray" value="false" />
         <entry key="InfiniteLoop" value="true" />
         <entry key="InfiniteRecursiveLoop" value="true" />
         <entry key="InheritanceUnsafeGetResource" value="true" />
@@ -135,6 +141,7 @@
         <entry key="MethodReturnCheck" value="true" />
         <entry key="Methods" value="true" />
         <entry key="MultithreadedInstanceAccess" value="true" />
+        <entry key="MutableEnum" value="true" />
         <entry key="MutableLock" value="true" />
         <entry key="MutableStaticFields" value="true" />
         <entry key="Naming" value="true" />
@@ -149,12 +156,14 @@
         <entry key="NoteSuppressedWarnings" value="true" />
         <entry key="NoteUnconditionalParamDerefs" value="true" />
         <entry key="NumberConstructor" value="true" />
+        <entry key="OptionalReturnNull" value="true" />
         <entry key="OverridingEqualsNotSymmetrical" value="true" />
         <entry key="PreferZeroLengthArrays" value="true" />
         <entry key="PublicSemaphores" value="false" />
         <entry key="QuestionableBooleanAssignment" value="true" />
         <entry key="ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass" value="true" />
         <entry key="ReadReturnShouldBeChecked" value="true" />
+        <entry key="RedundantConditions" value="true" />
         <entry key="RedundantInterfaces" value="true" />
         <entry key="ReflectiveClasses" value="true" />
         <entry key="RepeatedConditionals" value="true" />

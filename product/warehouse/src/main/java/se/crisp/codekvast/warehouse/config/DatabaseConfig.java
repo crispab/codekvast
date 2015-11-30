@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 /**
  * Initializes the database.
- * <p>
+ *
  * <ol> <li>runs Flyway.migrate().</li> <li>creates a JdbcTemplate bean</li> </ol>
  *
  * @author olle.hallin@crisp.se

@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.14.0
+
+1. Moved legacy server and daemon parts to new legacy folder.
+
 ## 0.13.8
 
 1. Corrected bug in CodeBase.readByteCodePatternsFrom()

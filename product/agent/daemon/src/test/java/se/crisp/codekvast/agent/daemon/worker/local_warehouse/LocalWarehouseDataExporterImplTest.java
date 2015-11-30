@@ -12,7 +12,6 @@ import se.crisp.codekvast.agent.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.agent.daemon.worker.DataExporter;
 
 import java.io.File;
-import java.net.URI;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -36,15 +35,12 @@ public class LocalWarehouseDataExporterImplTest {
     @Before
     public void before() throws Exception {
         config = DaemonConfig.builder()
-                             .apiAccessID("apiAccessID")
-                             .apiAccessSecret("apiSecret")
                              .daemonVcsId("daemonVcsId")
                              .daemonVersion("daemonVersion")
                              .dataPath(new File("foobar"))
                              .dataProcessingIntervalSeconds(600)
                              .environment(getClass().getSimpleName())
                              .exportFile(new File(temporaryFolder.getRoot(), "codekvast-data.zip"))
-                             .serverUri(new URI("http://foobar"))
                              .build();
 
         dataExporter = new LocalWarehouseDataExporterImpl(jdbcTemplate, config);
@@ -61,25 +57,4 @@ public class LocalWarehouseDataExporterImplTest {
         assertThat(config.getExportFile().exists(), is(true));
     }
 
-    @Test
-    public void should_not_exportData_when_exportFile_is_null() throws Exception {
-        assertThat(config.getExportFile().exists(), is(false));
-
-        config = config.withExportFile(null);
-        dataExporter = new LocalWarehouseDataExporterImpl(jdbcTemplate, config);
-
-        dataExporter.exportData();
-    }
-
-    @Test
-    public void should_not_exportData_when_exportFile_is_not_ending_with_zip() throws Exception {
-        assertThat(config.getExportFile().exists(), is(false));
-
-        config = config.withExportFile(new File("foo.bar"));
-        dataExporter = new LocalWarehouseDataExporterImpl(jdbcTemplate, config);
-
-        dataExporter.exportData();
-
-        assertThat(config.getExportFile().exists(), is(false));
-    }
 }
