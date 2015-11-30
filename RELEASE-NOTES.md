@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.13.7
+
+1. Corrected warehouse's application.properties: added missing "codekvast.importPathPollIntervalSeconds = 30"
+
 ## 0.13.6
 
 1. Corrected the names of the generated start scripts for daemon and warehouse.

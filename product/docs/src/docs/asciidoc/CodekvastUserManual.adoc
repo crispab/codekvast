@@ -145,12 +145,12 @@ Execute the following commands in a shell:
 sudo -s
 wget {bintrayDownloadPrefix}/codekvast-daemon-{codekvast-version}.zip
 unzip codekvast-daemon-{codekvast-version}.zip -d /opt
-rm /opt/codekvast-daemon
+rm -f /opt/codekvast-daemon
 ln -s /opt/codekvast-daemon-{codekvast-version} /opt/codekvast-daemon
 cd /opt/codekvast-daemon/conf
 cp codekvast-daemon.properties.sample.{codekvast-version} codekvast-daemon.properties # <1>
-rm /etc/init.d/codekvast-daemon
-ln -s /opt/codekvast-daemon/etc/startscript/debian/codekvast-daemon /etc/init.d #<2>
+rm -f /etc/init.d/codekvast-daemon
+ln -s /opt/codekvast-daemon/etc/startscript/debian/codekvast-daemon /etc/init.d/ #<2>
 mkdir -p /var/log/codekvast
 update-rc.d codekvast-daemon defaults # <2>
 ----
@@ -235,13 +235,13 @@ sudo -s
 mysql -e "create database if not exists codekvast_warehouse;grant all on codekvast_warehouse.* to 'codekvast'@'localhost' identified by 'codekvast';"
 wget {bintrayDownloadPrefix}/codekvast-warehouse-{codekvast-version}.zip # <1>
 unzip codekvast-warehouse-{codekvast-version}.zip -d /opt
-rm /opt/codekvast-warehouse
+rm -f /opt/codekvast-warehouse
 ln -s /opt/codekvast-warehouse-{codekvast-version} /opt/codekvast-warehouse
 cd /opt/codekvast-warehouse/conf
 cp codekvast-warehouse.properties.sample.{codekvast-version} codekvast-warehouse.properties # <2>
 mkdir -p /var/log/codekvast
-rm /etc/init.d/codekvast-warehouse
-ln -s /opt/codekvast-warehouse/etc/startscript/debian/codekvast-warehouse /etc/init.d # <3>
+rm -f /etc/init.d/codekvast-warehouse
+ln -s /opt/codekvast-warehouse/etc/startscript/debian/codekvast-warehouse /etc/init.d/ # <3>
 update-rc.d codekvast-warehouse defaults # <3>
 ----
 <1> You might need to add the options -u<username> and -p<password> to the mysql command.

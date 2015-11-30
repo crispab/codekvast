@@ -24,8 +24,8 @@ public class CodekvastSettings {
     private String commitDate;
     private String commitMessage;
 
-    private int importPollIntervalSeconds = 30;
     private File importPath;
+    private int importPathPollIntervalSeconds;
     private boolean deleteImportedFiles;
 
     @PostConstruct
