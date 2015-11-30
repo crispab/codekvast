@@ -1,0 +1,24 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Codekvast Daemon" type="Application" factoryName="Application" singleton="true">
+    <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+      <pattern>
+        <option name="PATTERN" value="se.crisp.codekvast.daemon.main.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <option name="MAIN_CLASS_NAME" value="se.crisp.codekvast.agent.daemon.CodekvastDaemon" />
+    <option name="VM_PARAMETERS" value="-Dcodekvast.log.consoleThreshold=DEBUG" />
+    <option name="PROGRAM_PARAMETERS" value="--codekvast.databasePath=tcp://localhost/$MODULE_DIR$/build/database --codekvast.dataProcessingIntervalSeconds=5 --codekvast.exportFile=/tmp/codekvast/.export/codekvast-data-#timestamp#.zip --codekvast.environment=Intellij" />
+    <option name="WORKING_DIRECTORY" value="file://$MODULE_DIR$" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+    <option name="ALTERNATIVE_JRE_PATH" />
+    <option name="ENABLE_SWING_INSPECTOR" value="false" />
+    <option name="ENV_VARIABLES" />
+    <option name="PASS_PARENT_ENVS" value="true" />
+    <module name="daemon" />
+    <envs />
+    <method>
+      <option name="Gradle.BeforeRunTask" enabled="true" tasks="processResources startDatabase" externalProjectPath="$PROJECT_DIR$/product/agent/daemon" vmOptions="" scriptParameters="" />
+    </method>
+  </configuration>
+</component>
