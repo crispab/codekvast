@@ -47,7 +47,7 @@ public class FileImportWorker {
         this.importService = importService;
         this.objectMapper = objectMapper;
         log.info("Created, looking for files in {} every {} seconds", codekvastSettings.getImportPath(),
-                 codekvastSettings.getImportPollIntervalSeconds());
+                 codekvastSettings.getImportPathPollIntervalSeconds());
     }
 
     @Scheduled(fixedDelayString = "${codekvast.importPathPollIntervalSeconds}000")
