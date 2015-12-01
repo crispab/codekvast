@@ -84,6 +84,11 @@ applicationDistribution.from('src/main/resources') {
     }
 }
 
+applicationDistribution.from('src/docker') {
+    into '/'
+    expand(project.properties)
+}
+
 startScripts {
     doLast {
         logger.info 'Adjusting start scripts...'
@@ -160,5 +165,9 @@ task coverageReport(type: JacocoReport) {
 build.dependsOn coverageReport
 
 distDocker {
-    dockerfile = file("Dockerfile")
+    maintainer 'Olle Hallin "olle.hallin@crisp.se"'
+    runCommand 'mkdir -p /var/log/codekvast'
+    volume '/var/log/codekvast'
+    volume '/tmp/codekvast'
+    tagVersion version
 }

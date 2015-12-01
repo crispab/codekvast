@@ -43,13 +43,14 @@ public class LoggingConfig {
     private static final String CODEKVAST_LOG_PATH_AS_ENVVAR = "CODEKVAST_LOGPATH";
     private static final String CODEKVAST_LOG_BASENAME = "codekvast.log.baseName";
     private static final String CODEKVAST_LOG_CONSOLE_THRESHOLD = "codekvast.log.consoleThreshold";
+    private static final String CODEKVAST_LOG_CONSOLE_THRESHOLD_AS_ENVVAR = "CODEKVAST_LOG_CONSOLE_THRESHOLD";
 
     public static void configure(Class<?> mainClass, String appName) {
         File varLogCodekvast = new File("/var/log/codekvast");
         String appHome = System.getenv("APP_HOME");
         File appHomeLog = appHome == null ? null : new File(appHome, "log");
         String codePath = mainClass.getProtectionDomain().getCodeSource().getLocation().getPath();
-        String consoleThreshold = "OFF";
+        String defaultConsoleThreshold = "OFF";
 
         boolean makeLogPathWritable = false;
         String logPath = System.getProperty(CODEKVAST_LOG_PATH, System.getenv(CODEKVAST_LOG_PATH_AS_ENVVAR));
@@ -65,20 +66,20 @@ public class LoggingConfig {
             int p = codePath.lastIndexOf("/build/libs");
             logPath = codePath.substring(0, p) + "/build/log";
             makeLogPathWritable = true;
-            consoleThreshold = "INFO";
+            defaultConsoleThreshold = "INFO";
         } else if (codePath.endsWith("/build/classes/main/")) {
             // Running from gradle run
             logPath = codePath.replace("/build/classes/main/", "/build/log");
             makeLogPathWritable = true;
-            consoleThreshold = "INFO";
+            defaultConsoleThreshold = "INFO";
         } else if (codePath.endsWith("/build/classes/production/" + appName + "/")) {
             // Running from IDEA at $MODULE_DIR
             logPath = codePath.replace("/build/classes/production/" + appName + "/", "/build/log");
             makeLogPathWritable = true;
-            consoleThreshold = "INFO";
+            defaultConsoleThreshold = "INFO";
         } else {
             logPath = ".";
-            consoleThreshold = "INFO";
+            defaultConsoleThreshold = "INFO";
         }
 
         File resultDir = new File(logPath);
@@ -90,14 +91,21 @@ public class LoggingConfig {
             logPath = System.getProperty("user.dir");
             System.err.println(getCanonicalPath(resultDir) + " is not a directory, will log to working directory, which is " +
                                        getCanonicalPath(new File(logPath)));
-            consoleThreshold = "INFO";
+            defaultConsoleThreshold = "INFO";
         }
 
         System.setProperty(CODEKVAST_LOG_PATH, logPath);
         System.setProperty(CODEKVAST_LOG_BASENAME, appName);
-        if (System.getProperty(CODEKVAST_LOG_CONSOLE_THRESHOLD) == null) {
-            System.setProperty(CODEKVAST_LOG_CONSOLE_THRESHOLD, consoleThreshold);
-        }
+
+        setConsoleThreshold(defaultConsoleThreshold);
+    }
+
+    private static void setConsoleThreshold(String defaultConsoleThreshold) {
+        String specifiedConsoleThreshold =
+                System.getProperty(CODEKVAST_LOG_CONSOLE_THRESHOLD, System.getenv(CODEKVAST_LOG_CONSOLE_THRESHOLD_AS_ENVVAR));
+        String consoleThreshold = specifiedConsoleThreshold == null ? defaultConsoleThreshold : specifiedConsoleThreshold;
+        System.setProperty(CODEKVAST_LOG_CONSOLE_THRESHOLD, consoleThreshold);
+        System.out.println("Setting console log threshold to " + consoleThreshold);
     }
 
     private static String getCanonicalPath(File file) {

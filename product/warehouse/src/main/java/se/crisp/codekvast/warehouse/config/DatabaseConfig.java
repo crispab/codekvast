@@ -33,8 +33,10 @@ import se.crisp.codekvast.warehouse.migration.V1_0__DummyJavaMigration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -51,8 +53,40 @@ public class DatabaseConfig {
     private static final String SQL_MIGRATION_LOCATION = "database.migration";
 
     @Bean
+    public String dataSourceReady(DataSource dataSource) throws SQLException {
+        int errorCount = 0;
+        while (errorCount < 6) {
+            try (Statement statement = dataSource.getConnection().createStatement()) {
+                statement.execute("SELECT 1 FROM DUAL");
+                if (errorCount > 0) {
+                    log.info("Finally connected to database after {} failed attempts", errorCount);
+                }
+                return getDataSourceUrl(dataSource);
+            } catch (SQLException e) {
+                errorCount += 1;
+                log.warn("Cannot connect to database, sleeping 10s before trying again...");
+                sleepSeconds(10);
+            }
+        }
+        throw new SQLException("Could not connect to database");
+    }
+
+    private void sleepSeconds(int seconds) {
+        try {
+            Thread.sleep(TimeUnit.SECONDS.toMillis(seconds));
+        } catch (InterruptedException ignore) {
+
+        }
+    }
+
+    private String getDataSourceUrl(DataSource dataSource) throws SQLException {
+        return dataSource.getConnection().getMetaData().getURL();
+    }
+
+    @Bean
+    @DependsOn("dataSourceReady")
     public Flyway flyway(DataSource dataSource) throws SQLException {
-        log.info("Applying Flyway to {}", dataSource.getConnection().getMetaData().getURL());
+        log.info("Applying Flyway to {}", getDataSourceUrl(dataSource));
         Flyway flyway = new Flyway();
         flyway.setDataSource(dataSource);
         flyway.setLocations(SQL_MIGRATION_LOCATION, JAVA_MIGRATION_LOCATION);

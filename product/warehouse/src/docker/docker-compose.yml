@@ -1,0 +1,25 @@
+warehouse:
+  image: crisp/codekvast-warehouse:${version}
+
+  volumes:
+  - /tmp/codekvast/import:/tmp/codekvast
+  - /tmp/codekvast/log:/var/log/codekvast
+
+  links:
+  - database
+
+  environment:
+  - SPRING_PROFILES_ACTIVE=docker
+  - CODEKVAST_LOG_CONSOLE_THRESHOLD=INFO
+
+database:
+  image: mariadb:10
+
+  environment:
+  - MYSQL_ROOT_PASSWORD=root
+  - MYSQL_DATABASE=codekvast_warehouse
+  - MYSQL_USER=codekvast
+  - MYSQL_PASSWORD=codekvast
+
+  expose:
+  - 3306

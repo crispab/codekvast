@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.14.3
+
+1. Dockerized codekvast-warehouse.
+
 ## 0.14.2
 
 1. Added MIT license header to all source files.
