@@ -76,8 +76,8 @@ run {
             "--codekvast.environment=Gradle",
             // During test
             //"--codekvast.exportFile=/home/qolha/Dropbox/Kund/Transmode/codekvast/codekvast-data-#hostname#.zip",
-            "--codekvast.uploadToHost=fjottas.local",
-            "--codekvast.uploadToPath=/tmp/codekvast/.export",
+            // "--codekvast.uploadToHost=fjottas.local",
+            // "--codekvast.uploadToPath=/tmp/codekvast/.export",
     ]
 }
 run.dependsOn startDatabase
