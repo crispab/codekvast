@@ -1,13 +1,14 @@
-repositories { jcenter() }
+repositories { jcenter(); mavenCentral() }
 
 dependencies {
-    classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.2.7.RELEASE'
-    classpath "org.flywaydb:flyway-gradle-plugin:3.1"
     classpath 'com.github.jengelman.gradle.plugins:gradle-processes:0.3.0'
     classpath 'com.h2database:h2:1.4.185'
     classpath 'com.moowork.gradle:gradle-node-plugin:0.10'
     classpath 'com.ofg:uptodate-gradle-plugin:1.6.0'
+    classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.10.0'
     classpath 'org.ajoberstar:grgit:1.1.0'
+    classpath 'org.flywaydb:flyway-gradle-plugin:3.1'
+    classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.2.7.RELEASE'
     // classpath 'com.eriwen:gradle-js-plugin:1.12.1'
     // classpath 'com.eriwen:gradle-css-plugin:1.11.1'
 }

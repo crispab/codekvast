@@ -3,6 +3,8 @@ plugins {
 }
 apply from: "$rootDir/gradle/java-6.gradle"
 apply from: "$rootDir/gradle/sources-javadoc.gradle"
+apply from: "$rootDir/gradle/license.gradle"
+
 //JCENTER apply plugin: 'com.jfrog.bintray'
 
 // This build script is prepared for publishing the shadow jar to bintray for linking to jcenter.

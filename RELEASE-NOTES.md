@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.14.2
+
+1. Added MIT license header to all source files.
+
 ## 0.14.1
 
 1. Added support for SCP upload of daemon export files.

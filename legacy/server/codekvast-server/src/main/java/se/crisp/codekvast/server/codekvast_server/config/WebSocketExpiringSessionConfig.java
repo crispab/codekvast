@@ -10,7 +10,7 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 /**
  * Trick to make Spring detect web socket session expiration.
- * <p/>
+ *
  * Without this, no {@link SessionDisconnectEvent}s will be published.
  *
  * @author olle.hallin@crisp.se

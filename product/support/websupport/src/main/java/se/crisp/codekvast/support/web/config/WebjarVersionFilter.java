@@ -1,3 +1,24 @@
+/**
+ * Copyright (c) 2015 Crisp AB
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 package se.crisp.codekvast.support.web.config;
 
 import lombok.AccessLevel;
@@ -19,21 +40,26 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * A filter that detects webjars in classpath and rewrites requests for version-less webjar resources to their canonical form. <br/> <br/>
- * It makes it possible to declare webjar versions only once, in build.gradle. This reduces risk for errors when updating dependencies.
- * Forgetting to update the html templates will most likely be detected very late in the deployment pipeline. <br/> <br/> The HTML file can
- * use e.g.,
- * <code><pre>
- * <p/>
+ * <p>A filter that detects webjars in classpath and rewrites requests for version-less webjar resources to their canonical form.</p>
+ *
+ * <p>It makes it possible to declare webjar versions only once, in build.gradle.</p>
+ *
+ * <p>This reduces risk for errors when updating dependencies.
+ * Forgetting to update the html templates will most likely be detected very late in the deployment pipeline.</p>
+ *
+ * <p>The HTML file can use e.g.,</p>
+ *
+ * <pre><code>
+ *
  *   &lt;script src="/webjars/angularjs/angular.js"&gt;&lt;/script&gt;
- * <p/>
- * </pre> </code>
+ *
+ * </code></pre>
  * instead of
- * <code><pre>
- * <p/>
+ * <pre><code>
+ *
  *   &lt;script src="/webjars/angularjs/<b>1.3.10</b>/angular.js"&gt;&lt;/script&gt;
- * <p/>
- * </pre> </code>
+ *
+ * </code></pre>
  * where <b>1.3.10</b> also appears in the build.gradle that brought in angular-1.3.10.jar in the first place.
  *
  * @author olle.hallin@crisp.se

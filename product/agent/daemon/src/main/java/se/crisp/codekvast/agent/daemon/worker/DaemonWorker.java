@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2015 Crisp AB
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -19,7 +19,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 package se.crisp.codekvast.agent.daemon.worker;
 
 import lombok.extern.slf4j.Slf4j;
