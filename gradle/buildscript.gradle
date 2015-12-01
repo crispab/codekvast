@@ -9,6 +9,7 @@ dependencies {
     classpath 'org.ajoberstar:grgit:1.1.0'
     classpath 'org.flywaydb:flyway-gradle-plugin:3.1'
     classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.2.7.RELEASE'
+    classpath 'se.transmode.gradle:gradle-docker:1.2'
     // classpath 'com.eriwen:gradle-js-plugin:1.12.1'
     // classpath 'com.eriwen:gradle-css-plugin:1.11.1'
 }
