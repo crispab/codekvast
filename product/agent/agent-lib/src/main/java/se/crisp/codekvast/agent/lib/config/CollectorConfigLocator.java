@@ -164,15 +164,13 @@ public class CollectorConfigLocator {
 
     private static String getCollectorHome() {
         try {
-            File myJar = new File(CollectorConfigLocator.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-            File home = myJar.getParentFile();
-            if (home.getName().endsWith("/lib")) {
-                home = home.getParentFile();
-            } else if (home.getName().endsWith("/endorsed")) {
+            File home = new File(CollectorConfigLocator.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile();
+            String homeName = home.getName();
+            if (homeName.endsWith("/lib") || homeName.endsWith("/endorsed") || homeName.endsWith("/javaagent")) {
                 home = home.getParentFile();
             }
             return home.getAbsolutePath();
-        } catch (URISyntaxException ignored) {
+        } catch (Exception ignored) {
         }
         return null;
     }

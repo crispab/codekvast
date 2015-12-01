@@ -3,6 +3,7 @@
 ## 0.14.2
 
 1. Added MIT license header to all source files.
+1. Fixed NPE in CollectorConfigLocator.
 
 ## 0.14.1
 
