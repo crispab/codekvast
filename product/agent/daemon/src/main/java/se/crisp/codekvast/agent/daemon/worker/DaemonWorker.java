@@ -132,7 +132,7 @@ public class DaemonWorker {
         try {
             fileUploader.uploadFile(file);
         } catch (FileUploadException e) {
-            LogUtil.logException(log, "Could not upload " + file + ": " + e, e);
+            LogUtil.logException(log, "Upload failed: " + e, e);
         }
     }
 

@@ -91,7 +91,7 @@ public class FileImportWorker {
                     if (file.isDirectory()) {
                         walkDirectory(file);
                     } else if (!file.getName().endsWith(ExportFileFormat.ZIP.getSuffix())) {
-                        log.debug("Ignoring {}, can only handle {} files", file, ExportFileFormat.ZIP);
+                        log.debug("Ignoring {}", file);
                     } else {
                         importZipFile(file);
 

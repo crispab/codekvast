@@ -23,6 +23,9 @@ package se.crisp.codekvast.agent.daemon.worker.scp_upload;
 
 import lombok.extern.slf4j.Slf4j;
 import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.connection.ConnectionException;
+import net.schmizz.sshj.connection.channel.direct.Session;
+import net.schmizz.sshj.transport.TransportException;
 import org.springframework.stereotype.Component;
 import se.crisp.codekvast.agent.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.agent.daemon.util.LogUtil;
@@ -34,8 +37,11 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static java.time.Instant.now;
+import static java.util.Optional.ofNullable;
 
 /**
  * @author olle.hallin@crisp.se
@@ -62,9 +68,9 @@ public class ScpFileUploaderImpl implements FileUploader {
             Instant startedAt = now();
             log.info("Uploading {} to {}:{}...", file.getName(), config.getUploadToHost(), config.getUploadToPath());
 
-            SSHClient ssh = new SSHClient();
+            SSHClient sshClient = new SSHClient();
             try {
-                doUploadFile(ssh, file);
+                doUploadFile(sshClient, file);
                 log.info("{} ({}) uploaded to {}:{} in {} s", file.getName(), LogUtil.humanReadableByteCount(file.length()),
                          config.getUploadToHost(), config.getUploadToPath(), Duration.between(startedAt, now()).getSeconds());
             } catch (IOException e) {
@@ -73,14 +79,45 @@ public class ScpFileUploaderImpl implements FileUploader {
         }
     }
 
-    private void doUploadFile(SSHClient ssh, File file) throws IOException {
+    private void doUploadFile(SSHClient sshClient, File file) throws IOException {
         try {
-            ssh.loadKnownHosts();
-            ssh.connect(config.getUploadToHost());
-            ssh.authPublickey(System.getProperty("user.name"));
-            ssh.newSCPFileTransfer().upload(file.getAbsolutePath(), config.getUploadToPath());
+            sshClient.loadKnownHosts();
+            sshClient.connect(config.getUploadToHost());
+            sshClient.authPublickey(System.getProperty("user.name"));
+
+            String realTarget = getUploadTargetFile(file);
+            String tmpTarget = realTarget + "." + UUID.randomUUID();
+
+            sshClient.newSCPFileTransfer().upload(file.getAbsolutePath(), tmpTarget);
+
+            renameFile(sshClient, tmpTarget, realTarget);
         } finally {
-            ssh.disconnect();
+            sshClient.disconnect();
+        }
+    }
+
+    private String getUploadTargetFile(File file) {
+        StringBuffer sb = new StringBuffer(config.getUploadToPath());
+        if (!config.getUploadToPath().endsWith(File.separator)) {
+            sb.append(File.separator);
+        }
+        sb.append(file.getName());
+        return sb.toString();
+    }
+
+    private void renameFile(SSHClient sshClient, String from, String to) throws ConnectionException, TransportException {
+        try (Session session = sshClient.startSession()) {
+
+            Session.Command command = session.exec(String.format("mv --force %s %s", from, to));
+
+            command.join(10, TimeUnit.SECONDS);
+
+            String errorMessage = ofNullable(command.getExitErrorMessage()).orElse("");
+            int exitStatus = ofNullable(command.getExitStatus()).orElse(0);
+
+            if (exitStatus != 0 || !errorMessage.isEmpty()) {
+                log.error("Could not rename uploaded file: [{}] {}", exitStatus, errorMessage);
+            }
         }
     }
 }

@@ -8,7 +8,7 @@
     </extension>
     <option name="MAIN_CLASS_NAME" value="se.crisp.codekvast.agent.daemon.CodekvastDaemon" />
     <option name="VM_PARAMETERS" value="-Dcodekvast.log.consoleThreshold=DEBUG" />
-    <option name="PROGRAM_PARAMETERS" value="--codekvast.databasePath=tcp://localhost/$MODULE_DIR$/build/database --codekvast.dataProcessingIntervalSeconds=5 --codekvast.exportFile=/tmp/codekvast/.export/codekvast-data-#timestamp#.zip --codekvast.environment=Intellij --codekvast.uploadToHost=localhost --codekvast.uploadToPath=slask" />
+    <option name="PROGRAM_PARAMETERS" value="--codekvast.databasePath=tcp://localhost/$MODULE_DIR$/build/database --codekvast.dataProcessingIntervalSeconds=5 --codekvast.exportFile=/tmp/codekvast/.export/codekvast-data-#hostname#.zip --codekvast.environment=Intellij --codekvast.uploadToHost=fjottas.local --codekvast.uploadToPath=/tmp/codekvast/.export" />
     <option name="WORKING_DIRECTORY" value="file://$MODULE_DIR$" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" />
