@@ -5,7 +5,7 @@ apply plugin: 'application'
 apply plugin: 'spring-boot'
 apply from: "$rootDir/gradle/standalone-h2server.gradle"
 
-description = "The Codekvast agent daemon"
+description = "The Codekvast daemon"
 applicationName = "codekvast-daemon"
 archivesBaseName = "codekvast-daemon"
 version = project.parent.parent.version

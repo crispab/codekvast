@@ -3,6 +3,8 @@ plugins {
     id 'com.jfrog.bintray' version '1.4'
 }
 
+description = "Modules that belongs to the Codekvast product"
+
 version = codekvastVersion
 
 ext.bintrayUserOrg = 'crisp'

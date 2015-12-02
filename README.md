@@ -8,7 +8,7 @@ Sample projects to use when testing Codekvast lives under `sample/`.
 
 Development tools live under `tools/`.
 
-Some legacy code lives under `legacy/`.
+Some experimental code lives under `playground/`.
 
 ## Development environment
 

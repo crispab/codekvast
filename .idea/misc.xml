@@ -25,7 +25,7 @@
     </list>
   </component>
   <component name="FrameworkDetectionExcludesConfiguration">
-    <file type="Spring" url="file://$PROJECT_DIR$/legacy" />
+    <file type="Spring" url="file://$PROJECT_DIR$/playground" />
     <file type="web" url="file://$PROJECT_DIR$" />
   </component>
   <component name="NullableNotNullManager">

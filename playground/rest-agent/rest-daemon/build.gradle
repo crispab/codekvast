@@ -1,0 +1,17 @@
+apply from: "$rootDir/gradle/java-8.gradle"
+apply plugin: 'spring-boot'
+
+version = project.parent.parent.version
+mainClassName = "rerquired.by.the.application.plugin"
+
+dependencies {
+    compile lombok
+    compile project(':product:support:commons')
+    compile project(':product:agent:agent-lib')
+    compile project(':product:agent:daemon')
+    compile project(':playground:server:daemon-api')
+    compile 'javax.inject:javax.inject:1'
+
+    testCompile junit
+    testCompile mockito
+}

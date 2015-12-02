@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="SqlDialectMappings">
-    <file url="file://$PROJECT_DIR$/legacy/server/codekvast-server/src/integTest/java/se/crisp/codekvast/server/codekvast_server/service/impl/AbstractServiceIntegTest.java" dialect="H2" />
-    <file url="file://$PROJECT_DIR$/legacy/server/codekvast-server/src/main/java/se/crisp/codekvast/server/codekvast_server/config/DatabaseConfig.java" dialect="H2" />
-    <file url="file://$PROJECT_DIR$/legacy/server/codekvast-server/src/main/java/se/crisp/codekvast/server/codekvast_server/dao/impl" dialect="H2" />
-    <file url="file://$PROJECT_DIR$/legacy/server/codekvast-server/src/main/java/se/crisp/codekvast/server/codekvast_server/dao/impl/DaemonDAOImpl.java" dialect="H2" />
-    <file url="file://$PROJECT_DIR$/legacy/server/codekvast-server/src/main/java/se/crisp/codekvast/server/codekvast_server/dao/impl/UserDAOImpl.java" dialect="H2" />
-    <file url="file://$PROJECT_DIR$/legacy/server/codekvast-server/src/main/resources/database/migration" dialect="H2" />
-    <file url="file://$PROJECT_DIR$/legacy/web/src/main/java/se/crisp/codekvast/web/service/impl/DatabaseMaintenanceImpl.java" dialect="H2" />
-    <file url="file://$PROJECT_DIR$/legacy/web/src/main/java/se/crisp/codekvast/web/service/impl/RegistrationServiceImpl.java" dialect="H2" />
-    <file url="file://$PROJECT_DIR$/legacy/web/src/main/resources/db/migration/V1_0__InitSchema.sql" dialect="H2" />
+    <file url="file://$PROJECT_DIR$/playground/server/codekvast-server/src/integTest/java/se/crisp/codekvast/server/codekvast_server/service/impl/AbstractServiceIntegTest.java" dialect="H2" />
+    <file url="file://$PROJECT_DIR$/playground/server/codekvast-server/src/main/java/se/crisp/codekvast/server/codekvast_server/config/DatabaseConfig.java" dialect="H2" />
+    <file url="file://$PROJECT_DIR$/playground/server/codekvast-server/src/main/java/se/crisp/codekvast/server/codekvast_server/dao/impl" dialect="H2" />
+    <file url="file://$PROJECT_DIR$/playground/server/codekvast-server/src/main/java/se/crisp/codekvast/server/codekvast_server/dao/impl/DaemonDAOImpl.java" dialect="H2" />
+    <file url="file://$PROJECT_DIR$/playground/server/codekvast-server/src/main/java/se/crisp/codekvast/server/codekvast_server/dao/impl/UserDAOImpl.java" dialect="H2" />
+    <file url="file://$PROJECT_DIR$/playground/server/codekvast-server/src/main/resources/database/migration" dialect="H2" />
+    <file url="file://$PROJECT_DIR$/playground/web/src/main/java/se/crisp/codekvast/web/service/impl/DatabaseMaintenanceImpl.java" dialect="H2" />
+    <file url="file://$PROJECT_DIR$/playground/web/src/main/java/se/crisp/codekvast/web/service/impl/RegistrationServiceImpl.java" dialect="H2" />
+    <file url="file://$PROJECT_DIR$/playground/web/src/main/resources/db/migration/V1_0__InitSchema.sql" dialect="H2" />
     <file url="file://$PROJECT_DIR$/product/agent/daemon/src/main/java/se/crisp/codekvast/agent/daemon/worker/local_warehouse/LocalWarehouseCollectorDataProcessorImpl.java" dialect="H2" />
     <file url="file://$PROJECT_DIR$/product/agent/daemon/src/main/resources/database/migration" dialect="H2" />
     <file url="file://$PROJECT_DIR$/product/agent/daemon/src/test/java/se/crisp/codekvast/agent/daemon/worker/local_warehouse/LocalWarehouseTest.java" dialect="H2" />

@@ -1,0 +1,165 @@
+plugins {
+    id 'distribution'
+    id 'org.hidetake.ssh' version '0.4.5'
+}
+description = "Some experimental code lives here"
+
+version = codekvastVersion
+
+distributions {
+    server {
+        baseName = 'codekvast-server'
+        contents {
+            from tasks.getByPath(":playground:server:codekvast-server:installDist")
+        }
+    }
+
+    web {
+        baseName = 'codekvast-web'
+        contents {
+            from tasks.getByPath(":playground:web:installDist")
+        }
+    }
+}
+
+ssh.settings {
+    knownHosts = allowAnyHosts    // Disable host key verification
+    pty = true
+}
+
+remotes {
+    web {
+        role 'all'
+        host = 'codekvast.crisp.se'
+        user = 'ubuntu'
+        identity = new File(System.properties['user.home'] + '/.ssh', 'Codekvast.pem')
+    }
+}
+
+task prepareTargetServers {
+    group = "provisioning"
+    description = "Prepares the target servers for installWeb"
+
+    doLast {
+        def etcDir = file('src/provision/etc/')
+        def keystoreFile = new File(System.properties['user.home'], ".ssh/star.crisp.se.jks")
+
+        if (!keystoreFile.exists()) {
+            throw new TaskExecutionException(keystoreFile + " is missing")
+        }
+
+        ssh.run {
+            session(remotes.role('all')) {
+                put "$etcDir/redirectPort80", "."
+                put keystoreFile, "."
+
+                execute """
+sudo apt-get -q update;
+sudo apt-get -q upgrade -y;
+sudo apt-get install -y unzip;
+sudo apt-get install -y openjdk-7-jdk;
+
+sudo "echo 'Europe/Stockholm' > /etc/timezone";
+
+sudo mv -f redirectPort80 /etc/init.d;
+sudo mv -f ${keystoreFile.name} /etc/ssl/certs/java;
+
+pushd /etc/init.d;
+chmod +x redirectPort80;
+sudo update-rc.d redirectPort80 defaults;
+popd
+
+"""
+            }
+        }
+    }
+}
+
+task installWeb {
+    group "Provisioning"
+    description "Installs Codekvast-web for the first time"
+    dependsOn webDistZip
+
+    def zip = file("$buildDir/distributions/codekvast-web-${version}.zip")
+    def confDir = file('src/provision/web/conf/')
+    def etcDir = file('src/provision/web/etc/')
+    def deployStatusFile = file("$buildDir/tmp/deploy-web-${version}.status")
+
+    inputs.file zip
+    inputs.dir file('src/provision/web')
+    outputs.file deployStatusFile
+
+    doLast {
+
+        println "Deploying $zip ..."
+
+        ssh.run {
+            session(remotes.web) {
+                put zip, "."
+                execute "unzip -o ${zip.name}"
+
+                put confDir, "codekvast-web-${version}"
+                put "$etcDir/codekvast-web.sh", "."
+
+                execute """
+pkill java
+rm -f codekvast-web
+ln -s codekvast-web-${version} codekvast-web
+sudo mv ./codekvast-web.sh /etc/init.d/codekvast-web
+cd /etc/init.d
+sudo update-rc.d codekvast-web defaults
+sudo chmod +x codekvast-web
+/etc/init.d/codekvast-web start
+"""
+            }
+        }
+        deployStatusFile.parentFile.mkdirs()
+        deployStatusFile.text = "$zip deployed at ${new Date()}\n"
+    }
+}
+
+task redeployWeb {
+    group "Provisioning"
+    description "Redeploys Codekvast-web with same version and configuration"
+    dependsOn webDistZip
+
+    def zip = file("$buildDir/distributions/codekvast-web-${version}.zip")
+    def deployStatusFile = file("$buildDir/tmp/deploy-web-${version}.status")
+
+    inputs.file zip
+    outputs.file deployStatusFile
+
+    doFirst {
+        if (!deployStatusFile.exists()) {
+            throw new TaskExecutionException("Cannot redeployWeb $version before installWeb")
+        }
+    }
+
+    doLast {
+
+        println "Redeploying $zip ..."
+        ssh.run {
+            session(remotes.web) {
+                put zip, "."
+                execute "unzip -o ${zip.name}"
+
+                execute '/etc/init.d/codekvast-web restart'
+            }
+        }
+        deployStatusFile.parentFile.mkdirs()
+        deployStatusFile.text = "$zip redeployed at ${new Date()}\n"
+    }
+}
+
+task getPeople {
+    description = "Fetches the latest people.csv from http://codekvast.crisp.se"
+    group = "help"
+
+    doLast {
+        ssh.run {
+            session(remotes.web) {
+                get 'people.csv', buildDir
+            }
+        }
+    }
+}
