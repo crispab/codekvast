@@ -84,11 +84,6 @@ applicationDistribution.from('src/main/resources') {
     }
 }
 
-applicationDistribution.from('src/docker') {
-    into '/'
-    expand(project.properties)
-}
-
 startScripts {
     doLast {
         logger.info 'Adjusting start scripts...'

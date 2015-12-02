@@ -1,5 +1,5 @@
 warehouse:
-  image: crisp/codekvast-warehouse:${version}
+  image: crisp/codekvast-warehouse:${CODEKVAST_VERSION}
 
   volumes:
   - /tmp/codekvast/import:/tmp/codekvast
