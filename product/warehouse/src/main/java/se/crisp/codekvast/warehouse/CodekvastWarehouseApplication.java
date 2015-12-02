@@ -39,7 +39,7 @@ import java.util.Properties;
 public class CodekvastWarehouseApplication {
 
     public static void main(String[] args) throws IOException {
-        LoggingConfig.configure(CodekvastWarehouseApplication.class, "codekvast-warehouse");
+        LoggingConfig.configure("codekvast-warehouse");
         System.setProperty("spring.config.location",
                            "classpath:/application.properties," +
                                    "classpath:/default.properties," +

@@ -21,7 +21,7 @@ import java.util.Properties;
 public class CodekvastPromoWebApplication {
 
     public static void main(String[] args) throws IOException {
-        LoggingConfig.configure(CodekvastPromoWebApplication.class, "codekvast-web");
+        LoggingConfig.configure("codekvast-web");
         SpringApplication application = new SpringApplication(CodekvastPromoWebApplication.class);
         application.setDefaultProperties(loadDefaultProperties());
         application.run(args);

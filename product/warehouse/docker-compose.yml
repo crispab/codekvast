@@ -5,7 +5,7 @@ warehouse:
 
   volumes:
   - /tmp/codekvast/import:/tmp/codekvast
-  - /tmp/codekvast/log:/var/log/codekvast
+  - /var/log/codekvast:/var/log/codekvast
 
   links:
   - database
@@ -24,6 +24,10 @@ database:
   - MYSQL_DATABASE=codekvast_warehouse
   - MYSQL_USER=codekvast
   - MYSQL_PASSWORD=codekvast
+  - TERM=xterm-256color
+
+  volumes:
+  - /var/lib/codekvast-database:/var/lib/mysql
 
   expose:
   - "3306"

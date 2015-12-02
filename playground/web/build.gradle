@@ -75,12 +75,20 @@ startScripts {
     }
 }
 
+run {
+    jvmArgs = [
+            '-ea',
+            "-Dcodekvast.logPath=$buildDir/log",
+            '-Dcodekvast.log.consoleThreshold=DEBUG',
+    ]
+}
+
 bootRun {
     jvmArgs = [
             "-javaagent:${configurations.springLoaded.asPath}",
             "-noverify",
             "-Dspring.thymeleaf.cache=false",
             "-Dspring.messages.cacheSeconds=1"
-    ]
+    ] + run.jvmArgs
 
 }

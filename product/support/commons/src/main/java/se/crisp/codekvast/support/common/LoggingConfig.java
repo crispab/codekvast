@@ -45,38 +45,21 @@ public class LoggingConfig {
     private static final String CODEKVAST_LOG_CONSOLE_THRESHOLD = "codekvast.log.consoleThreshold";
     private static final String CODEKVAST_LOG_CONSOLE_THRESHOLD_AS_ENVVAR = "CODEKVAST_LOG_CONSOLE_THRESHOLD";
 
-    public static void configure(Class<?> mainClass, String appName) {
+    public static void configure(String appName) {
         File varLogCodekvast = new File("/var/log/codekvast");
         String appHome = System.getenv("APP_HOME");
         File appHomeLog = appHome == null ? null : new File(appHome, "log");
-        String codePath = mainClass.getProtectionDomain().getCodeSource().getLocation().getPath();
         String defaultConsoleThreshold = "OFF";
 
         boolean makeLogPathWritable = false;
         String logPath = System.getProperty(CODEKVAST_LOG_PATH, System.getenv(CODEKVAST_LOG_PATH_AS_ENVVAR));
         if (logPath != null) {
-            // use it as it is
+            makeLogPathWritable = true;
         } else if (varLogCodekvast.isDirectory()) {
             logPath = getCanonicalPath(varLogCodekvast);
         } else if (appHomeLog != null) {
             logPath = getCanonicalPath(appHomeLog);
             makeLogPathWritable = true;
-        } else if (codePath.contains("/build/libs/") && codePath.endsWith(".jar!/")) {
-            // Running from Gradle workspace with java -jar build/libs/xxx.jar
-            int p = codePath.lastIndexOf("/build/libs");
-            logPath = codePath.substring(0, p) + "/build/log";
-            makeLogPathWritable = true;
-            defaultConsoleThreshold = "INFO";
-        } else if (codePath.endsWith("/build/classes/main/")) {
-            // Running from gradle run
-            logPath = codePath.replace("/build/classes/main/", "/build/log");
-            makeLogPathWritable = true;
-            defaultConsoleThreshold = "INFO";
-        } else if (codePath.endsWith("/build/classes/production/" + appName + "/")) {
-            // Running from IDEA at $MODULE_DIR
-            logPath = codePath.replace("/build/classes/production/" + appName + "/", "/build/log");
-            makeLogPathWritable = true;
-            defaultConsoleThreshold = "INFO";
         } else {
             logPath = ".";
             defaultConsoleThreshold = "INFO";

@@ -27,6 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.File;
 
 /**
@@ -53,5 +54,11 @@ public class CodekvastSettings {
     public void logStartup() {
         System.out.printf("%s v%s (%s) started%n", applicationName, displayVersion, commitDate);
         log.info("{} v{} ({}) starts", applicationName, displayVersion, commitDate);
+    }
+
+    @PreDestroy
+    public void logShutdown() {
+        System.out.printf("%s v%s (%s) shuts down%n", applicationName, displayVersion, commitDate);
+        log.info("{} v{} ({}) shuts down", applicationName, displayVersion, commitDate);
     }
 }

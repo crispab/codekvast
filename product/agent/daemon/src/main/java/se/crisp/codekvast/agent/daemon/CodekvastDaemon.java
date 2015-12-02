@@ -40,7 +40,7 @@ import java.net.URISyntaxException;
 public class CodekvastDaemon {
 
     public static void main(String[] args) throws IOException, URISyntaxException {
-        LoggingConfig.configure(CodekvastDaemon.class, "codekvast-daemon");
+        LoggingConfig.configure("codekvast-daemon");
         System.setProperty("spring.config.location",
                            "classpath:/application.properties," +
                                    "classpath:/default.properties," +

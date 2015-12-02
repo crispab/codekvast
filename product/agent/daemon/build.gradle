@@ -65,6 +65,7 @@ jar {
 run {
     jvmArgs = [
             '-ea',
+            "-Dcodekvast.logPath=$buildDir/log",
             '-Dcodekvast.log.consoleThreshold=DEBUG',
     ]
 

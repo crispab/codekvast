@@ -18,7 +18,7 @@ import java.util.Properties;
 public class CodekvastServerApplication {
 
     public static void main(String[] args) throws IOException {
-        LoggingConfig.configure(CodekvastServerApplication.class, "codekvast-server");
+        LoggingConfig.configure("codekvast-server");
         System.setProperty("spring.config.location",
                            "classpath:/application.properties," +
                                    "classpath:/default.properties," +
