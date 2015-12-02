@@ -30,6 +30,7 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -42,6 +43,16 @@ import java.util.TreeSet;
 @Value
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ComputerID {
+
+    private static final Set<String> virtualInterfaceNames = new HashSet<String>();
+
+    static {
+        virtualInterfaceNames.add("vbox");
+        virtualInterfaceNames.add("docker");
+        virtualInterfaceNames.add("veth");
+        // TODO: Are there other strange interface names to avoid?
+    }
+
     private final String value;
 
     @Override
@@ -72,8 +83,7 @@ public class ComputerID {
         try {
             for (Enumeration<NetworkInterface> it = NetworkInterface.getNetworkInterfaces(); it.hasMoreElements(); ) {
                 NetworkInterface ni = it.nextElement();
-                if (!ni.isLoopback() && !ni.getName().contains("vbox") && !ni.getName().contains("docker")) {
-                    // TODO: Are there other strange interface names to avoid?
+                if (!ni.isLoopback() && !virtualInterfaceNames.contains(ni.getName())) {
                     items.add(prettyPrintMacAddress(ni.getHardwareAddress()));
                 }
             }
