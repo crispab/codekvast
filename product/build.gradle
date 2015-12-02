@@ -65,6 +65,7 @@ bintray {
             include "CodekvastUserManual.html"
             rename { "CodekvastUserManual-${version}.html" }
         }
+        from "$rootDir/product/warehouse/docker-compose.yml"
         into "."
     }
 
@@ -77,7 +78,7 @@ bintray {
         name = 'distributions'
         desc = 'Codekvast is a Runtime Intelligence tool used for identifying Truly Dead Code, i.e., code that no-one has accessed in a certain period of time'
         websiteUrl = 'https://codekvast.crisp.se'
-        vcsUrl = 'https://github.com/crispab/duck.git'
+        vcsUrl = 'https://github.com/crispab/codekvast.git'
         licenses = ['MIT']
         labels = ['runtime-intelligence', 'dead-code', 'dead-code-detector', 'truly-dead-code', 'YANIA', 'java', 'java-6', 'jvm']
 

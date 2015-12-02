@@ -85,7 +85,7 @@ bintray {
         repo = 'maven-repo'
         name = 'codekvast-collector'
         desc = 'Just the javaagent part of Codekvast'
-        vcsUrl = 'https://github.com/crispab/duck.git'
+        vcsUrl = 'https://github.com/crispab/codekvast.git'
         licenses = ['MIT']
 
         publicDownloadNumbers = false
