@@ -65,7 +65,8 @@ bintray {
             include "CodekvastUserManual.html"
             rename { "CodekvastUserManual-${version}.html" }
         }
-        from "$rootDir/product/warehouse/docker-compose.yml"
+        from file("$rootDir/product/warehouse/docker-compose.yml")
+        from file("$rootDir/RELEASE-NOTES.md")
         into "."
     }
 
