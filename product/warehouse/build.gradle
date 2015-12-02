@@ -159,6 +159,10 @@ task coverageReport(type: JacocoReport) {
 }
 build.dependsOn coverageReport
 
+task tagDockerImageWithLatest(type: Exec) {
+    commandLine "$projectDir/tagDockerImageWithLatest.sh"
+}
+
 distDocker {
     baseImage 'azul/zulu-openjdk:8'
     maintainer 'Olle Hallin "olle.hallin@crisp.se"'
@@ -167,3 +171,6 @@ distDocker {
     volume '/tmp/codekvast'
     tagVersion version
 }
+distDocker.finalizedBy tagDockerImageWithLatest
+
+build.dependsOn distDocker

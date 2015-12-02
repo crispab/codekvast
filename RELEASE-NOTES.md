@@ -4,6 +4,7 @@
 
 1. Switched to a smaller Docker base image for codekvast-warehouse
 1. Made codekvast-warehouse exit immediately if Docker container linking is misconfigured.
+1. `./gradlew :product:warehouse:build` now also builds distDocker and tags the image with "latest"
 
 ## 0.14.4
 
