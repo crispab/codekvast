@@ -67,7 +67,7 @@ public class FileImportWorker {
         this.codekvastSettings = codekvastSettings;
         this.importService = importService;
         this.objectMapper = objectMapper;
-        log.info("Created, looking for files in {} every {} seconds", codekvastSettings.getImportPath(),
+        log.info("Looking for files in {} every {} seconds", codekvastSettings.getImportPath(),
                  codekvastSettings.getImportPathPollIntervalSeconds());
     }
 

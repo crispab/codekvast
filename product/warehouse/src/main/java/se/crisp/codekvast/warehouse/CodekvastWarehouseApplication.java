@@ -23,7 +23,6 @@ package se.crisp.codekvast.warehouse;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import se.crisp.codekvast.support.common.LoggingConfig;
 
@@ -36,7 +35,6 @@ import java.util.Properties;
  * @author olle.hallin@crisp.se
  */
 @SpringBootApplication
-@ComponentScan({"se.crisp.codekvast.warehouse", "se.crisp.codekvast.support"})
 @EnableScheduling
 public class CodekvastWarehouseApplication {
 

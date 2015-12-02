@@ -1,5 +1,14 @@
 # Codekvast Release Notes
 
+## 0.14.5
+
+1. Switched to a smaller Docker base image for codekvast-warehouse
+1. Made codekvast-warehouse exit immediately if Docker container linking is misconfigured.
+
+## 0.14.4
+
+1. Added docker-compose.sh
+
 ## 0.14.3
 
 1. Dockerized codekvast-warehouse.

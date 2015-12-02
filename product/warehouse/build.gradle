@@ -160,8 +160,9 @@ task coverageReport(type: JacocoReport) {
 build.dependsOn coverageReport
 
 distDocker {
+    baseImage 'azul/zulu-openjdk:8'
     maintainer 'Olle Hallin "olle.hallin@crisp.se"'
-    runCommand 'mkdir -p /var/log/codekvast'
+    runCommand 'mkdir -p /var/log/codekvast /tmp/codekvast'
     volume '/var/log/codekvast'
     volume '/tmp/codekvast'
     tagVersion version

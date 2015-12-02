@@ -24,6 +24,7 @@ package se.crisp.codekvast.warehouse.config;
 import lombok.extern.slf4j.Slf4j;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationInfo;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -31,7 +32,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import se.crisp.codekvast.warehouse.migration.V1_0__DummyJavaMigration;
 
+import javax.inject.Inject;
 import javax.sql.DataSource;
+import java.net.ConnectException;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
@@ -52,23 +55,41 @@ public class DatabaseConfig {
     private static final String JAVA_MIGRATION_LOCATION = V1_0__DummyJavaMigration.class.getPackage().getName();
     private static final String SQL_MIGRATION_LOCATION = "database.migration";
 
+    @Inject
+    @Value("${spring.datasource.url}")
+    private String dataSourceUrl;
+
     @Bean
     public String dataSourceReady(DataSource dataSource) throws SQLException {
         int errorCount = 0;
-        while (errorCount < 6) {
+        while (errorCount < 5) {
+            log.info("Trying to connect to {} ...", dataSourceUrl);
+
             try (Statement statement = dataSource.getConnection().createStatement()) {
                 statement.execute("SELECT 1 FROM DUAL");
                 if (errorCount > 0) {
-                    log.info("Finally connected to database after {} failed attempts", errorCount);
+                    log.info("Finally connected to {} after {} failed attempts", dataSourceUrl, errorCount);
                 }
                 return getDataSourceUrl(dataSource);
             } catch (SQLException e) {
-                errorCount += 1;
-                log.warn("Cannot connect to database, sleeping 10s before trying again...");
-                sleepSeconds(10);
+                if (getRootCause(e) instanceof ConnectException) {
+                    errorCount += 1;
+                    log.warn("Cannot connect to {}, sleeping 10s before trying again...", dataSourceUrl);
+                    sleepSeconds(10);
+                } else {
+                    throw e;
+                }
             }
         }
-        throw new SQLException("Could not connect to database");
+
+        throw new SQLException("Could not connect to " + dataSourceUrl + " after " + errorCount + " attempts");
+    }
+
+    private Throwable getRootCause(Throwable t) {
+        if (t.getCause() == null) {
+            return t;
+        }
+        return getRootCause(t.getCause());
     }
 
     private void sleepSeconds(int seconds) {

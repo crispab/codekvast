@@ -1,5 +1,7 @@
 warehouse:
-  image: crisp/codekvast-warehouse:${CODEKVAST_VERSION}
+  image: crisp/codekvast-warehouse:latest
+
+  container_name: codekvast-warehouse
 
   volumes:
   - /tmp/codekvast/import:/tmp/codekvast
@@ -15,6 +17,8 @@ warehouse:
 database:
   image: mariadb:10
 
+  container_name: codekvast-database
+
   environment:
   - MYSQL_ROOT_PASSWORD=root
   - MYSQL_DATABASE=codekvast_warehouse
@@ -22,4 +26,4 @@ database:
   - MYSQL_PASSWORD=codekvast
 
   expose:
-  - 3306
+  - "3306"
