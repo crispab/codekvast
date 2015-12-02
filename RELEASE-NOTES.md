@@ -1,5 +1,12 @@
 # Codekvast Release Notes
 
+## 0.14.6
+
+1. Simplified logging config. -Dcodekvast.logPath has highest precedence.
+1. The codekvast-database container now stores the MariaDB data in the host's /var/lib/codekvast-database.
+1. The codekvast-warehouse container logs in /var/log/codekvast.
+1. Made it possible to exec mysql in a running codekvast-database container.
+
 ## 0.14.5
 
 1. Switched to a smaller Docker base image for codekvast-warehouse
