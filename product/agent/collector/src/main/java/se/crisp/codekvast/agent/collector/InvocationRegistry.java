@@ -44,7 +44,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 @SuppressWarnings("Singleton")
 public class InvocationRegistry {
 
-    public static InvocationRegistry instance;
+    public static InvocationRegistry instance = new NullInvocationRegistry();
 
     private final Jvm jvm;
     private final InvocationDataDumper invocationDataDumper;
@@ -63,15 +63,19 @@ public class InvocationRegistry {
         }
     }
 
+    public boolean isNullRegistry() {
+        return false;
+    }
+
     /**
      * Should be called before handing over to the AspectJ load-time weaver, or else nothing will be registered.
-     *
-     * @param config The collector configuration. May not be null.
-     * @param invocationDataDumper The strategy for dumping invocation data to the outside world.
+
+     * @param config The collector configuration. May be null, in which case the registry is disabled.
+     * @param invocationDataDumper The strategy for dumping invocation data to the outside world. Not used if config is null.
      */
     public static void initialize(CollectorConfig config, InvocationDataDumper invocationDataDumper) {
-        if (config == null) {
-            instance = null;
+        if (config == null || invocationDataDumper == null) {
+            instance = new NullInvocationRegistry();
             return;
         }
 
@@ -145,4 +149,24 @@ public class InvocationRegistry {
         currentInvocationIndex = currentInvocationIndex == 0 ? 1 : 0;
     }
 
+    private static class NullInvocationRegistry extends InvocationRegistry {
+        public NullInvocationRegistry() {
+            super(null, null);
+        }
+
+        @Override
+        public void registerMethodInvocation(Signature signature) {
+            // No operation
+        }
+
+        @Override
+        public void dumpData(int dumpCount) {
+            // No operation
+        }
+
+        @Override
+        public boolean isNullRegistry() {
+            return true;
+        }
+    }
 }

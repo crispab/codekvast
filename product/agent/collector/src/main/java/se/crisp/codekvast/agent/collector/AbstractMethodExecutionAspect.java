@@ -58,9 +58,7 @@ public abstract class AbstractMethodExecutionAspect {
 
     @Before("methodExecution() && !trivialMethodExecution()")
     public void registerInvokation(JoinPoint thisJointPoint) {
-        if (InvocationRegistry.instance != null) {
-            InvocationRegistry.instance.registerMethodInvocation(thisJointPoint.getSignature());
-        }
+        InvocationRegistry.instance.registerMethodInvocation(thisJointPoint.getSignature());
     }
 
 }

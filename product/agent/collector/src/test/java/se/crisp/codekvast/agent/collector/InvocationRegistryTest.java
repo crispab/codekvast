@@ -54,7 +54,7 @@ public class InvocationRegistryTest {
 
     @After
     public void afterTest() throws Exception {
-        InvocationRegistry.initialize(null, new FileSystemInvocationDataDumper(null, CodekvastCollector.out));
+        InvocationRegistry.initialize(null, null);
     }
 
     @Test
@@ -79,9 +79,9 @@ public class InvocationRegistryTest {
         assertThat(jvm.getCollectorConfig().getCodeBase(), is(codeBase));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testRegisterBeforeInitialize() throws Exception {
-        InvocationRegistry.initialize(null, new FileSystemInvocationDataDumper(null, CodekvastCollector.out));
+        InvocationRegistry.initialize(null, null);
         InvocationRegistry.instance.registerMethodInvocation(signature);
     }
 
