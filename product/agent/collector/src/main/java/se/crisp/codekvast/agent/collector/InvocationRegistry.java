@@ -59,6 +59,8 @@ public class InvocationRegistry {
         this.invocationDataDumper = invocationDataDumper;
 
         for (int i = 0; i < invocations.length; i++) {
+            // ConcurrentSkipListSet is the fastest available concurrent set implementation in the standard Java runtime
+            // library. See ConcurrentSetPerformanceTest
             this.invocations[i] = new ConcurrentSkipListSet<String>();
         }
     }

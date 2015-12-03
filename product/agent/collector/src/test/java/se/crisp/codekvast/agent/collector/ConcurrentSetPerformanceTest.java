@@ -1,6 +1,9 @@
 package se.crisp.codekvast.agent.collector;
 
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -9,6 +12,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * This is an elaboratory test for measuring performance for different implementations of concurrent sets.
@@ -23,6 +28,8 @@ public class ConcurrentSetPerformanceTest {
         void add(String s);
 
         void clear();
+
+        boolean isThreadSafe();
     }
 
     static class ConcurrentSkipListStrategy implements Strategy {
@@ -36,6 +43,11 @@ public class ConcurrentSetPerformanceTest {
         @Override
         public void clear() {
             set.clear();
+        }
+
+        @Override
+        public boolean isThreadSafe() {
+            return true;
         }
     }
 
@@ -51,6 +63,11 @@ public class ConcurrentSetPerformanceTest {
         public void clear() {
             set.clear();
         }
+
+        @Override
+        public boolean isThreadSafe() {
+            return true;
+        }
     }
 
     static class SetFromConcurrentSkipListMapStrategy implements Strategy {
@@ -65,6 +82,11 @@ public class ConcurrentSetPerformanceTest {
         public void clear() {
             set.clear();
         }
+
+        @Override
+        public boolean isThreadSafe() {
+            return true;
+        }
     }
 
     static class ConcurrentHashMapStrategy implements Strategy {
@@ -78,6 +100,11 @@ public class ConcurrentSetPerformanceTest {
         @Override
         public void clear() {
             map.clear();
+        }
+
+        @Override
+        public boolean isThreadSafe() {
+            return true;
         }
     }
 
@@ -97,6 +124,41 @@ public class ConcurrentSetPerformanceTest {
                 set.clear();
             }
         }
+
+        @Override
+        public boolean isThreadSafe() {
+            return true;
+        }
+    }
+
+    static class ReadWriteLockHashSetStrategy implements Strategy {
+        private final Set<String> set = new HashSet<String>();
+        private ReadWriteLock lock = new ReentrantReadWriteLock();
+
+        @Override
+        public void add(String s) {
+            lock.writeLock().lock();
+            try {
+                set.add(s);
+            } finally {
+                lock.writeLock().unlock();
+            }
+        }
+
+        @Override
+        public void clear() {
+            lock.writeLock().lock();
+            try {
+                set.clear();
+            } finally {
+                lock.writeLock().unlock();
+            }
+        }
+
+        @Override
+        public boolean isThreadSafe() {
+            return true;
+        }
     }
 
     static class WrappedSynchronizedHashSetStrategy implements Strategy {
@@ -111,6 +173,30 @@ public class ConcurrentSetPerformanceTest {
         public void clear() {
             set.clear();
         }
+
+        @Override
+        public boolean isThreadSafe() {
+            return true;
+        }
+    }
+
+    static class UnsynchronizedHashSetStrategy implements Strategy {
+        private final Set<String> set = new HashSet<String>();
+
+        @Override
+        public void add(String s) {
+            set.add(s);
+        }
+
+        @Override
+        public void clear() {
+            set.clear();
+        }
+
+        @Override
+        public boolean isThreadSafe() {
+            return false;
+        }
     }
 
     private static final Strategy STRATEGIES[] = {
@@ -119,7 +205,9 @@ public class ConcurrentSetPerformanceTest {
             new SetFromConcurrentHashMapStrategy(),
             new ConcurrentHashMapStrategy(),
             new ManuallySynchronizedHashSetStrategy(),
-            new WrappedSynchronizedHashSetStrategy()
+            new ReadWriteLockHashSetStrategy(),
+            new WrappedSynchronizedHashSetStrategy(),
+            new UnsynchronizedHashSetStrategy()
     };
 
     private static final Random RANDOM = new Random();
@@ -147,29 +235,51 @@ public class ConcurrentSetPerformanceTest {
 
     @Parameterized.Parameters(name = "{0} threads")
     public static Object[] data() {
-        return new Object[]{10, 50, 100, 200, 500};
+        return new Object[]{1, 10, 20, 30 , 40, 50, 75, 100, 150, 200, 300, 500, 1000};
     }
 
-    @Parameterized.Parameter(0)
-    private int numThreads;
+    private final int numThreads;
 
     private final SortedSet<String> result = new TreeSet<String>();
+
+    private static final Map<Strategy, Long> totalElapsed = new HashMap<Strategy, Long>();
+
+    public ConcurrentSetPerformanceTest(int numThreads) {
+        this.numThreads = numThreads;
+    }
 
     @BeforeClass
     public static void warmUpJitCompiler() throws Exception {
         for (Strategy strategy : STRATEGIES) {
-            for (int i = 0; i < 10000; i++) {
+            for (int i = 0; i < 200000; i++) {
                 strategy.add(RANDOM_STRINGS[i % RANDOM_STRINGS.length]);
             }
             strategy.clear();
         }
+        collectGarbage();
     }
 
-    @Before
-    public void beforeTest() throws Exception {
-        for (Strategy strategy : STRATEGIES) {
-            strategy.clear();
+    @AfterClass
+    public static void showTheWinner() {
+        SortedMap<Long, Strategy> ranking = new TreeMap<Long, Strategy>();
+        for (Map.Entry<Strategy, Long> entry : totalElapsed.entrySet()) {
+            ranking.put(entry.getValue(), entry.getKey());
         }
+
+        System.out.printf("%4s %8s %s%n", "Rank", "Elapsed", "Strategy");
+        System.out.println("-------------------------------------");
+        int rank = 1;
+        for (Map.Entry<Long, Strategy> entry : ranking.entrySet()) {
+            System.out.printf("#%d: %5d ms  %s%n", rank, entry.getKey(), entry.getValue().getClass().getSimpleName());
+            rank += 1;
+        }
+
+    }
+
+    private static void collectGarbage() throws InterruptedException {
+        System.gc();
+        // Allow the GC thread to do it's job...
+        Thread.sleep(100);
     }
 
     @After
@@ -181,16 +291,29 @@ public class ConcurrentSetPerformanceTest {
     }
 
     @Test
-    @Ignore("Performance test for various concurrent set implementations")
+    // @Ignore("Performance test for various concurrent set implementations")
     public void testConcurrentAddToSet() throws Exception {
         for (Strategy strategy : STRATEGIES) {
-            long elapsed = doConcurrentAdds(strategy);
-            result.add(String.format("%3d threads: %5d ms: %s", numThreads, elapsed, strategy.getClass().getSimpleName()));
+            if (strategy.isThreadSafe() || numThreads == 1) {
+                long elapsed = doConcurrentAdds(strategy);
+                result.add(String.format("%4d threads: %5d ms: %s", numThreads, elapsed, strategy.getClass().getSimpleName()));
+
+                if (numThreads > 1) {
+                    Long total = totalElapsed.get(strategy);
+                    if (total == null) {
+                        total = 0L;
+                    }
+                    totalElapsed.put(strategy, total + elapsed);
+                }
+
+                strategy.clear();
+                collectGarbage();
+            }
         }
     }
 
     private long doConcurrentAdds(final Strategy strategy) throws InterruptedException {
-        final int count = 10000000 / numThreads;
+        final int count = 1000000 / numThreads;
         final CountDownLatch startingLine = new CountDownLatch(1);
         final CountDownLatch allThreadsFinished = new CountDownLatch(numThreads);
 
