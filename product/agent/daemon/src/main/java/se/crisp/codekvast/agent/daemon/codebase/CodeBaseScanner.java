@@ -58,17 +58,16 @@ public class CodeBaseScanner {
         log.debug("Scanning code base {}", codeBase);
 
         URLClassLoader appClassLoader = new URLClassLoader(codeBase.getUrls(), System.class.getClassLoader());
-        Set<String> prefixes = new TreeSet<String>(codeBase.getConfig().getNormalizedPackagePrefixes());
+        Set<String> prefixes = new TreeSet<>(codeBase.getConfig().getNormalizedPackagePrefixes());
+        Set<String> excludePrefixes = new TreeSet<>(codeBase.getConfig().getNormalizedExcludePackagePrefixes());
 
-        Set<String> recognizedTypes = getRecognizedTypes(prefixes, appClassLoader);
+        Set<String> recognizedTypes = getRecognizedTypes(prefixes, excludePrefixes, appClassLoader);
 
         for (String type : recognizedTypes) {
             try {
                 Class<?> clazz = Class.forName(type, false, appClassLoader);
-                result += findTrackedMethods(codeBase, prefixes, clazz);
-            } catch (ClassNotFoundException e) {
-                log.warn("Cannot analyze " + type + ": " + e);
-            } catch (NoClassDefFoundError e) {
+                result += findTrackedMethods(codeBase, prefixes, excludePrefixes, clazz);
+            } catch (ClassNotFoundException | NoClassDefFoundError e) {
                 log.warn("Cannot analyze " + type + ": " + e);
             }
         }
@@ -87,19 +86,19 @@ public class CodeBaseScanner {
         return result;
     }
 
-    private Set<String> getRecognizedTypes(Set<String> packagePrefixes, URLClassLoader appClassLoader) {
+    private Set<String> getRecognizedTypes(Set<String> packagePrefixes, Set<String> excludePackagePrefixes, URLClassLoader appClassLoader) {
         // This is a weird way of using Reflections.
         // We're only interested in it's ability to enumerate everything inside a class loader.
         // The actual Reflections object is immediately discarded. Our data is collected by the filter.
 
-        RecordingClassFileFilter recordingClassNameFilter = new RecordingClassFileFilter(packagePrefixes);
+        RecordingClassFileFilter recordingClassNameFilter = new RecordingClassFileFilter(packagePrefixes, excludePackagePrefixes);
 
         new Reflections(appClassLoader, new SubTypesScanner(), recordingClassNameFilter);
 
         return recordingClassNameFilter.getMatchedClassNames();
     }
 
-    int findTrackedMethods(CodeBase codeBase, Set<String> packagePrefixes, Class<?> clazz) {
+    int findTrackedMethods(CodeBase codeBase, Set<String> packagePrefixes, Set<String> excludePackagePrefixes, Class<?> clazz) {
         if (clazz.isInterface()) {
             log.debug("Ignoring interface {}", clazz);
             return 0;
@@ -124,7 +123,8 @@ public class CodeBaseScanner {
                     MethodSignature thisSignature = SignatureUtils.makeMethodSignature(methodFilter, clazz, method);
 
                     MethodSignature declaringSignature = SignatureUtils
-                            .makeMethodSignature(methodFilter, findDeclaringClass(method.getDeclaringClass(), method, packagePrefixes),
+                            .makeMethodSignature(methodFilter, findDeclaringClass(method.getDeclaringClass(), method, packagePrefixes,
+                                                                                  excludePackagePrefixes),
                                                  method);
 
                     codeBase.addSignature(thisSignature, declaringSignature);
@@ -132,7 +132,7 @@ public class CodeBaseScanner {
             }
 
             for (Class<?> innerClass : clazz.getDeclaredClasses()) {
-                result += findTrackedMethods(codeBase, packagePrefixes, innerClass);
+                result += findTrackedMethods(codeBase, packagePrefixes, excludePackagePrefixes, innerClass);
             }
         } catch (NoClassDefFoundError e) {
             log.warn("Cannot analyze {}: {}", clazz, e.toString());
@@ -140,11 +140,17 @@ public class CodeBaseScanner {
         return result;
     }
 
-    private Class findDeclaringClass(Class<?> clazz, Method method, Set<String> packagePrefixes) {
+    private Class findDeclaringClass(Class<?> clazz, Method method, Set<String> packagePrefixes, Set<String> excludePackagePrefixes) {
         if (clazz == null) {
             return null;
         }
         String pkg = clazz.getPackage().getName();
+
+        for (String excludePrefix : excludePackagePrefixes) {
+            if (pkg.startsWith(excludePrefix)) {
+                return null;
+            }
+        }
 
         boolean found = false;
         for (String prefix : packagePrefixes) {
@@ -163,7 +169,7 @@ public class CodeBaseScanner {
             return clazz;
         } catch (NoSuchMethodException ignore) {
         }
-        return findDeclaringClass(clazz.getSuperclass(), method, packagePrefixes);
+        return findDeclaringClass(clazz.getSuperclass(), method, packagePrefixes, excludePackagePrefixes);
     }
 
 }

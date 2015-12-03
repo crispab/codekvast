@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.15.0
+
+1. Added CollectorConfig.excludePackagePrefixes that excludes (time-critical) code from weaving
+
 ## 0.14.6
 
 1. Simplified logging config. -Dcodekvast.logPath has highest precedence.

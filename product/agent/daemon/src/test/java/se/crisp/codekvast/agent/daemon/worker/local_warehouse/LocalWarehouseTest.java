@@ -116,7 +116,11 @@ public class LocalWarehouseTest {
 
     private CollectorConfig createCollectorConfig(String appName, String appVersion) {
         return CollectorConfigFactory.builder()
-                                     .appName(appName).appVersion(appVersion).codeBase("codeBase").packagePrefixes("packagePrefixes")
+                                     .appName(appName)
+                                     .appVersion(appVersion)
+                                     .codeBase("codeBase")
+                                     .packagePrefixes("packagePrefixes")
+                                     .excludePackagePrefixes("excludePackagePrefixes")
                                      .build();
     }
 

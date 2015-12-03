@@ -44,7 +44,9 @@ public final class ConfigUtils {
         if (packagePrefixes != null) {
             String[] prefixes = packagePrefixes.split("[:;,]");
             for (String prefix : prefixes) {
-                result.add(getNormalizedPackagePrefix(prefix.trim()));
+                if (!prefix.isEmpty()) {
+                    result.add(getNormalizedPackagePrefix(prefix.trim()));
+                }
             }
         }
         return result;

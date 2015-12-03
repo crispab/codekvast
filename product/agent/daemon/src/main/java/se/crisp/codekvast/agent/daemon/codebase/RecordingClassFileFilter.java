@@ -38,27 +38,34 @@ import java.util.regex.Pattern;
  * @author olle.hallin@crisp.se
  */
 class RecordingClassFileFilter implements Predicate<String> {
-    private final Pattern pattern;
-    private final Set<String> matches = new HashSet<String>();
+    private final Pattern includePattern;
+    private final Pattern excludePattern;
+    private final Set<String> matches = new HashSet<>();
 
-    RecordingClassFileFilter(Set<String> packagePrefixes) {
-        this.pattern = buildPattern(packagePrefixes);
+    RecordingClassFileFilter(Set<String> packagePrefixes, Set<String> excludePackagePrefixes) {
+        this.includePattern = buildPattern(packagePrefixes);
+        this.excludePattern = buildPattern(excludePackagePrefixes);
     }
 
     @Override
     public boolean apply(String input) {
-        Matcher matcher = pattern.matcher(input);
-        if (matcher.matches()) {
-            matches.add(matcher.group(1));
+        Matcher includeMatcher = includePattern.matcher(input);
+        Matcher excludeMatcher = excludePattern == null ? null : excludePattern.matcher(input);
+        if (includeMatcher.matches() && (excludeMatcher == null || !excludeMatcher.matches())) {
+            matches.add(includeMatcher.group(1));
         }
         return false;
     }
 
     public Set<String> getMatchedClassNames() {
-        return new HashSet<String>(matches);
+        return new HashSet<>(matches);
     }
 
     private Pattern buildPattern(Set<String> prefixes) {
+        if (prefixes == null || prefixes.isEmpty()) {
+            return null;
+        }
+
         StringBuilder sb = new StringBuilder("^(");
         String delimiter = prefixes.isEmpty() ? "" : "(";
         for (String prefix : prefixes) {

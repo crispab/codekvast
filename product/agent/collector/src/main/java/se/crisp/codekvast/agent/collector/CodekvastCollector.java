@@ -33,9 +33,7 @@ import se.crisp.codekvast.agent.lib.util.FileUtils;
 import java.io.File;
 import java.io.PrintStream;
 import java.lang.instrument.Instrumentation;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 /**
  * This is the Java agent that hooks up Codekvast to the app.
@@ -168,11 +166,6 @@ public class CodekvastCollector {
      */
     private static String createAopXml(CollectorConfig config) {
 
-        StringBuilder includeWithin = new StringBuilder();
-        for (String prefix : config.getNormalizedPackagePrefixes()) {
-            includeWithin.append(String.format("    <include within='%s..*' />\n", prefix));
-        }
-
         String xml = String.format(
                 "<aspectj>\n"
                         + "  <aspects>\n"
@@ -183,20 +176,34 @@ public class CodekvastCollector {
                         + "  </aspects>\n"
                         + "  <weaver options='%3$s'>\n"
                         + "%4$s"
-                        + "    <exclude within='%5$s..*'/>\n"
+                        + "%5$s"
                         + "  </weaver>\n"
                         + "</aspectj>\n",
                 AbstractMethodExecutionAspect.class.getName(),
                 toMethodExecutionPointcut(config.getMethodFilter()),
                 config.getAspectjOptions(),
-                includeWithin.toString(),
-                "se.crisp.codekvast");
+                getIncludeExcludeElements("include", config.getNormalizedPackagePrefixes()),
+                getIncludeExcludeElements("exclude", config.getNormalizedExcludePackagePrefixes(), "se.crisp.codekvast"));
 
         File file = config.getAspectFile();
         if (config.isClobberAopXml() || !file.canRead()) {
             FileUtils.writeToFile(xml, file);
         }
         return "file:" + file.getAbsolutePath();
+    }
+
+    private static String getIncludeExcludeElements(String element, List<String> packagePrefixes, String... extraPrefixes) {
+        StringBuilder sb = new StringBuilder();
+
+        Set<String> prefixes = new HashSet<String>(packagePrefixes);
+        for (String prefix : extraPrefixes) {
+            prefixes.add(prefix);
+        }
+
+        for (String prefix : prefixes) {
+            sb.append(String.format("    <%s within='%s..*' />\n", element, prefix));
+        }
+        return sb.toString();
     }
 
     private static String toMethodExecutionPointcut(MethodFilter filter) {

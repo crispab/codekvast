@@ -8,6 +8,7 @@ import se.crisp.codekvast.agent.daemon.codebase.scannertest.ScannerTest1;
 import se.crisp.codekvast.agent.daemon.codebase.scannertest.ScannerTest2;
 import se.crisp.codekvast.agent.daemon.codebase.scannertest.ScannerTest3;
 import se.crisp.codekvast.agent.daemon.codebase.scannertest.ScannerTest4;
+import se.crisp.codekvast.agent.daemon.codebase.scannertest.excluded.ExcludedScannerTest5;
 import se.crisp.codekvast.agent.lib.config.CollectorConfigFactory;
 
 import java.io.File;
@@ -40,6 +41,7 @@ public class CodeBaseScannerTest {
                                                   .dataPath(temporaryFolder.getRoot())
                                                   .methodVisibility("private")
                                                   .packagePrefixes(ScannerTest1.class.getPackage().getName())
+                                                  .excludePackagePrefixes(ExcludedScannerTest5.class.getPackage().getName())
                                                   .build());
     }
 
@@ -53,7 +55,7 @@ public class CodeBaseScannerTest {
 
     @Test
     public void testFindBaseMethodForScannerTest2() throws URISyntaxException {
-        scanner.findTrackedMethods(codeBase, of("se."), ScannerTest2.class);
+        scanner.findTrackedMethods(codeBase, of("se."), of("acme."), ScannerTest2.class);
 
         assertThat(codeBase.getSignatures().size(), is(1));
         assertThat(codeBase.getOverriddenSignatures().size(), is(1));
@@ -63,7 +65,7 @@ public class CodeBaseScannerTest {
 
     @Test
     public void testFindBaseMethodForScannerTest3() throws URISyntaxException {
-        scanner.findTrackedMethods(codeBase, of("se."), ScannerTest3.class);
+        scanner.findTrackedMethods(codeBase, of("se."), of("acme."), ScannerTest3.class);
 
         assertThat(codeBase.getSignatures().size(), is(1));
         assertThat(codeBase.getOverriddenSignatures().size(), is(2));
@@ -75,7 +77,7 @@ public class CodeBaseScannerTest {
 
     @Test
     public void testFindBaseMethodForScannerTest4() throws URISyntaxException {
-        scanner.findTrackedMethods(codeBase, of("se."), ScannerTest4.class);
+        scanner.findTrackedMethods(codeBase, of("se."), of("acme."), ScannerTest4.class);
         assertThat(codeBase.getSignatures().size(), is(6));
     }
 

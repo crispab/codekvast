@@ -60,6 +60,8 @@ public class CollectorConfig implements CodekvastConfig {
     @NonNull
     private String packagePrefixes;
     @NonNull
+    private String excludePackagePrefixes;
+    @NonNull
     private String tags;
 
     @JsonIgnore
@@ -95,6 +97,11 @@ public class CollectorConfig implements CodekvastConfig {
     @JsonIgnore
     public List<String> getNormalizedPackagePrefixes() {
         return ConfigUtils.getNormalizedPackagePrefixes(packagePrefixes);
+    }
+
+    @JsonIgnore
+    public List<String> getNormalizedExcludePackagePrefixes() {
+        return ConfigUtils.getNormalizedPackagePrefixes(excludePackagePrefixes);
     }
 
     @JsonIgnore

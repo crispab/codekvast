@@ -99,6 +99,7 @@ public class CollectorConfigFactory {
                               .methodVisibility(ConfigUtils.getOptionalStringValue(props, "methodVisibility",
                                                                                    DEFAULT_METHOD_VISIBILITY))
                               .packagePrefixes(ConfigUtils.getMandatoryStringValue(props, "packagePrefixes"))
+                              .excludePackagePrefixes(ConfigUtils.getOptionalStringValue(props, "excludePackagePrefixes", ""))
                               .tags(ConfigUtils.getOptionalStringValue(props, TAGS_KEY, ""))
                               .verbose(getVerboseValue(props))
                               .build();
@@ -174,6 +175,7 @@ public class CollectorConfigFactory {
                                      .appName("Sample Application Name")
                                      .codeBase(SAMPLE_CODEBASE_URI1 + " , " + SAMPLE_CODEBASE_URI2)
                                      .packagePrefixes("com.acme. , foo.bar.")
+                                     .excludePackagePrefixes("some.excluded.package")
                                      .dataPath(SAMPLE_DATA_PATH)
                                      .build();
     }

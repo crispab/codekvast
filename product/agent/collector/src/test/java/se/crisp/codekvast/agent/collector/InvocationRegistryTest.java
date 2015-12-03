@@ -45,6 +45,7 @@ public class InvocationRegistryTest {
                                        .codeBase(codeBase)
                                        .dataPath(dataPath)
                                        .packagePrefixes("se.crisp")
+                                       .excludePackagePrefixes("")
                                        .build();
         //@formatter:on
         InvocationRegistry.initialize(config, new FileSystemInvocationDataDumper(config, CodekvastCollector.out));

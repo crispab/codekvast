@@ -41,6 +41,7 @@ public class CodeBaseTest {
         return new CodeBase(CollectorConfigFactory.builder()
                                                   .codeBase(new File(codeBase).getAbsolutePath())
                                                   .packagePrefixes("se.crisp")
+                                                  .excludePackagePrefixes("")
                                                   .appName("appName")
                                                   .build());
     }
