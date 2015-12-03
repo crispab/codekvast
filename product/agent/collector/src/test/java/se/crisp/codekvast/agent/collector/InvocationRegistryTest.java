@@ -59,6 +59,8 @@ public class InvocationRegistryTest {
 
     @Test
     public void testRegisterMethodInvocationAndDumpToDisk() throws IOException {
+        assertThat(InvocationRegistry.instance.isNullRegistry(), is(false));
+
         InvocationRegistry.instance.registerMethodInvocation(signature);
 
         InvocationRegistry.instance.dumpData(1);
@@ -82,6 +84,7 @@ public class InvocationRegistryTest {
     @Test
     public void testRegisterBeforeInitialize() throws Exception {
         InvocationRegistry.initialize(null, null);
+        assertThat(InvocationRegistry.instance.isNullRegistry(), is(true));
         InvocationRegistry.instance.registerMethodInvocation(signature);
     }
 

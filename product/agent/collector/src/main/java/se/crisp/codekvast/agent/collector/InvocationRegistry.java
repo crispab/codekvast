@@ -44,7 +44,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 @SuppressWarnings("Singleton")
 public class InvocationRegistry {
 
-    public static InvocationRegistry instance = new NullInvocationRegistry();
+    static InvocationRegistry instance = new NullInvocationRegistry();
 
     private final Jvm jvm;
     private final InvocationDataDumper invocationDataDumper;
