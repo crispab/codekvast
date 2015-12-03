@@ -28,6 +28,7 @@ import lombok.*;
  *
  * @author olle.hallin@crisp.se
  */
+@SuppressWarnings("ClassWithTooManyFields")
 @Data
 @Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -50,8 +51,8 @@ public class JvmData {
     private String environment;
     @NonNull private String jvmUuid;
     @NonNull private String methodVisibility;
-    @NonNull
-    private String packagePrefixes;
+    @NonNull private String packagePrefixes;
+    private String excludePackagePrefixes;
     @NonNull private Long   startedAtMillis;
     @NonNull private String tags;
     //@formatter:on

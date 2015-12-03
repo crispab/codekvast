@@ -216,13 +216,14 @@ public class ImportServiceImpl implements ImportService {
                                                                 "collectorResolutionSeconds, " +
                                                                 "methodVisibility, " +
                                                                 "packagePrefixes, " +
+                                                                "excludePackagePrefixes, " +
                                                                 "environment, " +
                                                                 "collectorComputerId, " +
                                                                 "collectorHostName, " +
                                                                 "collectorVersion, " +
                                                                 "collectorVcsId, " +
                                                                 "tags) " +
-                                                                "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                                                                "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                                                         Statement.RETURN_GENERATED_KEYS);
             int column = 0;
             ps.setString(++column, jvm.getUuid());
@@ -231,6 +232,7 @@ public class ImportServiceImpl implements ImportService {
             ps.setInt(++column, jvmData.getCollectorResolutionSeconds());
             ps.setString(++column, jvmData.getMethodVisibility());
             ps.setString(++column, jvmData.getPackagePrefixes());
+            ps.setString(++column, jvmData.getExcludePackagePrefixes());
             ps.setString(++column, jvmData.getEnvironment());
             ps.setString(++column, jvmData.getCollectorComputerId());
             ps.setString(++column, jvmData.getCollectorHostName());
