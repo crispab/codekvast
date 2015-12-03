@@ -84,6 +84,10 @@ applicationDistribution.from('src/main/resources') {
     }
 }
 
+applicationDistribution.from(projectDir) {
+    include 'docker-compose.yml'
+}
+
 startScripts {
     doLast {
         logger.info 'Adjusting start scripts...'
