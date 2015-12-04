@@ -99,7 +99,7 @@ public class CodekvastCollector {
      */
     @SuppressWarnings("UseOfSystemOutOrSystemErr")
     public static void initialize(CollectorConfig config, InvocationDataDumper dataDumper) {
-        if (InvocationRegistry.instance != null && config != null) {
+        if (!InvocationRegistry.instance.isNullRegistry() && config != null) {
             // Already initialized from -javaagent. Let it be.
             return;
         }
@@ -230,7 +230,7 @@ public class CodekvastCollector {
 
         @Override
         public void run() {
-            if (InvocationRegistry.instance == null) {
+            if (InvocationRegistry.instance.isNullRegistry()) {
                 // Someone has pulled the carpet...
                 timer.cancel();
             } else {
