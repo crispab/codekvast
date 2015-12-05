@@ -169,7 +169,7 @@ task tagDockerImageWithLatest(type: Exec) {
 }
 
 distDocker {
-    baseImage 'azul/zulu-openjdk:8'
+    baseImage 'java:8-jre'
     maintainer 'Olle Hallin "olle.hallin@crisp.se"'
     runCommand 'mkdir -p /var/log/codekvast /tmp/codekvast'
     volume '/var/log/codekvast'
