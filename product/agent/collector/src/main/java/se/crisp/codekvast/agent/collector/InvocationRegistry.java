@@ -30,9 +30,12 @@ import se.crisp.codekvast.agent.lib.util.SignatureUtils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * This is the target of the method execution recording aspects.
@@ -50,19 +53,24 @@ public class InvocationRegistry {
     private final InvocationDataDumper invocationDataDumper;
 
     // Toggle between two invocation sets to avoid synchronisation
-    private final Set[] invocations = new Set[2];
+    private final Set[] invocations;
     private volatile int currentInvocationIndex = 0;
+
+    // Do all updates to the current set from a single worker thread
+    private final BlockingQueue<String> queue = new LinkedBlockingQueue<String>();
+
     private long recordingIntervalStartedAtMillis = System.currentTimeMillis();
 
     private InvocationRegistry(Jvm jvm, InvocationDataDumper invocationDataDumper) {
         this.jvm = jvm;
         this.invocationDataDumper = invocationDataDumper;
 
-        for (int i = 0; i < invocations.length; i++) {
-            // ConcurrentSkipListSet is the fastest available concurrent set implementation in the standard Java runtime
-            // library. See ConcurrentSetPerformanceTest
-            this.invocations[i] = new ConcurrentSkipListSet<String>();
-        }
+        this.invocations = new Set[]{new HashSet<String>(), new HashSet<String>()};
+
+        Thread worker = new Thread(new InvocationsAdder());
+        worker.setDaemon(true);
+        worker.setName("Codekvast registry");
+        worker.start();
     }
 
     public boolean isNullRegistry() {
@@ -112,15 +120,20 @@ public class InvocationRegistry {
     }
 
     /**
-     * Record that this method signature was invoked at current recording interval.
+     * Record that this method signature was invoked in the current recording interval.
      * <p>
      * Thread-safe.
      *
      * @param signature The captured method invocation signature.
      */
     public void registerMethodInvocation(Signature signature) {
-        //noinspection unchecked
-        invocations[currentInvocationIndex].add(SignatureUtils.signatureToString(signature, false));
+        String sig = SignatureUtils.signatureToString(signature, false);
+
+        // HashSet.contains() is thread-safe, so test first before deciding to add, but do the actual update from
+        // a background worker thread.
+        if (!invocations[currentInvocationIndex].contains(sig)) {
+            queue.add(sig);
+        }
     }
 
     /**
@@ -139,8 +152,8 @@ public class InvocationRegistry {
 
             toggleInvocationsIndex();
 
-            //noinspection unchecked
-            invocationDataDumper.dumpData(jvm, dumpCount, oldRecordingIntervalStartedAtMillis, invocations[oldIndex]);
+            Set<String> sortedSet = new TreeSet<String>(invocations[oldIndex]);
+            invocationDataDumper.dumpData(jvm, dumpCount, oldRecordingIntervalStartedAtMillis, sortedSet);
 
             invocations[oldIndex].clear();
         }
@@ -151,8 +164,23 @@ public class InvocationRegistry {
         currentInvocationIndex = currentInvocationIndex == 0 ? 1 : 0;
     }
 
+    private class InvocationsAdder implements Runnable {
+        @SuppressWarnings("unchecked")
+        @Override
+        public void run() {
+            while (true) {
+                try {
+                    invocations[currentInvocationIndex].add(queue.take());
+                } catch (InterruptedException e) {
+                    e.printStackTrace(CodekvastCollector.out);
+                    return;
+                }
+            }
+        }
+    }
+
     private static class NullInvocationRegistry extends InvocationRegistry {
-        public NullInvocationRegistry() {
+        private NullInvocationRegistry() {
             super(null, null);
         }
 
@@ -171,4 +199,5 @@ public class InvocationRegistry {
             return true;
         }
     }
+
 }
