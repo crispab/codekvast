@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.15.1
+
+1. Tripled the performance of codekvast-collector.
+
 ## 0.15.0
 
 1. Added CollectorConfig.excludePackagePrefixes that excludes (time-critical) code from weaving
