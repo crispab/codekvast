@@ -177,5 +177,3 @@ distDocker {
     tagVersion version
 }
 distDocker.finalizedBy tagDockerImageWithLatest
-
-build.dependsOn distDocker
