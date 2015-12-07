@@ -27,7 +27,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @RunWith(Parameterized.class)
 public class ConcurrentSetPerformanceTest {
 
-    private static final int NUM_DIFFERENT_STRINGS = 1000;
+    private static final int NUM_DIFFERENT_STRINGS = 10000;
     private static final int AVG_STRING_LENGTH = 80;
 
     interface Strategy {
@@ -44,11 +44,12 @@ public class ConcurrentSetPerformanceTest {
 
     static class BlockingQueueStrategy implements Strategy {
         private final Set<String> set = new HashSet<String>();
-        private final BlockingQueue<String> queue = new LinkedBlockingQueue<String>();
+        private BlockingQueue<String> queue;
         private Thread consumer;
 
         @Override
         public void initialize(int numThreads) {
+            queue = new LinkedBlockingQueue<String>(); // new ArrayBlockingQueue<String>(numThreads);
             consumer = new Thread(new Runnable() {
 
                 @Override
@@ -63,6 +64,7 @@ public class ConcurrentSetPerformanceTest {
                     }
                 }
             });
+            consumer.setDaemon(true);
             consumer.start();
         }
 
@@ -203,7 +205,7 @@ public class ConcurrentSetPerformanceTest {
     }
 
     private static final Strategy STRATEGIES[] = {
-            new AtomicReferenceWrappedRegularHashSet(),
+            // new AtomicReferenceWrappedRegularHashSet(),
             new ConcurrentSkipListStrategy(),
             new SetFromConcurrentHashMapStrategy(),
             new UnsynchronizedHashSetStrategy(),
