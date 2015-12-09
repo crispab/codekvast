@@ -25,7 +25,6 @@ package se.crisp.codekvast.agent.daemon;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import se.crisp.codekvast.support.common.LoggingConfig;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -40,7 +39,6 @@ import java.net.URISyntaxException;
 public class CodekvastDaemon {
 
     public static void main(String[] args) throws IOException, URISyntaxException {
-        LoggingConfig.configure("codekvast-daemon");
         System.setProperty("spring.config.location",
                            "classpath:/application.properties," +
                                    "classpath:/default.properties," +

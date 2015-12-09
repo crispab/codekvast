@@ -19,7 +19,6 @@ configurations {
 
 dependencies {
     compile lombok
-    compile project(':product:support:commons')
     compile project(':product:agent:agent-lib')
     compile 'javax.inject:javax.inject:1'
     compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
@@ -63,18 +62,16 @@ jar {
 }
 
 run {
-    jvmArgs = [
-            '-ea',
-            "-Dcodekvast.logPath=$buildDir/log",
-            '-Dcodekvast.log.consoleThreshold=DEBUG',
-    ]
+    jvmArgs = ['-ea']
 
     args = [
-            "--h2database.options=TRACE_LEVEL_FILE=4;AUTO_SERVER=FALSE;DB_CLOSE_ON_EXIT=FALSE",
-            "--codekvast.dataProcessingIntervalSeconds=60",
+            "--logging.file=$buildDir/log/codekvast-daemon.log",
+            '--logging.level.se.crisp.codekvast=DEBUG',
+            '--h2database.options=TRACE_LEVEL_FILE=4;AUTO_SERVER=FALSE;DB_CLOSE_ON_EXIT=FALSE',
+            '--codekvast.dataProcessingIntervalSeconds=60',
             "--codekvast.databasePath=tcp://localhost/$buildDir/database",
-            "--codekvast.exportFile=/tmp/codekvast/.export/codekvast-data-#hostname#.zip",
-            "--codekvast.environment=Gradle",
+            '--codekvast.exportFile=/tmp/codekvast/.export/codekvast-data-#hostname#.zip',
+            '--codekvast.environment=Gradle',
             // During test
             //"--codekvast.exportFile=/home/qolha/Dropbox/Kund/Transmode/codekvast/codekvast-data-#hostname#.zip",
             // "--codekvast.uploadToHost=fjottas.local",
@@ -96,25 +93,22 @@ jar.dependsOn tasks.getByPath(":product:agent:agent-lib:test")
 
 applicationDistribution.from("src/main/resources") {
     into "conf"
-    include "logback.xml", "default.properties"
-    rename {
-        def name = it == "default.properties" ? "codekvast-daemon.properties" : it
-        "${name}.sample.${version}"
-    }
+    include "default.properties"
+    rename { "${it}.sample.${version}" }
 }
 
 applicationDistribution.from("src/main/resources") {
     into "conf"
     include "codekvast-collector.conf.sample", "byte-code-added-methods.txt", "byte-code-enhanced-methods.txt"
-    rename {
-        "${it}.${version}"
-    }
+    rename { "${it}.${version}" }
 }
 
 applicationDistribution.from("src/dist") {
     into "/"
     filter { it.replace("@CODEKVAST_VERSION@", project.version).replace("@ASPECTJ_VERSION@", aspectjVersion) }
 }
+
+applicationDefaultJvmArgs = ["-Dlogging.file=/var/log/codekvast/${applicationName}.log"]
 
 startScripts {
     doLast {

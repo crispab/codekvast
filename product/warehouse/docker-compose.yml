@@ -12,7 +12,6 @@ warehouse:
 
   environment:
   - SPRING_PROFILES_ACTIVE=docker
-  - CODEKVAST_LOG_CONSOLE_THRESHOLD=INFO
 
 database:
   image: mariadb:10

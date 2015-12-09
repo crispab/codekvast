@@ -61,7 +61,6 @@ def webjars = [
 dependencies {
     compile lombok
     compile project(':playground:server:daemon-api')
-    compile project(':product:support:commons')
     compile project(':product:support:websupport')
 
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
@@ -111,11 +110,8 @@ processResources {
 
 applicationDistribution.from("src/main/resources") {
     into "conf"
-    include "logback.xml", "default.properties"
-    rename {
-        def name = it == "default.properties" ? "codekvast-server.properties" : it
-        "${name}.sample.${version}"
-    }
+    include "default.properties"
+    rename { "${it}.sample.${version}" }
 }
 
 startScripts {
@@ -137,10 +133,7 @@ flyway {
 }
 
 run {
-    jvmArgs = [
-            '-ea',
-            '-Dcodekvast.log.consoleThreshold=DEBUG'
-    ]
+    jvmArgs = ['-ea']
     args = ["--codekvast.databasePath=tcp://localhost/$buildDir/database"]
 }
 

@@ -3,6 +3,7 @@
 ## 0.15.3
 
 1. Upgraded to Spring Boot 1.3.0
+1. Refactored to use sprint-boot-starter-logging instead of home-rolled LoggingConfig.
 
 ## 0.15.2
 

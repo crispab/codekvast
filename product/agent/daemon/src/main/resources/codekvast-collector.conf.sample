@@ -119,7 +119,7 @@
 # What packages should NOT be tracked?
 #
 # A comma-separated list of package prefixes. Methods in classes with a package name starting with any of the prefixes will
-# be excluded from tracking
+# be excluded from tracking.
 #
 # Optional.
 #--------------------------------------------------------------------------------------------------------

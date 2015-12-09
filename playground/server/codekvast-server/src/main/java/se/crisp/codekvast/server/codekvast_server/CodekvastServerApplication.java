@@ -3,7 +3,6 @@ package se.crisp.codekvast.server.codekvast_server;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
-import se.crisp.codekvast.support.common.LoggingConfig;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -18,7 +17,6 @@ import java.util.Properties;
 public class CodekvastServerApplication {
 
     public static void main(String[] args) throws IOException {
-        LoggingConfig.configure("codekvast-server");
         System.setProperty("spring.config.location",
                            "classpath:/application.properties," +
                                    "classpath:/default.properties," +

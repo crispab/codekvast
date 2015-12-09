@@ -29,11 +29,11 @@ sourceSets {
 
 dependencies {
     compile lombok
-    compile project(':product:support:commons')
     compile project(':product:agent:agent-lib')
 
     compile 'javax.inject:javax.inject:1'
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
+    compile 'org.springframework.boot:spring-boot-starter-logging'
     compile 'org.flywaydb:flyway-core'
     compile "com.opencsv:opencsv:$opencsvVersion"
     compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
@@ -77,16 +77,16 @@ check.dependsOn integTest
 
 applicationDistribution.from('src/main/resources') {
     into 'conf'
-    include 'logback.xml', 'default.properties'
-    rename {
-        def name = it == 'default.properties' ? 'codekvast-warehouse.properties' : it
-        "${name}.sample.${version}"
-    }
+    include 'default.properties'
+    rename { "${it}.sample.${version}" }
 }
 
 applicationDistribution.from(projectDir) {
     include 'docker-compose.yml'
+    rename { "docker-compose-${version}.yml" }
 }
+
+applicationDefaultJvmArgs = ['-Dlogging.file=/var/log/codekvast/.log/${applicationName}.log']
 
 startScripts {
     doLast {
@@ -110,12 +110,10 @@ flyway {
 }
 
 run {
-    jvmArgs = [
-            '-ea',
-            "-Dcodekvast.logPath=$buildDir/log",
-            '-Dcodekvast.log.consoleThreshold=DEBUG',
-    ]
+    jvmArgs = ['-ea']
+
     args = [
+            "--logging.file=$buildDir/log/${applicationName}.log",
             '--codekvast.importPath=/tmp/codekvast/.export', // same as daemon export to when started from Gradle
             '--codekvast.importPathPollIntervalSeconds=10',
 

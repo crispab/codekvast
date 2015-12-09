@@ -14,9 +14,9 @@ configurations {
 dependencies {
     compile lombok
     compile 'com.google.guava:guava:18.0'
-    compile project(':product:support:commons')
 
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
+    compile 'org.springframework.boot:spring-boot-starter-logging'
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
     compile h2database
@@ -53,11 +53,9 @@ processResources {
 
 applicationDistribution.from("src/main/resources") {
     into "conf"
-    include "logback.xml", "default.properties"
-    rename {
-        def name = it == "default.properties" ? "application.properties" : it
-        "${name}.default"
-    }
+    include "default.properties"
+    rename { "${it}.default" }
+
     // Hide lines starting with info.build.
     filter { line ->
         line.startsWith('info.build.') ? "" : line
@@ -76,11 +74,9 @@ startScripts {
 }
 
 run {
-    jvmArgs = [
-            '-ea',
-            "-Dcodekvast.logPath=$buildDir/log",
-            '-Dcodekvast.log.consoleThreshold=DEBUG',
-    ]
+    jvmArgs = ['-ea']
+
+    args = ["--logging.file=$buildDir/log/${applicationName}.log"]
 }
 
 bootRun {
@@ -91,4 +87,5 @@ bootRun {
             "-Dspring.messages.cacheSeconds=1"
     ] + run.jvmArgs
 
+    args = run.args
 }

@@ -5,7 +5,6 @@ version = project.parent.parent.version
 
 dependencies {
     compile lombok
-    compile project(':product:support:commons')
     compile project(':product:agent:agent-lib')
     compile project(':product:agent:daemon')
     compile project(':playground:server:daemon-api')
