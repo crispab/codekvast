@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.15.2
+
+1. Default methodVisibility is now protected.
+
 ## 0.15.1
 
 1. Tripled the performance of codekvast-collector.
