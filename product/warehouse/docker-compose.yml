@@ -5,7 +5,7 @@ warehouse:
 
   volumes:
   - /tmp/codekvast/import:/tmp/codekvast
-  - /var/log/codekvast:/var/log/codekvast
+  - /var/log:/var/log
 
   links:
   - database

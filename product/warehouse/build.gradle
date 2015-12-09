@@ -20,33 +20,21 @@ configurations {
     springLoaded
 }
 
-sourceSets {
-    integTest {
-        java.srcDir file('src/integTest/java')
-        resources.srcDir file('src/integTest/resources')
-    }
-}
-
 dependencies {
     compile lombok
     compile project(':product:agent:agent-lib')
-
+    compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+    compile "com.opencsv:opencsv:$opencsvVersion"
     compile 'javax.inject:javax.inject:1'
+    compile 'org.flywaydb:flyway-core'
+    compile 'org.springframework.boot:spring-boot-devtools'
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
     compile 'org.springframework.boot:spring-boot-starter-logging'
-    compile 'org.flywaydb:flyway-core'
-    compile "com.opencsv:opencsv:$opencsvVersion"
-    compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
 
     runtime 'ch.qos.logback:logback-classic'
     runtime 'org.mariadb.jdbc:mariadb-java-client:1.3.0'
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'
-
-    integTestCompile sourceSets.main.output
-    integTestCompile sourceSets.test.output
-    integTestCompile configurations.testCompile
-    integTestRuntime configurations.testRuntime
 
     springLoaded springLoadedAgent
 }
@@ -62,21 +50,22 @@ processResources {
     }
 }
 
-task integTest(type: Test) {
-    group = 'Verification'
-    description = 'Runs all integration tests'
-    dependsOn test
-
-    testClassesDir = sourceSets.integTest.output.classesDir
-    classpath = sourceSets.integTest.runtimeClasspath
-
-    reports.html.destination file('build/reports/integTest')
+springBoot {
+    executable = true
+    embeddedLaunchScriptProperties = [
+            'initInfoProvides'        : applicationName,
+            'initInfoShortDescription': 'Codekvast Warehouse',
+            'initInfoDescription'     : 'Codekvast Warehouse aggregates data from many Codekvast Daemons',
+    ]
 }
 
-check.dependsOn integTest
+bootRepackage {
+    // Set a classifier, or else gradle distZip will overwrite the fat jar...
+    classifier = 'all'
+}
 
 applicationDistribution.from('src/main/resources') {
-    into 'conf'
+    into 'config'
     include 'default.properties'
     rename { "${it}.sample.${version}" }
 }
@@ -86,16 +75,16 @@ applicationDistribution.from(projectDir) {
     rename { "docker-compose-${version}.yml" }
 }
 
-applicationDefaultJvmArgs = ['-Dlogging.file=/var/log/codekvast/.log/${applicationName}.log']
+applicationDefaultJvmArgs = ["-Dlogging.file=/var/log/${applicationName}.log"]
 
 startScripts {
     doLast {
         logger.info 'Adjusting start scripts...'
         windowsScript.text = windowsScript.text
-                .replace('CLASSPATH=%APP_HOME%\\lib', 'CLASSPATH=%APP_HOME%\\conf\\;%APP_HOME%\\lib')
+                .replace('CLASSPATH=%APP_HOME%\\lib', 'CLASSPATH=%APP_HOME%\\config\\;%APP_HOME%\\lib')
         unixScript.text = unixScript.text
                 .replace('APP_HOME=', 'export APP_HOME=')
-                .replace('CLASSPATH=$APP_HOME/lib', 'CLASSPATH=$APP_HOME/conf/:$APP_HOME/lib')
+                .replace('CLASSPATH=$APP_HOME/lib', 'CLASSPATH=$APP_HOME/config/:$APP_HOME/lib')
     }
 }
 
@@ -127,7 +116,6 @@ bootRun {
     jvmArgs = [
             "-javaagent:${configurations.springLoaded.asPath}",
             '-noverify',
-            '-Dspring.thymeleaf.cache=false',
             '-Dspring.messages.cacheSeconds=1'
     ] + run.jvmArgs
 
@@ -144,8 +132,8 @@ task coverageReport(type: JacocoReport) {
     sourceSets sourceSets.main
 
     // One could do
-    // executionData integTest, run
-    // but then *all* of build/jacoco/integTest.exec and run.exec  must exist, or else the report will be skipped.
+    // executionData test, run
+    // but then *all* of build/jacoco/test.exec and run.exec  must exist, or else the report will be skipped.
     // Instead, build a report on what execution data we happen to have.
 
     enabled = false
@@ -169,8 +157,8 @@ task tagDockerImageWithLatest(type: Exec) {
 distDocker {
     baseImage 'java:8-jre'
     maintainer 'Olle Hallin "olle.hallin@crisp.se"'
-    runCommand 'mkdir -p /var/log/codekvast /tmp/codekvast'
-    volume '/var/log/codekvast'
+    runCommand 'mkdir -p /var/log /tmp/codekvast'
+    volume '/var/log'
     volume '/tmp/codekvast'
     tagVersion version
 }

@@ -13,7 +13,14 @@ subprojects {
     buildscript { repositories { jcenter() } }
 
     apply from: "$rootDir/gradle/libs.gradle"
+
     apply plugin: 'idea'
+    idea {
+        module {
+            inheritOutputDirs = false
+            outputDir = file("$buildDir/classes/main/")
+        }
+    }
 
     ext.gitHead = Grgit.open("$rootDir").head()
 

@@ -150,13 +150,11 @@ Execute the following commands in a shell:
 sudo -s
 wget {bintrayDownloadPrefix}/codekvast-daemon-{codekvast-version}.zip
 unzip codekvast-daemon-{codekvast-version}.zip -d /opt
-rm -f /opt/codekvast-daemon
-ln -s /opt/codekvast-daemon-{codekvast-version} /opt/codekvast-daemon
+ln -fs /opt/codekvast-daemon-{codekvast-version} /opt/codekvast-daemon
 pushd /opt/codekvast-daemon/conf
 cp codekvast-daemon.properties.sample.{codekvast-version} codekvast-daemon.properties # <1>
 popd
-rm -f /etc/init.d/codekvast-daemon
-ln -s /opt/codekvast-daemon/etc/startscript/debian/codekvast-daemon /etc/init.d/ #<2>
+ln -fs /opt/codekvast-daemon/etc/startscript/debian/codekvast-daemon /etc/init.d/ #<2>
 mkdir -p /var/log/codekvast
 update-rc.d codekvast-daemon defaults # <2>
 ----
@@ -250,7 +248,7 @@ The Codekvast Warehouse log files will be located in `/var/log/codekvast/`.
 Codekvast Warehouse will look for import files in `/tmp/codekvast/import`.
 
 [[codekvast-warehouse-conventional-installation]]
-=== Install Codekvast Warehouse the traditional way
+=== Install Codekvast Warehouse as a Linux service
 
 . Make sure Java 8 or higher is installed.
 . Make sure MariaDB server 10 or higher is installed.
@@ -258,29 +256,25 @@ Codekvast Warehouse will look for import files in `/tmp/codekvast/import`.
 
 [source,bash,subs="attributes,verbatim"]
 ----
-sudo -s
-
-mysql -e "create database if not exists codekvast_warehouse;grant all on codekvast_warehouse.* to 'codekvast'@'localhost' identified by 'codekvast';"
-wget {bintrayDownloadPrefix}/codekvast-warehouse-{codekvast-version}.zip # <1>
-unzip codekvast-warehouse-{codekvast-version}.zip -d /opt
-rm -f /opt/codekvast-warehouse
-ln -s /opt/codekvast-warehouse-{codekvast-version} /opt/codekvast-warehouse
-pushd /opt/codekvast-warehouse/conf
-cp codekvast-warehouse.properties.sample.{codekvast-version} codekvast-warehouse.properties # <2>
-popd
-mkdir -p /var/log/codekvast
-rm -f /etc/init.d/codekvast-warehouse
-ln -s /opt/codekvast-warehouse/etc/startscript/debian/codekvast-warehouse /etc/init.d/ # <3>
-update-rc.d codekvast-warehouse defaults # <3>
+sudo adduser codekvast # <1>
+sudo mysql -e "create database if not exists codekvast_warehouse;grant all on codekvast_warehouse.* to 'codekvast'@'localhost' identified by 'codekvast';" # <2>
+sudo wget {bintrayDownloadPrefix}/codekvast-warehouse-{codekvast-version}.zip
+sudo unzip codekvast-warehouse-{codekvast-version}-svc.zip -d /opt
+sudo chown codekvast:codekvast /opt/codekvast-warehouse-{codekvast-version}/codekvast-warehouse.jar # <1>
+sudo ln -fs /opt/codekvast-warehouse-{codekvast-version}/codekvast-warehouse.jar /etc/init.d/codekvast-warehouse # <3>
+sudo update-rc.d codekvast-warehouse defaults # <4>
+sudo vi /opt/codekvast-warehouse-{codekvast-version}/application.properties # <5>
 ----
-<1> You might need to add the options -u<username> and -p<password> to the mysql command.
-<2> Edit codekvast-warehouse.properties to suit your needs. See <<configuring-codekvast-warehouse, Configuring Codekvast Warehouse>>.
-<3> This works for Debian-based Linux distros. For Redhat-based distros, use `chkconfig --add /etc/init.d/codekvast-warehouse` instead.
+<1> The service will run with the same user as the owner of the application jar file.
+<2> You might need to add the options -u<username> and -p<password> to the mysql command.
+<3> This works for Linux distros that support System-V.
+<4> This works for Debian based distros. For Redhat, use `chkconfig --add` instead.
+<5> Edit application.properties to suit your needs. See <<configuring-codekvast-warehouse, Configuring Codekvast Warehouse>>.
 
-Once you have finished editing codekvast-warehouse.properties, execute
+Once you have finished editing application.properties, execute
 
 ----
-/etc/init.d/codekvast-warehouse start
+sudo /etc/init.d/codekvast-warehouse start
 ----
 
 == Configuration

@@ -21,6 +21,6 @@ ext {
 
     // Development tools, not part of the product
     lombok = 'org.projectlombok:lombok:1.16.6'
-    springLoadedAgent = 'org.springframework:springloaded:1.2.4.RELEASE'
+    springLoadedAgent = 'org.springframework:springloaded:1.2.5.RELEASE'
 
 }

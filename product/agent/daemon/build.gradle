@@ -108,7 +108,7 @@ applicationDistribution.from("src/dist") {
     filter { it.replace("@CODEKVAST_VERSION@", project.version).replace("@ASPECTJ_VERSION@", aspectjVersion) }
 }
 
-applicationDefaultJvmArgs = ["-Dlogging.file=/var/log/codekvast/${applicationName}.log"]
+applicationDefaultJvmArgs = ["-Dlogging.file=/var/log/${applicationName}.log"]
 
 startScripts {
     doLast {
