@@ -108,7 +108,7 @@
 #--------------------------------------------------------------------------------------------------------
 # What packages should be tracked?
 #
-# A comma-separated list of package prefixes. Public methods in classes with a package name starting with any of the prefixes will
+# A comma-separated list of package prefixes. Methods in classes with a package name starting with any of the prefixes will
 # be tracked.
 #
 # Mandatory.
@@ -116,17 +116,27 @@
 # packagePrefixes = com.acme, foo.bar
 
 #--------------------------------------------------------------------------------------------------------
+# What packages should NOT be tracked?
+#
+# A comma-separated list of package prefixes. Methods in classes with a package name starting with any of the prefixes will
+# be excluded from tracking
+#
+# Optional.
+#--------------------------------------------------------------------------------------------------------
+# excludePackagePrefixes =
+
+#--------------------------------------------------------------------------------------------------------
 # Which methods should be tracked?
 # One of the keywords "public", "protected", "package-private" or "private".
 #
-# public means track public methods only. This is the default.
-# protected means track public and protected methods.
+# public means track public methods only.
+# protected means track public and protected methods. This is the default.
 # package-private means track public, protected and package-private methods. Synonym: !private
 # private means track all methods. Synonym: all
 #
-# Optional. Defaults to public.
+# Optional. Defaults to protected.
 #--------------------------------------------------------------------------------------------------------
-# methodVisibility = public
+# methodVisibility = protected
 
 #--------------------------------------------------------------------------------------------------------
 # What collector resolution is needed?

@@ -36,7 +36,7 @@ public class CollectorConfigFactory {
 
     private static final boolean DEFAULT_CLOBBER_AOP_XML = true;
     private static final String DEFAULT_ASPECTJ_OPTIONS = "";
-    private static final String DEFAULT_METHOD_VISIBILITY = SignatureUtils.PUBLIC;
+    private static final String DEFAULT_METHOD_VISIBILITY = SignatureUtils.PROTECTED;
     private static final int DEFAULT_COLLECTOR_RESOLUTION_SECONDS = 600;
     private static final boolean DEFAULT_VERBOSE = false;
     private static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";

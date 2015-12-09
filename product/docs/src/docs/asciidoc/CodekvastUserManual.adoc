@@ -46,6 +46,11 @@ inventory consists of all the method signatures that the collector potentially c
 Codekvast Warehouse:: Receives inventory and invocation data from the daemon(s), stores it in a database and makes it available for browsing
 in a web interface. It also offers a REST interface to facilitate IDE plugin development. There is only one warehouse. *The warehouse requires Java 8 or higher plus MariaDB server 10 or higher*
 
+[TIP]
+====
+Codekvast Warehouse including MariaDB is available as Docker Compose images. See <<codekvast-warehouse-docker-installation, Codekvast Warehouse Docker Compose installation guide>>.
+====
+
 ---
 
 [[architecture-diagram]]
@@ -114,7 +119,7 @@ in a web interface. It also offers a REST interface to facilitate IDE plugin dev
                                        +----------------------------------------+
                                        | Codekvast Warehouse                    |
                                        |                          /----------\  |
-                                       | o Data aggregation       | MariaDB  |  |
+                                       | o File import            | MariaDB  |  |
                                        | o Persistence layer <--->| database |  |
                                        | o IDE API                |          |  |
                                        | o Reporting              |          |  |
@@ -223,7 +228,29 @@ No data in /tmp/codekvast::
 . restart your application
 . Use the logging on standard output and standard error for determining the problem
 
-=== Install Codekvast Warehouse
+[[codekvast-warehouse-docker-installation]]
+=== Running Codekvast Warehouse with Docker
+
+This works for Mac OS X and Linux. Windows is not supported.
+
+. Make sure Docker Compose is installed. See https://docs.docker.com/compose/install/
+. Execute the following commands in a shell:
+
+[source,bash,subs="attributes,verbatim"]
+----
+wget {bintrayDownloadPrefix}/docker-compose-{codekvast-version}.yml
+mv docker-compose-{codekvast-version}.yml docker-compose.yml
+docker-compose up
+----
+
+The MariaDB database files will be located in `/var/lib/codekvast-database`.
+
+The Codekvast Warehouse log files will be located in `/var/log/codekvast/`.
+
+Codekvast Warehouse will look for import files in `/tmp/codekvast/import`.
+
+[[codekvast-warehouse-conventional-installation]]
+=== Install Codekvast Warehouse the traditional way
 
 . Make sure Java 8 or higher is installed.
 . Make sure MariaDB server 10 or higher is installed.
@@ -352,12 +379,19 @@ See <<about-app-version-strategy>>
 |packagePrefixes = com.acme, foo.bar
 |
 
+|excludePackagePrefixes
+|What packages shall *not* be tracked?
+See <<about-exclude-package-prefixes>>.
+|A comma-separated list of strings.
+|excludePackagePrefixes = com.acme.timecritical, foo.bar.even.more.time.critical
+|
+
 |methodVisibility
 |Which methods should be tracked?
 |One of the keywords *public*, *protected*, *package-private* or *private*.
 See <<about-specifying-method-visibility>>.
 |methodVisibility=protected
-|public
+|protected
 
 |collectorResolutionSeconds
 |Controls how often invocation data is exported from the Codekvast collector.
@@ -440,12 +474,28 @@ the file name.
 
 |===
 
-[[about-specifying-method-visibility]]
-==== About specifying methodVisibility
+[[about-exclude-package-prefixes]]
+==== About excluding packages from collection
+Codekvast Collector is extremely efficient, and each tracked method only incurs a runtime cost of approximately 15 nanoseconds.
+If you have code that execute in tight loops even this low overhead could be too much.
+
+In such situations you can exclude code from Codekvast. See also <<about-specifying-method-visibility, Specifying Method Visibility>>
 
 [NOTE]
 ====
+Excluding a package will not only exclude it from the collector. It will also be excluded from the <<method-inventory, Method Inventory>>.
+====
+
+[[about-specifying-method-visibility]]
+==== About specifying methodVisibility
+
 There is a certain overhead associated with tracking method calls, both in terms of CPU cycles and memory consumption.
+By specifying which methods shall be tracked, you can control the overhead.
+
+[NOTE]
+====
+Modern IDEs like IntelliJ are capable of suggesting deletion of dead methods as long as the method visibility is package private or private.
+They cannot know if a public or protected method is dead, since they cannot know what other clients to the method that exist.
 ====
 
 .Method visibilities
@@ -453,8 +503,8 @@ There is a certain overhead associated with tracking method calls, both in terms
 |===
 |Visibility |Result |Synonyms |Overhead
 
-|*public* |Track public methods only. This is the default. | |Lowest
-|*protected* |Track public and protected methods. | |Lower
+|*public* |Track public methods only. | |Lowest
+|*protected* |Track public and protected methods. This is the default. | |Lower
 |*package-private* |Track public, protected and package-private (default) methods. |*!private* |Higher
 |*private* |Track all methods. |*all* |Highest
 
@@ -467,18 +517,9 @@ aspectjweaver. This is done every time the instrumented application starts.
 
 If you have special needs, you can disable this behaviour by setting `clobberAopXml = false`.
 
-This gives you a chance to fine-tune how the AspectJ weaver shall work. You can for instance exclude certain performance-critical packages
-from weaving.
+This gives you a chance to fine-tune how the AspectJ weaver shall work.
 
-See also {aspectj-ltw-config}.
-
-[WARNING]
-====
-Excluding packages from AspectJ weaving will give misleading results! Excluded code that is perfectly healthy will be reported as Truly
-Dead.
-
-Use at your own risk.
-====
+See {aspectj-ltw-config}.
 
 [[configuring-codekvast-daemon]]
 === Codekvast Daemon
