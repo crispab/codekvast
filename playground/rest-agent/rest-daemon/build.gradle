@@ -2,7 +2,6 @@ apply from: "$rootDir/gradle/java-8.gradle"
 apply plugin: 'spring-boot'
 
 version = project.parent.parent.version
-mainClassName = "rerquired.by.the.application.plugin"
 
 dependencies {
     compile lombok

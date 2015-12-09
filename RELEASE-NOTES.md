@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.15.3
+
+1. Upgraded to Spring Boot 1.3.0
+
 ## 0.15.2
 
 1. Default methodVisibility is now protected.

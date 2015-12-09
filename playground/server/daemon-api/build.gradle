@@ -9,13 +9,12 @@ dependencies {
     compile lombok
     compile "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
     compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
-    compile "javax.inject:javax.inject:1"
-    compile "javax.validation:validation-api:1.1.0.Final"
-    compile "org.apache.httpcomponents:httpclient"
-    compile "org.slf4j:slf4j-api"
-    compile "org.springframework:spring-context"
-    compile "org.springframework:spring-web"
-    compile "org.hibernate:hibernate-validator"
+    compile 'javax.inject:javax.inject:1'
+    compile 'org.springframework.boot:spring-boot-starter-validation'
+    compile 'org.apache.httpcomponents:httpclient'
+    compile 'org.slf4j:slf4j-api'
+    compile 'org.springframework:spring-context'
+    compile 'org.springframework:spring-web'
     compile 'com.google.guava:guava:18.0'
 
     runtime "org.glassfish:javax.el:3.0.0"

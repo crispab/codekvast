@@ -25,7 +25,3 @@ dependencies {
 bootRepackage {
     enabled = false
 }
-
-startScripts {
-    actions = []
-}
