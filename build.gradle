@@ -3,8 +3,8 @@ buildscript {
 }
 import org.ajoberstar.grgit.Grgit
 
-task wrapper(type: Wrapper) {
-    gradleVersion "2.9"
+wrapper {
+    gradleVersion = '2.10-rc-1'
 }
 
 apply plugin: 'idea'

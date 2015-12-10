@@ -1,7 +1,7 @@
 ext {
     springBootVersion = '1.3.0.RELEASE'
     h2databaseVersion = '1.4.190'
-    jacksonVersion = '2.6.3'
+    jacksonVersion = '2.6.4'
     opencsvVersion = '3.6'
 
     // Synchronize it with "org.springframework.boot:spring-boot-dependencies:$springBootVersion" (available as HTML
