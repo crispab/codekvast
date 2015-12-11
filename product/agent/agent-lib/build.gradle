@@ -1,5 +1,4 @@
 apply from: "$rootDir/gradle/java-6.gradle"
-apply from: "$rootDir/gradle/sources-javadoc.gradle"
 apply from: "$rootDir/gradle/license.gradle"
 
 description = "Code that is shared between the Codekvast daemon and collector"

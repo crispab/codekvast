@@ -18,7 +18,6 @@ import java.lang.annotation.*;
 @WebAppConfiguration
 @IntegrationTest({"server.port=0",
                   "management.port=0",
-                  "spring.thymeleaf.cache=true",
                   "spring.datasource.url=jdbc:h2:mem:integrationTest",
                   "codekvast.backupPath=build/backup",
                   "codekvast.backupSchedule=0 0 4 * * *"

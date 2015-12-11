@@ -1,5 +1,4 @@
 apply from: "$rootDir/gradle/java-8.gradle"
-apply from: "$rootDir/gradle/sources-javadoc.gradle"
 apply from: "$rootDir/gradle/license.gradle"
 apply plugin: 'application'
 apply plugin: 'spring-boot'

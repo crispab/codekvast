@@ -1,7 +1,6 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 apply from: "$rootDir/gradle/java-8.gradle"
-apply from: "$rootDir/gradle/sources-javadoc.gradle"
 apply from: "$rootDir/gradle/license.gradle"
 apply plugin: 'flyway'
 apply plugin: 'application'
@@ -82,6 +81,7 @@ springBoot {
             'initInfoShortDescription': 'Codekvast Warehouse',
             'initInfoDescription'     : 'Codekvast Warehouse aggregates data from many Codekvast Daemons',
     ]
+    excludeDevtools = true
 }
 
 bootRepackage {

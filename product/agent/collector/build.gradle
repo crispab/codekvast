@@ -2,7 +2,6 @@ plugins {
     id "com.github.johnrengelman.shadow" version "1.2.2"
 }
 apply from: "$rootDir/gradle/java-6.gradle"
-apply from: "$rootDir/gradle/sources-javadoc.gradle"
 apply from: "$rootDir/gradle/license.gradle"
 
 //JCENTER apply plugin: 'com.jfrog.bintray'
