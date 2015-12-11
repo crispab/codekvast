@@ -150,16 +150,17 @@ Execute the following commands in a shell:
 sudo -s
 wget {bintrayDownloadPrefix}/codekvast-daemon-{codekvast-version}.zip
 unzip codekvast-daemon-{codekvast-version}.zip -d /opt
-ln -fs /opt/codekvast-daemon-{codekvast-version} /opt/codekvast-daemon
-pushd /opt/codekvast-daemon/conf
-cp codekvast-daemon.properties.sample.{codekvast-version} codekvast-daemon.properties # <1>
+pushd /opt/codekvast-daemon-{codekvast-version}/conf
+cp codekvast-daemon.properties.sample.{codekvast-version} codekvast-daemon.properties
 popd
-ln -fs /opt/codekvast-daemon/etc/startscript/debian/codekvast-daemon /etc/init.d/ #<2>
+rm -f /etc/init.d/codekvast-daemon
+ln -s /opt/codekvast-daemon-{codekvast-version}/etc/startscript/debian/codekvast-daemon /etc/init.d/codekvast-daemon # <1>
 mkdir -p /var/log/codekvast
-update-rc.d codekvast-daemon defaults # <2>
+update-rc.d codekvast-daemon defaults # <1>
 ----
-<1> Edit codekvast-daemon.properties to suit your needs. See <<configuring-codekvast-daemon, Configuring Codekvast Daemon>>.
-<2> This works for Debian-based Linux distros. For Redhat-based distros, use `chkconfig --add /etc/init.d/codekvast-daemon` instead.
+<1> This works for Debian-based Linux distros. For Redhat-based distros, use `chkconfig --add /etc/init.d/codekvast-daemon` instead.
+
+Edit `/opt/codekvast-daemon-{codekvast-version}/conf/codekvast-daemon.properties` to suit your needs. See <<configuring-codekvast-daemon, Configuring Codekvast Daemon>>.
 
 Once you have finished editing codekvast-daemon.properties, execute
 

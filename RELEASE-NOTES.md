@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.15.4
+
+1. Corrected codekvast-daemon installation guide.
+
 ## 0.15.3
 
 1. Upgraded to Spring Boot 1.3.0
