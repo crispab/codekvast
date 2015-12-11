@@ -3,6 +3,8 @@
 ## 0.15.4
 
 1. Corrected codekvast-daemon installation guide.
+1. Enabled color in console logging.
+1. Simplified default config.
 
 ## 0.15.3
 

@@ -9,7 +9,7 @@
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
           <element id="module-output" name="webstart-swing-app" />
-          <element id="dir-copy" path="$PROJECT_DIR$/sample/webstart-swing-app/build/resources/main" />
+          <element id="dir-copy" path="$PROJECT_DIR$/sample/webstart-swing-app/build/classes/main" />
         </element>
       </element>
       <element id="directory" name="META-INF">

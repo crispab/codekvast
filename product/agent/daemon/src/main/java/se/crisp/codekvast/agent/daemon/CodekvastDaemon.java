@@ -21,13 +21,9 @@
  */
 package se.crisp.codekvast.agent.daemon;
 
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
 
 /**
  * The Spring Boot main program of the codekvast-daemon.
@@ -38,12 +34,9 @@ import java.net.URISyntaxException;
 @EnableScheduling
 public class CodekvastDaemon {
 
-    public static void main(String[] args) throws IOException, URISyntaxException {
+    public static void main(String[] args) {
         System.setProperty("spring.config.location",
-                           "classpath:/application.properties," +
-                                   "classpath:/default.properties," +
-                                   "classpath:/codekvast-daemon.properties");
-        SpringApplication application = new SpringApplication(CodekvastDaemon.class);
-        application.run(args);
+                           "classpath:/application.properties, classpath:/codekvast-daemon.properties");
+        new SpringApplication(CodekvastDaemon.class).run(args);
     }
 }

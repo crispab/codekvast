@@ -14,7 +14,7 @@
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
-    <option name="MAIN_CLASS_NAME" value="se.crisp.codekvast.warehouse.CodekvastWarehouseApplication" />
+    <option name="MAIN_CLASS_NAME" value="se.crisp.codekvast.warehouse.CodekvastWarehouse" />
     <option name="VM_PARAMETERS" value="-Dcodekvast.log.consoleThreshold=DEBUG" />
     <option name="PROGRAM_PARAMETERS" value="--codekvast.importPollIntervalSeconds=10 --codekvast.importPath=/tmp/codekvast/.export" />
     <option name="WORKING_DIRECTORY" value="file://$MODULE_DIR$" />

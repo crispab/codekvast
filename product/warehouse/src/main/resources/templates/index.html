@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:inline="text">
+<head>
+    <th:block th:include="fragments :: #head_boilerplate"/>
+    <th:block th:include="fragments :: #head_disable_caching"/>
+    <title>Codekvast</title>
+</head>
+<body class="ng-cloak">
+
+<nav class="navbar navbar-default">
+    <div class="container-fluid" role="navigation" ng-controller="NavigationController">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/">Codekvast Server</a>
+        </div>
+
+        <ul class="nav navbar-nav">
+
+            <li ng-repeat="menuItem in menuItems" ng-class="{ active: isActive(menuItem.url)}">
+                <!--suppress HtmlUnknownTarget -->
+                <a href="{{menuItem.url}}" title="{{menuItem.title}}">
+                    <span class="glyphicon {{menuItem.icon}}" aria-hidden="true"></span>
+                    {{menuItem.name}} </a></li>
+        </ul>
+
+        <form class="navbar-form navbar-right" th:action="@{/logout}" method="post">
+            <span th:text="${'Logged in as ' + #httpServletRequest.remoteUser}">sample_user</span>
+            &nbsp;
+            <button type="button" class="btn btn-default btn-sm" ng-click="openSettings()">
+                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                Settings
+            </button>
+            &nbsp;
+            <button type="submit" class="btn btn-default btn-sm">
+                <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
+                Log out
+            </button>
+        </form>
+
+        <ul class="nav navbar-nav navbar-right">
+            <li ng-repeat="menuItem in rightMenuItems" ng-class="{ active: isActive(menuItem.url)}">
+                <!--suppress HtmlUnknownTarget -->
+                <a href="{{menuItem.url}}" title="{{menuItem.title}}">
+                    <span class="glyphicon {{menuItem.icon}}" aria-hidden="true"></span>
+                    {{menuItem.name}} </a></li>
+        </ul>
+
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div ng-controller="JumbotronController">
+        <div class="jumbotron" ng-show="jumbotronMessage"><h2>{{jumbotronMessage}}</h2></div>
+
+        <div ng-show="!jumbotronMessage" ng-view="true"></div>
+    </div>
+
+</div>
+
+<nav class="navbar navbar-default navbar-fixed-bottom codekvast-footer">
+    <p class="text-right">
+        <small>Codekvast Server v[[${@codekvastSettings.getDisplayVersion()}]] ([[${@codekvastSettings.getCommitDate()}]])</small>
+    </p>
+</nav>
+
+<th:block th:include="fragments :: #scripts_twitter_bootstrap"/>
+<th:block th:include="fragments :: #scripts_angularjs"/>
+<th:block th:include="fragments :: #scripts_sockjs"/>
+<script th:src="@{/app/codekvast.js}"></script>
+</body>
+</html>

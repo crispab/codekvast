@@ -175,6 +175,7 @@
       <option name="ignorableAnnotations">
         <value>
           <item value="lombok.experimental.UtilityClass" />
+          <item value="org.springframework.boot.autoconfigure.SpringBootApplication" />
         </value>
       </option>
       <option name="ignoreClassesWithOnlyMain" value="false" />

@@ -14,15 +14,26 @@ applicationName = 'codekvast-warehouse'
 archivesBaseName = 'codekvast-warehouse'
 version = project.parent.version
 group = "crisp"
-mainClassName = 'se.crisp.codekvast.warehouse.CodekvastWarehouseApplication'
+mainClassName = 'se.crisp.codekvast.warehouse.CodekvastWarehouse'
 
 configurations {
     springLoaded
 }
 
+def webjars = [
+        'org.webjars:angular-ui-bootstrap:0.14.3',
+        'org.webjars:angularjs:1.4.7',
+        'org.webjars:bootstrap:3.3.5',
+        'org.webjars:jquery:2.1.4',
+        'org.webjars:lodash:3.10.1',
+        'org.webjars:sockjs-client:1.0.2',
+        'org.webjars:stomp-websocket:2.3.3',
+]
+
 dependencies {
     compile lombok
     compile project(':product:agent:agent-lib')
+    compile project(':product:support:websupport')
     compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
     compile "com.opencsv:opencsv:$opencsvVersion"
     compile 'javax.inject:javax.inject:1'
@@ -30,9 +41,12 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-devtools'
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
     compile 'org.springframework.boot:spring-boot-starter-logging'
+    compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    compile 'org.springframework.boot:spring-boot-starter-web'
 
     runtime 'ch.qos.logback:logback-classic'
     runtime 'org.mariadb.jdbc:mariadb-java-client:1.3.3'
+    runtime webjars
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'
 
@@ -50,6 +64,17 @@ processResources {
     }
 }
 
+flyway {
+    url = 'jdbc:mysql://localhost/codekvast_warehouse'
+    user = 'codekvast'
+    password = 'codekvast'
+    locations = [
+            'classpath:/database/migration',
+            'classpath:/se/crisp/codekvast/warehouse/migration',
+    ]
+}
+
+//--- Packaging ------------------------------------------------------------------------------------------------------------------
 springBoot {
     executable = true
     embeddedLaunchScriptProperties = [
@@ -60,13 +85,13 @@ springBoot {
 }
 
 bootRepackage {
-    // Set a classifier, or else gradle distZip will overwrite the fat jar...
+    // Set a classifier, or else gradle distZip will overwrite the repackaged jar...
     classifier = 'all'
 }
 
 applicationDistribution.from('src/main/resources') {
     into 'config'
-    include 'default.properties'
+    include 'codekvast-warehouse.properties'
     rename { "${it}.sample.${version}" }
 }
 
@@ -88,16 +113,7 @@ startScripts {
     }
 }
 
-flyway {
-    url = 'jdbc:mysql://localhost/codekvast_warehouse'
-    user = 'codekvast'
-    password = 'codekvast'
-    locations = [
-            'classpath:/database/migration',
-            'classpath:/se/crisp/codekvast/warehouse/migration',
-    ]
-}
-
+//--- Run & bootRun -----------------------------------------------------------------------------------------------------
 run {
     jvmArgs = ['-ea']
 
@@ -122,6 +138,7 @@ bootRun {
     args = run.args
 }
 
+// --- Coverage -------------------------------------------------------------------------------------------------------
 jacoco {
     applyTo run
 }
@@ -150,6 +167,7 @@ task coverageReport(type: JacocoReport) {
 }
 build.dependsOn coverageReport
 
+//--- Docker ---------------------------------------------------------------------------------------
 task tagDockerImageWithLatest(type: Exec) {
     commandLine "$projectDir/tagDockerImageWithLatest.sh"
 }

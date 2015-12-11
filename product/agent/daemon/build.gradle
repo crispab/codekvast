@@ -93,8 +93,8 @@ jar.dependsOn tasks.getByPath(":product:agent:agent-lib:test")
 
 applicationDistribution.from("src/main/resources") {
     into "conf"
-    include "default.properties"
-    rename { "codekvast-daemon.properties.sample.${version}" }
+    include "codekvast-daemon.properties"
+    rename { "${it}.sample.${version}" }
 }
 
 applicationDistribution.from("src/main/resources") {

@@ -19,20 +19,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package se.crisp.codekvast.warehouse.config;
+package se.crisp.codekvast.warehouse;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
+
+import java.io.IOException;
 
 /**
+ * The Spring Boot main for codekvast-warehouse,
+ *
  * @author olle.hallin@crisp.se
  */
-@Configuration
-public class JacksonConfig {
+@SpringBootApplication
+@EnableScheduling
+public class CodekvastWarehouse {
 
-    @Bean
-    public ObjectMapper objectMapper() {
-        return new ObjectMapper();
+    public static void main(String[] args) throws IOException {
+        System.setProperty("spring.config.location",
+                           "classpath:/application.properties, classpath:/codekvast-warehouse.properties");
+        new SpringApplication(CodekvastWarehouse.class).run(args);
     }
+
 }
