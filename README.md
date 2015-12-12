@@ -44,6 +44,10 @@ the local database maintained by Codekvast Daemon occupies less than 10 MB disk 
 
 The zip file for that case weighs less than 1 MB. 
 
+## License
+
+Codekvast is released under the MIT license.
+
 ## How To Kick The Tyres
 
 1. Install **JDK 8** (OpenJDK or Oracle are fine.) 
