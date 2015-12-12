@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.15.5
+
+1. Added Overview and Kick The Tyres sections to README.md
+
 ## 0.15.4
 
 1. Corrected codekvast-daemon installation guide.
