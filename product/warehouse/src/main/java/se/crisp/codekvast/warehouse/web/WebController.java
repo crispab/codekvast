@@ -27,13 +27,13 @@ public class WebController {
      */
     @ModelAttribute
     public void populateModel(Model model) {
-        model.addAttribute("thymeleafCache", thymeleafCache);
-
         // If Thymeleaf caching is enabled, use minified versions of JS and CSS
         String dot = thymeleafCache ? ".min." : ".";
         model.addAttribute("dotCss", dot + "css");
         model.addAttribute("dotJs", dot + "js");
-        model.addAttribute("foo", "bar2");
+
+        // Dummy attribute to see how live reload and spring loaded works...
+        model.addAttribute("foo", "text from Java 2");
     }
 
 

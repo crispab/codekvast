@@ -16,6 +16,7 @@ subprojects {
 
     apply plugin: 'idea'
     idea {
+        // Make spring loaded work when doing 'gradle bootRun'...
         module {
             inheritOutputDirs = false
             outputDir = file("$buildDir/classes/main/")
