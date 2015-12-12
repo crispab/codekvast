@@ -12,7 +12,6 @@ include ':tools'
 
 include ':sample:jenkins1'
 include ':sample:jenkins2'
-include ':sample:jenkins3'
 include ':sample:sample-ltw'
 include ':sample:sample-concrete-aspect'
 include ':sample:sample-lib'

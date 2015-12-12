@@ -12,7 +12,6 @@
       <module fileurl="file://$PROJECT_DIR$/product/docs/docs.iml" filepath="$PROJECT_DIR$/product/docs/docs.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/jenkins1/jenkins1.iml" filepath="$PROJECT_DIR$/sample/jenkins1/jenkins1.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/jenkins2/jenkins2.iml" filepath="$PROJECT_DIR$/sample/jenkins2/jenkins2.iml" />
-      <module fileurl="file://$PROJECT_DIR$/sample/jenkins3/jenkins3.iml" filepath="$PROJECT_DIR$/sample/jenkins3/jenkins3.iml" />
       <module fileurl="file://$PROJECT_DIR$/playground/playground.iml" filepath="$PROJECT_DIR$/playground/playground.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/product.iml" filepath="$PROJECT_DIR$/product/product.iml" />
       <module fileurl="file://$PROJECT_DIR$/playground/rest-agent/rest-agent.iml" filepath="$PROJECT_DIR$/playground/rest-agent/rest-agent.iml" />

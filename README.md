@@ -46,6 +46,57 @@ The zip file for that case weighs less than 1 MB.
 
 ## How To Kick The Tyres
 
+1. Install **JDK 8** (OpenJDK or Oracle are fine.) 
+1. Install **docker-compose**
+1. `git clone https://github.com/crispab/codekvast.git`
+1. Open 5 terminal windows and do `cd codekvast`
+1. In terminal window #1 do `./gradlew :sample:jenkins1:run`
+
+    This will download and start Jenkins inside Tomcat with Codekvast Collector attached.
+    
+    You can access Jenkins at [http://localhost:8081/jenkins](http://localhost:8081/jenkins)
+    
+    **NOTE:** Should the command fail, it is probably due to an old version of Tomcat in sample/jenkins1/build.gradle.
+     If this happens, edit build.gradle, step ext.tomcatVersion and try again.
+    
+1. In terminal window #2 do `./gradlew :sample:jenkins2:run`
+   
+    Downloads and starts another version of Jenkins inside another Tomcat also with Codekvast Collector attached.
+    
+    You can access it at [http://localhost:8082/jenkins](http://localhost:8082/jenkins)
+    
+1. In terminal window #3 do `docker-compose -f product/warehouse/docker-compose.yml up`
+
+    This will download and launch two Docker containers: **codekvast-database** (MariaDB) and **codekvast-warehouse** (the Codekvast Warehouse app).
+    
+    The warehouse app is configured to look for zip files in /tmp/codekvast/import and import them into the MariaDB database.
+    
+1. In terminal window #4 do `sudo chmod o+rw /tmp/codekvast/import` or else the Codekvast Daemon cannot create it's zip files there.
+    
+1. In terminal window #4 do `./gradlew :product:agent:daemon:run`
+
+    This will launch **Codekvast daemon**, that will process output from the collectors attached to the two Jenkins instances.
+    
+    The daemon will regularly produce data files in /tmp/codekvast/import (where Codekvast Warehouse will find them).
+    
+1. In terminal window #5 do `docker exec -ti codekvast-database mysql -ucodekvast -pcodekvast codekvast_warehouse`
+
+    Examine the collected data by means of `SELECT * FROM MethodInvocations1;`
+    
+    Examine the view with `DESCRIBE MethodInvocations1;`
+
+1. In each terminal window press `Ctrl-C`to terminate.
+
+### User Manual
+
+A User Manual located in product/docs/src/asciidoc.
+
+It is built by doing `./gradlew product:docs:asciidoctor`.
+
+The result is a self-contained HTML5 file located at product/docs/build/asciidoc/html5/CodekvastUserManual.html
+
+## Development Guide
+
 ### Technology Stack
 
 The following stack is used when developing Codekvast:
@@ -147,66 +198,3 @@ Then a couple of module settings must be changed:
     Language level **6 - @Override in interfaces** and 
     Module SDK: **1.6** (in the Dependencies tab)
 
-### How to build the product from the commmand line
-    cd <root>
-    ./gradlew :product:build
-
-Or if using the convenience gradle script:
-
-    cd <anywhere-within-the-codekvast-directory-tree>
-    gradle :product:build
-
-The rest of this guide assumes that you have the project root as working directory.
-
-### How to test with Tomcat+Jenkins
-
-#### Start Jenkins 1 in terminal 1
-
-    ./gradlew :sample:jenkins1:run
-
-This will download Tomcat 7 and then download and deploy one version of Jenkins into Tomcat. Finally, Tomcat is started on port 8081 with 
-Codekvast Collector attached.
-Terminate with `Ctrl-C`.
-
-You can access Jenkins at [http://localhost:8081/jenkins](http://localhost:8081/jenkins)
-
-#### Start Jenkins 2 in terminal 2
-
-    ./gradlew :sample:jenkins2:run
-
-This will download Tomcat 7 and then download and deploy another version of Jenkins into Tomcat. Finally, Tomcat is started on port 8082 
-with 
-Codekvast Collector attached.
-Terminate with `Ctrl-C`.
-
-You can access Jenkins at [http://localhost:8082/jenkins](http://localhost:8082/jenkins)
-
-#### Start Codekvast daemon in terminal 3
-
-    ./gradlew :product:agent:daemon:run
-
-This will launch the Codekvast **daemon**, that will process output from the collectors attached to the two Jenkins instances.
-The daemon will regularly produce data files in /tmp/codekvast/.export.
-Terminate the daemon with `Ctrl-C`.
-
-#### Start Codekvast Warehouse in terminal 4
-
-    ./gradlew :product:warehouse:bootRun
-
-This will start Codekvast Warehouse. It will look for the data files produced by codekvast-daemon and import them into the
-local MariaDB database **codekvast_warehouse** (username/password: `codekvast/codekvast`).
-Terminate with `Ctrl-C`.
-
-Log in to MariaDB with `mysql -ucodekvast -pcodekvast codekvast_warehouse`.
-
-Examine the collected data by means of `SELECT * FROM MethodInvocations1`
-
-### User Manual
-
-A User Manual located in product/docs/src/asciidoc.
-
-The source is in AsciiDoctor format.
-
-It is built by doing `./gradlew product:docs:asciidoctor`.
-
-The result is a self-contained HTML5 file located at [file:product/docs/build/asciidoc/html5/CodekvastUserManual.html]()

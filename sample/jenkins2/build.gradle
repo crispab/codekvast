@@ -1,6 +1,6 @@
 description = "Illustrates how to use Codekvast on an ordinary WAR application"
 
-ext.tomcatVersion = "7.0.65"
+ext.tomcatVersion = "7.0.67"
 ext.tomcatPort = "8082"
 ext.jenkinsVersion = "1.600"
 
