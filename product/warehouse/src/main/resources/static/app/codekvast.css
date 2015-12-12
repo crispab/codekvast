@@ -1,0 +1,21 @@
+/* codekvast.css */
+
+.ng-cloak {
+    display: none;
+}
+
+.nav, .pagination, .carousel, .panel-title a {
+    cursor: pointer;
+}
+
+.navbar-nav > li > a {
+    outline: 0;
+}
+
+body {
+    padding-bottom: 70px;
+}
+
+.codekvast-footer {
+    min-height: 0;
+}

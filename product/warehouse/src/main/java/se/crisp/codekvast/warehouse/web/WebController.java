@@ -33,6 +33,7 @@ public class WebController {
         String dot = thymeleafCache ? ".min." : ".";
         model.addAttribute("dotCss", dot + "css");
         model.addAttribute("dotJs", dot + "js");
+        model.addAttribute("foo", "bar2");
     }
 
 

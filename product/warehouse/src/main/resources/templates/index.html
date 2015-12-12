@@ -2,11 +2,17 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:inline="text">
 <head>
     <th:block th:include="fragments :: #head_boilerplate"/>
+    <th:block th:include="fragments :: #head_disable_caching"/>
+
     <title>Codekvast Warehouse</title>
 </head>
-<body>
+
+<body ng-app="codekvastWarehouse" class="ng-cloak">
 <h1>Codekvast Warehouse</h1>
+<p th:text="${foo}">Static placeholder for foo</p>
 
 <th:block th:include="fragments :: #scripts_twitter_bootstrap"/>
+<th:block th:include="fragments :: #scripts_angularjs"/>
+<script th:src="@{/app/codekvast.js}"></script>
 </body>
 </html>
