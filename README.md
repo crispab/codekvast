@@ -47,17 +47,38 @@ The zip file for that case weighs less than 1 MB.
 
 Codekvast is released under the MIT license.
 
+## Development Status
+
+* The Codekvast Collector is fairly complete and stable.
+
+* The Codekvast Daemon is fairly stable.
+
+* The Codekvast Warehouse is quite rudimentary. It aggregates and persists data alright, but the user interface is quite limited. (For the moment
+the only functionality offered is a view in the database schema).
+
+*NOTE:* the collector and the daemon communicates via the local file system. This means that Codekvast for the moment is unusable in e.g., Heroku and
+Google App Engine.
+
 ## How To Kick The Tyres
 
+The following procedure will download and start two different versions of Jenkins and launch them in Tomcat 7, with Codekvast Collector attached.
+It will also build and start Codekvast Daemon and Codekvast Warehouse.
+
 1. Install **JDK 8** (OpenJDK or Oracle are fine.) 
-1. Install [https://docs.docker.com/compose/install/](Docker Compose)
-1. `git clone https://github.com/crispab/codekvast.git`
-1. Open 5 terminal windows and do `cd path/to/codekvast`
+
+1. Install [Docker Compose](https://docs.docker.com/compose/install/)
+
+1. Open a terminal window
+
+1. Do `git clone https://github.com/crispab/codekvast.git && cd codekvast`
+
+1. Open 4 more terminal windows with `codekvast` as working directory.
+
 1. In terminal window #1 do `./gradlew :sample:jenkins1:run`
 
     This will download and start Jenkins inside Tomcat with Codekvast Collector attached.
     
-    You can access Jenkins at [http://localhost:8081/jenkins](http://localhost:8081/jenkins)
+    You can access Jenkins at http://localhost:8081/jenkins
     
     **NOTE:** Should the command fail, it is probably due to an old version of Tomcat in sample/jenkins1/build.gradle.
      If this happens, edit build.gradle, step ext.tomcatVersion and try again.
@@ -66,11 +87,15 @@ Codekvast is released under the MIT license.
    
     Downloads and starts another version of Jenkins inside another Tomcat also with Codekvast Collector attached.
     
-    You can access it at [http://localhost:8082/jenkins](http://localhost:8082/jenkins)
+    You can access it at http://localhost:8082/jenkins
+    
+1. In terminal window #3 do `./gradlew :product:warehouse:distDocker`.
+ 
+    This will build a local Docker image for Codekvast Warehouse from the sources.
     
 1. In terminal window #3 do `docker-compose -f product/warehouse/docker-compose.yml up`
 
-    This will download and launch two Docker containers: **codekvast-database** (MariaDB) and **codekvast-warehouse** (the Codekvast Warehouse app).
+    This will launch two Docker containers: **codekvast-database** (MariaDB) and **codekvast-warehouse** (the Codekvast Warehouse app).
     
     The warehouse app is configured to look for zip files in /tmp/codekvast/import and import them into the MariaDB database.
     
@@ -80,7 +105,7 @@ Codekvast is released under the MIT license.
 
     This will launch **Codekvast daemon**, that will process output from the collectors attached to the two Jenkins instances.
     
-    The daemon will regularly produce data files in /tmp/codekvast/import (where Codekvast Warehouse will find them).
+    The daemon will regularly produce zip data files in /tmp/codekvast/import (where Codekvast Warehouse will find and consume them).
     
 1. In terminal window #5 do `docker exec -ti codekvast-database mysql -ucodekvast -pcodekvast codekvast_warehouse`
 
@@ -90,20 +115,29 @@ Codekvast is released under the MIT license.
 
 1. In each terminal window press `Ctrl-C`to terminate.
 
-### User Manual
+### Pre-built binaries and Docker Compose recipes
 
-A User Manual located in product/docs/src/asciidoc.
+Pre-built binaries, a User Manual and Docker Compose files are available for download from [Codekvast at Bintray](https://bintray.com/crisp/codekvast/distributions/view#files)
 
-It is built by doing `./gradlew product:docs:asciidoctor`.
+* codekvast-daemon-x.x.x.zip contains the *Codekvast Collector* and the *Codekvast Daemon*.
 
-The result is a self-contained HTML5 file located at product/docs/build/asciidoc/html5/CodekvastUserManual.html
+* codekvast-warehouse-x.x.x.zip contains *Codekvast Warehouse* as a regular Linux System-V service. Install MariaDB separately.
+
+* docker-compose-x.x.x.yml is a Docker Compose file for running Codekvast Warehouse and MariaDB as Docker images.
+
+* CodekvastUserManual-x.x.x.html is a complete User Manual for all three components. It contains installation and configuration guides.
+
+* RELEASE-NOTES-x.x.x.md contains release notes.
 
 ## Development Guide
+
+If you have read this far, you're probably eager to do some Codekvast development. Welcome!
 
 ### Technology Stack
 
 The following stack is used when developing Codekvast:
 
+1. Github
 1. Java 8 (the collector is built with Java 6)
 1. AspectJ (in Load-Time Weaving mode)
 1. Spring Boot

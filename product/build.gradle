@@ -61,6 +61,9 @@ bintray {
         from file("$rootDir/product/warehouse/docker-compose.yml"), {
             rename { "docker-compose-${version}.yml" }
         }
+        from file("$rootDir/RELEASE-NOTES.md"), {
+            rename { "RELEASE-NOTES-${version}.md" }
+        }
         into "."
     }
 
