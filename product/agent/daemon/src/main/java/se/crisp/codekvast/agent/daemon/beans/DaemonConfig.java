@@ -51,12 +51,12 @@ public class DaemonConfig {
     private String environment;
     @NonNull
     private File exportFile;
-
-    private String uploadToHost;
+    @NonNull
     private String uploadToPath;
+    private String uploadToHost;
 
     public boolean isUploadEnabled() {
-        return uploadToHost != null && !uploadToHost.isEmpty() && uploadToPath != null && !uploadToPath.isEmpty();
+        return uploadToHost != null && !uploadToHost.isEmpty() && !uploadToPath.isEmpty();
     }
 
     public String getDisplayVersion() {

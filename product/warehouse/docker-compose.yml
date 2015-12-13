@@ -4,7 +4,7 @@ warehouse:
   container_name: codekvast-warehouse
 
   volumes:
-  - /tmp/codekvast/import:/tmp/codekvast
+  - /tmp/codekvast/.warehouse:/tmp/codekvast/.warehouse
   - /var/log:/var/log
 
   links:

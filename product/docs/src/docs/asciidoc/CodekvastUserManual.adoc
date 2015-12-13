@@ -246,7 +246,7 @@ The MariaDB database files will be located in `/var/lib/codekvast-database`.
 
 The Codekvast Warehouse log files will be located in `/var/log/codekvast/`.
 
-Codekvast Warehouse will look for import files in `/tmp/codekvast/import`.
+Codekvast Warehouse will look for import files in `/tmp/codekvast/.import`.
 
 [[codekvast-warehouse-conventional-installation]]
 === Install Codekvast Warehouse as a Linux service

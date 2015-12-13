@@ -97,15 +97,15 @@ It will also build and start Codekvast Daemon and Codekvast Warehouse.
 
     This will launch two Docker containers: **codekvast-database** (MariaDB) and **codekvast-warehouse** (the Codekvast Warehouse app).
     
-    The warehouse app is configured to look for zip files in /tmp/codekvast/import and import them into the MariaDB database.
+    The warehouse app is configured to look for zip files in /tmp/codekvast/.warehouse and import them into the MariaDB database.
     
-1. In terminal window #4 do `sudo chmod o+rw /tmp/codekvast/import` or else the Codekvast Daemon cannot create it's zip files there.
+1. In terminal window #4 do `sudo chmod o+rw /tmp/codekvast/.warehouse` or else the Codekvast Daemon cannot create it's zip files there.
     
 1. In terminal window #4 do `./gradlew :product:agent:daemon:run`
 
     This will launch **Codekvast daemon**, that will process output from the collectors attached to the two Jenkins instances.
     
-    The daemon will regularly produce zip data files in /tmp/codekvast/import (where Codekvast Warehouse will find and consume them).
+    The daemon will regularly produce zip data files in /tmp/codekvast/.warehouse (where Codekvast Warehouse will find and consume them).
     
 1. In terminal window #5 do `docker exec -ti codekvast-database mysql -ucodekvast -pcodekvast codekvast_warehouse`
 

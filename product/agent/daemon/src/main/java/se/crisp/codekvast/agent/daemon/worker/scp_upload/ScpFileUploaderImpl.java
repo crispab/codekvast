@@ -32,9 +32,11 @@ import se.crisp.codekvast.agent.daemon.util.LogUtil;
 import se.crisp.codekvast.agent.daemon.worker.FileUploadException;
 import se.crisp.codekvast.agent.daemon.worker.FileUploader;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
@@ -55,11 +57,39 @@ public class ScpFileUploaderImpl implements FileUploader {
     @Inject
     public ScpFileUploaderImpl(DaemonConfig config) {
         this.config = config;
-        if (config.isUploadEnabled()) {
-            log.info("Will upload to {}:{}", config.getUploadToHost(), config.getUploadToPath());
-        } else {
+    }
+
+    @PostConstruct
+    public void validateUploadConfig() throws IOException {
+        if (!config.isUploadEnabled()) {
             log.debug("Will not upload");
+            return;
         }
+
+        String tmpFile = getUploadTargetFile(InetAddress.getLocalHost().getHostName() + "-" + UUID.randomUUID().toString() + ".tmp");
+        String remoteCommand = String.format("mkdir -p %1$s && touch %2$s && rm %2$s", config.getUploadToPath(), tmpFile);
+        log.debug("Validating upload config by attempting to execute '{}' on {}...", remoteCommand, config.getUploadToHost());
+
+        SSHClient sshClient = new SSHClient();
+        sshClient.loadKnownHosts();
+        sshClient.connect(config.getUploadToHost());
+        sshClient.authPublickey(System.getProperty("user.name"));
+
+        try (Session session = sshClient.startSession()) {
+            Session.Command command = session.exec(remoteCommand);
+            command.join(10, TimeUnit.SECONDS);
+
+            String errorMessage = ofNullable(command.getExitErrorMessage()).orElse("");
+            int exitStatus = ofNullable(command.getExitStatus()).orElse(0);
+
+            if (exitStatus != 0 || !errorMessage.isEmpty()) {
+                throw new IOException(
+                        String.format("Could not execute '%s' on %s: [%d] %s", remoteCommand, config.getUploadToHost(), exitStatus,
+                                      errorMessage));
+            }
+        }
+
+        log.info("Will upload to {}:{}", config.getUploadToHost(), config.getUploadToPath());
     }
 
     @Override
@@ -85,7 +115,7 @@ public class ScpFileUploaderImpl implements FileUploader {
             sshClient.connect(config.getUploadToHost());
             sshClient.authPublickey(System.getProperty("user.name"));
 
-            String realTarget = getUploadTargetFile(file);
+            String realTarget = getUploadTargetFile(file.getName());
             String tmpTarget = realTarget + "." + UUID.randomUUID();
 
             sshClient.newSCPFileTransfer().upload(file.getAbsolutePath(), tmpTarget);
@@ -96,12 +126,12 @@ public class ScpFileUploaderImpl implements FileUploader {
         }
     }
 
-    private String getUploadTargetFile(File file) {
-        StringBuffer sb = new StringBuffer(config.getUploadToPath());
+    private String getUploadTargetFile(String fileName) {
+        StringBuilder sb = new StringBuilder(config.getUploadToPath());
         if (!config.getUploadToPath().endsWith(File.separator)) {
             sb.append(File.separator);
         }
-        sb.append(file.getName());
+        sb.append(fileName);
         return sb.toString();
     }
 

@@ -21,8 +21,8 @@ configurations {
 
 def webjars = [
         'org.webjars:angular-ui-bootstrap:0.14.3',
-        'org.webjars:angularjs:1.4.7',
-        'org.webjars:bootstrap:3.3.5',
+        'org.webjars:angularjs:1.4.8',
+        'org.webjars:bootstrap:3.3.6',
         'org.webjars:jquery:2.1.4',
         'org.webjars:lodash:3.10.1',
 ]
@@ -117,12 +117,7 @@ run {
 
     args = [
             "--logging.file=$buildDir/log/${applicationName}.log",
-            '--codekvast.importPath=/tmp/codekvast/.export', // same as daemon export to when started from Gradle
             '--codekvast.importPathPollIntervalSeconds=10',
-
-            // During test
-            // '--codekvast.importPath=/home/qolha/Dropbox/Kund/Transmode/codekvast',
-            // '--codekvast.deleteImportedFiles=false',
     ]
 }
 
