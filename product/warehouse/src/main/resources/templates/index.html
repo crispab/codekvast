@@ -1,18 +1,41 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:inline="text">
 <head>
-    <th:block th:include="fragments :: #head_boilerplate"/>
-    <th:block th:include="fragments :: #head_disable_caching"/>
-
     <title>Codekvast Warehouse</title>
+
+    <meta charset="utf-8"/>
+
+    <!-- Enable responsive -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <!-- Base -->
+    <base th:href="@{/}"/>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.css}"/>
+    <link rel="stylesheet" th:href="@{/app/codekvast.css}"/>
+
+    <!-- Cache control -->
+    <meta http-equiv="cache-control" content="max-age=0"/>
+    <meta http-equiv="cache-control" content="no-cache"/>
+    <meta http-equiv="expires" content="0"/>
+    <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT"/>
+    <meta http-equiv="pragma" content="no-cache"/>
 </head>
 
 <body ng-app="codekvastWarehouse" class="ng-cloak">
 <h1>Codekvast Warehouse 3</h1>
 <p th:text="${foo}">Static placeholder for foo</p>
 
-<th:block th:include="fragments :: #scripts_twitter_bootstrap"/>
-<th:block th:include="fragments :: #scripts_angularjs"/>
+<script th:src="@{/webjars/jquery/jquery.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.js}"></script>
+<script th:src="@{/webjars/angularjs/angular.js}"></script>
+<script th:src="@{/webjars/angularjs/angular-route.js}"></script>
+<script th:src="@{/webjars/angularjs/i18n/angular-locale_sv.js}"></script>
+<script th:src="@{/webjars/angular-ui-bootstrap/ui-bootstrap-tpls.js}"></script>
+<script th:src="@{/webjars/lodash/lodash.js}"></script>
 <script th:src="@{/app/codekvast.js}"></script>
 </body>
 </html>

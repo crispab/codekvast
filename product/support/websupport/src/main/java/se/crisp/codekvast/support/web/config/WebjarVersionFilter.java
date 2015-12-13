@@ -89,7 +89,7 @@ public class WebjarVersionFilter implements Filter {
         String requestURI = ((HttpServletRequest) request).getRequestURI();
         String expandedRequestURI = expandRequestURI(requestURI);
         if (expandedRequestURI != null) {
-            log.debug("Forwarding {} to {}", requestURI, expandedRequestURI);
+            log.trace("Forwarding {} to {}", requestURI, expandedRequestURI);
             request.getRequestDispatcher(expandedRequestURI).forward(request, response);
         } else {
             chain.doFilter(request, response);
