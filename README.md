@@ -12,11 +12,10 @@ The collector records the instant when methods belonging to any of your packages
 By default Codekvast tracks *public* and *protected* methods. Modern IDEs like IntelliJ IDEA can detect dead code which have *package 
 private* or *private* visibility. They can never know what callers there are to public and protected methods though.
  
-This is where Codekvast can help. Codekvast does not know either what *potential* callers there are to public and protected
- methods, but records the fact if there *are* any invocations in *production*.
+This is where Codekvast can help. Codekvast *records when your methods are invoked in production*.
 
-The collector periodically forwards the recorded data to the **Codekvast Daemon**, which combines the invocation data
-with an inventory of *all* methods in your application.
+The collector periodically sends the recorded data to the **Codekvast Daemon**, which combines the invocation data
+with an *inventory* of all methods in your application.
  
 The Codekvast Daemon is installed in the same host as your application, since it needs access to your application's binaries
  (jar files) to make the inventory.
@@ -36,7 +35,7 @@ that safely could be deleted.*
 
 ### Performance
 
-Codekvast Collector is extremely efficient. It adds approximately **15 ns** to each method invocation. If this is unacceptable,
+Codekvast Collector is extremely efficient. It adds approximately *15 ns* to each method invocation. If this is unacceptable,
 you can exclude certain time critical packages from collection.
 
 The collected data volumes are quite moderate. When tested on a telecom equipment vendors' fairly large network management application,
@@ -51,9 +50,9 @@ Codekvast is released under the MIT license.
 ## How To Kick The Tyres
 
 1. Install **JDK 8** (OpenJDK or Oracle are fine.) 
-1. Install **docker-compose**
+1. Install [https://docs.docker.com/compose/install/](Docker Compose)
 1. `git clone https://github.com/crispab/codekvast.git`
-1. Open 5 terminal windows and do `cd codekvast`
+1. Open 5 terminal windows and do `cd path/to/codekvast`
 1. In terminal window #1 do `./gradlew :sample:jenkins1:run`
 
     This will download and start Jenkins inside Tomcat with Codekvast Collector attached.
@@ -139,10 +138,7 @@ Use the following command to install MariaDB (Ubuntu, Debian):
     
 Then the following commands must be executed once:
     
-    $ sudo mysql
-    create database codekvast_warehouse;
-    grant all on codekvast_warehouse.* to 'codekvast'@'localhost' identified by 'codekvast';
-    Ctrl-D
+    $ sudo mysql -e "create database codekvast_warehouse; grant all on codekvast_warehouse.* to 'codekvast'@'localhost' identified by 'codekvast';"
     
 #### Build tool
 
