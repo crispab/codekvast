@@ -32,7 +32,6 @@ import se.crisp.codekvast.agent.daemon.util.LogUtil;
 import se.crisp.codekvast.agent.daemon.worker.FileUploadException;
 import se.crisp.codekvast.agent.daemon.worker.FileUploader;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
@@ -59,37 +58,19 @@ public class ScpFileUploaderImpl implements FileUploader {
         this.config = config;
     }
 
-    @PostConstruct
-    public void validateUploadConfig() throws IOException {
+    @Override
+    public void validateUploadConfig() throws FileUploadException {
         if (!config.isUploadEnabled()) {
             log.debug("Will not upload");
             return;
         }
 
-        String tmpFile = getUploadTargetFile(InetAddress.getLocalHost().getHostName() + "-" + UUID.randomUUID().toString() + ".tmp");
-        String remoteCommand = String.format("mkdir -p %1$s && touch %2$s && rm %2$s", config.getUploadToPath(), tmpFile);
-        log.debug("Validating upload config by attempting to execute '{}' on {}...", remoteCommand, config.getUploadToHost());
-
-        SSHClient sshClient = new SSHClient();
-        sshClient.loadKnownHosts();
-        sshClient.connect(config.getUploadToHost());
-        sshClient.authPublickey(System.getProperty("user.name"));
-
-        try (Session session = sshClient.startSession()) {
-            Session.Command command = session.exec(remoteCommand);
-            command.join(10, TimeUnit.SECONDS);
-
-            String errorMessage = ofNullable(command.getExitErrorMessage()).orElse("");
-            int exitStatus = ofNullable(command.getExitStatus()).orElse(0);
-
-            if (exitStatus != 0 || !errorMessage.isEmpty()) {
-                throw new IOException(
-                        String.format("Could not execute '%s' on %s: [%d] %s", remoteCommand, config.getUploadToHost(), exitStatus,
-                                      errorMessage));
-            }
+        try {
+            doValidateUploadConfig();
+            log.info("Will upload to {}:{}", config.getUploadToHost(), config.getUploadToPath());
+        } catch (IOException e) {
+            throw new FileUploadException(String.format("Failed to validate %s:%s", config.getUploadToHost(), config.getUploadToPath()), e);
         }
-
-        log.info("Will upload to {}:{}", config.getUploadToHost(), config.getUploadToPath());
     }
 
     @Override
@@ -150,4 +131,31 @@ public class ScpFileUploaderImpl implements FileUploader {
             }
         }
     }
+
+    private void doValidateUploadConfig() throws IOException {
+        String tmpFile = getUploadTargetFile(InetAddress.getLocalHost().getHostName() + "-" + UUID.randomUUID().toString() + ".tmp");
+        String remoteCommand = String.format("mkdir -p %1$s && touch %2$s && rm %2$s", config.getUploadToPath(), tmpFile);
+        log.debug("Validating upload config by attempting to execute '{}' on {}...", remoteCommand, config.getUploadToHost());
+
+        SSHClient sshClient = new SSHClient();
+        sshClient.loadKnownHosts();
+        sshClient.connect(config.getUploadToHost());
+        sshClient.authPublickey(System.getProperty("user.name"));
+
+        try (Session session = sshClient.startSession()) {
+            Session.Command command = session.exec(remoteCommand);
+            command.join(10, TimeUnit.SECONDS);
+
+            String errorMessage = ofNullable(command.getExitErrorMessage()).orElse("");
+            int exitStatus = ofNullable(command.getExitStatus()).orElse(0);
+
+            if (exitStatus != 0 || !errorMessage.isEmpty()) {
+                if (!errorMessage.isEmpty()) {
+                    errorMessage = ": " + errorMessage;
+                }
+                throw new IOException(String.format("Failed to execute '%s': [exitCode=%d]%s", remoteCommand, exitStatus, errorMessage));
+            }
+        }
+    }
+
 }

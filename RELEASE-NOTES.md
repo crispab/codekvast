@@ -1,5 +1,10 @@
 # Codekvast Release Notes
 
+## 0.15.6
+
+1. Simplified config of SCP upload.
+1. Added fail-fast validation of DaemonConfig.uploadToHost. Now the daemon logs an ERROR if it fails to touch a file in the upload target.
+
 ## 0.15.5
 
 1. Added Overview and Kick The Tyres sections to README.md

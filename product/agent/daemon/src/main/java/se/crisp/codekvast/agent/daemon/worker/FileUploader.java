@@ -30,5 +30,18 @@ import java.io.File;
  */
 public interface FileUploader {
 
+    /**
+     * Validate that the upload config is correct.
+     *
+     * @throws FileUploadException If failed to validate the upload config.
+     */
+    void validateUploadConfig() throws FileUploadException;
+
+    /**
+     * Upload a file to the central warehouse.
+     *
+     * @param file The file to upload.
+     * @throws FileUploadException Should the upload fail.
+     */
     void uploadFile(File file) throws FileUploadException;
 }

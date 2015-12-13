@@ -60,6 +60,7 @@ public class DaemonWorker {
     private final DataExporter dataExporter;
     private final FileUploader fileUploader;
     private Instant exportedAt = Instant.MIN;
+    private boolean haveValidatedFileUploader;
 
     @Inject
     public DaemonWorker(DaemonConfig config, AppVersionResolver appVersionResolver, CollectorDataProcessor collectorDataProcessor,
@@ -78,15 +79,28 @@ public class DaemonWorker {
         log.info("{} {} shuts down", getClass().getSimpleName(), config.getDisplayVersion());
     }
 
-    @Scheduled(initialDelay = 10L, fixedDelayString = "${codekvast.dataProcessingIntervalSeconds}000")
+    @Scheduled(initialDelay = 5_000L, fixedDelayString = "${codekvast.dataProcessingIntervalSeconds}000")
     public void analyseCollectorData() {
         String oldThreadName = Thread.currentThread().getName();
         Thread.currentThread().setName(getClass().getSimpleName());
         try {
+            validateFileUploaderIfNeeded();
+
             findAndAnalyzeCollectorData();
             exportDataIfNeeded();
         } finally {
             Thread.currentThread().setName(oldThreadName);
+        }
+    }
+
+    private void validateFileUploaderIfNeeded() {
+        if (!haveValidatedFileUploader) {
+            try {
+                fileUploader.validateUploadConfig();
+                haveValidatedFileUploader = true;
+            } catch (FileUploadException e) {
+                LogUtil.logException(log, "Could not validate upload config", e);
+            }
         }
     }
 
@@ -166,7 +180,7 @@ public class DaemonWorker {
 
             jvmState.setInvocationsFile(new File(file.getParentFile(), CollectorConfig.INVOCATIONS_BASENAME));
         } catch (IOException e) {
-            log.error("Cannot load " + file, e);
+            LogUtil.logException(log, "Cannot load " + file, e);
         }
     }
 }
