@@ -41,12 +41,29 @@ dependencies {
 processResources {
     from(sourceSets.main.resources.srcDirs) {
         include '**/application.properties'
-        filter(ReplaceTokens, tokens: gitVersionTokens + ['gradle.name'          : archivesBaseName,
-                                                          'gradle.description'   : project.description,
-                                                          'gradle.version'       : project.version,
-                                                          'gradle.displayVersion': codekvastDisplayVersion]
+        include '**/setenv.bat'
+        filter(ReplaceTokens, tokens: gitVersionTokens + ['gradle.name'       : archivesBaseName,
+                                                          'gradle.description': project.description,
+                                                          'gradle.version'    : project.version,
+                                                          'aspectjVersion'    : aspectjVersion]
         )
     }
+}
+
+//--- Packaging ------------------------------------------------------------------------------------------------------------------
+springBoot {
+    executable = true
+    embeddedLaunchScriptProperties = [
+            'initInfoProvides'        : applicationName,
+            'initInfoShortDescription': 'Codekvast Daemon',
+            'initInfoDescription'     : 'Codekvast Daemon consumes data from the collected apps',
+    ]
+    excludeDevtools = true
+}
+
+bootRepackage {
+    // Set a classifier, or else gradle distZip will overwrite the repackaged jar...
+    classifier = 'all'
 }
 
 flyway {
@@ -83,36 +100,5 @@ bootRun {
     ] + run.jvmArgs
     args = run.args
 }
+
 bootRun.dependsOn startDatabase
-
-jar.dependsOn tasks.getByPath(":product:agent:agent-lib:test")
-
-applicationDistribution.from("src/main/resources") {
-    into "conf"
-    include "codekvast-daemon.properties.sample"
-    rename { "${it}.${version}" }
-}
-
-applicationDistribution.from("src/main/resources") {
-    into "conf"
-    include "codekvast-collector.conf.sample", "byte-code-added-methods.txt", "byte-code-enhanced-methods.txt"
-    rename { "${it}.${version}" }
-}
-
-applicationDistribution.from("src/dist") {
-    into "/"
-    filter { it.replace("@CODEKVAST_VERSION@", project.version).replace("@ASPECTJ_VERSION@", aspectjVersion) }
-}
-
-applicationDefaultJvmArgs = ["-Dlogging.file=/var/log/${applicationName}.log"]
-
-startScripts {
-    doLast {
-        windowsScript.text = windowsScript.text
-                .replace('CLASSPATH=%APP_HOME%\\lib', 'CLASSPATH=%APP_HOME%\\conf\\;%APP_HOME%\\lib')
-
-        unixScript.text = unixScript.text
-                .replace('APP_HOME=', 'export APP_HOME=')
-                .replace('CLASSPATH=$APP_HOME/lib', 'CLASSPATH=$APP_HOME/conf/:$APP_HOME/lib')
-    }
-}

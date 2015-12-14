@@ -147,25 +147,27 @@ Execute the following commands in a shell:
 
 [source,bash,subs="attributes,verbatim"]
 ----
-sudo -s
-wget {bintrayDownloadPrefix}/codekvast-daemon-{codekvast-version}.zip
-unzip codekvast-daemon-{codekvast-version}.zip -d /opt
-pushd /opt/codekvast-daemon-{codekvast-version}/conf
-cp codekvast-daemon.properties.sample.{codekvast-version} codekvast-daemon.properties
-popd
-rm -f /etc/init.d/codekvast-daemon
-ln -s /opt/codekvast-daemon-{codekvast-version}/etc/startscript/debian/codekvast-daemon /etc/init.d/codekvast-daemon # <1>
-mkdir -p /var/log/codekvast
-update-rc.d codekvast-daemon defaults # <1>
+RUN_DAEMON_AS_USER=root # <1>
+sudo wget {bintrayDownloadPrefix}/codekvast-daemon-{codekvast-version}.zip
+sudo unzip codekvast-daemon-{codekvast-version}.zip -d /opt
+sudo chown $RUN_DAEMON_AS_USER /opt/codekvast-daemon-{codekvast-version}/codekvast-daemon.jar # <1>
+sudo rm -f /etc/init.d/codekvast-daemon
+sudo ln -s /opt/codekvast-daemon-{codekvast-version}/codekvast-daemon.jar /etc/init.d/codekvast-daemon # <2>
+sudo update-rc.d codekvast-daemon defaults # <3>
+sudo vi /opt/codekvast-daemon-{codekvast-version}/application.properties # <4>
 ----
-<1> This works for Debian-based Linux distros. For Redhat-based distros, use `chkconfig --add /etc/init.d/codekvast-daemon` instead.
+<1> Insert the name of the user that runs your application(s) here. Codekvast Daemon needs permission to delete consumed
+collection data files. You can also assign proper owner and/or permissions to /tmp/codekvast/.collector/ so that codekvast-daemon can remove
+collector data files created by your application(s). See `man chmod` and `man chown`.
+The daemon will run with the same user as the owner of the application jar file.
+<2> This works for  Linux distros that support System-V.
+<3> This works for Debian-based distros. For Redhat, use `chkconfig --add` instead.
+<4> Configure the daemon to suit your needs.
 
-Edit `/opt/codekvast-daemon-{codekvast-version}/conf/codekvast-daemon.properties` to suit your needs. See <<configuring-codekvast-daemon, Configuring Codekvast Daemon>>.
-
-Once you have finished editing codekvast-daemon.properties, execute
+Once you have finished editing application.properties, execute
 
 ----
-/etc/init.d/codekvast-daemon start
+sudo /etc/init.d/codekvast-daemon start
 ----
 
 === Modify all applications`' start scripts
@@ -176,11 +178,11 @@ Once you have finished editing codekvast-daemon.properties, execute
 [source,bash,subs="attributes,verbatim"]
 ----
 cd path/to/tomcat # <1>
-cp /opt/codekvast-daemon/conf/codekvast-collector.conf.sample.{codekvast-version} conf/codekvast.conf # <2>
-cp /opt/codekvast-daemon/bin/tomcat/setenv.sh bin/
+cp /opt/codekvast-daemon-{codekvast-version}/codekvast-collector.conf conf/ # <2>
+cp /opt/codekvast-daemon-{codekvast-version}/tomcat/setenv.sh bin/
 ----
 <1> Substitute `path/to` with the actual path were Tomcat is installed.
-<2> Edit `conf/codekvast.conf` to suit your needs. See <<configuring-codekvast-collector, Configuring Codekvast Collector>>.
+<2> Edit `conf/codekvast-collector.conf` to suit your needs. See <<configuring-codekvast-collector, Configuring Codekvast Collector>>.
 
 ==== Tomcat (Windows)
 
@@ -190,13 +192,13 @@ set CODEKVAST_HOME="path\to\codekvast-daemon-{codekvast-version}" # <1>
 cd path\to\tomcat # <2>
 mkdir endorsed
 copy %CODEKVAST_HOME%\javaagents\* endorsed
-copy %CODEKVAST_HOME%\bin\tomcat\setenv.bat bin # <3>
-copy %CODEKVAST_HOME%\conf\codekvast-collector.conf.sample.{codekvast-version} conf\codekvast.conf # <4>
+copy %CODEKVAST_HOME%\tomcat\setenv.bat bin\ # <3>
+copy %CODEKVAST_HOME%\codekvast-collector.conf conf\ # <4>
 ----
 <1> Substitute `path\to` with the actual path were Codekvast is installed.
 <2> Substitute `path\to` with the actual path were Tomcat is installed.
 <3> Edit `bin\setenv.bat` so that CODEKVAST_HOME matches the path were codekvast-daemon-{codekvast-version} is installed.
-<4> Edit `conf\codekvast.conf` to suit your needs. See <<configuring-codekvast-collector, Configuring Codekvast Collector>>.
+<4> Edit `conf\codekvast-collector.conf` to suit your needs. See <<configuring-codekvast-collector, Configuring Codekvast Collector>>.
 
 ==== Other applications
 
@@ -211,7 +213,7 @@ Codekvast Collector expects it. See <<codekvast-collector-config-file-location, 
 
 [TIP]
 ====
-There is a helper script called `/opt/codekvast-daemon/bin/showJvmParams.sh` which produces a valid JVM_OPTS that can be pasted
+There is a helper script called `/opt/codekvast-daemon{codekvast-version}/showJvmParams.sh` which produces a valid JAVA_OPTS that can be pasted
 into your application's start script.
 ====
 
@@ -258,11 +260,15 @@ Codekvast Warehouse will look for import files in `/tmp/codekvast/.import`.
 [source,bash,subs="attributes,verbatim"]
 ----
 sudo adduser codekvast # <1>
-sudo mysql -e "create database if not exists codekvast_warehouse;grant all on codekvast_warehouse.* to 'codekvast'@'localhost' identified by 'codekvast';" # <2>
+sudo mysql << EOF  # <2>
+create database if not exists codekvast_warehouse;
+grant all on codekvast_warehouse.* to 'codekvast'@'localhost' identified by 'codekvast';
+EOF
 sudo wget {bintrayDownloadPrefix}/codekvast-warehouse-{codekvast-version}.zip
-sudo unzip codekvast-warehouse-{codekvast-version}-svc.zip -d /opt
+sudo unzip codekvast-warehouse-{codekvast-version}.zip -d /opt
 sudo chown codekvast:codekvast /opt/codekvast-warehouse-{codekvast-version}/codekvast-warehouse.jar # <1>
-sudo ln -fs /opt/codekvast-warehouse-{codekvast-version}/codekvast-warehouse.jar /etc/init.d/codekvast-warehouse # <3>
+sudo rm -f /etc/init.d/codekvast-warehouse
+sudo ln -s /opt/codekvast-warehouse-{codekvast-version}/codekvast-warehouse.jar /etc/init.d/codekvast-warehouse # <3>
 sudo update-rc.d codekvast-warehouse defaults # <4>
 sudo vi /opt/codekvast-warehouse-{codekvast-version}/application.properties # <5>
 ----
@@ -287,23 +293,22 @@ sudo /etc/init.d/codekvast-warehouse start
 ==== Configuration File Name and Location
 
 The collector reads it's configuration from a file named either `codekvast-collector.conf` or `codekvast.conf` in any of these places (the
-first
-found file will win:)
+first found file will win)
 
 . The Java system property `-Dcodekvast.configuration=path/to/configfile`.
 . The environment variable `CODEKVAST_CONFIG=path/to/configfile`.
-. The file `${codekvast.home}/conf/codekvast-collector.conf` or `${codekvast.home}/conf/codekvast.conf` (codekvast.home is a
-Java system property)
-. The file `$\{CODEKVAST_HOME}/conf/codekvast-collector.conf` or `$\{CODEKVAST_HOME}/conf/codekvast.conf` (CODEKVAST_HOME is an
-environment variable)
+. The file `${codekvast.home}/codekvast-collector.conf` or `${codekvast.home}/codekvast.conf` (codekvast.home is a Java system property)
+. The file `${codekvast.home}/conf/codekvast-collector.conf` or `${codekvast.home}/conf/codekvast.conf` (codekvast.home is a Java system property)
+. The file `$\{CODEKVAST_HOME}/codekvast-collector.conf` or `$\{CODEKVAST_HOME}/codekvast.conf` (CODEKVAST_HOME is an environment variable)
+. The file `$\{CODEKVAST_HOME}/conf/codekvast-collector.conf` or `$\{CODEKVAST_HOME}/conf/codekvast.conf` (CODEKVAST_HOME is an environment variable)
 . In a similar way it looks for
-.. catalina.home
-.. CATALINA_HOME
-.. catalina.base
-.. CATALINA_BASE
-. It looks for the configuration file in the `conf/` sibling directory to where codekvast-collector-{codekvast-version}.jar is located.
-. It looks for the configuration file in `/etc/codekvast`.
-. It looks for the configuration file in `/etc`.
+.. ${catalina.home}/conf
+.. $\{CATALINA_HOME}/conf
+.. ${catalina.base}/conf
+.. $\{CATALINA_BASE}/conf
+. It looks for codekvast-collector.conf and codekvast.conf in the `conf/` sibling directory to where codekvast-collector-{codekvast-version}.jar is located.
+. It looks for codekvast-collector.conf and codekvast.conf in `/etc/codekvast`.
+. It looks for codekvast-collector.conf and codekvast.conf in `/etc`.
 
 [TIP]
 ====
@@ -507,7 +512,7 @@ They cannot know if a public or protected method is dead, since they cannot know
 
 [[about-clobberAopXml]]
 ==== About clobberAopXml
-Normally, codekvast-collector uses the information in codekvast-collector.conf for producing a tailored aop.xml that then is fed to
+Normally, codekvast-collector uses the information in codekvast.conf for producing a tailored aop.xml that then is fed to
 aspectjweaver. This is done every time the instrumented application starts.
 
 If you have special needs, you can disable this behaviour by setting `clobberAopXml = false`.
@@ -518,15 +523,15 @@ See {aspectj-ltw-config}.
 
 [[configuring-codekvast-daemon]]
 === Codekvast Daemon
-The daemon reads it configuration from /opt/codekvast-daemon/conf/codekvast-daemon.properties.
+The daemon reads it configuration from /opt/codekvast-daemon-{codekvast-version}/application.properties.
 
-The sample configuration file /opt/codekvast-daemon/conf/codekvast-daemon.properties.sample.{codekvast-version} is self-documenting.
+The file is self-documenting.
 
 [[configuring-codekvast-warehouse]]
 === Codekvast Warehouse
-The warehouse reads it configuration from /opt/codekvast-warehouse/conf/codekvast-warehouse.properties.
+The warehouse reads it configuration from /opt/codekvast-warehouse-{codekvast-version}/application.properties.
 
-The sample configuration file /opt/codekvast-warehouse/conf/codekvast-warehouse.properties.sample.{codekvast-version} is self-documenting.
+The file is self-documenting.
 
 == Usage hints
 [[use-in-production]]

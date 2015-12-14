@@ -87,30 +87,6 @@ bootRepackage {
     classifier = 'all'
 }
 
-applicationDistribution.from('src/main/resources') {
-    into 'config'
-    include 'codekvast-warehouse.properties.sample'
-    rename { "${it}.${version}" }
-}
-
-applicationDistribution.from(projectDir) {
-    include 'docker-compose.yml'
-    rename { "docker-compose-${version}.yml" }
-}
-
-applicationDefaultJvmArgs = ["-Dlogging.file=/var/log/${applicationName}.log"]
-
-startScripts {
-    doLast {
-        logger.info 'Adjusting start scripts...'
-        windowsScript.text = windowsScript.text
-                .replace('CLASSPATH=%APP_HOME%\\lib', 'CLASSPATH=%APP_HOME%\\config\\;%APP_HOME%\\lib')
-        unixScript.text = unixScript.text
-                .replace('APP_HOME=', 'export APP_HOME=')
-                .replace('CLASSPATH=$APP_HOME/lib', 'CLASSPATH=$APP_HOME/config/:$APP_HOME/lib')
-    }
-}
-
 //--- Run & bootRun -----------------------------------------------------------------------------------------------------
 run {
     jvmArgs = ['-ea']

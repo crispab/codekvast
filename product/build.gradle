@@ -15,11 +15,25 @@ distributions {
     daemon {
         baseName = 'codekvast-daemon'
         contents {
-            from tasks.getByPath(":product:agent:daemon:installDist")
-            from tasks.getByPath(":product:agent:collector:javaagents"), { into "javaagents" }
+            from tasks.getByPath(":product:agent:daemon:bootRepackage"), {
+                rename { "codekvast-daemon.jar" }
+            }
+            from tasks.getByPath(":product:agent:daemon:processResources"), {
+                include 'exposed-application.properties'
+                rename { 'application.properties' }
+            }
+            from tasks.getByPath(":product:agent:daemon:processResources"), {
+                include 'codekvast-collector.conf'
+                include 'tomcat/**'
+                include '*.sh'
+                into 'conf'
+            }
+            from tasks.getByPath(":product:agent:collector:javaagents"), {
+                into "javaagents"
+            }
             from tasks.getByPath(":product:docs:asciidoctor"), {
                 exclude "html5/**"
-                into "doc"
+                exclude "images/**"
             }
             from file("$rootDir/RELEASE-NOTES.md")
             from file("$rootDir/LICENSE")
@@ -33,12 +47,12 @@ distributions {
                 rename { "codekvast-warehouse.jar" }
             }
             from tasks.getByPath(":product:warehouse:processResources"), {
-                include 'default.properties'
+                include 'exposed-application.properties'
                 rename { 'application.properties' }
             }
             from tasks.getByPath(":product:docs:asciidoctor"), {
                 exclude "html5/**"
-                into "doc"
+                exclude "images/**"
             }
             from file("$rootDir/RELEASE-NOTES.md")
             from file("$rootDir/LICENSE")

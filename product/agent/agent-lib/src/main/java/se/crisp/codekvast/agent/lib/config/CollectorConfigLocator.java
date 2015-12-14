@@ -24,7 +24,6 @@ package se.crisp.codekvast.agent.lib.config;
 import java.io.File;
 import java.io.PrintStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * This class locates the file to feed into {@link CollectorConfigFactory#parseCollectorConfig(URI, String)} .
@@ -69,7 +68,19 @@ public class CollectorConfigLocator {
             return file.toURI();
         }
 
+        file = tryLocation(out, verbose, constructLocation(System.getProperty(SYSPROP_HOME), ""));
+        if (file != null) {
+            printMessage(out, verbose, "Found " + file);
+            return file.toURI();
+        }
+
         file = tryLocation(out, verbose, constructLocation(System.getProperty(SYSPROP_HOME), "conf"));
+        if (file != null) {
+            printMessage(out, verbose, "Found " + file);
+            return file.toURI();
+        }
+
+        file = tryLocation(out, verbose, constructLocation(System.getenv(ENVVAR_HOME), ""));
         if (file != null) {
             printMessage(out, verbose, "Found " + file);
             return file.toURI();

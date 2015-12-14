@@ -9,11 +9,11 @@
 if "%OS%"=="Windows_NT" setlocal
 
 @rem Modify this to match your actual installation location
-set CODEKVAST_HOME=C:\Program Files\codekvast-daemon-@CODEKVAST_VERSION@
+set CODEKVAST_HOME=C:\Program Files\codekvast-daemon-@gradle.version@
 
 @rem Don't touch below this line!
-set COLLECTOR=%CATALINA_HOME%\endorsed\codekvast-collector-@CODEKVAST_VERSION@.jar
-set WEAVER=%CATALINA_HOME%\endorsed\aspectjweaver-@ASPECTJ_VERSION@.jar
+set COLLECTOR=%CATALINA_HOME%\endorsed\codekvast-collector-@gradle.version@.jar
+set WEAVER=%CATALINA_HOME%\endorsed\aspectjweaver-@aspectjVersion@.jar
 
 set CATALINA_OPTS=-javaagent:%COLLECTOR% -javaagent:%WEAVER%
 

@@ -42,8 +42,14 @@ public class CollectorConfigLocatorTest {
     }
 
     @Test
-    public void valid_home() throws Exception {
+    public void valid_home_conf() throws Exception {
         System.setProperty(CollectorConfigLocator.SYSPROP_HOME, "src/test/resources/collectorConfigLocatorTest");
+        assertThat(CollectorConfigLocator.locateConfig(System.out), not(nullValue()));
+    }
+
+    @Test
+    public void valid_home() throws Exception {
+        System.setProperty(CollectorConfigLocator.SYSPROP_HOME, "src/test/resources/collectorConfigLocatorTest/conf");
         assertThat(CollectorConfigLocator.locateConfig(System.out), not(nullValue()));
     }
 
