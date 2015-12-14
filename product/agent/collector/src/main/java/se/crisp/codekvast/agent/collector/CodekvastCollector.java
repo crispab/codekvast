@@ -119,13 +119,13 @@ public class CodekvastCollector {
         CodekvastCollector.out.printf("%s is ready to detect used code within(%s..*).%n" +
                                               "First write to %s will be in %d seconds, thereafter every %d seconds.%n" +
                                               "-------------------------------------------------------------------------------%n",
-                                      NAME, getNormalizedPackagePrefixes(config), config.getInvocationsFile(),
+                                      NAME, getNormalizedPackages(config), config.getInvocationsFile(),
                                       firstResultInSeconds, config.getCollectorResolutionSeconds()
         );
     }
 
-    private static String getNormalizedPackagePrefixes(CollectorConfig config) {
-        List<String> prefixes = config.getNormalizedPackagePrefixes();
+    private static String getNormalizedPackages(CollectorConfig config) {
+        List<String> prefixes = config.getNormalizedPackages();
         return prefixes.size() == 1 ? prefixes.get(0) : prefixes.toString();
     }
 
@@ -159,7 +159,7 @@ public class CodekvastCollector {
     }
 
     /**
-     * Creates a concrete implementation of the AbstractMethodExecutionAspect, using the packagePrefixes for specifying the abstract
+     * Creates a concrete implementation of the AbstractMethodExecutionAspect, using the packages for specifying the abstract
      * pointcut 'scope'.
      *
      * @return A file URI to a temporary aop-ajc.xml file.
@@ -182,8 +182,8 @@ public class CodekvastCollector {
                 AbstractMethodExecutionAspect.class.getName(),
                 toMethodExecutionPointcut(config.getMethodFilter()),
                 config.getAspectjOptions(),
-                getIncludeExcludeElements("include", config.getNormalizedPackagePrefixes()),
-                getIncludeExcludeElements("exclude", config.getNormalizedExcludePackagePrefixes(), "se.crisp.codekvast"));
+                getIncludeExcludeElements("include", config.getNormalizedPackages()),
+                getIncludeExcludeElements("exclude", config.getNormalizedExcludePackages(), "se.crisp.codekvast"));
 
         File file = config.getAspectFile();
         if (config.isClobberAopXml() || !file.canRead()) {
@@ -192,10 +192,10 @@ public class CodekvastCollector {
         return "file:" + file.getAbsolutePath();
     }
 
-    private static String getIncludeExcludeElements(String element, List<String> packagePrefixes, String... extraPrefixes) {
+    private static String getIncludeExcludeElements(String element, List<String> packages, String... extraPrefixes) {
         StringBuilder sb = new StringBuilder();
 
-        Set<String> prefixes = new HashSet<String>(packagePrefixes);
+        Set<String> prefixes = new HashSet<String>(packages);
         for (String prefix : extraPrefixes) {
             prefixes.add(prefix);
         }

@@ -58,9 +58,9 @@ public class CollectorConfig implements CodekvastConfig {
     @NonNull
     private String codeBase;
     @NonNull
-    private String packagePrefixes;
+    private String packages;
     @NonNull
-    private String excludePackagePrefixes;
+    private String excludePackages;
     @NonNull
     private String tags;
 
@@ -95,13 +95,13 @@ public class CollectorConfig implements CodekvastConfig {
     }
 
     @JsonIgnore
-    public List<String> getNormalizedPackagePrefixes() {
-        return ConfigUtils.getNormalizedPackagePrefixes(packagePrefixes);
+    public List<String> getNormalizedPackages() {
+        return ConfigUtils.getNormalizedPackages(packages);
     }
 
     @JsonIgnore
-    public List<String> getNormalizedExcludePackagePrefixes() {
-        return ConfigUtils.getNormalizedPackagePrefixes(excludePackagePrefixes);
+    public List<String> getNormalizedExcludePackages() {
+        return ConfigUtils.getNormalizedPackages(excludePackages);
     }
 
     @JsonIgnore

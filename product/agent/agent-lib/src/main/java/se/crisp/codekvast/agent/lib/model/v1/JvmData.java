@@ -51,8 +51,9 @@ public class JvmData {
     private String environment;
     @NonNull private String jvmUuid;
     @NonNull private String methodVisibility;
-    @NonNull private String packagePrefixes;
-    private String excludePackagePrefixes;
+    @NonNull
+    private String packages;
+    private String excludePackages;
     @NonNull private Long   startedAtMillis;
     @NonNull private String tags;
     //@formatter:on

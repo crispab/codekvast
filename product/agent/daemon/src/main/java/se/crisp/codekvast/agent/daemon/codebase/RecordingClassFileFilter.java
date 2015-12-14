@@ -42,9 +42,9 @@ class RecordingClassFileFilter implements Predicate<String> {
     private final Pattern excludePattern;
     private final Set<String> matches = new HashSet<>();
 
-    RecordingClassFileFilter(Set<String> packagePrefixes, Set<String> excludePackagePrefixes) {
-        this.includePattern = buildPattern(packagePrefixes);
-        this.excludePattern = buildPattern(excludePackagePrefixes);
+    RecordingClassFileFilter(Set<String> packages, Set<String> excludePackages) {
+        this.includePattern = buildPattern(packages);
+        this.excludePattern = buildPattern(excludePackages);
     }
 
     @Override

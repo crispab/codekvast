@@ -40,8 +40,8 @@ public class CodeBaseScannerTest {
                                                   .codeBase(new File(codeBase).getAbsolutePath())
                                                   .dataPath(temporaryFolder.getRoot())
                                                   .methodVisibility("private")
-                                                  .packagePrefixes(ScannerTest1.class.getPackage().getName())
-                                                  .excludePackagePrefixes(ExcludedScannerTest5.class.getPackage().getName())
+                                                  .packages(ScannerTest1.class.getPackage().getName())
+                                                  .excludePackages(ExcludedScannerTest5.class.getPackage().getName())
                                                   .build());
     }
 

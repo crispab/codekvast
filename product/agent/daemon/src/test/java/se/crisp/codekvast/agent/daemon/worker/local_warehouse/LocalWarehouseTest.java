@@ -119,8 +119,8 @@ public class LocalWarehouseTest {
                                      .appName(appName)
                                      .appVersion(appVersion)
                                      .codeBase("codeBase")
-                                     .packagePrefixes("packagePrefixes")
-                                     .excludePackagePrefixes("excludePackagePrefixes")
+                                     .packages("packages")
+                                     .excludePackages("excludePackages")
                                      .build();
     }
 

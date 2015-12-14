@@ -23,7 +23,7 @@ public class SampleSwingApp extends JFrame {
                 .appName(ConfigUtils.expandVariables(null, "$APP_NAME"))
                 .appVersion("from static aspect")
                 .codeBase("$APP_HOME/lib")
-                .packagePrefixes("sample")
+                .packages("sample")
                 .build();
         CodekvastCollector.initialize(config, new FileSystemInvocationDataDumper(config, System.err));
     }

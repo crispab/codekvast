@@ -215,8 +215,8 @@ public class ImportServiceImpl implements ImportService {
                                                                 "dumpedAt, " +
                                                                 "collectorResolutionSeconds, " +
                                                                 "methodVisibility, " +
-                                                                "packagePrefixes, " +
-                                                                "excludePackagePrefixes, " +
+                                                                "packages, " +
+                                                                "excludePackages, " +
                                                                 "environment, " +
                                                                 "collectorComputerId, " +
                                                                 "collectorHostName, " +
@@ -231,8 +231,8 @@ public class ImportServiceImpl implements ImportService {
             ps.setTimestamp(++column, new Timestamp(jvm.getDumpedAtMillis()));
             ps.setInt(++column, jvmData.getCollectorResolutionSeconds());
             ps.setString(++column, jvmData.getMethodVisibility());
-            ps.setString(++column, jvmData.getPackagePrefixes());
-            ps.setString(++column, jvmData.getExcludePackagePrefixes());
+            ps.setString(++column, jvmData.getPackages());
+            ps.setString(++column, jvmData.getExcludePackages());
             ps.setString(++column, jvmData.getEnvironment());
             ps.setString(++column, jvmData.getCollectorComputerId());
             ps.setString(++column, jvmData.getCollectorHostName());

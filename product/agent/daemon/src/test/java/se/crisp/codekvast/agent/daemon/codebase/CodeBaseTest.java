@@ -40,8 +40,8 @@ public class CodeBaseTest {
     private CodeBase getCodeBase(String codeBase) {
         return new CodeBase(CollectorConfigFactory.builder()
                                                   .codeBase(new File(codeBase).getAbsolutePath())
-                                                  .packagePrefixes("se.crisp")
-                                                  .excludePackagePrefixes("")
+                                                  .packages("se.crisp")
+                                                  .excludePackages("")
                                                   .appName("appName")
                                                   .build());
     }

@@ -83,7 +83,7 @@ aspectjOptions = -verbose
 codeBase = $catalinaBase/webapps/jenkins, ${System.properties['user.home']}/.jenkins/plugins
 collectorResolutionSeconds = 5
 methodVisibility = private
-packagePrefixes = hudson, jenkins
+packages = hudson, jenkins
 tags = development, sample
 verbose = true
 """

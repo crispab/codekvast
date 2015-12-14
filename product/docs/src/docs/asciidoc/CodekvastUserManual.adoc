@@ -373,17 +373,17 @@ See <<about-app-version-strategy>>
 |filename jenkins-core-(.*).jar
 |unspecified
 
-|*packagePrefixes*
+|*packages*
 |What packages shall be tracked?
 |A comma-separated list of strings.
-|packagePrefixes = com.acme, foo.bar
+|packages = com.acme, foo.bar
 |
 
-|excludePackagePrefixes
+|excludePackages
 |What packages shall *not* be tracked?
 See <<about-exclude-package-prefixes>>.
 |A comma-separated list of strings.
-|excludePackagePrefixes = com.acme.timecritical, foo.bar.even.more.time.critical
+|excludePackages = com.acme.timecritical, foo.bar.even.more.time.critical
 |
 
 |methodVisibility

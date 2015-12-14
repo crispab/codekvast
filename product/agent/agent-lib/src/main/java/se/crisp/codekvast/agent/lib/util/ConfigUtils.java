@@ -39,10 +39,10 @@ import java.util.regex.Pattern;
 @UtilityClass
 public final class ConfigUtils {
 
-    public static List<String> getNormalizedPackagePrefixes(String packagePrefixes) {
+    public static List<String> getNormalizedPackages(String packages) {
         List<String> result = new ArrayList<String>();
-        if (packagePrefixes != null) {
-            String[] prefixes = packagePrefixes.split("[:;,]");
+        if (packages != null) {
+            String[] prefixes = packages.split("[:;,]");
             for (String prefix : prefixes) {
                 if (!prefix.isEmpty()) {
                     result.add(getNormalizedPackagePrefix(prefix.trim()));

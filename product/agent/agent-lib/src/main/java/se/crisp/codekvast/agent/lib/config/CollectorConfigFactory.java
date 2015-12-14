@@ -98,8 +98,8 @@ public class CollectorConfigFactory {
                               .dataPath(ConfigUtils.getDataPath(props, DEFAULT_DATA_PATH))
                               .methodVisibility(ConfigUtils.getOptionalStringValue(props, "methodVisibility",
                                                                                    DEFAULT_METHOD_VISIBILITY))
-                              .packagePrefixes(ConfigUtils.getMandatoryStringValue(props, "packagePrefixes"))
-                              .excludePackagePrefixes(ConfigUtils.getOptionalStringValue(props, "excludePackagePrefixes", ""))
+                              .packages(ConfigUtils.getMandatoryStringValue(props, "packages"))
+                              .excludePackages(ConfigUtils.getOptionalStringValue(props, "excludePackages", ""))
                               .tags(ConfigUtils.getOptionalStringValue(props, TAGS_KEY, ""))
                               .verbose(getVerboseValue(props))
                               .build();
@@ -174,8 +174,8 @@ public class CollectorConfigFactory {
         return CollectorConfigFactory.builder()
                                      .appName("Sample Application Name")
                                      .codeBase(SAMPLE_CODEBASE_URI1 + " , " + SAMPLE_CODEBASE_URI2)
-                                     .packagePrefixes("com.acme. , foo.bar.")
-                                     .excludePackagePrefixes("some.excluded.package")
+                                     .packages("com.acme. , foo.bar.")
+                                     .excludePackages("some.excluded.package")
                                      .dataPath(DEFAULT_DATA_PATH)
                                      .build();
     }

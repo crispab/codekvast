@@ -49,8 +49,8 @@ public class InvocationRegistryTest {
                                        .appVersion(APP_VERSION)
                                        .codeBase(codeBase)
                                        .dataPath(dataPath)
-                                       .packagePrefixes("se.crisp")
-                                       .excludePackagePrefixes("")
+                                       .packages("se.crisp")
+                                       .excludePackages("")
                                        .build();
         //@formatter:on
         InvocationRegistry.initialize(config, new FileSystemInvocationDataDumper(config, CodekvastCollector.out));

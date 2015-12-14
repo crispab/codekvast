@@ -3,7 +3,9 @@
 ## 0.16.0
 
 1. Codekvast Daemon is now distributed as a Spring Boot executable jar (was: a Gradle application).
-
+1. Renamed CollectorConfig.packagePrefixes to CollectorConfig.packages
+1. Renamed CollectorConfig.excludePackagePrefixes to CollectorConfig.excludePackages
+ 
 ## 0.15.6
 
 1. Simplified config of SCP upload.

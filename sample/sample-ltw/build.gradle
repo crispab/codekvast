@@ -39,8 +39,8 @@ clobberAopXml = true
 codeBase = ${file("build/install/${project.name}/lib/")}
 collectorResolutionSeconds = 2
 methodVisibility = all
-packagePrefixes = sample. , foo.bar.
-excludePackagePrefixes = foo.bar.excluded
+packages = sample. , foo.bar.
+excludePackages = foo.bar.excluded
 tags = development, sample
 verbose = true
 """
