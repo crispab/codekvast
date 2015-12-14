@@ -41,6 +41,7 @@ public class LocalWarehouseDataExporterImplTest {
                              .dataProcessingIntervalSeconds(600)
                              .environment(getClass().getSimpleName())
                              .exportFile(new File(temporaryFolder.getRoot(), "codekvast-data.zip"))
+                             .uploadToPath("uploadToPath")
                              .build();
 
         dataExporter = new LocalWarehouseDataExporterImpl(jdbcTemplate, config);
