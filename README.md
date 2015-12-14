@@ -39,9 +39,9 @@ Codekvast Collector is extremely efficient. It adds approximately *15 ns* to eac
 you can exclude certain time critical packages from collection.
 
 The collected data volumes are quite moderate. When tested on a telecom equipment vendors' fairly large network management application,
-the local database maintained by Codekvast Daemon occupies less than 10 MB disk space.
+the local database maintained by Codekvast Daemon occupies less than 200 MB disk space.
 
-The zip file for that case weighs less than 1 MB. 
+The zip file for that case weighs less than 3 MB. 
 
 ## License
 
