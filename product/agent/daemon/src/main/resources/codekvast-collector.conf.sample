@@ -154,10 +154,9 @@
 #
 # Must be the same path as in codekvast-daemon.conf
 #
-# Optional. Defaults to ${java.io.tmpdir}/codekvast, which normally is /tmp/codekvast.
-# NOTE: When running inside an app server or Tomcat, the tmp directory is normally something else!
+# Optional. Defaults to /tmp/codekvast/.collector.
 #--------------------------------------------------------------------------------------------------------
-dataPath = /tmp/codekvast
+# dataPath = /tmp/codekvast/.collector
 
 #--------------------------------------------------------------------------------------------------------
 # Should Codekvast Collector say something on standard output upon start?

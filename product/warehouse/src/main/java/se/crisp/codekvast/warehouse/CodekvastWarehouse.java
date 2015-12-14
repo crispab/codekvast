@@ -40,7 +40,7 @@ public class CodekvastWarehouse {
 
     public static void main(String[] args) throws IOException {
         System.setProperty("spring.config.location",
-                           "classpath:/application.properties, classpath:/codekvast-warehouse.properties");
+                           "classpath:/codekvast-warehouse.properties, classpath:/application.properties");
         new SpringApplication(CodekvastWarehouse.class).run(args);
     }
 

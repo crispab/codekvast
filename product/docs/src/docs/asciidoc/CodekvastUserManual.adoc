@@ -399,8 +399,8 @@ A higher value also means less precision.
 |dataPath
 |Which part of the file system shall Codekvast Collector dump the invocation data to?
 |A file system path.
-|dataPath=/var/lib/codekvast
-|/tmp/codekvast
+|dataPath=/var/lib/codekvast/data
+|/tmp/codekvast/.collector
 
 |verbose
 |Should Codekvast Collector say something on standard output upon start? Useful for trouble shooting.

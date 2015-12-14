@@ -89,8 +89,8 @@ bootRepackage {
 
 applicationDistribution.from('src/main/resources') {
     into 'config'
-    include 'codekvast-warehouse.properties'
-    rename { "${it}.sample.${version}" }
+    include 'codekvast-warehouse.properties.sample'
+    rename { "${it}.${version}" }
 }
 
 applicationDistribution.from(projectDir) {

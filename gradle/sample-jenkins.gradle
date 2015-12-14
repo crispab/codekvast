@@ -80,13 +80,10 @@ task generateCodekvastConfig {
 appName = Jenkins
 appVersion = manifest jenkins-cli.*\\\\.jar Jenkins-CLI-Version
 aspectjOptions = -verbose
-clobberAopXml = true
 codeBase = $catalinaBase/webapps/jenkins, ${System.properties['user.home']}/.jenkins/plugins
 collectorResolutionSeconds = 5
-dataPath=/tmp/codekvast
 methodVisibility = private
 packagePrefixes = hudson, jenkins
-serverUri = http://localhost:8090
 tags = development, sample
 verbose = true
 """

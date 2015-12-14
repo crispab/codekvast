@@ -56,11 +56,6 @@
     </div>
 
     <div ng-view="true"></div>
-
-    <div th:if="${!thymeleafCache}">
-        <hr/>
-        <button ng-click="cleanTemplateCache()">Clean template cache</button>
-    </div>
 </div>
 
 <th:block th:include="fragments :: #scripts_angularjs"/>

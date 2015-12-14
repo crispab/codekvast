@@ -36,7 +36,7 @@ public class CodekvastDaemon {
 
     public static void main(String[] args) {
         System.setProperty("spring.config.location",
-                           "classpath:/application.properties, classpath:/codekvast-daemon.properties");
+                           "classpath:/codekvast-daemon.properties, classpath:/application.properties");
         new SpringApplication(CodekvastDaemon.class).run(args);
     }
 }

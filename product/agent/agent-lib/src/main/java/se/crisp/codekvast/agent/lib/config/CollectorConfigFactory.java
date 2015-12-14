@@ -42,7 +42,7 @@ public class CollectorConfigFactory {
     private static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
     private static final String SAMPLE_CODEBASE_URI1 = "/path/to/codebase1/";
     private static final String SAMPLE_CODEBASE_URI2 = "/path/to/codebase2/";
-    private static final File SAMPLE_DATA_PATH = new File("/tmp/codekvast");
+    private static final File DEFAULT_DATA_PATH = new File("/tmp/codekvast/.collector");
     private static final String SAMPLE_TAGS = "key1=value1, key2=value2";
     private static final String OVERRIDE_SEPARATOR = ";";
     private static final String UNSPECIFIED_VERSION = "unspecified";
@@ -95,7 +95,7 @@ public class CollectorConfigFactory {
                               .codeBase(ConfigUtils.getMandatoryStringValue(props, "codeBase"))
                               .collectorResolutionSeconds(ConfigUtils.getOptionalIntValue(props, "collectorResolutionSeconds",
                                                                                           DEFAULT_COLLECTOR_RESOLUTION_SECONDS))
-                              .dataPath(ConfigUtils.getDataPath(props))
+                              .dataPath(ConfigUtils.getDataPath(props, DEFAULT_DATA_PATH))
                               .methodVisibility(ConfigUtils.getOptionalStringValue(props, "methodVisibility",
                                                                                    DEFAULT_METHOD_VISIBILITY))
                               .packagePrefixes(ConfigUtils.getMandatoryStringValue(props, "packagePrefixes"))
@@ -176,7 +176,7 @@ public class CollectorConfigFactory {
                                      .codeBase(SAMPLE_CODEBASE_URI1 + " , " + SAMPLE_CODEBASE_URI2)
                                      .packagePrefixes("com.acme. , foo.bar.")
                                      .excludePackagePrefixes("some.excluded.package")
-                                     .dataPath(SAMPLE_DATA_PATH)
+                                     .dataPath(DEFAULT_DATA_PATH)
                                      .build();
     }
 
@@ -186,7 +186,7 @@ public class CollectorConfigFactory {
                               .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
                               .clobberAopXml(DEFAULT_CLOBBER_AOP_XML)
                               .collectorResolutionSeconds(DEFAULT_COLLECTOR_RESOLUTION_SECONDS)
-                              .dataPath(ConfigUtils.getDataPath(new Properties()))
+                              .dataPath(ConfigUtils.getDataPath(new Properties(), DEFAULT_DATA_PATH))
                               .methodVisibility(DEFAULT_METHOD_VISIBILITY)
                               .tags(createSystemPropertiesTags() + ", " + SAMPLE_TAGS)
                               .verbose(DEFAULT_VERBOSE);

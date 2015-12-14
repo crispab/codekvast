@@ -4,6 +4,7 @@
 
 1. Simplified config of SCP upload.
 1. Added fail-fast validation of DaemonConfig.uploadToHost. Now the daemon logs an ERROR if it fails to touch a file in the upload target.
+1. Changed default collector and daemon dataPath to /tmp/codekvast/.collector
 
 ## 0.15.5
 

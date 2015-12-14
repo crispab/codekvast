@@ -138,14 +138,7 @@ public final class ConfigUtils {
         return result;
     }
 
-    public static File getDataPath(Properties props) {
-        // Prefer /tmp over ${java.io.tmpdir}, since the latter is redefined when running inside Tomcat
-        File tmpDir = new File("/tmp");
-        if (!tmpDir.isDirectory()) {
-            tmpDir = new File(System.getProperty("java.io.tmpdir"));
-        }
-        String defaultValue = new File(tmpDir, "codekvast").getAbsolutePath();
-
-        return new File(getOptionalStringValue(props, "dataPath", defaultValue));
+    public static File getDataPath(Properties props, File defaultDataPath) {
+        return new File(getOptionalStringValue(props, "dataPath", defaultDataPath.getAbsolutePath()));
     }
 }

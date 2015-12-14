@@ -2,7 +2,7 @@
 # logging.level.se.crisp.codekvast = INFO
 
 # Where shall we look for collector output?
-# codekvast.dataPath = ${java.io.tmpdir}/codekvast
+# codekvast.dataPath = /tmp/codekvast/.collector
 
 # How often shall we look for collector output?
 # codekvast.dataProcessingIntervalSeconds = 60
@@ -10,7 +10,7 @@
 # What is the full path of the produced export file?
 # This file shall be transferred to the central warehouse.
 # Supported placeholders: #timestamp# and #hostname#
-# codekvast.exportFile = ${java.io.tmpdir}/codekvast/.warehouse/codekvast-data-#hostname#.zip
+# codekvast.exportFile = /tmp/codekvast/.warehouse/codekvast-data-#hostname#.zip
 
 # What is the name of this environment?
 # Is used for distinguishing the contributions to the central warehouse.

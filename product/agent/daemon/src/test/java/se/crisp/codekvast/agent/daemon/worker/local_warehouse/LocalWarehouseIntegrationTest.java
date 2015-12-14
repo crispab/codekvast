@@ -18,13 +18,8 @@ import java.lang.annotation.*;
 @SpringApplicationConfiguration(classes = CodekvastDaemon.class)
 @IntegrationTest({
         "spring.datasource.url=jdbc:h2:mem:integrationTest",
-        "codekvast.apiAccessID=apiAccessID",
-        "codekvast.apiAccessSecret=apiAccessSecret",
-        "codekvast.serverUri=serverUri",
-        "codekvast.dataPath=dataPath",
-        "codekvast.dataProcessingIntervalSeconds=600",
         "codekvast.environment=integration-test",
-        "codekvast.exportFile=/tmp/codekvast-data.zip"
+        "codekvast.exportFile=/tmp/codekvast/.export/codekvast-data.zip"
 })
 public @interface LocalWarehouseIntegrationTest {
 }

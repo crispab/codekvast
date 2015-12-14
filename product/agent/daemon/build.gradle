@@ -67,11 +67,11 @@ run {
             "--logging.file=$buildDir/log/codekvast-daemon.log",
             '--logging.level.se.crisp.codekvast=DEBUG',
             '--h2database.options=TRACE_LEVEL_FILE=4;AUTO_SERVER=FALSE;DB_CLOSE_ON_EXIT=FALSE',
-            '--codekvast.dataProcessingIntervalSeconds=60',
+            '--codekvast.dataProcessingIntervalSeconds=10',
             "--codekvast.databasePath=tcp://localhost/$buildDir/database",
             '--codekvast.environment=Gradle',
 
-            '--codekvast.uploadToHost=fjottas.local',
+            // '--codekvast.uploadToHost=fjottas.local',
     ]
 }
 run.dependsOn startDatabase

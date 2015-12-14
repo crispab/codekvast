@@ -18,9 +18,7 @@ public class CodekvastServerApplication {
 
     public static void main(String[] args) throws IOException {
         System.setProperty("spring.config.location",
-                           "classpath:/application.properties," +
-                                   "classpath:/default.properties," +
-                                   "classpath:/codekvast-server.properties");
+                           "classpath:/codekvast-server.properties, classpath:/default.properties, classpath:/application.properties");
         SpringApplication application = new SpringApplication(CodekvastServerApplication.class);
         application.setDefaultProperties(loadDefaultProperties());
         application.run(args);
