@@ -30,7 +30,7 @@ the zip files must be transferred manually somehow.
 
 By using the Codekvast Warehouse, you can find out whether a certain method, class or package is safe to remove or not.
 
-*Codekvast collects the data, you combine that with your domain knowledge to make informed decisions about what is truly dead code
+*Codekvast collects the data. You then combine that with your domain knowledge to make informed decisions about what is truly dead code
 that safely could be deleted.*
 
 ### Performance
