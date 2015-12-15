@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:inline="text">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:inline="text" ng-app="codekvastWarehouse" ng-strict-di="true">
 <head>
     <title>Codekvast Warehouse</title>
 
@@ -25,9 +25,42 @@
     <meta http-equiv="pragma" content="no-cache"/>
 </head>
 
-<body ng-app="codekvastWarehouse" class="ng-cloak">
-<h1>Codekvast Warehouse 3</h1>
-<p th:text="${foo}">Static placeholder for foo</p>
+<body class="ng-cloak">
+
+<nav class="navbar navbar-default">
+    <div class="container-fluid" role="navigation" ng-controller="NavigationController">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/">Codekvast Warehouse</a>
+        </div>
+
+        <ul class="nav navbar-nav">
+            <li ng-repeat="menuItem in menuItems" ng-class="{ active: isActive(menuItem.url)}">
+                <!--suppress HtmlUnknownTarget -->
+                <a href="{{menuItem.url}}" title="{{menuItem.title}}">
+                    <span class="glyphicon {{menuItem.icon}}" aria-hidden="true"></span>
+                    {{menuItem.name}} </a></li>
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right">
+            <li ng-repeat="menuItem in rightMenuItems" ng-class="{ active: isActive(menuItem.url)}">
+                <!--suppress HtmlUnknownTarget -->
+                <a href="{{menuItem.url}}" title="{{menuItem.title}}">
+                    <span class="glyphicon {{menuItem.icon}}" aria-hidden="true"></span>
+                    {{menuItem.name}} </a></li>
+        </ul>
+
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div ng-view="true"></div>
+</div>
+
+<nav class="navbar navbar-default navbar-fixed-bottom codekvast-footer">
+    <p class="text-right">
+        <small>Codekvast Warehouse v[[${@codekvastSettings.getDisplayVersion()}]] ([[${@codekvastSettings.getCommitDate()}]])</small>
+    </p>
+</nav>
 
 <script th:src="@{/webjars/jquery/jquery.js}"></script>
 <script th:src="@{/webjars/bootstrap/js/bootstrap.js}"></script>
