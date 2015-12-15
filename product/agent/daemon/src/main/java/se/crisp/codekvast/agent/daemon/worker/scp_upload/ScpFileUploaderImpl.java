@@ -141,6 +141,9 @@ public class ScpFileUploaderImpl implements FileUploader {
         sshClient.loadKnownHosts();
         sshClient.connect(config.getUploadToHost());
         sshClient.authPublickey(System.getProperty("user.name"));
+        if (config.isUploadToHostKeyTrusted()) {
+            sshClient.addHostKeyVerifier((hostname, port, key) -> true);
+        }
 
         try (Session session = sshClient.startSession()) {
             Session.Command command = session.exec(remoteCommand);

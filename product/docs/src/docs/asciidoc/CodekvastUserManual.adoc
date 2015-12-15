@@ -152,7 +152,7 @@ sudo /etc/init.d/codekvast-daemon stop # <2>
 sudo wget {bintrayDownloadPrefix}/codekvast-daemon-{codekvast-version}.zip
 sudo unzip codekvast-daemon-{codekvast-version}.zip -d /opt
 sudo chown $RUN_DAEMON_AS_USER /opt/codekvast-daemon-{codekvast-version}/codekvast-daemon.jar # <1>
-sudo rm -f /etc/init.d/codekvast-daemon
+sudo rm -f /etc/init.d/codekvast-daemon # <2>
 sudo ln -s /opt/codekvast-daemon-{codekvast-version}/codekvast-daemon.jar /etc/init.d/codekvast-daemon # <3>
 sudo update-rc.d codekvast-daemon defaults # <4>
 sudo vi /opt/codekvast-daemon-{codekvast-version}/application.properties # <5>
