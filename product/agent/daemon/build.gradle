@@ -89,7 +89,8 @@ run {
             "--codekvast.databasePath=tcp://localhost/$buildDir/database",
             '--codekvast.environment=Gradle',
 
-            // '--codekvast.uploadToHost=fjottas.local',
+            // '--codekvast.verifyUploadToHostKey=false',
+            // '--codekvast.uploadToHost=tnm-vm2',
     ]
 }
 run.dependsOn startDatabase

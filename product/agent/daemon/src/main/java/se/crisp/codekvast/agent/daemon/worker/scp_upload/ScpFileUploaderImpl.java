@@ -32,6 +32,7 @@ import se.crisp.codekvast.agent.daemon.util.LogUtil;
 import se.crisp.codekvast.agent.daemon.worker.FileUploadException;
 import se.crisp.codekvast.agent.daemon.worker.FileUploader;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
@@ -79,8 +80,9 @@ public class ScpFileUploaderImpl implements FileUploader {
             Instant startedAt = now();
             log.info("Uploading {} to {}:{}...", file.getName(), config.getUploadToHost(), config.getUploadToPath());
 
-            SSHClient sshClient = new SSHClient();
             try {
+                SSHClient sshClient = createAuthenticatedSshClient();
+
                 doUploadFile(sshClient, file);
                 log.info("{} ({}) uploaded to {}:{} in {} s", file.getName(), LogUtil.humanReadableByteCount(file.length()),
                          config.getUploadToHost(), config.getUploadToPath(), Duration.between(startedAt, now()).getSeconds());
@@ -92,10 +94,6 @@ public class ScpFileUploaderImpl implements FileUploader {
 
     private void doUploadFile(SSHClient sshClient, File file) throws IOException {
         try {
-            sshClient.loadKnownHosts();
-            sshClient.connect(config.getUploadToHost());
-            sshClient.authPublickey(System.getProperty("user.name"));
-
             String realTarget = getUploadTargetFile(file.getName());
             String tmpTarget = realTarget + "." + UUID.randomUUID();
 
@@ -137,13 +135,7 @@ public class ScpFileUploaderImpl implements FileUploader {
         String remoteCommand = String.format("mkdir -p %1$s && touch %2$s && rm %2$s", config.getUploadToPath(), tmpFile);
         log.debug("Validating upload config by attempting to execute '{}' on {}...", remoteCommand, config.getUploadToHost());
 
-        SSHClient sshClient = new SSHClient();
-        sshClient.loadKnownHosts();
-        sshClient.connect(config.getUploadToHost());
-        sshClient.authPublickey(System.getProperty("user.name"));
-        if (config.isUploadToHostKeyTrusted()) {
-            sshClient.addHostKeyVerifier((hostname, port, key) -> true);
-        }
+        SSHClient sshClient = createAuthenticatedSshClient();
 
         try (Session session = sshClient.startSession()) {
             Session.Command command = session.exec(remoteCommand);
@@ -158,7 +150,33 @@ public class ScpFileUploaderImpl implements FileUploader {
                 }
                 throw new IOException(String.format("Failed to execute '%s': [exitCode=%d]%s", remoteCommand, exitStatus, errorMessage));
             }
+        } finally {
+            sshClient.disconnect();
         }
+    }
+
+    @Nonnull
+    private SSHClient createAuthenticatedSshClient() throws IOException {
+        SSHClient sshClient = new SSHClient();
+
+        if (config.isVerifyUploadToHostKey()) {
+            // Let SSH validate against ~/.ssh/known_hosts
+            sshClient.loadKnownHosts();
+        } else {
+            // Just compare the hostnames...
+            sshClient.addHostKeyVerifier((hostname, port, key) -> {
+                boolean trusted = config.getUploadToHost().equals(hostname);
+                if (trusted) {
+                    log.info("Trusting {}:{}", hostname, port);
+                } else {
+                    log.error("Not trusting {}:{}, the configured uploadToHost is {}", hostname, port, config.getUploadToHost());
+                }
+                return trusted;
+            });
+        }
+        sshClient.connect(config.getUploadToHost());
+        sshClient.authPublickey(System.getProperty("user.name"));
+        return sshClient;
     }
 
 }

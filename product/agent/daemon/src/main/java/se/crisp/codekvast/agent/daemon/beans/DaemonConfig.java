@@ -54,7 +54,7 @@ public class DaemonConfig {
     @NonNull
     private String uploadToPath;
     private String uploadToHost;
-    private boolean uploadToHostKeyTrusted;
+    private boolean verifyUploadToHostKey;
 
     public boolean isUploadEnabled() {
         return uploadToHost != null && !uploadToHost.isEmpty() && !uploadToPath.isEmpty();
