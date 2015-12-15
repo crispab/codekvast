@@ -42,10 +42,11 @@ processResources {
     from(sourceSets.main.resources.srcDirs) {
         include '**/application.properties'
         include '**/setenv.bat'
-        filter(ReplaceTokens, tokens: gitVersionTokens + ['gradle.name'       : archivesBaseName,
-                                                          'gradle.description': project.description,
-                                                          'gradle.version'    : project.version,
-                                                          'aspectjVersion'    : aspectjVersion]
+        filter(ReplaceTokens, tokens: gitVersionTokens + ['gradle.name'          : archivesBaseName,
+                                                          'gradle.description'   : project.description,
+                                                          'gradle.version'       : project.version,
+                                                          'gradle.displayVersion': codekvastDisplayVersion,
+                                                          'aspectjVersion'       : aspectjVersion]
         )
     }
 }
