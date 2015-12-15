@@ -58,7 +58,7 @@ public class ImportServiceImpl implements ImportService {
     public void recordFileAsImported(ExportFileMetaInfo metaInfo, ImportStatistics importStatistics) {
         jdbcTemplate
                 .update("INSERT INTO import_file_info(uuid, fileSchemaVersion, fileName, fileLengthBytes, importTimeMillis, " +
-                                "importedFromDaemonHostname, importedFromEnvironment) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                                "daemonHostname, environment) VALUES (?, ?, ?, ?, ?, ?, ?)",
                         metaInfo.getUuid(), metaInfo.getSchemaVersion(),
                         importStatistics.getImportFile().getPath(), importStatistics.getImportFile().length(),
                         importStatistics.getProcessingTime().toMillis(), metaInfo.getDaemonHostname(), metaInfo.getEnvironment());
@@ -219,7 +219,7 @@ public class ImportServiceImpl implements ImportService {
                                                                 "excludePackages, " +
                                                                 "environment, " +
                                                                 "collectorComputerId, " +
-                                                                "collectorHostName, " +
+                                                                "collectorHostname, " +
                                                                 "collectorVersion, " +
                                                                 "collectorVcsId, " +
                                                                 "tags) " +
