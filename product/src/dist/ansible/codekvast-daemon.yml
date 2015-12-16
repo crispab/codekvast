@@ -1,0 +1,18 @@
+- name: Install the codekvast-daemon
+  hosts: codekvast-daemons
+  remote_user: root
+
+  vars:
+    codekvast_version: @gradle.version@
+    run_codekvast_daemon_as: root
+    codekvast_warehouse: host-where-the-codekvast-warehouse-is-running
+    verify_codekvast_warehouse_host_key: true
+
+    # Do not change anyting below!
+    download_url_prefix: @bintrayDownloadPrefix@
+    tarball: "codekvast-daemon-{{codekvast_version}}.tar"
+    service_name: codekvast-daemon
+    codekvast_config: "/opt/codekvast-daemon-{{codekvast_version}}/application.properties"
+
+  roles:
+  - codekvast-daemon
