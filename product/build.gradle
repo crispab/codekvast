@@ -81,6 +81,7 @@ bintray {
         from tasks.getByPath(":product:daemonDistTar")
         from tasks.getByPath(":product:warehouseDistTar")
         from tasks.getByPath(":product:ansibleDistTar")
+        from tasks.getByPath(":product:ansibleDistZip")
 
         from tasks.getByPath(":product:docs:asciidoctor"), {
             include "CodekvastUserManual.html"
