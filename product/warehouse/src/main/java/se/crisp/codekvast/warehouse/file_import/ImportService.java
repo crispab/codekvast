@@ -136,6 +136,8 @@ public interface ImportService {
         @NonNull
         private File importFile;
         @NonNull
+        private String fileSize;
+        @NonNull
         private Duration processingTime;
     }
 

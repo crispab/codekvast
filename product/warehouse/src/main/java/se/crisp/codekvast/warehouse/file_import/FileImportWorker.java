@@ -45,6 +45,7 @@ import java.util.function.Function;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import static java.lang.String.format;
 import static java.time.Instant.now;
 import static se.crisp.codekvast.warehouse.file_import.ImportService.*;
 
@@ -155,12 +156,22 @@ public class FileImportWorker {
                 importService.recordFileAsImported(metaInfo,
                                                    ImportStatistics.builder()
                                                                    .importFile(file)
+                                                                   .fileSize(humanReadableByteCount(file.length()))
                                                                    .processingTime(Duration.between(startedAt, now()))
                                                                    .build());
             }
         } catch (IllegalArgumentException | IOException e) {
             log.error("Cannot import " + file, e);
         }
+    }
+
+    private String humanReadableByteCount(long bytes) {
+        if (bytes < 1000) {
+            return bytes + " B";
+        }
+        int exponent = (int) (Math.log(bytes) / Math.log(1000));
+        String unit = " kMGTPE".charAt(exponent) + "B";
+        return format("%.1f %s", bytes / Math.pow(1000, exponent), unit);
     }
 
     private void doReadCsv(InputStreamReader reader, String what, Function<String[], Void> lineProcessor) {
