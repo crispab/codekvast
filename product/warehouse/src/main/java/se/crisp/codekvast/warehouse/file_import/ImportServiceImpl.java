@@ -22,6 +22,7 @@
 package se.crisp.codekvast.warehouse.file_import;
 
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -41,6 +42,12 @@ import java.util.List;
 @Service
 @Slf4j
 public class ImportServiceImpl implements ImportService {
+
+    @Value
+    private static class InsertResult {
+        long id;
+        boolean newRow;
+    }
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -66,22 +73,28 @@ public class ImportServiceImpl implements ImportService {
     }
 
     @Override
-    public void saveApplication(Application application, ImportContext context) {
-        context.putApplication(getCentralApplicationId(application), application);
+    public boolean saveApplication(Application application, ImportContext context) {
+        InsertResult insertResult = getCentralApplicationId(application);
+        context.putApplication(insertResult.getId(), application);
+        return insertResult.isNewRow();
     }
 
     @Override
-    public void saveMethod(Method method, ImportContext context) {
-        context.putMethod(getCentralMethodId(method), method);
+    public boolean saveMethod(Method method, ImportContext context) {
+        InsertResult insertResult = getCentralMethodId(method);
+        context.putMethod(insertResult.getId(), method);
+        return insertResult.isNewRow();
     }
 
     @Override
-    public void saveJvm(Jvm jvm, JvmData jvmData, ImportContext context) {
-        context.putJvm(getCentralJvmId(jvm, jvmData), jvm);
+    public boolean saveJvm(Jvm jvm, JvmData jvmData, ImportContext context) {
+        InsertResult insertResult = getCentralJvmId(jvm, jvmData);
+        context.putJvm(insertResult.getId(), jvm);
+        return insertResult.isNewRow();
     }
 
     @Override
-    public void saveInvocation(Invocation invocation, ImportContext context) {
+    public boolean saveInvocation(Invocation invocation, ImportContext context) {
         long applicationId = context.getApplicationId(invocation.getLocalApplicationId());
         long methodId = context.getMethodId(invocation.getLocalMethodId());
         long jvmId = context.getJvmId(invocation.getLocalJvmId());
@@ -91,23 +104,27 @@ public class ImportServiceImpl implements ImportService {
                 queryForTimestamp("SELECT invokedAtMillis FROM invocations WHERE applicationId = ? AND methodId = ? AND jvmId = ? ",
                                   applicationId, methodId, jvmId);
 
+        boolean databaseTouched = false;
         if (oldInvokedAt == null) {
             jdbcTemplate.update("INSERT INTO invocations(applicationId, methodId, jvmId, invokedAtMillis, invocationCount, confidence) " +
                                         "VALUES(?, ?, ?, ?, ?, ?) ",
                                 applicationId, methodId, jvmId, invokedAt.getTime(),
                                 invocation.getInvocationCount(), invocation.getConfidence().name());
             log.trace("Inserted invocation {}:{}:{} {}", applicationId, methodId, jvmId, invokedAt);
+            databaseTouched = true;
         } else if (invokedAt.after(oldInvokedAt)) {
             jdbcTemplate.update("UPDATE invocations SET invokedAtMillis = ?, invocationCount = invocationCount + ?, confidence = ? " +
                                         "WHERE applicationId = ? AND methodId = ? AND jvmId = ? ",
                                 invokedAt.getTime(), invocation.getInvocationCount(), invocation.getConfidence().name(),
                                 applicationId, methodId, jvmId);
             log.trace("Updated invocation {}:{}:{} {}", applicationId, methodId, jvmId, invokedAt);
+            databaseTouched = true;
         } else if (oldInvokedAt.equals(invokedAt)) {
             log.trace("Ignoring invocation, same row exists in database");
         } else {
             log.trace("Ignoring invocation, a newer row exists in database");
         }
+        return databaseTouched;
     }
 
     @Override
@@ -126,35 +143,37 @@ public class ImportServiceImpl implements ImportService {
         return keyHolder.getKey().longValue();
     }
 
-    private long getCentralApplicationId(Application app) {
+    private InsertResult getCentralApplicationId(Application app) {
         Long appId = queryForLong("SELECT id FROM applications WHERE name = ? AND version = ? ",
                                   app.getName(), app.getVersion());
-
         if (appId == null) {
             appId = doInsertRow(new InsertApplicationStatement(app));
             log.debug("Stored application {}:{}", appId, app);
+            return new InsertResult(appId, true);
         }
-        return appId;
+        return new InsertResult(appId, false);
     }
 
-    private long getCentralMethodId(Method method) {
+    private InsertResult getCentralMethodId(Method method) {
         Long methodId = queryForLong("SELECT id FROM methods WHERE signature = ? ", method.getSignature());
 
         if (methodId == null) {
             methodId = doInsertRow(new InsertMethodStatement(method));
             log.trace("Stored method {}:{}", methodId, method.getSignature());
+            return new InsertResult(methodId, true);
         }
-        return methodId;
+        return new InsertResult(methodId, false);
     }
 
-    private long getCentralJvmId(Jvm jvm, JvmData jvmData) {
+    private InsertResult getCentralJvmId(Jvm jvm, JvmData jvmData) {
         Long jvmId = queryForLong("SELECT id FROM jvms WHERE uuid = ? ", jvm.getUuid());
 
         if (jvmId == null) {
             jvmId = doInsertRow(new InsertJvmStatement(jvm, jvmData));
             log.trace("Stored JVM {}:{}", jvmId, jvm);
+            return new InsertResult(jvmId, true);
         }
-        return jvmId;
+        return new InsertResult(jvmId, false);
     }
 
     @RequiredArgsConstructor

@@ -174,22 +174,26 @@ public class FileImportWorker {
         return format("%.1f %s", bytes / Math.pow(1000, exponent), unit);
     }
 
-    private void doReadCsv(InputStreamReader reader, String what, Function<String[], Void> lineProcessor) {
+    private void doReadCsv(InputStreamReader reader, String what, Function<String[], Boolean> lineProcessor) {
         CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
         int count = 0;
         Instant startedAt = now();
         importService.beginInsert();
         for (String[] columns : csvReader) {
-            lineProcessor.apply(columns);
-            count += 1;
-            if (count % 1000 == 0) {
-                importService.endInsert();
-                importService.beginInsert();
-                log.debug("Imported {} {}...", count, what);
+            if (lineProcessor.apply(columns)) {
+                count += 1;
+
+                if (count % 1000 == 0) {
+                    importService.endInsert();
+                    importService.beginInsert();
+                    log.debug("Imported {} {}...", count, what);
+                }
             }
         }
         importService.endInsert();
-        log.debug("Imported {} {} in {} ms", count, what, Duration.between(startedAt, now()).toMillis());
+        if (count > 0) {
+            log.debug("Imported {} {} in {} ms", count, what, Duration.between(startedAt, now()).toMillis());
+        }
     }
 
     private void readApplications(InputStreamReader reader, ImportContext context) {
@@ -201,8 +205,7 @@ public class FileImportWorker {
                                          .createdAtMillis(Long.valueOf(columns[3]))
                                          .build();
 
-            importService.saveApplication(app, context);
-            return null;
+            return importService.saveApplication(app, context);
         });
     }
 
@@ -221,20 +224,16 @@ public class FileImportWorker {
                                   .parameterTypes(columns[9])
                                   .returnType(columns[10])
                                   .build();
-            importService.saveMethod(method, context);
-            return null;
+            return importService.saveMethod(method, context);
         });
     }
 
     private void readJvms(InputStreamReader reader, ImportContext context) {
-        doReadCsv(reader, "JVMs", (String[] columns) -> {
-            doProcessJvm(context, columns);
-            return null;
-        });
+        doReadCsv(reader, "JVMs", (String[] columns) -> doProcessJvm(context, columns));
     }
 
     @SneakyThrows(IOException.class)
-    private void doProcessJvm(ImportContext context, String[] columns) {
+    private boolean doProcessJvm(ImportContext context, String[] columns) {
         Jvm jvm = Jvm.builder()
                      .localId(Long.valueOf(columns[0]))
                      .uuid(columns[1])
@@ -243,7 +242,7 @@ public class FileImportWorker {
                      .jvmDataJson(columns[4])
                      .build();
         JvmData jvmData = objectMapper.readValue(jvm.getJvmDataJson(), JvmData.class);
-        importService.saveJvm(jvm, jvmData, context);
+        return importService.saveJvm(jvm, jvmData, context);
     }
 
     private void readInvocations(InputStreamReader reader, ImportContext context) {
@@ -256,8 +255,7 @@ public class FileImportWorker {
                                               .invocationCount(Long.valueOf(columns[4]))
                                               .confidence(SignatureConfidence.fromOrdinal(Integer.valueOf(columns[5])))
                                               .build();
-            importService.saveInvocation(invocation, context);
-            return null;
+            return importService.saveInvocation(invocation, context);
         });
     }
 
