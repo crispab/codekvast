@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.16.1
+
+1. CollectorConfig now backward compatible with 0.15.6
+
 ## 0.16.0
 
 1. Codekvast Daemon is now distributed as a Spring Boot executable jar (was: a Gradle application).

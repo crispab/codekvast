@@ -87,6 +87,18 @@ public class CollectorConfigFactory {
     }
 
     public static CollectorConfig buildCollectorConfig(Properties props) {
+        // Backwards compatibility kludge. "packages" and "packagePrefixes" were renamed in version 0.16.0
+        String packages = ConfigUtils.getOptionalStringValue(props, "packagePrefixes", null);
+        if (packages == null) {
+            packages = ConfigUtils.getMandatoryStringValue(props, "packages");
+        }
+
+        String excludePackages = ConfigUtils.getOptionalStringValue(props, "excludePackagePrefixes", null);
+        if (excludePackages == null) {
+            excludePackages = ConfigUtils.getOptionalStringValue(props, "excludePackages", "");
+        }
+        // End
+
         return CollectorConfig.builder()
                               .appName(validateAppName(ConfigUtils.getMandatoryStringValue(props, "appName")))
                               .appVersion(ConfigUtils.getOptionalStringValue(props, "appVersion", UNSPECIFIED_VERSION))
@@ -98,8 +110,8 @@ public class CollectorConfigFactory {
                               .dataPath(ConfigUtils.getDataPath(props, DEFAULT_DATA_PATH))
                               .methodVisibility(ConfigUtils.getOptionalStringValue(props, "methodVisibility",
                                                                                    DEFAULT_METHOD_VISIBILITY))
-                              .packages(ConfigUtils.getMandatoryStringValue(props, "packages"))
-                              .excludePackages(ConfigUtils.getOptionalStringValue(props, "excludePackages", ""))
+                              .packages(packages)
+                              .excludePackages(excludePackages)
                               .tags(ConfigUtils.getOptionalStringValue(props, TAGS_KEY, ""))
                               .verbose(getVerboseValue(props))
                               .build();
