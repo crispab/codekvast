@@ -34,6 +34,7 @@ import org.aspectj.lang.annotation.Pointcut;
  * @author olle.hallin@crisp.se
  * @see CodekvastCollector
  */
+@SuppressWarnings("NoopMethodInAbstractClass")
 @Aspect
 public abstract class AbstractMethodExecutionAspect {
 
@@ -46,7 +47,6 @@ public abstract class AbstractMethodExecutionAspect {
     @Pointcut
     public abstract void methodExecution();
 
-    @SuppressWarnings("NoopMethodInAbstractClass")
     @Pointcut("execution(int compareTo(Object)) " +
             "|| execution(boolean equals(Object)) " +
             "|| execution(* get*()) " +
@@ -56,8 +56,12 @@ public abstract class AbstractMethodExecutionAspect {
     public void trivialMethodExecution() {
     }
 
-    @Before("methodExecution() && !trivialMethodExecution()")
-    public void registerInvokation(JoinPoint thisJointPoint) {
+    @Pointcut("execution(synthetic * *(..))")
+    public void syntheticMethodExecution() {
+    }
+
+    @Before("methodExecution() && !trivialMethodExecution() && !syntheticMethodExecution()")
+    public void registerInvocation(JoinPoint thisJointPoint) {
         InvocationRegistry.instance.registerMethodInvocation(thisJointPoint.getSignature());
     }
 
