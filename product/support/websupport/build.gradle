@@ -18,7 +18,7 @@ dependencies {
 
     // NOTE: When you change these, WebjarVersionFilterTest.java must also be upgraded!
     testRuntime "org.webjars:sockjs-client:1.0.2"
-    testRuntime "org.webjars:d3js:3.5.6"
+    testRuntime "org.webjars:d3js:3.5.10"
 }
 
 bootRepackage {
