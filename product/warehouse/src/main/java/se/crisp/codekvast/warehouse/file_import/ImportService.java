@@ -44,16 +44,42 @@ public interface ImportService {
 
     void recordFileAsImported(ExportFileMetaInfo metaInfo, ImportStatistics importStatistics);
 
-    void saveApplication(Application application, ImportContext context);
+    /**
+     * An idempotent method for adding an application to the database.
+     *
+     * @return true iff the application was actually inserted in the database.
+     */
+    boolean saveApplication(Application application, ImportContext context);
 
-    void saveMethod(Method method, ImportContext context);
+    /**
+     * An idempotent method for adding a method to the database.
+     *
+     * @return true iff the method was actually inserted in the database.
+     */
+    boolean saveMethod(Method method, ImportContext context);
 
-    void saveJvm(Jvm jvm, JvmData jvmData, ImportContext context);
+    /**
+     * An idempotent method for adding a jvm to the database.
+     *
+     * @return true iff the jvm was actually inserted in the database.
+     */
+    boolean saveJvm(Jvm jvm, JvmData jvmData, ImportContext context);
 
-    void saveInvocation(Invocation invocation, ImportContext context);
+    /**
+     * An idempotent method for adding an invocation to the database.
+     *
+     * @return true iff the invocation was actually inserted or updated in the database.
+     */
+    boolean saveInvocation(Invocation invocation, ImportContext context);
 
+    /**
+     * Start a batch of insertions.
+     */
     void beginInsert();
 
+    /**
+     * End a batch of insertions.
+     */
     void endInsert();
 
 
@@ -135,6 +161,8 @@ public interface ImportService {
     class ImportStatistics {
         @NonNull
         private File importFile;
+        @NonNull
+        private String fileSize;
         @NonNull
         private Duration processingTime;
     }

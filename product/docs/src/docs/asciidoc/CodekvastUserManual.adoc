@@ -143,6 +143,36 @@ Codekvast Warehouse including MariaDB is available as Docker Compose images. See
 
 The Codekvast daemon must be installed in each host that runs an application that shall be tracked by Codekvast.
 
+You have two options here:
+
+. Let http://www.ansible.com/[Ansible] do it for you, all hosts at once.
+. Do it manually, host by host
+
+==== The Ansible way of installing Codekvast Daemon
+Execute the following commands in a shell:
+
+[source,bash,subs="attributes,verbatim"]
+----
+apt-get install ansible # <1>
+wget {bintrayDownloadPrefix}/codekvast-ansible-{codekvast-version}.zip
+unzip codekvast-ansible-{codekvast-version}.zip
+cd codekvast-ansible-{codekvast-version}
+----
+<1> This works for Debian-based distros. For Redhat, use `yum install ansible` instead.
+
+Now, edit `codekvast-daemon.yml` and `inventory` to suit your needs.
+
+Finally, let Ansible to the heavy lifting of installing and configuring Codekvast Daemon in the hosts in `inventory`:
+
+[source,bash,subs="attributes,verbatim"]
+----
+ansible-playbook -i inventory codekvast-daemon.yml
+----
+
+If you have configured `codekvast_warehouse` in `codekvast-daemon.yml`, you must make sure that the hosts can connect without
+username and password. See <<configuring-scp-to-codekvast-warehouse>>.
+
+==== Manual installation of Codekvast Daemon
 Execute the following commands in a shell:
 
 [source,bash,subs="attributes,verbatim"]
@@ -167,35 +197,53 @@ The daemon will run with the same user as the owner of the application jar file.
 <5> Configure the daemon to suit your needs.
 
 If you have configured `uploadToHost` in `/opt/codekvast-daemon-{codekvast-version}/application.properties` you also need
-to make sure that SCP works without asking for a password:
-----
-sudo su - $RUN_DAEMON_AS_USER
-SCP_TARGET=$(grep uploadToHost /opt/codekvast-daemon-{codekvast-version}/application.properties | cut -d= -f2-) # <1>
-ssh-keygen # <2>
-ssh-copy-id $SCP_TARGET # <3>
-ssh $SCP_TARGET # <4>
-exit # <5>
-exit # <6>
-----
-<1> Extract the value of the uploadToHost parameter
-<2> Generate a SSH key pair
-<3> Upload the public key to the target server
-<4> Validate that you can login without password
-<5> Logout from the remote host
-<6> Exit from the RUN_DAEMON_AS_USER shell
+to make sure that SCP works without asking for a password. See <<configuring-scp-to-codekvast-warehouse>>.
 
-Once you have finished editing application.properties (and uploaded the public SSH key), execute
+[[configuring-scp-to-codekvast-warehouse]]
+=== Configuring automatic upload of collected data to Codekvast Warehouse
+If you want Codekvast Daemon to upload collection data automatically to Codekvast Warehouse you must make sure
+that the Codekvast Daemons can connect to Codekvast Warehouse without having to provide a username and password.
+
+This is done by creating and uploading a public key from each Codekvast Daemon server to the Codekvast Warehouse server.
+
+For each Codekvast Daemon server, enter the following commands with the same user as the owner of `/opt/codekvast-daemon-{codekvast-version}/codekvast-daemon.jar`:
 
 [source,bash,subs="attributes,verbatim"]
 ----
-sudo /etc/init.d/codekvast-daemon start
+SCP_TARGET=$( grep uploadToHost /opt/codekvast-daemon-{codekvast-version}/application.properties | cut -d= -f2- ) # <1>
+ssh-keygen # <2>
+ssh-copy-id $SCP_TARGET # <3>
+----
+<1> Extract the value of the uploadToHost parameter
+<2> Generate a SSH key pair
+<3> Upload the public key to the target server. You will have to enter your password in the target server here.
+
+Once you have uploaded the public SSH key to the Codekvast Warehouse host, test that it works (still being the user that owns
+`codekvast-daemon.jar`):
+
+[source,bash,subs="attributes,verbatim"]
+----
+ssh $SCP_TARGET # <1>
+exit # <2>
+----
+<1> You should be logged in without password
+<2> Exit from the target server
+
+Finally, restart Codekvast Daemon and check that it works:
+
+[source,bash,subs="attributes,verbatim"]
+----
+sudo /etc/init.d/codekvast-daemon restart
 ----
 
-Check that it starts correctly by issuing
+Check that automatic upload is correctly configured by issuing
+
 [source,bash,subs="attributes,verbatim"]
 ----
 sudo tail -f /var/log/codekvast-daemon.log
 ----
+
+After 10-15 seconds there will be an INFO logging containing the words "Will upload to".
 
 === Modify all applications`' start scripts
 

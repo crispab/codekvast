@@ -87,11 +87,11 @@ public class SignatureUtils {
      * @param clazz        The class containing the method
      * @param method       The method to make a signature of
      * @return The same signature object as an AspectJ execution pointcut will provide in JoinPoint.getSignature(). Returns null unless the
-     * method passes the methodVisibilityFilter.
+     * method is not synthetic and it passes the methodVisibilityFilter.
      */
     public static Signature makeSignature(MethodFilter methodFilter, Class clazz, Method method) {
 
-        if (clazz == null || !methodFilter.shouldInclude(method)) {
+        if (clazz == null || method.isSynthetic() || !methodFilter.shouldInclude(method)) {
             return null;
         }
 

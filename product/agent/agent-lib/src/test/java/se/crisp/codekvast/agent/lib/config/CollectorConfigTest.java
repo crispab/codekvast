@@ -72,4 +72,11 @@ public class CollectorConfigTest {
         assertThat(CollectorConfigFactory.isSyspropVerbose(), is(false));
     }
 
+    @Test
+    public void testParsePre_0_16_0_ConfigFile() throws IOException, URISyntaxException {
+        CollectorConfig config = CollectorConfigFactory.parseCollectorConfig(new URI("classpath:/pre-0.16.0-config.conf"), null);
+        assertThat(config.getPackages(), is("packages"));
+        assertThat(config.getExcludePackages(), is("excludePackages"));
+    }
+
 }

@@ -1,0 +1,3 @@
+[codekvast-daemons]
+host1     codekvast_environment=load-test
+host2     codekvast_environment=regression-test

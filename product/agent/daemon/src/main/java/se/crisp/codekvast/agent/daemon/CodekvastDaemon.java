@@ -35,8 +35,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class CodekvastDaemon {
 
     public static void main(String[] args) {
-        System.setProperty("spring.config.location",
-                           "classpath:/codekvast-daemon.properties, classpath:/application.properties");
         new SpringApplication(CodekvastDaemon.class).run(args);
     }
 }

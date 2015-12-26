@@ -22,6 +22,7 @@
 package se.crisp.codekvast.agent.daemon.worker;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import se.crisp.codekvast.agent.daemon.appversion.AppVersionResolver;
@@ -64,14 +65,16 @@ public class DaemonWorker {
 
     @Inject
     public DaemonWorker(DaemonConfig config, AppVersionResolver appVersionResolver, CollectorDataProcessor collectorDataProcessor,
-                        DataExporter dataExporter, FileUploader fileUploader) {
+                        DataExporter dataExporter, FileUploader fileUploader,
+                        @Value("${spring.datasource.url}") String dataSourceUrl) {
         this.config = config;
         this.appVersionResolver = appVersionResolver;
         this.collectorDataProcessor = collectorDataProcessor;
         this.dataExporter = dataExporter;
         this.fileUploader = fileUploader;
 
-        log.info("{} {} started using {}", getClass().getSimpleName(), config.getDisplayVersion(), config);
+        log.info("{} {} starting.\n  dataSource={}\n  config={}", getClass().getSimpleName(), config.getDisplayVersion(), dataSourceUrl,
+                 config);
     }
 
     @PreDestroy

@@ -1,20 +1,25 @@
 # Codekvast Release Notes
 
+## 0.16.1
+
+1. CollectorConfig now backward compatible with 0.15.6.
+1. Collector now excludes synthetic methods.
+
 ## 0.16.0
 
 1. Codekvast Daemon is now distributed as a Spring Boot executable jar (was: a Gradle application).
-1. Renamed CollectorConfig.packagePrefixes to CollectorConfig.packages
-1. Renamed CollectorConfig.excludePackagePrefixes to CollectorConfig.excludePackages
+1. Renamed CollectorConfig.packagePrefixes to CollectorConfig.packages.
+1. Renamed CollectorConfig.excludePackagePrefixes to CollectorConfig.excludePackages.
  
 ## 0.15.6
 
 1. Simplified config of SCP upload.
 1. Added fail-fast validation of DaemonConfig.uploadToHost. Now the daemon logs an ERROR if it fails to touch a file in the upload target.
-1. Changed default collector and daemon dataPath to /tmp/codekvast/.collector
+1. Changed default collector and daemon dataPath to /tmp/codekvast/.collector.
 
 ## 0.15.5
 
-1. Added Overview and Kick The Tyres sections to README.md
+1. Added Overview and Kick The Tyres sections to README.md.
 
 ## 0.15.4
 

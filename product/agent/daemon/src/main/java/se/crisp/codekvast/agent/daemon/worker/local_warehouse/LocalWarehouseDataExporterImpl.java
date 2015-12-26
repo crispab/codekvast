@@ -90,8 +90,8 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
 
         doExportDataTo(exportFile);
 
-        log.info("Created {} ({}) in {} s", exportFile, LogUtil.humanReadableByteCount(exportFile.length()),
-                 Duration.between(startedAt, now()).getSeconds());
+        log.info("Created {} ({}) in {} ms", exportFile, LogUtil.humanReadableByteCount(exportFile.length()),
+                 Duration.between(startedAt, now()).toMillis());
         return Optional.of(exportFile);
     }
 

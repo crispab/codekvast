@@ -1,3 +1,5 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
 plugins {
     id 'distribution'
     id 'com.jfrog.bintray' version '1.4'
@@ -58,6 +60,16 @@ distributions {
             from file("$rootDir/LICENSE")
         }
     }
+
+    ansible {
+        baseName = 'codekvast-ansible'
+        contents {
+            from file("src/dist/ansible"), {
+                filter(ReplaceTokens, tokens: gitVersionTokens + ['gradle.version'       : project.version,
+                                                                  'bintrayDownloadPrefix': project.ext.bintrayDownloadPrefix.toString()])
+            }
+        }
+    }
 }
 
 bintray {
@@ -66,18 +78,24 @@ bintray {
     key = project.hasProperty('bintrayKey') ? bintrayKey : "undefined"
 
     filesSpec {
-        from tasks.getByPath(":product:daemonDistZip")
-        from tasks.getByPath(":product:warehouseDistZip")
+        from tasks.getByPath(":product:daemonDistTar")
+        from tasks.getByPath(":product:warehouseDistTar")
+        from tasks.getByPath(":product:ansibleDistTar")
+        from tasks.getByPath(":product:ansibleDistZip")
+
         from tasks.getByPath(":product:docs:asciidoctor"), {
             include "CodekvastUserManual.html"
             rename { "CodekvastUserManual-${version}.html" }
         }
+
         from file("$rootDir/product/warehouse/docker-compose.yml"), {
             rename { "docker-compose-${version}.yml" }
         }
+
         from file("$rootDir/RELEASE-NOTES.md"), {
             rename { "RELEASE-NOTES-${version}.md" }
         }
+
         into "."
     }
 
