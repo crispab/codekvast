@@ -58,7 +58,7 @@ public enum SignatureConfidence {
     NOT_FOUND_IN_CODE_BASE(4);
 
     /*
-     * The database representation of the value. It is 1-based to make it easyy to use with MariaDB's ENUM column type.
+     * The database representation of the value. It is 1-based to make it easy to use with MariaDB's ENUM column type.
      * MariaDB reserves 0 for the special value ''.
      */
     private final int dbNumber;
