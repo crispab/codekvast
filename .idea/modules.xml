@@ -3,30 +3,56 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/product/agent/agent.iml" filepath="$PROJECT_DIR$/product/agent/agent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/product/agent/agent.iml" filepath="$PROJECT_DIR$/product/agent/agent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/product/agent/agent-lib/agent-lib.iml" filepath="$PROJECT_DIR$/product/agent/agent-lib/agent-lib.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/agent/agent-lib/agent-lib.iml" filepath="$PROJECT_DIR$/product/agent/agent-lib/agent-lib.iml" />
       <module fileurl="file://$PROJECT_DIR$/codekvast.iml" filepath="$PROJECT_DIR$/codekvast.iml" />
+      <module fileurl="file://$PROJECT_DIR$/codekvast.iml" filepath="$PROJECT_DIR$/codekvast.iml" />
+      <module fileurl="file://$PROJECT_DIR$/playground/server/codekvast-server/codekvast-server.iml" filepath="$PROJECT_DIR$/playground/server/codekvast-server/codekvast-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/playground/server/codekvast-server/codekvast-server.iml" filepath="$PROJECT_DIR$/playground/server/codekvast-server/codekvast-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/agent/collector/collector.iml" filepath="$PROJECT_DIR$/product/agent/collector/collector.iml" />
+      <module fileurl="file://$PROJECT_DIR$/product/agent/collector/collector.iml" filepath="$PROJECT_DIR$/product/agent/collector/collector.iml" />
+      <module fileurl="file://$PROJECT_DIR$/product/agent/daemon/daemon.iml" filepath="$PROJECT_DIR$/product/agent/daemon/daemon.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/agent/daemon/daemon.iml" filepath="$PROJECT_DIR$/product/agent/daemon/daemon.iml" />
       <module fileurl="file://$PROJECT_DIR$/playground/server/daemon-api/daemon-api.iml" filepath="$PROJECT_DIR$/playground/server/daemon-api/daemon-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/playground/server/daemon-api/daemon-api.iml" filepath="$PROJECT_DIR$/playground/server/daemon-api/daemon-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/product/docs/docs.iml" filepath="$PROJECT_DIR$/product/docs/docs.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/docs/docs.iml" filepath="$PROJECT_DIR$/product/docs/docs.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/jenkins1/jenkins1.iml" filepath="$PROJECT_DIR$/sample/jenkins1/jenkins1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sample/jenkins1/jenkins1.iml" filepath="$PROJECT_DIR$/sample/jenkins1/jenkins1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sample/jenkins2/jenkins2.iml" filepath="$PROJECT_DIR$/sample/jenkins2/jenkins2.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/jenkins2/jenkins2.iml" filepath="$PROJECT_DIR$/sample/jenkins2/jenkins2.iml" />
       <module fileurl="file://$PROJECT_DIR$/playground/playground.iml" filepath="$PROJECT_DIR$/playground/playground.iml" />
+      <module fileurl="file://$PROJECT_DIR$/playground/playground.iml" filepath="$PROJECT_DIR$/playground/playground.iml" />
+      <module fileurl="file://$PROJECT_DIR$/product/product.iml" filepath="$PROJECT_DIR$/product/product.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/product.iml" filepath="$PROJECT_DIR$/product/product.iml" />
       <module fileurl="file://$PROJECT_DIR$/playground/rest-agent/rest-agent.iml" filepath="$PROJECT_DIR$/playground/rest-agent/rest-agent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/playground/rest-agent/rest-agent.iml" filepath="$PROJECT_DIR$/playground/rest-agent/rest-agent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/playground/rest-agent/rest-daemon/rest-daemon.iml" filepath="$PROJECT_DIR$/playground/rest-agent/rest-daemon/rest-daemon.iml" />
       <module fileurl="file://$PROJECT_DIR$/playground/rest-agent/rest-daemon/rest-daemon.iml" filepath="$PROJECT_DIR$/playground/rest-agent/rest-daemon/rest-daemon.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/sample.iml" filepath="$PROJECT_DIR$/sample/sample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sample/sample.iml" filepath="$PROJECT_DIR$/sample/sample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sample/sample-concrete-aspect/sample-concrete-aspect.iml" filepath="$PROJECT_DIR$/sample/sample-concrete-aspect/sample-concrete-aspect.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/sample-concrete-aspect/sample-concrete-aspect.iml" filepath="$PROJECT_DIR$/sample/sample-concrete-aspect/sample-concrete-aspect.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/sample-lib/sample-lib.iml" filepath="$PROJECT_DIR$/sample/sample-lib/sample-lib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sample/sample-lib/sample-lib.iml" filepath="$PROJECT_DIR$/sample/sample-lib/sample-lib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sample/sample-ltw/sample-ltw.iml" filepath="$PROJECT_DIR$/sample/sample-ltw/sample-ltw.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/sample-ltw/sample-ltw.iml" filepath="$PROJECT_DIR$/sample/sample-ltw/sample-ltw.iml" />
       <module fileurl="file://$PROJECT_DIR$/playground/server/server.iml" filepath="$PROJECT_DIR$/playground/server/server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/playground/server/server.iml" filepath="$PROJECT_DIR$/playground/server/server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/product/support/support.iml" filepath="$PROJECT_DIR$/product/support/support.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/support/support.iml" filepath="$PROJECT_DIR$/product/support/support.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/swing-app/swing-app.iml" filepath="$PROJECT_DIR$/sample/swing-app/swing-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sample/swing-app/swing-app.iml" filepath="$PROJECT_DIR$/sample/swing-app/swing-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tools/tools.iml" filepath="$PROJECT_DIR$/tools/tools.iml" />
       <module fileurl="file://$PROJECT_DIR$/tools/tools.iml" filepath="$PROJECT_DIR$/tools/tools.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/warehouse/warehouse.iml" filepath="$PROJECT_DIR$/product/warehouse/warehouse.iml" />
+      <module fileurl="file://$PROJECT_DIR$/product/warehouse/warehouse.iml" filepath="$PROJECT_DIR$/product/warehouse/warehouse.iml" />
+      <module fileurl="file://$PROJECT_DIR$/playground/web/web.iml" filepath="$PROJECT_DIR$/playground/web/web.iml" />
       <module fileurl="file://$PROJECT_DIR$/playground/web/web.iml" filepath="$PROJECT_DIR$/playground/web/web.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/webstart-swing-app/webstart-swing-app.iml" filepath="$PROJECT_DIR$/sample/webstart-swing-app/webstart-swing-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sample/webstart-swing-app/webstart-swing-app.iml" filepath="$PROJECT_DIR$/sample/webstart-swing-app/webstart-swing-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/product/support/websupport/websupport.iml" filepath="$PROJECT_DIR$/product/support/websupport/websupport.iml" />
       <module fileurl="file://$PROJECT_DIR$/product/support/websupport/websupport.iml" filepath="$PROJECT_DIR$/product/support/websupport/websupport.iml" />
     </modules>
   </component>

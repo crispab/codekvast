@@ -19,5 +19,42 @@
         <processorPath useClasspath="true" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="agent_lib_main" target="1.6" />
+      <module name="agent_lib_test" target="1.6" />
+      <module name="codekvast_server_integTest" target="1.8" />
+      <module name="codekvast_server_main" target="1.8" />
+      <module name="codekvast_server_test" target="1.8" />
+      <module name="collector_main" target="1.6" />
+      <module name="collector_test" target="1.6" />
+      <module name="daemon_api_main" target="1.8" />
+      <module name="daemon_api_test" target="1.8" />
+      <module name="daemon_main" target="1.8" />
+      <module name="daemon_test" target="1.8" />
+      <module name="jenkins1_javaagent" target="1.8" />
+      <module name="jenkins1_main" target="1.8" />
+      <module name="jenkins1_test" target="1.8" />
+      <module name="jenkins2_javaagent" target="1.8" />
+      <module name="jenkins2_main" target="1.8" />
+      <module name="jenkins2_test" target="1.8" />
+      <module name="rest_daemon_main" target="1.8" />
+      <module name="rest_daemon_test" target="1.8" />
+      <module name="sample_concrete_aspect_main" target="1.8" />
+      <module name="sample_concrete_aspect_test" target="1.8" />
+      <module name="sample_lib_main" target="1.6" />
+      <module name="sample_lib_test" target="1.6" />
+      <module name="sample_ltw_main" target="1.6" />
+      <module name="sample_ltw_test" target="1.6" />
+      <module name="swing_app_main" target="1.6" />
+      <module name="swing_app_test" target="1.6" />
+      <module name="warehouse_main" target="1.8" />
+      <module name="warehouse_test" target="1.8" />
+      <module name="web_main" target="1.8" />
+      <module name="web_test" target="1.8" />
+      <module name="webstart_swing_app_main" target="1.8" />
+      <module name="webstart_swing_app_test" target="1.8" />
+      <module name="websupport_main" target="1.8" />
+      <module name="websupport_test" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
