@@ -2,6 +2,7 @@ package se.crisp.codekvast.server.codekvast_server.config;
 
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
@@ -15,6 +16,7 @@ import java.net.URISyntaxException;
  *
  * @author olle.hallin@crisp.se
  */
+@Configuration
 @Import(RedisAutoConfiguration.class)
 @EnableRedisHttpSession
 public class RedisHttpSessionConfig {
