@@ -1,5 +1,10 @@
 # Codekvast Release Notes
 
+## 0.17.0
+
+1. Now the warehouse contains *all* methods, even those that are excluded from collection. The confidence column tells why a certain
+    signature was excluded.
+    
 ## 0.16.1
 
 1. CollectorConfig now backward compatible with 0.15.6.

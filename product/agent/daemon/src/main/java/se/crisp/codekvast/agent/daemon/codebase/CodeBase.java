@@ -19,6 +19,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+/**
+ * Copyright (c) 2015 Crisp AB
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR
+ * ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
+ * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 package se.crisp.codekvast.agent.daemon.codebase;
 
 import lombok.EqualsAndHashCode;
@@ -48,13 +63,14 @@ import java.util.regex.PatternSyntaxException;
 @Slf4j
 public class CodeBase {
 
-    public static final String ADDED_PATTERNS_FILENAME = "/byte-code-added-methods.txt";
-    public static final String ENHANCED_PATTERNS_FILENAME = "/byte-code-enhanced-methods.txt";
+    private static final String ADDED_PATTERNS_FILENAME = "/byte-code-added-methods.txt";
+    private static final String ENHANCED_PATTERNS_FILENAME = "/byte-code-enhanced-methods.txt";
 
-    static final String SIGNATURES_SECTION = "# Signatures:";
-    static final String OVERRIDDEN_SIGNATURES_SECTION = "# Overridden signatures:";
+    private static final String SIGNATURES_SECTION = "# Signatures:";
+    private static final String OVERRIDDEN_SIGNATURES_SECTION = "# Overridden signatures:";
+    private static final String EXCLUDED_SIGNATURES_SECTION = "# Excluded signatures:";
     static final String RAW_STRANGE_SIGNATURES_SECTION = "# Raw strange signatures:";
-    static final String NORMALIZED_STRANGE_SIGNATURES_SECTION = "# Normalized strange signatures:";
+    private static final String NORMALIZED_STRANGE_SIGNATURES_SECTION = "# Normalized strange signatures:";
 
     private final List<File> codeBaseFiles;
 
@@ -66,6 +82,9 @@ public class CodeBase {
 
     @Getter
     private final Map<String, String> overriddenSignatures = new HashMap<>();
+
+    @Getter
+    private final Map<String, MethodSignature> excludedSignaturesByPackageName = new TreeMap<>();
 
     private static final Set<String> strangeSignatures = new TreeSet<>();
 
@@ -113,7 +132,7 @@ public class CodeBase {
         }
     }
 
-    public String normalizeSignature(MethodSignature methodSignature) {
+    private String normalizeSignature(MethodSignature methodSignature) {
         return methodSignature == null ? null : normalizeSignature(methodSignature.getAspectjString());
     }
 
@@ -234,6 +253,14 @@ public class CodeBase {
         }
     }
 
+    void addExcludedSignatureByPackageName(MethodSignature signature) {
+        String normalizedSignature = normalizeSignature(signature);
+
+        if (normalizedSignature != null && excludedSignaturesByPackageName.put(normalizedSignature, signature) == null) {
+            log.trace("  Excluded {} since it belongs to an excluded package", normalizedSignature);
+        }
+    }
+
     public void writeSignaturesToDisk() {
         File file = config.getSignatureFile(config.getAppName());
         PrintWriter out = null;
@@ -246,6 +273,13 @@ public class CodeBase {
 
             out.println(SIGNATURES_SECTION);
             for (String signature : signatures.keySet()) {
+                out.println(signature);
+            }
+
+            out.println();
+            out.println("------------------------------------------------------------------------------------------------");
+            out.println(EXCLUDED_SIGNATURES_SECTION);
+            for (String signature : excludedSignaturesByPackageName.keySet()) {
                 out.println(signature);
             }
 
@@ -295,11 +329,11 @@ public class CodeBase {
         return signature == null ? null : overriddenSignatures.get(signature);
     }
 
-    public boolean isEmpty() {
+    boolean isEmpty() {
         return signatures.isEmpty();
     }
 
-    public int size() {
+    int size() {
         return signatures.size();
     }
 }

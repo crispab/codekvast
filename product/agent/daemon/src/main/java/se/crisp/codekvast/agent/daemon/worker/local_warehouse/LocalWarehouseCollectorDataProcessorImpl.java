@@ -89,6 +89,9 @@ public class LocalWarehouseCollectorDataProcessorImpl extends AbstractCollectorD
         for (Map.Entry<String, MethodSignature> entry : codeBase.getSignatures().entrySet()) {
             doStoreInvocation(jvmState, 0L, entry.getKey(), SignatureConfidence.NOT_INVOKED, entry.getValue());
         }
+        for (Map.Entry<String, MethodSignature> entry : codeBase.getExcludedSignaturesByPackageName().entrySet()) {
+            doStoreInvocation(jvmState, 0L, entry.getKey(), SignatureConfidence.EXCLUDED_BY_PACKAGE_NAME, entry.getValue());
+        }
     }
 
     @Override

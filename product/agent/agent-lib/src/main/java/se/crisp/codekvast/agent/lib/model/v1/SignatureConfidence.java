@@ -22,16 +22,14 @@
 package se.crisp.codekvast.agent.lib.model.v1;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
- * The confidence that an invoked could be located in the codebase.
+ * The confidence that an invoked method could be located in the codebase.
  *
  * NOTE: Is also defined as an ENUM in the central warehouse's invocations table!
  *
  * @author olle.hallin@crisp.se
  */
-@RequiredArgsConstructor
 @Getter
 public enum SignatureConfidence {
     /**
@@ -53,15 +51,36 @@ public enum SignatureConfidence {
 
     /**
      * The used signature was <em>not</em> found at all in the scanned code base. This indicates a problem with the code base scanner.
-     * Access to the source code is required in order to resolve the problem.
+     * Access to the scanned application's source code is required in order to resolve the problem.
      */
-    NOT_FOUND_IN_CODE_BASE(4);
+    NOT_FOUND_IN_CODE_BASE(4),
+
+    /**
+     * The signature was found in the code base but was excluded from being tracked since it sits in an excluded package.
+     */
+    EXCLUDED_BY_PACKAGE_NAME(5),
+
+    /**
+     * The signature was found in the code base but was excluded from being tracked since it has wrong visibility.
+     */
+    EXCLUDED_BY_VISIBILITY(6),
+
+    /**
+     * The signature was found in the code base but was excluded from being tracked since it is a trivial method (setter, getter, equals(),
+     * hashCode(), toString() etc.
+     */
+    EXCLUDED_SINCE_TRIVIAL(7);
 
     /*
      * The database representation of the value. It is 1-based to make it easy to use with MariaDB's ENUM column type.
      * MariaDB reserves 0 for the special value ''.
      */
     private final int dbNumber;
+
+
+    SignatureConfidence(int dbNumber) {
+        this.dbNumber = dbNumber;
+    }
 
     public static SignatureConfidence fromOrdinal(int ordinal) {
         for (SignatureConfidence confidence : values()) {

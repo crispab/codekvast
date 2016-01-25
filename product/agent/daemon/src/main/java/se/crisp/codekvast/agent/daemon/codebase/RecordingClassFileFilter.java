@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 
 /**
  * This is a Reflections filter that rejects everything, but remembers the names of "our" classes, i.e.,
- * classes with correct package prefixes.
+ * classes with correct package name prefixes.
  *
  * After doing {@code new Reflections(... new RecordingClassFileFilter(prefixes))} one can retrieve the
  * matched set of class names from the filter.
@@ -39,25 +39,22 @@ import java.util.regex.Pattern;
  */
 class RecordingClassFileFilter implements Predicate<String> {
     private final Pattern includePattern;
-    private final Pattern excludePattern;
     private final Set<String> matches = new HashSet<>();
 
-    RecordingClassFileFilter(Set<String> packages, Set<String> excludePackages) {
+    RecordingClassFileFilter(Set<String> packages) {
         this.includePattern = buildPattern(packages);
-        this.excludePattern = buildPattern(excludePackages);
     }
 
     @Override
     public boolean apply(String input) {
         Matcher includeMatcher = includePattern.matcher(input);
-        Matcher excludeMatcher = excludePattern == null ? null : excludePattern.matcher(input);
-        if (includeMatcher.matches() && (excludeMatcher == null || !excludeMatcher.matches())) {
+        if (includeMatcher.matches()) {
             matches.add(includeMatcher.group(1));
         }
         return false;
     }
 
-    public Set<String> getMatchedClassNames() {
+    Set<String> getMatchedClassNames() {
         return new HashSet<>(matches);
     }
 

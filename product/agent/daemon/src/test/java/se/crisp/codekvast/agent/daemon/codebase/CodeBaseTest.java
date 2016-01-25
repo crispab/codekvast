@@ -59,8 +59,8 @@ public class CodeBaseTest {
             } else if (inStrangeSignaturesSection) {
                 String normalized = codeBase.normalizeSignature(signature);
                 if (normalized != null) {
-                    assertThat(String.format("Could not normalize%n%n   %s%n%nresult is%n%n   %s%n", signature, normalized),
-                                             codeBase.isStrangeSignature(normalized), is(false));
+                    assertThat(String.format("Could not normalize%n%n   %s%n%n result is%n%n   %s%n", signature, normalized),
+                               codeBase.isStrangeSignature(normalized), is(false));
                 }
             }
         }

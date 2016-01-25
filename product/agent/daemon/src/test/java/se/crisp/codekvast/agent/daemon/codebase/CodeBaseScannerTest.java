@@ -49,8 +49,9 @@ public class CodeBaseScannerTest {
     public void testScanCodeBaseForDirectoryWithMyClassFiles() throws URISyntaxException {
         int numClasses = scanner.scanSignatures(codeBase);
         assertThat(codeBase.getSignatures(), notNullValue());
-        assertThat(numClasses, is(9));
+        assertThat(numClasses, is(10));
         assertThat(codeBase.getSignatures().size(), is(11));
+        assertThat(codeBase.getExcludedSignaturesByPackageName().size(), is(1));
     }
 
     @Test
