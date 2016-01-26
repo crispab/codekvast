@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015, 2016 Crisp AB
+ * Copyright (c) 2015-2016 Crisp AB
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import se.crisp.codekvast.warehouse.migration.V1_0__DummyJavaMigration;
@@ -145,6 +144,7 @@ public class DatabaseConfig {
         Flyway flyway = new Flyway();
         flyway.setDataSource(dataSource);
         flyway.setLocations(SQL_MIGRATION_LOCATION, JAVA_MIGRATION_LOCATION);
+        flyway.setValidateOnMigrate(false);
 
         MigrationInfo[] pendingMigrations = flyway.info().pending();
         boolean werePendingMigrations = false;
@@ -175,20 +175,18 @@ public class DatabaseConfig {
      * Override the default JdbcTemplate created by Spring Boot, to make sure that Flyway.migrate() has run first.
      */
     @Bean
-    @DependsOn("flyway")
-    public JdbcTemplate jdbcTemplate(DataSource dataSource) throws SQLException {
+    public JdbcTemplate jdbcTemplate(Flyway flyway) throws SQLException {
         log.debug("Create a JdbcTemplate");
-        return new JdbcTemplate(dataSource);
+        return new JdbcTemplate(flyway.getDataSource());
     }
 
     /*
      * Override the default NamedParameterJdbcTemplate created by Spring Boot, to make sure that Flyway.migrate() has run first.
      */
     @Bean
-    @DependsOn("flyway")
-    public NamedParameterJdbcTemplate namedParameterJdbcTemplate(DataSource dataSource) {
+    public NamedParameterJdbcTemplate namedParameterJdbcTemplate(Flyway flyway) {
         log.debug("Creates a NamedParameterJdbcTemplate");
-        return new NamedParameterJdbcTemplate(dataSource);
+        return new NamedParameterJdbcTemplate(flyway.getDataSource());
     }
 
 
