@@ -22,6 +22,7 @@
 package se.crisp.codekvast.agent.lib.model.v1;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * The confidence that an invoked method could be located in the codebase.
@@ -31,6 +32,7 @@ import lombok.Getter;
  * @author olle.hallin@crisp.se
  */
 @Getter
+@RequiredArgsConstructor
 public enum SignatureConfidence {
     /**
      * The signature has been detected in the codebase, but it has never been invoked.
@@ -56,7 +58,7 @@ public enum SignatureConfidence {
     NOT_FOUND_IN_CODE_BASE(4),
 
     /**
-     * The signature was found in the code base but was excluded from being tracked since it sits in an excluded package.
+     * The signature was found in the code base but was excluded from being tracked since it belongs to an excluded package.
      */
     EXCLUDED_BY_PACKAGE_NAME(5),
 
@@ -76,11 +78,6 @@ public enum SignatureConfidence {
      * MariaDB reserves 0 for the special value ''.
      */
     private final int dbNumber;
-
-
-    SignatureConfidence(int dbNumber) {
-        this.dbNumber = dbNumber;
-    }
 
     public static SignatureConfidence fromOrdinal(int ordinal) {
         for (SignatureConfidence confidence : values()) {
