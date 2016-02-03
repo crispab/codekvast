@@ -27,6 +27,7 @@ import org.reflections.scanners.SubTypesScanner;
 import org.springframework.stereotype.Component;
 import se.crisp.codekvast.agent.lib.config.MethodFilter;
 import se.crisp.codekvast.agent.lib.model.MethodSignature;
+import se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence;
 import se.crisp.codekvast.agent.lib.util.SignatureUtils;
 
 import java.lang.reflect.Method;
@@ -115,23 +116,21 @@ public class CodeBaseScanner {
             System.arraycopy(methods, 0, allMethods, declaredMethods.length, methods.length);
 
             for (Method method : allMethods) {
-                if (methodFilter.shouldInclude(method)) {
+                SignatureConfidence confidence = methodFilter.apply(method);
 
-                    // Some AOP frameworks (e.g., Guice) push methods from a base class down to subclasses created in runtime.
-                    // We need to map those back to the original declaring signature, or else the original declared method will look unused.
+                // Some AOP frameworks (e.g., Guice) push methods from a base class down to subclasses created in runtime.
+                // We need to map those back to the original declaring signature, or else the original declared method will look unused.
 
-                    MethodSignature thisSignature = SignatureUtils.makeMethodSignature(methodFilter, clazz, method);
+                MethodSignature thisSignature = SignatureUtils.makeMethodSignature(clazz, method);
 
-                    MethodSignature declaringSignature = SignatureUtils
-                            .makeMethodSignature(methodFilter, findDeclaringClass(method.getDeclaringClass(), method, packages),
-                                                 method);
+                MethodSignature declaringSignature = SignatureUtils
+                        .makeMethodSignature(findDeclaringClass(method.getDeclaringClass(), method, packages),
+                                             method);
 
-                    if (shouldExcludeSignature(declaringSignature, excludePackages)) {
-                        codeBase.addExcludedSignatureByPackageName(declaringSignature);
-                    } else {
-                        codeBase.addSignature(thisSignature, declaringSignature);
-                    }
+                if (shouldExcludeSignature(declaringSignature, excludePackages)) {
+                    confidence = SignatureConfidence.EXCLUDED_BY_PACKAGE_NAME;
                 }
+                codeBase.addSignature(thisSignature, declaringSignature, confidence);
             }
 
             for (Class<?> innerClass : clazz.getDeclaredClasses()) {

@@ -31,7 +31,7 @@ public class SignatureUtilsTest {
 
     @Test
     public void testGetSignaturePublicStaticMethod() throws IOException, NoSuchMethodException {
-        String s = signatureToString(makeSignature(methodFilter, TestClass.class, findTestMethod("publicStaticMethod1")), true);
+        String s = signatureToString(makeSignature(TestClass.class, findTestMethod("publicStaticMethod1")), true);
         assertThat(s,
                    is("public se.crisp.codekvast.agent.lib.util.SignatureUtilsTest.TestClass.publicStaticMethod1(java.lang.String, java" +
                                  ".util.Collection)"));
@@ -39,28 +39,28 @@ public class SignatureUtilsTest {
 
     @Test
     public void testGetSignatureProtectedMethod2() throws IOException, NoSuchMethodException {
-        String s = signatureToString(makeSignature(methodFilter, TestClass.class, findTestMethod("protectedMethod2")), true);
+        String s = signatureToString(makeSignature(TestClass.class, findTestMethod("protectedMethod2")), true);
         assertThat(s, is("protected se.crisp.codekvast.agent.lib.util.SignatureUtilsTest.TestClass.protectedMethod2()"));
     }
 
     @Test
     public void testGetSignaturePrivateMethod3() throws IOException, NoSuchMethodException {
         String s = signatureToString(
-                makeSignature(methodFilter, TestClass.class, findTestMethod("privateMethod3")), true);
+                makeSignature(TestClass.class, findTestMethod("privateMethod3")), true);
         assertThat(s, is("private se.crisp.codekvast.agent.lib.util.SignatureUtilsTest.TestClass.privateMethod3(int, java.lang.String[])"));
     }
 
     @Test
     public void testGetSignaturePackagePrivateMethod4() throws IOException, NoSuchMethodException {
         String s = signatureToString(
-                makeSignature(methodFilter, TestClass.class, findTestMethod("packagePrivateMethod4")), true);
+                makeSignature(TestClass.class, findTestMethod("packagePrivateMethod4")), true);
         assertThat(s, is("package-private se.crisp.codekvast.agent.lib.util.SignatureUtilsTest.TestClass.packagePrivateMethod4(int)"));
     }
 
     @Test
     public void testMinimizeAlreadyMinimizedSignature() throws NoSuchMethodException {
         String s = signatureToString(
-                makeSignature(methodFilter, TestClass.class, findTestMethod("privateMethod3")), true);
+                makeSignature(TestClass.class, findTestMethod("privateMethod3")), true);
         assertThat(s, is("private se.crisp.codekvast.agent.lib.util.SignatureUtilsTest.TestClass.privateMethod3(int, java.lang.String[])"));
         String s2 = SignatureUtils.stripModifiersAndReturnType(s);
         assertThat(s2, is(s));
@@ -69,7 +69,7 @@ public class SignatureUtilsTest {
     @SuppressWarnings("Duplicates")
     @Test
     public void testMakeMethodSignature2() throws Exception {
-        MethodSignature signature = makeMethodSignature(methodFilter, TestClass.class, findTestMethod("protectedMethod2"));
+        MethodSignature signature = makeMethodSignature(TestClass.class, findTestMethod("protectedMethod2"));
         assertThat(signature, notNullValue());
         assertThat(signature.getAspectjString(),
                    is("protected se.crisp.codekvast.agent.lib.util.SignatureUtilsTest.TestClass.protectedMethod2()"));
@@ -85,7 +85,7 @@ public class SignatureUtilsTest {
     @SuppressWarnings("Duplicates")
     @Test
     public void testMakeMethodSignature5() throws Exception {
-        MethodSignature signature = makeMethodSignature(methodFilter, TestClass.class, findTestMethod("protectedMethod5"));
+        MethodSignature signature = makeMethodSignature(TestClass.class, findTestMethod("protectedMethod5"));
         assertThat(signature, notNullValue());
         assertThat(signature.getAspectjString(),
                    is("protected se.crisp.codekvast.agent.lib.util.SignatureUtilsTest.TestClass.protectedMethod5(java.lang.String, se" +

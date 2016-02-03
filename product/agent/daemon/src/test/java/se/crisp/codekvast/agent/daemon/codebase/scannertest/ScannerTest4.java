@@ -25,6 +25,25 @@ public class ScannerTest4 extends java.util.Date {
         System.out.printf("m4(String)");
     }
 
+    private void m5(String s) {
+        System.out.printf("m5(String)");
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public String toString() {
+        return "ScannerTest4";
+    }
+
     @Override
     public ScannerTest4 clone() {
         return (ScannerTest4) super.clone();

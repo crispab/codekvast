@@ -24,7 +24,6 @@ package se.crisp.codekvast.agent.lib.util;
 import lombok.experimental.UtilityClass;
 import org.aspectj.lang.Signature;
 import org.aspectj.runtime.reflect.Factory;
-import se.crisp.codekvast.agent.lib.config.MethodFilter;
 import se.crisp.codekvast.agent.lib.model.MethodSignature;
 
 import java.lang.reflect.Method;
@@ -83,15 +82,14 @@ public class SignatureUtils {
     /**
      * Uses AspectJ for creating the same signature as AbstractCodekvastAspect.
      *
-     * @param methodFilter A filter for which methods should be included
      * @param clazz        The class containing the method
      * @param method       The method to make a signature of
      * @return The same signature object as an AspectJ execution pointcut will provide in JoinPoint.getSignature(). Returns null unless the
-     * method is not synthetic and it passes the methodVisibilityFilter.
+     * method is not synthetic.
      */
-    public static Signature makeSignature(MethodFilter methodFilter, Class clazz, Method method) {
+    public static Signature makeSignature(Class clazz, Method method) {
 
-        if (clazz == null || method.isSynthetic() || !methodFilter.shouldInclude(method)) {
+        if (clazz == null || method.isSynthetic()) {
             return null;
         }
 
@@ -107,15 +105,14 @@ public class SignatureUtils {
     /**
      * Converts a java.lang.reflect.Method to a MethodSignature object.
      *
-     * @param methodFilter The method visibility filter
      * @param clazz        The class containing the method
      * @param method       The method to make a signature of
      * @return A MethodSignature or null if the methodFilter stops the method.
-     * @see #makeSignature(MethodFilter, Class, java.lang.reflect.Method)
+     * @see #makeSignature(Class, Method)
      */
-    public static MethodSignature makeMethodSignature(MethodFilter methodFilter, Class<?> clazz, Method method) {
+    public static MethodSignature makeMethodSignature(Class<?> clazz, Method method) {
         org.aspectj.lang.reflect.MethodSignature aspectjSignature =
-                (org.aspectj.lang.reflect.MethodSignature) makeSignature(methodFilter, clazz, method);
+                (org.aspectj.lang.reflect.MethodSignature) makeSignature(clazz, method);
 
         if (aspectjSignature == null) {
             return null;
@@ -131,11 +128,6 @@ public class SignatureUtils {
                                                          .parameterTypes(classArrayToString(aspectjSignature.getParameterTypes()))
                                                          .returnType(aspectjSignature.getReturnType().getName())
                                                          .build();
-
-        // DEBUG
-        if (methodSignature.getPackageName().isEmpty()) {
-            int i = 17;
-        }
 
         return methodSignature;
 

@@ -34,6 +34,7 @@ import se.crisp.codekvast.agent.daemon.appversion.AppVersionResolver;
 import se.crisp.codekvast.agent.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.agent.daemon.beans.JvmState;
 import se.crisp.codekvast.agent.daemon.codebase.CodeBase;
+import se.crisp.codekvast.agent.daemon.codebase.CodeBaseEntry;
 import se.crisp.codekvast.agent.daemon.codebase.CodeBaseScanner;
 import se.crisp.codekvast.agent.daemon.worker.AbstractCollectorDataProcessorImpl;
 import se.crisp.codekvast.agent.daemon.worker.DataProcessingException;
@@ -47,7 +48,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * An implementation of CollectorDataProcessor that stores collected data in a local data warehouse.
@@ -86,11 +86,8 @@ public class LocalWarehouseCollectorDataProcessorImpl extends AbstractCollectorD
 
     @Override
     protected void doProcessCodebase(JvmState jvmState, CodeBase codeBase) {
-        for (Map.Entry<String, MethodSignature> entry : codeBase.getSignatures().entrySet()) {
-            doStoreInvocation(jvmState, 0L, entry.getKey(), SignatureConfidence.NOT_INVOKED, entry.getValue());
-        }
-        for (Map.Entry<String, MethodSignature> entry : codeBase.getExcludedSignaturesByPackageName().entrySet()) {
-            doStoreInvocation(jvmState, 0L, entry.getKey(), SignatureConfidence.EXCLUDED_BY_PACKAGE_NAME, entry.getValue());
+        for (CodeBaseEntry entry : codeBase.getEntries()) {
+            doStoreInvocation(jvmState, 0L, entry.getNormalizedSignature(), entry.getSignatureConfidence(), entry.getMethodSignature());
         }
     }
 

@@ -22,6 +22,7 @@
 package se.crisp.codekvast.agent.lib.config;
 
 import lombok.EqualsAndHashCode;
+import se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence;
 import se.crisp.codekvast.agent.lib.util.SignatureUtils;
 
 import java.lang.reflect.Method;
@@ -120,6 +121,19 @@ public class MethodFilter {
         return (mask & Modifier.PRIVATE) != 0;
     }
 
+    public SignatureConfidence apply(Method method) {
+        if (!shouldIncludeByModifiers(method.getModifiers())) {
+            return SignatureConfidence.EXCLUDED_BY_VISIBILITY;
+        }
+        if (isGetter(method)
+                || isSetter(method)
+                || isEquals(method)
+                || isHashCode(method)) {
+            return SignatureConfidence.EXCLUDED_SINCE_TRIVIAL;
+        }
+        return SignatureConfidence.NOT_INVOKED;
+    }
+
     /**
      * Given a Method.modifiers() tell whether a method should be included in the inventory or not.
      *
@@ -133,14 +147,6 @@ public class MethodFilter {
         }
         // At least one of the visibility bits match
         return (modifiers & mask) != 0;
-    }
-
-    public boolean shouldInclude(Method method) {
-        return shouldIncludeByModifiers(method.getModifiers())
-                && !isGetter(method)
-                && !isSetter(method)
-                && !isEquals(method)
-                && !isHashCode(method);
     }
 
     boolean isEquals(Method method) {

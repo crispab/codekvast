@@ -43,6 +43,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import se.crisp.codekvast.agent.lib.config.CollectorConfig;
 import se.crisp.codekvast.agent.lib.model.MethodSignature;
+import se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -84,10 +85,9 @@ public class CodeBase {
     private final Map<String, String> overriddenSignatures = new HashMap<>();
 
     @Getter
-    private final Map<String, MethodSignature> excludedSignaturesByPackageName = new TreeMap<>();
+    private final Map<String, SignatureConfidence> confidences = new HashMap<>();
 
     private static final Set<String> strangeSignatures = new TreeSet<>();
-
     private final CodeBaseFingerprint fingerprint;
 
     private List<URL> urls;
@@ -239,7 +239,7 @@ public class CodeBase {
         }
     }
 
-    void addSignature(MethodSignature thisSignature, MethodSignature declaringSignature) {
+    void addSignature(MethodSignature thisSignature, MethodSignature declaringSignature, SignatureConfidence confidence) {
         String thisNormalizedSignature = normalizeSignature(thisSignature);
         String declaringNormalizedSignature = normalizeSignature(declaringSignature);
 
@@ -250,14 +250,7 @@ public class CodeBase {
             } else if (signatures.put(declaringNormalizedSignature, declaringSignature) == null) {
                 log.trace("  Found {}", declaringNormalizedSignature);
             }
-        }
-    }
-
-    void addExcludedSignatureByPackageName(MethodSignature signature) {
-        String normalizedSignature = normalizeSignature(signature);
-
-        if (normalizedSignature != null && excludedSignaturesByPackageName.put(normalizedSignature, signature) == null) {
-            log.trace("  Excluded {} since it belongs to an excluded package", normalizedSignature);
+            confidences.put(declaringNormalizedSignature, confidence);
         }
     }
 
@@ -273,14 +266,7 @@ public class CodeBase {
 
             out.println(SIGNATURES_SECTION);
             for (String signature : signatures.keySet()) {
-                out.println(signature);
-            }
-
-            out.println();
-            out.println("------------------------------------------------------------------------------------------------");
-            out.println(EXCLUDED_SIGNATURES_SECTION);
-            for (String signature : excludedSignaturesByPackageName.keySet()) {
-                out.println(signature);
+                out.printf("%s %s%n", confidences.get(signature), signature);
             }
 
             out.println();
@@ -335,5 +321,16 @@ public class CodeBase {
 
     int size() {
         return signatures.size();
+    }
+
+    public Collection<CodeBaseEntry> getEntries() {
+        List<CodeBaseEntry> result = new ArrayList<>();
+
+        for (Map.Entry<String, MethodSignature> entry : signatures.entrySet()) {
+            String name = entry.getKey();
+            result.add(new CodeBaseEntry(name, entry.getValue(), confidences.get(name)));
+        }
+
+        return result;
     }
 }

@@ -73,8 +73,8 @@ public class LocalWarehouseTest {
     private static final long T3 = T1 + 60000L;
 
     private static final String[][] SIGNATURE_PARTS = {
-            {"public", "pkg1.pkg2.pkg3.Class1.method1(java.lang.String, int)"},
-            {"private", "Class2.method2()"}
+            {"public", "packages.excluded.Class1.method1(java.lang.String, int)"},
+            {"public", "packages.Class2.method2()"}
     };
     private static final List<String> SIGNATURES = makeSignatures(SIGNATURE_PARTS);
 
@@ -120,7 +120,7 @@ public class LocalWarehouseTest {
                                      .appVersion(appVersion)
                                      .codeBase("codeBase")
                                      .packages("packages")
-                                     .excludePackages("excludePackages")
+                                     .excludePackages("packages.excluded")
                                      .build();
     }
 
@@ -159,10 +159,10 @@ public class LocalWarehouseTest {
                                                Integer.class, collectorConfig1.getAppName(), collectorConfig1.getAppVersion(), T1),
                    is(1));
 
-        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM methods", Integer.class), is(2));
+        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM methods", Integer.class), is(1));
 
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM methods WHERE visibility = ? AND signature = ? ",
-                                               Integer.class, SIGNATURE_PARTS[0][0], SIGNATURE_PARTS[0][1]), is(1));
+                                               Integer.class, SIGNATURE_PARTS[0][0], SIGNATURE_PARTS[0][1]), is(0));
 
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM methods WHERE visibility = ? AND signature = ? ",
                                                Integer.class, SIGNATURE_PARTS[1][0], SIGNATURE_PARTS[1][1]), is(1));
@@ -171,7 +171,7 @@ public class LocalWarehouseTest {
                                                Integer.class, "jvm1", T1, T2), is(1));
 
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM invocations WHERE invokedAtMillis = ? AND invocationCount = ? ",
-                                               Integer.class, 0L, 0L), is(1));
+                                               Integer.class, 0L, 0L), is(0));
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM invocations WHERE invokedAtMillis = ? AND invocationCount = ? ",
                                                Integer.class, T2, 1L),
                    is(1));
@@ -189,7 +189,7 @@ public class LocalWarehouseTest {
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM jvms WHERE uuid = ? AND startedAtMillis = ? AND dumpedAtMillis = ?",
                                                Integer.class, "jvm1", T1, T3), is(1));
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM invocations WHERE invokedAtMillis = ? AND invocationCount = ? ",
-                                               Integer.class, 0L, 0L), is(1));
+                                               Integer.class, 0L, 0L), is(0));
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM invocations WHERE invokedAtMillis = ? AND invocationCount = ?  ",
                                                Integer.class, T3, 2), is(1));
 

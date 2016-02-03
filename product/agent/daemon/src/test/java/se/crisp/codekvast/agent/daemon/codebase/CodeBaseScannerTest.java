@@ -10,9 +10,11 @@ import se.crisp.codekvast.agent.daemon.codebase.scannertest.ScannerTest3;
 import se.crisp.codekvast.agent.daemon.codebase.scannertest.ScannerTest4;
 import se.crisp.codekvast.agent.daemon.codebase.scannertest.excluded.ExcludedScannerTest5;
 import se.crisp.codekvast.agent.lib.config.CollectorConfigFactory;
+import se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.util.Collection;
 
 import static com.google.common.collect.ImmutableSet.of;
 import static org.hamcrest.CoreMatchers.is;
@@ -39,7 +41,7 @@ public class CodeBaseScannerTest {
                                                   .appName("appName")
                                                   .codeBase(new File(codeBase).getAbsolutePath())
                                                   .dataPath(temporaryFolder.getRoot())
-                                                  .methodVisibility("private")
+                                                  .methodVisibility("!private")
                                                   .packages(ScannerTest1.class.getPackage().getName())
                                                   .excludePackages(ExcludedScannerTest5.class.getPackage().getName())
                                                   .build());
@@ -48,10 +50,20 @@ public class CodeBaseScannerTest {
     @Test
     public void testScanCodeBaseForDirectoryWithMyClassFiles() throws URISyntaxException {
         int numClasses = scanner.scanSignatures(codeBase);
-        assertThat(codeBase.getSignatures(), notNullValue());
         assertThat(numClasses, is(10));
-        assertThat(codeBase.getSignatures().size(), is(11));
-        assertThat(codeBase.getExcludedSignaturesByPackageName().size(), is(1));
+
+        Collection<CodeBaseEntry> entries = codeBase.getEntries();
+        assertThat(entries, notNullValue());
+        assertThat(entries.size(), is(17));
+        assertThat(entries.stream()
+                          .filter(e -> e.getSignatureConfidence() == SignatureConfidence.EXCLUDED_BY_PACKAGE_NAME)
+                          .count(), is(1L));
+        assertThat(entries.stream()
+                          .filter(e -> e.getSignatureConfidence() == SignatureConfidence.EXCLUDED_BY_VISIBILITY)
+                          .count(), is(1L));
+        assertThat(entries.stream()
+                          .filter(e -> e.getSignatureConfidence() == SignatureConfidence.EXCLUDED_SINCE_TRIVIAL)
+                          .count(), is(3L));
     }
 
     @Test
@@ -79,7 +91,7 @@ public class CodeBaseScannerTest {
     @Test
     public void testFindBaseMethodForScannerTest4() throws URISyntaxException {
         scanner.findTrackedMethods(codeBase, of("se."), of("acme."), ScannerTest4.class);
-        assertThat(codeBase.getSignatures().size(), is(6));
+        assertThat(codeBase.getSignatures().size(), is(11));
     }
 
 }
