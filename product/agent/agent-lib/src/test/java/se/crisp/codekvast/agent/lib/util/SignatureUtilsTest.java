@@ -1,7 +1,7 @@
 package se.crisp.codekvast.agent.lib.util;
 
 import org.junit.Test;
-import se.crisp.codekvast.agent.lib.config.MethodFilter;
+import se.crisp.codekvast.agent.lib.config.MethodAnalyzer;
 import se.crisp.codekvast.agent.lib.model.MethodSignature;
 
 import java.io.IOException;
@@ -16,7 +16,7 @@ import static se.crisp.codekvast.agent.lib.util.SignatureUtils.*;
 
 public class SignatureUtilsTest {
 
-    private final MethodFilter methodFilter = new MethodFilter("all");
+    private final MethodAnalyzer methodAnalyzer = new MethodAnalyzer("all");
 
     private final Method testMethods[] = TestClass.class.getDeclaredMethods();
 

@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.springframework.stereotype.Component;
-import se.crisp.codekvast.agent.lib.config.MethodFilter;
+import se.crisp.codekvast.agent.lib.config.MethodAnalyzer;
 import se.crisp.codekvast.agent.lib.model.MethodSignature;
 import se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence;
 import se.crisp.codekvast.agent.lib.util.SignatureUtils;
@@ -106,7 +106,7 @@ public class CodeBaseScanner {
         }
 
         log.debug("Analyzing {}", clazz);
-        MethodFilter methodFilter = codeBase.getConfig().getMethodFilter();
+        MethodAnalyzer methodAnalyzer = codeBase.getConfig().getMethodAnalyzer();
         int result = 1;
         try {
             Method[] declaredMethods = clazz.getDeclaredMethods();
@@ -116,7 +116,7 @@ public class CodeBaseScanner {
             System.arraycopy(methods, 0, allMethods, declaredMethods.length, methods.length);
 
             for (Method method : allMethods) {
-                SignatureConfidence confidence = methodFilter.apply(method);
+                SignatureConfidence confidence = methodAnalyzer.apply(method);
 
                 // Some AOP frameworks (e.g., Guice) push methods from a base class down to subclasses created in runtime.
                 // We need to map those back to the original declaring signature, or else the original declared method will look unused.

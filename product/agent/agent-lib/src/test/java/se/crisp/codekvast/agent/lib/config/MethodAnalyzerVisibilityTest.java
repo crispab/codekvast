@@ -21,13 +21,13 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 /**
- * Test for the visibility part of MethodFilter.
+ * Test for the visibility part of MethodAnalyzer.
  *
  * @author olle.hallin@crisp.se
  */
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
 @RunWith(Parameterized.class)
-public class MethodFilterVisibilityTest {
+public class MethodAnalyzerVisibilityTest {
 
     @Parameters(name = "{index}: {0}")
     public static Object[][] data() {
@@ -103,7 +103,7 @@ public class MethodFilterVisibilityTest {
 
     @Test
     public void shouldParseVisibility() {
-        MethodFilter filter = new MethodFilter(input);
+        MethodAnalyzer filter = new MethodAnalyzer(input);
         assertThat("Should select public", filter.selectsPublicMethods(), is(selectsPublic));
         assertThat("Should select protected", filter.selectsProtectedMethods(), is(selectsProtected));
         assertThat("Should select package private", filter.selectsPackagePrivateMethods(), is(selectsPackagePrivate));

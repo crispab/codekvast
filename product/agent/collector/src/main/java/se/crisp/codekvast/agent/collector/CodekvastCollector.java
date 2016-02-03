@@ -25,7 +25,7 @@ import org.aspectj.bridge.Constants;
 import se.crisp.codekvast.agent.lib.config.CollectorConfig;
 import se.crisp.codekvast.agent.lib.config.CollectorConfigFactory;
 import se.crisp.codekvast.agent.lib.config.CollectorConfigLocator;
-import se.crisp.codekvast.agent.lib.config.MethodFilter;
+import se.crisp.codekvast.agent.lib.config.MethodAnalyzer;
 import se.crisp.codekvast.agent.lib.io.FileSystemInvocationDataDumper;
 import se.crisp.codekvast.agent.lib.io.InvocationDataDumper;
 import se.crisp.codekvast.agent.lib.util.FileUtils;
@@ -180,7 +180,7 @@ public class CodekvastCollector {
                         + "  </weaver>\n"
                         + "</aspectj>\n",
                 AbstractMethodExecutionAspect.class.getName(),
-                toMethodExecutionPointcut(config.getMethodFilter()),
+                toMethodExecutionPointcut(config.getMethodAnalyzer()),
                 config.getAspectjOptions(),
                 getIncludeExcludeElements("include", config.getNormalizedPackages()),
                 getIncludeExcludeElements("exclude", config.getNormalizedExcludePackages(), "se.crisp.codekvast"));
@@ -206,7 +206,7 @@ public class CodekvastCollector {
         return sb.toString();
     }
 
-    private static String toMethodExecutionPointcut(MethodFilter filter) {
+    private static String toMethodExecutionPointcut(MethodAnalyzer filter) {
         if (filter.selectsPrivateMethods()) {
             return "execution(* *..*(..))";
         }

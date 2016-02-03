@@ -214,7 +214,7 @@ public abstract class AbstractCollectorDataProcessorImpl implements CollectorDat
                       .environment(daemonConfig.getEnvironment())
                       .excludePackages(jvm.getCollectorConfig().getNormalizedExcludePackages().stream().collect(Collectors.joining(", ")))
                       .jvmUuid(jvm.getJvmUuid())
-                      .methodVisibility(jvm.getCollectorConfig().getMethodFilter().toString())
+                      .methodVisibility(jvm.getCollectorConfig().getMethodAnalyzer().toString())
                       .packages(jvm.getCollectorConfig().getNormalizedPackages().stream().collect(Collectors.joining(", ")))
                       .startedAtMillis(jvm.getStartedAtMillis())
                       .tags(jvm.getCollectorConfig().getTags())

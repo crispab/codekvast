@@ -16,7 +16,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * @author olle.hallin@crisp.se
  */
 @RunWith(Parameterized.class)
-public class MethodFilterNameTest {
+public class MethodAnalyzerNameTest {
 
     @Getter
     @Setter
@@ -115,7 +115,7 @@ public class MethodFilterNameTest {
     @Parameter(8)
     public boolean expectedToString;
 
-    final MethodFilter filter = new MethodFilter("all");
+    final MethodAnalyzer filter = new MethodAnalyzer("all");
 
     @Test
     public void testIsMethod() throws Exception {

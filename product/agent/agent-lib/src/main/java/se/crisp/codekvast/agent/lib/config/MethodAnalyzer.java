@@ -32,7 +32,7 @@ import java.lang.reflect.Modifier;
  * @author olle.hallin@crisp.se
  */
 @EqualsAndHashCode
-public class MethodFilter {
+public class MethodAnalyzer {
 
     private static final int VISIBILITY_MODIFIERS = Modifier.PUBLIC | Modifier.PROTECTED | Modifier.PRIVATE;
 
@@ -44,7 +44,7 @@ public class MethodFilter {
     private final boolean includeSetters = false;
     private final boolean includeEqualsAndHashcode = false;
 
-    public MethodFilter(String visibility) {
+    public MethodAnalyzer(String visibility) {
         mask = parseVisibility(visibility);
     }
 

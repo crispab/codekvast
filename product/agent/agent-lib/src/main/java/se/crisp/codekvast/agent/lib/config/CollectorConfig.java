@@ -110,8 +110,8 @@ public class CollectorConfig implements CodekvastConfig {
     }
 
     @JsonIgnore
-    public MethodFilter getMethodFilter() {
-        return new MethodFilter(this.methodVisibility);
+    public MethodAnalyzer getMethodAnalyzer() {
+        return new MethodAnalyzer(this.methodVisibility);
     }
 
 }
