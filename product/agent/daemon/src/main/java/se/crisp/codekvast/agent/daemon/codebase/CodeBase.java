@@ -43,7 +43,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import se.crisp.codekvast.agent.lib.config.CollectorConfig;
 import se.crisp.codekvast.agent.lib.model.MethodSignature;
-import se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence;
+import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -59,6 +59,7 @@ import java.util.regex.PatternSyntaxException;
  *
  * @author olle.hallin@crisp.se
  */
+@SuppressWarnings("ClassWithTooManyFields")
 @ToString(of = "codeBaseFiles", includeFieldNames = false)
 @EqualsAndHashCode(of = "fingerprint")
 @Slf4j
@@ -69,7 +70,6 @@ public class CodeBase {
 
     private static final String SIGNATURES_SECTION = "# Signatures:";
     private static final String OVERRIDDEN_SIGNATURES_SECTION = "# Overridden signatures:";
-    private static final String EXCLUDED_SIGNATURES_SECTION = "# Excluded signatures:";
     static final String RAW_STRANGE_SIGNATURES_SECTION = "# Raw strange signatures:";
     private static final String NORMALIZED_STRANGE_SIGNATURES_SECTION = "# Normalized strange signatures:";
 
@@ -85,7 +85,7 @@ public class CodeBase {
     private final Map<String, String> overriddenSignatures = new HashMap<>();
 
     @Getter
-    private final Map<String, SignatureConfidence> confidences = new HashMap<>();
+    private final Map<String, SignatureStatus> statuses = new HashMap<>();
 
     private static final Set<String> strangeSignatures = new TreeSet<>();
     private final CodeBaseFingerprint fingerprint;
@@ -239,7 +239,7 @@ public class CodeBase {
         }
     }
 
-    void addSignature(MethodSignature thisSignature, MethodSignature declaringSignature, SignatureConfidence confidence) {
+    void addSignature(MethodSignature thisSignature, MethodSignature declaringSignature, SignatureStatus status) {
         String thisNormalizedSignature = normalizeSignature(thisSignature);
         String declaringNormalizedSignature = normalizeSignature(declaringSignature);
 
@@ -250,7 +250,7 @@ public class CodeBase {
             } else if (signatures.put(declaringNormalizedSignature, declaringSignature) == null) {
                 log.trace("  Found {}", declaringNormalizedSignature);
             }
-            confidences.put(declaringNormalizedSignature, confidence);
+            statuses.put(declaringNormalizedSignature, status);
         }
     }
 
@@ -266,7 +266,7 @@ public class CodeBase {
 
             out.println(SIGNATURES_SECTION);
             for (String signature : signatures.keySet()) {
-                out.printf("%s %s%n", confidences.get(signature), signature);
+                out.printf("%s %s%n", statuses.get(signature), signature);
             }
 
             out.println();
@@ -328,7 +328,7 @@ public class CodeBase {
 
         for (Map.Entry<String, MethodSignature> entry : signatures.entrySet()) {
             String name = entry.getKey();
-            result.add(new CodeBaseEntry(name, entry.getValue(), confidences.get(name)));
+            result.add(new CodeBaseEntry(name, entry.getValue(), statuses.get(name)));
         }
 
         return result;

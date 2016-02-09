@@ -17,7 +17,7 @@ package se.crisp.codekvast.agent.daemon.codebase;
 
 import lombok.Value;
 import se.crisp.codekvast.agent.lib.model.MethodSignature;
-import se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence;
+import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 
 /**
  * @author olle.hallin@crisp.se
@@ -26,5 +26,5 @@ import se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence;
 public class CodeBaseEntry {
     String normalizedSignature;
     MethodSignature methodSignature;
-    SignatureConfidence signatureConfidence;
+    SignatureStatus signatureStatus;
 }

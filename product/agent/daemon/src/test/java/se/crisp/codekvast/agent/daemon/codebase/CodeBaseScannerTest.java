@@ -10,7 +10,7 @@ import se.crisp.codekvast.agent.daemon.codebase.scannertest.ScannerTest3;
 import se.crisp.codekvast.agent.daemon.codebase.scannertest.ScannerTest4;
 import se.crisp.codekvast.agent.daemon.codebase.scannertest.excluded.ExcludedScannerTest5;
 import se.crisp.codekvast.agent.lib.config.CollectorConfigFactory;
-import se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence;
+import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -56,13 +56,13 @@ public class CodeBaseScannerTest {
         assertThat(entries, notNullValue());
         assertThat(entries.size(), is(17));
         assertThat(entries.stream()
-                          .filter(e -> e.getSignatureConfidence() == SignatureConfidence.EXCLUDED_BY_PACKAGE_NAME)
+                          .filter(e -> e.getSignatureStatus() == SignatureStatus.EXCLUDED_BY_PACKAGE_NAME)
                           .count(), is(1L));
         assertThat(entries.stream()
-                          .filter(e -> e.getSignatureConfidence() == SignatureConfidence.EXCLUDED_BY_VISIBILITY)
+                          .filter(e -> e.getSignatureStatus() == SignatureStatus.EXCLUDED_BY_VISIBILITY)
                           .count(), is(1L));
         assertThat(entries.stream()
-                          .filter(e -> e.getSignatureConfidence() == SignatureConfidence.EXCLUDED_SINCE_TRIVIAL)
+                          .filter(e -> e.getSignatureStatus() == SignatureStatus.EXCLUDED_SINCE_TRIVIAL)
                           .count(), is(3L));
     }
 

@@ -27,7 +27,7 @@ import org.reflections.scanners.SubTypesScanner;
 import org.springframework.stereotype.Component;
 import se.crisp.codekvast.agent.lib.config.MethodAnalyzer;
 import se.crisp.codekvast.agent.lib.model.MethodSignature;
-import se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence;
+import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 import se.crisp.codekvast.agent.lib.util.SignatureUtils;
 
 import java.lang.reflect.Method;
@@ -116,7 +116,7 @@ public class CodeBaseScanner {
             System.arraycopy(methods, 0, allMethods, declaredMethods.length, methods.length);
 
             for (Method method : allMethods) {
-                SignatureConfidence confidence = methodAnalyzer.apply(method);
+                SignatureStatus status = methodAnalyzer.apply(method);
 
                 // Some AOP frameworks (e.g., Guice) push methods from a base class down to subclasses created in runtime.
                 // We need to map those back to the original declaring signature, or else the original declared method will look unused.
@@ -128,9 +128,9 @@ public class CodeBaseScanner {
                                              method);
 
                 if (shouldExcludeSignature(declaringSignature, excludePackages)) {
-                    confidence = SignatureConfidence.EXCLUDED_BY_PACKAGE_NAME;
+                    status = SignatureStatus.EXCLUDED_BY_PACKAGE_NAME;
                 }
-                codeBase.addSignature(thisSignature, declaringSignature, confidence);
+                codeBase.addSignature(thisSignature, declaringSignature, status);
             }
 
             for (Class<?> innerClass : clazz.getDeclaredClasses()) {

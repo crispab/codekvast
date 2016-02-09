@@ -26,7 +26,7 @@ import lombok.NonNull;
 import lombok.Value;
 import se.crisp.codekvast.agent.lib.model.ExportFileMetaInfo;
 import se.crisp.codekvast.agent.lib.model.v1.JvmData;
-import se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence;
+import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 
 import java.io.File;
 import java.time.Duration;
@@ -153,7 +153,7 @@ public interface ImportService {
         @NonNull
         private final Long invocationCount;
         @NonNull
-        private final SignatureConfidence confidence;
+        private final SignatureStatus status;
     }
 
     @Value

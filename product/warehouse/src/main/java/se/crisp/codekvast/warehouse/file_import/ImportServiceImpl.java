@@ -106,16 +106,16 @@ public class ImportServiceImpl implements ImportService {
 
         boolean databaseTouched = false;
         if (oldInvokedAt == null) {
-            jdbcTemplate.update("INSERT INTO invocations(applicationId, methodId, jvmId, invokedAtMillis, invocationCount, confidence) " +
+            jdbcTemplate.update("INSERT INTO invocations(applicationId, methodId, jvmId, invokedAtMillis, invocationCount, status) " +
                                         "VALUES(?, ?, ?, ?, ?, ?) ",
                                 applicationId, methodId, jvmId, invokedAt.getTime(),
-                                invocation.getInvocationCount(), invocation.getConfidence().name());
+                                invocation.getInvocationCount(), invocation.getStatus().name());
             log.trace("Inserted invocation {}:{}:{} {}", applicationId, methodId, jvmId, invokedAt);
             databaseTouched = true;
         } else if (invokedAt.after(oldInvokedAt)) {
-            jdbcTemplate.update("UPDATE invocations SET invokedAtMillis = ?, invocationCount = invocationCount + ?, confidence = ? " +
+            jdbcTemplate.update("UPDATE invocations SET invokedAtMillis = ?, invocationCount = invocationCount + ?, status = ? " +
                                         "WHERE applicationId = ? AND methodId = ? AND jvmId = ? ",
-                                invokedAt.getTime(), invocation.getInvocationCount(), invocation.getConfidence().name(),
+                                invokedAt.getTime(), invocation.getInvocationCount(), invocation.getStatus().name(),
                                 applicationId, methodId, jvmId);
             log.trace("Updated invocation {}:{}:{} {}", applicationId, methodId, jvmId, invokedAt);
             databaseTouched = true;

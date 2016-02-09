@@ -21,11 +21,5 @@
 --
 
 ALTER TABLE invocations
-MODIFY COLUMN confidence ENUM('NOT_INVOKED',
-                              'EXACT_MATCH',
-                              'FOUND_IN_PARENT_CLASS',
-                              'NOT_FOUND_IN_CODE_BASE',
-                              'EXCLUDED_BY_PACKAGE_NAME',
-                              'EXCLUDED_BY_VISIBILITY',
-                              'EXCLUDED_SINCE_TRIVIAL') NOT NULL
-COMMENT 'Same values as se.crisp.codekvast.agent.lib.model.v1.SignatureStatus';
+CHANGE COLUMN confidence status TINYINT NOT NULL
+COMMENT 'Same values as se.crisp.codekvast.agent.lib.model.v1.SignatureStatus.dbNumber()';

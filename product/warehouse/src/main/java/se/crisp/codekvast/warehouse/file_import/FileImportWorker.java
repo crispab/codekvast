@@ -33,7 +33,7 @@ import se.crisp.codekvast.agent.lib.model.ExportFileMetaInfo;
 import se.crisp.codekvast.agent.lib.model.v1.ExportFileEntry;
 import se.crisp.codekvast.agent.lib.model.v1.ExportFileFormat;
 import se.crisp.codekvast.agent.lib.model.v1.JvmData;
-import se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence;
+import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 import se.crisp.codekvast.warehouse.config.CodekvastSettings;
 
 import javax.inject.Inject;
@@ -253,7 +253,7 @@ public class FileImportWorker {
                                               .localJvmId(Long.valueOf(columns[2]))
                                               .invokedAtMillis(Long.valueOf(columns[3]))
                                               .invocationCount(Long.valueOf(columns[4]))
-                                              .confidence(SignatureConfidence.fromOrdinal(Integer.valueOf(columns[5])))
+                                              .status(SignatureStatus.fromOrdinal(Integer.valueOf(columns[5])))
                                               .build();
             return importService.saveInvocation(invocation, context);
         });

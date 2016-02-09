@@ -25,7 +25,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * The confidence that an invoked method could be located in the codebase.
+ * The status of a method signature.
  *
  * NOTE: Is also defined as an ENUM in the central warehouse's invocations table!
  *
@@ -33,7 +33,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Getter
 @RequiredArgsConstructor
-public enum SignatureConfidence {
+public enum SignatureStatus {
     /**
      * The signature has been detected in the codebase, but it has never been invoked.
      */
@@ -79,21 +79,21 @@ public enum SignatureConfidence {
      */
     private final int dbNumber;
 
-    public static SignatureConfidence fromOrdinal(int ordinal) {
-        for (SignatureConfidence confidence : values()) {
-            if (confidence.ordinal() == ordinal) {
-                return confidence;
+    public static SignatureStatus fromOrdinal(int ordinal) {
+        for (SignatureStatus status : values()) {
+            if (status.ordinal() == ordinal) {
+                return status;
             }
         }
-        throw new IllegalArgumentException("Illegal ordinal for a " + SignatureConfidence.class.getSimpleName() + ": " + ordinal);
+        throw new IllegalArgumentException("Illegal ordinal for a " + SignatureStatus.class.getSimpleName() + ": " + ordinal);
     }
 
-    public static SignatureConfidence fromDbNumber(int dbNumber) {
-        for (SignatureConfidence confidence : values()) {
-            if (confidence.getDbNumber() == dbNumber) {
-                return confidence;
+    public static SignatureStatus fromDbNumber(int dbNumber) {
+        for (SignatureStatus status : values()) {
+            if (status.getDbNumber() == dbNumber) {
+                return status;
             }
         }
-        throw new IllegalArgumentException("Illegal dbNumber for a " + SignatureConfidence.class.getSimpleName() + ": " + dbNumber);
+        throw new IllegalArgumentException("Illegal dbNumber for a " + SignatureStatus.class.getSimpleName() + ": " + dbNumber);
     }
 }

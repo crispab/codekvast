@@ -35,7 +35,7 @@ import se.crisp.codekvast.agent.daemon.util.LogUtil;
 import se.crisp.codekvast.agent.lib.model.Invocation;
 import se.crisp.codekvast.agent.lib.model.Jvm;
 import se.crisp.codekvast.agent.lib.model.v1.JvmData;
-import se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence;
+import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 import se.crisp.codekvast.agent.lib.util.ComputerID;
 import se.crisp.codekvast.agent.lib.util.FileUtils;
 
@@ -46,7 +46,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.time.Instant.now;
-import static se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence.*;
+import static se.crisp.codekvast.agent.lib.model.v1.SignatureStatus.*;
 
 /**
  * Common behaviour for all data processors.
@@ -132,7 +132,7 @@ public abstract class AbstractCollectorDataProcessorImpl implements CollectorDat
     protected abstract void doProcessUnprocessedInvocations(JvmState jvmState) throws DataProcessingException;
 
     protected abstract void doStoreNormalizedSignature(JvmState jvmState, String normalizedSignature,
-                                                       long invokedAtMillis, SignatureConfidence confidence);
+                                                       long invokedAtMillis, SignatureStatus status);
 
     private void doProcessInvocations(JvmState jvmState, List<Invocation> invocations) {
         CodeBase codeBase = jvmState.getCodeBase();
@@ -147,29 +147,29 @@ public abstract class AbstractCollectorDataProcessorImpl implements CollectorDat
             String normalizedSignature = codeBase.normalizeSignature(rawSignature);
             String baseSignature = codeBase.getBaseSignature(normalizedSignature);
 
-            SignatureConfidence confidence = null;
+            SignatureStatus status = null;
             if (normalizedSignature == null) {
                 ignored += 1;
             } else if (codeBase.hasSignature(normalizedSignature)) {
                 recognized += 1;
-                confidence = EXACT_MATCH;
+                status = EXACT_MATCH;
             } else if (baseSignature != null) {
                 overridden += 1;
-                confidence = FOUND_IN_PARENT_CLASS;
+                status = FOUND_IN_PARENT_CLASS;
                 log.debug("Signature '{}' is replaced by '{}'", normalizedSignature, baseSignature);
                 normalizedSignature = baseSignature;
             } else if (normalizedSignature.equals(rawSignature)) {
                 unrecognized += 1;
-                confidence = NOT_FOUND_IN_CODE_BASE;
+                status = NOT_FOUND_IN_CODE_BASE;
                 log.debug("Unrecognized signature: '{}'", normalizedSignature);
             } else {
                 unrecognized += 1;
-                confidence = NOT_FOUND_IN_CODE_BASE;
+                status = NOT_FOUND_IN_CODE_BASE;
                 log.debug("Unrecognized signature: '{}' (was '{}')", normalizedSignature, rawSignature);
             }
 
             if (normalizedSignature != null) {
-                doStoreNormalizedSignature(jvmState, normalizedSignature, invocation.getInvokedAtMillis(), confidence);
+                doStoreNormalizedSignature(jvmState, normalizedSignature, invocation.getInvokedAtMillis(), status);
             }
         }
 

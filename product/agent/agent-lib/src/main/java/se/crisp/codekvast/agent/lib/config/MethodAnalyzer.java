@@ -22,7 +22,7 @@
 package se.crisp.codekvast.agent.lib.config;
 
 import lombok.EqualsAndHashCode;
-import se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence;
+import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 import se.crisp.codekvast.agent.lib.util.SignatureUtils;
 
 import java.lang.reflect.Method;
@@ -121,17 +121,17 @@ public class MethodAnalyzer {
         return (mask & Modifier.PRIVATE) != 0;
     }
 
-    public SignatureConfidence apply(Method method) {
+    public SignatureStatus apply(Method method) {
         if (!shouldIncludeByModifiers(method.getModifiers())) {
-            return SignatureConfidence.EXCLUDED_BY_VISIBILITY;
+            return SignatureStatus.EXCLUDED_BY_VISIBILITY;
         }
         if (isGetter(method)
                 || isSetter(method)
                 || isEquals(method)
                 || isHashCode(method)) {
-            return SignatureConfidence.EXCLUDED_SINCE_TRIVIAL;
+            return SignatureStatus.EXCLUDED_SINCE_TRIVIAL;
         }
-        return SignatureConfidence.NOT_INVOKED;
+        return SignatureStatus.NOT_INVOKED;
     }
 
     /**
