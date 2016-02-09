@@ -54,6 +54,7 @@ class InvocationsCollector {
                                                         "invoked_at_millis > ?", Integer.class, jvmUuid, signature, invokedAtMillis);
 
         if (count == 0) {
+            // Legacy: the column is still named confidence.
             long millisSinceJvmStart = invokedAtMillis == 0L ? 0L : invokedAtMillis - jvmStartedAtMillis;
             jdbcTemplate.update("MERGE INTO signatures (jvm_uuid, signature, invoked_at_millis, millis_since_jvm_start, confidence) " +
                                         "VALUES(?, ?, ?, ?, ?)",
