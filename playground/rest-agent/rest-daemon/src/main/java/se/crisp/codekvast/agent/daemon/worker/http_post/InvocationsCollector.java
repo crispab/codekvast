@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence;
+import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 import se.crisp.codekvast.server.daemon_api.model.v1.SignatureEntry;
 
 import javax.inject.Inject;
@@ -24,7 +24,7 @@ class InvocationsCollector {
     }
 
     @Transactional
-    public void put(String jvmUuid, long jvmStartedAtMillis, String signature, long invokedAtMillis, SignatureConfidence confidence) {
+    public void put(String jvmUuid, long jvmStartedAtMillis, String signature, long invokedAtMillis, SignatureStatus status) {
         if (jvmUuid == null) {
             throw new IllegalArgumentException("jvmUuid is null");
         }
@@ -41,7 +41,7 @@ class InvocationsCollector {
             throw new IllegalArgumentException("invokedAtMillis cannot be negative");
         }
 
-        if (confidence == null) {
+        if (status == null) {
             throw new IllegalArgumentException("confidence is null");
         }
 
@@ -57,7 +57,7 @@ class InvocationsCollector {
             long millisSinceJvmStart = invokedAtMillis == 0L ? 0L : invokedAtMillis - jvmStartedAtMillis;
             jdbcTemplate.update("MERGE INTO signatures (jvm_uuid, signature, invoked_at_millis, millis_since_jvm_start, confidence) " +
                                         "VALUES(?, ?, ?, ?, ?)",
-                                jvmUuid, signature, invokedAtMillis, millisSinceJvmStart, confidence.ordinal());
+                                jvmUuid, signature, invokedAtMillis, millisSinceJvmStart, status.ordinal());
         }
     }
 

@@ -11,7 +11,7 @@ import se.crisp.codekvast.agent.daemon.codebase.CodeBaseScanner;
 import se.crisp.codekvast.agent.daemon.worker.AbstractCollectorDataProcessorImpl;
 import se.crisp.codekvast.agent.daemon.worker.DataProcessingException;
 import se.crisp.codekvast.agent.lib.model.v1.JvmData;
-import se.crisp.codekvast.agent.lib.model.v1.SignatureConfidence;
+import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 import se.crisp.codekvast.server.daemon_api.DaemonApi;
 import se.crisp.codekvast.server.daemon_api.DaemonApiException;
 
@@ -87,10 +87,10 @@ public class HttpPostCollectorDataProcessorImpl extends AbstractCollectorDataPro
 
     @Override
     protected void doStoreNormalizedSignature(JvmState jvmState, String normalizedSignature, long invokedAtMillis,
-                                              SignatureConfidence confidence) {
+                                              SignatureStatus status) {
         invocationsCollector
                 .put(jvmState.getJvm().getJvmUuid(), jvmState.getJvm().getStartedAtMillis(), normalizedSignature, invokedAtMillis,
-                     confidence);
+                     status);
 
     }
 
