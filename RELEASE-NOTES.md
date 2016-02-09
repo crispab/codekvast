@@ -1,5 +1,10 @@
 # Codekvast Release Notes
 
+## 0.17.1
+
+1. Upgraded to Gradle 2.11
+1. Upgraded some dependencies: aspectj 1.8.8, h2database 1.4.191, opencsv 3.7, mariadb-java-client 1.3.5
+
 ## 0.17.0
 
 1. Now the warehouse contains *all* methods, even those that are excluded from collection. The confidence column tells why a certain
