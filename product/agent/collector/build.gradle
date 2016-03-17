@@ -4,11 +4,7 @@ plugins {
 apply from: "$rootDir/gradle/java-6.gradle"
 apply from: "$rootDir/gradle/license.gradle"
 
-//JCENTER apply plugin: 'com.jfrog.bintray'
-
-// This build script is prepared for publishing the shadow jar to bintray for linking to jcenter.
-// It is however currently disabled, since bintray won't allow linking it to jcenter because the GitHub repo is not public.
-// All bintray-related code is commented out with the marker JCENTER
+apply plugin: 'com.jfrog.bintray'
 
 description = "The collector part of Codekvast, the code that runs inside the instrumented app's JVM"
 archivesBaseName = "codekvast-collector"
@@ -47,23 +43,34 @@ shadowJar {
     }
 }
 
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
 task javaagents(type: Sync) {
     from configurations.aspectjweaver
     from tasks.shadowJar
     into "$buildDir/javaagents"
 }
 
-/*
---- JCENTER begin ---------------------
 apply plugin: 'maven-publish'
-
 publishing {
     publications {
         shadowJar(MavenPublication) {
             groupId 'se.crisp.codekvast'
             artifactId 'codekvast-collector'
-
-            from components.jar
+            from components.shadow
             artifact sourcesJar { classifier "sources" }
             artifact javadocJar { classifier "javadoc" }
         }
@@ -103,5 +110,3 @@ bintrayUpload {
         }
     }
 }
---- JCENTER end ---------------------
- */

@@ -5,6 +5,8 @@
 1. Fixed ignored Flyway migrations (caused by misspelled file names).
 1. Tomcat and Jenkins now downloaded from their archive sites.
 1. Moved the playground stuff to the branch playground and removed it from master.
+1. Added Github Pages at http://crispab.github.io/codekvast/
+1. Now uploads codekvast-collector-x.x.x-*.jar to bintray
 
 ## 0.17.1
 
