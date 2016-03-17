@@ -1,1 +1,0 @@
-CREATE INDEX signatures_millis_since_jvm_start_ix ON signatures (millis_since_jvm_start)

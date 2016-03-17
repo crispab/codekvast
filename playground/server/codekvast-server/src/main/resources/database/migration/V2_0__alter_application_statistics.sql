@@ -1,4 +1,0 @@
-ALTER TABLE application_statistics
-ALTER COLUMN num_probably_dead_signatures
-RENAME TO num_possibly_dead_signatures;
-

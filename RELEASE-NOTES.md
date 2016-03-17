@@ -4,6 +4,7 @@
 
 1. Fixed ignored Flyway migrations (caused by misspelled file names).
 1. Tomcat and Jenkins now downloaded from their archive sites.
+1. Moved the playground stuff to the branch playground and removed it from master.
 
 ## 0.17.1
 
