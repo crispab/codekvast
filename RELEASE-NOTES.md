@@ -1,5 +1,10 @@
 # Codekvast Release Notes
 
+## 0.17.2
+
+1. Fixed ignored Flyway migrations (caused by misspelled file names).
+1. Tomcat and Jenkins now downloaded from their archive sites.
+
 ## 0.17.1
 
 1. Upgraded to Gradle 2.11

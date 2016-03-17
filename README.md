@@ -15,7 +15,8 @@ private* or *private* visibility. They can never know what callers there are to 
 This is where Codekvast can help. Codekvast *records when your methods are invoked in production*.
 
 The collector periodically sends the recorded data to the **Codekvast Daemon**, which combines the invocation data
-with an *inventory* of all methods in your application.
+with an inventory of *all* methods in your application. (It's the methods that *not* have been invoked recently that
+constitutes Truly Dead Code, remember?)
  
 The Codekvast Daemon is installed in the same host as your application, since it needs access to your application's binaries
  (jar files) to make the inventory.
@@ -85,30 +86,29 @@ It will also build and start Codekvast Daemon and Codekvast Warehouse.
 
 1. Install **JDK 8** (OpenJDK or Oracle are fine.) 
 
-1. Install [Docker Compose](https://docs.docker.com/compose/install/)
+1. Install [Docker Engine](https://docs.docker.com/engine/installation/) and [Docker Compose](https://docs.docker.com/compose/install/)
 
 1. Open a terminal window
 
 1. Do `git clone https://github.com/crispab/codekvast.git && cd codekvast`
 
-1. Open 4 more terminal windows with `codekvast` as working directory.
+1. Open 4 more terminal windows or tabs with `codekvast` as working directory.
 
 1. In terminal window #1 do `./gradlew :sample:jenkins1:run`
 
     This will download and start Jenkins inside Tomcat with Codekvast Collector attached.
     
-    You can access Jenkins at http://localhost:8081/jenkins
-    
-    **NOTE:** Should the command fail, it is probably due to an old version of Tomcat in sample/jenkins1/build.gradle.
-     If this happens, edit build.gradle, step ext.tomcatVersion and try again.
+    You can access Jenkins #1 at http://localhost:8081/jenkins
+
+    _NOTE:_ The download of jenkins.war could take some time. Be patient!
     
 1. In terminal window #2 do `./gradlew :sample:jenkins2:run`
    
     Downloads and starts another version of Jenkins inside another Tomcat also with Codekvast Collector attached.
     
-    You can access it at http://localhost:8082/jenkins
+    You can access Jenkins #2 at http://localhost:8082/jenkins
     
-1. In terminal window #3 do `./gradlew :product:warehouse:distDocker`.
+1. In terminal window #3 do `./gradlew :product:warehouse:distDocker`
  
     This will build a local Docker image for Codekvast Warehouse from the sources.
     
@@ -198,10 +198,10 @@ Then the following commands must be executed once:
 
 Codekvast uses **Gradle** as build tool. It uses the Gradle Wrapper, `gradlew`, which is checked in at the root of the workspace.
 There is the convenience script `tools/src/script/gradle` which simplifies invocation of gradlew. Install that script in your PATH
-and use that script instead of `path/to/gradlew`
+and use `gradle` instead of `path/to/gradlew`
 
 #### Software publishing
-Codekvast is published to Bintray. To be able to upload to Bintray you need the following lines in your `~/.gradle/gradle.properties`:
+Codekvast binaries are published to Bintray. To be able to upload to Bintray you need the following lines in your `~/.gradle/gradle.properties`:
 
     bintrayUser=my-bintray-user
     bintrayKey=my-bintray-key
@@ -210,10 +210,10 @@ You also need to be member of the Crisp organisation in Bintray.
 
 #### IDE
 
-**Intellij Ultimate Edition 14+** is the recommended IDE with the following plugins:
+**Intellij Ultimate Edition 15+** is the recommended IDE with the following plugins:
 
 1. **Lombok Support** (required)
-1. **Git** (required)
+1. Git (optional)
 1. Github (optional)
 1. AspectJ Support (optional)
 1. AngularJS (optional)

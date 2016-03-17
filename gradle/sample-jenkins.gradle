@@ -6,14 +6,14 @@ sourceSets {
 
 defaultTasks 'run'
 
-ext.tomcatDownloadUrl = "http://apache.mirrors.spacedump.net/tomcat/tomcat-7/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}.zip"
+ext.tomcatDownloadUrl = "http://archive.apache.org/dist/tomcat/tomcat-7/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}.zip"
 ext.tomcatDir = file("$buildDir/tomcat")
 ext.catalinaBase = file("$tomcatDir/apache-tomcat-${tomcatVersion}")
 
-ext.jenkinsDownloadUrl = "http://mirrors.jenkins-ci.org/war/${jenkinsVersion}/jenkins.war"
+ext.jenkinsDownloadUrl = "http://archives.jenkins-ci.org/war/${jenkinsVersion}/jenkins.war"
 
 task installJenkinsInTomcat7 {
-    def downloadDir = file("$buildDir/tmp/download")
+    def downloadDir = file("$rootDir/.tmp/download")
     def webappsDir = new File(catalinaBase, "webapps")
     def jenkinsDir = new File(webappsDir, "jenkins")
 
@@ -47,18 +47,25 @@ task installJenkinsInTomcat7 {
         def serverXml = file("$catalinaBase/conf/server.xml")
         serverXml.text = serverXml.text.replace("8080", tomcatPort).replace("8005", "0").replace("8009", "0")
 
-        logger.lifecycle "Downloading $jenkinsDownloadUrl into $webappsDir ..."
+        logger.lifecycle "Downloading $jenkinsDownloadUrl into $downloadDir ..."
         ant.get(
                 src: jenkinsDownloadUrl,
-                dest: webappsDir,
+                dest: downloadDir,
                 usetimestamp: true,
                 verbose: true
         )
+
+        logger.lifecycle "Copying jenkins.war into $webappsDir ..."
+        copy {
+            from "$downloadDir/jenkins.war"
+            into webappsDir
+        }
 
         if (jenkinsDir.exists()) {
             logger.lifecycle "Deleting old exploded jenkins dir..."
             delete jenkinsDir
         }
+        logger.lifecycle "Jenkins downloaded and deployed to Tomcat."
     }
 }
 
