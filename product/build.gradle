@@ -142,6 +142,10 @@ task shipIt {
     description "Builds and uploads to bintray"
     group = "publishing"
 
-    dependsOn assertCleanWorkspace, build, bintrayUpload, tasks.getByPath(":product:agent:collector:bintrayUpload"), tasks.getByPath(":product:warehouse:pushDockerImage")
+    dependsOn assertCleanWorkspace,
+            clean,
+            build,
+            tasks.getByPath(":product:bintrayUpload"),
+            tasks.getByPath(":product:agent:collector:bintrayUpload"),
+            tasks.getByPath(":product:warehouse:pushDockerImage")
 }
-
