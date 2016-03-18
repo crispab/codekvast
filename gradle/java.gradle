@@ -4,6 +4,7 @@ apply plugin: 'com.ofg.uptodate'
 uptodate {
     connectionTimeout 20000
     addExcludedVersionPatterns '.*-alpha.*'
+    addExcludedVersionPatterns '.*-rc.*'
     addExcludedVersionPatterns '.*-b[0-9]+$'
     addExcludedVersionPatterns '.*-[0-9]$'
 }

@@ -132,9 +132,11 @@ task assertCleanWorkspace {
     description "Asserts that the Git workspace is clean"
     group "publishing"
 
-    def status = Grgit.open(dir: rootDir).status()
-    if (!status.staged.allChanges.empty || !status.unstaged.allChanges.empty) {
-        throw new IllegalStateException("Git workspace is not clean!")
+    doLast {
+        def status = Grgit.open(dir: rootDir).status()
+        if (!status.staged.allChanges.empty || !status.unstaged.allChanges.empty) {
+            throw new IllegalStateException("Git workspace is not clean!")
+        }
     }
 }
 
