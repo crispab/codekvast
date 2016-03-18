@@ -233,20 +233,3 @@ After the import, some settings must be changed:
 1. Build, Execution, Deployment > Compiler > Annotation Processing
 1. Check **Enable annotation processing**
 1. Click OK
-
-Then a couple of module settings must be changed:
-
-1. File > Project Structure
-
-1. Platform Settings > SDKs
-     You need **both** a **1.6** SDK **and** a **1.8** SDK.
-
-1. Project Settings > Project
-    Project SDK should be **1.8** and
-    Project language level should be **8 - Lambdas, type annotations etc**
-
-1. Project Settings > Modules
-    The modules **agent-lib** and **collector** shall have
-    Language level **6 - @Override in interfaces** and 
-    Module SDK: **1.6** (in the Dependencies tab)
-
