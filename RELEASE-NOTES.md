@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.17.3
+
+1. Upgraded bintrayPlugin, added github info to Bintray metadata.
+
 ## 0.17.2
 
 1. Fixed ignored Flyway migrations (caused by misspelled file names).

@@ -1,9 +1,6 @@
-plugins {
-    id "com.github.johnrengelman.shadow" version "1.2.3"
-}
 apply from: "$rootDir/gradle/java-6.gradle"
 apply from: "$rootDir/gradle/license.gradle"
-
+apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'com.jfrog.bintray'
 
 description = "The collector part of Codekvast, the code that runs inside the instrumented app's JVM"
@@ -91,11 +88,13 @@ bintray {
         userOrg = bintrayUserOrg
         repo = 'maven-repo'
         name = 'codekvast-collector'
-        desc = 'Just the javaagent part of Codekvast'
+        desc = 'Just the javaagent part of Codekvast.'
         vcsUrl = 'https://github.com/crispab/codekvast.git'
         licenses = ['MIT']
+        githubRepo = 'crispab/codekvast'
+        githubReleaseNotesFile = 'RELEASE-NOTES.md'
 
-        publicDownloadNumbers = false
+        publicDownloadNumbers = true
     }
 }
 

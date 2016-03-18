@@ -1,10 +1,7 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
-plugins {
-    id 'distribution'
-    id 'com.jfrog.bintray' version '1.4'
-}
-
+apply plugin: 'distribution'
+apply plugin: 'com.jfrog.bintray'
 description = "Modules that belongs to the Codekvast product"
 
 version = codekvastVersion
@@ -111,8 +108,10 @@ bintray {
         vcsUrl = 'https://github.com/crispab/codekvast.git'
         licenses = ['MIT']
         labels = ['runtime-intelligence', 'dead-code', 'dead-code-detector', 'truly-dead-code', 'YANIA', 'java', 'java-6', 'jvm']
+        githubRepo = 'crispab/codekvast'
+        githubReleaseNotesFile = 'RELEASE-NOTES.md'
 
-        publicDownloadNumbers = false
+        publicDownloadNumbers = true
     }
 }
 
