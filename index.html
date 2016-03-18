@@ -23,8 +23,6 @@
         </header>
 
         <section id="downloads" class="clearfix">
-            <a href="https://github.com/crispab/codekvast/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
-            <a href="https://github.com/crispab/codekvast/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
             <a href="https://github.com/crispab/codekvast" id="view-on-github"
                class="button"><span>View on GitHub</span></a>
         </section>
@@ -52,7 +50,7 @@
                 The collector records the instant when methods belonging to any of your packages are invoked. </p>
 
             <p>By default Codekvast tracks <em>public</em> and <em>protected</em> methods. Modern IDEs like IntelliJ
-                IDEA can detect dead code which have <em>package
+                IDEA can detect statically dead code, i.e., code which have <em>package
                     private</em> or <em>private</em> visibility. They can never know what callers there are to public
                 and protected methods though.</p>
 
@@ -83,18 +81,16 @@
             <p>By using the Codekvast Warehouse, you can find out whether a certain method, class or package is safe to
                 remove or not.</p>
 
-            <p><em>Codekvast collects the data. You then combine that with your domain knowledge to make informed
-                decisions about what is truly dead code
-                that safely could be deleted.</em></p>
+            <p><em>Codekvast collects the data. You use your domain knowledge to make informed
+                decisions about what is truly dead code that safely could be deleted.</em></p>
 
             <h3>
                 <a id="performance" class="anchor" href="#performance" aria-hidden="true"><span aria-hidden="true"
                                                                                                 class="octicon octicon-link"></span></a>Performance
             </h3>
 
-            <p>Codekvast Collector is extremely efficient. It adds approximately <em>15 ns</em> to each method
-                invocation. If this is unacceptable,
-                you can exclude certain time critical packages from collection.</p>
+            <p>Codekvast Collector is extremely efficient. It adds approximately <em>15 nanoseconds</em> to each method
+                invocation. If this is unacceptable, you can exclude certain time critical packages from collection.</p>
 
             <p>The collected data volumes are quite moderate. When tested on a telecom equipment vendors' fairly large
                 network management application,
