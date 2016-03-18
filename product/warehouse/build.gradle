@@ -33,7 +33,7 @@ def webjars = [
 ]
 
 dependencies {
-    compile lombok
+    compileOnly lombok
     compile project(':product:agent:agent-lib')
     compile project(':product:support:websupport')
     compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"

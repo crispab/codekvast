@@ -7,7 +7,7 @@ apply plugin: 'spring-boot'
 archivesBaseName = "codekvast-websupport"
 
 dependencies {
-    compile lombok
+    compileOnly lombok
     compile 'ch.qos.logback:logback-classic'
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile "javax.inject:javax.inject:1"

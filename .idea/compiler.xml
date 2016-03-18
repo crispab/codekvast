@@ -47,6 +47,7 @@
       <module name="sample_ltw_test" target="1.6" />
       <module name="swing_app_main" target="1.6" />
       <module name="swing_app_test" target="1.6" />
+      <module name="warehouse_integrationTest" target="1.8" />
       <module name="warehouse_main" target="1.8" />
       <module name="warehouse_test" target="1.8" />
       <module name="web_main" target="1.8" />

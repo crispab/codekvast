@@ -6,15 +6,16 @@ archivesBaseName = "codekvast-agent-lib"
 version = project.parent.parent.version
 
 dependencies {
-    compile lombok
+    compileOnly lombok
     compile aspectjWeaver
     compile "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
 
     // Absolutely NO other compile or runtime dependencies are allowed here!
 
     // All transitive compile and runtime dependencies will end up in the collected app's system
-    // class path. (Lombok will be excluded when assembling codekvast-collector jar).
+    // class path.
 
+    testCompile lombok
     testCompile junit
     testCompile mockito
     testCompile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"

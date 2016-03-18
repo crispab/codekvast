@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.17.4
+
+1. Upgraded to Gradle 2.12
+
 ## 0.17.3
 
 1. Upgraded bintrayPlugin, added github info to Bintray metadata.

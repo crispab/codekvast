@@ -17,7 +17,7 @@ configurations {
 }
 
 dependencies {
-    compile lombok
+    compileOnly lombok
     compile project(':product:agent:agent-lib')
     compile 'javax.inject:javax.inject:1'
     compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
@@ -31,6 +31,7 @@ dependencies {
     runtime h2database
     runtime 'ch.qos.logback:logback-classic'
 
+    testCompile lombok
     testCompile junit
     testCompile mockito
     testCompile "org.springframework.boot:spring-boot-starter-test"
@@ -72,10 +73,6 @@ flyway {
     user = 'codekvast'
     password = 'codekvast'
     locations = ['classpath:/database/migration', 'classpath:/se/crisp/codekvast/agent/daemon/database/migration']
-}
-
-jar {
-    exclude "lombok"
 }
 
 run {

@@ -8,6 +8,7 @@ wrapper {
 }
 
 apply plugin: 'idea'
+idea.project.vcs = 'Git'
 
 subprojects {
     buildscript { repositories { jcenter() } }
