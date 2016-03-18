@@ -147,6 +147,8 @@ build.dependsOn coverageReport
 
 //--- Docker ---------------------------------------------------------------------------------------
 task tagDockerImageWithLatest(type: Exec) {
+    description "Assigns the tag 'latest' to the most recently built Docker image"
+    group "Docker"
     commandLine "$projectDir/tagDockerImageWithLatest.sh"
 }
 
@@ -159,3 +161,10 @@ distDocker {
     tagVersion version
 }
 distDocker.finalizedBy tagDockerImageWithLatest
+
+task pushDockerImage(type: Exec) {
+    description "Pushes the codekvast-warehouse Docker image to Docker hub"
+    group "Docker"
+    commandLine "$projectDir/pushToDockerHub.sh"
+    dependsOn distDocker
+}

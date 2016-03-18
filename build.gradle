@@ -24,7 +24,7 @@ subprojects {
         }
     }
 
-    ext.gitHead = Grgit.open("$rootDir").head()
+    ext.gitHead = Grgit.open(dir: rootDir).head()
 
     ext.gitVersionTokens = [
             'git.id'          : "$gitHead.id"[0..6].toString(),
