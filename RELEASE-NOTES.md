@@ -1,12 +1,10 @@
 # Codekvast Release Notes
 
-## 0.17.5
-
-1. Upgraded to Spring Boot 1.3.3.RELEASE
 
 ## 0.17.4
 
 1. Upgraded to Gradle 2.12
+1. Upgraded to Spring Boot 1.3.3.RELEASE
 
 ## 0.17.3
 

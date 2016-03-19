@@ -129,7 +129,7 @@ bintrayUpload {
 }
 
 task assertCleanWorkspace {
-    description "Asserts that the Git workspace is clean"
+    description "Asserts that the Git workspace is clean before publishing to Bintray and Docker Hub"
     group "publishing"
 
     doLast {
