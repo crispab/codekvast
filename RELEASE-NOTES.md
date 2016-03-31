@@ -1,5 +1,8 @@
 # Codekvast Release Notes
 
+## 0.17.5
+
+1. Fixed bug in warehouse; now it can insert into import_file_info.
 
 ## 0.17.4
 
