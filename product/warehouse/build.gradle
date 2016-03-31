@@ -25,10 +25,10 @@ configurations {
 }
 
 def webjars = [
-        'org.webjars:angular-ui-bootstrap:1.2.1',
-        'org.webjars:angularjs:1.5.0',
+        'org.webjars:angular-ui-bootstrap:1.2.5',
+        'org.webjars:angularjs:1.5.3',
         'org.webjars:bootstrap:3.3.6',
-        'org.webjars:jquery:2.2.1',
+        'org.webjars:jquery:2.2.2',
         'org.webjars:lodash:4.0.0',
 ]
 
@@ -45,7 +45,7 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
     compile 'org.springframework.boot:spring-boot-starter-web'
 
-    runtime 'org.mariadb.jdbc:mariadb-java-client:1.3.6'
+    runtime mariadbDriver
     runtime webjars
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'

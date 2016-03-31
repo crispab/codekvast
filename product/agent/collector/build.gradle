@@ -85,7 +85,7 @@ bintray {
     publish = true
 
     pkg {
-        userOrg = bintrayUserOrg
+        userOrg = 'crisp'
         repo = 'maven-repo'
         name = 'codekvast-collector'
         desc = 'Just the javaagent part of Codekvast.'

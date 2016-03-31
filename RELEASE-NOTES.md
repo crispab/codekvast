@@ -3,6 +3,7 @@
 ## 0.17.5
 
 1. Fixed bug in warehouse; now it can insert into import_file_info.
+1. Upgraded dependencies.
 
 ## 0.17.4
 

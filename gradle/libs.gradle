@@ -17,10 +17,12 @@ ext {
     // These are used when starting the stand-alone h2 server during development. Make sure the version is synchronized with
     // spring-boot-dependencies
     h2database = "com.h2database:h2:$h2databaseVersion"
-    logback = 'ch.qos.logback:logback-classic:1.1.6'
+    logback = 'ch.qos.logback:logback-classic:1.1.7'
 
     // Development tools, not part of the product
     lombok = 'org.projectlombok:lombok:1.16.8'
     springLoadedAgent = 'org.springframework:springloaded:1.2.5.RELEASE'
 
+    // The JDBC driver for MariaDB
+    mariadbDriver = 'org.mariadb.jdbc:mariadb-java-client:1.4.0'
 }
