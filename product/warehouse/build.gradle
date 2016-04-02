@@ -7,7 +7,7 @@ apply plugin: 'application'
 apply plugin: 'docker'
 apply plugin: 'spring-boot'
 apply plugin: 'jacoco'
-// apply plugin: 'org.unbroken-dome.test-sets'
+apply plugin: 'org.unbroken-dome.test-sets'
 
 description = 'The central Codekvast warehouse'
 applicationName = 'codekvast-warehouse'
@@ -16,9 +16,11 @@ version = project.parent.version
 group = "crisp"
 mainClassName = 'se.crisp.codekvast.warehouse.CodekvastWarehouse'
 
-// testSets {
-//     integrationTest
-// }
+testSets {
+    integrationTest
+}
+integrationTest.dependsOn test
+check.dependsOn integrationTest
 
 configurations {
     springLoaded
@@ -50,10 +52,6 @@ dependencies {
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testRuntime h2database
-
-    // integrationTestCompile 'net.serenity-bdd:serenity-screenplay:1.1.28'
-    // integrationTestCompile 'net.serenity-bdd:serenity-junit:1.1.28'
-    // integrationTestCompile 'net.serenity-bdd:serenity-spring:1.1.28'
 
     springLoaded springLoadedAgent
 }
