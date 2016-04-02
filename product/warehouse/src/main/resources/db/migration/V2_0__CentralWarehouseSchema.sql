@@ -99,7 +99,7 @@ CREATE TABLE invocations (
                        'FOUND_IN_PARENT_CLASS',
                        'NOT_FOUND_IN_CODE_BASE') NOT NULL
   ${ifMariadbEnd}
-  ${ifH2} confidence VARCHAR (20) NOT NULL
+  ${ifH2} confidence VARCHAR (40) NOT NULL
   COMMENT 'Same values as se.crisp.codekvast.agent.lib.model.v1.SignatureStatus',
 
   CONSTRAINT ix_invocation_applicationId FOREIGN KEY (applicationId) REFERENCES applications (id),
