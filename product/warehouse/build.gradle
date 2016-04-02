@@ -145,25 +145,26 @@ task coverageReport(type: JacocoReport) {
 build.dependsOn coverageReport
 
 //--- Docker ---------------------------------------------------------------------------------------
-task tagDockerImageWithLatest(type: Exec) {
-    description "Assigns the tag 'latest' to the most recently built Docker image"
-    group "Docker"
-    commandLine "$projectDir/tagDockerImageWithLatest.sh"
-}
-
 distDocker {
     baseImage 'java:8-jre'
     maintainer 'Olle Hallin "olle.hallin@crisp.se"'
     runCommand 'mkdir -p /var/log /tmp/codekvast'
     volume '/var/log'
     volume '/tmp/codekvast'
-    tagVersion version
+    tagVersion 'latest'
+
+    dependsOn check
 }
-distDocker.finalizedBy tagDockerImageWithLatest
+
+task tagDockerImageWithLatest(type: Exec) {
+    description "Assigns version tags the latest Docker image"
+    group "Docker"
+    commandLine "$projectDir/tagDockerImage.sh"
+}
 
 task pushDockerImage(type: Exec) {
     description "Pushes the codekvast-warehouse Docker image to Docker hub"
     group "Docker"
     commandLine "$projectDir/pushToDockerHub.sh"
-    dependsOn distDocker
+    dependsOn tagDockerImageWithLatest
 }

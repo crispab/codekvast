@@ -35,8 +35,7 @@ CREATE TABLE import_file_info (
   importedFromDaemonHostname VARCHAR(80)           NOT NULL,
   importedAt                 TIMESTAMP             NOT NULL,
   importedFromEnvironment    VARCHAR(255)          NULL
-)
-  ENGINE = innodb, CHARACTER SET = utf8, COLLATE = utf8_general_ci;
+);
 
 --- Applications --------------------------------
 CREATE TABLE applications (
@@ -46,8 +45,7 @@ CREATE TABLE applications (
   createdAt TIMESTAMP             NOT NULL,
 
   CONSTRAINT ix_application_identity UNIQUE KEY (NAME, version)
-)
-  ENGINE = innodb, CHARACTER SET = utf8, COLLATE = utf8_general_ci;
+);
 
 --- Methods --------------------------------
 CREATE TABLE methods (
@@ -66,8 +64,7 @@ CREATE TABLE methods (
   INDEX ix_method_signature (signature(255)),
   INDEX ix_method_declaring_type (declaringType(255)),
   INDEX ix_method_package (packageName(255))
-)
-  ENGINE = innodb, CHARACTER SET = utf8, COLLATE = utf8_general_ci;
+);
 
 --- JVMs --------------------------------
 CREATE TABLE jvms (
@@ -84,8 +81,7 @@ CREATE TABLE jvms (
   collectorVersion           VARCHAR(40)           NOT NULL,
   collectorVcsId             VARCHAR(40)           NOT NULL,
   tags                       VARCHAR(1000)         NOT NULL
-)
-  ENGINE = innodb, CHARACTER SET = utf8, COLLATE = utf8_general_ci;
+);
 
 --- invocations --------------------------------
 CREATE TABLE invocations (
@@ -105,5 +101,4 @@ CREATE TABLE invocations (
   CONSTRAINT ix_invocation_jvmId FOREIGN KEY (jvmId) REFERENCES jvms (id),
 
   CONSTRAINT ix_invocation_identity UNIQUE KEY (applicationId, methodId, jvmId)
-)
-  ENGINE = innodb, CHARACTER SET = utf8, COLLATE = utf8_general_ci;
+);

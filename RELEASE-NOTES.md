@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.17.6
+
+1. Refactored to enable in-memory tests with H2 database.
+
 ## 0.17.5
 
 1. Fixed bug in warehouse; now it can insert into import_file_info.
