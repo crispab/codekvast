@@ -49,6 +49,7 @@ dependencies {
     runtime webjars
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testRuntime h2database
 
     // integrationTestCompile 'net.serenity-bdd:serenity-screenplay:1.1.28'
     // integrationTestCompile 'net.serenity-bdd:serenity-junit:1.1.28'

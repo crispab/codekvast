@@ -10,6 +10,8 @@ warehouse:
   links:
   - database
 
+  restart: on-failure:10
+
   environment:
   - SPRING_PROFILES_ACTIVE=docker
 
