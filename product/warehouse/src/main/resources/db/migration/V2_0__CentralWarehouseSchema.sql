@@ -44,7 +44,7 @@ CREATE TABLE applications (
   version   VARCHAR(80)           NOT NULL,
   createdAt TIMESTAMP             NOT NULL,
 
-  CONSTRAINT ix_application_identity UNIQUE KEY (NAME, version)
+  CONSTRAINT ix_application_identity UNIQUE (NAME, version)
 );
 
 --- Methods --------------------------------
@@ -59,11 +59,13 @@ CREATE TABLE methods (
   modifiers      VARCHAR(50)           NULL,
   packageName    TEXT                  NULL,
   parameterTypes TEXT                  NULL,
-  returnType     TEXT                  NULL,
+  returnType     TEXT                  NULL ${ifMariadbStart},
 
+  -- H2 does not support indexing TEXT fields. But we don't need these indexes in integration tests...
   INDEX ix_method_signature (signature(255)),
   INDEX ix_method_declaring_type (declaringType(255)),
   INDEX ix_method_package (packageName(255))
+    ${ifMariadbEnd}
 );
 
 --- JVMs --------------------------------
@@ -90,15 +92,19 @@ CREATE TABLE invocations (
   jvmId           BIGINT                         NOT NULL,
   invokedAtMillis BIGINT                         NOT NULL,
   invocationCount BIGINT                         NOT NULL,
+  ${ifMariadbStart}
+    -- Space optimization: store enum value as one single byte
   confidence      ENUM('NOT_INVOKED',
                        'EXACT_MATCH',
                        'FOUND_IN_PARENT_CLASS',
                        'NOT_FOUND_IN_CODE_BASE') NOT NULL
+  ${ifMariadbEnd}
+  ${ifH2} confidence VARCHAR (20) NOT NULL
   COMMENT 'Same values as se.crisp.codekvast.agent.lib.model.v1.SignatureStatus',
 
   CONSTRAINT ix_invocation_applicationId FOREIGN KEY (applicationId) REFERENCES applications (id),
   CONSTRAINT ix_invocation_methodId FOREIGN KEY (methodId) REFERENCES methods (id),
   CONSTRAINT ix_invocation_jvmId FOREIGN KEY (jvmId) REFERENCES jvms (id),
 
-  CONSTRAINT ix_invocation_identity UNIQUE KEY (applicationId, methodId, jvmId)
+  CONSTRAINT ix_invocation_identity UNIQUE (applicationId, methodId, jvmId)
 );

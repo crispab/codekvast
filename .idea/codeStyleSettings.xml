@@ -12,12 +12,8 @@
         <option name="HTML_INLINE_ELEMENTS" value="a,abbr,acronym,b,basefont,bdo,big,br,cite,cite,code,dfn,em,font,i,img,kbd,label,q,s,samp,select,strike,strong,sub,sup,tt,u,var" />
         <option name="FORMATTER_TAGS_ENABLED" value="true" />
         <option name="WRAP_COMMENTS" value="true" />
-        <MultiMarkdownCodeStyleSettings>
-          <option name="RIGHT_MARGIN" value="72" />
-        </MultiMarkdownCodeStyleSettings>
         <SqlCodeStyleSettings>
           <option name="QUOTE_IDENTIFIER" value="1" />
-          <option name="QUOTED_IDENTIFIER_CASE" value="1" />
         </SqlCodeStyleSettings>
         <XML>
           <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />

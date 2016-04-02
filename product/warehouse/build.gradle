@@ -70,12 +70,17 @@ processResources {
 }
 
 flyway {
-    url = 'jdbc:mysql://localhost/codekvast_warehouse'
+    url = 'jdbc:mariadb://localhost/codekvast_warehouse'
     user = 'codekvast'
     password = 'codekvast'
     locations = [
-            'classpath:/database/migration',
-            'classpath:/se/crisp/codekvast/warehouse/migration',
+            'classpath:/db/migration',
+    ]
+    placeholders = [
+            'ifH2'          : '--',
+            'ifMariadb'     : '',
+            'ifMariadbStart': '',
+            'ifMariadbEnd'  : '',
     ]
 }
 

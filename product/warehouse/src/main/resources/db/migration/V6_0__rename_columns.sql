@@ -21,12 +21,13 @@
 --
 
 ALTER TABLE import_file_info
+${ifMariadb} CHANGE COLUMN importedFromDaemonHostname daemonHostname VARCHAR (80) NOT NULL AFTER daemonVcsId;
+${ifH2} ALTER COLUMN importedFromDaemonHostname RENAME TO daemonHostname;
 
-CHANGE COLUMN importedFromDaemonHostname daemonHostname VARCHAR(80) NOT NULL
-AFTER daemonVcsId,
-
-CHANGE COLUMN importedFromEnvironment environment VARCHAR(255) NULL
-AFTER daemonHostname;
+ALTER TABLE import_file_info
+${ifMariadb} CHANGE COLUMN importedFromEnvironment environment VARCHAR (255) NULL AFTER daemonHostname;
+${ifH2} ALTER COLUMN importedFromEnvironment RENAME TO environment;
 
 ALTER TABLE jvms
-CHANGE COLUMN collectorHostName collectorHostname VARCHAR(255) NOT NULL;
+${ifMariadb} CHANGE COLUMN collectorHostName collectorHostname VARCHAR (255) NOT NULL;
+${ifH2} ALTER COLUMN collectorHostName RENAME TO collectorHostname;

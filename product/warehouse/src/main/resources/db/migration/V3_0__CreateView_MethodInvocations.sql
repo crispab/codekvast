@@ -20,7 +20,8 @@
 -- THE SOFTWARE.
 --
 
-CREATE OR REPLACE SQL SECURITY INVOKER VIEW MethodInvocations1 AS
+${ifMariadbStart}
+CREATE OR REPLACE VIEW MethodInvocations1 AS
   SELECT
     DISTINCT
     m.packageName                                                                      AS Package,
@@ -37,3 +38,4 @@ CREATE OR REPLACE SQL SECURITY INVOKER VIEW MethodInvocations1 AS
     INNER JOIN methods m ON m.id = i.methodId
     INNER JOIN jvms j ON j.id = i.jvmId
   GROUP BY m.packageName, m.declaringType, m.signature;
+${ifMariadbEnd}
