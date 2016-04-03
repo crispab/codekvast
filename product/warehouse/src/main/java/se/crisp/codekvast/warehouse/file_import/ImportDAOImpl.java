@@ -128,16 +128,6 @@ public class ImportDAOImpl implements ImportDAO {
         return databaseTouched;
     }
 
-    @Override
-    public void beginInsert() {
-        jdbcTemplate.execute("BEGIN");
-    }
-
-    @Override
-    public void endInsert() {
-        jdbcTemplate.execute("COMMIT");
-    }
-
     private Long doInsertRow(PreparedStatementCreator psc) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(psc, keyHolder);

@@ -72,17 +72,6 @@ public interface ImportDAO {
      */
     boolean saveInvocation(Invocation invocation, ImportContext context);
 
-    /**
-     * Start a batch of insertions.
-     */
-    void beginInsert();
-
-    /**
-     * End a batch of insertions.
-     */
-    void endInsert();
-
-
     @Value
     @Builder
     class Application {

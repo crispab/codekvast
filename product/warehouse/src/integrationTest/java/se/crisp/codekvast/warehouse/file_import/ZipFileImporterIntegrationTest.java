@@ -5,6 +5,7 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,16 +23,13 @@ import static org.junit.Assert.assertThat;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = CodekvastWarehouse.class)
-@IntegrationTest({
-        "spring.datasource.url=jdbc:h2:mem:zipFileImporterIntegrationTest",
-        "flyway.placeholders.ifH2=",
-        "flyway.placeholders.ifMariadb=--",
-        "flyway.placeholders.ifMariadbStart=/*",
-        "flyway.placeholders.ifMariadbEnd=*/",
-        "codekvast.importPathPollIntervalSeconds=82400",
-})
+@IntegrationTest
+@ActiveProfiles("integrationTest")
 @Transactional
 public class ZipFileImporterIntegrationTest {
+
+    private static final String ZIP_FILE1 = "/file_import/sample-ltw-v1-1.zip";
+    private static final String ZIP_FILE2 = "/file_import/sample-ltw-v1-2.zip";
 
     @Inject
     private ZipFileImporter importer;
@@ -42,8 +40,7 @@ public class ZipFileImporterIntegrationTest {
     @Test
     public void should_handle_importing_same_zipFile_twice() throws Exception {
         // given
-        assertThat(countRowsInTable("import_file_info"), is(0));
-        File zipFile = getZipFile("/file_import/sample-ltw-v1-1.zip");
+        File zipFile = getZipFile(ZIP_FILE1);
 
         // when
         importer.importZipFile(zipFile);
@@ -65,11 +62,10 @@ public class ZipFileImporterIntegrationTest {
     @Test
     public void should_handle_importing_two_zips_from_same_app() throws Exception {
         // given
-        assertThat(countRowsInTable("import_file_info"), is(0));
 
         // when
-        importer.importZipFile(getZipFile("/file_import/sample-ltw-v1-1.zip"));
-        importer.importZipFile(getZipFile("/file_import/sample-ltw-v1-2.zip"));
+        importer.importZipFile(getZipFile(ZIP_FILE1));
+        importer.importZipFile(getZipFile(ZIP_FILE2));
 
         // then
         assertThat(countRowsInTable("import_file_info"), is(2));

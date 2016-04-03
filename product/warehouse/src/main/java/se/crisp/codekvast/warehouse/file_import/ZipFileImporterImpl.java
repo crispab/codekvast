@@ -107,19 +107,15 @@ public class ZipFileImporterImpl implements ZipFileImporter {
         CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
         int count = 0;
         Instant startedAt = now();
-        importDAO.beginInsert();
         for (String[] columns : csvReader) {
             if (lineProcessor.apply(columns)) {
                 count += 1;
 
                 if (count % 1000 == 0) {
-                    importDAO.endInsert();
-                    importDAO.beginInsert();
                     log.debug("Imported {} {}...", count, what);
                 }
             }
         }
-        importDAO.endInsert();
         if (count > 0) {
             log.debug("Imported {} {} in {} ms", count, what, Duration.between(startedAt, now()).toMillis());
         }
