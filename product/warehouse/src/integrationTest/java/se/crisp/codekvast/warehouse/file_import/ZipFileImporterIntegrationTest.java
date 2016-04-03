@@ -28,8 +28,9 @@ import static org.junit.Assert.assertThat;
 @Transactional
 public class ZipFileImporterIntegrationTest {
 
-    private static final String ZIP_FILE1 = "/file_import/sample-ltw-v1-1.zip";
-    private static final String ZIP_FILE2 = "/file_import/sample-ltw-v1-2.zip";
+    private static final File ZIP_FILE1 = getZipFile("/file_import/sample-ltw-v1-1.zip");
+    private static final File ZIP_FILE2 = getZipFile("/file_import/sample-ltw-v1-2.zip");
+    private static final File ZIP_FILE3 = getZipFile("/file_import/sample-ltw-v1-3.zip");
 
     @Inject
     private ZipFileImporter importer;
@@ -40,10 +41,9 @@ public class ZipFileImporterIntegrationTest {
     @Test
     public void should_handle_importing_same_zipFile_twice() throws Exception {
         // given
-        File zipFile = getZipFile(ZIP_FILE1);
 
         // when
-        importer.importZipFile(zipFile);
+        importer.importZipFile(ZIP_FILE1);
 
         // then
         assertThat(countRowsInTable("import_file_info"), is(1));
@@ -53,30 +53,35 @@ public class ZipFileImporterIntegrationTest {
         assertThat(countRowsInTable("methods"), is(11));
 
         // when
-        importer.importZipFile(zipFile);
+        importer.importZipFile(ZIP_FILE1);
 
         // then
         assertThat(countRowsInTable("import_file_info"), is(1));
     }
 
     @Test
-    public void should_handle_importing_two_zips_from_same_app() throws Exception {
+    public void should_handle_importing_multiple_zips_from_same_app() throws Exception {
         // given
 
         // when
-        importer.importZipFile(getZipFile(ZIP_FILE1));
-        importer.importZipFile(getZipFile(ZIP_FILE2));
+        importer.importZipFile(ZIP_FILE1);
+        importer.importZipFile(ZIP_FILE2);
+        importer.importZipFile(ZIP_FILE3);
 
         // then
-        assertThat(countRowsInTable("import_file_info"), is(2));
+        assertThat(countRowsInTable("import_file_info"), is(3));
         assertThat(countRowsInTable("applications"), is(1));
-        assertThat(countRowsInTable("invocations"), is(11));
-        assertThat(countRowsInTable("jvms"), is(2));
+        assertThat(countRowsInTable("invocations"), is(33));
+        assertThat(countRowsInTable("jvms"), is(4));
         assertThat(countRowsInTable("methods"), is(11));
     }
 
-    private File getZipFile(String name) throws URISyntaxException {
-        return new File(getClass().getResource(name).toURI());
+    private static File getZipFile(String name) {
+        try {
+            return new File(ZipFileImporterIntegrationTest.class.getResource(name).toURI());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private int countRowsInTable(String tableName) {
