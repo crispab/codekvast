@@ -38,7 +38,7 @@ import java.util.Map;
  *
  * @author Olle Hallin (qolha), olle.hallin@crisp.se
  */
-public interface ImportService {
+public interface ImportDAO {
 
     boolean isFileImported(ExportFileMetaInfo metaInfo);
 

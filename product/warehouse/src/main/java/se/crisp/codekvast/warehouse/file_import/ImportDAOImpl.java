@@ -28,7 +28,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 import se.crisp.codekvast.agent.lib.model.ExportFileMetaInfo;
 import se.crisp.codekvast.agent.lib.model.v1.JvmData;
 
@@ -39,9 +39,9 @@ import java.util.List;
 /**
  * @author Olle Hallin (qolha), olle.hallin@crisp.se
  */
-@Service
+@Repository
 @Slf4j
-public class ImportServiceImpl implements ImportService {
+public class ImportDAOImpl implements ImportDAO {
 
     @Value
     private static class InsertResult {
@@ -52,7 +52,7 @@ public class ImportServiceImpl implements ImportService {
     private final JdbcTemplate jdbcTemplate;
 
     @Inject
-    public ImportServiceImpl(JdbcTemplate jdbcTemplate) {
+    public ImportDAOImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -64,12 +64,12 @@ public class ImportServiceImpl implements ImportService {
     @Override
     public void recordFileAsImported(ExportFileMetaInfo metaInfo, ImportStatistics importStatistics) {
         jdbcTemplate
-                .update("INSERT INTO import_file_info(uuid, fileSchemaVersion, fileName, fileLengthBytes, importTimeMillis, " +
-                                "daemonHostname, daemonVersion, daemonVcsId, environment) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                .update("INSERT INTO import_file_info(uuid, fileSchemaVersion, fileName, fileLengthBytes, importedAt, importTimeMillis, " +
+                                "daemonHostname, daemonVersion, daemonVcsId, environment) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                         metaInfo.getUuid(), metaInfo.getSchemaVersion(), importStatistics.getImportFile().getPath(),
-                        importStatistics.getImportFile().length(), importStatistics.getProcessingTime().toMillis(),
-                        metaInfo.getDaemonHostname(), metaInfo.getDaemonVersion(), metaInfo.getDaemonVcsId(),
-                        metaInfo.getEnvironment());
+                        importStatistics.getImportFile().length(), new Timestamp(System.currentTimeMillis()),
+                        importStatistics.getProcessingTime().toMillis(), metaInfo.getDaemonHostname(), metaInfo.getDaemonVersion(),
+                        metaInfo.getDaemonVcsId(), metaInfo.getEnvironment());
         log.info("Imported {} {}", metaInfo, importStatistics);
     }
 
