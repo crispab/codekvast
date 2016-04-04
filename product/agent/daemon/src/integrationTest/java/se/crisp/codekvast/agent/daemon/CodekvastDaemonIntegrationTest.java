@@ -46,7 +46,8 @@ import static org.mockito.Mockito.when;
 @IntegrationTest({
         "spring.datasource.url=jdbc:h2:mem:integrationTest",
         "codekvast.environment=integration-test",
-        "codekvast.exportFile=/tmp/codekvast/.export/codekvast-data.zip"
+        "codekvast.exportFile=/tmp/codekvast/.export/codekvast-data.zip",
+        "codekvast.dataProcessingInitialDelaySeconds=1000000"
 })
 public class CodekvastDaemonIntegrationTest {
 

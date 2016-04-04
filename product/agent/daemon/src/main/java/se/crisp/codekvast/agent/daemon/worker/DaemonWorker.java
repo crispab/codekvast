@@ -82,7 +82,8 @@ public class DaemonWorker {
         log.info("{} {} shuts down", getClass().getSimpleName(), config.getDisplayVersion());
     }
 
-    @Scheduled(initialDelay = 5_000L, fixedDelayString = "${codekvast.dataProcessingIntervalSeconds}000")
+    @Scheduled(initialDelayString = "${codekvast.dataProcessingInitialDelaySeconds}000", fixedDelayString = "${codekvast" +
+            ".dataProcessingIntervalSeconds}000")
     public void analyseCollectorData() {
         String oldThreadName = Thread.currentThread().getName();
         Thread.currentThread().setName(getClass().getSimpleName());

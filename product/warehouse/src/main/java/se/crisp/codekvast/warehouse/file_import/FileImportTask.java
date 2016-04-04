@@ -45,7 +45,8 @@ public class FileImportTask {
                  codekvastSettings.getImportPathPollIntervalSeconds());
     }
 
-    @Scheduled(fixedDelayString = "${codekvast.importPathPollIntervalSeconds}000")
+    @Scheduled(initialDelayString = "${codekvast.importPathPollInitialDelaySeconds}000", fixedDelayString = "${codekvast" +
+            ".importPathPollIntervalSeconds}000")
     public void importDaemonFiles() {
         String oldThreadName = Thread.currentThread().getName();
         Thread.currentThread().setName("FileImport");
