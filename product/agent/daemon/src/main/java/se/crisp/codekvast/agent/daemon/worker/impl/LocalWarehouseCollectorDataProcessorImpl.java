@@ -49,7 +49,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * An implementation of CollectorDataProcessor that stores collected data in a local data warehouse.
+ * An implementation of CollectorDataProcessor that stores collected data in a local data warehouse implemented as
+ * a file-based H2 database.
  *
  * @author olle.hallin@crisp.se
  */
