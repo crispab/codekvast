@@ -54,6 +54,10 @@ public class DaemonConfig {
     @NonNull
     private String uploadToPath;
     private String uploadToHost;
+    private int uploadToPort = 22;
+    private String uploadToUsername;
+    private String uploadToPassword;
+
     private boolean verifyUploadToHostKey;
 
     public boolean isUploadEnabled() {

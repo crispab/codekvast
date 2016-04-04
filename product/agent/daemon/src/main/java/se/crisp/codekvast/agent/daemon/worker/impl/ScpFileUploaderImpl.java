@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -68,24 +69,39 @@ public class ScpFileUploaderImpl implements FileUploader {
 
         try {
             doValidateUploadConfig();
-            log.info("Will upload to {}:{}", config.getUploadToHost(), config.getUploadToPath());
+            log.info("Will upload to {}", formatUploadTo(config));
         } catch (IOException e) {
-            throw new FileUploadException(String.format("Failed to validate %s:%s", config.getUploadToHost(), config.getUploadToPath()), e);
+            throw new FileUploadException(String.format("Failed to validate %s", formatUploadTo(config)), e);
         }
+    }
+
+    private String getUploadToUsername(DaemonConfig config) {
+        return Optional.ofNullable(config.getUploadToUsername()).orElse(System.getProperty("user.name"));
+    }
+
+    private String formatUploadTo(DaemonConfig config) {
+        StringBuilder sb = new StringBuilder()
+                .append(getUploadToUsername(config)).append("@").append(config.getUploadToHost());
+
+        if (config.getUploadToPort() != 22) {
+            sb.append(":").append(config.getUploadToPort());
+        }
+        sb.append(":").append(config.getUploadToPath());
+        return sb.toString();
     }
 
     @Override
     public void uploadFile(File file) throws FileUploadException {
         if (config.isUploadEnabled()) {
             Instant startedAt = now();
-            log.info("Uploading {} to {}:{}...", file.getName(), config.getUploadToHost(), config.getUploadToPath());
+            log.info("Uploading {} to {}...", file.getName(), formatUploadTo(config));
 
             try {
                 SSHClient sshClient = createAuthenticatedSshClient();
 
                 doUploadFile(sshClient, file);
-                log.info("{} ({}) uploaded to {}:{} in {} s", file.getName(), LogUtil.humanReadableByteCount(file.length()),
-                         config.getUploadToHost(), config.getUploadToPath(), Duration.between(startedAt, now()).getSeconds());
+                log.info("{} ({}) uploaded to {} in {} s", file.getName(), LogUtil.humanReadableByteCount(file.length()),
+                         formatUploadTo(config), Duration.between(startedAt, now()).getSeconds());
             } catch (IOException e) {
                 throw new FileUploadException("Cannot upload " + file, e);
             }
@@ -133,7 +149,8 @@ public class ScpFileUploaderImpl implements FileUploader {
     private void doValidateUploadConfig() throws IOException {
         String tmpFile = getUploadTargetFile(InetAddress.getLocalHost().getHostName() + "-" + UUID.randomUUID().toString() + ".tmp");
         String remoteCommand = String.format("mkdir -p %1$s && touch %2$s && rm %2$s", config.getUploadToPath(), tmpFile);
-        log.debug("Validating upload config by attempting to execute '{}' on {}...", remoteCommand, config.getUploadToHost());
+        log.debug("Validating upload config by attempting to execute '{}' on {}:{}...", remoteCommand, config.getUploadToHost(),
+                  config.getUploadToPort());
 
         SSHClient sshClient = createAuthenticatedSshClient();
 
@@ -169,13 +186,21 @@ public class ScpFileUploaderImpl implements FileUploader {
                 if (trusted) {
                     log.info("Trusting {}:{}", hostname, port);
                 } else {
-                    log.error("Not trusting {}:{}, the configured uploadToHost is {}", hostname, port, config.getUploadToHost());
+                    log.error("Not trusting {}:{}, the configured uploadToHost is {}:{}", hostname, port, config.getUploadToHost(),
+                              config.getUploadToPort());
                 }
                 return trusted;
             });
         }
-        sshClient.connect(config.getUploadToHost());
-        sshClient.authPublickey(System.getProperty("user.name"));
+        sshClient.connect(config.getUploadToHost(), config.getUploadToPort());
+
+        String username = getUploadToUsername(config);
+
+        if (config.getUploadToPassword() == null) {
+            sshClient.authPublickey(username);
+        } else {
+            sshClient.authPassword(username, config.getUploadToPassword());
+        }
         return sshClient;
     }
 

@@ -65,5 +65,6 @@ task coverageReport(type: JacocoReport) {
         csv.enabled false
         html.destination "${buildDir}/reports/coverage"
     }
+
 }
 build.dependsOn coverageReport
