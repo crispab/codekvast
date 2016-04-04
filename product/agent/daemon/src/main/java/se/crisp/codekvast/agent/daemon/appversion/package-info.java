@@ -12,26 +12,14 @@
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR
  * ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-package se.crisp.codekvast.agent.daemon.config;
-
-import lombok.extern.slf4j.Slf4j;
-import org.flywaydb.core.Flyway;
-import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
-import org.springframework.stereotype.Component;
-
-/**
+ *
+ * Strategies for extracting the version of the collected app.
+ *
  * @author olle.hallin@crisp.se
  */
-@Component
-@Slf4j
-public class MyFlywayMigrationStrategy implements FlywayMigrationStrategy {
-
-    @Override
-    public void migrate(Flyway flyway) {
-        log.info("Disabling Flyway checksum verification");
-        flyway.setValidateOnMigrate(false);
-
-        flyway.migrate();
-    }
-}
+/**
+ * Strategies for extracting the version of the collected app.
+ *
+ * @author olle.hallin@crisp.se
+ */
+package se.crisp.codekvast.agent.daemon.appversion;

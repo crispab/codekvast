@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.daemon.worker.local_warehouse;
+package se.crisp.codekvast.agent.daemon.worker.zip_file_exporter;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -10,6 +10,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.jdbc.core.JdbcTemplate;
 import se.crisp.codekvast.agent.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.agent.daemon.worker.DataExporter;
+import se.crisp.codekvast.agent.daemon.worker.impl.ZipFileDataExporterImpl;
 
 import java.io.File;
 
@@ -20,7 +21,7 @@ import static org.junit.Assert.assertThat;
  * @author olle.hallin@crisp.se
  */
 @RunWith(MockitoJUnitRunner.class)
-public class LocalWarehouseDataExporterImplTest {
+public class ZipFileDataExporterImplTest {
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -44,7 +45,7 @@ public class LocalWarehouseDataExporterImplTest {
                              .uploadToPath("uploadToPath")
                              .build();
 
-        dataExporter = new LocalWarehouseDataExporterImpl(jdbcTemplate, config);
+        dataExporter = new ZipFileDataExporterImpl(jdbcTemplate, config);
     }
 
     @Test

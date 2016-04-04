@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package se.crisp.codekvast.agent.daemon.worker;
+package se.crisp.codekvast.agent.daemon.worker.impl;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -32,6 +32,8 @@ import se.crisp.codekvast.agent.daemon.beans.JvmState;
 import se.crisp.codekvast.agent.daemon.codebase.CodeBase;
 import se.crisp.codekvast.agent.daemon.codebase.CodeBaseScanner;
 import se.crisp.codekvast.agent.daemon.util.LogUtil;
+import se.crisp.codekvast.agent.daemon.worker.CollectorDataProcessor;
+import se.crisp.codekvast.agent.daemon.worker.DataProcessingException;
 import se.crisp.codekvast.agent.lib.model.Invocation;
 import se.crisp.codekvast.agent.lib.model.Jvm;
 import se.crisp.codekvast.agent.lib.model.v1.JvmData;

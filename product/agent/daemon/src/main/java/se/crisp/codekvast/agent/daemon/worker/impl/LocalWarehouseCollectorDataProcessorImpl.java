@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package se.crisp.codekvast.agent.daemon.worker.local_warehouse;
+package se.crisp.codekvast.agent.daemon.worker.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,7 +36,6 @@ import se.crisp.codekvast.agent.daemon.beans.JvmState;
 import se.crisp.codekvast.agent.daemon.codebase.CodeBase;
 import se.crisp.codekvast.agent.daemon.codebase.CodeBaseEntry;
 import se.crisp.codekvast.agent.daemon.codebase.CodeBaseScanner;
-import se.crisp.codekvast.agent.daemon.worker.AbstractCollectorDataProcessorImpl;
 import se.crisp.codekvast.agent.daemon.worker.DataProcessingException;
 import se.crisp.codekvast.agent.lib.model.Jvm;
 import se.crisp.codekvast.agent.lib.model.MethodSignature;

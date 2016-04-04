@@ -6,7 +6,6 @@ apply plugin: 'flyway'
 apply plugin: 'application'
 apply plugin: 'docker'
 apply plugin: 'spring-boot'
-apply plugin: 'jacoco'
 apply plugin: 'org.unbroken-dome.test-sets'
 
 description = 'The central Codekvast warehouse'
@@ -117,35 +116,6 @@ bootRun {
 
     args = run.args
 }
-
-// --- Coverage -------------------------------------------------------------------------------------------------------
-jacoco {
-    applyTo run
-}
-
-task coverageReport(type: JacocoReport) {
-    group 'Documentation'
-    description 'Generates a test coverage report'
-    sourceSets sourceSets.main
-
-    // One could do
-    // executionData test, run
-    // but then *all* of build/jacoco/test.exec and run.exec  must exist, or else the report will be skipped.
-    // Instead, build a report on what execution data we happen to have.
-
-    enabled = false
-    def jacocoDir = file('build/jacoco')
-    if (jacocoDir.exists()) {
-        jacocoDir.eachFileMatch(~/.*\.exec/) { executionData it; enabled = true }
-    }
-
-    reports {
-        xml.enabled false
-        csv.enabled false
-        html.destination "${buildDir}/reports/coverage"
-    }
-}
-build.dependsOn coverageReport
 
 //--- Docker ---------------------------------------------------------------------------------------
 distDocker {

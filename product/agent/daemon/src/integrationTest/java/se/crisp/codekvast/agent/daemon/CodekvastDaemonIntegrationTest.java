@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.daemon.worker.local_warehouse;
+package se.crisp.codekvast.agent.daemon;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -9,7 +9,6 @@ import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import se.crisp.codekvast.agent.daemon.CodekvastDaemon;
 import se.crisp.codekvast.agent.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.agent.daemon.beans.JvmState;
 import se.crisp.codekvast.agent.daemon.codebase.CodeBase;
@@ -49,7 +48,7 @@ import static org.mockito.Mockito.when;
         "codekvast.environment=integration-test",
         "codekvast.exportFile=/tmp/codekvast/.export/codekvast-data.zip"
 })
-public class LocalWarehouseIntegrationTest {
+public class CodekvastDaemonIntegrationTest {
 
     private static final MethodSignature DUMMY_METHOD_SIGNATURE = MethodSignature.builder()
                                                                                  .aspectjString("aspectjString")

@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package se.crisp.codekvast.agent.daemon.worker.local_warehouse;
+package se.crisp.codekvast.agent.daemon.worker.impl;
 
 import com.opencsv.CSVWriter;
 import lombok.extern.slf4j.Slf4j;
@@ -60,7 +60,7 @@ import static java.util.stream.Collectors.joining;
  */
 @Component
 @Slf4j
-public class LocalWarehouseDataExporterImpl implements DataExporter {
+public class ZipFileDataExporterImpl implements DataExporter {
 
     private static final String SCHEMA_VERSION = "V1";
 
@@ -68,7 +68,7 @@ public class LocalWarehouseDataExporterImpl implements DataExporter {
     private final DaemonConfig config;
 
     @Inject
-    public LocalWarehouseDataExporterImpl(JdbcTemplate jdbcTemplate, DaemonConfig config) {
+    public ZipFileDataExporterImpl(JdbcTemplate jdbcTemplate, DaemonConfig config) {
         this.jdbcTemplate = jdbcTemplate;
         this.config = config;
     }

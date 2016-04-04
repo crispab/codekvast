@@ -3,6 +3,7 @@ apply from: "$rootDir/gradle/license.gradle"
 apply plugin: 'application'
 apply plugin: 'spring-boot'
 apply from: "$rootDir/gradle/standalone-h2server.gradle"
+apply plugin: 'org.unbroken-dome.test-sets'
 
 description = "The Codekvast daemon"
 applicationName = "codekvast-daemon"
@@ -11,6 +12,12 @@ version = project.parent.parent.version
 mainClassName = "se.crisp.codekvast.agent.daemon.CodekvastDaemon"
 
 import org.apache.tools.ant.filters.ReplaceTokens
+
+testSets {
+    integrationTest
+}
+integrationTest.dependsOn test
+check.dependsOn integrationTest
 
 configurations {
     springLoaded

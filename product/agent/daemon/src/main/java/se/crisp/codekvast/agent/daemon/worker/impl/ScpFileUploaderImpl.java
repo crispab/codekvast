@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package se.crisp.codekvast.agent.daemon.worker.scp_upload;
+package se.crisp.codekvast.agent.daemon.worker.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import net.schmizz.sshj.SSHClient;

@@ -19,21 +19,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package se.crisp.codekvast.agent.daemon.database.migration;
+package se.crisp.codekvast.agent.daemon.config;
 
-import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
-
-import java.sql.Connection;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
- * This is a dummy Java migration just to keep Flyway happy.
- *
  * @author olle.hallin@crisp.se
  */
-@SuppressWarnings("UnusedDeclaration")
-public class V1_1__DummyJavaMigration implements JdbcMigration {
-    @Override
-    public void migrate(Connection connection) throws Exception {
-        // NOTHING HERE!
+@Configuration
+public class JacksonConfig {
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
     }
 }

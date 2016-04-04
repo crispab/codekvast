@@ -29,6 +29,7 @@
       <module name="collector_test" target="1.6" />
       <module name="daemon_api_main" target="1.8" />
       <module name="daemon_api_test" target="1.8" />
+      <module name="daemon_integrationTest" target="1.8" />
       <module name="daemon_main" target="1.8" />
       <module name="daemon_test" target="1.8" />
       <module name="jenkins1_javaagent" target="1.8" />
