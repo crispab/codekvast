@@ -3,6 +3,9 @@
 ## 0.17.6
 
 1. Refactored to enable in-memory tests with H2 database.
+1. Refactored daemon; renamed many classes and packages.
+1. Made all @Scheduled parameters configurable.
+1. Fixed auto-commit bug in warehouse zip file import.
 
 ## 0.17.5
 
