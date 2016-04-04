@@ -9,13 +9,11 @@ import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.agent.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.agent.daemon.beans.JvmState;
 import se.crisp.codekvast.agent.daemon.codebase.CodeBase;
-import se.crisp.codekvast.agent.daemon.worker.CollectorDataProcessor;
-import se.crisp.codekvast.agent.daemon.worker.DataExportException;
-import se.crisp.codekvast.agent.daemon.worker.DataExporter;
-import se.crisp.codekvast.agent.daemon.worker.DataProcessingException;
+import se.crisp.codekvast.agent.daemon.worker.*;
 import se.crisp.codekvast.agent.lib.config.CollectorConfig;
 import se.crisp.codekvast.agent.lib.config.CollectorConfigFactory;
 import se.crisp.codekvast.agent.lib.model.Jvm;
@@ -46,9 +44,12 @@ import static org.mockito.Mockito.when;
 @IntegrationTest({
         "spring.datasource.url=jdbc:h2:mem:integrationTest",
         "codekvast.environment=integration-test",
-        "codekvast.exportFile=/tmp/codekvast/.export/codekvast-data.zip",
-        "codekvast.dataProcessingInitialDelaySeconds=1000000"
+        "codekvast.dataPath = /tmp/codekvast/.daemonIntegrationTest/.collector",
+        "codekvast.exportFile=/tmp/codekvast/.daemonIntegrationTest/.export/codekvast-data.zip",
+        "codekvast.dataProcessingInitialDelaySeconds=1000000",
+
 })
+@Transactional
 public class CodekvastDaemonIntegrationTest {
 
     private static final MethodSignature DUMMY_METHOD_SIGNATURE = MethodSignature.builder()
@@ -75,6 +76,9 @@ public class CodekvastDaemonIntegrationTest {
 
     @Inject
     public DaemonConfig config;
+
+    @Inject
+    private DaemonWorker daemonWorker;
 
     private static final long T1 = System.currentTimeMillis();
     private static final long T2 = T1 + 20000L;
@@ -204,5 +208,10 @@ public class CodekvastDaemonIntegrationTest {
         dataExporter.exportData();
 
         assertThat(config.getExportFile().exists(), is(true));
+    }
+
+    @Test
+    public void daemonWorker_should_analyze_collector_data() {
+        daemonWorker.analyseCollectorData();
     }
 }

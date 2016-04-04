@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.daemon.worker.zip_file_exporter;
+package se.crisp.codekvast.agent.daemon.worker.impl;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -10,7 +10,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.jdbc.core.JdbcTemplate;
 import se.crisp.codekvast.agent.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.agent.daemon.worker.DataExporter;
-import se.crisp.codekvast.agent.daemon.worker.impl.ZipFileDataExporterImpl;
 
 import java.io.File;
 
