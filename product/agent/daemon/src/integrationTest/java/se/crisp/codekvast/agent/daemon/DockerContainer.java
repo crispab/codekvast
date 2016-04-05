@@ -56,14 +56,14 @@ public class DockerContainer extends ExternalResource {
                 if (parts.length > 2) {
                     throw new IllegalArgumentException("Invalid format of port; specify 'internalPort' or 'externalPort:internalPort'");
                 }
-                Integer externalPort = parts.length == 2 ? Integer.valueOf(parts[0]) : null;
+                String externalPort = parts.length == 2 ? parts[0].trim() : "0";
                 Integer internalPort = Integer.valueOf(parts.length == 2 ? parts[1] : port);
-                if (externalPort == null || externalPort == 0) {
+                if (externalPort.isEmpty() || externalPort.equals("0")) {
                     log.debug("Looking up external port for internal port {} ...", internalPort);
                     parts = executeCommand("docker port " + containerId + " " + internalPort).split(":");
-                    externalPort = Integer.valueOf(parts[1]);
+                    externalPort = parts[1].trim();
                 }
-                externalPorts.put(internalPort, externalPort);
+                externalPorts.put(internalPort, Integer.valueOf(externalPort));
             }
 
             log.debug("Started container {}, access it on {}", containerId, externalPorts);
