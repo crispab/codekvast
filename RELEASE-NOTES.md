@@ -6,6 +6,7 @@
 1. Refactored daemon; renamed many classes and packages.
 1. Made all @Scheduled parameters configurable.
 1. Fixed auto-commit bug in warehouse zip file import.
+1. Added Docker-based integration test for ScpFileUploader.
 
 ## 0.17.5
 
