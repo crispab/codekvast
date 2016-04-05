@@ -1,6 +1,9 @@
 package se.crisp.codekvast.agent.daemon;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Singular;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.rules.ExternalResource;
 
@@ -8,7 +11,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author olle.hallin@crisp.se
@@ -20,23 +25,18 @@ public class DockerContainer extends ExternalResource {
     @NonNull
     private final String imageName;
 
-    @NonNull
-    private final Integer internalPort;
+    private final List<String> ports;
 
     private final List<String> envs;
 
     private String containerId;
 
-    @Getter
-    private String host;
-
-    @Getter
-    private Integer port;
+    private Map<Integer, Integer> externalPorts = new HashMap<>();
 
     @Builder
-    private DockerContainer(String imageName, Integer internalPort, @Singular List<String> envs) {
+    private DockerContainer(String imageName, @Singular List<String> ports, @Singular List<String> envs) {
         this.imageName = imageName;
-        this.internalPort = internalPort;
+        this.ports = ports;
         this.envs = envs;
     }
 
@@ -49,12 +49,24 @@ public class DockerContainer extends ExternalResource {
         String runCommand = buildDockerRunCommand();
         try {
             containerId = executeCommand(runCommand);
+            log.debug("Container started, id={}", containerId);
 
-            String[] parts = executeCommand("docker port " + containerId + " " + internalPort).split(":");
-            host = parts[0];
-            port = Integer.valueOf(parts[1]);
+            for (String port : ports) {
+                String[] parts = port.split(":");
+                if (parts.length > 2) {
+                    throw new IllegalArgumentException("Invalid format of port; specify 'internalPort' or 'externalPort:internalPort'");
+                }
+                Integer externalPort = parts.length == 2 ? Integer.valueOf(parts[0]) : null;
+                Integer internalPort = Integer.valueOf(parts.length == 2 ? parts[1] : port);
+                if (externalPort == null || externalPort == 0) {
+                    log.debug("Looking up external port for internal port {} ...", internalPort);
+                    parts = executeCommand("docker port " + containerId + " " + internalPort).split(":");
+                    externalPort = Integer.valueOf(parts[1]);
+                }
+                externalPorts.put(internalPort, externalPort);
+            }
 
-            log.debug("Started container {}, access it on {}:{}", containerId, host, port);
+            log.debug("Started container {}, access it on {}", containerId, externalPorts);
         } catch (Exception e) {
             log.error("Cannot execute '" + runCommand + "'", e);
         }
@@ -70,6 +82,14 @@ public class DockerContainer extends ExternalResource {
                 log.error("Cannot stop and remove docker container", e);
             }
         }
+    }
+
+    public int getExternalPort(int internalPort) {
+        Integer port = externalPorts.get(internalPort);
+        if (port == null) {
+            throw new IllegalArgumentException("Unknown internal port: " + internalPort);
+        }
+        return port;
     }
 
     private String executeCommand(String command) throws RuntimeException, IOException, InterruptedException {
@@ -98,7 +118,11 @@ public class DockerContainer extends ExternalResource {
 
     private String buildDockerRunCommand() {
         StringBuilder sb = new StringBuilder();
-        sb.append("docker run -d -P");
+        sb.append("docker run -d");
+        for (String p : ports) {
+            sb.append(" -p ").append(p);
+        }
+
         for (String e : envs) {
             sb.append(" -e ").append(e);
         }

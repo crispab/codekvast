@@ -20,7 +20,7 @@ public class ScpFileUploaderIntegrationTest {
     @ClassRule
     public static DockerContainer sshd = DockerContainer.builder()
                                                         .imageName("rastasheep/ubuntu-sshd:14.04")
-                                                        .internalPort(22)
+                                                        .port("22")
                                                         .build();
 
     private ScpFileUploaderImpl scpUploader;
@@ -30,8 +30,8 @@ public class ScpFileUploaderIntegrationTest {
         assumeTrue(sshd.isRunning());
 
         DaemonConfig config = DaemonConfig.builder()
-                                          .uploadToHost(sshd.getHost())
-                                          .uploadToPort(sshd.getPort())
+                                          .uploadToHost("localhost")
+                                          .uploadToPort(sshd.getExternalPort(22))
                                           .uploadToUsername("root")
                                           .uploadToPassword("root")
                                           .uploadToPath("/tmp")
