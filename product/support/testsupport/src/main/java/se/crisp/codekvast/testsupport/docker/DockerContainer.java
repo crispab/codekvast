@@ -35,25 +35,23 @@ import java.util.Map;
  */
 @Slf4j
 @ToString
+@Builder
 public class DockerContainer extends ExternalResource {
 
     @NonNull
     private final String imageName;
 
+    @Singular
     private final List<String> ports;
 
+    @Singular
     private final List<String> envs;
+
+    private final ContainerReadyChecker readyChecker;
 
     private String containerId;
 
-    private Map<Integer, Integer> externalPorts = new HashMap<>();
-
-    @Builder
-    private DockerContainer(String imageName, @Singular List<String> ports, @Singular List<String> envs) {
-        this.imageName = imageName;
-        this.ports = ports;
-        this.envs = envs;
-    }
+    private final Map<Integer, Integer> externalPorts = new HashMap<>();
 
     public boolean isRunning() {
         return containerId != null;
@@ -82,9 +80,36 @@ public class DockerContainer extends ExternalResource {
             }
 
             log.debug("Started container {}, access it on {}", containerId, externalPorts);
+
+            if (readyChecker != null) {
+                waitUntilReady();
+            }
         } catch (Exception e) {
             log.error("Cannot execute '" + runCommand + "'", e);
         }
+    }
+
+    private void waitUntilReady() {
+        long stopWaitingAtMillis = readyChecker.getTimeoutSeconds() <= 0 ? Long.MAX_VALUE :
+                System.currentTimeMillis() + readyChecker.getTimeoutSeconds() * 1000L;
+
+        int attempt = 0;
+        while (System.currentTimeMillis() < stopWaitingAtMillis) {
+            attempt += 1;
+            try {
+                readyChecker.check(getExternalPort(readyChecker.getInternalPort()));
+                return;
+            } catch (Exception e) {
+                log.debug("{} is not yet ready, attempt #{}", imageName, attempt);
+            }
+
+            try {
+                Thread.sleep(1000L);
+            } catch (InterruptedException ignore) {
+                // ignore
+            }
+        }
+
     }
 
     @Override

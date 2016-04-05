@@ -16,6 +16,7 @@ dependencies {
     compileOnly lombok
     compile slf4jApi
     compile junit
+    compile mariadbDriver
 
     testRuntime logback
 }
