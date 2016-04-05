@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.rules.ExternalResource;
 
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 
@@ -39,28 +41,16 @@ public class DockerContainer extends ExternalResource {
     }
 
     public boolean isRunning() {
-        return port != null;
+        return containerId != null;
     }
 
     @Override
     protected void before() {
         String runCommand = buildDockerRunCommand();
         try {
-            Process process = Runtime.getRuntime().exec(runCommand);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            containerId = reader.readLine();
+            containerId = executeCommand(runCommand);
 
-            int exitCode = process.waitFor();
-            if (exitCode != 0) {
-                log.error("Could not execute '{}', exit code={}", runCommand, exitCode);
-                return;
-            }
-
-            process = Runtime.getRuntime().exec("docker port " + containerId + " " + internalPort);
-            reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String[] parts = reader.readLine().split(":");
-            process.waitFor();
-
+            String[] parts = executeCommand("docker port " + containerId + " " + internalPort).split(":");
             host = parts[0];
             port = Integer.valueOf(parts[1]);
 
@@ -68,6 +58,42 @@ public class DockerContainer extends ExternalResource {
         } catch (Exception e) {
             log.error("Cannot execute '" + runCommand + "'", e);
         }
+    }
+
+    @Override
+    protected void after() {
+        if (isRunning()) {
+            try {
+                executeCommand("docker stop " + containerId);
+                executeCommand("docker rm " + containerId);
+            } catch (Exception e) {
+                log.error("Cannot stop and remove docker container", e);
+            }
+        }
+    }
+
+    private String executeCommand(String command) throws RuntimeException, IOException, InterruptedException {
+        log.debug("Attempting to execute '{}' ...", command);
+        Process process = Runtime.getRuntime().exec(command);
+        int exitCode = process.waitFor();
+        if (exitCode != 0) {
+            String error = collectProcessOutput(process.getErrorStream());
+            throw new RuntimeException(String.format("Could not execute '%s': %s%nExit code=%d", command, error, exitCode));
+        }
+
+        return collectProcessOutput(process.getInputStream());
+    }
+
+    private String collectProcessOutput(InputStream inputStream) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        String line;
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        String newLine = "";
+        while ((line = reader.readLine()) != null) {
+            sb.append(newLine).append(line);
+            newLine = String.format("%n");
+        }
+        return sb.toString();
     }
 
     private String buildDockerRunCommand() {
@@ -80,20 +106,4 @@ public class DockerContainer extends ExternalResource {
         return sb.toString();
     }
 
-    @Override
-    protected void after() {
-        if (containerId != null) {
-            try {
-                Runtime.getRuntime().exec("docker stop " + containerId).waitFor();
-            } catch (Exception e) {
-                log.error("Cannot stop Docker container " + containerId, e);
-            }
-
-            try {
-                Runtime.getRuntime().exec("docker rm " + containerId).waitFor();
-            } catch (Exception e) {
-                log.error("Cannot remove Docker container " + containerId, e);
-            }
-        }
-    }
 }
