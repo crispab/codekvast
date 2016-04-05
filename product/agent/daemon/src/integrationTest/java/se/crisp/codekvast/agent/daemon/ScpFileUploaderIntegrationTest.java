@@ -34,7 +34,7 @@ public class ScpFileUploaderIntegrationTest {
                                           .uploadToPort(sshd.getExternalPort(22))
                                           .uploadToUsername("root")
                                           .uploadToPassword("root")
-                                          .uploadToPath("/tmp")
+                                          .uploadToPath("/tmp/codekvast")
                                           .verifyUploadToHostKey(false)
 
                                           .dataPath(new File("dataPath"))

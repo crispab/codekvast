@@ -109,7 +109,10 @@ public class ScpFileUploaderImpl implements FileUploader {
     }
 
     private void doUploadFile(SSHClient sshClient, File file) throws IOException {
-        try {
+        try (Session session = sshClient.startSession()) {
+            Session.Command command = session.exec(String.format("mkdir -p %s", config.getUploadToPath()));
+            command.join(10, TimeUnit.SECONDS);
+
             String realTarget = getUploadTargetFile(file.getName());
             String tmpTarget = realTarget + "." + UUID.randomUUID();
 
@@ -134,7 +137,6 @@ public class ScpFileUploaderImpl implements FileUploader {
         try (Session session = sshClient.startSession()) {
 
             Session.Command command = session.exec(String.format("mv --force %s %s", from, to));
-
             command.join(10, TimeUnit.SECONDS);
 
             String errorMessage = ofNullable(command.getExitErrorMessage()).orElse("");
