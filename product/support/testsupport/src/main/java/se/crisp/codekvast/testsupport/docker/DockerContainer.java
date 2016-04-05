@@ -1,4 +1,19 @@
-package se.crisp.codekvast.agent.daemon;
+/**
+ * Copyright (c) 2015-2016 Crisp AB
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR
+ * ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
+ * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+package se.crisp.codekvast.testsupport.docker;
 
 import lombok.Builder;
 import lombok.NonNull;
@@ -59,10 +74,10 @@ public class DockerContainer extends ExternalResource {
                 String externalPort = parts.length == 2 ? parts[0].trim() : "0";
                 Integer internalPort = Integer.valueOf(parts.length == 2 ? parts[1] : port);
                 if (externalPort.isEmpty() || externalPort.equals("0")) {
-                    log.debug("Looking up external port for internal port {} ...", internalPort);
                     parts = executeCommand("docker port " + containerId + " " + internalPort).split(":");
                     externalPort = parts[1].trim();
                 }
+                log.debug("Internal port {} is mapped to {}", internalPort, externalPort);
                 externalPorts.put(internalPort, Integer.valueOf(externalPort));
             }
 
@@ -79,7 +94,7 @@ public class DockerContainer extends ExternalResource {
                 executeCommand("docker stop " + containerId);
                 executeCommand("docker rm " + containerId);
             } catch (Exception e) {
-                log.error("Cannot stop and remove docker container", e);
+                log.warn("Cannot stop and remove docker container", e);
             }
         }
     }
@@ -116,7 +131,7 @@ public class DockerContainer extends ExternalResource {
         return sb.toString();
     }
 
-    private String buildDockerRunCommand() {
+    String buildDockerRunCommand() {
         StringBuilder sb = new StringBuilder();
         sb.append("docker run -d");
         for (String p : ports) {

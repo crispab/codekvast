@@ -8,17 +8,17 @@ archivesBaseName = "codekvast-websupport"
 
 dependencies {
     compileOnly lombok
-    compile 'ch.qos.logback:logback-classic'
+    compile slf4jApi
     compile 'org.springframework.boot:spring-boot-starter-web'
-    compile "javax.inject:javax.inject:1"
+    compile 'javax.inject:javax.inject:1'
     compile 'net.sourceforge.pjl-comp-filter:pjl-comp-filter:1.7'
 
     testCompile junit
     testCompile mockito
 
     // NOTE: When you change these, WebjarVersionFilterTest.java must also be upgraded!
-    testRuntime "org.webjars:sockjs-client:1.0.2"
-    testRuntime "org.webjars:d3js:3.5.12"
+    testRuntime 'org.webjars:sockjs-client:1.0.2'
+    testRuntime 'org.webjars:d3js:3.5.12'
 }
 
 bootRepackage {

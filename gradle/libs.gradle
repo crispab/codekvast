@@ -13,6 +13,7 @@ ext {
     // spring-boot-dependencies
     junit = "junit:junit:4.12"
     mockito = "org.mockito:mockito-core:1.10.19"
+    slf4jApi = "org.slf4j:slf4j-api:1.7.20"
 
     // These are used when starting the stand-alone h2 server during development. Make sure the version is synchronized with
     // spring-boot-dependencies

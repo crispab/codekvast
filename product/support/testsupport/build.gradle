@@ -1,0 +1,21 @@
+description = "Test utilities that can be used from any application"
+
+apply from: "$rootDir/gradle/java-8.gradle"
+apply from: "$rootDir/gradle/license.gradle"
+apply plugin: 'org.unbroken-dome.test-sets'
+
+archivesBaseName = "codekvast-testsupport"
+
+testSets {
+    integrationTest
+}
+integrationTest.dependsOn test
+check.dependsOn integrationTest
+
+dependencies {
+    compileOnly lombok
+    compile slf4jApi
+    compile junit
+
+    testRuntime logback
+}
