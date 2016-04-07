@@ -20,7 +20,6 @@
 -- THE SOFTWARE.
 --
 
-${ifMariadbStart}
 ALTER TABLE invocations
 MODIFY COLUMN confidence ENUM('NOT_INVOKED',
                               'EXACT_MATCH',
@@ -30,4 +29,3 @@ MODIFY COLUMN confidence ENUM('NOT_INVOKED',
                               'EXCLUDED_BY_VISIBILITY',
                               'EXCLUDED_SINCE_TRIVIAL') NOT NULL
 COMMENT 'Same values as se.crisp.codekvast.agent.lib.model.v1.SignatureStatus';
-${ifMariadbEnd}

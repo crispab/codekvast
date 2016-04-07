@@ -21,7 +21,6 @@
 --
 
 ALTER TABLE invocations
-${ifMariadbStart}
 CHANGE COLUMN confidence status ENUM ('NOT_INVOKED',
                                       'EXACT_MATCH',
                                       'FOUND_IN_PARENT_CLASS',
@@ -30,6 +29,3 @@ CHANGE COLUMN confidence status ENUM ('NOT_INVOKED',
                                       'EXCLUDED_BY_VISIBILITY',
                                       'EXCLUDED_SINCE_TRIVIAL') NOT NULL
 COMMENT 'Same values as se.crisp.codekvast.agent.lib.model.v1.SignatureStatus';
-${ifMariadbEnd}
-
-${ifH2} ALTER COLUMN confidence RENAME TO STATUS;

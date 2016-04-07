@@ -21,9 +21,7 @@
 --
 
 ALTER TABLE jvms
-${ifMariadb} CHANGE COLUMN packagePrefixes packages VARCHAR (255) NOT NULL;
-${ifH2} ALTER COLUMN packagePrefixes RENAME TO packages;
+  CHANGE COLUMN packagePrefixes packages VARCHAR(255) NOT NULL;
 
 ALTER TABLE jvms
-${ifMariadb} CHANGE COLUMN excludePackagePrefixes excludePackages VARCHAR (255) NULL;
-${ifH2} ALTER COLUMN excludePackagePrefixes RENAME TO excludePackages;
+  CHANGE COLUMN excludePackagePrefixes excludePackages VARCHAR(255) NULL;

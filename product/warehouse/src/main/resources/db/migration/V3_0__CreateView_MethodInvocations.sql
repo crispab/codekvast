@@ -20,7 +20,6 @@
 -- THE SOFTWARE.
 --
 
-${ifMariadbStart}
 CREATE OR REPLACE VIEW MethodInvocations1 AS
   SELECT
     DISTINCT
@@ -38,4 +37,3 @@ CREATE OR REPLACE VIEW MethodInvocations1 AS
     INNER JOIN methods m ON m.id = i.methodId
     INNER JOIN jvms j ON j.id = i.jvmId
   GROUP BY m.packageName, m.declaringType, m.signature;
-${ifMariadbEnd}

@@ -53,6 +53,8 @@ public class DockerContainer extends ExternalResource {
 
     private final Map<Integer, Integer> externalPorts = new HashMap<>();
 
+    private final boolean leaveContainerRunning;
+
     public boolean isRunning() {
         return containerId != null;
     }
@@ -115,12 +117,21 @@ public class DockerContainer extends ExternalResource {
     @Override
     protected void after() {
         if (isRunning()) {
+            if (leaveContainerRunning) {
+                log.info("Leaving {} running; id={}", imageName, containerId);
+                return;
+            }
+
             try {
+                log.info("Stopping container {} ...", containerId);
                 executeCommand("docker stop " + containerId);
+
+                log.info("Removing container {} ...", containerId);
                 executeCommand("docker rm " + containerId);
             } catch (Exception e) {
-                log.warn("Cannot stop and remove docker container", e);
+                log.error("Cannot stop and/or remove docker container", e);
             }
+
         }
     }
 

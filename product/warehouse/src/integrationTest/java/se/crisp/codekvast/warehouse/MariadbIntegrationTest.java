@@ -14,8 +14,11 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.testsupport.docker.DockerContainer;
 import se.crisp.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
+import se.crisp.codekvast.warehouse.file_import.ZipFileImporter;
 
 import javax.inject.Inject;
+import java.io.File;
+import java.net.URISyntaxException;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
@@ -29,6 +32,10 @@ import static org.junit.Assert.assertThat;
 @ActiveProfiles({"integrationTest"})
 @Transactional
 public class MariadbIntegrationTest {
+
+    private static final File ZIP_FILE1 = getZipFile("/file_import/sample-ltw-v1-1.zip");
+    private static final File ZIP_FILE2 = getZipFile("/file_import/sample-ltw-v1-2.zip");
+    private static final File ZIP_FILE3 = getZipFile("/file_import/sample-ltw-v1-3.zip");
 
     @ClassRule
     public static DockerContainer mariadb = DockerContainer
@@ -51,6 +58,7 @@ public class MariadbIntegrationTest {
                                                 .timeoutSeconds(120)
                                                 .assignJdbcUrlToSystemProperty("spring.datasource.url")
                                                 .build())
+            .leaveContainerRunning(true)
             .build();
 
     @ClassRule
@@ -65,6 +73,9 @@ public class MariadbIntegrationTest {
     @Inject
     private Flyway flyway;
 
+    @Inject
+    private ZipFileImporter importer;
+
     @Test
     public void should_apply_flyway_migrations_on_empty_database() throws Exception {
         // given
@@ -76,6 +87,52 @@ public class MariadbIntegrationTest {
         assertThat(flyway.info().pending().length, is(0));
 
         assertThat(countRowsInTable("import_file_info"), is(0));
+    }
+
+    @Test
+    public void should_handle_importing_same_zipFile_twice() throws Exception {
+        // given
+
+        // when
+        importer.importZipFile(ZIP_FILE1);
+
+        // then
+        assertThat(countRowsInTable("import_file_info"), is(1));
+        assertThat(countRowsInTable("applications"), is(1));
+        assertThat(countRowsInTable("invocations"), is(11));
+        assertThat(countRowsInTable("jvms"), is(2));
+        assertThat(countRowsInTable("methods"), is(11));
+
+        // when
+        importer.importZipFile(ZIP_FILE1);
+
+        // then
+        assertThat(countRowsInTable("import_file_info"), is(1));
+    }
+
+    @Test
+    public void should_handle_importing_multiple_zips_from_same_app() throws Exception {
+        // given
+
+        // when
+        importer.importZipFile(ZIP_FILE1);
+        importer.importZipFile(ZIP_FILE2);
+        importer.importZipFile(ZIP_FILE3);
+
+        // then
+        assertThat(countRowsInTable("import_file_info"), is(3));
+        assertThat(countRowsInTable("applications"), is(1));
+        assertThat(countRowsInTable("invocations"), is(33));
+        assertThat(countRowsInTable("jvms"), is(4));
+        assertThat(countRowsInTable("methods"), is(11));
+    }
+
+    private static File getZipFile(String name) {
+        try {
+            return new File(MariadbIntegrationTest.class.getResource(name).toURI());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private int countRowsInTable(String tableName) {
