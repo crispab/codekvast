@@ -61,6 +61,7 @@ Codekvast is released under the MIT license.
 
     Tentative Road-map:
 
+    1. Make it possible to analyze unexploded WAR and EAR archives.
     1. Add a mechanism for pruning the local database once data has been delivered to the warehouse.
     1. Add a mechanism for receiving collected data from the collectors using TCP sockets.
     1. Add other mechanisms than scp for delivering data to the central warehouse.
@@ -86,7 +87,7 @@ It will also build and start Codekvast Daemon and Codekvast Warehouse.
 
 1. Install **JDK 8** (OpenJDK or Oracle are fine.) 
 
-1. Install [Docker Engine](https://docs.docker.com/engine/installation/) and [Docker Compose](https://docs.docker.com/compose/install/)
+1. Install [Docker Engine 1.10.3+](https://docs.docker.com/engine/installation/) and [Docker Compose 1.6.2+](https://docs.docker.com/compose/install/)
 
 1. Open a terminal window
 
@@ -164,7 +165,7 @@ The following stack is used when developing Codekvast:
 1. H2 database (disk persistent, embedded in Codekvast Daemon)
 1. MariaDB 10+ (Codekvast Warehouse)
 1. Gradle 
-1. Docker + Docker Compose (optional mode of running Codekvast Warehouse)
+1. Docker 1.10.3+ and Docker Compose 1.6.2+ (For integration testing and running Codekvast Warehouse)
 
 ### Directory structure
 
@@ -214,6 +215,7 @@ You also need to be member of the Crisp organisation in Bintray.
 1. Git (optional)
 1. Github (optional)
 1. AspectJ Support (optional)
+1. Docker (optional)
 1. AngularJS (optional)
 1. Karma (optional)
 
