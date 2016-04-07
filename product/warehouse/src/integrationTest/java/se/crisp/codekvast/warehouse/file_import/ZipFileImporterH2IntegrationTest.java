@@ -1,5 +1,6 @@
 package se.crisp.codekvast.warehouse.file_import;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.IntegrationTest;
@@ -24,13 +25,15 @@ import static org.junit.Assert.assertThat;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = CodekvastWarehouse.class)
 @IntegrationTest
-@ActiveProfiles("integrationTest")
+@ActiveProfiles({"integrationTest", "h2"})
 @Transactional
-public class ZipFileImporterIntegrationTest {
+public class ZipFileImporterH2IntegrationTest {
 
     private static final File ZIP_FILE1 = getZipFile("/file_import/sample-ltw-v1-1.zip");
     private static final File ZIP_FILE2 = getZipFile("/file_import/sample-ltw-v1-2.zip");
     private static final File ZIP_FILE3 = getZipFile("/file_import/sample-ltw-v1-3.zip");
+    private static final File ZIP_FILE4 = getZipFile("/file_import/sample-jenkins-v1-1.zip");
+    private static final File ZIP_FILE5 = getZipFile("/file_import/sample-jenkins-v1-2.zip");
 
     @Inject
     private ZipFileImporter importer;
@@ -76,9 +79,26 @@ public class ZipFileImporterIntegrationTest {
         assertThat(countRowsInTable("methods"), is(11));
     }
 
+    @Test
+    @Ignore
+    public void should_handle_importing_multiple_dumps_from_same_app() throws Exception {
+        // given
+
+        // when
+        importer.importZipFile(ZIP_FILE4);
+        importer.importZipFile(ZIP_FILE5);
+
+        // then
+        assertThat(countRowsInTable("import_file_info"), is(2));
+        assertThat(countRowsInTable("applications"), is(3));
+        assertThat(countRowsInTable("invocations"), is(57725));
+        assertThat(countRowsInTable("jvms"), is(3));
+        assertThat(countRowsInTable("methods"), is(11));
+    }
+
     private static File getZipFile(String name) {
         try {
-            return new File(ZipFileImporterIntegrationTest.class.getResource(name).toURI());
+            return new File(ZipFileImporterH2IntegrationTest.class.getResource(name).toURI());
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }

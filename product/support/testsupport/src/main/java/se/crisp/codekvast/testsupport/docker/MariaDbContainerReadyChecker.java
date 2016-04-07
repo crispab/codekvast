@@ -22,6 +22,7 @@ import org.mariadb.jdbc.MariaDbDataSource;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * A Runnable that can be used as ready-checker when starting a {@link DockerContainer} containing a MariaDB image.
@@ -39,6 +40,7 @@ public class MariaDbContainerReadyChecker implements ContainerReadyChecker {
     private int timeoutSeconds;
     private final String username;
     private final String password;
+    private final String assignJdbcUrlToSystemProperty;
 
     @Override
     public int getInternalPort() {
@@ -53,14 +55,23 @@ public class MariaDbContainerReadyChecker implements ContainerReadyChecker {
     @Override
     public void check(int externalPort) throws ContainerNotReadyException {
         try {
-            DataSource dataSource = new MariaDbDataSource(host, externalPort, database);
-            try (Connection connection = dataSource.getConnection(username, password)) {
-                if (!connection.isValid(timeoutSeconds)) {
-                    throw new ContainerNotReadyException(this + " is not ready");
-                }
+            DataSource dataSource = new MariaDbDataSource(buildJdbcUrl(externalPort));
+
+            try (Connection connection = dataSource.getConnection(username, password);
+                 Statement st = connection.createStatement()) {
+
+                st.execute("SELECT 1 FROM DUAL");
             }
         } catch (SQLException e) {
             throw new ContainerNotReadyException(this + " is not ready", e);
         }
+
+        if (assignJdbcUrlToSystemProperty != null) {
+            System.setProperty(assignJdbcUrlToSystemProperty, buildJdbcUrl(externalPort));
+        }
+    }
+
+    private String buildJdbcUrl(int port) {
+        return String.format("jdbc:mariadb://localhost:%d/%s", port, database);
     }
 }

@@ -4,15 +4,11 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.mariadb.jdbc.MariaDbDataSource;
 
-import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeTrue;
 
 /**
@@ -39,19 +35,24 @@ public class DockerContainerIntegrationTest {
                                                 .username("nisse")
                                                 .password("hult")
                                                 .timeoutSeconds(120)
+                                                .assignJdbcUrlToSystemProperty("my.jdbcUrl")
                                                 .build())
             .build();
 
     @Test
     public void should_start_and_wait_for_mariadb() throws Exception {
-        assumeTrue(mariadb.isRunning());
-        assertThat(mariadb.getExternalPort(3306), not(is(0)));
+        // given
+        // class rule has started MariaDB in a Docker container
 
-        assertDataSourceIsReady(mariadb.getExternalPort(3306));
+        // when
+        assumeTrue(mariadb.isRunning());
+
+        // then
+        assertDataSourceIsReady(System.getProperty("my.jdbcUrl"));
     }
 
-    private void assertDataSourceIsReady(int port) throws IOException, SQLException {
-        DataSource dataSource = new MariaDbDataSource("localhost", port, "somedatabase");
+    private void assertDataSourceIsReady(String jdbcUrl) throws IOException, SQLException {
+        MariaDbDataSource dataSource = new MariaDbDataSource(jdbcUrl);
         try (Connection connection = dataSource.getConnection("nisse", "hult");
              Statement st = connection.createStatement()) {
 

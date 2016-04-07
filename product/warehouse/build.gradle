@@ -50,6 +50,10 @@ dependencies {
     runtime webjars
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'
+
+    integrationTestCompile project(':product:support:testsupport')
+    integrationTestRuntime mariadbDriver
+
     testRuntime h2database
 
     springLoaded springLoadedAgent
