@@ -81,7 +81,7 @@ public class DockerContainer extends ExternalResource {
                 externalPorts.put(internalPort, Integer.valueOf(externalPort));
             }
 
-            log.debug("Started container {}, access it on {}", containerId, externalPorts);
+            log.info("Started container {} using ports (internal=external) {}", containerId, externalPorts);
 
             if (readyChecker != null) {
                 waitUntilReady();

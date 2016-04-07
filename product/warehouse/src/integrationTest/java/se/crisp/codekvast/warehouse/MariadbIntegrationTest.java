@@ -8,10 +8,12 @@ import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
+import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 import se.crisp.codekvast.testsupport.docker.DockerContainer;
 import se.crisp.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
 import se.crisp.codekvast.warehouse.file_import.ZipFileImporter;
@@ -125,6 +127,20 @@ public class MariadbIntegrationTest {
         assertThat(countRowsInTable("invocations"), is(33));
         assertThat(countRowsInTable("jvms"), is(4));
         assertThat(countRowsInTable("methods"), is(11));
+    }
+
+    @Test
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_store_status_enum_correctly() throws Exception {
+        int methodId = 0;
+        long now = System.currentTimeMillis();
+        for (SignatureStatus status : SignatureStatus.values()) {
+            methodId += 1;
+            jdbcTemplate.update("INSERT INTO invocations(applicationId, methodId, jvmId, invokedAtMillis, " +
+                                        "invocationCount, status) VALUES(11, ?, 1, ?, 0, ?)",
+                                methodId, now, status.toString());
+        }
+
     }
 
     private static File getZipFile(String name) {

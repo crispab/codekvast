@@ -209,7 +209,7 @@ You also need to be member of the Crisp organisation in Bintray.
 
 #### IDE
 
-**Intellij Ultimate Edition 15+** is the recommended IDE with the following plugins:
+**Intellij Ultimate Edition 16+** is the recommended IDE with the following plugins:
 
 1. **Lombok Support** (required)
 1. Git (optional)
