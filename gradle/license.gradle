@@ -2,6 +2,5 @@ apply plugin: 'license'
 
 license {
     header file("$rootDir/LICENSE")
-    includes (['**/*.java', '**/*.sql'])
-    exclude '**/*Test*.java'
+    includes (['**/main/**.java', '**/main/**.sql'])
 }

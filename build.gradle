@@ -32,7 +32,13 @@ subprojects {
             'git.shortMessage': "$gitHead.shortMessage".toString(),
             'git.time'        : new Date(gitHead.time * 1000L).format('yyyy-MM-dd HH:mm:ss'),
     ]
-    ext.gitId = "$gitHead.id"[0..6].toString()
+
+    // For easy consumption in processResources
+    ext.gitId = gitVersionTokens['git.id']
+    ext.gitCommitter = gitVersionTokens['git.committer']
+    ext.gitShortMessage = gitVersionTokens['git.shortMessage']
+    ext.gitTime = gitVersionTokens['git.time']
+
     ext.codekvastDisplayVersion = "${codekvastVersion}-${gitId}".toString()
 
     repositories { jcenter() }

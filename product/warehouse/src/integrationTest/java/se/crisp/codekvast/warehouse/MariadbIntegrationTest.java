@@ -22,7 +22,6 @@ import javax.inject.Inject;
 import java.io.File;
 import java.net.URISyntaxException;
 
-import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -79,16 +78,14 @@ public class MariadbIntegrationTest {
     private ZipFileImporter importer;
 
     @Test
-    public void should_apply_flyway_migrations_on_empty_database() throws Exception {
+    public void should_apply_all_flyway_migrations_on_empty_database() throws Exception {
         // given
 
         // when
 
         // then
-        assertThat(flyway.info().applied().length, greaterThan(0));
+        assertThat(flyway.info().applied().length, is(9));
         assertThat(flyway.info().pending().length, is(0));
-
-        assertThat(countRowsInTable("import_file_info"), is(0));
     }
 
     @Test

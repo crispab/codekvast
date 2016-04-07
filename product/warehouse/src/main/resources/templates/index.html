@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Codekvast Warehouse v${project.codekvastDisplayVersion} (${project.gitTime}) -->
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:inline="text" ng-app="codekvastWarehouse" ng-strict-di="true">
 <head>
     <title>Codekvast Warehouse</title>
@@ -58,7 +59,7 @@
 
 <nav class="navbar navbar-default navbar-fixed-bottom codekvast-footer">
     <p class="text-right">
-        <small>Codekvast Warehouse v[[${@codekvastSettings.getDisplayVersion()}]] ([[${@codekvastSettings.getCommitDate()}]])</small>
+        <small>Codekvast Warehouse v${project.codekvastDisplayVersion} (${project.gitTime})</small>
     </p>
 </nav>
 
