@@ -2,13 +2,13 @@
 
 ## 0.17.6
 
-1. Refactored to enable in-memory tests with H2 database.
 1. Refactored daemon; renamed many classes and packages.
 1. Made all @Scheduled parameters configurable.
 1. Fixed auto-commit bug in warehouse zip file import.
 1. Added Docker-based integration test for ScpFileUploader.
 1. Added ready-checker support in testsupport's DockerContainer.
 1. Warehouse integration tests now use MariaDB in a Docker container.
+1. Improved test coverage.
 
 ## 0.17.5
 
