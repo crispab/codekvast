@@ -26,6 +26,7 @@ import se.crisp.codekvast.agent.lib.model.ExportFileMetaInfo;
 import se.crisp.codekvast.agent.lib.model.v1.ExportFileEntry;
 import se.crisp.codekvast.agent.lib.model.v1.JvmData;
 import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
+import se.crisp.codekvast.warehouse.file_import.ImportDAO.Jvm;
 
 import javax.inject.Inject;
 import java.io.*;
@@ -174,13 +175,13 @@ public class ZipFileImporterImpl implements ZipFileImporter {
 
     @SneakyThrows(IOException.class)
     private boolean doProcessJvm(ImportDAO.ImportContext context, String[] columns) {
-        ImportDAO.Jvm jvm = ImportDAO.Jvm.builder()
-                                         .localId(Long.valueOf(columns[0]))
-                                         .uuid(columns[1])
-                                         .startedAtMillis(Long.valueOf(columns[2]))
-                                         .dumpedAtMillis(Long.valueOf(columns[3]))
-                                         .jvmDataJson(columns[4])
-                                         .build();
+        Jvm jvm = Jvm.builder()
+                     .localId(Long.valueOf(columns[0]))
+                     .uuid(columns[1])
+                     .startedAtMillis(Long.valueOf(columns[2]))
+                     .dumpedAtMillis(Long.valueOf(columns[3]))
+                     .jvmDataJson(columns[4])
+                     .build();
         JvmData jvmData = objectMapper.readValue(jvm.getJvmDataJson(), JvmData.class);
         return importDAO.saveJvm(jvm, jvmData, context);
     }

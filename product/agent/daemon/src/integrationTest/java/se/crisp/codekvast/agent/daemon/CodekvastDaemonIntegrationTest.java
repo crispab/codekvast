@@ -111,12 +111,8 @@ public class CodekvastDaemonIntegrationTest {
 
     private JvmState createJvmState(CollectorConfig collectorConfig, String jvmUuid, long startedAtMillis) throws IOException {
         JvmState jvmState = new JvmState();
-        jvmState.setJvm(Jvm.builder()
+        jvmState.setJvm(Jvm.createSampleJvm().toBuilder()
                            .collectorConfig(collectorConfig)
-                           .collectorVcsId("collectorVcsId")
-                           .collectorVersion("collectorVersion")
-                           .computerId("computerId")
-                           .hostName("hostName")
                            .jvmUuid(jvmUuid)
                            .startedAtMillis(startedAtMillis)
                            .dumpedAtMillis(startedAtMillis + 20000)
@@ -127,12 +123,9 @@ public class CodekvastDaemonIntegrationTest {
     }
 
     private CollectorConfig createCollectorConfig(String appName, String appVersion) {
-        return CollectorConfigFactory.builder()
+        return CollectorConfigFactory.createSampleCollectorConfig().toBuilder()
                                      .appName(appName)
                                      .appVersion(appVersion)
-                                     .codeBase("codeBase")
-                                     .packages("packages")
-                                     .excludePackages("packages.excluded")
                                      .build();
     }
 

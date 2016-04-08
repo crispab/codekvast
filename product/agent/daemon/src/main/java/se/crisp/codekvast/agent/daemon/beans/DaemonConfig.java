@@ -35,7 +35,7 @@ import java.io.File;
 @Component
 @ConfigurationProperties(prefix = "codekvast")
 @Data
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class DaemonConfig {
@@ -66,5 +66,17 @@ public class DaemonConfig {
 
     public String getDisplayVersion() {
         return daemonVersion + "-" + daemonVcsId;
+    }
+
+    public static DaemonConfig createSampleDaemonConfig() {
+        return builder()
+                .daemonVcsId("daemonVcsId")
+                .daemonVersion("daemonVersion")
+                .dataPath(new File("dataPath"))
+                .dataProcessingIntervalSeconds(600)
+                .environment("environment")
+                .exportFile(new File("exportFile"))
+                .uploadToPath("uploadToPath")
+                .build();
     }
 }

@@ -1,6 +1,7 @@
 package se.crisp.codekvast.warehouse;
 
 import org.flywaydb.core.Flyway;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -13,17 +14,28 @@ import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
+import se.crisp.codekvast.agent.lib.model.ExportFileMetaInfo;
+import se.crisp.codekvast.agent.lib.model.v1.JvmData;
 import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 import se.crisp.codekvast.testsupport.docker.DockerContainer;
 import se.crisp.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
+import se.crisp.codekvast.warehouse.file_import.ImportDAO;
+import se.crisp.codekvast.warehouse.file_import.ImportDAO.Application;
+import se.crisp.codekvast.warehouse.file_import.ImportDAO.ImportContext;
+import se.crisp.codekvast.warehouse.file_import.ImportDAO.ImportStatistics;
 import se.crisp.codekvast.warehouse.file_import.ZipFileImporter;
 
 import javax.inject.Inject;
 import java.io.File;
 import java.net.URISyntaxException;
+import java.sql.Timestamp;
+import java.time.Duration;
+import java.util.UUID;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeTrue;
+import static se.crisp.codekvast.warehouse.file_import.ImportDAO.Jvm;
 
 /**
  * @author olle.hallin@crisp.se
@@ -34,32 +46,32 @@ import static org.junit.Assert.assertThat;
 @Transactional
 public class MariadbIntegrationTest {
 
-    private static final File ZIP_FILE1 = getZipFile("/file_import/sample-ltw-v1-1.zip");
-    private static final File ZIP_FILE2 = getZipFile("/file_import/sample-ltw-v1-2.zip");
-    private static final File ZIP_FILE3 = getZipFile("/file_import/sample-ltw-v1-3.zip");
+    private static final int PORT = 3306;
+    private static final String DATABASE = "codekvast_warehouse";
+    private static final String USERNAME = "codekvast";
+    private static final String PASSWORD = "codekvast";
 
     @ClassRule
     public static DockerContainer mariadb = DockerContainer
             .builder()
             .imageName("mariadb:10")
-            .port("3306")
+            .port("" + PORT)
 
             .env("MYSQL_ROOT_PASSWORD=root")
-            .env("MYSQL_DATABASE=codekvast_warehouse")
-            .env("MYSQL_USER=codekvast")
-            .env("MYSQL_PASSWORD=codekvast")
+            .env("MYSQL_DATABASE=" + DATABASE)
+            .env("MYSQL_USER=" + USERNAME)
+            .env("MYSQL_PASSWORD=" + PASSWORD)
 
             .readyChecker(
                     MariaDbContainerReadyChecker.builder()
                                                 .host("localhost")
-                                                .internalPort(3306)
-                                                .database("codekvast_warehouse")
-                                                .username("codekvast")
-                                                .password("codekvast")
+                                                .internalPort(PORT)
+                                                .database(DATABASE)
+                                                .username(USERNAME)
+                                                .password(PASSWORD)
                                                 .timeoutSeconds(120)
                                                 .assignJdbcUrlToSystemProperty("spring.datasource.url")
                                                 .build())
-            .leaveContainerRunning(true)
             .build();
 
     @ClassRule
@@ -77,8 +89,18 @@ public class MariadbIntegrationTest {
     @Inject
     private ZipFileImporter importer;
 
+    @Inject
+    private ImportDAO importDAO;
+
+    private ImportContext importContext = new ImportContext();
+
+    @Before
+    public void beforeTest() throws Exception {
+        assumeTrue(mariadb.isRunning());
+    }
+
     @Test
-    public void should_apply_all_flyway_migrations_on_empty_database() throws Exception {
+    public void should_apply_all_flyway_migrations_to_an_empty_database() throws Exception {
         // given
 
         // when
@@ -89,11 +111,11 @@ public class MariadbIntegrationTest {
     }
 
     @Test
-    public void should_handle_importing_same_zipFile_twice() throws Exception {
+    public void should_import_zipFile() throws Exception {
         // given
 
         // when
-        importer.importZipFile(ZIP_FILE1);
+        importer.importZipFile(getZipFile("/file_import/sample-ltw-v1-1.zip"));
 
         // then
         assertThat(countRowsInTable("import_file_info"), is(1));
@@ -101,34 +123,14 @@ public class MariadbIntegrationTest {
         assertThat(countRowsInTable("invocations"), is(11));
         assertThat(countRowsInTable("jvms"), is(2));
         assertThat(countRowsInTable("methods"), is(11));
-
-        // when
-        importer.importZipFile(ZIP_FILE1);
-
-        // then
-        assertThat(countRowsInTable("import_file_info"), is(1));
-    }
-
-    @Test
-    public void should_handle_importing_multiple_zips_from_same_app() throws Exception {
-        // given
-
-        // when
-        importer.importZipFile(ZIP_FILE1);
-        importer.importZipFile(ZIP_FILE2);
-        importer.importZipFile(ZIP_FILE3);
-
-        // then
-        assertThat(countRowsInTable("import_file_info"), is(3));
-        assertThat(countRowsInTable("applications"), is(1));
-        assertThat(countRowsInTable("invocations"), is(33));
-        assertThat(countRowsInTable("jvms"), is(4));
-        assertThat(countRowsInTable("methods"), is(11));
     }
 
     @Test
     @Sql(scripts = "/sql/base-data.sql")
-    public void should_store_status_enum_correctly() throws Exception {
+    public void should_store_all_signature_statuses_correctly() throws Exception {
+        // given
+
+        // when
         int methodId = 0;
         long now = System.currentTimeMillis();
         for (SignatureStatus status : SignatureStatus.values()) {
@@ -138,6 +140,144 @@ public class MariadbIntegrationTest {
                                 methodId, now, status.toString());
         }
 
+        // then
+        assertThat(countRowsInTable("invocations"), is(SignatureStatus.values().length));
+    }
+
+    @Test
+    public void should_reject_importing_same_file_twice() throws Exception {
+        // given
+        ExportFileMetaInfo metaInfo = ExportFileMetaInfo.createSampleExportFileMetaInfo();
+
+        ImportStatistics stats = ImportStatistics.builder()
+                                                 .fileSize("1.2 KB")
+                                                 .importFile(File.createTempFile("codekvast-import", ".zip"))
+                                                 .processingTime(Duration.ofMillis(100))
+                                                 .build();
+
+        assertThat(importDAO.isFileImported(metaInfo), is(false));
+
+        // when
+        importDAO.recordFileAsImported(metaInfo, stats);
+
+        // then
+        assertThat(importDAO.isFileImported(metaInfo), is(true));
+        assertThat(countRowsInTable("import_file_info"), is(1));
+
+        // when
+        importDAO.recordFileAsImported(metaInfo, stats);
+
+        // then
+        assertThat(importDAO.isFileImported(metaInfo), is(true));
+        assertThat(countRowsInTable("import_file_info"), is(1));
+    }
+
+    @Test
+    public void should_import_same_application_only_once() throws Exception {
+        // given
+        Application app = Application.builder()
+                                     .localId(10L)
+                                     .name("application")
+                                     .version("v1")
+                                     .createdAtMillis(System.currentTimeMillis())
+                                     .build();
+
+        // when
+        boolean imported = importDAO.saveApplication(app, importContext);
+
+        // then
+        assertThat(countRowsInTable("applications"), is(1));
+        assertThat(imported, is(true));
+        assertThat(importContext.getApplicationId(10L), is(1L));
+
+        // given same app is imported again, from a different daemon
+        app = app.toBuilder().localId(200L).build();
+
+        // when
+        imported = importDAO.saveApplication(app, importContext);
+
+        // then
+        assertThat(countRowsInTable("applications"), is(1));
+        assertThat(imported, is(false));
+        assertThat(importContext.getApplicationId(200L), is(1L));
+    }
+
+    @Test
+    public void should_import_application_with_different_versions() throws Exception {
+        // given
+        Application app1 = Application.builder()
+                                      .localId(10L)
+                                      .name("application")
+                                      .version("v1")
+                                      .createdAtMillis(System.currentTimeMillis())
+                                      .build();
+
+        // when
+        boolean imported = importDAO.saveApplication(app1, importContext);
+
+        // then
+        assertThat(countRowsInTable("applications"), is(1));
+        assertThat(imported, is(true));
+        assertThat(importContext.getApplicationId(10L), is(getCentralApplicationId(app1)));
+
+        // given same app is imported again, with a different version
+        Application app2 = app1.toBuilder().localId(11L).version("v2").build();
+
+        // when
+        imported = importDAO.saveApplication(app2, importContext);
+
+        // then
+        assertThat(countRowsInTable("applications"), is(2));
+        assertThat(imported, is(true));
+
+        assertThat(importContext.getApplicationId(10L), is(getCentralApplicationId(app1)));
+        assertThat(importContext.getApplicationId(11L), is(getCentralApplicationId(app2)));
+    }
+
+    @Test
+    public void should_import_or_update_jvm() throws Exception {
+        // given
+        JvmData jvmData = createJvmData(UUID.randomUUID().toString(), 1000L, 2000L);
+
+        Jvm jvm1 = Jvm.builder()
+                      .localId(100L)
+                      .uuid(jvmData.getJvmUuid())
+                      .jvmDataJson(jvmData.toString())
+                      .startedAtMillis(jvmData.getStartedAtMillis())
+                      .dumpedAtMillis(jvmData.getDumpedAtMillis())
+                      .build();
+        // when
+        boolean imported = importDAO.saveJvm(jvm1, jvmData, importContext);
+
+        // then
+        assertThat(imported, is(true));
+        assertThat(countRowsInTable("jvms"), is(1));
+        assertThat(countRowsInTableWhere("jvms", "dumpedAt=?", new Timestamp(2000)), is(1));
+
+        // given the same JVM is collected again
+        Jvm jvm2 = jvm1.toBuilder().dumpedAtMillis(3000L).build();
+
+        // when
+        imported = importDAO.saveJvm(jvm2, jvmData, importContext);
+
+        // then
+        assertThat(imported, is(false));
+        assertThat(countRowsInTable("jvms"), is(1));
+        assertThat(countRowsInTableWhere("jvms", "dumpedAt=?", new Timestamp(2000)), is(0));
+        assertThat(countRowsInTableWhere("jvms", "dumpedAt=?", new Timestamp(3000)), is(1));
+    }
+
+    private JvmData createJvmData(String jvmUuid, Long startedAtMillis, long dumpedAtMillis) {
+        return JvmData.createSampleJvmData().toBuilder()
+                      .jvmUuid(jvmUuid)
+                      .dumpedAtMillis(dumpedAtMillis)
+                      .startedAtMillis(startedAtMillis)
+                      .build();
+    }
+
+    private Long getCentralApplicationId(Application app) {
+        return jdbcTemplate
+                .queryForList("SELECT id FROM applications WHERE name=? AND version=?", Long.class, app.getName(), app.getVersion()).get(0);
     }
 
     private static File getZipFile(String name) {
@@ -150,5 +290,9 @@ public class MariadbIntegrationTest {
 
     private int countRowsInTable(String tableName) {
         return JdbcTestUtils.countRowsInTable(jdbcTemplate, tableName);
+    }
+
+    private int countRowsInTableWhere(String tableName, String where, Object... args) {
+        return jdbcTemplate.queryForObject("SELECT COUNT(1) FROM " + tableName + " WHERE " + where, Integer.class, args);
     }
 }

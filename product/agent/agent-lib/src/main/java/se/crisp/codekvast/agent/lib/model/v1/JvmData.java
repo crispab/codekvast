@@ -33,7 +33,7 @@ import lombok.*;
 @Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder
+@Builder(toBuilder = true)
 public class JvmData {
     //@formatter:off
     @NonNull private String appName;
@@ -57,4 +57,29 @@ public class JvmData {
     @NonNull private Long   startedAtMillis;
     @NonNull private String tags;
     //@formatter:on
+
+    public static JvmData createSampleJvmData() {
+        return builder()
+                .appName("appName")
+                .appVersion("appVersion")
+                .collectorComputerId("collectorComputerId")
+                .collectorHostName("collectorHostName")
+                .collectorResolutionSeconds(0)
+                .collectorVcsId("collectorVcsId")
+                .collectorVersion("collectorVersion")
+                .daemonComputerId("daemonComputerId")
+                .daemonHostName("daemonHostName")
+                .daemonVcsId("daemonVcsId")
+                .daemonVersion("daemonVersion")
+                .dumpedAtMillis(System.currentTimeMillis())
+                .environment("environment")
+                .excludePackages("exclude.packages")
+                .jvmUuid("jvmUuid")
+                .methodVisibility("public")
+                .packages("packages")
+                .startedAtMillis(System.currentTimeMillis())
+                .tags("tags")
+                .build();
+    }
+
 }

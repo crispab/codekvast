@@ -19,22 +19,19 @@ public class ExportFileMetaInfoTest {
 
         Set<String> lines = new HashSet<String>();
 
-        FileUtils.extractFieldValuesFrom(ExportFileMetaInfo.builder()
-                                                           .daemonHostname("some-hostname")
-                                                           .daemonVcsId("daemon Vcs:Id")
-                                                           .daemonVersion("daemon V1")
-                                                           .environment("some environment")
-                                                           .schemaVersion("V1")
-                                                           .uuid("uuid-value")
-                                                           .build(),
-                                         lines);
+        FileUtils.extractFieldValuesFrom(
+                ExportFileMetaInfo.createSampleExportFileMetaInfo()
+                                  .toBuilder()
+                                  .uuid("uuid-value")
+                                  .daemonVcsId("daemon Vcs:Id")
+                                  .build(), lines);
 
         assertThat(lines, hasItems(
-                "daemonHostname = some-hostname",
+                "daemonHostname = daemonHostname",
                 "daemonVcsId = daemon Vcs\\:Id",
-                "daemonVersion = daemon V1",
-                "schemaVersion = V1",
-                "environment = some environment",
+                "daemonVersion = daemonVersion",
+                "schemaVersion = 1",
+                "environment = environment",
                 "uuid = uuid-value"));
     }
 }

@@ -28,12 +28,13 @@ import lombok.Value;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.UUID;
 
 /**
  * @author olle.hallin@crisp.se
  */
 @Value
-@Builder
+@Builder(toBuilder = true)
 public class ExportFileMetaInfo {
 
     @NonNull private final String uuid;
@@ -47,13 +48,24 @@ public class ExportFileMetaInfo {
         Properties props = new Properties();
         props.load(is);
 
-        return ExportFileMetaInfo.builder()
-                                 .uuid(props.getProperty("uuid"))
-                                 .schemaVersion(props.getProperty("schemaVersion"))
-                                 .daemonVersion(props.getProperty("daemonVersion"))
-                                 .daemonVcsId(props.getProperty("daemonVcsId"))
-                                 .daemonHostname(props.getProperty("daemonHostname"))
-                                 .environment(props.getProperty("environment"))
-                                 .build();
+        return builder()
+                .uuid(props.getProperty("uuid"))
+                .schemaVersion(props.getProperty("schemaVersion"))
+                .daemonVersion(props.getProperty("daemonVersion"))
+                .daemonVcsId(props.getProperty("daemonVcsId"))
+                .daemonHostname(props.getProperty("daemonHostname"))
+                .environment(props.getProperty("environment"))
+                .build();
+    }
+
+    public static ExportFileMetaInfo createSampleExportFileMetaInfo() {
+        return builder()
+                .uuid(UUID.randomUUID().toString())
+                .schemaVersion("1")
+                .daemonVersion("daemonVersion")
+                .daemonVcsId("daemonVcsId")
+                .daemonHostname("daemonHostname")
+                .environment("environment")
+                .build();
     }
 }

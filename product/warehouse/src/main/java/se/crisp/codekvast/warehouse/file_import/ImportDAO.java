@@ -73,7 +73,7 @@ public interface ImportDAO {
     boolean saveInvocation(Invocation invocation, ImportContext context);
 
     @Value
-    @Builder
+    @Builder(toBuilder = true)
     class Application {
         @NonNull
         private final Long localId;
@@ -86,7 +86,7 @@ public interface ImportDAO {
     }
 
     @Value
-    @Builder
+    @Builder(toBuilder = true)
     class Jvm {
         @NonNull
         private final Long localId;

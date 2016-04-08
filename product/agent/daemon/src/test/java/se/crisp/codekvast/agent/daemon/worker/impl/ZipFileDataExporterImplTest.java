@@ -34,14 +34,9 @@ public class ZipFileDataExporterImplTest {
 
     @Before
     public void before() throws Exception {
-        config = DaemonConfig.builder()
-                             .daemonVcsId("daemonVcsId")
-                             .daemonVersion("daemonVersion")
-                             .dataPath(new File("foobar"))
-                             .dataProcessingIntervalSeconds(600)
-                             .environment(getClass().getSimpleName())
+        config = DaemonConfig.createSampleDaemonConfig()
+                             .toBuilder()
                              .exportFile(new File(temporaryFolder.getRoot(), "codekvast-data.zip"))
-                             .uploadToPath("uploadToPath")
                              .build();
 
         dataExporter = new ZipFileDataExporterImpl(jdbcTemplate, config);

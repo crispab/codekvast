@@ -43,13 +43,11 @@ public class InvocationRegistryTest {
         File dataPath = temporaryFolder.newFolder(".collector");
 
         //@formatter:off
-        config = CollectorConfigFactory.builder()
+        config = CollectorConfigFactory.createSampleCollectorConfig().toBuilder()
                                        .appName(APP_NAME)
                                        .appVersion(APP_VERSION)
                                        .codeBase(codeBase)
                                        .dataPath(dataPath)
-                                       .packages("se.crisp")
-                                       .excludePackages("")
                                        .build();
         //@formatter:on
         InvocationRegistry.initialize(config, new FileSystemInvocationDataDumper(config, CodekvastCollector.out));

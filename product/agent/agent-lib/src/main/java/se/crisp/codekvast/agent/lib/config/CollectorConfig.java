@@ -37,7 +37,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Setter(AccessLevel.PRIVATE)
-@Builder
+@Builder(toBuilder = true)
 public class CollectorConfig implements CodekvastConfig {
     public static final String INVOCATIONS_BASENAME = "invocations.dat";
     public static final String JVM_BASENAME = "jvm.dat";

@@ -37,11 +37,9 @@ public class CodeBaseScannerTest {
     }
 
     private CodeBase getCodeBase(String codeBase) {
-        return new CodeBase(CollectorConfigFactory.builder()
-                                                  .appName("appName")
+        return new CodeBase(CollectorConfigFactory.createSampleCollectorConfig().toBuilder()
                                                   .codeBase(new File(codeBase).getAbsolutePath())
                                                   .dataPath(temporaryFolder.getRoot())
-                                                  .methodVisibility("!private")
                                                   .packages(ScannerTest1.class.getPackage().getName())
                                                   .excludePackages(ExcludedScannerTest5.class.getPackage().getName())
                                                   .build());

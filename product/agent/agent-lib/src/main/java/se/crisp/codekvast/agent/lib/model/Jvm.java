@@ -30,6 +30,7 @@ import se.crisp.codekvast.agent.lib.util.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.UUID;
 
 /**
  * Data about one JVM that is instrumented with codekvast-collector.
@@ -40,7 +41,7 @@ import java.util.Properties;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Setter(AccessLevel.PRIVATE)
-@Builder
+@Builder(toBuilder = true)
 public class Jvm {
     @NonNull
     private String jvmUuid;
@@ -67,7 +68,7 @@ public class Jvm {
         Properties props = FileUtils.readPropertiesFrom(file);
 
         try {
-            return Jvm.builder()
+            return builder()
                       .collectorConfig(CollectorConfigFactory.buildCollectorConfig(props))
                       .collectorVcsId(props.getProperty("collectorVcsId"))
                       .collectorVersion(props.getProperty("collectorVersion"))
@@ -80,5 +81,18 @@ public class Jvm {
         } catch (Exception e) {
             throw new IOException("Cannot parse " + file, e);
         }
+    }
+
+    public static Jvm createSampleJvm() {
+        return builder()
+                .collectorConfig(CollectorConfigFactory.createSampleCollectorConfig())
+                .collectorVcsId("collectorVcsId")
+                .collectorVersion("collectorVersion")
+                .computerId("computerId")
+                .dumpedAtMillis(System.currentTimeMillis())
+                .hostName("hostName")
+                .jvmUuid(UUID.randomUUID().toString())
+                .startedAtMillis(System.currentTimeMillis())
+                .build();
     }
 }

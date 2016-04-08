@@ -30,7 +30,7 @@ import lombok.*;
  */
 @Value
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder
+@Builder(toBuilder = true)
 @ToString(of = "aspectjString")
 @EqualsAndHashCode(of = "aspectjString")
 public class MethodSignature {
@@ -50,4 +50,17 @@ public class MethodSignature {
     private final String parameterTypes;
     @NonNull
     private final String returnType;
+
+    public static MethodSignature createSampleMethodSignature() {
+        return builder()
+                .aspectjString("aspectjString")
+                .declaringType("declaringType")
+                .exceptionTypes("exceptionTypes")
+                .methodName("methodName")
+                .modifiers("modifiers")
+                .packageName("packageName")
+                .parameterTypes("parameterTypes")
+                .returnType("returnType")
+                .build();
+    }
 }

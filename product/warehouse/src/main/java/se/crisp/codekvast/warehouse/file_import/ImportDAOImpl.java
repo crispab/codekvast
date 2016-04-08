@@ -63,14 +63,20 @@ public class ImportDAOImpl implements ImportDAO {
 
     @Override
     public void recordFileAsImported(ExportFileMetaInfo metaInfo, ImportStatistics importStatistics) {
-        jdbcTemplate
-                .update("INSERT INTO import_file_info(uuid, fileSchemaVersion, fileName, fileLengthBytes, importedAt, importTimeMillis, " +
-                                "daemonHostname, daemonVersion, daemonVcsId, environment) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                        metaInfo.getUuid(), metaInfo.getSchemaVersion(), importStatistics.getImportFile().getPath(),
-                        importStatistics.getImportFile().length(), new Timestamp(System.currentTimeMillis()),
-                        importStatistics.getProcessingTime().toMillis(), metaInfo.getDaemonHostname(), metaInfo.getDaemonVersion(),
-                        metaInfo.getDaemonVcsId(), metaInfo.getEnvironment());
-        log.info("Imported {} {}", metaInfo, importStatistics);
+        if (isFileImported(metaInfo)) {
+            log.warn("Rejecting import of {}", metaInfo);
+        } else {
+            jdbcTemplate
+                    .update("INSERT INTO import_file_info(uuid, fileSchemaVersion, fileName, fileLengthBytes, importedAt, " +
+                                    "importTimeMillis, " +
+
+                                    "daemonHostname, daemonVersion, daemonVcsId, environment) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                            metaInfo.getUuid(), metaInfo.getSchemaVersion(), importStatistics.getImportFile().getPath(),
+                            importStatistics.getImportFile().length(), new Timestamp(System.currentTimeMillis()),
+                            importStatistics.getProcessingTime().toMillis(), metaInfo.getDaemonHostname(), metaInfo.getDaemonVersion(),
+                            metaInfo.getDaemonVcsId(), metaInfo.getEnvironment());
+            log.info("Imported {} {}", metaInfo, importStatistics);
+        }
     }
 
     @Override
@@ -164,6 +170,9 @@ public class ImportDAOImpl implements ImportDAO {
             log.trace("Stored JVM {}:{}", jvmId, jvm);
             return new InsertResult(jvmId, true);
         }
+
+        jdbcTemplate.update("UPDATE jvms SET dumpedAt=? WHERE uuid=?", new Timestamp(jvm.getDumpedAtMillis()), jvm.getUuid());
+        log.trace("Updated JVM {}:{}", jvmId, jvm);
         return new InsertResult(jvmId, false);
     }
 

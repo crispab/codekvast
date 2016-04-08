@@ -38,11 +38,9 @@ public class CodeBaseTest {
     }
 
     private CodeBase getCodeBase(String codeBase) {
-        return new CodeBase(CollectorConfigFactory.builder()
+        return new CodeBase(CollectorConfigFactory.createSampleCollectorConfig()
+                                                  .toBuilder()
                                                   .codeBase(new File(codeBase).getAbsolutePath())
-                                                  .packages("se.crisp")
-                                                  .excludePackages("")
-                                                  .appName("appName")
                                                   .build());
     }
 
