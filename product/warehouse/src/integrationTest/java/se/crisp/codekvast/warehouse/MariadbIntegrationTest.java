@@ -114,10 +114,11 @@ public class MariadbIntegrationTest {
     }
 
     @Test
-    public void should_import_zipFile() throws Exception {
+    public void should_import_zipFile_idempotently() throws Exception {
         // given
 
         // when
+        importer.importZipFile(getZipFile("/file_import/sample-ltw-v1-1.zip"));
         importer.importZipFile(getZipFile("/file_import/sample-ltw-v1-1.zip"));
 
         // then
