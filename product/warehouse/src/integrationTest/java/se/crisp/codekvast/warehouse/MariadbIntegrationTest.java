@@ -23,6 +23,7 @@ import se.crisp.codekvast.warehouse.file_import.ImportDAO;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO.Application;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO.ImportContext;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO.ImportStatistics;
+import se.crisp.codekvast.warehouse.file_import.ImportDAO.Invocation;
 import se.crisp.codekvast.warehouse.file_import.ZipFileImporter;
 
 import javax.inject.Inject;
@@ -33,9 +34,11 @@ import java.time.Duration;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeTrue;
 import static se.crisp.codekvast.warehouse.file_import.ImportDAO.Jvm;
+import static se.crisp.codekvast.warehouse.file_import.ImportDAO.Method;
 
 /**
  * @author olle.hallin@crisp.se
@@ -175,12 +178,7 @@ public class MariadbIntegrationTest {
     @Test
     public void should_import_same_application_only_once() throws Exception {
         // given
-        Application app = Application.builder()
-                                     .localId(10L)
-                                     .name("application")
-                                     .version("v1")
-                                     .createdAtMillis(System.currentTimeMillis())
-                                     .build();
+        Application app = createApplication(10L);
 
         // when
         boolean imported = importDAO.saveApplication(app, importContext);
@@ -205,12 +203,7 @@ public class MariadbIntegrationTest {
     @Test
     public void should_import_application_with_different_versions() throws Exception {
         // given
-        Application app1 = Application.builder()
-                                      .localId(10L)
-                                      .name("application")
-                                      .version("v1")
-                                      .createdAtMillis(System.currentTimeMillis())
-                                      .build();
+        Application app1 = createApplication(10L);
 
         // when
         boolean imported = importDAO.saveApplication(app1, importContext);
@@ -237,15 +230,9 @@ public class MariadbIntegrationTest {
     @Test
     public void should_import_or_update_jvm() throws Exception {
         // given
-        JvmData jvmData = createJvmData(UUID.randomUUID().toString(), 1000L, 2000L);
+        JvmData jvmData = createJvmData(1000L, 2000L);
+        Jvm jvm1 = createJvm(100L, jvmData);
 
-        Jvm jvm1 = Jvm.builder()
-                      .localId(100L)
-                      .uuid(jvmData.getJvmUuid())
-                      .jvmDataJson(jvmData.toString())
-                      .startedAtMillis(jvmData.getStartedAtMillis())
-                      .dumpedAtMillis(jvmData.getDumpedAtMillis())
-                      .build();
         // when
         boolean imported = importDAO.saveJvm(jvm1, jvmData, importContext);
 
@@ -267,9 +254,133 @@ public class MariadbIntegrationTest {
         assertThat(countRowsInTableWhere("jvms", "dumpedAt=?", new Timestamp(3000)), is(1));
     }
 
-    private JvmData createJvmData(String jvmUuid, Long startedAtMillis, long dumpedAtMillis) {
+    private Jvm createJvm(long localId, JvmData jvmData) {
+        return Jvm.builder()
+                  .localId(localId)
+                  .uuid(jvmData.getJvmUuid())
+                  .jvmDataJson(jvmData.toString())
+                  .startedAtMillis(jvmData.getStartedAtMillis())
+                  .dumpedAtMillis(jvmData.getDumpedAtMillis())
+                  .build();
+    }
+
+    @Test
+    public void should_import_method() throws Exception {
+        // given
+        Method m1 = createMethod(100, "m1");
+
+        // when
+        boolean imported = importDAO.saveMethod(m1, importContext);
+
+        // then
+        assertThat(imported, is(true));
+        assertThat(countRowsInTable("methods"), is(1));
+        assertThat(importContext.getMethodId(100L), not(is(100L)));
+
+        // given the same method is imported again with different localId
+        Method m2 = m1.toBuilder().localId(1000L).build();
+
+        // when
+        imported = importDAO.saveMethod(m2, importContext);
+
+        // then
+        assertThat(imported, is(false));
+        assertThat(countRowsInTable("methods"), is(1));
+        assertThat(importContext.getMethodId(100L), not(is(100L)));
+        assertThat(importContext.getMethodId(1000L), not(is(100L)));
+        assertThat(importContext.getMethodId(1000L), not(is(1000L)));
+    }
+
+    @Test
+    public void should_import_or_update_invocation() throws Exception {
+        // given
+        Application app = createApplication(10L);
+        Method method = createMethod(20L, "signature");
+        JvmData jvmData = createJvmData(1000L, 2000L);
+        Jvm jvm = createJvm(100L, jvmData);
+        importDAO.saveApplication(app, importContext);
+        importDAO.saveMethod(method, importContext);
+        importDAO.saveJvm(jvm, jvmData, importContext);
+
+        Invocation inv1 = Invocation.builder()
+                                    .localApplicationId(10L)
+                                    .localJvmId(100L)
+                                    .localMethodId(20L)
+                                    .invocationCount(1L)
+                                    .invokedAtMillis(10000L)
+                                    .status(SignatureStatus.EXACT_MATCH)
+                                    .build();
+
+        // when
+        boolean imported = importDAO.saveInvocation(inv1, importContext);
+
+        // then
+        assertThat(imported, is(true));
+        assertThat(countRowsInTable("invocations"), is(1));
+        assertThat(countRowsInTableWhere("invocations", "invokedAtMillis=?", 10000L), is(1));
+
+        // given the same invocation is saved with a newer timestamp
+        Invocation inv2 = inv1.toBuilder().invokedAtMillis(20000L).build();
+
+        // when
+        imported = importDAO.saveInvocation(inv2, importContext);
+
+        // then
+        assertThat(imported, is(true));
+        assertThat(countRowsInTable("invocations"), is(1));
+        assertThat(countRowsInTableWhere("invocations", "invokedAtMillis=?", inv1.getInvokedAtMillis()), is(0));
+        assertThat(countRowsInTableWhere("invocations", "invokedAtMillis=?", inv2.getInvokedAtMillis()), is(1));
+
+        // given the same invocation is saved again with the same timestamp
+
+        // when
+        imported = importDAO.saveInvocation(inv2, importContext);
+
+        // then
+        assertThat(imported, is(false));
+
+        // given the same invocation is saved again but with and older timestamp
+        Invocation inv3 = inv1.toBuilder().invokedAtMillis(inv2.getInvokedAtMillis() - 100).build();
+
+        // when
+        imported = importDAO.saveInvocation(inv3, importContext);
+
+        // then
+        assertThat(imported, is(false));
+        assertThat(countRowsInTable("invocations"), is(1));
+        assertThat(countRowsInTableWhere("invocations", "invokedAtMillis=?", inv1.getInvokedAtMillis()), is(0));
+        assertThat(countRowsInTableWhere("invocations", "invokedAtMillis=?", inv2.getInvokedAtMillis()), is(1));
+        assertThat(countRowsInTableWhere("invocations", "invokedAtMillis=?", inv3.getInvokedAtMillis()), is(0));
+    }
+
+    private Application createApplication(long localId) {
+        return Application.builder()
+                          .localId(localId)
+                          .name("application")
+                          .version("v1")
+                          .createdAtMillis(System.currentTimeMillis())
+                          .build();
+    }
+
+    private Method createMethod(long localId, String signature) {
+        return Method.builder()
+                     .localId(localId)
+                     .visibility("visibility")
+                     .signature(signature)
+                     .createdAtMillis(System.currentTimeMillis())
+                     .declaringType("declaringType")
+                     .exceptionTypes("exceptionTypes")
+                     .methodName("methodName")
+                     .modifiers("modifiers")
+                     .packageName("packageName")
+                     .parameterTypes("parameterTypes")
+                     .returnType("returnType")
+                     .build();
+    }
+
+    private JvmData createJvmData(Long startedAtMillis, long dumpedAtMillis) {
         return JvmData.createSampleJvmData().toBuilder()
-                      .jvmUuid(jvmUuid)
+                      .jvmUuid(UUID.randomUUID().toString())
                       .dumpedAtMillis(dumpedAtMillis)
                       .startedAtMillis(startedAtMillis)
                       .build();

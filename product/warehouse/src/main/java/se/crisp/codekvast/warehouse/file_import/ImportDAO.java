@@ -102,7 +102,7 @@ public interface ImportDAO {
 
     @SuppressWarnings("ClassWithTooManyFields")
     @Value
-    @Builder
+    @Builder(toBuilder = true)
     class Method {
         @NonNull
         private final Long localId;
@@ -129,7 +129,7 @@ public interface ImportDAO {
     }
 
     @Value
-    @Builder
+    @Builder(toBuilder = true)
     class Invocation {
         @NonNull
         private final Long localApplicationId;
