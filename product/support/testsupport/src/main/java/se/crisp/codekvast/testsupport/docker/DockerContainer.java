@@ -53,8 +53,11 @@ public class DockerContainer extends ExternalResource {
 
     private final Map<Integer, Integer> externalPorts = new HashMap<>();
 
-    private final boolean leaveContainerRunning;
+    private final String args;
 
+    private final boolean pullBeforeRun;
+
+    private final boolean leaveContainerRunning;
     public boolean isRunning() {
         return containerId != null;
     }
@@ -63,6 +66,10 @@ public class DockerContainer extends ExternalResource {
     protected void before() {
         String runCommand = buildDockerRunCommand();
         try {
+            if (pullBeforeRun) {
+                executeCommand("docker pull " + imageName);
+            }
+
             containerId = executeCommand(runCommand);
             log.debug("Container started, id={}", containerId);
 
@@ -178,6 +185,10 @@ public class DockerContainer extends ExternalResource {
             sb.append(" -e ").append(e);
         }
         sb.append(" ").append(imageName);
+
+        if (args != null) {
+            sb.append(" ").append(args);
+        }
         return sb.toString();
     }
 
