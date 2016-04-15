@@ -29,4 +29,13 @@ public class DockerContainerTest {
                                             .build();
         assertThat(dc.buildDockerRunCommand(), is("docker run -d imageName"));
     }
+
+    @Test
+    public void should_build_run_command_image_and_args() {
+        DockerContainer dc = DockerContainer.builder()
+                                            .imageName("imageName")
+                                            .args("arg1 arg2")
+                                            .build();
+        assertThat(dc.buildDockerRunCommand(), is("docker run -d imageName arg1 arg2"));
+    }
 }
