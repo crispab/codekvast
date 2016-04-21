@@ -19,6 +19,8 @@ import se.crisp.codekvast.agent.lib.model.v1.JvmData;
 import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 import se.crisp.codekvast.testsupport.docker.DockerContainer;
 import se.crisp.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
+import se.crisp.codekvast.warehouse.api.QueryService;
+import se.crisp.codekvast.warehouse.api.model.MethodDescriptor;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO.Application;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO.ImportContext;
@@ -31,10 +33,10 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.time.Duration;
+import java.util.List;
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeTrue;
 import static se.crisp.codekvast.warehouse.file_import.ImportDAO.Jvm;
@@ -94,6 +96,9 @@ public class MariadbIntegrationTest {
 
     @Inject
     private ImportDAO importDAO;
+
+    @Inject
+    private QueryService queryService;
 
     private ImportContext importContext = new ImportContext();
 
@@ -352,6 +357,18 @@ public class MariadbIntegrationTest {
         assertThat(countRowsInTableWhere("invocations", "invokedAtMillis=?", inv1.getInvokedAtMillis()), is(0));
         assertThat(countRowsInTableWhere("invocations", "invokedAtMillis=?", inv2.getInvokedAtMillis()), is(1));
         assertThat(countRowsInTableWhere("invocations", "invokedAtMillis=?", inv3.getInvokedAtMillis()), is(0));
+    }
+
+    @Test
+    public void should_query_signature_correctly() throws Exception {
+        // given
+        importer.importZipFile(getZipFile("/file_import/sample-ltw-v1-1.zip"));
+
+        // when
+        List<MethodDescriptor> methods = queryService.findMethodsBySignature(null);
+
+        // then
+        assertThat(methods, hasSize(11));
     }
 
     private Application createApplication(long localId) {
