@@ -69,7 +69,7 @@ public enum SignatureStatus {
 
     /**
      * The signature was found in the code base but was excluded from being tracked since it is a trivial method (setter, getter, equals(),
-     * hashCode(), toString() etc.
+     * hashCode(), toString() etc).
      */
     EXCLUDED_SINCE_TRIVIAL(7);
 
