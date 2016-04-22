@@ -222,7 +222,7 @@ public class ImportDAOImpl implements ImportDAO {
     }
 
     @RequiredArgsConstructor
-    private static class InsertJvmStatement implements PreparedStatementCreator {
+    public static class InsertJvmStatement implements PreparedStatementCreator {
         private final Jvm jvm;
         private final JvmData jvmData;
 

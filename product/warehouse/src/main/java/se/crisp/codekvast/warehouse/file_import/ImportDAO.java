@@ -161,15 +161,15 @@ public interface ImportDAO {
         private final Map<Long, Long> centralMethodIdByLocalId = new HashMap<>();
         private final Map<Long, Long> centralJvmIdByLocalId = new HashMap<>();
 
-        public void putApplication(Long centralId, Application app) {
+        void putApplication(Long centralId, Application app) {
             centralApplicationIdByLocalId.put(app.getLocalId(), centralId);
         }
 
-        public void putMethod(Long centralId, Method method) {
+        void putMethod(Long centralId, Method method) {
             centralMethodIdByLocalId.put(method.getLocalId(), centralId);
         }
 
-        public void putJvm(Long centralId, Jvm jvm) {
+        void putJvm(Long centralId, Jvm jvm) {
             centralJvmIdByLocalId.put(jvm.getLocalId(), centralId);
         }
 
@@ -181,7 +181,7 @@ public interface ImportDAO {
             return centralMethodIdByLocalId.get(localId);
         }
 
-        public long getJvmId(Long localId) {
+        long getJvmId(Long localId) {
             return centralJvmIdByLocalId.get(localId);
         }
 

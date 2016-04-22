@@ -20,6 +20,7 @@ import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 import se.crisp.codekvast.testsupport.docker.DockerContainer;
 import se.crisp.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
 import se.crisp.codekvast.warehouse.api.QueryService;
+import se.crisp.codekvast.warehouse.api.model.ApplicationId;
 import se.crisp.codekvast.warehouse.api.model.MethodDescriptor;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO.Application;
@@ -27,29 +28,37 @@ import se.crisp.codekvast.warehouse.file_import.ImportDAO.ImportContext;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO.ImportStatistics;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO.Invocation;
 import se.crisp.codekvast.warehouse.file_import.ZipFileImporter;
+import se.crisp.codekvast.warehouse.testdata.TestDataGenerator;
 
 import javax.inject.Inject;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.TemporalUnit;
 import java.util.List;
 import java.util.UUID;
 
+import static java.time.temporal.ChronoUnit.DAYS;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeTrue;
 import static se.crisp.codekvast.warehouse.file_import.ImportDAO.Jvm;
 import static se.crisp.codekvast.warehouse.file_import.ImportDAO.Method;
+import static se.crisp.codekvast.warehouse.testdata.ImportDescriptor.*;
 
 /**
  * @author olle.hallin@crisp.se
  */
-@SpringApplicationConfiguration(classes = CodekvastWarehouse.class)
+@SpringApplicationConfiguration(classes = {CodekvastWarehouse.class, TestDataGenerator.class})
 @IntegrationTest
 @ActiveProfiles({"integrationTest"})
 @Transactional
 public class MariadbIntegrationTest {
+
+    private final long days = 24 * 60 * 60 * 1000L;
+    private final long now = System.currentTimeMillis();
 
     private static final int PORT = 3306;
     private static final String DATABASE = "codekvast_warehouse";
@@ -100,6 +109,9 @@ public class MariadbIntegrationTest {
     @Inject
     private QueryService queryService;
 
+    @Inject
+    private TestDataGenerator testDataGenerator;
+
     private ImportContext importContext = new ImportContext();
 
     @Before
@@ -141,7 +153,6 @@ public class MariadbIntegrationTest {
 
         // when
         int methodId = 0;
-        long now = System.currentTimeMillis();
         for (SignatureStatus status : SignatureStatus.values()) {
             methodId += 1;
             jdbcTemplate.update("INSERT INTO invocations(applicationId, methodId, jvmId, invokedAtMillis, " +
@@ -362,13 +373,111 @@ public class MariadbIntegrationTest {
     @Test
     public void should_query_signature_correctly() throws Exception {
         // given
-        importer.importZipFile(getZipFile("/file_import/sample-ltw-v1-1.zip"));
+        ImportDescriptorBuilder builder = builder()
+                .now(now)
 
-        // when
+                .app("1 app1 1.0")
+                .app("2 app2 2.0")
+
+                .method(testDataGenerator.getMethod(0))
+                .method(testDataGenerator.getMethod(1))
+                .method(testDataGenerator.getMethod(2))
+
+                .jvm(createJvm(1,
+                               adjust(now, -10, DAYS),
+                               adjust(now, -1, DAYS),
+                               "environment1",
+                               "host1",
+                               "tag1=1, tag2=1"))
+                .jvm(createJvm(2,
+                               adjust(now, -20, DAYS),
+                               adjust(now, -11, DAYS),
+                               "environment2",
+                               "host2",
+                               "tag1=2, tag2=2"))
+                .jvm(createJvm(3,
+                               adjust(now, -30, DAYS),
+                               adjust(now, -29, DAYS),
+                               "environment3",
+                               "host3",
+                               "tag1=3, tag2=3"));
+
+        for (long appId = 1; appId <= 2; appId++) {
+            for (long methodId = 1; methodId <= 3; methodId++) {
+                for (long jvmId = 1; jvmId <= 3; jvmId++) {
+                    long hash = appId * 100 + methodId * 10 + jvmId;
+
+                    builder.invocation(Invocation.builder()
+                                                 .localApplicationId(appId)
+                                                 .localMethodId(methodId)
+                                                 .localJvmId(jvmId)
+                                                 .status(SignatureStatus.EXACT_MATCH)
+                                                 .invocationCount(hash)
+                                                 .invokedAtMillis(hash)
+                                                 .build());
+                }
+            }
+        }
+        testDataGenerator.simulateFileImport(builder.build());
+
+        // when - find all
         List<MethodDescriptor> methods = queryService.findMethodsBySignature(null);
 
         // then
-        assertThat(methods, hasSize(11));
+        assertThat(methods, hasSize(3));
+
+        // when find exact signature
+        methods = queryService.findMethodsBySignature(testDataGenerator.getMethod(1).getSignature());
+
+        // then
+        assertThat(methods, hasSize(1));
+
+        // when find signature substring
+        methods = queryService.findMethodsBySignature(testDataGenerator.getMethod(1).getSignature().substring(3, 10));
+
+        // then
+        assertThat(methods, hasSize(1));
+
+        MethodDescriptor md = methods.get(0);
+        ApplicationId app1 = ApplicationId.of("app1", "1.0");
+        ApplicationId app2 = ApplicationId.of("app2", "2.0");
+
+        assertThat(md.getOccursInApplications().keySet(), contains(app1, app2));
+
+        assertThat(toDaysAgo(md.getCollectedSinceMillis()), is(30));
+        // TODO: assertThat(toDaysAgo(md.getCollectedToMillis()), is(1));
+
+        // when find non-existing signature
+        methods = queryService.findMethodsBySignature("foobar");
+
+        // then
+        assertThat(methods, hasSize(0));
+    }
+
+    int toDaysAgo(long timestamp) {
+        return Math.toIntExact((now - timestamp) / days);
+    }
+
+    private JvmDataPair createJvm(long localId, long startedAtMillis, long dumpedAtMillis, String environment, String hostName,
+                                  String tags) {
+        return new JvmDataPair(
+                Jvm.builder()
+                   .dumpedAtMillis(dumpedAtMillis)
+                   .jvmDataJson("not-used")
+                   .localId(localId)
+                   .startedAtMillis(startedAtMillis)
+                   .uuid("uuid" + localId)
+                   .build(),
+                JvmData.createSampleJvmData().toBuilder()
+                       .collectorHostName(hostName)
+                       .environment(environment)
+                       .tags(tags)
+                       .build()
+        );
+    }
+
+    private long adjust(long instant, int duration, TemporalUnit unit) {
+        return Instant.ofEpochMilli(instant).plus(duration, unit).toEpochMilli();
     }
 
     private Application createApplication(long localId) {

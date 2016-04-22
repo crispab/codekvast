@@ -30,6 +30,7 @@ public class MethodDescriptorTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final MethodDescriptor methodDescriptor = MethodDescriptor.builder()
+                                                                      .id(1L)
                                                                       .declaringType("declaringType")
                                                                       .modifiers("")
                                                                       .occursInApplication(

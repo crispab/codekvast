@@ -15,6 +15,9 @@ import java.util.SortedSet;
 @Builder(toBuilder = true)
 public class MethodDescriptor {
     @NonNull
+    private final Long id;
+
+    @NonNull
     private final String signature;
 
     /**
@@ -26,13 +29,10 @@ public class MethodDescriptor {
     /**
      * static, final, etc
      */
-    @NonNull
     private final String modifiers;
 
-    @NonNull
     private final String packageName;
 
-    @NonNull
     private final String declaringType;
 
     /**

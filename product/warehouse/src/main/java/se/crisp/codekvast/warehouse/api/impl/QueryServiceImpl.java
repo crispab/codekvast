@@ -16,6 +16,8 @@ import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -45,7 +47,8 @@ public class QueryServiceImpl implements QueryService {
                                    "  JOIN methods m ON m.id = i.methodId\n" +
                                    "  JOIN jvms j ON j.id = i.jvmId\n" +
                                    "WHERE m.signature LIKE ?\n" +
-                                   "ORDER BY m.id, j.startedAt, j.dumpedAt, i.invokedAtMillis", rowCallbackHandler, sig);
+                                   "ORDER BY i.methodId ASC, j.startedAt DESC, j.dumpedAt ASC, i.invokedAtMillis ASC", rowCallbackHandler,
+                           sig);
 
         return rowCallbackHandler.getResult();
     }
@@ -58,11 +61,16 @@ public class QueryServiceImpl implements QueryService {
         @Override
         public void processRow(ResultSet rs) throws SQLException {
             long id = rs.getLong("methodId");
+            String signature = rs.getString("signature");
+
             if (!queryState.isSameMethod(id)) {
+                // The query is sorted on methodId
+                log.trace("Found method {}:{}", id, signature);
                 queryState.addTo(result);
                 queryState = new QueryState(id);
             }
 
+            queryState.countRow();
             long startedAt = rs.getTimestamp("startedAt").getTime();
             long dumpedAt = rs.getTimestamp("dumpedAt").getTime();
             long invokedAtMillis = rs.getLong("invokedAtMillis");
@@ -79,7 +87,7 @@ public class QueryServiceImpl implements QueryService {
                    .collectedInEnvironment(rs.getString("environment"),
                                            EnvironmentDescriptor.builder()
                                                                 .hostName(rs.getString("collectorHostname"))
-                                                                .tag(rs.getString("tags"))
+                                                                .tags(splitOnCommaOrSemicolon(rs.getString("tags")))
                                                                 .collectedSinceMillis(startedAt)
                                                                 .collectedToMillis(dumpedAt)
                                                                 .invokedAtMillis(invokedAtMillis)
@@ -87,7 +95,7 @@ public class QueryServiceImpl implements QueryService {
                    .declaringType(rs.getString("declaringType"))
                    .modifiers(rs.getString("modifiers"))
                    .packageName(rs.getString("packageName"))
-                   .signature(rs.getString("signature"))
+                   .signature(signature)
                    .visibility(rs.getString("visibility"));
         }
 
@@ -97,15 +105,21 @@ public class QueryServiceImpl implements QueryService {
         }
     }
 
+    private Collection<String> splitOnCommaOrSemicolon(String tags) {
+        String[] strings = tags.split("\\s*[,;]\\s");
+        return Arrays.asList(strings);
+    }
+
     @RequiredArgsConstructor
     private class QueryState {
         private final long methodId;
 
         MethodDescriptor.MethodDescriptorBuilder builder;
+        private int rows;
 
         MethodDescriptor.MethodDescriptorBuilder getBuilder() {
             if (builder == null) {
-                builder = MethodDescriptor.builder();
+                builder = MethodDescriptor.builder().id(methodId);
             }
             return builder;
         }
@@ -116,9 +130,13 @@ public class QueryServiceImpl implements QueryService {
 
         void addTo(List<MethodDescriptor> result) {
             if (builder != null) {
+                log.debug("Adding method {} to result ({} result set rows)", methodId, rows);
                 result.add(builder.build());
             }
         }
 
+        void countRow() {
+            rows += 1;
+        }
     }
 }

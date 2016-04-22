@@ -52,6 +52,7 @@ dependencies {
     testCompile 'org.springframework.boot:spring-boot-starter-test'
 
     integrationTestCompile project(':product:support:testsupport')
+    integrationTestCompileOnly lombok
     integrationTestRuntime mariadbDriver
 
     springLoaded springLoadedAgent
