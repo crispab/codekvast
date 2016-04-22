@@ -8,13 +8,13 @@ import org.springframework.stereotype.Service;
 import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 import se.crisp.codekvast.warehouse.api.QueryService;
 import se.crisp.codekvast.warehouse.api.model.ApplicationDescriptor;
+import se.crisp.codekvast.warehouse.api.model.ApplicationId;
 import se.crisp.codekvast.warehouse.api.model.EnvironmentDescriptor;
 import se.crisp.codekvast.warehouse.api.model.MethodDescriptor;
 
 import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +45,7 @@ public class QueryServiceImpl implements QueryService {
                                    "  JOIN methods m ON m.id = i.methodId\n" +
                                    "  JOIN jvms j ON j.id = i.jvmId\n" +
                                    "WHERE m.signature LIKE ?\n" +
-                                   "ORDER BY m.id ASC, i.invokedAtMillis ASC", rowCallbackHandler, sig);
+                                   "ORDER BY m.id, j.startedAt, j.dumpedAt, i.invokedAtMillis", rowCallbackHandler, sig);
 
         return rowCallbackHandler.getResult();
     }
@@ -53,103 +53,72 @@ public class QueryServiceImpl implements QueryService {
     private class MethodDescriptorRowCallbackHandler implements RowCallbackHandler {
         private final List<MethodDescriptor> result = new ArrayList<>();
 
-        State state = new State(-1L);
+        QueryState queryState = new QueryState(-1L);
 
         @Override
         public void processRow(ResultSet rs) throws SQLException {
             long id = rs.getLong("methodId");
-            if (!state.isSameMethod(id)) {
-                state.addTo(result);
-                state = new State(id);
+            if (!queryState.isSameMethod(id)) {
+                queryState.addTo(result);
+                queryState = new QueryState(id);
             }
-            Long invokedAtMillis = rs.getLong("invokedAtMillis");
-            Timestamp startedAt = rs.getTimestamp("startedAt");
-            Timestamp dumpedAt = rs.getTimestamp("dumpedAt");
 
-            MethodDescriptor.MethodDescriptorBuilder builder = state.getBuilder();
-            builder.occursInApplication(ApplicationDescriptor
+            long startedAt = rs.getTimestamp("startedAt").getTime();
+            long dumpedAt = rs.getTimestamp("dumpedAt").getTime();
+            long invokedAtMillis = rs.getLong("invokedAtMillis");
+
+            MethodDescriptor.MethodDescriptorBuilder builder = queryState.getBuilder();
+            builder.occursInApplication(ApplicationId.of(rs.getString("appName"), rs.getString("appVersion")),
+                                        ApplicationDescriptor
                                                 .builder()
-                                                .name(rs.getString("appName"))
-                                                .version(rs.getString("appVersion"))
+                                                .startedAtMillis(startedAt)
+                                                .dumpedAtMillis(dumpedAt)
                                                 .invokedAtMillis(invokedAtMillis)
                                                 .status(SignatureStatus.valueOf(rs.getString("status")))
                                                 .build())
-                   .collectedInEnvironment(EnvironmentDescriptor.builder()
-                                                                .name(rs.getString("environment"))
+                   .collectedInEnvironment(rs.getString("environment"),
+                                           EnvironmentDescriptor.builder()
                                                                 .hostName(rs.getString("collectorHostname"))
                                                                 .tag(rs.getString("tags"))
-                                                                .collectedSinceMillis(startedAt.getTime())
-                                                                .collectedDays(getDaysBetween(startedAt, dumpedAt))
+                                                                .collectedSinceMillis(startedAt)
+                                                                .collectedToMillis(dumpedAt)
+                                                                .invokedAtMillis(invokedAtMillis)
                                                                 .build())
                    .declaringType(rs.getString("declaringType"))
                    .modifiers(rs.getString("modifiers"))
                    .packageName(rs.getString("packageName"))
                    .signature(rs.getString("signature"))
                    .visibility(rs.getString("visibility"));
-
-            state.updateLastInvokedAtMillis(invokedAtMillis)
-                 .updateMinStartedAt(startedAt)
-                 .updateMaxDumpedAt(dumpedAt);
         }
 
-        public List<MethodDescriptor> getResult() {
-            state.addTo(result);
+        private List<MethodDescriptor> getResult() {
+            queryState.addTo(result);
             return result;
         }
+    }
 
-        @RequiredArgsConstructor
-        private class State {
-            private final long methodId;
+    @RequiredArgsConstructor
+    private class QueryState {
+        private final long methodId;
 
-            Long lastInvokedAtMillis = 0L;
-            Timestamp minStartedAt = new Timestamp(Long.MAX_VALUE);
-            Timestamp maxDumpedAt = new Timestamp(0L);
-            MethodDescriptor.MethodDescriptorBuilder builder;
+        MethodDescriptor.MethodDescriptorBuilder builder;
 
-            MethodDescriptor.MethodDescriptorBuilder getBuilder() {
-                if (builder == null) {
-                    builder = MethodDescriptor.builder();
-                }
-                return builder;
+        MethodDescriptor.MethodDescriptorBuilder getBuilder() {
+            if (builder == null) {
+                builder = MethodDescriptor.builder();
             }
-
-            State updateLastInvokedAtMillis(long invokedAtMillis) {
-                this.lastInvokedAtMillis = Math.max(this.lastInvokedAtMillis, invokedAtMillis);
-                return this;
-            }
-
-            State updateMinStartedAt(Timestamp startedAt) {
-                if (startedAt.before(minStartedAt)) {
-                    minStartedAt = startedAt;
-                }
-                return this;
-            }
-
-            State updateMaxDumpedAt(Timestamp dumpedAt) {
-                if (dumpedAt.after(maxDumpedAt)) {
-                    maxDumpedAt = dumpedAt;
-                }
-                return this;
-            }
-
-            public boolean isSameMethod(long id) {
-                return id == this.methodId;
-            }
-
-            public void addTo(List<MethodDescriptor> result) {
-                if (builder != null) {
-                    result.add(builder.lastInvokedAtMillis(lastInvokedAtMillis)
-                                      .collectedSinceMillis(minStartedAt.getTime())
-                                      .collectedDays(getDaysBetween(minStartedAt, maxDumpedAt))
-                                      .build());
-                }
-            }
-
+            return builder;
         }
 
-        private int getDaysBetween(Timestamp first, Timestamp last) {
-            int millisPerDay = 24 * 60 * 60 * 1000;
-            return (int) (last.getTime() - first.getTime()) / millisPerDay;
+        boolean isSameMethod(long id) {
+            return id == this.methodId;
         }
+
+        void addTo(List<MethodDescriptor> result) {
+            if (builder != null) {
+                result.add(builder.build());
+            }
+        }
+
     }
 }

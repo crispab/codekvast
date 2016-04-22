@@ -4,13 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 import se.crisp.codekvast.warehouse.api.model.ApplicationDescriptor;
+import se.crisp.codekvast.warehouse.api.model.ApplicationId;
 import se.crisp.codekvast.warehouse.api.model.EnvironmentDescriptor;
 import se.crisp.codekvast.warehouse.api.model.MethodDescriptor;
 
-import java.time.Instant;
-
-import static java.time.temporal.ChronoUnit.DAYS;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -18,59 +17,72 @@ import static org.junit.Assert.assertThat;
  */
 public class MethodDescriptorTest {
 
+    private final long days = 24 * 60 * 60 * 1000L;
+    private final long now = System.currentTimeMillis();
+
+    private final long oneDayAgo = now - 1 * days;
+    private final long twoDaysAgo = now - 2 * days;
+    private final long twelveDaysAgo = now - 12 * days;
+    private final long fourteenDaysAgo = now - 14 * days;
+    private final long fifteenDaysAgo = now - 15 * days;
+    private final long never = 0L;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final MethodDescriptor methodDescriptor = MethodDescriptor.builder()
-                                                                      .collectedDays(30)
-                                                                      .collectedSinceMillis(0L)
                                                                       .declaringType("declaringType")
-                                                                      .lastInvokedAtMillis(null)
                                                                       .modifiers("")
                                                                       .occursInApplication(
+                                                                              ApplicationId.of("app1", "1.3"),
                                                                               ApplicationDescriptor.builder()
-                                                                                                   .name("app1")
-                                                                                                   .version("1.2")
-                                                                                                   .status(SignatureStatus
-                                                                                                                   .EXCLUDED_BY_PACKAGE_NAME)
-                                                                                                   .invokedAtMillis(0L)
-                                                                                                   .build())
-                                                                      .occursInApplication(
-                                                                              ApplicationDescriptor.builder()
-                                                                                                   .name("app1")
-                                                                                                   .version("1.3")
                                                                                                    .status(SignatureStatus.EXACT_MATCH)
-                                                                                                   .invokedAtMillis(
-                                                                                                           System.currentTimeMillis())
+                                                                                                   .startedAtMillis(twelveDaysAgo)
+                                                                                                   .dumpedAtMillis(oneDayAgo)
+                                                                                                   .invokedAtMillis(twoDaysAgo)
                                                                                                    .build())
                                                                       .occursInApplication(
+                                                                              ApplicationId.of("app1", "1.2"),
                                                                               ApplicationDescriptor.builder()
-                                                                                                   .name("app1")
-                                                                                                   .version("1.2")
                                                                                                    .status(SignatureStatus
                                                                                                                    .EXCLUDED_BY_PACKAGE_NAME)
-                                                                                                   .invokedAtMillis(0L)
+                                                                                                   .startedAtMillis(fourteenDaysAgo)
+                                                                                                   .dumpedAtMillis(twelveDaysAgo)
+                                                                                                   .invokedAtMillis(never)
+                                                                                                   .build())
+                                                                      .occursInApplication(
+                                                                              ApplicationId.of("app1", "1.2"),
+                                                                              ApplicationDescriptor.builder()
+                                                                                                   .status(SignatureStatus
+                                                                                                                   .EXCLUDED_BY_PACKAGE_NAME)
+                                                                                                   .startedAtMillis(fifteenDaysAgo)
+                                                                                                   .dumpedAtMillis(twelveDaysAgo)
+                                                                                                   .invokedAtMillis(never)
                                                                                                    .build())
                                                                       .collectedInEnvironment(
+                                                                              "test",
                                                                               EnvironmentDescriptor.builder()
-                                                                                                   .name("test")
-                                                                                                   .collectedSinceMillis(0L)
-                                                                                                   .collectedDays(3)
+                                                                                                   .collectedSinceMillis(twelveDaysAgo)
+                                                                                                   .collectedToMillis(oneDayAgo)
+                                                                                                   .invokedAtMillis(twoDaysAgo)
                                                                                                    .build())
                                                                       .collectedInEnvironment(
+                                                                              "training",
                                                                               EnvironmentDescriptor.builder()
-                                                                                                   .name("training")
-                                                                                                   .collectedSinceMillis(
-                                                                                                           Instant.now().minus(27, DAYS)
-                                                                                                                  .toEpochMilli())
-                                                                                                   .collectedDays(27)
+                                                                                                   .collectedSinceMillis(fifteenDaysAgo)
+                                                                                                   .collectedToMillis(oneDayAgo)
+                                                                                                   .invokedAtMillis(twoDaysAgo)
                                                                                                    .build())
                                                                       .collectedInEnvironment(
+                                                                              "customer1",
                                                                               EnvironmentDescriptor.builder()
-                                                                                                   .name("customer1")
-                                                                                                   .collectedSinceMillis(
-                                                                                                           Instant.now().minus(33, DAYS)
-                                                                                                                  .toEpochMilli())
-                                                                                                   .collectedDays(33)
+                                                                                                   .collectedSinceMillis(twelveDaysAgo)
+                                                                                                   .collectedToMillis(twoDaysAgo)
+                                                                                                   .invokedAtMillis(twoDaysAgo)
+                                                                                                   .hostName("server1.customer1.com")
+                                                                                                   .hostName("server2.customer1.com")
+                                                                                                   .tag("foo=1")
+                                                                                                   .tag("bar=2")
+                                                                                                   .tag("baz")
                                                                                                    .build())
                                                                       .packageName("packageName")
                                                                       .signature("signature")
@@ -78,30 +90,35 @@ public class MethodDescriptorTest {
                                                                       .build();
 
     @Test
-    public void should_serializable_not_invoked_method_to_JSON() throws Exception {
+    public void should_calculate_min_max_correctly() throws Exception {
         // given
-        MethodDescriptor md = methodDescriptor.toBuilder().lastInvokedAtMillis(null).build();
 
         // when
-        String json = objectMapper.writeValueAsString(md);
 
         // then
-        assertThat(json, containsString("\"lastInvokedAtMillis\":null"));
+        assertThat(toDaysAgo(methodDescriptor.getCollectedSinceMillis()), is(toDaysAgo(fifteenDaysAgo)));
+        assertThat(toDaysAgo(methodDescriptor.getCollectedToMillis()), is(toDaysAgo(oneDayAgo)));
+        assertThat(methodDescriptor.getCollectedDays(), is(14));
+        assertThat(toDaysAgo(methodDescriptor.getLastInvokedAtMillis()), is(toDaysAgo(twoDaysAgo)));
+    }
+
+    int toDaysAgo(long timestamp) {
+        return Math.toIntExact((now - timestamp) / days);
     }
 
     @Test
-    public void should_serializable_invoked_method_to_JSON() throws Exception {
+    public void should_serializable_to_JSON() throws Exception {
         // given
-        MethodDescriptor md = methodDescriptor.toBuilder().lastInvokedAtMillis(1000L).build();
+        long lastInvokedAtMillis = methodDescriptor.getLastInvokedAtMillis();
 
         // when
-        String json = objectMapper.writeValueAsString(md);
+        String json = objectMapper.writeValueAsString(methodDescriptor);
 
         // then
-        assertThat(json, containsString("\"lastInvokedAtMillis\":1000"));
+        assertThat(json, containsString("\"lastInvokedAtMillis\":" + lastInvokedAtMillis));
 
         System.out.println("json = " + objectMapper.writer()
                                                    .withDefaultPrettyPrinter()
-                                                   .writeValueAsString(md));
+                                                   .writeValueAsString(methodDescriptor));
     }
 }

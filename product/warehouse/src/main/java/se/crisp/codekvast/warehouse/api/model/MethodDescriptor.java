@@ -5,7 +5,8 @@ import lombok.NonNull;
 import lombok.Singular;
 import lombok.Value;
 
-import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
 
 /**
  * @author olle.hallin@crisp.se
@@ -38,29 +39,42 @@ public class MethodDescriptor {
      * Copied over from codekvast-collector.conf
      */
     @Singular
-    private final Set<String> tags;
+    private final SortedSet<String> tags;
 
     @Singular
-    private final Set<ApplicationDescriptor> occursInApplications;
+    private final SortedMap<ApplicationId, ApplicationDescriptor> occursInApplications;
 
     @Singular
-    private final Set<EnvironmentDescriptor> collectedInEnvironments;
+    private final SortedMap<String, EnvironmentDescriptor> collectedInEnvironments;
 
     /**
-     * Convenience: maximum value of occursInApplications.invokedAtMillis;
+     * Maximum value of occursInApplications.invokedAtMillis;
      */
-    private final Long lastInvokedAtMillis;
+    public long getLastInvokedAtMillis() {
+        return occursInApplications.values().stream().map(ApplicationDescriptor::getInvokedAtMillis).reduce(Math::max).orElse(0L);
+    }
 
     /**
-     * Convenience: the minimum value of collectedInEnvironments.collectedSince
+     * Minimum value of occursInApplications.startedAtMillis
      */
-    @NonNull
-    private final Long collectedSinceMillis;
+    public long getCollectedSinceMillis() {
+        return occursInApplications.values().stream().map(ApplicationDescriptor::getStartedAtMillis).reduce(Math::min).orElse(0L);
+    }
 
     /**
-     * Convenience: the maximum value of collectedInEnvironments.collectedDays
+     * Maximum value of occursInApplications.getDumpedAtMillis
      */
-    @NonNull
-    private final Integer collectedDays;
+    public long getCollectedToMillis() {
+        return occursInApplications.values().stream().map(ApplicationDescriptor::getDumpedAtMillis).reduce(Math::max).orElse(0L);
+    }
+
+    /**
+     * Convenience: the difference between {@link #getCollectedToMillis()} and {@link #getCollectedSinceMillis()} expressed as days.
+     */
+    @SuppressWarnings("unused")
+    public int getCollectedDays() {
+        int dayInMillis = 24 * 60 * 60 * 1000;
+        return Math.toIntExact((getCollectedToMillis() - getCollectedSinceMillis()) / dayInMillis);
+    }
 
 }
