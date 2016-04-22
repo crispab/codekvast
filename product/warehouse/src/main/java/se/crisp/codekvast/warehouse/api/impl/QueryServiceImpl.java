@@ -32,9 +32,17 @@ public class QueryServiceImpl implements QueryService {
     }
 
     @Override
-    public List<MethodDescriptor> findMethodsBySignature(String signature) {
+    public List<MethodDescriptor> findMethodsBySignature(String signature, int maxResults) {
+        if (signature == null || signature.length() < 5) {
+            throw new IllegalArgumentException("Too short signature, minimum 5 is characters");
+        }
+
+        if (maxResults > 1000) {
+            throw new IllegalArgumentException("Too big maxResults, maximum is 1000");
+        }
+
         String sig = signature == null ? "%" : "%" + signature + "%";
-        MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler();
+        MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler(maxResults);
 
         // This is a simpler to understand approach than trying to do everything in the database.
         // Let the database do the joining, and the Java layer does the data reduction. The query will return several rows for each
@@ -55,13 +63,20 @@ public class QueryServiceImpl implements QueryService {
         return rowCallbackHandler.getResult();
     }
 
+    @RequiredArgsConstructor
     private class MethodDescriptorRowCallbackHandler implements RowCallbackHandler {
         private final List<MethodDescriptor> result = new ArrayList<>();
+        private final int maxResults;
 
         QueryState queryState = new QueryState(-1L);
 
+
         @Override
         public void processRow(ResultSet rs) throws SQLException {
+            if (result.size() >= maxResults) {
+                return;
+            }
+
             long id = rs.getLong("methodId");
             String signature = rs.getString("signature");
 
@@ -113,7 +128,8 @@ public class QueryServiceImpl implements QueryService {
 
         private List<MethodDescriptor> getResult() {
             queryState.addTo(result);
-            return result;
+            int length = Math.min(maxResults, result.size());
+            return result.subList(0, length);
         }
     }
 

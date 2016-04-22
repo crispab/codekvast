@@ -18,7 +18,8 @@ public interface QueryService {
      * search field (Ctrl-V)
      *
      * @param signature The signature to search for. May be null, which means get all methods.
+     * @param maxResults
      * @return A list of matching methods. Does never return null.
      */
-    List<MethodDescriptor> findMethodsBySignature(String signature);
+    List<MethodDescriptor> findMethodsBySignature(String signature, int maxResults);
 }

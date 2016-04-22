@@ -56,7 +56,6 @@ import static se.crisp.codekvast.warehouse.testdata.ImportDescriptor.*;
 @Transactional
 public class MariadbIntegrationTest {
 
-    private final long days = 24 * 60 * 60 * 1000L;
     private final long now = System.currentTimeMillis();
 
     private static final int PORT = 3306;
@@ -409,20 +408,14 @@ public class MariadbIntegrationTest {
         }
         testDataGenerator.simulateFileImport(builder.build());
 
-        // when - find all
-        List<MethodDescriptor> methods = queryService.findMethodsBySignature(null);
-
-        // then
-        assertThat(methods, hasSize(3));
-
         // when find exact signature
-        methods = queryService.findMethodsBySignature(testDataGenerator.getMethod(1).getSignature());
+        List<MethodDescriptor> methods = queryService.findMethodsBySignature(testDataGenerator.getMethod(1).getSignature(), 50);
 
         // then
         assertThat(methods, hasSize(1));
 
         // when find signature substring
-        methods = queryService.findMethodsBySignature(testDataGenerator.getMethod(1).getSignature().substring(3, 10));
+        methods = queryService.findMethodsBySignature(testDataGenerator.getMethod(1).getSignature().substring(3, 10), 50);
 
         // then
         assertThat(methods, hasSize(1));
@@ -432,13 +425,14 @@ public class MariadbIntegrationTest {
         assertThat(toDaysAgo(md.getCollectedToMillis()), is(1));
 
         // when find non-existing signature
-        methods = queryService.findMethodsBySignature("foobar");
+        methods = queryService.findMethodsBySignature("foobar", 50);
 
         // then
         assertThat(methods, hasSize(0));
     }
 
-    int toDaysAgo(long timestamp) {
+    private int toDaysAgo(long timestamp) {
+        long days = 24 * 60 * 60 * 1000L;
         return Math.toIntExact((now - timestamp) / days);
     }
 
