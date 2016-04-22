@@ -1,7 +1,6 @@
 package se.crisp.codekvast.warehouse.api.model;
 
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.Value;
 import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
@@ -13,7 +12,6 @@ import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
  */
 @Value
 @Builder
-@EqualsAndHashCode(of = {"name", "version"})
 public class ApplicationDescriptor {
     /**
      * When was this application version first seen?

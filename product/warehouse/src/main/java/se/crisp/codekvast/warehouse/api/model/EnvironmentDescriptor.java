@@ -1,6 +1,9 @@
 package se.crisp.codekvast.warehouse.api.model;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Singular;
+import lombok.Value;
 
 import java.util.Set;
 
@@ -11,7 +14,6 @@ import java.util.Set;
  */
 @Value
 @Builder
-@EqualsAndHashCode(of = {"name"})
 public class EnvironmentDescriptor {
 
     /**
