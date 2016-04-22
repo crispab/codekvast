@@ -1,6 +1,7 @@
 package se.crisp.codekvast.warehouse.api.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -8,7 +9,6 @@ import org.springframework.stereotype.Service;
 import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 import se.crisp.codekvast.warehouse.api.QueryService;
 import se.crisp.codekvast.warehouse.api.model.ApplicationDescriptor;
-import se.crisp.codekvast.warehouse.api.model.ApplicationId;
 import se.crisp.codekvast.warehouse.api.model.EnvironmentDescriptor;
 import se.crisp.codekvast.warehouse.api.model.MethodDescriptor;
 
@@ -35,6 +35,11 @@ public class QueryServiceImpl implements QueryService {
     public List<MethodDescriptor> findMethodsBySignature(String signature) {
         String sig = signature == null ? "%" : "%" + signature + "%";
         MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler();
+
+        // This is a simpler to understand approach than trying to do everything in the database.
+        // Let the database do the joining, and the Java layer does the data reduction. The query will return several rows for each
+        // method that matches the WHERE clause, and the RowCallbackHandler reduces them to only one MethodDescriptor per method ID.
+        // This is probably doable in pure SQL, provided you are a black-belt SQL ninja. Unfortunately I'm not that strong at SQL.
 
         jdbcTemplate.query("SELECT i.methodId, a.name AS appName, a.version AS appVersion,\n" +
                                    "  i.invokedAtMillis, i.status, j.startedAt, j.dumpedAt, j.environment, j.collectorHostname, j.tags,\n" +
@@ -157,5 +162,23 @@ public class QueryServiceImpl implements QueryService {
             rows += 1;
         }
 
+    }
+
+    /**
+     * @author olle.hallin@crisp.se
+     */
+    @Value
+    static class ApplicationId implements Comparable<ApplicationId> {
+        private final String name;
+        private final String version;
+
+        @Override
+        public int compareTo(ApplicationId that) {
+            return this.toString().compareTo(that.toString());
+        }
+
+        public static ApplicationId of(ApplicationDescriptor applicationDescriptor) {
+            return new ApplicationId(applicationDescriptor.getName(), applicationDescriptor.getVersion());
+        }
     }
 }
