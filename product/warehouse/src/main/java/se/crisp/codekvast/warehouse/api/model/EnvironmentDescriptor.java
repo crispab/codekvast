@@ -1,10 +1,8 @@
 package se.crisp.codekvast.warehouse.api.model;
 
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Singular;
-import lombok.Value;
+import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -14,7 +12,11 @@ import java.util.Set;
  */
 @Value
 @Builder
-public class EnvironmentDescriptor {
+@EqualsAndHashCode(of = "name")
+public class EnvironmentDescriptor implements Comparable<EnvironmentDescriptor> {
+
+    @NonNull
+    private final String name;
 
     /**
      * In what hosts does the particular method appear?
@@ -55,5 +57,28 @@ public class EnvironmentDescriptor {
     public Integer getCollectedDays() {
         int oneDayInMillis = 24 * 60 * 60 * 1000;
         return Math.toIntExact((collectedToMillis - collectedSinceMillis) / oneDayInMillis);
+    }
+
+    public EnvironmentDescriptor mergeWith(EnvironmentDescriptor that) {
+        return that == null ? this
+                : EnvironmentDescriptor.builder()
+                                       .name(this.name)
+                                       .invokedAtMillis(Math.max(this.invokedAtMillis, that.invokedAtMillis))
+                                       .collectedToMillis(Math.max(this.collectedToMillis, that.collectedToMillis))
+                                       .collectedSinceMillis(Math.min(this.collectedSinceMillis, that.collectedSinceMillis))
+                                       .hostNames(add(this.hostNames, that.hostNames))
+                                       .tags(add(this.tags, that.tags))
+                                       .build();
+    }
+
+    private Set<String> add(Set<String> left, Set<String> right) {
+        Set<String> result = new HashSet<>(left);
+        result.addAll(right);
+        return result;
+    }
+
+    @Override
+    public int compareTo(EnvironmentDescriptor that) {
+        return this.name.compareTo(that.name);
     }
 }

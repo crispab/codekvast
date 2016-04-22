@@ -15,10 +15,7 @@ import se.crisp.codekvast.warehouse.api.model.MethodDescriptor;
 import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author olle.hallin@crisp.se
@@ -76,27 +73,37 @@ public class QueryServiceImpl implements QueryService {
             long invokedAtMillis = rs.getLong("invokedAtMillis");
 
             MethodDescriptor.MethodDescriptorBuilder builder = queryState.getBuilder();
-            builder.occursInApplication(ApplicationId.of(rs.getString("appName"), rs.getString("appVersion")),
-                                        ApplicationDescriptor
-                                                .builder()
-                                                .startedAtMillis(startedAt)
-                                                .dumpedAtMillis(dumpedAt)
-                                                .invokedAtMillis(invokedAtMillis)
-                                                .status(SignatureStatus.valueOf(rs.getString("status")))
-                                                .build())
-                   .collectedInEnvironment(rs.getString("environment"),
-                                           EnvironmentDescriptor.builder()
-                                                                .hostName(rs.getString("collectorHostname"))
-                                                                .tags(splitOnCommaOrSemicolon(rs.getString("tags")))
-                                                                .collectedSinceMillis(startedAt)
-                                                                .collectedToMillis(dumpedAt)
-                                                                .invokedAtMillis(invokedAtMillis)
-                                                                .build())
-                   .declaringType(rs.getString("declaringType"))
+            String appName = rs.getString("appName");
+            String appVersion = rs.getString("appVersion");
+
+            queryState.saveApplication(ApplicationDescriptor
+                                               .builder()
+                                               .name(appName)
+                                               .version(appVersion)
+                                               .startedAtMillis(startedAt)
+                                               .dumpedAtMillis(dumpedAt)
+                                               .invokedAtMillis(invokedAtMillis)
+                                               .status(SignatureStatus.valueOf(rs.getString("status")))
+                                               .build());
+
+            queryState.saveEnvironment(EnvironmentDescriptor.builder()
+                                                            .name(rs.getString("environment"))
+                                                            .hostName(rs.getString("collectorHostname"))
+                                                            .tags(splitOnCommaOrSemicolon(rs.getString("tags")))
+                                                            .collectedSinceMillis(startedAt)
+                                                            .collectedToMillis(dumpedAt)
+                                                            .invokedAtMillis(invokedAtMillis)
+                                                            .build());
+
+            builder.declaringType(rs.getString("declaringType"))
                    .modifiers(rs.getString("modifiers"))
                    .packageName(rs.getString("packageName"))
                    .signature(signature)
                    .visibility(rs.getString("visibility"));
+        }
+
+        private Set<String> splitOnCommaOrSemicolon(String tags) {
+            return new HashSet<>(Arrays.asList(tags.split("\\s*[,;]\\s")));
         }
 
         private List<MethodDescriptor> getResult() {
@@ -105,14 +112,12 @@ public class QueryServiceImpl implements QueryService {
         }
     }
 
-    private Collection<String> splitOnCommaOrSemicolon(String tags) {
-        String[] strings = tags.split("\\s*[,;]\\s");
-        return Arrays.asList(strings);
-    }
-
     @RequiredArgsConstructor
     private class QueryState {
         private final long methodId;
+
+        private final Map<ApplicationId, ApplicationDescriptor> applications = new HashMap<>();
+        private final Map<String, EnvironmentDescriptor> environments = new HashMap<>();
 
         MethodDescriptor.MethodDescriptorBuilder builder;
         private int rows;
@@ -128,9 +133,22 @@ public class QueryServiceImpl implements QueryService {
             return id == this.methodId;
         }
 
+        void saveApplication(ApplicationDescriptor applicationDescriptor) {
+            ApplicationId appId = ApplicationId.of(applicationDescriptor);
+            applications.put(appId, applicationDescriptor.mergeWith(applications.get(appId)));
+
+        }
+
+        void saveEnvironment(EnvironmentDescriptor environmentDescriptor) {
+            String name = environmentDescriptor.getName();
+            environments.put(name, environmentDescriptor.mergeWith(environments.get(name)));
+        }
+
         void addTo(List<MethodDescriptor> result) {
             if (builder != null) {
                 log.debug("Adding method {} to result ({} result set rows)", methodId, rows);
+                builder.occursInApplications(new TreeSet<>(applications.values()));
+                builder.collectedInEnvironments(new TreeSet<>(environments.values()));
                 result.add(builder.build());
             }
         }
@@ -138,5 +156,6 @@ public class QueryServiceImpl implements QueryService {
         void countRow() {
             rows += 1;
         }
+
     }
 }

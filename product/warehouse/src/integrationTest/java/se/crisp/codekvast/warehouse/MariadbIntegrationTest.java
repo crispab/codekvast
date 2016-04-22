@@ -20,7 +20,6 @@ import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 import se.crisp.codekvast.testsupport.docker.DockerContainer;
 import se.crisp.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
 import se.crisp.codekvast.warehouse.api.QueryService;
-import se.crisp.codekvast.warehouse.api.model.ApplicationId;
 import se.crisp.codekvast.warehouse.api.model.MethodDescriptor;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO.Application;
@@ -378,33 +377,23 @@ public class MariadbIntegrationTest {
 
                 .app("1 app1 1.0")
                 .app("2 app2 2.0")
+                .app("3 app3 3.0")
 
-                .method(testDataGenerator.getMethod(0))
                 .method(testDataGenerator.getMethod(1))
                 .method(testDataGenerator.getMethod(2))
+                .method(testDataGenerator.getMethod(3))
 
-                .jvm(createJvm(1,
-                               adjust(now, -10, DAYS),
-                               adjust(now, -1, DAYS),
-                               "environment1",
-                               "host1",
-                               "tag1=1, tag2=1"))
-                .jvm(createJvm(2,
-                               adjust(now, -20, DAYS),
-                               adjust(now, -11, DAYS),
-                               "environment2",
-                               "host2",
-                               "tag1=2, tag2=2"))
-                .jvm(createJvm(3,
-                               adjust(now, -30, DAYS),
-                               adjust(now, -29, DAYS),
-                               "environment3",
-                               "host3",
-                               "tag1=3, tag2=3"));
+                .jvm(createJvm(1, adjust(now, -10, DAYS), adjust(now, -1, DAYS),
+                               "environment1", "host1", "tag1=1, tag2=1"))
+                .jvm(createJvm(2, adjust(now, -30, DAYS), adjust(now, -29, DAYS),
+                               "environment2", "host2", "tag1=2, tag2=2"))
+                .jvm(createJvm(3, adjust(now, -20, DAYS), adjust(now, -19, DAYS),
+                               "environment3", "host3", "tag1=3, tag2=3"));
 
-        for (long appId = 1; appId <= 2; appId++) {
+        for (long appId = 1; appId <= 3; appId++) {
             for (long methodId = 1; methodId <= 3; methodId++) {
                 for (long jvmId = 1; jvmId <= 3; jvmId++) {
+
                     long hash = appId * 100 + methodId * 10 + jvmId;
 
                     builder.invocation(Invocation.builder()
@@ -439,13 +428,8 @@ public class MariadbIntegrationTest {
         assertThat(methods, hasSize(1));
 
         MethodDescriptor md = methods.get(0);
-        ApplicationId app1 = ApplicationId.of("app1", "1.0");
-        ApplicationId app2 = ApplicationId.of("app2", "2.0");
-
-        assertThat(md.getOccursInApplications().keySet(), contains(app1, app2));
-
         assertThat(toDaysAgo(md.getCollectedSinceMillis()), is(30));
-        // TODO: assertThat(toDaysAgo(md.getCollectedToMillis()), is(1));
+        assertThat(toDaysAgo(md.getCollectedToMillis()), is(1));
 
         // when find non-existing signature
         methods = queryService.findMethodsBySignature("foobar");

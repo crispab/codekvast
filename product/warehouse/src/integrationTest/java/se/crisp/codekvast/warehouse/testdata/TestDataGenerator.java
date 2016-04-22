@@ -30,7 +30,7 @@ public class TestDataGenerator {
 
         Class[] testClasses = {TestClass1.class, TestClass2.class};
 
-        long localId = 1;
+        long localId = 0;
         for (Class testClass : testClasses) {
             for (Method method : testClass.getDeclaredMethods()) {
                 methods.add(new MethodDescriptor(localId, method));

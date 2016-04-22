@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 import se.crisp.codekvast.warehouse.api.model.ApplicationDescriptor;
-import se.crisp.codekvast.warehouse.api.model.ApplicationId;
 import se.crisp.codekvast.warehouse.api.model.EnvironmentDescriptor;
 import se.crisp.codekvast.warehouse.api.model.MethodDescriptor;
 
@@ -34,16 +33,18 @@ public class MethodDescriptorTest {
                                                                       .declaringType("declaringType")
                                                                       .modifiers("")
                                                                       .occursInApplication(
-                                                                              ApplicationId.of("app1", "1.3"),
                                                                               ApplicationDescriptor.builder()
+                                                                                                   .name("app1")
+                                                                                                   .version("1.3")
                                                                                                    .status(SignatureStatus.EXACT_MATCH)
                                                                                                    .startedAtMillis(twelveDaysAgo)
                                                                                                    .dumpedAtMillis(oneDayAgo)
                                                                                                    .invokedAtMillis(twoDaysAgo)
                                                                                                    .build())
                                                                       .occursInApplication(
-                                                                              ApplicationId.of("app1", "1.2"),
                                                                               ApplicationDescriptor.builder()
+                                                                                                   .name("app1")
+                                                                                                   .version("1.2")
                                                                                                    .status(SignatureStatus
                                                                                                                    .EXCLUDED_BY_PACKAGE_NAME)
                                                                                                    .startedAtMillis(fourteenDaysAgo)
@@ -51,8 +52,9 @@ public class MethodDescriptorTest {
                                                                                                    .invokedAtMillis(never)
                                                                                                    .build())
                                                                       .occursInApplication(
-                                                                              ApplicationId.of("app1", "1.2"),
                                                                               ApplicationDescriptor.builder()
+                                                                                                   .name("app1")
+                                                                                                   .version("1.2")
                                                                                                    .status(SignatureStatus
                                                                                                                    .EXCLUDED_BY_PACKAGE_NAME)
                                                                                                    .startedAtMillis(fifteenDaysAgo)
@@ -60,22 +62,24 @@ public class MethodDescriptorTest {
                                                                                                    .invokedAtMillis(never)
                                                                                                    .build())
                                                                       .collectedInEnvironment(
-                                                                              "test",
                                                                               EnvironmentDescriptor.builder()
+                                                                                                   .name("test")
                                                                                                    .collectedSinceMillis(twelveDaysAgo)
                                                                                                    .collectedToMillis(oneDayAgo)
                                                                                                    .invokedAtMillis(twoDaysAgo)
+                                                                                                   .tag("tag2=2")
+                                                                                                   .tag("tag1=1")
                                                                                                    .build())
                                                                       .collectedInEnvironment(
-                                                                              "training",
                                                                               EnvironmentDescriptor.builder()
+                                                                                                   .name("training")
                                                                                                    .collectedSinceMillis(fifteenDaysAgo)
                                                                                                    .collectedToMillis(oneDayAgo)
                                                                                                    .invokedAtMillis(twoDaysAgo)
                                                                                                    .build())
                                                                       .collectedInEnvironment(
-                                                                              "customer1",
                                                                               EnvironmentDescriptor.builder()
+                                                                                                   .name("customer1")
                                                                                                    .collectedSinceMillis(twelveDaysAgo)
                                                                                                    .collectedToMillis(twoDaysAgo)
                                                                                                    .invokedAtMillis(twoDaysAgo)
@@ -97,9 +101,9 @@ public class MethodDescriptorTest {
         // when
 
         // then
-        assertThat(toDaysAgo(methodDescriptor.getCollectedSinceMillis()), is(toDaysAgo(fifteenDaysAgo)));
+        assertThat(toDaysAgo(methodDescriptor.getCollectedSinceMillis()), is(toDaysAgo(fourteenDaysAgo)));
         assertThat(toDaysAgo(methodDescriptor.getCollectedToMillis()), is(toDaysAgo(oneDayAgo)));
-        assertThat(methodDescriptor.getCollectedDays(), is(14));
+        assertThat(methodDescriptor.getCollectedDays(), is(13));
         assertThat(toDaysAgo(methodDescriptor.getLastInvokedAtMillis()), is(toDaysAgo(twoDaysAgo)));
     }
 

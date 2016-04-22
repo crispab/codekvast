@@ -18,13 +18,7 @@ public class ApplicationId implements Comparable<ApplicationId> {
         return this.toString().compareTo(that.toString());
     }
 
-    @Override
-    public String toString() {
-        // Make it pretty in JSON...
-        return name + " " + version;
-    }
-
-    public static ApplicationId of(String name, String version) {
-        return new ApplicationId(name, version);
+    public static ApplicationId of(ApplicationDescriptor applicationDescriptor) {
+        return new ApplicationId(applicationDescriptor.getName(), applicationDescriptor.getVersion());
     }
 }

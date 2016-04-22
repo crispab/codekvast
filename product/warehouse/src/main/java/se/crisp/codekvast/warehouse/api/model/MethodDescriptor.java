@@ -5,8 +5,9 @@ import lombok.NonNull;
 import lombok.Singular;
 import lombok.Value;
 
-import java.util.SortedMap;
+import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * @author olle.hallin@crisp.se
@@ -35,37 +36,31 @@ public class MethodDescriptor {
 
     private final String declaringType;
 
-    /**
-     * Copied over from codekvast-collector.conf
-     */
     @Singular
-    private final SortedSet<String> tags;
+    private final SortedSet<ApplicationDescriptor> occursInApplications;
 
     @Singular
-    private final SortedMap<ApplicationId, ApplicationDescriptor> occursInApplications;
-
-    @Singular
-    private final SortedMap<String, EnvironmentDescriptor> collectedInEnvironments;
+    private final SortedSet<EnvironmentDescriptor> collectedInEnvironments;
 
     /**
      * Maximum value of occursInApplications.invokedAtMillis;
      */
     public long getLastInvokedAtMillis() {
-        return occursInApplications.values().stream().map(ApplicationDescriptor::getInvokedAtMillis).reduce(Math::max).orElse(0L);
+        return occursInApplications.stream().map(ApplicationDescriptor::getInvokedAtMillis).reduce(Math::max).orElse(0L);
     }
 
     /**
      * Minimum value of occursInApplications.startedAtMillis
      */
     public long getCollectedSinceMillis() {
-        return occursInApplications.values().stream().map(ApplicationDescriptor::getStartedAtMillis).reduce(Math::min).orElse(0L);
+        return occursInApplications.stream().map(ApplicationDescriptor::getStartedAtMillis).reduce(Math::min).orElse(0L);
     }
 
     /**
      * Maximum value of occursInApplications.getDumpedAtMillis
      */
     public long getCollectedToMillis() {
-        return occursInApplications.values().stream().map(ApplicationDescriptor::getDumpedAtMillis).reduce(Math::max).orElse(0L);
+        return occursInApplications.stream().map(ApplicationDescriptor::getDumpedAtMillis).reduce(Math::max).orElse(0L);
     }
 
     /**
@@ -77,4 +72,13 @@ public class MethodDescriptor {
         return Math.toIntExact((getCollectedToMillis() - getCollectedSinceMillis()) / dayInMillis);
     }
 
+    /**
+     * Convenience: collects tags from all environments
+     */
+    @SuppressWarnings("unused")
+    public Set<String> getTags() {
+        Set<String> result = new TreeSet<>();
+        collectedInEnvironments.stream().map(EnvironmentDescriptor::getTags).forEach(tags -> result.addAll(tags));
+        return result;
+    }
 }
