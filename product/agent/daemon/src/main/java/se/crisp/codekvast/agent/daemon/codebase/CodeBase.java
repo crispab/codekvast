@@ -185,6 +185,7 @@ public class CodeBase {
 
     public URL[] getUrls() {
         if (needsExploding) {
+            // TODO: implement WAR and EAR exploding
             throw new UnsupportedOperationException("Exploding WAR or EAR not yet implemented");
         }
         return urls.toArray(new URL[urls.size()]);
