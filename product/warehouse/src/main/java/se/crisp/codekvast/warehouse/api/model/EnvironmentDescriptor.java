@@ -51,6 +51,7 @@ public class EnvironmentDescriptor {
     /**
      * Convenience: the difference between collectedToMillis and collectedSinceMillis expressed as days.
      */
+    @SuppressWarnings("unused")
     public Integer getCollectedDays() {
         int oneDayInMillis = 24 * 60 * 60 * 1000;
         return Math.toIntExact((collectedToMillis - collectedSinceMillis) / oneDayInMillis);
