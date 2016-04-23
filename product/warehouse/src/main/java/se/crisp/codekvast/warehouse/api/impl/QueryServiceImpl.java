@@ -6,13 +6,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
+import se.crisp.codekvast.warehouse.api.QueryMethodsBySignatureParameters;
 import se.crisp.codekvast.warehouse.api.QueryService;
 import se.crisp.codekvast.warehouse.api.model.ApplicationDescriptor;
 import se.crisp.codekvast.warehouse.api.model.EnvironmentDescriptor;
 import se.crisp.codekvast.warehouse.api.model.MethodDescriptor;
 
 import javax.inject.Inject;
+import javax.validation.Valid;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -22,6 +25,7 @@ import java.util.*;
  */
 @Service
 @Slf4j
+@Validated
 public class QueryServiceImpl implements QueryService {
 
     private final JdbcTemplate jdbcTemplate;
@@ -32,22 +36,14 @@ public class QueryServiceImpl implements QueryService {
     }
 
     @Override
-    public List<MethodDescriptor> findMethodsBySignature(String signature, int maxResults) {
-        if (signature == null || signature.length() < 5) {
-            throw new IllegalArgumentException("Too short signature, minimum 5 is characters");
-        }
-
-        if (maxResults > 1000) {
-            throw new IllegalArgumentException("Too big maxResults, maximum is 1000");
-        }
-
-        String sig = signature == null ? "%" : "%" + signature + "%";
-        MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler(maxResults);
+    public List<MethodDescriptor> queryMethodsBySignature(@Valid QueryMethodsBySignatureParameters params) {
+        MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler(params);
 
         // This is a simpler to understand approach than trying to do everything in the database.
-        // Let the database do the joining, and the Java layer does the data reduction. The query will return several rows for each
+        // Let the database do the joining and selection, and the Java layer do the data reduction. The query will return several rows
+        // for each
         // method that matches the WHERE clause, and the RowCallbackHandler reduces them to only one MethodDescriptor per method ID.
-        // This is probably doable in pure SQL, provided you are a black-belt SQL ninja. Unfortunately I'm not that strong at SQL.
+        // This is probably doable in pure SQL too, provided you are a black-belt SQL ninja. Unfortunately I'm not that strong at SQL.
 
         jdbcTemplate.query("SELECT i.methodId, a.name AS appName, a.version AS appVersion,\n" +
                                    "  i.invokedAtMillis, i.status, j.startedAt, j.dumpedAt, j.environment, j.collectorHostname, j.tags,\n" +
@@ -58,22 +54,26 @@ public class QueryServiceImpl implements QueryService {
                                    "  JOIN jvms j ON j.id = i.jvmId\n" +
                                    "WHERE m.signature LIKE ?\n" +
                                    "ORDER BY i.methodId ASC, j.startedAt DESC, j.dumpedAt ASC, i.invokedAtMillis ASC", rowCallbackHandler,
-                           sig);
+                           params.getNormalizedSignature());
 
         return rowCallbackHandler.getResult();
     }
 
-    @RequiredArgsConstructor
     private class MethodDescriptorRowCallbackHandler implements RowCallbackHandler {
+        private final QueryMethodsBySignatureParameters params;
+
         private final List<MethodDescriptor> result = new ArrayList<>();
-        private final int maxResults;
 
-        QueryState queryState = new QueryState(-1L);
+        private QueryState queryState;
 
+        private MethodDescriptorRowCallbackHandler(QueryMethodsBySignatureParameters params) {
+            this.params = params;
+            queryState = new QueryState(-1L, this.params);
+        }
 
         @Override
         public void processRow(ResultSet rs) throws SQLException {
-            if (result.size() >= maxResults) {
+            if (result.size() >= params.getMaxResults()) {
                 return;
             }
 
@@ -84,7 +84,7 @@ public class QueryServiceImpl implements QueryService {
                 // The query is sorted on methodId
                 log.trace("Found method {}:{}", id, signature);
                 queryState.addTo(result);
-                queryState = new QueryState(id);
+                queryState = new QueryState(id, params);
             }
 
             queryState.countRow();
@@ -128,14 +128,15 @@ public class QueryServiceImpl implements QueryService {
 
         private List<MethodDescriptor> getResult() {
             queryState.addTo(result);
-            int length = Math.min(maxResults, result.size());
-            return result.subList(0, length);
+            Collections.sort(result, MethodDescriptor.getComparator(params.getOrderBy()));
+            return result;
         }
     }
 
     @RequiredArgsConstructor
     private class QueryState {
         private final long methodId;
+        private final QueryMethodsBySignatureParameters params;
 
         private final Map<ApplicationId, ApplicationDescriptor> applications = new HashMap<>();
         private final Map<String, EnvironmentDescriptor> environments = new HashMap<>();
@@ -166,7 +167,7 @@ public class QueryServiceImpl implements QueryService {
         }
 
         void addTo(List<MethodDescriptor> result) {
-            if (builder != null) {
+            if (builder != null && result.size() < params.getMaxResults()) {
                 log.debug("Adding method {} to result ({} result set rows)", methodId, rows);
                 builder.occursInApplications(new TreeSet<>(applications.values()));
                 builder.collectedInEnvironments(new TreeSet<>(environments.values()));

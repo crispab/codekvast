@@ -19,6 +19,7 @@ import se.crisp.codekvast.agent.lib.model.v1.JvmData;
 import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 import se.crisp.codekvast.testsupport.docker.DockerContainer;
 import se.crisp.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
+import se.crisp.codekvast.warehouse.api.QueryMethodsBySignatureParameters;
 import se.crisp.codekvast.warehouse.api.QueryService;
 import se.crisp.codekvast.warehouse.api.model.MethodDescriptor;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO;
@@ -30,6 +31,7 @@ import se.crisp.codekvast.warehouse.file_import.ZipFileImporter;
 import se.crisp.codekvast.warehouse.testdata.TestDataGenerator;
 
 import javax.inject.Inject;
+import javax.validation.ConstraintViolationException;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
@@ -191,20 +193,21 @@ public class MariadbIntegrationTest {
     }
 
     @Test
-    public void should_import_same_application_only_once() throws Exception {
+    public void should_import_same_application_only_once_with_the_same_central_id() throws Exception {
         // given
-        Application app = createApplication(10L);
+        Application app = createApplication(4711L);
 
         // when
         boolean imported = importDAO.saveApplication(app, importContext);
+        long centralId = importContext.getApplicationId(4711L);
 
         // then
         assertThat(countRowsInTable("applications"), is(1));
         assertThat(imported, is(true));
-        assertThat(importContext.getApplicationId(10L), is(1L));
+        assertThat(centralId, not(is(4711L)));
 
         // given same app is imported again, from a different daemon
-        app = app.toBuilder().localId(200L).build();
+        app = app.toBuilder().localId(11147L).build();
 
         // when
         imported = importDAO.saveApplication(app, importContext);
@@ -212,7 +215,7 @@ public class MariadbIntegrationTest {
         // then
         assertThat(countRowsInTable("applications"), is(1));
         assertThat(imported, is(false));
-        assertThat(importContext.getApplicationId(200L), is(1L));
+        assertThat(importContext.getApplicationId(11147L), is(centralId));
     }
 
     @Test
@@ -369,8 +372,88 @@ public class MariadbIntegrationTest {
     }
 
     @Test
+    public void should_query_normalized_signature_correctly() throws Exception {
+        // given
+        generateQueryTestData();
+
+        // when find exact signature
+        List<MethodDescriptor> methods = queryService.queryMethodsBySignature(
+                QueryMethodsBySignatureParameters.defaults()
+                                                 .signature(testDataGenerator.getMethod(1).getSignature().replace(".method", "#method"))
+                                                 .build());
+
+        // then
+        assertThat(methods, hasSize(1));
+
+        MethodDescriptor md = methods.get(0);
+        assertThat(toDaysAgo(md.getCollectedSinceMillis()), is(30));
+        assertThat(toDaysAgo(md.getCollectedToMillis()), is(1));
+
+    }
+
+    @Test
+    public void should_query_signature_suffix_correctly() throws Exception {
+        // given
+        generateQueryTestData();
+
+        // when find exact signature
+        List<MethodDescriptor> methods = queryService.queryMethodsBySignature(
+                QueryMethodsBySignatureParameters.defaults()
+                                                 .signature(testDataGenerator.getMethod(1).getSignature().substring(1))
+                                                 .build());
+
+        // then
+        assertThat(methods, hasSize(1));
+
+        // when find signature substring
+        methods = queryService.queryMethodsBySignature(
+                QueryMethodsBySignatureParameters.defaults()
+                                                 .signature(testDataGenerator.getMethod(1).getSignature().substring(1))
+                                                 .build());
+
+        // then
+        assertThat(methods, hasSize(1));
+    }
+
+    @Test
+    public void should_query_signature_exact_correctly() throws Exception {
+        // given
+        generateQueryTestData();
+
+        // when find exact signature
+        List<MethodDescriptor> methods = queryService.queryMethodsBySignature(
+                QueryMethodsBySignatureParameters.defaults()
+                                                 .signature(testDataGenerator.getMethod(1).getSignature().substring(1))
+                                                 .normalizeSignature(false)
+                                                 .build());
+
+        // then
+        assertThat(methods, hasSize(0));
+    }
+
+    @Test(expected = ConstraintViolationException.class)
+    public void should_throw_when_querying_signature_with_too_short_signature() throws Exception {
+        // given
+        generateQueryTestData();
+
+        // when find with too short signature
+        queryService.queryMethodsBySignature(QueryMethodsBySignatureParameters.defaults().signature("x").build());
+    }
+
+    @Test
     public void should_query_signature_correctly() throws Exception {
         // given
+        generateQueryTestData();
+
+        // when find exact signature
+        List<MethodDescriptor> methods = queryService.queryMethodsBySignature(
+                QueryMethodsBySignatureParameters.defaults().signature("foobar").build());
+
+        // then
+        assertThat(methods, hasSize(0));
+    }
+
+    private void generateQueryTestData() {
         ImportDescriptorBuilder builder = builder()
                 .now(now)
 
@@ -382,12 +465,9 @@ public class MariadbIntegrationTest {
                 .method(testDataGenerator.getMethod(2))
                 .method(testDataGenerator.getMethod(3))
 
-                .jvm(createJvm(1, adjust(now, -10, DAYS), adjust(now, -1, DAYS),
-                               "environment1", "host1", "tag1=1, tag2=1"))
-                .jvm(createJvm(2, adjust(now, -30, DAYS), adjust(now, -29, DAYS),
-                               "environment2", "host2", "tag1=2, tag2=2"))
-                .jvm(createJvm(3, adjust(now, -20, DAYS), adjust(now, -19, DAYS),
-                               "environment3", "host3", "tag1=3, tag2=3"));
+                .jvm(createJvm(1, adjust(now, -10, DAYS), adjust(now, -1, DAYS), "environment1", "host1", "tag1=1, tag2=1"))
+                .jvm(createJvm(2, adjust(now, -30, DAYS), adjust(now, -29, DAYS), "environment2", "host2", "tag1=2, tag2=2"))
+                .jvm(createJvm(3, adjust(now, -20, DAYS), adjust(now, -19, DAYS), "environment3", "host3", "tag1=3, tag2=3"));
 
         for (long appId = 1; appId <= 3; appId++) {
             for (long methodId = 1; methodId <= 3; methodId++) {
@@ -407,28 +487,6 @@ public class MariadbIntegrationTest {
             }
         }
         testDataGenerator.simulateFileImport(builder.build());
-
-        // when find exact signature
-        List<MethodDescriptor> methods = queryService.findMethodsBySignature(testDataGenerator.getMethod(1).getSignature(), 50);
-
-        // then
-        assertThat(methods, hasSize(1));
-
-        // when find signature substring
-        methods = queryService.findMethodsBySignature(testDataGenerator.getMethod(1).getSignature().substring(3, 10), 50);
-
-        // then
-        assertThat(methods, hasSize(1));
-
-        MethodDescriptor md = methods.get(0);
-        assertThat(toDaysAgo(md.getCollectedSinceMillis()), is(30));
-        assertThat(toDaysAgo(md.getCollectedToMillis()), is(1));
-
-        // when find non-existing signature
-        methods = queryService.findMethodsBySignature("foobar", 50);
-
-        // then
-        assertThat(methods, hasSize(0));
     }
 
     private int toDaysAgo(long timestamp) {

@@ -7,7 +7,7 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import se.crisp.codekvast.warehouse.config.CodekvastSettings;
+import se.crisp.codekvast.warehouse.bootstrap.CodekvastSettings;
 
 import java.io.File;
 import java.io.IOException;

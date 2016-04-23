@@ -24,12 +24,18 @@ public class QueryController {
     }
 
     @RequestMapping("/api/query")
-    public List<MethodDescriptor> getMethods(@RequestParam("q") String query,
-                                             @RequestParam(name = "maxResults", required = false, defaultValue = "100") Integer
-                                                     maxResults) {
-        log.debug("q={}", query);
+    public List<MethodDescriptor> getMethods(@RequestParam("signature")
+                                                     String signature,
+                                             @RequestParam(name = "maxResults", required = false, defaultValue = QueryService.Default
+                                                     .MAX_RESULTS_STR)
+                                                     Integer maxResults) {
+        log.debug("signature={}", signature);
 
-        List<MethodDescriptor> result = queryService.findMethodsBySignature(query, maxResults);
+        List<MethodDescriptor> result = queryService.queryMethodsBySignature(
+                QueryMethodsBySignatureParameters.defaults()
+                                                 .signature(signature)
+                                                 .maxResults(maxResults)
+                                                 .build());
 
         log.debug("Result: {} methods", result.size());
         return result;

@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package se.crisp.codekvast.warehouse.config;
+package se.crisp.codekvast.warehouse.bootstrap;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;

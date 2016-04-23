@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import se.crisp.codekvast.agent.lib.model.v1.ExportFileFormat;
-import se.crisp.codekvast.warehouse.config.CodekvastSettings;
+import se.crisp.codekvast.warehouse.bootstrap.CodekvastSettings;
 
 import javax.inject.Inject;
 import java.io.File;
