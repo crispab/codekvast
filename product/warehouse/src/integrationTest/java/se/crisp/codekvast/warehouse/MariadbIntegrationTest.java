@@ -372,11 +372,11 @@ public class MariadbIntegrationTest {
     }
 
     @Test
-    public void should_query_normalized_signature_correctly() throws Exception {
+    public void should_query_IDEA_signature_correctly() throws Exception {
         // given
         generateQueryTestData();
 
-        // when find exact signature
+        // when
         List<MethodDescriptor> methods = queryService.queryMethodsBySignature(
                 QueryMethodsBySignatureParameters.defaults()
                                                  .signature(testDataGenerator.getMethod(1).getSignature().replace(".method", "#method"))
@@ -396,19 +396,10 @@ public class MariadbIntegrationTest {
         // given
         generateQueryTestData();
 
-        // when find exact signature
+        // when find substring
         List<MethodDescriptor> methods = queryService.queryMethodsBySignature(
                 QueryMethodsBySignatureParameters.defaults()
-                                                 .signature(testDataGenerator.getMethod(1).getSignature().substring(1))
-                                                 .build());
-
-        // then
-        assertThat(methods, hasSize(1));
-
-        // when find signature substring
-        methods = queryService.queryMethodsBySignature(
-                QueryMethodsBySignatureParameters.defaults()
-                                                 .signature(testDataGenerator.getMethod(1).getSignature().substring(1))
+                                                 .signature(testDataGenerator.getMethod(1).getSignature().substring(3))
                                                  .build());
 
         // then
@@ -416,11 +407,11 @@ public class MariadbIntegrationTest {
     }
 
     @Test
-    public void should_query_signature_exact_correctly() throws Exception {
+    public void should_query_signature_not_normalize_but_no_match() throws Exception {
         // given
         generateQueryTestData();
 
-        // when find exact signature
+        // when find by signat
         List<MethodDescriptor> methods = queryService.queryMethodsBySignature(
                 QueryMethodsBySignatureParameters.defaults()
                                                  .signature(testDataGenerator.getMethod(1).getSignature().substring(1))
@@ -431,12 +422,43 @@ public class MariadbIntegrationTest {
         assertThat(methods, hasSize(0));
     }
 
+    @Test
+    public void should_query_signatures_and_respect_max_results() throws Exception {
+        // given
+        generateQueryTestData();
+
+        String signature = testDataGenerator.getMethod(0).getSignature();
+
+        String prefix = signature.substring(signature.indexOf("se.crisp"), signature.indexOf(".method"));
+        assertThat(prefix, startsWith("se.crisp"));
+        assertThat(prefix, endsWith("TestClass1"));
+
+        // when find many
+        List<MethodDescriptor> methods = queryService.queryMethodsBySignature(
+                QueryMethodsBySignatureParameters.defaults()
+                                                 .signature(prefix)
+                                                 .build());
+
+        // then
+        assertThat(methods, hasSize(3));
+
+        // when find many with max results
+        methods = queryService.queryMethodsBySignature(
+                QueryMethodsBySignatureParameters.defaults()
+                                                 .signature(prefix)
+                                                 .maxResults(2)
+                                                 .build());
+
+        // then
+        assertThat(methods, hasSize(2));
+    }
+
     @Test(expected = ConstraintViolationException.class)
     public void should_throw_when_querying_signature_with_too_short_signature() throws Exception {
         // given
         generateQueryTestData();
 
-        // when find with too short signature
+        // when query with too short signature
         queryService.queryMethodsBySignature(QueryMethodsBySignatureParameters.defaults().signature("x").build());
     }
 
@@ -461,16 +483,16 @@ public class MariadbIntegrationTest {
                 .app("2 app2 2.0")
                 .app("3 app3 3.0")
 
-                .method(testDataGenerator.getMethod(1))
-                .method(testDataGenerator.getMethod(2))
-                .method(testDataGenerator.getMethod(3))
-
                 .jvm(createJvm(1, adjust(now, -10, DAYS), adjust(now, -1, DAYS), "environment1", "host1", "tag1=1, tag2=1"))
                 .jvm(createJvm(2, adjust(now, -30, DAYS), adjust(now, -29, DAYS), "environment2", "host2", "tag1=2, tag2=2"))
                 .jvm(createJvm(3, adjust(now, -20, DAYS), adjust(now, -19, DAYS), "environment3", "host3", "tag1=3, tag2=3"));
 
+        for (int i = 0; i < testDataGenerator.numMethods(); i++) {
+            builder.method(testDataGenerator.getMethod(i));
+        }
+
         for (long appId = 1; appId <= 3; appId++) {
-            for (long methodId = 1; methodId <= 3; methodId++) {
+            for (long methodId = 0; methodId < testDataGenerator.numMethods(); methodId++) {
                 for (long jvmId = 1; jvmId <= 3; jvmId++) {
 
                     long hash = appId * 100 + methodId * 10 + jvmId;

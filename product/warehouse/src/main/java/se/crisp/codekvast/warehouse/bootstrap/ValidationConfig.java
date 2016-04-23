@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
 /**
+ * Enable support for JSR-303 also on service layer.
+ *
  * @author olle.hallin@crisp.se
  */
 @Configuration

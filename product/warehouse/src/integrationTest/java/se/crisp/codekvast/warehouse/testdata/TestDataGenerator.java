@@ -32,11 +32,25 @@ public class TestDataGenerator {
 
         long localId = 0;
         for (Class testClass : testClasses) {
-            for (Method method : testClass.getDeclaredMethods()) {
-                methods.add(new MethodDescriptor(localId, method));
-                localId += 1;
+            Method[] declaredMethods = testClass.getDeclaredMethods();
+
+            Arrays.sort(declaredMethods, (o1, o2) -> o1.getName().compareTo(o2.getName()));
+
+            for (Method method : declaredMethods) {
+                if (!method.getName().contains("jacoco")) {
+                    methods.add(new MethodDescriptor(localId, method));
+                    localId += 1;
+                }
             }
         }
+    }
+
+    public int numMethods() {
+        return methods.size();
+    }
+
+    public MethodDescriptor getMethod(int index) {
+        return methods.get(index);
     }
 
     @Transactional
@@ -46,10 +60,6 @@ public class TestDataGenerator {
         importMethods(descriptor, context);
         importJvms(descriptor, context);
         importInvocations(descriptor, context);
-    }
-
-    public MethodDescriptor getMethod(int index) {
-        return methods.get(index);
     }
 
     private void importApplications(ImportDescriptor descriptor, ImportContext context) {

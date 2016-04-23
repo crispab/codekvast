@@ -18,7 +18,7 @@ public class QueryMethodsBySignatureParameters {
     public enum OrderBy {INVOKED_AT_ASC, INVOKED_AT_DESC, SIGNATURE}
 
     /**
-     * The signature to search fore
+     * The signature to search for.
      */
     @NonNull
     @Size(min = 5)
