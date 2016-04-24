@@ -69,7 +69,7 @@ public abstract class AbstractCollectorDataProcessorImpl implements CollectorDat
     private Instant lastCollectorDataProcessedAt = Instant.MIN;
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void processCollectorData(JvmState jvmState, CodeBase codeBase) throws DataProcessingException {
         appVersionResolver.resolveAppVersion(jvmState);
         processJvmData(jvmState);

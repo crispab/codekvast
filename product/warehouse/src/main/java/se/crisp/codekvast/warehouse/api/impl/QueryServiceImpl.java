@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 import se.crisp.codekvast.warehouse.api.QueryMethodsBySignatureParameters;
@@ -36,6 +37,7 @@ public class QueryServiceImpl implements QueryService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<MethodDescriptor> queryMethodsBySignature(@Valid QueryMethodsBySignatureParameters params) {
         MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler(params);
 

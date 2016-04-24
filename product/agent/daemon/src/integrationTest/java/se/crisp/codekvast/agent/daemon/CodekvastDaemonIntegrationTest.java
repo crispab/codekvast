@@ -49,7 +49,7 @@ import static org.mockito.Mockito.when;
         "codekvast.dataProcessingInitialDelaySeconds=1000000",
 
 })
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class CodekvastDaemonIntegrationTest {
 
     private static final MethodSignature DUMMY_METHOD_SIGNATURE = MethodSignature.builder()

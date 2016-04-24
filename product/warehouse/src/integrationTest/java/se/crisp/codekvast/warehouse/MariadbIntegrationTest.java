@@ -55,7 +55,7 @@ import static se.crisp.codekvast.warehouse.testdata.ImportDescriptor.*;
 @SpringApplicationConfiguration(classes = {CodekvastWarehouse.class, TestDataGenerator.class})
 @IntegrationTest
 @ActiveProfiles({"integrationTest"})
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class MariadbIntegrationTest {
 
     private final long now = System.currentTimeMillis();
@@ -195,19 +195,19 @@ public class MariadbIntegrationTest {
     @Test
     public void should_import_same_application_only_once_with_the_same_central_id() throws Exception {
         // given
-        Application app = createApplication(4711L);
+        Application app = createApplication(5L);
 
         // when
         boolean imported = importDAO.saveApplication(app, importContext);
-        long centralId = importContext.getApplicationId(4711L);
+        long centralId = importContext.getApplicationId(5L);
 
         // then
         assertThat(countRowsInTable("applications"), is(1));
         assertThat(imported, is(true));
-        assertThat(centralId, not(is(4711L)));
+        assertThat(centralId, not(is(5L)));
 
         // given same app is imported again, from a different daemon
-        app = app.toBuilder().localId(11147L).build();
+        app = app.toBuilder().localId(7L).build();
 
         // when
         imported = importDAO.saveApplication(app, importContext);
@@ -215,7 +215,7 @@ public class MariadbIntegrationTest {
         // then
         assertThat(countRowsInTable("applications"), is(1));
         assertThat(imported, is(false));
-        assertThat(importContext.getApplicationId(11147L), is(centralId));
+        assertThat(importContext.getApplicationId(7L), is(centralId));
     }
 
     @Test

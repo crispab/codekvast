@@ -53,7 +53,7 @@ public class TestDataGenerator {
         return methods.get(index);
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void simulateFileImport(ImportDescriptor descriptor) {
         ImportContext context = new ImportContext();
         importApplications(descriptor, context);
