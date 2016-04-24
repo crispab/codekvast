@@ -372,7 +372,7 @@ public class MariadbIntegrationTest {
     }
 
     @Test
-    public void should_query_IDEA_signature_correctly() throws Exception {
+    public void should_describe_IDEA_signature_correctly() throws Exception {
         // given
         generateQueryTestData();
 
@@ -392,7 +392,7 @@ public class MariadbIntegrationTest {
     }
 
     @Test
-    public void should_query_signature_suffix_correctly() throws Exception {
+    public void should_describe_signature_suffix_correctly() throws Exception {
         // given
         generateQueryTestData();
 
@@ -407,7 +407,7 @@ public class MariadbIntegrationTest {
     }
 
     @Test
-    public void should_query_signature_not_normalize_but_no_match() throws Exception {
+    public void should_describe_signature_not_normalize_but_no_match() throws Exception {
         // given
         generateQueryTestData();
 
@@ -423,7 +423,7 @@ public class MariadbIntegrationTest {
     }
 
     @Test
-    public void should_query_signatures_and_respect_max_results() throws Exception {
+    public void should_describe_signatures_and_respect_max_results() throws Exception {
         // given
         generateQueryTestData();
 
@@ -463,7 +463,7 @@ public class MariadbIntegrationTest {
     }
 
     @Test
-    public void should_query_signature_correctly() throws Exception {
+    public void should_describe_signature_correctly() throws Exception {
         // given
         generateQueryTestData();
 
