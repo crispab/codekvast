@@ -26,50 +26,12 @@
     <meta http-equiv="pragma" content="no-cache"/>
 </head>
 
-<body class="ng-cloak">
+<body>
+<h1>Codekvast Warehouse</h1>
 
-<nav class="navbar navbar-default">
-    <div class="container-fluid" role="navigation" ng-controller="NavigationController">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="/">Codekvast Warehouse</a>
-        </div>
-
-        <ul class="nav navbar-nav">
-            <li ng-repeat="menuItem in menuItems" ng-class="{ active: isActive(menuItem.url)}">
-                <!--suppress HtmlUnknownTarget -->
-                <a href="{{menuItem.url}}" title="{{menuItem.title}}">
-                    <span class="glyphicon {{menuItem.icon}}" aria-hidden="true"></span>
-                    {{menuItem.name}} </a></li>
-        </ul>
-
-        <ul class="nav navbar-nav navbar-right">
-            <li ng-repeat="menuItem in rightMenuItems" ng-class="{ active: isActive(menuItem.url)}">
-                <!--suppress HtmlUnknownTarget -->
-                <a href="{{menuItem.url}}" title="{{menuItem.title}}">
-                    <span class="glyphicon {{menuItem.icon}}" aria-hidden="true"></span>
-                    {{menuItem.name}} </a></li>
-        </ul>
-
-    </div>
-</nav>
-
-<div class="container-fluid">
-    <div ng-view="true"></div>
-</div>
-
-<nav class="navbar navbar-default navbar-fixed-bottom codekvast-footer">
-    <p class="text-right">
-        <small>Codekvast Warehouse v${project.codekvastDisplayVersion} (${project.gitTime})</small>
-    </p>
-</nav>
-
-<script th:src="@{/webjars/jquery/jquery.js}"></script>
-<script th:src="@{/webjars/bootstrap/js/bootstrap.js}"></script>
-<script th:src="@{/webjars/angularjs/angular.js}"></script>
-<script th:src="@{/webjars/angularjs/angular-route.js}"></script>
-<script th:src="@{/webjars/angularjs/i18n/angular-locale_sv.js}"></script>
-<script th:src="@{/webjars/angular-ui-bootstrap/ui-bootstrap-tpls.js}"></script>
-<script th:src="@{/webjars/lodash/lodash.js}"></script>
-<script th:src="@{/app/codekvast.js}"></script>
+<ul>
+    <li><a href="swagger-ui.html">Swagger UI</a></li>
+    <li><a href="api-docs">Raw Swagger2 docs (JSON)</a></li>
+</ul>
 </body>
 </html>
