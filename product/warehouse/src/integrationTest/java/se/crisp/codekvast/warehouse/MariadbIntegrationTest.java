@@ -19,9 +19,9 @@ import se.crisp.codekvast.agent.lib.model.v1.JvmData;
 import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 import se.crisp.codekvast.testsupport.docker.DockerContainer;
 import se.crisp.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
-import se.crisp.codekvast.warehouse.api.QueryMethodsBySignatureParameters;
-import se.crisp.codekvast.warehouse.api.QueryService;
-import se.crisp.codekvast.warehouse.api.model.MethodDescriptor;
+import se.crisp.codekvast.warehouse.api.ApiService;
+import se.crisp.codekvast.warehouse.api.DescribeSignature1Parameters;
+import se.crisp.codekvast.warehouse.api.response.MethodDescriptor1;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO.Application;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO.ImportContext;
@@ -107,7 +107,7 @@ public class MariadbIntegrationTest {
     private ImportDAO importDAO;
 
     @Inject
-    private QueryService queryService;
+    private ApiService apiService;
 
     @Inject
     private TestDataGenerator testDataGenerator;
@@ -377,15 +377,15 @@ public class MariadbIntegrationTest {
         generateQueryTestData();
 
         // when
-        List<MethodDescriptor> methods = queryService.queryMethodsBySignature(
-                QueryMethodsBySignatureParameters.defaults()
-                                                 .signature(testDataGenerator.getMethod(1).getSignature().replace(".method", "#method"))
-                                                 .build());
+        List<MethodDescriptor1> methods = apiService.describeSignature1(
+                DescribeSignature1Parameters.defaults()
+                                            .signature(testDataGenerator.getMethod(1).getSignature().replace(".method", "#method"))
+                                            .build());
 
         // then
         assertThat(methods, hasSize(1));
 
-        MethodDescriptor md = methods.get(0);
+        MethodDescriptor1 md = methods.get(0);
         assertThat(toDaysAgo(md.getCollectedSinceMillis()), is(30));
         assertThat(toDaysAgo(md.getCollectedToMillis()), is(1));
 
@@ -397,10 +397,10 @@ public class MariadbIntegrationTest {
         generateQueryTestData();
 
         // when find substring
-        List<MethodDescriptor> methods = queryService.queryMethodsBySignature(
-                QueryMethodsBySignatureParameters.defaults()
-                                                 .signature(testDataGenerator.getMethod(1).getSignature().substring(3))
-                                                 .build());
+        List<MethodDescriptor1> methods = apiService.describeSignature1(
+                DescribeSignature1Parameters.defaults()
+                                            .signature(testDataGenerator.getMethod(1).getSignature().substring(3))
+                                            .build());
 
         // then
         assertThat(methods, hasSize(1));
@@ -412,11 +412,11 @@ public class MariadbIntegrationTest {
         generateQueryTestData();
 
         // when find by signat
-        List<MethodDescriptor> methods = queryService.queryMethodsBySignature(
-                QueryMethodsBySignatureParameters.defaults()
-                                                 .signature(testDataGenerator.getMethod(1).getSignature().substring(1))
-                                                 .normalizeSignature(false)
-                                                 .build());
+        List<MethodDescriptor1> methods = apiService.describeSignature1(
+                DescribeSignature1Parameters.defaults()
+                                            .signature(testDataGenerator.getMethod(1).getSignature().substring(1))
+                                            .normalizeSignature(false)
+                                            .build());
 
         // then
         assertThat(methods, hasSize(0));
@@ -434,20 +434,20 @@ public class MariadbIntegrationTest {
         assertThat(prefix, endsWith("TestClass1"));
 
         // when find many
-        List<MethodDescriptor> methods = queryService.queryMethodsBySignature(
-                QueryMethodsBySignatureParameters.defaults()
-                                                 .signature(prefix)
-                                                 .build());
+        List<MethodDescriptor1> methods = apiService.describeSignature1(
+                DescribeSignature1Parameters.defaults()
+                                            .signature(prefix)
+                                            .build());
 
         // then
         assertThat(methods, hasSize(3));
 
         // when find many with max results
-        methods = queryService.queryMethodsBySignature(
-                QueryMethodsBySignatureParameters.defaults()
-                                                 .signature(prefix)
-                                                 .maxResults(2)
-                                                 .build());
+        methods = apiService.describeSignature1(
+                DescribeSignature1Parameters.defaults()
+                                            .signature(prefix)
+                                            .maxResults(2)
+                                            .build());
 
         // then
         assertThat(methods, hasSize(2));
@@ -459,7 +459,7 @@ public class MariadbIntegrationTest {
         generateQueryTestData();
 
         // when query with too short signature
-        queryService.queryMethodsBySignature(QueryMethodsBySignatureParameters.defaults().signature("x").build());
+        apiService.describeSignature1(DescribeSignature1Parameters.defaults().signature("x").build());
     }
 
     @Test
@@ -468,8 +468,8 @@ public class MariadbIntegrationTest {
         generateQueryTestData();
 
         // when find exact signature
-        List<MethodDescriptor> methods = queryService.queryMethodsBySignature(
-                QueryMethodsBySignatureParameters.defaults().signature("foobar").build());
+        List<MethodDescriptor1> methods = apiService.describeSignature1(
+                DescribeSignature1Parameters.defaults().signature("foobar").build());
 
         // then
         assertThat(methods, hasSize(0));

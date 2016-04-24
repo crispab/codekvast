@@ -1,19 +1,19 @@
 package se.crisp.codekvast.warehouse.api;
 
-import se.crisp.codekvast.warehouse.api.model.MethodDescriptor;
+import se.crisp.codekvast.warehouse.api.response.MethodDescriptor1;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-import static se.crisp.codekvast.warehouse.api.QueryMethodsBySignatureParameters.OrderBy;
+import static se.crisp.codekvast.warehouse.api.DescribeSignature1Parameters.OrderBy;
 
 /**
  * A service for querying the warehouse for collected information.
  *
  * @author olle.hallin@crisp.se
  */
-public interface QueryService {
+public interface ApiService {
 
     interface Default {
         int MAX_RESULTS = 100;
@@ -37,6 +37,6 @@ public interface QueryService {
      * @return A list of matching methods. Does never return null.
      */
     @NotNull
-    List<MethodDescriptor> queryMethodsBySignature(@Valid QueryMethodsBySignatureParameters params);
+    List<MethodDescriptor1> describeSignature1(@Valid DescribeSignature1Parameters params);
 
 }

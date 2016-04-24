@@ -1,10 +1,10 @@
-package se.crisp.codekvast.warehouse.api.model;
+package se.crisp.codekvast.warehouse.api.response;
 
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Singular;
 import lombok.Value;
-import se.crisp.codekvast.warehouse.api.QueryMethodsBySignatureParameters;
+import se.crisp.codekvast.warehouse.api.DescribeSignature1Parameters;
 
 import java.util.Comparator;
 import java.util.Set;
@@ -16,7 +16,7 @@ import java.util.TreeSet;
  */
 @Value
 @Builder(toBuilder = true)
-public class MethodDescriptor {
+public class MethodDescriptor1 {
     @NonNull
     private final Long id;
 
@@ -39,30 +39,30 @@ public class MethodDescriptor {
     private final String declaringType;
 
     @Singular
-    private final SortedSet<ApplicationDescriptor> occursInApplications;
+    private final SortedSet<ApplicationDescriptor1> occursInApplications;
 
     @Singular
-    private final SortedSet<EnvironmentDescriptor> collectedInEnvironments;
+    private final SortedSet<EnvironmentDescriptor1> collectedInEnvironments;
 
     /**
      * Maximum value of occursInApplications.invokedAtMillis;
      */
     public Long getLastInvokedAtMillis() {
-        return occursInApplications.stream().map(ApplicationDescriptor::getInvokedAtMillis).reduce(Math::max).orElse(0L);
+        return occursInApplications.stream().map(ApplicationDescriptor1::getInvokedAtMillis).reduce(Math::max).orElse(0L);
     }
 
     /**
      * Minimum value of occursInApplications.startedAtMillis
      */
     public Long getCollectedSinceMillis() {
-        return occursInApplications.stream().map(ApplicationDescriptor::getStartedAtMillis).reduce(Math::min).orElse(0L);
+        return occursInApplications.stream().map(ApplicationDescriptor1::getStartedAtMillis).reduce(Math::min).orElse(0L);
     }
 
     /**
      * Maximum value of occursInApplications.getDumpedAtMillis
      */
     public Long getCollectedToMillis() {
-        return occursInApplications.stream().map(ApplicationDescriptor::getDumpedAtMillis).reduce(Math::max).orElse(0L);
+        return occursInApplications.stream().map(ApplicationDescriptor1::getDumpedAtMillis).reduce(Math::max).orElse(0L);
     }
 
     /**
@@ -80,11 +80,11 @@ public class MethodDescriptor {
     @SuppressWarnings("unused")
     public Set<String> getTags() {
         Set<String> result = new TreeSet<>();
-        collectedInEnvironments.stream().map(EnvironmentDescriptor::getTags).forEach(tags -> result.addAll(tags));
+        collectedInEnvironments.stream().map(EnvironmentDescriptor1::getTags).forEach(tags -> result.addAll(tags));
         return result;
     }
 
-    public static Comparator<MethodDescriptor> getComparator(QueryMethodsBySignatureParameters.OrderBy orderBy) {
+    public static Comparator<MethodDescriptor1> getComparator(DescribeSignature1Parameters.OrderBy orderBy) {
         switch (orderBy) {
         case INVOKED_AT_ASC:
             return new ByInvokedAtComparatorAsc();
@@ -96,23 +96,23 @@ public class MethodDescriptor {
         throw new IllegalArgumentException("Unknown OrderBy: " + orderBy);
     }
 
-    public static class ByInvokedAtComparatorAsc implements Comparator<MethodDescriptor> {
+    public static class ByInvokedAtComparatorAsc implements Comparator<MethodDescriptor1> {
         @Override
-        public int compare(MethodDescriptor o1, MethodDescriptor o2) {
+        public int compare(MethodDescriptor1 o1, MethodDescriptor1 o2) {
             return o1.getLastInvokedAtMillis().compareTo(o2.getLastInvokedAtMillis());
         }
     }
 
-    public static class ByInvokedAtComparatorDesc implements Comparator<MethodDescriptor> {
+    public static class ByInvokedAtComparatorDesc implements Comparator<MethodDescriptor1> {
         @Override
-        public int compare(MethodDescriptor o1, MethodDescriptor o2) {
+        public int compare(MethodDescriptor1 o1, MethodDescriptor1 o2) {
             return o2.getLastInvokedAtMillis().compareTo(o1.getLastInvokedAtMillis());
         }
     }
 
-    public static class BySignatureComparator implements Comparator<MethodDescriptor> {
+    public static class BySignatureComparator implements Comparator<MethodDescriptor1> {
         @Override
-        public int compare(MethodDescriptor o1, MethodDescriptor o2) {
+        public int compare(MethodDescriptor1 o1, MethodDescriptor1 o2) {
             return o1.getSignature().compareTo(o2.getSignature());
         }
     }

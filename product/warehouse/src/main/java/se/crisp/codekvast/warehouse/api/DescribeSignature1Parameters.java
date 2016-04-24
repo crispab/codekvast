@@ -3,17 +3,18 @@ package se.crisp.codekvast.warehouse.api;
 import lombok.*;
 
 import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
 /**
- * A validated parameters object for {@link QueryService#queryMethodsBySignature(QueryMethodsBySignatureParameters)}
+ * A validated parameters object for {@link ApiService#describeSignature1(DescribeSignature1Parameters)}
  *
  * @author olle.hallin@crisp.se
  */
 @Builder
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class QueryMethodsBySignatureParameters {
+public class DescribeSignature1Parameters {
 
     public enum OrderBy {INVOKED_AT_ASC, INVOKED_AT_DESC, SIGNATURE}
 
@@ -21,13 +22,14 @@ public class QueryMethodsBySignatureParameters {
      * The signature to search for.
      */
     @NonNull
-    @Size(min = 5)
+    @Size(min = 5, message = "signature must be at least 5 characters")
     private final String signature;
 
     /**
      * How many results to return.
      */
-    @Max(1000)
+    @Min(value = 1, message = "maxResult must be greater than 0")
+    @Max(value = 1000, message = "maxResults must not be higher that 100")
     private final int maxResults;
 
     /**
@@ -51,12 +53,12 @@ public class QueryMethodsBySignatureParameters {
         return normalizeSignature ? sig.replace("%%", "%").replace("#", ".") : signature;
     }
 
-    public static QueryMethodsBySignatureParametersBuilder defaults() {
+    public static DescribeSignature1ParametersBuilder defaults() {
         return builder()
-                .maxResults(QueryService.Default.MAX_RESULTS)
-                .normalizeSignature(QueryService.Default.NORMALIZE_SIGNATURE)
-                .onlyTrulyDeadMethods(QueryService.Default.ONLY_TRULY_DEAD_METHODS)
-                .orderBy(QueryService.Default.ORDER_BY);
+                .maxResults(ApiService.Default.MAX_RESULTS)
+                .normalizeSignature(ApiService.Default.NORMALIZE_SIGNATURE)
+                .onlyTrulyDeadMethods(ApiService.Default.ONLY_TRULY_DEAD_METHODS)
+                .orderBy(ApiService.Default.ORDER_BY);
     }
 
 }

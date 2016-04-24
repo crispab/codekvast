@@ -9,11 +9,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
-import se.crisp.codekvast.warehouse.api.QueryMethodsBySignatureParameters;
-import se.crisp.codekvast.warehouse.api.QueryService;
-import se.crisp.codekvast.warehouse.api.model.ApplicationDescriptor;
-import se.crisp.codekvast.warehouse.api.model.EnvironmentDescriptor;
-import se.crisp.codekvast.warehouse.api.model.MethodDescriptor;
+import se.crisp.codekvast.warehouse.api.ApiService;
+import se.crisp.codekvast.warehouse.api.DescribeSignature1Parameters;
+import se.crisp.codekvast.warehouse.api.response.ApplicationDescriptor1;
+import se.crisp.codekvast.warehouse.api.response.EnvironmentDescriptor1;
+import se.crisp.codekvast.warehouse.api.response.MethodDescriptor1;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -27,24 +27,24 @@ import java.util.*;
 @Service
 @Slf4j
 @Validated
-public class QueryServiceImpl implements QueryService {
+public class ApiServiceImpl implements ApiService {
 
     private final JdbcTemplate jdbcTemplate;
 
     @Inject
-    public QueryServiceImpl(JdbcTemplate jdbcTemplate) {
+    public ApiServiceImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<MethodDescriptor> queryMethodsBySignature(@Valid QueryMethodsBySignatureParameters params) {
+    public List<MethodDescriptor1> describeSignature1(@Valid DescribeSignature1Parameters params) {
         MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler(params);
 
         // This is a simpler to understand approach than trying to do everything in the database.
         // Let the database do the joining and selection, and the Java layer do the data reduction. The query will return several rows
         // for each
-        // method that matches the WHERE clause, and the RowCallbackHandler reduces them to only one MethodDescriptor per method ID.
+        // method that matches the WHERE clause, and the RowCallbackHandler reduces them to only one MethodDescriptor1 per method ID.
         // This is probably doable in pure SQL too, provided you are a black-belt SQL ninja. Unfortunately I'm not that strong at SQL.
 
         jdbcTemplate.query("SELECT i.methodId, a.name AS appName, a.version AS appVersion,\n" +
@@ -62,13 +62,13 @@ public class QueryServiceImpl implements QueryService {
     }
 
     private class MethodDescriptorRowCallbackHandler implements RowCallbackHandler {
-        private final QueryMethodsBySignatureParameters params;
+        private final DescribeSignature1Parameters params;
 
-        private final List<MethodDescriptor> result = new ArrayList<>();
+        private final List<MethodDescriptor1> result = new ArrayList<>();
 
         private QueryState queryState;
 
-        private MethodDescriptorRowCallbackHandler(QueryMethodsBySignatureParameters params) {
+        private MethodDescriptorRowCallbackHandler(DescribeSignature1Parameters params) {
             this.params = params;
             queryState = new QueryState(-1L, this.params);
         }
@@ -94,11 +94,11 @@ public class QueryServiceImpl implements QueryService {
             long dumpedAt = rs.getTimestamp("dumpedAt").getTime();
             long invokedAtMillis = rs.getLong("invokedAtMillis");
 
-            MethodDescriptor.MethodDescriptorBuilder builder = queryState.getBuilder();
+            MethodDescriptor1.MethodDescriptor1Builder builder = queryState.getBuilder();
             String appName = rs.getString("appName");
             String appVersion = rs.getString("appVersion");
 
-            queryState.saveApplication(ApplicationDescriptor
+            queryState.saveApplication(ApplicationDescriptor1
                                                .builder()
                                                .name(appName)
                                                .version(appVersion)
@@ -108,14 +108,14 @@ public class QueryServiceImpl implements QueryService {
                                                .status(SignatureStatus.valueOf(rs.getString("status")))
                                                .build());
 
-            queryState.saveEnvironment(EnvironmentDescriptor.builder()
-                                                            .name(rs.getString("environment"))
-                                                            .hostName(rs.getString("collectorHostname"))
-                                                            .tags(splitOnCommaOrSemicolon(rs.getString("tags")))
-                                                            .collectedSinceMillis(startedAt)
-                                                            .collectedToMillis(dumpedAt)
-                                                            .invokedAtMillis(invokedAtMillis)
-                                                            .build());
+            queryState.saveEnvironment(EnvironmentDescriptor1.builder()
+                                                             .name(rs.getString("environment"))
+                                                             .hostName(rs.getString("collectorHostname"))
+                                                             .tags(splitOnCommaOrSemicolon(rs.getString("tags")))
+                                                             .collectedSinceMillis(startedAt)
+                                                             .collectedToMillis(dumpedAt)
+                                                             .invokedAtMillis(invokedAtMillis)
+                                                             .build());
 
             builder.declaringType(rs.getString("declaringType"))
                    .modifiers(rs.getString("modifiers"))
@@ -128,9 +128,9 @@ public class QueryServiceImpl implements QueryService {
             return new HashSet<>(Arrays.asList(tags.split("\\s*[,;]\\s")));
         }
 
-        private List<MethodDescriptor> getResult() {
+        private List<MethodDescriptor1> getResult() {
             queryState.addTo(result);
-            Collections.sort(result, MethodDescriptor.getComparator(params.getOrderBy()));
+            Collections.sort(result, MethodDescriptor1.getComparator(params.getOrderBy()));
             return result;
         }
     }
@@ -138,17 +138,17 @@ public class QueryServiceImpl implements QueryService {
     @RequiredArgsConstructor
     private class QueryState {
         private final long methodId;
-        private final QueryMethodsBySignatureParameters params;
+        private final DescribeSignature1Parameters params;
 
-        private final Map<ApplicationId, ApplicationDescriptor> applications = new HashMap<>();
-        private final Map<String, EnvironmentDescriptor> environments = new HashMap<>();
+        private final Map<ApplicationId, ApplicationDescriptor1> applications = new HashMap<>();
+        private final Map<String, EnvironmentDescriptor1> environments = new HashMap<>();
 
-        MethodDescriptor.MethodDescriptorBuilder builder;
+        MethodDescriptor1.MethodDescriptor1Builder builder;
         private int rows;
 
-        MethodDescriptor.MethodDescriptorBuilder getBuilder() {
+        MethodDescriptor1.MethodDescriptor1Builder getBuilder() {
             if (builder == null) {
-                builder = MethodDescriptor.builder().id(methodId);
+                builder = MethodDescriptor1.builder().id(methodId);
             }
             return builder;
         }
@@ -157,18 +157,18 @@ public class QueryServiceImpl implements QueryService {
             return id == this.methodId;
         }
 
-        void saveApplication(ApplicationDescriptor applicationDescriptor) {
+        void saveApplication(ApplicationDescriptor1 applicationDescriptor) {
             ApplicationId appId = ApplicationId.of(applicationDescriptor);
             applications.put(appId, applicationDescriptor.mergeWith(applications.get(appId)));
 
         }
 
-        void saveEnvironment(EnvironmentDescriptor environmentDescriptor) {
+        void saveEnvironment(EnvironmentDescriptor1 environmentDescriptor) {
             String name = environmentDescriptor.getName();
             environments.put(name, environmentDescriptor.mergeWith(environments.get(name)));
         }
 
-        void addTo(List<MethodDescriptor> result) {
+        void addTo(List<MethodDescriptor1> result) {
             if (builder != null && result.size() < params.getMaxResults()) {
                 log.debug("Adding method {} to result ({} result set rows)", methodId, rows);
                 builder.occursInApplications(new TreeSet<>(applications.values()));
@@ -196,7 +196,7 @@ public class QueryServiceImpl implements QueryService {
             return this.toString().compareTo(that.toString());
         }
 
-        public static ApplicationId of(ApplicationDescriptor applicationDescriptor) {
+        public static ApplicationId of(ApplicationDescriptor1 applicationDescriptor) {
             return new ApplicationId(applicationDescriptor.getName(), applicationDescriptor.getVersion());
         }
     }

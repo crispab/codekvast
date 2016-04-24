@@ -1,4 +1,4 @@
-package se.crisp.codekvast.warehouse.api.model;
+package se.crisp.codekvast.warehouse.api.response;
 
 import lombok.*;
 
@@ -13,7 +13,7 @@ import java.util.Set;
 @Value
 @Builder
 @EqualsAndHashCode(of = "name")
-public class EnvironmentDescriptor implements Comparable<EnvironmentDescriptor> {
+public class EnvironmentDescriptor1 implements Comparable<EnvironmentDescriptor1> {
 
     @NonNull
     private final String name;
@@ -59,16 +59,16 @@ public class EnvironmentDescriptor implements Comparable<EnvironmentDescriptor> 
         return Math.toIntExact((collectedToMillis - collectedSinceMillis) / oneDayInMillis);
     }
 
-    public EnvironmentDescriptor mergeWith(EnvironmentDescriptor that) {
+    public EnvironmentDescriptor1 mergeWith(EnvironmentDescriptor1 that) {
         return that == null ? this
-                : EnvironmentDescriptor.builder()
-                                       .name(this.name)
-                                       .invokedAtMillis(Math.max(this.invokedAtMillis, that.invokedAtMillis))
-                                       .collectedToMillis(Math.max(this.collectedToMillis, that.collectedToMillis))
-                                       .collectedSinceMillis(Math.min(this.collectedSinceMillis, that.collectedSinceMillis))
-                                       .hostNames(add(this.hostNames, that.hostNames))
-                                       .tags(add(this.tags, that.tags))
-                                       .build();
+                : EnvironmentDescriptor1.builder()
+                                        .name(this.name)
+                                        .invokedAtMillis(Math.max(this.invokedAtMillis, that.invokedAtMillis))
+                                        .collectedToMillis(Math.max(this.collectedToMillis, that.collectedToMillis))
+                                        .collectedSinceMillis(Math.min(this.collectedSinceMillis, that.collectedSinceMillis))
+                                        .hostNames(add(this.hostNames, that.hostNames))
+                                        .tags(add(this.tags, that.tags))
+                                        .build();
     }
 
     private Set<String> add(Set<String> left, Set<String> right) {
@@ -78,7 +78,7 @@ public class EnvironmentDescriptor implements Comparable<EnvironmentDescriptor> 
     }
 
     @Override
-    public int compareTo(EnvironmentDescriptor that) {
+    public int compareTo(EnvironmentDescriptor1 that) {
         return this.name.compareTo(that.name);
     }
 }

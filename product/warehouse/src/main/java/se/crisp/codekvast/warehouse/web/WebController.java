@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class WebController {
 
     /**
-     * Stuff some common stuff into the MVC model...
+     * Stuff some common stuff into the MVC response...
      */
     @ModelAttribute
     public void populateModel(Model model) {

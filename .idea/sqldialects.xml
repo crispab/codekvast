@@ -7,7 +7,7 @@
     <file url="file://$PROJECT_DIR$/product/warehouse/src/integrationTest/java/se/crisp/codekvast/warehouse/MariadbIntegrationTest.java" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/product/warehouse/src/integrationTest/java/se/crisp/codekvast/warehouse/testdata/TestDataGenerator.java" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/product/warehouse/src/integrationTest/resources/sql" dialect="MySQL" />
-    <file url="file://$PROJECT_DIR$/product/warehouse/src/main/java/se/crisp/codekvast/warehouse/api/impl/QueryServiceImpl.java" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/product/warehouse/src/main/java/se/crisp/codekvast/warehouse/api/impl/ApiServiceImpl.java" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/product/warehouse/src/main/java/se/crisp/codekvast/warehouse/file_import/ImportDAOImpl.java" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/product/warehouse/src/main/resources/db/migration" dialect="MySQL" />
   </component>
