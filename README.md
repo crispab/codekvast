@@ -93,7 +93,7 @@ It will also build and start Codekvast Daemon and Codekvast Warehouse.
 
 1. Do `git clone https://github.com/crispab/codekvast.git && cd codekvast`
 
-1. Open 4 more terminal windows or tabs with `codekvast` as working directory.
+1. Open 3 more terminal windows or tabs with `codekvast` as working directory.
 
 1. In terminal window #1 do `./gradlew :sample:jenkins1:run`
 
@@ -113,11 +113,13 @@ It will also build and start Codekvast Daemon and Codekvast Warehouse.
  
     This will build a local Docker image for Codekvast Warehouse from the sources.
     
-1. In terminal window #3 do `docker-compose -f product/warehouse/docker-compose.yml up`
+1. In terminal window #3 do `docker-compose -f product/warehouse/docker-compose.yml up -d`
 
     This will launch two Docker containers: **codekvast-database** (MariaDB) and **codekvast-warehouse** (the Codekvast Warehouse app).
     
     The warehouse app is configured to look for zip files in /tmp/codekvast/.warehouse and import them into the MariaDB database.
+    
+    Do `docker-compose ps` and note the port that was allocated to warehouse_app_1 (the number after "0.0.0.0:"). Note this port number.
     
 1. In terminal window #4 do `sudo chmod o+rw /tmp/codekvast/.warehouse` or else the Codekvast Daemon cannot create it's zip files there.
     
@@ -127,11 +129,9 @@ It will also build and start Codekvast Daemon and Codekvast Warehouse.
     
     The daemon will regularly produce zip data files in /tmp/codekvast/.warehouse (where Codekvast Warehouse will find and consume them).
     
-1. In terminal window #5 do `docker exec -ti codekvast-database mysql -ucodekvast -pcodekvast codekvast_warehouse`
+1. Open a web browser to localhost:&lt;warehouse_app_1-port&gt;
 
-    Examine the collected data by means of `SELECT * FROM MethodInvocations1;`
-    
-    Examine the view with `DESCRIBE MethodInvocations1;`
+   Play around with the Swagger UI console.
 
 1. In each terminal window press `Ctrl-C`to terminate.
 
