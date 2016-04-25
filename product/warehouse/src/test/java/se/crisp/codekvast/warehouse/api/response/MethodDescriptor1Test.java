@@ -3,7 +3,10 @@ package se.crisp.codekvast.warehouse.api.response;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
-import se.crisp.codekvast.warehouse.api.DescribeSignature1Parameters;
+import se.crisp.codekvast.warehouse.api.model.ApplicationDescriptor1;
+import se.crisp.codekvast.warehouse.api.model.EnvironmentDescriptor1;
+import se.crisp.codekvast.warehouse.api.model.GetMethodsRequest1;
+import se.crisp.codekvast.warehouse.api.model.MethodDescriptor1;
 
 import java.util.Comparator;
 
@@ -63,7 +66,7 @@ public class MethodDescriptor1Test {
 
     @Test
     public void should_provide_comparator_for_all_orderBy_values() throws Exception {
-        for (DescribeSignature1Parameters.OrderBy orderBy : DescribeSignature1Parameters.OrderBy.values()) {
+        for (GetMethodsRequest1.OrderBy orderBy : GetMethodsRequest1.OrderBy.values()) {
             assertThat(MethodDescriptor1.getComparator(orderBy), not(nullValue()));
         }
     }

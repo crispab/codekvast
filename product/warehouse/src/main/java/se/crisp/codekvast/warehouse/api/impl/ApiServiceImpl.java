@@ -10,10 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 import se.crisp.codekvast.warehouse.api.ApiService;
-import se.crisp.codekvast.warehouse.api.DescribeSignature1Parameters;
-import se.crisp.codekvast.warehouse.api.response.ApplicationDescriptor1;
-import se.crisp.codekvast.warehouse.api.response.EnvironmentDescriptor1;
-import se.crisp.codekvast.warehouse.api.response.MethodDescriptor1;
+import se.crisp.codekvast.warehouse.api.model.ApplicationDescriptor1;
+import se.crisp.codekvast.warehouse.api.model.EnvironmentDescriptor1;
+import se.crisp.codekvast.warehouse.api.model.GetMethodsRequest1;
+import se.crisp.codekvast.warehouse.api.model.MethodDescriptor1;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -38,8 +38,8 @@ public class ApiServiceImpl implements ApiService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<MethodDescriptor1> describeSignature1(@Valid DescribeSignature1Parameters params) {
-        MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler(params);
+    public List<MethodDescriptor1> getMethods(@Valid GetMethodsRequest1 request) {
+        MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler(request);
 
         // This is a simpler to understand approach than trying to do everything in the database.
         // Let the database do the joining and selection, and the Java layer do the data reduction. The query will return several rows
@@ -56,19 +56,19 @@ public class ApiServiceImpl implements ApiService {
                                    "  JOIN jvms j ON j.id = i.jvmId\n" +
                                    "WHERE m.signature LIKE ?\n" +
                                    "ORDER BY i.methodId ASC", rowCallbackHandler,
-                           params.getNormalizedSignature());
+                           request.getNormalizedSignature());
 
         return rowCallbackHandler.getResult();
     }
 
     private class MethodDescriptorRowCallbackHandler implements RowCallbackHandler {
-        private final DescribeSignature1Parameters params;
+        private final GetMethodsRequest1 params;
 
         private final List<MethodDescriptor1> result = new ArrayList<>();
 
         private QueryState queryState;
 
-        private MethodDescriptorRowCallbackHandler(DescribeSignature1Parameters params) {
+        private MethodDescriptorRowCallbackHandler(GetMethodsRequest1 params) {
             this.params = params;
             queryState = new QueryState(-1L, this.params);
         }
@@ -138,7 +138,7 @@ public class ApiServiceImpl implements ApiService {
     @RequiredArgsConstructor
     private class QueryState {
         private final long methodId;
-        private final DescribeSignature1Parameters params;
+        private final GetMethodsRequest1 params;
 
         private final Map<ApplicationId, ApplicationDescriptor1> applications = new HashMap<>();
         private final Map<String, EnvironmentDescriptor1> environments = new HashMap<>();
@@ -170,7 +170,7 @@ public class ApiServiceImpl implements ApiService {
 
         void addTo(List<MethodDescriptor1> result) {
             if (builder != null && result.size() < params.getMaxResults()) {
-                log.debug("Adding method {} to result ({} result set rows)", methodId, rows);
+                log.trace("Adding method {} to result ({} result set rows)", methodId, rows);
                 builder.occursInApplications(new TreeSet<>(applications.values()));
                 builder.collectedInEnvironments(new TreeSet<>(environments.values()));
                 result.add(builder.build());

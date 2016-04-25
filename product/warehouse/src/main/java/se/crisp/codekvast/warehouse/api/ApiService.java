@@ -1,30 +1,29 @@
 package se.crisp.codekvast.warehouse.api;
 
-import se.crisp.codekvast.warehouse.api.response.MethodDescriptor1;
+import se.crisp.codekvast.warehouse.api.model.GetMethodsRequest1;
+import se.crisp.codekvast.warehouse.api.model.MethodDescriptor1;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-import static se.crisp.codekvast.warehouse.api.DescribeSignature1Parameters.OrderBy;
+import static se.crisp.codekvast.warehouse.api.model.GetMethodsRequest1.OrderBy;
 
 /**
- * A service for querying the warehouse for collected information.
+ * The service used by the {@link ApiController}.
  *
  * @author olle.hallin@crisp.se
  */
 public interface ApiService {
 
-    interface Default {
-        int MAX_RESULTS = 100;
-        String MAX_RESULTS_STR = "" + MAX_RESULTS;
-        OrderBy ORDER_BY = OrderBy.INVOKED_AT_ASC;
-        boolean ONLY_TRULY_DEAD_METHODS = false;
-        boolean NORMALIZE_SIGNATURE = true;
-    }
+    int DEFAULT_MAX_RESULTS = 100;
+    String DEFAULT_MAX_RESULTS_STR = "" + DEFAULT_MAX_RESULTS;
+    OrderBy DEFAULT_ORDER_BY = OrderBy.INVOKED_AT_ASC;
+    boolean DEFAULT_ONLY_TRULY_DEAD_METHODS = false;
+    boolean DEFAULT_NORMALIZE_SIGNATURE = true;
 
     /**
-     * Retrieve information about a certain method.
+     * Retrieve information about a certain method or methods.
      *
      * Use case:
      * <ol>
@@ -33,10 +32,10 @@ public interface ApiService {
      * search field (Ctrl-V)</li>
      * </ol>
      *
-     * @param params The query parameters
+     * @param request The request parameters
      * @return A list of matching methods. Does never return null.
      */
     @NotNull
-    List<MethodDescriptor1> describeSignature1(@Valid DescribeSignature1Parameters params);
+    List<MethodDescriptor1> getMethods(@Valid GetMethodsRequest1 request);
 
 }

@@ -1,5 +1,5 @@
 /**
- * Things related to the API.
+ * Things related to the REST API.
  *
  * @author olle.hallin@crisp.se
  */

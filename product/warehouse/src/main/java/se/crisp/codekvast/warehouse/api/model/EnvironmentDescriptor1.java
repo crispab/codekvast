@@ -1,4 +1,4 @@
-package se.crisp.codekvast.warehouse.api.response;
+package se.crisp.codekvast.warehouse.api.model;
 
 import lombok.*;
 

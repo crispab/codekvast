@@ -11,6 +11,8 @@ import springfox.documentation.swagger.web.UiConfiguration;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
+ * Configure the embedded Swagger API docs stuff.
+ *
  * @author olle.hallin@crisp.se
  */
 @Configuration

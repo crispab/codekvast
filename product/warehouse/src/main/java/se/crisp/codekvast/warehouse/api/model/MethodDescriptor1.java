@@ -1,10 +1,9 @@
-package se.crisp.codekvast.warehouse.api.response;
+package se.crisp.codekvast.warehouse.api.model;
 
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Singular;
 import lombok.Value;
-import se.crisp.codekvast.warehouse.api.DescribeSignature1Parameters;
 
 import java.util.Comparator;
 import java.util.Set;
@@ -84,7 +83,7 @@ public class MethodDescriptor1 {
         return result;
     }
 
-    public static Comparator<MethodDescriptor1> getComparator(DescribeSignature1Parameters.OrderBy orderBy) {
+    public static Comparator<MethodDescriptor1> getComparator(GetMethodsRequest1.OrderBy orderBy) {
         switch (orderBy) {
         case INVOKED_AT_ASC:
             return new ByInvokedAtComparatorAsc();

@@ -1,20 +1,21 @@
-package se.crisp.codekvast.warehouse.api;
+package se.crisp.codekvast.warehouse.api.model;
 
 import lombok.*;
+import se.crisp.codekvast.warehouse.api.ApiService;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
 /**
- * A validated parameters object for {@link ApiService#describeSignature1(DescribeSignature1Parameters)}
+ * A validated parameters object for {@link ApiService#getMethods(GetMethodsRequest1)}
  *
  * @author olle.hallin@crisp.se
  */
 @Builder
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class DescribeSignature1Parameters {
+public class GetMethodsRequest1 {
 
     public enum OrderBy {INVOKED_AT_ASC, INVOKED_AT_DESC, SIGNATURE}
 
@@ -29,7 +30,7 @@ public class DescribeSignature1Parameters {
      * How many results to return.
      */
     @Min(value = 1, message = "maxResult must be greater than 0")
-    @Max(value = 1000, message = "maxResults must not be higher than 100")
+    @Max(value = 10_000, message = "maxResults must be less than or equal to 10000")
     private final int maxResults;
 
     /**
@@ -53,12 +54,12 @@ public class DescribeSignature1Parameters {
         return normalizeSignature ? sig.replace("#", ".") : signature;
     }
 
-    public static DescribeSignature1ParametersBuilder defaults() {
+    public static GetMethodsRequest1Builder defaults() {
         return builder()
-                .maxResults(ApiService.Default.MAX_RESULTS)
-                .normalizeSignature(ApiService.Default.NORMALIZE_SIGNATURE)
-                .onlyTrulyDeadMethods(ApiService.Default.ONLY_TRULY_DEAD_METHODS)
-                .orderBy(ApiService.Default.ORDER_BY);
+                .maxResults(ApiService.DEFAULT_MAX_RESULTS)
+                .normalizeSignature(ApiService.DEFAULT_NORMALIZE_SIGNATURE)
+                .onlyTrulyDeadMethods(ApiService.DEFAULT_ONLY_TRULY_DEAD_METHODS)
+                .orderBy(ApiService.DEFAULT_ORDER_BY);
     }
 
 }

@@ -4,16 +4,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import se.crisp.codekvast.warehouse.api.response.MethodDescriptor1;
+import se.crisp.codekvast.warehouse.api.model.GetMethodsRequest1;
+import se.crisp.codekvast.warehouse.api.model.GetMethodsResponse1;
+import se.crisp.codekvast.warehouse.api.model.MethodDescriptor1;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.util.List;
 
-import static se.crisp.codekvast.warehouse.api.ApiService.Default.MAX_RESULTS_STR;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static se.crisp.codekvast.warehouse.api.ApiService.DEFAULT_MAX_RESULTS_STR;
 
 /**
+ * The API REST controller.
+ *
  * @author olle.hallin@crisp.se
  */
 @RestController
@@ -37,33 +42,34 @@ public class ApiController {
         return ResponseEntity.badRequest().body(violations.toString());
     }
 
-    @RequestMapping(value = "/api/v1/signatures", method = RequestMethod.GET)
-    public List<MethodDescriptor1> describeSignature1(
-            @RequestParam(name = "maxResults", defaultValue = MAX_RESULTS_STR) Integer maxResults) {
+    @RequestMapping(method = GET, value = "/api/v1/methods")
+    public GetMethodsResponse1 getMethods1(@RequestParam(name = "maxResults", defaultValue = DEFAULT_MAX_RESULTS_STR) Integer maxResults) {
 
-        List<MethodDescriptor1> result = apiService.describeSignature1(
-                DescribeSignature1Parameters.defaults()
-                                            .signature("%")
-                                            .maxResults(maxResults)
-                                            .build());
-
-        log.debug("Result: {} methods", result.size());
-        return result;
+        return doGetMethods("%", maxResults);
     }
 
-    @RequestMapping(value = "/api/v1/signatures/{signature}", method = RequestMethod.GET)
-    public List<MethodDescriptor1> describeSignature1(@PathVariable("signature") String signature,
-                                                      @RequestParam(name = "maxResults", defaultValue = MAX_RESULTS_STR) Integer maxResults) {
-
-        log.debug("signature={}", signature);
-
-        List<MethodDescriptor1> result = apiService.describeSignature1(
-                DescribeSignature1Parameters.defaults()
-                                            .signature(signature)
-                                            .maxResults(maxResults)
-                                            .build());
-
-        log.debug("Result: {} methods", result.size());
-        return result;
+    @RequestMapping(method = GET, value = "/api/v1/methods/{signature}")
+    public GetMethodsResponse1 getMethods1(@PathVariable("signature") String signature,
+                                           @RequestParam(name = "maxResults", defaultValue = DEFAULT_MAX_RESULTS_STR) Integer maxResults) {
+        return doGetMethods(signature, maxResults);
     }
+
+    private GetMethodsResponse1 doGetMethods(String signature, Integer maxResults) {
+        long startedAt = System.currentTimeMillis();
+
+        GetMethodsRequest1 request = GetMethodsRequest1.defaults().signature(signature).maxResults(maxResults).build();
+
+        List<MethodDescriptor1> methods = apiService.getMethods(request);
+
+        GetMethodsResponse1 response = GetMethodsResponse1.builder()
+                                                          .timestamp(startedAt)
+                                                          .request(request)
+                                                          .queryTimeMillis(System.currentTimeMillis() - startedAt)
+                                                          .numMethods(methods.size())
+                                                          .methods(methods)
+                                                          .build();
+        log.debug("Response: {}", response);
+        return response;
+    }
+
 }
