@@ -55,10 +55,10 @@ task fetchJavaAgents(type: Sync) {
 }
 
 run {
-    dependsOn = [fetchJavaAgents, generateCodekvastConfig]
+    dependsOn = [installDist, fetchJavaAgents, generateCodekvastConfig]
 
-    def codekvastCollector = file("$buildDir/javaagent").listFiles().find { it.name.startsWith("codekvast") }
-    def aspectjWeaver = file("$buildDir/javaagent").listFiles().find { it.name.startsWith("aspectjweaver") }
+    def codekvastCollector = {-> file("$buildDir/javaagent").listFiles().find { it.name.startsWith("codekvast")}}
+    def aspectjWeaver = {->file("$buildDir/javaagent").listFiles().find { it.name.startsWith("aspectjweaver") }}
 
     jvmArgs = [
             "-Dcodekvast.configuration=$generateCodekvastConfig.configFile",
