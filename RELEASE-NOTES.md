@@ -1,6 +1,6 @@
 # Codekvast Release Notes
 
-## 0.17.6
+## 0.18.0
 
 1. Refactored daemon; renamed many classes and packages.
 1. Made all @Scheduled parameters configurable.
@@ -9,8 +9,8 @@
 1. Added ready-checker support in testsupport's DockerContainer.
 1. Warehouse integration tests now use MariaDB in a Docker container.
 1. Improved test coverage.
-1. Implemented simple REST API in Codekvast Warehouse: /api/v1/signatures/{signature}
-1. Added Swagger UI in Warehouse.
+1. Implemented simple REST API in Codekvast Warehouse: /api/v1/methods/
+1. Added Swagger UI in Codekvast Warehouse.
 
 ## 0.17.5
 
