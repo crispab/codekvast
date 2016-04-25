@@ -5,8 +5,8 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
@@ -53,7 +53,7 @@ import static se.crisp.codekvast.warehouse.testdata.ImportDescriptor.*;
  * @author olle.hallin@crisp.se
  */
 @SpringApplicationConfiguration(classes = {CodekvastWarehouse.class, TestDataGenerator.class})
-@IntegrationTest
+@WebIntegrationTest(randomPort = true)
 @ActiveProfiles({"integrationTest"})
 @Transactional(rollbackFor = Exception.class)
 public class MariadbIntegrationTest {
