@@ -3,7 +3,10 @@ package se.crisp.codekvast.warehouse.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import se.crisp.codekvast.warehouse.api.model.GetMethodsRequest1;
 import se.crisp.codekvast.warehouse.api.model.GetMethodsResponse1;
 import se.crisp.codekvast.warehouse.api.model.MethodDescriptor1;
@@ -43,13 +46,7 @@ public class ApiController {
     }
 
     @RequestMapping(method = GET, value = "/api/v1/methods")
-    public GetMethodsResponse1 getMethods1(@RequestParam(name = "maxResults", defaultValue = DEFAULT_MAX_RESULTS_STR) Integer maxResults) {
-
-        return doGetMethods("%", maxResults);
-    }
-
-    @RequestMapping(method = GET, value = "/api/v1/methods/{signature}")
-    public GetMethodsResponse1 getMethods1(@PathVariable("signature") String signature,
+    public GetMethodsResponse1 getMethods1(@RequestParam(value = "signature", defaultValue = "%") String signature,
                                            @RequestParam(name = "maxResults", defaultValue = DEFAULT_MAX_RESULTS_STR) Integer maxResults) {
         return doGetMethods(signature, maxResults);
     }
