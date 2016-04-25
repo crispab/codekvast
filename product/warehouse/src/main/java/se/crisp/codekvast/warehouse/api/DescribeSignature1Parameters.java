@@ -29,7 +29,7 @@ public class DescribeSignature1Parameters {
      * How many results to return.
      */
     @Min(value = 1, message = "maxResult must be greater than 0")
-    @Max(value = 1000, message = "maxResults must not be higher that 100")
+    @Max(value = 1000, message = "maxResults must not be higher than 100")
     private final int maxResults;
 
     /**

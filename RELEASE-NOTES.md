@@ -9,6 +9,8 @@
 1. Added ready-checker support in testsupport's DockerContainer.
 1. Warehouse integration tests now use MariaDB in a Docker container.
 1. Improved test coverage.
+1. Implemented simple REST API in Codekvast Warehouse: /api/v1/signatures/{signature}
+1. Added Swagger UI in Warehouse.
 
 ## 0.17.5
 
