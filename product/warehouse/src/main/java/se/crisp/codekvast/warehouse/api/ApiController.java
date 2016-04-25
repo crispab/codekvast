@@ -8,6 +8,8 @@ import se.crisp.codekvast.warehouse.api.response.MethodDescriptor1;
 import javax.inject.Inject;
 import java.util.List;
 
+import static se.crisp.codekvast.warehouse.api.ApiService.Default.MAX_RESULTS_STR;
+
 /**
  * @author olle.hallin@crisp.se
  */
@@ -23,11 +25,23 @@ public class ApiController {
         this.apiService = apiService;
     }
 
-    @RequestMapping(value = "/api/v1/describe/{signature}", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/v1/signatures", method = RequestMethod.GET)
+    public List<MethodDescriptor1> describeSignature1(
+            @RequestParam(name = "maxResults", defaultValue = MAX_RESULTS_STR) Integer maxResults) {
+
+        List<MethodDescriptor1> result = apiService.describeSignature1(
+                DescribeSignature1Parameters.defaults()
+                                            .signature("%")
+                                            .maxResults(maxResults)
+                                            .build());
+
+        log.debug("Result: {} methods", result.size());
+        return result;
+    }
+
+    @RequestMapping(value = "/api/v1/signatures/{signature}", method = RequestMethod.GET)
     public List<MethodDescriptor1> describeSignature1(@PathVariable("signature") String signature,
-                                                      @RequestParam(name = "maxResults", required = false,
-                                                              defaultValue = ApiService.Default.MAX_RESULTS_STR)
-                                                              Integer maxResults) {
+                                                      @RequestParam(name = "maxResults", defaultValue = MAX_RESULTS_STR) Integer maxResults) {
 
         log.debug("signature={}", signature);
 

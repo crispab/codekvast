@@ -22,7 +22,7 @@ public class DescribeSignature1Parameters {
      * The signature to search for.
      */
     @NonNull
-    @Size(min = 5, message = "signature must be at least 5 characters")
+    @Size(min = 1, message = "signature must be at least 1 characters")
     private final String signature;
 
     /**
@@ -38,7 +38,7 @@ public class DescribeSignature1Parameters {
     private final boolean onlyTrulyDeadMethods;
 
     /**
-     * Surround signature with "%" and reoṕlace "#" with "."
+     * Surround signature with "%" and replace "#" with "."
      */
     private final boolean normalizeSignature;
 
@@ -49,8 +49,8 @@ public class DescribeSignature1Parameters {
     private final OrderBy orderBy;
 
     public String getNormalizedSignature() {
-        String sig = "%" + signature + "%";
-        return normalizeSignature ? sig.replace("%%", "%").replace("#", ".") : signature;
+        String sig = signature.contains("%") ? signature : "%" + signature + "%";
+        return normalizeSignature ? sig.replace("#", ".") : signature;
     }
 
     public static DescribeSignature1ParametersBuilder defaults() {

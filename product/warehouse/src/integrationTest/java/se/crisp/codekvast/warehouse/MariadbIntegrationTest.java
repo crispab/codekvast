@@ -459,7 +459,7 @@ public class MariadbIntegrationTest {
         generateQueryTestData();
 
         // when query with too short signature
-        apiService.describeSignature1(DescribeSignature1Parameters.defaults().signature("x").build());
+        apiService.describeSignature1(DescribeSignature1Parameters.defaults().signature("").build());
     }
 
     @Test

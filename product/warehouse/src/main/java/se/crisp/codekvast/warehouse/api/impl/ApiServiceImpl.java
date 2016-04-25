@@ -55,7 +55,7 @@ public class ApiServiceImpl implements ApiService {
                                    "  JOIN methods m ON m.id = i.methodId\n" +
                                    "  JOIN jvms j ON j.id = i.jvmId\n" +
                                    "WHERE m.signature LIKE ?\n" +
-                                   "ORDER BY i.methodId ASC, j.startedAt DESC, j.dumpedAt ASC, i.invokedAtMillis ASC", rowCallbackHandler,
+                                   "ORDER BY i.methodId ASC", rowCallbackHandler,
                            params.getNormalizedSignature());
 
         return rowCallbackHandler.getResult();
