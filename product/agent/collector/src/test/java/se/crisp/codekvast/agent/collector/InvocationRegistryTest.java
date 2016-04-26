@@ -64,15 +64,13 @@ public class InvocationRegistryTest {
     public void testRegisterMethodInvocationAndDumpToDisk() throws IOException, InterruptedException {
         assertThat(InvocationRegistry.instance.isNullRegistry(), is(false));
 
-        doExtremelyConcurrentRegistrationOf(10, 10, signature1);
-        doExtremelyConcurrentRegistrationOf(10, 10, signature2);
+        doExtremelyConcurrentRegistrationOf(10, 10, signature1, signature2);
 
-        Thread.sleep(10);
         InvocationRegistry.instance.dumpData(1);
 
         File[] files = config.getDataPath().listFiles();
         assertThat(files.length, is(1));
-        assertThat(files[0].getName(), is("invocationsregistrytest"));
+        assertThat(files[0].getName(), is(APP_NAME.toLowerCase().replace(" ", "")));
 
         files = files[0].listFiles();
         assertThat(files.length, is(2));
@@ -93,25 +91,35 @@ public class InvocationRegistryTest {
         assertThat(jvm.getCollectorConfig().getCodeBase(), is(codeBase));
     }
 
-    private void doExtremelyConcurrentRegistrationOf(int numThreads, final int numRegistrations, final Signature signature) {
-        final CountDownLatch latch = new CountDownLatch(1);
-        for (int i = 0; i < numThreads; i++) {
-            Thread t = new Thread(new Runnable() {
+    private void doExtremelyConcurrentRegistrationOf(int numThreads, final int numRegistrations, final Signature... signatures)
+            throws InterruptedException {
 
-                @Override
-                public void run() {
-                    try {
-                        latch.await();
-                        for (int j = 0; j < numRegistrations; j++) {
-                            InvocationRegistry.instance.registerMethodInvocation(signature);
+        final CountDownLatch startingGun = new CountDownLatch(1);
+        final CountDownLatch finishLine = new CountDownLatch(numThreads * signatures.length);
+
+        for (final Signature signature : signatures) {
+            for (int i = 0; i < numThreads; i++) {
+                Thread t = new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        try {
+                            startingGun.await();
+                            for (int j = 0; j < numRegistrations; j++) {
+                                InvocationRegistry.instance.registerMethodInvocation(signature);
+                            }
+                        } catch (InterruptedException ignore) {
+                        } finally {
+                            finishLine.countDown();
                         }
-                    } catch (InterruptedException ignore) {
+
                     }
-                }
-            });
-            t.start();
+                });
+                t.start();
+            }
         }
-        latch.countDown();
+        startingGun.countDown();
+        finishLine.await();
     }
 
     @Test
