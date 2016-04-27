@@ -19,5 +19,7 @@
 build/
 codekvast.iws
 node_modules/
+typings/
 target/
 tools/downloaded/
+npm-debug.log

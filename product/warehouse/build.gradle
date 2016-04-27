@@ -1,10 +1,11 @@
 apply from: "$rootDir/gradle/java-8.gradle"
 apply from: "$rootDir/gradle/license.gradle"
-apply plugin: 'flyway'
 apply plugin: 'application'
+apply plugin: 'de.richsource.gradle.plugins.typescript'
 apply plugin: 'docker'
-apply plugin: 'spring-boot'
+apply plugin: 'flyway'
 apply plugin: 'org.unbroken-dome.test-sets'
+apply plugin: 'spring-boot'
 
 description = 'The central Codekvast warehouse'
 applicationName = 'codekvast-warehouse'
@@ -139,4 +140,39 @@ task pushDockerImage(type: Exec) {
     group "Docker"
     commandLine "$projectDir/pushToDockerHub.sh"
     dependsOn tagDockerImageWithLatest
+}
+
+//--- TypeScript -----------------------------------------------------------------------------------
+task npmInstall(type: Exec) {
+    commandLine 'npm', 'install'
+
+    inputs.file file('package.json')
+    inputs.file file('typings.json')
+    outputs.dir file('node_modules')
+    outputs.dir file('typings')
+}
+
+compileTypeScript {
+    inputs.file 'tsconfig.json'
+
+    source = file("src/main/ts")
+    projectFile = projectDir
+    compilerExecutable = 'npm run tsc'
+}
+
+jar {
+    into('static/app') {
+        from compileTypeScript.outputs
+    }
+    into('static/node_modules') {
+        from('node_modules') {
+            include 'es6-shim/es6-shim/es6-shim.min.js'
+            include 'systemjs/dist/system-polyfills.js'
+            include 'angular2/es6/dev/src/testing/shims_for_IE.js'
+            include 'angular2/bundles/angular2-polyfills.js'
+            include 'systemjs/dist/system.src.js'
+            include 'rxjs/bundles/Rx.js'
+            include 'angular2/bundles/angular2.dev.js'
+        }
+    }
 }

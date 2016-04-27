@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.18.1
+
+1. Added support for developing Codekvast Warehouse web UI with Angular2 and TypeScript.
+
 ## 0.18.0
 
 1. Refactored daemon; renamed many classes and packages.

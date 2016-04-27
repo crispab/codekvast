@@ -68,12 +68,12 @@ Codekvast is released under the MIT license.
     1. Add devops stuff. (ping, health checks, JMX, metrics, ...)
     
 * The Codekvast Warehouse is **very** rudimentary. It aggregates and persists data alright, but the user interface is absent. (For the moment
-the only functionality offered is a view in the database schema).
+the only functionality offered is a REST API for getting information about a method).
 
     Tentative road-map:
     
      1. Add a web UI.
-     1. Add a IDE plugin API.
+     1. Add a REST API.
      1. Add a mechanism for informing daemons that they safely can prune data.
      1. Add more mechanisms for receiving data from daemons (currently supported: zip files, optionally pushed by scp).  
 
@@ -113,13 +113,15 @@ It will also build and start Codekvast Daemon and Codekvast Warehouse.
  
     This will build a local Docker image for Codekvast Warehouse from the sources.
     
-1. In terminal window #3 do `docker-compose -f product/warehouse/docker-compose.yml up -d`
+1. In terminal window #3 do `cd product/warehouse`
+
+1. In terminal window #3 do `docker-compose up -d`
 
     This will launch two Docker containers: **codekvast-database** (MariaDB) and **codekvast-warehouse** (the Codekvast Warehouse app).
     
     The warehouse app is configured to look for zip files in /tmp/codekvast/.warehouse and import them into the MariaDB database.
     
-    Do `docker-compose ps` and note the port that was allocated to warehouse_app_1 (the number after "0.0.0.0:"). Note this port number.
+    Do `docker-compose port app 8080` and note the port that was allocated to warehouse_app_1 (the number after "0.0.0.0:"). Note this port number.
     
 1. In terminal window #4 do `sudo chmod o+rw /tmp/codekvast/.warehouse` or else the Codekvast Daemon cannot create it's zip files there.
     
@@ -129,7 +131,7 @@ It will also build and start Codekvast Daemon and Codekvast Warehouse.
     
     The daemon will regularly produce zip data files in /tmp/codekvast/.warehouse (where Codekvast Warehouse will find and consume them).
     
-1. Open a web browser to localhost:&lt;warehouse_app_1-port&gt;
+1. Open a web browser to 0.0.0.0:&lt;warehouse_app_1-port&gt; (output from the `docker-compose port` command above)
 
    Play around with the Swagger UI console.
 
@@ -160,9 +162,11 @@ The following stack is used when developing Codekvast:
 1. Github
 1. Java 8 (the collector is built with Java 6)
 1. AspectJ (in Load-Time Weaving mode)
+1. TypeScript
+1. Angular2
 1. Spring Boot
 1. Lombok
-1. H2 database (disk persistent, embedded in Codekvast Daemon)
+1. H2 database (disk persistent data, server embedded in Codekvast Daemon)
 1. MariaDB 10+ (Codekvast Warehouse)
 1. Gradle 
 1. Docker 1.10.3+ and Docker Compose 1.6.2+ (For integration testing and running Codekvast Warehouse)
@@ -179,8 +183,20 @@ Development tools live under `tools/`.
 
 #### JDK
 
-Java 8 **and** Java 6 is required. OpenJDK is recommended.
+Java 8  is required. OpenJDK is recommended.
 
+Use the folling command to install OpenJDK 8 (Ubuntu, Debian):
+
+    sudo apt-get install openjdk-8-jdk
+
+#### TypeScript
+
+The Codekvast Warehouse web UI is developed with TypeScript and Angular2.
+ 
+Use the following command to install the Node Package Manager, which is used to manage all JavaScript-related stuff (Ubuntu, Debian):
+
+    sudo apt-get install npm
+    
 #### Database
 
 MariaDB v10.0 or later is required for Codekvast Warehouse.
@@ -191,7 +207,7 @@ Use the following command to install MariaDB (Ubuntu, Debian):
     
 Then the following commands must be executed once:
     
-    $ sudo mysql -e "create database codekvast_warehouse; grant all on codekvast_warehouse.* to 'codekvast'@'localhost' identified by 'codekvast';"
+    sudo mysql -e "create database codekvast_warehouse; grant all on codekvast_warehouse.* to 'codekvast'@'localhost' identified by 'codekvast';"
     
 #### Build tool
 
@@ -212,6 +228,7 @@ You also need to be member of the Crisp organisation in Bintray.
 **Intellij Ultimate Edition 16+** is the recommended IDE with the following plugins:
 
 1. **Lombok Support** (required)
+1. **JavaScript Support** (required)
 1. Git (optional)
 1. Github (optional)
 1. AspectJ Support (optional)
