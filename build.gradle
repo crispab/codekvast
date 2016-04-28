@@ -4,7 +4,7 @@ buildscript {
 import org.ajoberstar.grgit.Grgit
 
 wrapper {
-    gradleVersion = '2.11'
+    gradleVersion = '2.13'
 }
 
 apply plugin: 'idea'
