@@ -139,8 +139,9 @@ task pushDockerImage(type: Exec) {
     dependsOn tagDockerImageWithLatest
 }
 
-//--- TypeScript -----------------------------------------------------------------------------------
+//--- Webapp -----------------------------------------------------------------------------------
 task npmInstall(type: Exec) {
+    workingDir 'src/main/webapp'
     commandLine 'npm', 'install'
 
     inputs.file file('package.json')
@@ -150,47 +151,52 @@ task npmInstall(type: Exec) {
 }
 
 task compileTypeScript(type: Exec) {
+    dependsOn npmInstall
+    workingDir 'src/main/webapp'
+    commandLine 'node_modules/.bin/tsc'
+
     inputs.file 'src/main/webapp/package.json'
     inputs.file 'src/main/webapp/tsconfig.json'
     inputs.file 'src/main/webapp/typings.json'
     inputs.file 'src/main/webapp/index.html'
-    inputs.dir 'src/main/webapp/src'
+    inputs.dir 'src/main/webapp/ts'
 
     outputs.dir 'src/main/webapp/app'
+}
 
-    workingDir 'src/main/webapp'
-    executable 'node_modules/.bin/tsc'
+def scriptsSpec = copySpec {
+    logger.info "Including scripts linked from index.html..."
+
+    def slurper = new XmlSlurper()
+    slurper.setFeature('http://apache.org/xml/features/disallow-doctype-decl', false)
+
+    from('src/main/webapp') {
+        slurper.parse(file('src/main/webapp/index.html')).head.script.each {
+            logger.debug "Including {}", it.@src
+            include it.@src.toString()
+        }
+    }
 }
 
 jar {
+    // Assemble the jar from the normal sources plus from src/main/webapp...
+
     into('static/app') {
         from(compileTypeScript.outputs) {
-            exclude '**/*.js.map'
-        }
-    }
-
-    into('static/css') {
-        from('src/main/webapp/css') {
-
+            include '**/*.js'
         }
     }
 
     into('static') {
         from('src/main/webapp') {
-            // TODO: filter index.html to contain build info
-            include '**.*.html'
+            include '**/*.css'
+            include '**/*.html'
+            exclude 'node_modules/**'
+            expand(project.properties)
         }
     }
 
-    into('static/node_modules') {
-        from('src/main/webapp/node_modules') {
-            include 'es6-shim/es6-shim/es6-shim.min.js'
-            include 'systemjs/dist/system-polyfills.js'
-            include 'angular2/es6/dev/src/testing/shims_for_IE.js'
-            include 'angular2/bundles/angular2-polyfills.js'
-            include 'systemjs/dist/system.src.js'
-            include 'rxjs/bundles/Rx.js'
-            include 'angular2/bundles/angular2.dev.js'
-        }
+    into('static') {
+        with scriptsSpec
     }
 }
