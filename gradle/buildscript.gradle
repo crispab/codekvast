@@ -11,7 +11,6 @@ dependencies {
     classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
     classpath 'com.moowork.gradle:gradle-node-plugin:0.10'
     classpath 'com.ofg:uptodate-gradle-plugin:1.6.0'
-    classpath 'de.richsource.gradle.plugins:typescript-gradle-plugin:1.8.0'
     classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.10.0'
     classpath 'org.ajoberstar:grgit:1.1.0'
     classpath 'org.flywaydb:flyway-gradle-plugin:3.1'
