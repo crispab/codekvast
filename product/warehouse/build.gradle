@@ -1,7 +1,6 @@
 apply from: "$rootDir/gradle/java-8.gradle"
 apply from: "$rootDir/gradle/license.gradle"
 apply plugin: 'application'
-apply plugin: 'de.richsource.gradle.plugins.typescript'
 apply plugin: 'docker'
 apply plugin: 'flyway'
 apply plugin: 'org.unbroken-dome.test-sets'
@@ -65,12 +64,10 @@ dependencies {
 processResources {
     from "src/main/resources", {
         include "*application*.properties"
-        include "**/*.html"
         expand(project.properties)
     }
     from "src/main/resources", {
         exclude "*application*.properties"
-        exclude "**/*.html"
     }
 }
 
@@ -152,20 +149,41 @@ task npmInstall(type: Exec) {
     outputs.dir file('typings')
 }
 
-compileTypeScript {
-    inputs.file 'tsconfig.json'
+task compileTypeScript(type: Exec) {
+    inputs.file 'src/main/webapp/package.json'
+    inputs.file 'src/main/webapp/tsconfig.json'
+    inputs.file 'src/main/webapp/typings.json'
+    inputs.file 'src/main/webapp/index.html'
+    inputs.dir 'src/main/webapp/src'
 
-    source = file("src/main/ts")
-    projectFile = projectDir
-    compilerExecutable = 'npm run tsc'
+    outputs.dir 'src/main/webapp/app'
+
+    workingDir 'src/main/webapp'
+    executable 'node_modules/.bin/tsc'
 }
 
 jar {
     into('static/app') {
-        from compileTypeScript.outputs
+        from(compileTypeScript.outputs) {
+            exclude '**/*.js.map'
+        }
     }
+
+    into('static/css') {
+        from('src/main/webapp/css') {
+
+        }
+    }
+
+    into('static') {
+        from('src/main/webapp') {
+            // TODO: filter index.html to contain build info
+            include '**.*.html'
+        }
+    }
+
     into('static/node_modules') {
-        from('node_modules') {
+        from('src/main/webapp/node_modules') {
             include 'es6-shim/es6-shim/es6-shim.min.js'
             include 'systemjs/dist/system-polyfills.js'
             include 'angular2/es6/dev/src/testing/shims_for_IE.js'

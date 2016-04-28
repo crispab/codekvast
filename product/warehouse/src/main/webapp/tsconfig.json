@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "rootDir": "src/main/webapp",
     "outDir": "app",
     "charset": "utf8",
     "target": "es5",
