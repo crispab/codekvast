@@ -23,14 +23,6 @@ configurations {
     springLoaded
 }
 
-def webjars = [
-        'org.webjars:angular-ui-bootstrap:1.2.5',
-        'org.webjars:angularjs:1.5.3',
-        'org.webjars:bootstrap:3.3.6',
-        'org.webjars:jquery:2.2.2',
-        'org.webjars:lodash:4.0.0',
-]
-
 def springfoxVersion = '2.4.0'
 
 dependencies {
@@ -47,11 +39,9 @@ dependencies {
     compile "io.springfox:springfox-swagger2:${springfoxVersion}"
 
     runtime 'org.springframework.boot:spring-boot-starter-actuator'
-    runtime 'org.springframework.boot:spring-boot-starter-thymeleaf'
     runtime "io.springfox:springfox-swagger-ui:${springfoxVersion}"
 
     runtime mariadbDriver
-    runtime webjars
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'
 
@@ -95,7 +85,40 @@ bootRepackage {
 }
 
 //--- Run & bootRun -----------------------------------------------------------------------------------------------------
+task startMariadb(type: Exec) {
+    description 'Starts MariaDB 10 in a Docker container, on port 3306'
+    group 'Backend Development'
+
+    commandLine 'docker', 'run', '-d', '--restart=unless-stopped',
+            '--name', 'codekvast_database',
+            '-p', '3306:3306',
+            '-v', '/var/lib/codekvast-database:/var/lib/mysql',
+            '-e', 'MYSQL_ROOT_PASSWORD=root',
+            '-e', 'MYSQL_DATABASE=codekvast_warehouse',
+            '-e', 'MYSQL_USER=codekvast',
+            '-e', 'MYSQL_PASSWORD=codekvast',
+            '-e', 'TERM=xterm-256color',
+            'mariadb:10',
+            '--character-set-server=utf8',
+            '--collation-server=utf8_general_ci',
+            '--default-storage-engine=innodb'
+
+    outputs.upToDateWhen {
+        Socket socket = new Socket()
+        try {
+            socket.connect(new InetSocketAddress(3306), 500)
+            return true
+        } catch (Exception e) {
+            return false
+        } finally {
+            socket.close()
+        }
+    }
+}
+
 run {
+    dependsOn startMariadb
+
     jvmArgs = ['-ea']
 
     args = [
@@ -105,6 +128,8 @@ run {
 }
 
 bootRun {
+    dependsOn startMariadb
+
     jvmArgs = [
             "-javaagent:${configurations.springLoaded.asPath}",
             '-noverify',
@@ -139,8 +164,11 @@ task pushDockerImage(type: Exec) {
     dependsOn tagDockerImageWithLatest
 }
 
-//--- Webapp -----------------------------------------------------------------------------------
+//--- Frontend -----------------------------------------------------------------------------------
 task npmInstall(type: Exec) {
+    description "Installs the node modules required for frontend development"
+    group "Frontend Development"
+
     workingDir 'src/main/webapp'
     commandLine 'npm', 'install'
 
@@ -151,6 +179,9 @@ task npmInstall(type: Exec) {
 }
 
 task compileTypeScript(type: Exec) {
+    description "Runs the TypeScript compiler"
+    group "Frontend Development"
+
     dependsOn npmInstall
     workingDir 'src/main/webapp'
     commandLine 'node_modules/.bin/tsc'
@@ -163,6 +194,9 @@ task compileTypeScript(type: Exec) {
 
     outputs.dir 'src/main/webapp/app'
 }
+
+// This copySpec defines what .js files that should be included in the jar. It has to be a separate spec, or else
+// no .class files will be included. Strange.
 
 def scriptsSpec = copySpec {
     logger.info "Including scripts linked from index.html..."
@@ -191,6 +225,7 @@ jar {
         from('src/main/webapp') {
             include '**/*.css'
             include '**/*.html'
+            filter { line -> return line.contains('CODEKVAST_API') ? "        CODEKVAST_API=''" : line }
             exclude 'node_modules/**'
             expand(project.properties)
         }
@@ -199,4 +234,15 @@ jar {
     into('static') {
         with scriptsSpec
     }
+}
+
+task runLiteServer(type: Exec) {
+    description "Starts tsc --watch and a NodeJS Lite server on port 3000"
+    group "Frontend Development"
+
+    dependsOn npmInstall
+
+    workingDir "src/main/webapp"
+    executable "npm"
+    args "start"
 }

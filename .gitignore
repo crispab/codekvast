@@ -22,7 +22,7 @@ node_modules/
 typings/
 target/
 tools/downloaded/
-npm-debug.log
+npm-debug.log**
 **/src/main/webapp/app/
 **/src/main/webapp/ts/**/*.js
 **/src/main/webapp/ts/**/*.js.map

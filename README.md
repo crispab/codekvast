@@ -117,7 +117,7 @@ It will also build and start Codekvast Daemon and Codekvast Warehouse.
 
 1. In terminal window #3 do `docker-compose up -d`
 
-    This will launch two Docker containers: **codekvast-database** (MariaDB) and **codekvast-warehouse** (the Codekvast Warehouse app).
+    This will launch two Docker containers: **warehouse_db_1** (MariaDB) and **warehouse_app_1** (the Codekvast Warehouse app).
     
     The warehouse app is configured to look for zip files in /tmp/codekvast/.warehouse and import them into the MariaDB database.
     
@@ -157,19 +157,20 @@ If you have read this far, you're probably eager to do some Codekvast developmen
 
 ### Technology Stack
 
-The following stack is used when developing Codekvast:
+The following stack is used when developing Codekvast (in alphabetical order):
 
-1. Github
-1. Java 8 (the collector is built with Java 6)
-1. AspectJ (in Load-Time Weaving mode)
-1. TypeScript
 1. Angular2
-1. Spring Boot
-1. Lombok
-1. H2 database (disk persistent data, server embedded in Codekvast Daemon)
-1. MariaDB 10+ (Codekvast Warehouse)
+1. AspectJ (in Load-Time Weaving mode)
+1. Docker 1.10.3+ and Docker Compose 1.6.2+ (For running MariaDB and Codekvast Warehouse)
+1. Github
 1. Gradle 
-1. Docker 1.10.3+ and Docker Compose 1.6.2+ (For integration testing and running Codekvast Warehouse)
+1. H2 database (disk persistent data, server embedded in Codekvast Daemon)
+1. Java 8 (the collector is built with Java 6)
+1. Lombok
+1. MariaDB 10+ (Codekvast Warehouse)
+1. Node Package Manager (npm)
+1. Spring Boot
+1. TypeScript
 
 ### Directory structure
 
@@ -191,24 +192,21 @@ Use the folling command to install OpenJDK 8 (Ubuntu, Debian):
 
 #### TypeScript
 
-The Codekvast Warehouse web UI is developed with TypeScript and Angular2.
+The Codekvast Warehouse web UI is developed with npm, TypeScript and Angular2.
+
+npm is used for managing the frontend development environment.
  
-Use the following command to install the Node Package Manager, which is used to manage all JavaScript-related stuff (Ubuntu, Debian):
+Use the following command to install the Node Package Manager (npm), which is used to manage all JavaScript-related stuff (Ubuntu, Debian):
 
     sudo apt-get install npm
     
-#### Database
+#### Docker Engine & Docker Compose
 
-MariaDB v10.0 or later is required for Codekvast Warehouse.
+Docker Engine 1.10 or later and Docker Compose 1.6 or later is required for Codekvast Warehouse.
 
-Use the following command to install MariaDB (Ubuntu, Debian):
+Install [Docker Engine 1.10.3+](https://docs.docker.com/engine/installation/) and [Docker Compose 1.6.2+](https://docs.docker.com/compose/install/) using
+the official instructions.
 
-    sudo apt-get install mariadb-server
-    
-Then the following commands must be executed once:
-    
-    sudo mysql -e "create database codekvast_warehouse; grant all on codekvast_warehouse.* to 'codekvast'@'localhost' identified by 'codekvast';"
-    
 #### Build tool
 
 Codekvast uses **Gradle** as build tool. It uses the Gradle Wrapper, `gradlew`, which is checked in at the root of the workspace.
