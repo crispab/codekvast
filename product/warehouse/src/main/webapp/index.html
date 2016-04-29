@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="stylesheet" href="css/codekvast.css"/>
 
-    <!-- 1. Load libraries -->
-    <!-- IE required polyfills, in this exact order -->
-    <script src="node_modules/es6-shim/es6-shim.min.js"></script>
-    <script src="node_modules/systemjs/dist/system-polyfills.js"></script>
-    <script src="node_modules/angular2/es6/dev/src/testing/shims_for_IE.js"></script>
+    <!--
+        <script src="node_modules/es6-shim/es6-shim.min.js"></script>
+        <script src="node_modules/systemjs/dist/system-polyfills.js"></script>
+        <script src="node_modules/angular2/es6/dev/src/testing/shims_for_IE.js"></script>
+    -->
 
     <script src="node_modules/angular2/bundles/angular2-polyfills.js"></script>
     <script src="node_modules/systemjs/dist/system.src.js"></script>
@@ -37,8 +37,9 @@
 
 <!-- 3. Display the application -->
 <body>
-§§    <p><a href="swagger-ui.html" target="_new">Swagger Console</a></p>
-
+<p><!--suppress HtmlUnknownTarget -->
+    <a href="/swagger-ui.html" target="_new">Swagger Console</a></p>
+<hr/>
 <codekvast-warehouse>Loading...</codekvast-warehouse>
 </body>
 </html>

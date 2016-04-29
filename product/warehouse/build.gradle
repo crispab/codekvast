@@ -194,10 +194,19 @@ task compileTypeScript(type: Exec) {
     outputs.dir 'src/main/webapp/app'
 }
 
-// This copySpec defines what .js files that should be included in the jar. It has to be a separate spec, or else
-// no .class files will be included. Strange.
+task compileAndWatchTypeScript(type: Exec) {
+    description "Runs the TypeScript compiler in watch mode"
+    group "Frontend Development"
 
-def scriptsSpec = copySpec {
+    dependsOn npmInstall
+    workingDir 'src/main/webapp'
+    commandLine 'node_modules/.bin/tsc', '--watch'
+}
+
+// This copySpec defines what node_modules that should be included in the jar. It has to be a separate spec, or else
+// no .class files will be included. Strange...
+
+def referencedNodeModulesSpec = copySpec {
     logger.info "Including scripts linked from index.html..."
 
     def slurper = new XmlSlurper()
@@ -212,30 +221,35 @@ def scriptsSpec = copySpec {
 }
 
 jar {
-    // Assemble the jar from the normal sources plus from src/main/webapp...
+    dependsOn compileTypeScript
 
-    into('static/app') {
-        from(compileTypeScript.outputs) {
-            include '**/*.js'
+    // Spring Boot automatically serves static content from static/**
+
+    into('static') {
+        from('src/main/webapp') {
+            include 'css/**'
+            include 'img/**'
+            include 'app/**.js'
+            exclude '**/*.spec.js'
         }
     }
 
     into('static') {
         from('src/main/webapp') {
-            include '**/*.css'
             include '**/*.html'
-            filter { line -> return line.contains('CODEKVAST_API') ? "        CODEKVAST_API=''" : line }
+            exclude '**/*tests.html'
             exclude 'node_modules/**'
             expand(project.properties)
+            filter { line -> return line.contains('CODEKVAST_API') ? "        CODEKVAST_API=''" : line }
         }
     }
 
     into('static') {
-        with scriptsSpec
+        with referencedNodeModulesSpec
     }
 }
 
-task runLiteServer(type: Exec) {
+task npmStart(type: Exec) {
     description "Starts tsc --watch and a NodeJS Lite server on port 3000"
     group "Frontend Development"
 
