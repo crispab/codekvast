@@ -31,3 +31,26 @@ The next time `gradle assemble` is done, the result of the TypeScript compilatio
 
 **NOTE:** runLiteServer also starts [Browser Sync](https://www.browsersync.io), which means that you could test the webapp simultaneously in more than one browser
  (e.g., Chrome and Firefox).
+
+## File watch limits
+Both IntelliJ IDEA and the Node.js uses the system service `inotify` to watch directories for changed files.
+
+If the limit is to low, `gradle runLiteServer` will fail.
+
+If you happen to use Ubuntu, here is the remedy:
+
+Create the file `/etc/sysctl.d/60-jetbrains.conf` with the following content:
+
+    # Set inotify watch limit high enough for IntelliJ IDEA (PhpStorm, PyCharm, RubyMine, WebStorm).
+    # Create this file as /etc/sysctl.d/60-jetbrains.conf (Debian, Ubuntu), and
+    # run `sudo sysctl --system` or reboot.
+    # Source: https://confluence.jetbrains.com/display/IDEADEV/Inotify+Watches+Limit
+    # 
+    # More information resources:
+    # man inotify  # manpage
+    # man sysctl.conf  # manpage
+    # cat /proc/sys/fs/inotify/max_user_watches  # print current value in use
+    
+    fs.inotify.max_user_watches = 524288
+    
+Then do `sudo sysctl --system` to activate the changes.

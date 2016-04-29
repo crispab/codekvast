@@ -6,6 +6,7 @@
 !.idea/inspectionProfiles/
 !.idea/runConfigurations/
 !.idea/sqldialects.xml
+!.idea/typescript-compiler.xml
 **/*.bak
 **/*.ipr
 **/*.iml
