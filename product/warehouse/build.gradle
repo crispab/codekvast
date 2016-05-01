@@ -190,9 +190,14 @@ task compileTypeScript(type: Exec) {
     inputs.file 'src/main/webapp/package.json'
     inputs.file 'src/main/webapp/tsconfig.json'
     inputs.file 'src/main/webapp/typings.json'
-    inputs.dir 'src/main/webapp/app'
+    inputs.files fileTree('src/main/webapp/app') {
+        include '**/*.ts'
+    }
 
-    outputs.dir 'src/main/webapp/app'
+    outputs.files fileTree('src/main/webapp/app') {
+        include '**/*.js'
+        include '**/*.js.map'
+    }
 }
 
 task compileAndWatchTypeScript(type: Exec) {
@@ -229,13 +234,14 @@ jar {
     // All webapp stuff except tools config, tests and those things that need special treatment...
     into('static') {
         from('src/main/webapp') {
-            exclude '*.json'
-            exclude 'npm-debug.log**'
+            exclude '**/*.js.map'
             exclude '**/*.spec.js'
             exclude '**/*.ts'
-            exclude 'index.html'
+            exclude '*.json'
             exclude '*tests.html'
+            exclude 'index.html'
             exclude 'node_modules/**'
+            exclude 'npm-debug.log**'
         }
     }
 
