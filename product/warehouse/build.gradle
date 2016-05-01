@@ -109,7 +109,7 @@ task startMariadb(type: Exec) {
         try {
             socket.connect(new InetSocketAddress(3306), 500)
             return true
-        } catch (Exception e) {
+        } catch (Exception ignored) {
             return false
         } finally {
             socket.close()
