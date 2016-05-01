@@ -18,9 +18,10 @@
     "typings": "^0.8.1"
   },
   "scripts": {
-    "start": "tsc && concurrently \"npm run tsc:w\" \"npm run lite\" ",
     "lite": "lite-server",
     "postinstall": "typings install",
+    "start": "tsc && concurrently \"npm run tsc:w\" \"npm run lite\" ",
+    "test": "lite-server --open=unit-tests.html",
     "tsc": "tsc",
     "tsc:w": "tsc -w",
     "typings": "typings"

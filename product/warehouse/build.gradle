@@ -13,9 +13,11 @@ version = project.parent.parent.version
 group = "crisp"
 mainClassName = 'se.crisp.codekvast.warehouse.CodekvastWarehouse'
 
+//--- Custom test sets ----------------------------------------------------------------------------------------------------------
 testSets {
     integrationTest
 }
+
 integrationTest.dependsOn test
 check.dependsOn integrationTest
 
@@ -188,7 +190,6 @@ task compileTypeScript(type: Exec) {
     inputs.file 'src/main/webapp/package.json'
     inputs.file 'src/main/webapp/tsconfig.json'
     inputs.file 'src/main/webapp/typings.json'
-    inputs.file 'src/main/webapp/index.html'
     inputs.dir 'src/main/webapp/ts'
 
     outputs.dir 'src/main/webapp/app'
@@ -225,25 +226,28 @@ jar {
 
     // Spring Boot automatically serves static content from static/**
 
+    // All webapp stuff except tools config, tests and those things that need special treatment...
     into('static') {
         from('src/main/webapp') {
-            include 'css/**'
-            include 'img/**'
-            include 'app/**.js'
+            exclude '*.json'
+            exclude 'npm-debug.log**'
             exclude '**/*.spec.js'
+            exclude 'index.html'
+            exclude '*tests.html'
+            exclude 'node_modules/**'
         }
     }
 
+    // The index.html page needs some editing...
     into('static') {
         from('src/main/webapp') {
-            include '**/*.html'
-            exclude '**/*tests.html'
-            exclude 'node_modules/**'
+            include 'index.html'
             expand(project.properties)
             filter { line -> return line.contains('CODEKVAST_API') ? "        CODEKVAST_API=''" : line }
         }
     }
 
+    // Also include referenced node_modules...
     into('static') {
         with referencedNodeModulesSpec
     }
