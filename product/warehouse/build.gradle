@@ -185,12 +185,12 @@ task compileTypeScript(type: Exec) {
 
     dependsOn npmInstall
     workingDir 'src/main/webapp'
-    commandLine 'node_modules/.bin/tsc'
+    commandLine 'npm', 'run', 'tsc'
 
     inputs.file 'src/main/webapp/package.json'
     inputs.file 'src/main/webapp/tsconfig.json'
     inputs.file 'src/main/webapp/typings.json'
-    inputs.dir 'src/main/webapp/ts'
+    inputs.dir 'src/main/webapp/app'
 
     outputs.dir 'src/main/webapp/app'
 }
@@ -201,7 +201,7 @@ task compileAndWatchTypeScript(type: Exec) {
 
     dependsOn npmInstall
     workingDir 'src/main/webapp'
-    commandLine 'node_modules/.bin/tsc', '--watch'
+    commandLine 'npm', 'run', 'tsc:w'
 }
 
 // This copySpec defines what node_modules that should be included in the jar. It has to be a separate spec, or else
@@ -232,6 +232,7 @@ jar {
             exclude '*.json'
             exclude 'npm-debug.log**'
             exclude '**/*.spec.js'
+            exclude '**/*.ts'
             exclude 'index.html'
             exclude '*tests.html'
             exclude 'node_modules/**'

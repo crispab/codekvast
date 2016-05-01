@@ -24,6 +24,5 @@ typings/
 target/
 tools/downloaded/
 npm-debug.log**
-**/src/main/webapp/app/
-**/src/main/webapp/ts/**/*.js
-**/src/main/webapp/ts/**/*.js.map
+**/src/main/webapp/app/**/*.js
+**/src/main/webapp/app/**/*.js.map

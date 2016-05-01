@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "outDir": "app",
     "charset": "utf8",
     "target": "es5",
     "module": "system",
