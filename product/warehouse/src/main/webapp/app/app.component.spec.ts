@@ -1,8 +1,19 @@
-describe('1st tests', () => {
+import {AppComponent} from './app.component';
+import {ConfigService} from "./config.service";
 
-    it('true is true', () => expect(true).toEqual(true));
+describe('AppComponent', () => {
 
-    it('null is not the same thing as undefined',
-        () => expect(null).not.toEqual(undefined)
-    );
+    let config: ConfigService;
+    let app: AppComponent;
+
+    beforeEach(() => {
+        config = new ConfigService();
+        spyOn(config, 'getApiPrefix').and.returnValue('somePrefix');
+        spyOn(config, 'getVersion').and.returnValue('someVersion');
+        app = new AppComponent(config);
+    });
+
+    it('app.apiPrefix() should return value of configService.apiPrefix()', () => expect(app.apiPrefix()).toEqual('somePrefix'));
+
+    it('app.version() should return value of configService.version()', () => expect(app.version()).toEqual('someVersion'))
 });

@@ -33,7 +33,8 @@
 
     // #3. Import the spec files explicitly
     Promise.all([
-        System.import('app/app.component.spec')
+        System.import('app/config.service.spec'),
+        System.import('app/app.component.spec'),
     ])
 
     // #4. wait for all imports to load ...

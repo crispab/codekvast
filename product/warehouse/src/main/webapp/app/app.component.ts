@@ -1,5 +1,5 @@
-import {Component} from 'angular2/core';
-import {window} from 'angular2/src/facade/browser';
+import {Component} from "angular2/core";
+import {ConfigService} from "./config.service";
 
 @Component({
     selector: 'codekvast-warehouse',
@@ -7,11 +7,16 @@ import {window} from 'angular2/src/facade/browser';
 })
 export class AppComponent {
 
-    api: String;
-    now:Date = new Date();
+    now: Date = new Date();
 
-    constructor() {
-        this.api = window['CODEKVAST_API'];
+    constructor(private _config: ConfigService) {
     }
 
+    apiPrefix(): String {
+        return this._config.getApiPrefix();
+    }
+
+    version(): String {
+        return this._config.getVersion();
+    }
 }
