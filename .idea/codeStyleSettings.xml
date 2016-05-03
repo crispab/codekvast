@@ -21,6 +21,11 @@
         <SqlCodeStyleSettings>
           <option name="QUOTE_IDENTIFIER" value="1" />
         </SqlCodeStyleSettings>
+        <TypeScriptCodeStyleSettings>
+          <option name="SPACE_AFTER_TYPE_COLON" value="true" />
+          <option name="USE_DOUBLE_QUOTES" value="false" />
+          <option name="USE_CHAINED_CALLS_GROUP_INDENTS" value="true" />
+        </TypeScriptCodeStyleSettings>
         <XML>
           <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
         </XML>
@@ -312,6 +317,7 @@
           <option name="PARENT_SETTINGS_INSTALLED" value="true" />
         </codeStyleSettings>
         <codeStyleSettings language="TypeScript">
+          <option name="KEEP_LINE_BREAKS" value="false" />
           <option name="WRAP_COMMENTS" value="true" />
           <option name="PARENT_SETTINGS_INSTALLED" value="true" />
         </codeStyleSettings>

@@ -1,5 +1,5 @@
-import {Component} from "angular2/core";
-import {ConfigService} from "./config.service";
+import {Component} from 'angular2/core';
+import {ConfigService} from './config.service';
 
 @Component({
     selector: 'codekvast-warehouse',

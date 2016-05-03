@@ -8,7 +8,7 @@ describe('ConfigService', () => {
     beforeEach(() => {
         window['CODEKVAST_API'] = 'somePrefix';
         window['CODEKVAST_VERSION'] = 'someVersion';
-        
+
         config = new ConfigService();
     });
 
