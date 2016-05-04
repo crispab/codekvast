@@ -19,7 +19,7 @@ distDocker {
     volume '/tmp/codekvast'
     tagVersion 'latest'
 
-    dependsOn check, pullLatestDockerImage
+    dependsOn ':product:warehouse:integrationTest', pullLatestDockerImage
 }
 
 task tagDockerImageWithLatest(type: Exec) {
