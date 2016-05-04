@@ -1,0 +1,11 @@
+testSets {
+    functionTest
+}
+
+functionTest.dependsOn test
+check.dependsOn functionTest
+
+dependencies {
+    functionTestCompile project(':product:support:testsupport')
+    functionTestCompileOnly lombok
+}

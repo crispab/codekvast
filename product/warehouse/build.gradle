@@ -10,6 +10,7 @@ apply from: "$projectDir/gradle/build-devtools.gradle"
 apply from: "$projectDir/gradle/build-docker.gradle"
 apply from: "$projectDir/gradle/build-frontend.gradle"
 apply from: "$projectDir/gradle/build-integrationTest.gradle"
+apply from: "$projectDir/gradle/build-functionTest.gradle"
 
 description = 'The central Codekvast warehouse'
 applicationName = 'codekvast-warehouse'

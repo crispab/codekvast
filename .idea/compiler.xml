@@ -51,6 +51,7 @@
       <module name="testsupport_integrationTest" target="1.8" />
       <module name="testsupport_main" target="1.8" />
       <module name="testsupport_test" target="1.8" />
+      <module name="warehouse_functionTest" target="1.8" />
       <module name="warehouse_integrationTest" target="1.8" />
       <module name="warehouse_main" target="1.8" />
       <module name="warehouse_test" target="1.8" />

@@ -1,0 +1,36 @@
+version: '2'
+
+services:
+
+  app:
+    image: crisp/codekvast-warehouse:latest
+
+    volumes:
+    - /tmp/codekvast/.functest/warehouse:/tmp/codekvast/.warehouse
+    - /tmp/codekvast/.functest/log:/var/log
+
+    links:
+    - db:database
+
+    restart: on-failure:10
+
+    environment:
+    - SPRING_PROFILES_ACTIVE=docker
+
+    ports:
+    - "8080"
+
+  db:
+    image: mariadb:10
+
+    environment:
+    - MYSQL_ROOT_PASSWORD=root
+    - MYSQL_DATABASE=codekvast_warehouse
+    - MYSQL_USER=codekvast
+    - MYSQL_PASSWORD=codekvast
+    - TERM=xterm-256color
+
+    expose:
+    - "3306"
+
+    command: --character-set-server=utf8 --collation-server=utf8_general_ci --default-storage-engine=innodb
