@@ -2,6 +2,14 @@ testSets {
     functionTest
 }
 
+functionTest.dependsOn test
+check.dependsOn functionTest
+
+dependencies {
+    functionTestCompile project(':product:support:testsupport')
+    functionTestCompileOnly lombok
+}
+
 task startFunctionTestEnvironment(type: Exec) {
     description 'docker-compose up'
     group 'Function test'
@@ -13,51 +21,73 @@ task startFunctionTestEnvironment(type: Exec) {
 }
 
 task stopFunctionTestEnvironment(type: Exec) {
-    description "docker-compose stop"
-    group "Function test"
-    commandLine "docker-compose",
-            "-p", "warehouse-functest",
-            "-f", file("src/functionTest/resources/docker-compose.yml").absolutePath,
-            "stop"
+    description 'docker-compose stop'
+    group 'Function test'
+    commandLine 'docker-compose',
+            '-p', 'warehouse-functest',
+            '-f', file('src/functionTest/resources/docker-compose.yml').absolutePath,
+            'stop'
 }
 
 task downFunctionTestEnvironment(type: Exec) {
-    description "docker-compose down"
-    group "Function test"
-    commandLine "docker-compose",
-            "-p", "warehouse-functest",
-            "-f", file("src/functionTest/resources/docker-compose.yml").absolutePath,
-            "down"
+    description 'docker-compose down'
+    group 'Function test'
+    commandLine 'docker-compose',
+            '-p', 'warehouse-functest',
+            '-f', file('src/functionTest/resources/docker-compose.yml').absolutePath,
+            'down'
 }
 
 task psFunctionTestEnvironment(type: Exec) {
-    description "docker-compose ps"
-    group "Function test"
-    commandLine "docker-compose",
-            "-p", "warehouse-functest",
-            "-f", file("src/functionTest/resources/docker-compose.yml").absolutePath,
-            "ps"
+    description 'docker-compose ps'
+    group 'Function test'
+    commandLine 'docker-compose',
+            '-p', 'warehouse-functest',
+            '-f', file('src/functionTest/resources/docker-compose.yml').absolutePath,
+            'ps'
 }
 
 task logsFunctionTestEnvironment(type: Exec) {
-    description "docker-compose logs"
-    group "Function test"
-    commandLine "docker-compose",
-            "-p", "warehouse-functest",
-            "-f", file("src/functionTest/resources/docker-compose.yml").absolutePath,
-            "logs"
+    description 'docker-compose logs'
+    group 'Function test'
+    commandLine 'docker-compose',
+            '-p', 'warehouse-functest',
+            '-f', file('src/functionTest/resources/docker-compose.yml').absolutePath,
+            'logs'
+}
+
+task endpointForFunctionTestWarehouse(type: Exec) {
+    description 'docker-compose port'
+    group 'Function test'
+    dependsOn startFunctionTestEnvironment
+
+    commandLine 'docker-compose',
+            '-p', 'warehouse-functest',
+            '-f', file('src/functionTest/resources/docker-compose.yml').absolutePath,
+            'port',
+            'app',
+            '8080'
+
+    standardOutput = new ByteArrayOutputStream()
+
+    ext.endpoint = {
+        return standardOutput.toString()
+    }
 }
 
 functionTest {
-    description "Runs function tests against Codekvast Warehouse in a Docker container"
-    group "Function test"
-    dependsOn test, startFunctionTestEnvironment
+    description 'Runs function tests against Codekvast Warehouse in a Docker container'
+    group 'Function test'
+    dependsOn test, endpointForFunctionTestWarehouse
     finalizedBy stopFunctionTestEnvironment
+
+    doFirst {
+        systemProperty 'codekvast.warehouse.endpoint', endpointForFunctionTestWarehouse.endpoint()
+    }
 }
 
 check.dependsOn functionTest
 
-dependencies {
-    functionTestCompile project(':product:support:testsupport')
-    functionTestCompileOnly lombok
+def findPublicWarehousePort() {
+
 }
