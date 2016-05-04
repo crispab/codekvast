@@ -1,5 +1,5 @@
 /**
- * Created by olle on 2016-05-03.
+ * Injectable wrapper for front-end config rendered as JavaScript literals in the index.html host page.
  */
 import {Injectable} from "angular2/core";
 import {window} from 'angular2/src/facade/browser';

@@ -6,26 +6,17 @@ apply plugin: 'flyway'
 apply plugin: 'org.unbroken-dome.test-sets'
 apply plugin: 'spring-boot'
 
+apply from: "$projectDir/gradle/build-devtools.gradle"
+apply from: "$projectDir/gradle/build-docker.gradle"
+apply from: "$projectDir/gradle/build-frontend.gradle"
+apply from: "$projectDir/gradle/build-integrationTest.gradle"
+
 description = 'The central Codekvast warehouse'
 applicationName = 'codekvast-warehouse'
 archivesBaseName = 'codekvast-warehouse'
 version = project.parent.parent.version
 group = "crisp"
 mainClassName = 'se.crisp.codekvast.warehouse.CodekvastWarehouse'
-
-//--- Custom test sets ----------------------------------------------------------------------------------------------------------
-testSets {
-    integrationTest
-}
-
-integrationTest.dependsOn test
-check.dependsOn integrationTest
-
-configurations {
-    springLoaded
-}
-
-def springfoxVersion = '2.4.0'
 
 dependencies {
     compileOnly lombok
@@ -46,11 +37,6 @@ dependencies {
     runtime mariadbDriver
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'
-
-    integrationTestCompile project(':product:support:testsupport')
-    integrationTestCompileOnly lombok
-
-    springLoaded springLoadedAgent
 }
 
 processResources {
@@ -61,13 +47,6 @@ processResources {
     from "src/main/resources", {
         exclude "*application*.properties"
     }
-}
-
-flyway {
-    url = 'jdbc:mariadb://localhost/codekvast_warehouse'
-    user = 'codekvast'
-    password = 'codekvast'
-    validateOnMigrate = false
 }
 
 //--- Packaging ------------------------------------------------------------------------------------------------------------------
@@ -84,189 +63,4 @@ springBoot {
 bootRepackage {
     // Set a classifier, or else gradle distZip will overwrite the repackaged jar...
     classifier = 'all'
-}
-
-//--- Run & bootRun -----------------------------------------------------------------------------------------------------
-task startMariadb(type: Exec) {
-    description 'Starts MariaDB 10 in a Docker container, on port 3306'
-    group 'Backend Development'
-
-    commandLine 'docker', 'run', '-d', '--restart=unless-stopped',
-            '--name', 'codekvast_database',
-            '-p', '3306:3306',
-            '-e', 'MYSQL_ROOT_PASSWORD=root',
-            '-e', 'MYSQL_DATABASE=codekvast_warehouse',
-            '-e', 'MYSQL_USER=codekvast',
-            '-e', 'MYSQL_PASSWORD=codekvast',
-            '-e', 'TERM=xterm-256color',
-            'mariadb:10',
-            '--character-set-server=utf8',
-            '--collation-server=utf8_general_ci',
-            '--default-storage-engine=innodb'
-
-    outputs.upToDateWhen {
-        Socket socket = new Socket()
-        try {
-            socket.connect(new InetSocketAddress(3306), 500)
-            return true
-        } catch (Exception ignored) {
-            return false
-        } finally {
-            socket.close()
-        }
-    }
-}
-
-run {
-    dependsOn startMariadb
-
-    jvmArgs = ['-ea']
-
-    args = [
-            "--logging.file=$buildDir/log/${applicationName}.log",
-            '--codekvast.importPathPollIntervalSeconds=10',
-    ]
-}
-
-bootRun {
-    dependsOn startMariadb
-
-    jvmArgs = [
-            "-javaagent:${configurations.springLoaded.asPath}",
-            '-noverify',
-            '-Dspring.messages.cacheSeconds=1'
-    ] + run.jvmArgs
-
-    args = run.args
-}
-
-//--- Docker ---------------------------------------------------------------------------------------
-distDocker {
-    baseImage 'java:8-jre'
-    maintainer 'Olle Hallin "olle.hallin@crisp.se"'
-    runCommand 'mkdir -p /var/log /tmp/codekvast'
-    volume '/var/log'
-    volume '/tmp/codekvast'
-    tagVersion 'latest'
-
-    dependsOn check
-}
-
-task tagDockerImageWithLatest(type: Exec) {
-    description "Assigns version tags the latest Docker image"
-    group "Docker"
-    commandLine "$projectDir/tagDockerImage.sh"
-}
-
-task pushDockerImage(type: Exec) {
-    description "Pushes the codekvast-warehouse Docker image to Docker hub"
-    group "Docker"
-    commandLine "$projectDir/pushToDockerHub.sh"
-    dependsOn tagDockerImageWithLatest
-}
-
-//--- Frontend -----------------------------------------------------------------------------------
-task npmInstall(type: Exec) {
-    description "Installs the node modules required for frontend development"
-    group "Frontend Development"
-
-    workingDir 'src/main/webapp'
-    commandLine 'npm', 'install'
-
-    inputs.file file('package.json')
-    inputs.file file('typings.json')
-    outputs.dir file('node_modules')
-    outputs.dir file('typings')
-}
-
-task compileTypeScript(type: Exec) {
-    description "Runs the TypeScript compiler"
-    group "Frontend Development"
-
-    dependsOn npmInstall
-    workingDir 'src/main/webapp'
-    commandLine 'npm', 'run', 'tsc'
-
-    inputs.file 'src/main/webapp/package.json'
-    inputs.file 'src/main/webapp/tsconfig.json'
-    inputs.file 'src/main/webapp/typings.json'
-    inputs.files fileTree('src/main/webapp/app') {
-        include '**/*.ts'
-    }
-
-    outputs.files fileTree('src/main/webapp/app') {
-        include '**/*.js'
-        include '**/*.js.map'
-    }
-}
-
-task compileAndWatchTypeScript(type: Exec) {
-    description "Runs the TypeScript compiler in watch mode"
-    group "Frontend Development"
-
-    dependsOn npmInstall
-    workingDir 'src/main/webapp'
-    commandLine 'npm', 'run', 'tsc:w'
-}
-
-// This copySpec defines what node_modules that should be included in the jar. It has to be a separate spec, or else
-// no .class files will be included. Strange...
-
-def referencedNodeModulesSpec = copySpec {
-    logger.info "Including scripts linked from index.html..."
-
-    def slurper = new XmlSlurper()
-    slurper.setFeature('http://apache.org/xml/features/disallow-doctype-decl', false)
-
-    from('src/main/webapp') {
-        slurper.parse(file('src/main/webapp/index.html')).head.script.each {
-            logger.debug "Including {}", it.@src
-            include it.@src.toString()
-        }
-    }
-}
-
-jar {
-    dependsOn compileTypeScript
-
-    // Spring Boot automatically serves static content from static/**
-
-    // All webapp stuff except tools config, tests and those things that need special treatment...
-    into('static') {
-        from('src/main/webapp') {
-            exclude '**/*.js.map'
-            exclude '**/*.spec.js'
-            exclude '**/*.ts'
-            exclude '*.json'
-            exclude '*tests.html'
-            exclude 'index.html'
-            exclude 'node_modules/**'
-            exclude 'npm-debug.log**'
-        }
-    }
-
-    // The index.html page needs some editing...
-    into('static') {
-        from('src/main/webapp') {
-            include 'index.html'
-            expand(project.properties)
-            filter { line -> return line.contains('CODEKVAST_API') ? "        CODEKVAST_API=''" : line }
-        }
-    }
-
-    // Also include referenced node_modules...
-    into('static') {
-        with referencedNodeModulesSpec
-    }
-}
-
-task npmStart(type: Exec) {
-    description "Starts tsc --watch and a NodeJS Lite server on port 3000"
-    group "Frontend Development"
-
-    dependsOn npmInstall
-
-    workingDir "src/main/webapp"
-    executable "npm"
-    args "start"
 }

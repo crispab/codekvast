@@ -1,0 +1,11 @@
+testSets {
+    integrationTest
+}
+
+integrationTest.dependsOn test
+check.dependsOn integrationTest
+
+dependencies {
+    integrationTestCompile project(':product:support:testsupport')
+    integrationTestCompileOnly lombok
+}

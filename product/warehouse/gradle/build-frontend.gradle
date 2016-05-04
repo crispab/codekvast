@@ -1,0 +1,106 @@
+//--- Frontend -----------------------------------------------------------------------------------
+
+task npmInstall(type: Exec) {
+    description "Installs the node modules required for frontend development"
+    group "Frontend Development"
+
+    workingDir 'src/main/webapp'
+    commandLine 'npm', 'install'
+
+    inputs.file file('package.json')
+    inputs.file file('typings.json')
+    outputs.dir file('node_modules')
+    outputs.dir file('typings')
+}
+
+task compileTypeScript(type: Exec) {
+    description "Runs the TypeScript compiler"
+    group "Frontend Development"
+
+    dependsOn npmInstall
+    workingDir 'src/main/webapp'
+    commandLine 'npm', 'run', 'tsc'
+
+    inputs.file 'src/main/webapp/package.json'
+    inputs.file 'src/main/webapp/tsconfig.json'
+    inputs.file 'src/main/webapp/typings.json'
+    inputs.files fileTree('src/main/webapp/app') {
+        include '**/*.ts'
+    }
+
+    outputs.files fileTree('src/main/webapp/app') {
+        include '**/*.js'
+        include '**/*.js.map'
+    }
+}
+
+task compileAndWatchTypeScript(type: Exec) {
+    description "Runs the TypeScript compiler in watch mode"
+    group "Frontend Development"
+
+    dependsOn npmInstall
+    workingDir 'src/main/webapp'
+    commandLine 'npm', 'run', 'tsc:w'
+}
+
+// This copySpec defines what node_modules that should be included in the jar. It has to be a separate spec, or else
+// no .class files will be included. Strange...
+
+def referencedNodeModulesSpec = copySpec {
+    logger.info "Including scripts linked from index.html..."
+
+    def slurper = new XmlSlurper()
+    slurper.setFeature('http://apache.org/xml/features/disallow-doctype-decl', false)
+
+    from('src/main/webapp') {
+        slurper.parse(file('src/main/webapp/index.html')).head.script.each {
+            logger.debug "Including {}", it.@src
+            include it.@src.toString()
+        }
+    }
+}
+
+jar {
+    dependsOn compileTypeScript
+
+    // Spring Boot automatically serves static content from static/**
+
+    // All webapp stuff except tools config, tests and those things that need special treatment...
+    into('static') {
+        from('src/main/webapp') {
+            exclude '**/*.js.map'
+            exclude '**/*.spec.js'
+            exclude '**/*.ts'
+            exclude '*.json'
+            exclude '*tests.html'
+            exclude 'index.html'
+            exclude 'node_modules/**'
+            exclude 'npm-debug.log**'
+        }
+    }
+
+    // The index.html page needs some editing...
+    into('static') {
+        from('src/main/webapp') {
+            include 'index.html'
+            expand(project.properties)
+            filter { line -> return line.contains('CODEKVAST_API') ? "        CODEKVAST_API=''" : line }
+        }
+    }
+
+    // Also include referenced node_modules...
+    into('static') {
+        with referencedNodeModulesSpec
+    }
+}
+
+task npmStart(type: Exec) {
+    description "Starts tsc --watch and a NodeJS Lite server on port 3000"
+    group "Frontend Development"
+
+    dependsOn npmInstall
+
+    workingDir "src/main/webapp"
+    executable "npm"
+    args "start"
+}

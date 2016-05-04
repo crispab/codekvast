@@ -1,0 +1,74 @@
+/**
+ * Gradle stuff related to the local development environment.
+ */
+
+configurations {
+    springLoaded
+}
+
+dependencies {
+    springLoaded springLoadedAgent
+}
+
+task startMariadb(type: Exec) {
+    description 'Starts MariaDB 10 in a Docker container, on port 3306'
+    group 'Backend Development'
+
+    commandLine 'docker', 'run', '-d', '--restart=unless-stopped',
+            '--name', 'codekvast_database',
+            '-p', '3306:3306',
+            '-e', 'MYSQL_ROOT_PASSWORD=root',
+            '-e', 'MYSQL_DATABASE=codekvast_warehouse',
+            '-e', 'MYSQL_USER=codekvast',
+            '-e', 'MYSQL_PASSWORD=codekvast',
+            '-e', 'TERM=xterm-256color',
+            'mariadb:10',
+            '--character-set-server=utf8',
+            '--collation-server=utf8_general_ci',
+            '--default-storage-engine=innodb'
+
+    outputs.upToDateWhen {
+        Socket socket = new Socket()
+        try {
+            socket.connect(new InetSocketAddress(3306), 500)
+            return true
+        } catch (Exception ignored) {
+            return false
+        } finally {
+            socket.close()
+        }
+    }
+}
+
+flyway {
+    url = 'jdbc:mariadb://localhost/codekvast_warehouse'
+    user = 'codekvast'
+    password = 'codekvast'
+    validateOnMigrate = false
+}
+
+//--- Run & bootRun -----------------------------------------------------------------------------------------------------
+run {
+    group "Backend Development"
+    dependsOn startMariadb
+
+    jvmArgs = ['-ea']
+
+    args = [
+            "--logging.file=$buildDir/log/${applicationName}.log",
+            '--codekvast.importPathPollIntervalSeconds=10',
+    ]
+}
+
+bootRun {
+    group "Backend Development"
+    dependsOn startMariadb
+
+    jvmArgs = [
+            "-javaagent:${configurations.springLoaded.asPath}",
+            '-noverify',
+            '-Dspring.messages.cacheSeconds=1'
+    ] + run.jvmArgs
+
+    args = run.args
+}

@@ -3,6 +3,8 @@ apply plugin: 'com.ofg.uptodate'
 apply plugin: 'jacoco'
 
 uptodate {
+    group "Backend Development"
+
     connectionTimeout 20000
     addExcludedVersionPatterns '.*-alpha.*'
     addExcludedVersionPatterns '.*-rc.*'
@@ -25,7 +27,7 @@ configurations.forEach { it ->
     def taskName = "sync${configName.capitalize()}Dependencies"
 
     task "$taskName"(type: Sync) {
-        group = "Support"
+        group = "Troubleshooting"
         description = "Syncs $configName dependencies into build/deps/$configName"
 
         from config
