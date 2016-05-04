@@ -3,7 +3,8 @@ import {ConfigService} from "./config.service";
 
 @Component({
     selector: 'codekvast-warehouse',
-    templateUrl: 'templates/app.component.html'
+    templateUrl: 'templates/app.component.html',
+    providers: [ConfigService]
 })
 export class AppComponent {
 

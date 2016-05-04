@@ -61,24 +61,25 @@ Codekvast is released under the MIT license.
 
     Tentative Road-map:
 
-    1. Make it possible to analyze unexploded WAR and EAR archives.
     1. Add a mechanism for pruning the local database once data has been delivered to the warehouse.
     1. Add a mechanism for receiving collected data from the collectors using TCP sockets.
     1. Add other mechanisms than scp for delivering data to the central warehouse.
+    1. Make it possible to run as a Docker container.
+    1. Make it possible to analyze unexploded WAR and EAR archives.
     1. Add devops stuff. (ping, health checks, JMX, metrics, ...)
     
+*NOTE:* the collector and the daemon communicates via the local file system. This means that Codekvast for the moment is unusable in e.g., Heroku and
+Google App Engine.
+
 * The Codekvast Warehouse is **very** rudimentary. It aggregates and persists data alright, but the user interface is absent. (For the moment
 the only functionality offered is a REST API for getting information about a method).
 
     Tentative road-map:
     
-     1. Add a web UI.
      1. Add a REST API.
+     1. Add a web UI.
      1. Add a mechanism for informing daemons that they safely can prune data.
      1. Add more mechanisms for receiving data from daemons (currently supported: zip files, optionally pushed by scp).  
-
-*NOTE:* the collector and the daemon communicates via the local file system. This means that Codekvast for the moment is unusable in e.g., Heroku and
-Google App Engine.
 
 ## How To Kick The Tyres
 
