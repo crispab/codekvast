@@ -328,7 +328,7 @@ The Codekvast Warehouse log files will be located in `/var/log/codekvast/`.
 Codekvast Warehouse will look for import files in `/tmp/codekvast/.import`.
 
 [[codekvast-warehouse-conventional-installation]]
-==== The manual way
+==== Manual installation
 
 . Make sure Java 8 or higher is installed.
 . Make sure MariaDB server 10 or higher is installed.
