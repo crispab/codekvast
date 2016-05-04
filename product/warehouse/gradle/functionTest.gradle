@@ -6,8 +6,9 @@ functionTest.dependsOn test
 check.dependsOn functionTest
 
 dependencies {
-    functionTestCompile project(':product:support:testsupport')
     functionTestCompileOnly lombok
+
+    functionTestCompile project(':product:support:testsupport')
 }
 
 task startFunctionTestEnvironment(type: Exec) {
@@ -96,7 +97,3 @@ def waitForPortOpen(String endpoint) {
 }
 
 check.dependsOn functionTest
-
-def findPublicWarehousePort() {
-
-}
