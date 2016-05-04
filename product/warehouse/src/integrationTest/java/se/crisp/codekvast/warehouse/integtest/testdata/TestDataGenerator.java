@@ -1,11 +1,11 @@
-package se.crisp.codekvast.warehouse.testdata;
+package se.crisp.codekvast.warehouse.integtest.testdata;
 
 import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO.Application;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO.ImportContext;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO.Invocation;
-import se.crisp.codekvast.warehouse.testdata.ImportDescriptor.MethodDescriptor;
+import se.crisp.codekvast.warehouse.integtest.testdata.ImportDescriptor.MethodDescriptor;
 
 import javax.inject.Inject;
 import java.lang.reflect.Method;

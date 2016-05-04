@@ -1,4 +1,4 @@
-package se.crisp.codekvast.warehouse;
+package se.crisp.codekvast.warehouse.integtest;
 
 import org.flywaydb.core.Flyway;
 import org.junit.Before;
@@ -19,6 +19,7 @@ import se.crisp.codekvast.agent.lib.model.v1.JvmData;
 import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 import se.crisp.codekvast.testsupport.docker.DockerContainer;
 import se.crisp.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
+import se.crisp.codekvast.warehouse.CodekvastWarehouse;
 import se.crisp.codekvast.warehouse.api.ApiService;
 import se.crisp.codekvast.warehouse.api.model.GetMethodsRequest1;
 import se.crisp.codekvast.warehouse.api.model.MethodDescriptor1;
@@ -28,7 +29,7 @@ import se.crisp.codekvast.warehouse.file_import.ImportDAO.ImportContext;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO.ImportStatistics;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO.Invocation;
 import se.crisp.codekvast.warehouse.file_import.ZipFileImporter;
-import se.crisp.codekvast.warehouse.testdata.TestDataGenerator;
+import se.crisp.codekvast.warehouse.integtest.testdata.TestDataGenerator;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolationException;
@@ -47,7 +48,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeTrue;
 import static se.crisp.codekvast.warehouse.file_import.ImportDAO.Jvm;
 import static se.crisp.codekvast.warehouse.file_import.ImportDAO.Method;
-import static se.crisp.codekvast.warehouse.testdata.ImportDescriptor.*;
+import static se.crisp.codekvast.warehouse.integtest.testdata.ImportDescriptor.*;
 
 /**
  * @author olle.hallin@crisp.se

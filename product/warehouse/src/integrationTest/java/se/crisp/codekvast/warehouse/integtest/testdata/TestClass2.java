@@ -1,4 +1,4 @@
-package se.crisp.codekvast.warehouse.testdata;
+package se.crisp.codekvast.warehouse.integtest.testdata;
 
 /**
  * @author olle.hallin@crisp.se
