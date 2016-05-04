@@ -71,7 +71,7 @@ task endpointForFunctionTestWarehouse(type: Exec) {
     standardOutput = new ByteArrayOutputStream()
 
     ext.endpoint = {
-        return standardOutput.toString()
+        return standardOutput.toString().trim()
     }
 }
 
@@ -82,8 +82,17 @@ functionTest {
     finalizedBy stopFunctionTestEnvironment
 
     doFirst {
-        systemProperty 'codekvast.warehouse.endpoint', endpointForFunctionTestWarehouse.endpoint()
+        def endpoint = endpointForFunctionTestWarehouse.endpoint()
+        systemProperty 'codekvast.warehouse.endpoint', endpoint
+        waitForPortOpen endpoint
     }
+}
+
+def waitForPortOpen(String endpoint) {
+    String[] parts = endpoint.split(':')
+    Socket socket = new Socket()
+    socket.connect(new InetSocketAddress(parts[0], Integer.parseInt(parts[1])), 15_000);
+    socket.close()
 }
 
 check.dependsOn functionTest
