@@ -15,6 +15,7 @@
 :attribute-missing: warn
 :description: Codekvast is a tool that detects Truly Dead Code in your Java app.
 :aspectj-ltw-config: link:https://eclipse.org/aspectj/doc/next/devguide/ltw-configuration.html[AspectJ Load-Time Weaver configuration]
+:overhead-nanoseconds: 30
 
 
 Codekvast User Manual covers installation and usage of Codekvast, a tool for detecting Truly Dead Code in JVM-based applications.
@@ -48,7 +49,7 @@ in a web interface. It also offers a REST interface to facilitate IDE plugin dev
 
 [TIP]
 ====
-Codekvast Warehouse including MariaDB is available as Docker Compose images. See <<codekvast-warehouse-docker-installation, Codekvast Warehouse Docker Compose installation guide>>.
+Codekvast Warehouse including MariaDB is available as Docker images. See <<codekvast-warehouse-docker-installation, Codekvast Warehouse Docker Compose installation guide>>.
 ====
 
 ---
@@ -148,13 +149,13 @@ You have two options here:
 . Let http://www.ansible.com/[Ansible] do it for you, all hosts at once.
 . Do it manually, host by host
 
-==== The Ansible way of installing Codekvast Daemon
+==== The Ansible way
 Execute the following commands in a shell:
 
 [source,bash,subs="attributes,verbatim"]
 ----
 apt-get install ansible # <1>
-wget {bintrayDownloadPrefix}/codekvast-ansible-{codekvast-version}.zip
+wget {bintray-download-prefix}/codekvast-ansible-{codekvast-version}.zip
 unzip codekvast-ansible-{codekvast-version}.zip
 cd codekvast-ansible-{codekvast-version}
 ----
@@ -172,14 +173,14 @@ ansible-playbook -i inventory codekvast-daemon.yml
 If you have configured `codekvast_warehouse` in `codekvast-daemon.yml`, you must make sure that the hosts can connect without
 username and password. See <<configuring-scp-to-codekvast-warehouse>>.
 
-==== Manual installation of Codekvast Daemon
+==== Manual installation
 Execute the following commands in a shell:
 
 [source,bash,subs="attributes,verbatim"]
 ----
 RUN_DAEMON_AS_USER=root # <1>
 sudo /etc/init.d/codekvast-daemon stop # <2>
-sudo wget {bintrayDownloadPrefix}/codekvast-daemon-{codekvast-version}.zip
+sudo wget {bintray-download-prefix}/codekvast-daemon-{codekvast-version}.zip
 sudo unzip codekvast-daemon-{codekvast-version}.zip -d /opt
 sudo chown $RUN_DAEMON_AS_USER /opt/codekvast-daemon-{codekvast-version}/codekvast-daemon.jar # <1>
 sudo rm -f /etc/init.d/codekvast-daemon # <2>
@@ -200,9 +201,9 @@ If you have configured `uploadToHost` in `/opt/codekvast-daemon-{codekvast-versi
 to make sure that SCP works without asking for a password. See <<configuring-scp-to-codekvast-warehouse>>.
 
 [[configuring-scp-to-codekvast-warehouse]]
-=== Configuring automatic upload of collected data to Codekvast Warehouse
+=== Configuring automatic upload to Codekvast Warehouse
 If you want Codekvast Daemon to upload collection data automatically to Codekvast Warehouse you must make sure
-that the Codekvast Daemons can connect to Codekvast Warehouse without having to provide a username and password.
+that the Codekvast Daemons can connect with ssh and scp to Codekvast Warehouse without having to provide a username and password.
 
 This is done by creating and uploading a public key from each Codekvast Daemon server to the Codekvast Warehouse server.
 
@@ -245,7 +246,7 @@ sudo tail -f /var/log/codekvast-daemon.log
 
 After 10-15 seconds there will be an INFO logging containing the words "Will upload to".
 
-=== Modify all applications`' start scripts
+=== Modify your applications`' start scripts
 
 [[install-collector-tomcat-linux]]
 ==== Tomcat (Linux)
@@ -304,19 +305,20 @@ No data in /tmp/codekvast::
 . restart your application
 . Use the logging on standard output and standard error for determining the problem
 
+[[codekvast-warehouse-installation]]
+=== Install Codekvast Warehouse
 [[codekvast-warehouse-docker-installation]]
-=== Running Codekvast Warehouse with Docker
+==== The Docker way
 
 This works for Mac OS X and Linux. Windows is not supported.
 
-. Make sure Docker Compose is installed. See https://docs.docker.com/compose/install/
+. Make sure Docker Engine and Docker Compose are installed. See https://docs.docker.com/compose/install/
 . Execute the following commands in a shell:
 
 [source,bash,subs="attributes,verbatim"]
 ----
-wget {bintrayDownloadPrefix}/docker-compose-{codekvast-version}.yml
-mv docker-compose-{codekvast-version}.yml docker-compose.yml
-docker-compose up
+wget {bintray-download-prefix}/docker-compose-{codekvast-version}.yml
+docker-compose -p codekvast -f docker-compose-{codekvast-version}.yml up -d
 ----
 
 The MariaDB database files will be located in `/var/lib/codekvast-database`.
@@ -326,7 +328,7 @@ The Codekvast Warehouse log files will be located in `/var/log/codekvast/`.
 Codekvast Warehouse will look for import files in `/tmp/codekvast/.import`.
 
 [[codekvast-warehouse-conventional-installation]]
-=== Install Codekvast Warehouse as a Linux service
+==== The manual way
 
 . Make sure Java 8 or higher is installed.
 . Make sure MariaDB server 10 or higher is installed.
@@ -339,7 +341,7 @@ sudo mysql << EOF  # <2>
 create database if not exists codekvast_warehouse;
 grant all on codekvast_warehouse.* to 'codekvast'@'localhost' identified by 'codekvast';
 EOF
-sudo wget {bintrayDownloadPrefix}/codekvast-warehouse-{codekvast-version}.zip
+sudo wget {bintray-download-prefix}/codekvast-warehouse-{codekvast-version}.zip
 sudo unzip codekvast-warehouse-{codekvast-version}.zip -d /opt
 sudo chown codekvast:codekvast /opt/codekvast-warehouse-{codekvast-version}/codekvast-warehouse.jar # <1>
 sudo rm -f /etc/init.d/codekvast-warehouse
@@ -556,15 +558,10 @@ the file name.
 
 [[about-exclude-package-prefixes]]
 ==== About excluding packages from collection
-Codekvast Collector is extremely efficient, and each tracked method only incurs a runtime cost of approximately 15 nanoseconds.
+Codekvast Collector is extremely efficient, and each tracked method only incurs a runtime cost of approximately {overhead-nanoseconds} nanoseconds.
 If you have code that execute in tight loops even this low overhead could be too much.
 
 In such situations you can exclude code from Codekvast. See also <<about-specifying-method-visibility, Specifying Method Visibility>>
-
-[NOTE]
-====
-Excluding a package will not only exclude it from the collector. It will also be excluded from the <<method-inventory, Method Inventory>>.
-====
 
 [[about-specifying-method-visibility]]
 ==== About specifying methodVisibility
@@ -626,7 +623,7 @@ than if you use Codekvast in production!
 +
 [NOTE]
 ====
-The Codekvast Collector is extremely efficient. It adds roughly 30 nanoseconds to each tracked method call.
+The Codekvast Collector is extremely efficient. It adds roughly {overhead-nanoseconds} nanoseconds to each tracked method call.
 
 The memory consumption is low. For a fairly large server application (0.5 million lines of code), the complete set of tracked
 method names occupy less than 10 MB of heap space.

@@ -29,10 +29,10 @@ asciidoctor {
     }
 
     attributes = [
-            'codekvast-version': version,
+            'codekvast-version': codekvastVersion,
             'aspectj-version': aspectjVersion,
             'git-time': project.parent.gitVersionTokens['git.time'],
             'git-id': gitId,
-            'bintrayDownloadPrefix': project.parent.bintrayDownloadPrefix
+            'bintray-download-prefix': bintrayDownloadPrefix
     ]
 }

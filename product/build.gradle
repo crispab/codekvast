@@ -7,10 +7,6 @@ description = "Modules that belongs to the Codekvast product"
 
 version = codekvastVersion
 
-ext.bintrayUserOrg = 'crisp'
-ext.bintrayRepo = 'codekvast'
-ext.bintrayDownloadPrefix = "https://dl.bintray.com/$bintrayUserOrg/$bintrayRepo"
-
 distributions {
     daemon {
         baseName = 'codekvast-daemon'
