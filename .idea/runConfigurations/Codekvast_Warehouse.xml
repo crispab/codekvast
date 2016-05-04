@@ -10,7 +10,7 @@
     </extension>
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
       <pattern>
-        <option name="PATTERN" value="se.crisp.codekvast.warehouse.*" />
+        <option name="PATTERN" value="se.crisp.codekvast.warehouse.integtest.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
