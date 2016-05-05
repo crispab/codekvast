@@ -9,6 +9,8 @@ dependencies {
     functionTestCompileOnly lombok
 
     functionTestCompile project(':product:support:testsupport')
+    functionTestCompile 'net.serenity-bdd:serenity-core:1.1.31'
+    functionTestCompile 'net.serenity-bdd:serenity-junit:1.1.31'
 }
 
 task startFunctionTestEnvironment(type: Exec) {
@@ -17,7 +19,7 @@ task startFunctionTestEnvironment(type: Exec) {
     dependsOn ':product:warehouse:distDocker'
     commandLine 'docker-compose',
             '-p', 'warehouse-functest',
-            '-f', file('src/functionTest/resources/docker-compose.yml').absolutePath,
+            '-f', 'src/functionTest/resources/docker-compose.yml',
             'up', '-d'
 }
 
@@ -26,7 +28,7 @@ task stopFunctionTestEnvironment(type: Exec) {
     group 'Function test'
     commandLine 'docker-compose',
             '-p', 'warehouse-functest',
-            '-f', file('src/functionTest/resources/docker-compose.yml').absolutePath,
+            '-f', 'src/functionTest/resources/docker-compose.yml',
             'stop'
 }
 
@@ -35,7 +37,7 @@ task downFunctionTestEnvironment(type: Exec) {
     group 'Function test'
     commandLine 'docker-compose',
             '-p', 'warehouse-functest',
-            '-f', file('src/functionTest/resources/docker-compose.yml').absolutePath,
+            '-f', 'src/functionTest/resources/docker-compose.yml',
             'down'
 }
 
@@ -44,7 +46,7 @@ task psFunctionTestEnvironment(type: Exec) {
     group 'Function test'
     commandLine 'docker-compose',
             '-p', 'warehouse-functest',
-            '-f', file('src/functionTest/resources/docker-compose.yml').absolutePath,
+            '-f', 'src/functionTest/resources/docker-compose.yml',
             'ps'
 }
 
@@ -53,7 +55,7 @@ task logsFunctionTestEnvironment(type: Exec) {
     group 'Function test'
     commandLine 'docker-compose',
             '-p', 'warehouse-functest',
-            '-f', file('src/functionTest/resources/docker-compose.yml').absolutePath,
+            '-f', 'src/functionTest/resources/docker-compose.yml',
             'logs'
 }
 
@@ -64,7 +66,7 @@ task endpointForFunctionTestWarehouse(type: Exec) {
 
     commandLine 'docker-compose',
             '-p', 'warehouse-functest',
-            '-f', file('src/functionTest/resources/docker-compose.yml').absolutePath,
+            '-f', 'src/functionTest/resources/docker-compose.yml',
             'port',
             'app',
             '8080'
@@ -84,12 +86,16 @@ functionTest {
 
     doFirst {
         def endpoint = endpointForFunctionTestWarehouse.endpoint()
-        systemProperty 'codekvast.warehouse.endpoint', endpoint
-        waitForPortOpen endpoint
+        waitForPortOpenAt endpoint
+
+        systemProperty 'expectedCodekvastVersion', codekvastDisplayVersion
+        systemProperty 'webdriver.base.url', "http://$endpoint"
+        systemProperty 'serenity.outputDirectory', "build/reports/serenity"
+        systemProperty 'serenity.console.colors', true
     }
 }
 
-def waitForPortOpen(String endpoint) {
+def waitForPortOpenAt(String endpoint) {
     String[] parts = endpoint.split(':')
     Socket socket = new Socket()
     socket.connect(new InetSocketAddress(parts[0], Integer.parseInt(parts[1])), 15_000);

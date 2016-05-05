@@ -16,7 +16,9 @@ dependencies {
     compileOnly lombok
     compile slf4jApi
     compile junit
-    compile mariadbDriver
+    compile mariadbDriver, {
+        exclude group: 'net.java.dev.jna'
+    }
 
     testRuntime logback
 }

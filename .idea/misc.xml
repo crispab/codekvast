@@ -7,22 +7,25 @@
     <entry_points version="2.0">
       <entry_point TYPE="method" FQNAME="se.crisp.codekvast.agent.collector.CodekvastCollector void premain(java.lang.String args, java.lang.instrument.Instrumentation inst)" />
     </entry_points>
-    <list size="15">
+    <list size="18">
       <item index="0" class="java.lang.String" itemvalue="com.google.common.annotations.VisibleForTesting" />
       <item index="1" class="java.lang.String" itemvalue="com.google.common.eventbus.Subscribe" />
-      <item index="2" class="java.lang.String" itemvalue="org.junit.runners.Parameterized.Parameter" />
-      <item index="3" class="java.lang.String" itemvalue="org.springframework.boot.context.properties.ConfigurationProperties" />
-      <item index="4" class="java.lang.String" itemvalue="org.springframework.context.annotation.Configuration" />
-      <item index="5" class="java.lang.String" itemvalue="org.springframework.messaging.handler.annotation.MessageMapping" />
-      <item index="6" class="java.lang.String" itemvalue="org.springframework.messaging.simp.annotation.SubscribeMapping" />
-      <item index="7" class="java.lang.String" itemvalue="org.springframework.stereotype.Component" />
-      <item index="8" class="java.lang.String" itemvalue="org.springframework.stereotype.Controller" />
-      <item index="9" class="java.lang.String" itemvalue="org.springframework.stereotype.Service" />
-      <item index="10" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.ExceptionHandler" />
-      <item index="11" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.InitBinder" />
-      <item index="12" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.ModelAttribute" />
-      <item index="13" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.RequestMapping" />
-      <item index="14" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.RestController" />
+      <item index="2" class="java.lang.String" itemvalue="net.serenitybdd.core.annotations.findby.FindBy" />
+      <item index="3" class="java.lang.String" itemvalue="net.thucydides.core.annotations.Managed" />
+      <item index="4" class="java.lang.String" itemvalue="net.thucydides.core.annotations.WhenPageOpens" />
+      <item index="5" class="java.lang.String" itemvalue="org.junit.runners.Parameterized.Parameter" />
+      <item index="6" class="java.lang.String" itemvalue="org.springframework.boot.context.properties.ConfigurationProperties" />
+      <item index="7" class="java.lang.String" itemvalue="org.springframework.context.annotation.Configuration" />
+      <item index="8" class="java.lang.String" itemvalue="org.springframework.messaging.handler.annotation.MessageMapping" />
+      <item index="9" class="java.lang.String" itemvalue="org.springframework.messaging.simp.annotation.SubscribeMapping" />
+      <item index="10" class="java.lang.String" itemvalue="org.springframework.stereotype.Component" />
+      <item index="11" class="java.lang.String" itemvalue="org.springframework.stereotype.Controller" />
+      <item index="12" class="java.lang.String" itemvalue="org.springframework.stereotype.Service" />
+      <item index="13" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.ExceptionHandler" />
+      <item index="14" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.InitBinder" />
+      <item index="15" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.ModelAttribute" />
+      <item index="16" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.RequestMapping" />
+      <item index="17" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.RestController" />
     </list>
   </component>
   <component name="FrameworkDetectionExcludesConfiguration">
