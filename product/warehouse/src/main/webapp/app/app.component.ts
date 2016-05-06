@@ -2,8 +2,7 @@ import {Component} from 'angular2/core';
 import {ConfigService} from './config.service';
 
 @Component({
-    selector: 'codekvast-warehouse',
-    templateUrl: 'templates/app.component.html',
+    selector: 'codekvast-warehouse', templateUrl: 'app/app.component.html',
     providers: [ConfigService]
 })
 export class AppComponent {
