@@ -25,6 +25,7 @@
       <module name="codekvast_server_integTest" target="1.8" />
       <module name="codekvast_server_main" target="1.8" />
       <module name="codekvast_server_test" target="1.8" />
+      <module name="collector_integrationTest" target="1.6" />
       <module name="collector_main" target="1.6" />
       <module name="collector_test" target="1.6" />
       <module name="daemon_api_main" target="1.8" />

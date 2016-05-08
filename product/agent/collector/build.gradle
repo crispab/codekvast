@@ -2,6 +2,7 @@ apply from: "$rootDir/gradle/java-6.gradle"
 apply from: "$rootDir/gradle/license.gradle"
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'com.jfrog.bintray'
+apply plugin: 'org.unbroken-dome.test-sets'
 
 description = "The collector part of Codekvast, the code that runs inside the instrumented app's JVM"
 archivesBaseName = "codekvast-collector"
@@ -10,6 +11,11 @@ version = project.parent.parent.version
 configurations {
     aspectjweaver
 }
+
+testSets {
+    integrationTest
+}
+check.dependsOn integrationTest
 
 dependencies {
     compile project(":product:agent:agent-lib"), { transitive = false }
@@ -24,6 +30,7 @@ dependencies {
     testCompile junit
     testCompile mockito
     testCompile lombok
+
 }
 
 shadowJar {
@@ -38,6 +45,12 @@ shadowJar {
     dependencies {
         exclude(dependency('org.aspectj:aspectjweaver'))
     }
+}
+
+integrationTest {
+    dependsOn shadowJar
+    systemProperty 'key', 'value'
+    jvmArgs '-javaagent:' + shadowJar.outputs.files.asPath, '-javaagent:' + configurations.aspectjweaver.asPath
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {

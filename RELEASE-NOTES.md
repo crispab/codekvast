@@ -4,6 +4,7 @@
 
 1. Added support for developing Codekvast Warehouse web UI with Angular2 and TypeScript.
 1. Added a Serenity BDD- and Docker-based function test for Codekvast Warehouse.
+1. Added proper integration test for Codekvast Collector.
 
 ## 0.18.0
 
