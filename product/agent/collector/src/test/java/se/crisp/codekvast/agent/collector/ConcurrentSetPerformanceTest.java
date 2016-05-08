@@ -90,6 +90,7 @@ public class ConcurrentSetPerformanceTest {
         }
     }
 
+    @SuppressWarnings("unused")
     static class AtomicReferenceWrappedRegularHashSet implements Strategy {
         private final AtomicReference<Set<String>> ref = new AtomicReference<Set<String>>(new HashSet<String>());
         private int numThreads;
