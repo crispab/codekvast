@@ -5,10 +5,6 @@ services:
   app:
     image: crisp/codekvast-warehouse:latest
 
-    volumes:
-    - /tmp/codekvast/.functest/warehouse:/tmp/codekvast/.warehouse
-    - /tmp/codekvast/.functest/log:/var/log
-
     links:
     - db:database
 

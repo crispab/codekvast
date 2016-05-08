@@ -166,7 +166,7 @@ The following stack is used when developing Codekvast (in alphabetical order):
 1. Github
 1. Gradle 
 1. H2 database (disk persistent data, server embedded in Codekvast Daemon)
-1. Java 8 (the collector is built with Java 6)
+1. Java 8
 1. Lombok
 1. MariaDB 10+ (Codekvast Warehouse)
 1. Node Package Manager (npm)
@@ -187,7 +187,7 @@ Development tools live under `tools/`.
 
 Java 8  is required. OpenJDK is recommended.
 
-Use the folling command to install OpenJDK 8 (Ubuntu, Debian):
+Use the following command to install OpenJDK 8 (Ubuntu, Debian):
 
     sudo apt-get install openjdk-8-jdk
 
@@ -199,7 +199,7 @@ npm is used for managing the frontend development environment.
  
 Use the following command to install the Node Package Manager (npm), which is used to manage all JavaScript-related stuff (Ubuntu, Debian):
 
-    sudo apt-get install npm
+    sudo apt-get install nodejs npm
     
 #### Docker Engine & Docker Compose
 
