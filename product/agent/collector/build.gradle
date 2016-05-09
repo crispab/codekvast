@@ -51,10 +51,9 @@ shadowJar {
 
 integrationTest {
     dependsOn shadowJar
-    systemProperty 'codekvast.collectorPath', shadowJar.outputs.files.asPath
-    systemProperty 'codekvast.aspectjweaverPath', configurations.aspectjweaver.asPath
-    systemProperty 'codekvast.sampleAppClasspath', file("build/classes/integrationTest/")
-    environment['CODEKVAST_VERBOSE'] = 'true'
+    systemProperty 'integrationTest.codekvastCollector', shadowJar.outputs.files.asPath
+    systemProperty 'integrationTest.aspectjweaver', configurations.aspectjweaver.asPath
+    systemProperty 'integrationTest.classpath', file("build/classes/integrationTest/")
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {

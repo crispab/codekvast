@@ -1,5 +1,6 @@
 package se.crisp.codekvast.agent.collector.itest;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -11,22 +12,40 @@ import se.crisp.codekvast.agent.lib.config.CollectorConfigFactory;
 import se.crisp.codekvast.agent.lib.util.FileUtils;
 import se.crisp.codekvast.testsupport.ProcessUtils;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CollectorIntegrationTest {
 
-    private final String aspectjweaverPath = System.getProperty("codekvast.aspectjweaverPath");
-    private final String collectorPath = System.getProperty("codekvast.collectorPath");
-    private final String classpath = System.getProperty("codekvast.sampleAppClasspath");
+    private final String aspectjweaver = System.getProperty("integrationTest.aspectjweaver");
+    private final String codekvastCollector = System.getProperty("integrationTest.codekvastCollector");
+    private final String classpath = System.getProperty("integrationTest.classpath");
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+    private CollectorConfig collectorConfig;
+
+    private final Map<String, File> collectorOutputFiles = new TreeMap<String, File>();
+
+    @Before
+    public void beforeTest() throws Exception {
+        collectorConfig = CollectorConfigFactory.createSampleCollectorConfig().toBuilder()
+                                                .appName("SampleApp")
+                                                .packages("sample")
+                                                .dataPath(temporaryFolder.newFolder())
+                                                .build();
+    }
 
     @Test
     public void should_have_paths_to_javaagents() throws Exception {
@@ -35,8 +54,8 @@ public class CollectorIntegrationTest {
         // when
 
         // then
-        assertThat(aspectjweaverPath, notNullValue());
-        assertThat(collectorPath, notNullValue());
+        assertThat(aspectjweaver, notNullValue());
+        assertThat(codekvastCollector, notNullValue());
         assertThat(classpath, notNullValue());
     }
 
@@ -53,36 +72,62 @@ public class CollectorIntegrationTest {
     }
 
     @Test
-    public void should_start_collector_when_config_specified() throws Exception {
+    public void should_collect_data_when_valid_config_specified() throws Exception {
         // given
-        String command = buildJavaCommand(createCollectorConfig());
+        String command = buildJavaCommand(writeCollectorConfigToFile());
 
         // when
         String result = ProcessUtils.executeCommand(command);
 
         // then
         assertThat(result, containsString("Found " + temporaryFolder.getRoot().getAbsolutePath()));
+
+        walkFileTree(collectorOutputFiles, collectorConfig.getDataPath());
+
+        assertThat(collectorOutputFiles.keySet(), hasItems("aop.xml", "invocations.dat.00000", "jvm.dat"));
+
+        List<String> lines = readLinesFrom("invocations.dat.00000");
+        assertThat(lines.size(), is(5));
+        assertThat(lines, hasItem("public sample.app.SampleApp.main(java.lang.String[])"));
+        assertThat(lines, hasItem("public sample.app.SampleApp.add(int, int)"));
     }
 
-    private String createCollectorConfig() throws IOException {
-        CollectorConfig config = CollectorConfigFactory.createSampleCollectorConfig().toBuilder()
-                                                       .dataPath(temporaryFolder.newFolder("data"))
-                                                       .build();
-        File file = temporaryFolder.newFile();
-        FileUtils.writePropertiesTo(file, config, getClass().getSimpleName());
+    private List<String> readLinesFrom(String basename) throws IOException {
+        File file = collectorOutputFiles.get(basename);
+        List<String> result = new ArrayList<String>();
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            result.add(line);
+        }
+        return result;
+    }
+
+    private String writeCollectorConfigToFile() throws IOException {
+        File file = new File(temporaryFolder.getRoot(), "codekvast.conf");
+        FileUtils.writePropertiesTo(file, collectorConfig, getClass().getSimpleName());
         return file.getAbsolutePath();
     }
 
     private String buildJavaCommand(String configPath) {
         String sysProps = configPath == null ? "" : "-Dcodekvast.configuration=" + configPath;
         return String.format(
-                "java -javaagent:%s -javaagent:%s -cp %s %s %s",
-                collectorPath,
-                aspectjweaverPath,
+                "java -javaagent:%s -javaagent:%s -cp %s %s %s %s",
+                codekvastCollector,
+                aspectjweaver,
                 classpath,
+                "-Dcodekvast.options=verbose=true",
                 sysProps,
                 SampleApp.class.getName());
     }
 
-
+    private void walkFileTree(Map<String, File> result, File path) {
+        for (File file : path.listFiles()) {
+            if (file.isDirectory()) {
+                walkFileTree(result, file);
+            } else {
+                result.put(file.getName(), file);
+            }
+        }
+    }
 }
