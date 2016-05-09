@@ -31,6 +31,8 @@ dependencies {
     testCompile mockito
     testCompile lombok
 
+    integrationTestCompile project(":product:support:testsupport")
+
 }
 
 shadowJar {
@@ -49,8 +51,10 @@ shadowJar {
 
 integrationTest {
     dependsOn shadowJar
-    systemProperty 'key', 'value'
-    jvmArgs '-javaagent:' + shadowJar.outputs.files.asPath, '-javaagent:' + configurations.aspectjweaver.asPath
+    systemProperty 'codekvast.collectorPath', shadowJar.outputs.files.asPath
+    systemProperty 'codekvast.aspectjweaverPath', configurations.aspectjweaver.asPath
+    systemProperty 'codekvast.sampleAppClasspath', file("build/classes/integrationTest/")
+    environment['CODEKVAST_VERBOSE'] = 'true'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {

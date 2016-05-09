@@ -22,13 +22,11 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.rules.ExternalResource;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static se.crisp.codekvast.testsupport.ProcessUtils.executeCommand;
 
 /**
  * @author olle.hallin@crisp.se
@@ -148,30 +146,6 @@ public class DockerContainer extends ExternalResource {
             throw new IllegalArgumentException("Unknown internal port: " + internalPort);
         }
         return port;
-    }
-
-    private String executeCommand(String command) throws RuntimeException, IOException, InterruptedException {
-        log.debug("Attempting to execute '{}' ...", command);
-        Process process = Runtime.getRuntime().exec(command);
-        int exitCode = process.waitFor();
-        if (exitCode != 0) {
-            String error = collectProcessOutput(process.getErrorStream());
-            throw new RuntimeException(String.format("Could not execute '%s': %s%nExit code=%d", command, error, exitCode));
-        }
-
-        return collectProcessOutput(process.getInputStream());
-    }
-
-    private String collectProcessOutput(InputStream inputStream) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        String line;
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-        String newLine = "";
-        while ((line = reader.readLine()) != null) {
-            sb.append(newLine).append(line);
-            newLine = String.format("%n");
-        }
-        return sb.toString();
     }
 
     String buildDockerRunCommand() {
