@@ -5,6 +5,7 @@ import se.crisp.codekvast.agent.lib.config.MethodAnalyzer;
 import se.crisp.codekvast.agent.lib.model.MethodSignature;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
@@ -14,11 +15,13 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static se.crisp.codekvast.agent.lib.util.SignatureUtils.*;
 
+@SuppressWarnings("ALL")
 public class SignatureUtilsTest {
 
     private final MethodAnalyzer methodAnalyzer = new MethodAnalyzer("all");
 
     private final Method testMethods[] = TestClass.class.getDeclaredMethods();
+    private final Constructor testConstructors[] = TestClass.class.getDeclaredConstructors();
 
     private Method findTestMethod(String name) {
         for (Method method : testMethods) {
@@ -27,6 +30,15 @@ public class SignatureUtilsTest {
             }
         }
         throw new IllegalArgumentException("Unknown test method: " + name);
+    }
+
+    private Constructor findTestConstructor(String name) {
+        for (Constructor ctor : testConstructors) {
+            if (ctor.toString().contains(name)) {
+                return ctor;
+            }
+        }
+        throw new IllegalArgumentException("Unknown test constructor: " + name);
     }
 
     @Test
@@ -101,6 +113,49 @@ public class SignatureUtilsTest {
         assertThat(signature.getReturnType(), is("int"));
     }
 
+    @Test
+    public void testMakeConstructorSignature1() throws Exception {
+        MethodSignature signature = makeConstructorSignature(TestClass.class, findTestConstructor("TestClass()"));
+        assertThat(signature, notNullValue());
+        assertThat(signature.getAspectjString(), is("public se.crisp.codekvast.agent.lib.util.SignatureUtilsTest.TestClass()"));
+        assertThat(signature.getDeclaringType(), is("se.crisp.codekvast.agent.lib.util.SignatureUtilsTest$TestClass"));
+        assertThat(signature.getExceptionTypes(), is(""));
+        assertThat(signature.getMethodName(), is("<init>"));
+        assertThat(signature.getModifiers(), is("public"));
+        assertThat(signature.getPackageName(), is("se.crisp.codekvast.agent.lib.util"));
+        assertThat(signature.getParameterTypes(), is(""));
+        assertThat(signature.getReturnType(), is(""));
+    }
+
+    @Test
+    public void testMakeConstructorSignature2() throws Exception {
+        MethodSignature signature = makeConstructorSignature(TestClass.class, findTestConstructor("TestClass(int)"));
+        assertThat(signature, notNullValue());
+        assertThat(signature.getAspectjString(), is("protected se.crisp.codekvast.agent.lib.util.SignatureUtilsTest.TestClass(int)"));
+        assertThat(signature.getDeclaringType(), is("se.crisp.codekvast.agent.lib.util.SignatureUtilsTest$TestClass"));
+        assertThat(signature.getExceptionTypes(), is(""));
+        assertThat(signature.getMethodName(), is("<init>"));
+        assertThat(signature.getModifiers(), is("protected"));
+        assertThat(signature.getPackageName(), is("se.crisp.codekvast.agent.lib.util"));
+        assertThat(signature.getParameterTypes(), is("int"));
+        assertThat(signature.getReturnType(), is(""));
+    }
+
+    @Test
+    public void testMakeConstructorSignature3() throws Exception {
+        MethodSignature signature = makeConstructorSignature(TestClass.class, findTestConstructor("TestClass(int,int)"));
+        assertThat(signature, notNullValue());
+        assertThat(signature.getAspectjString(),
+                   is("package-private se.crisp.codekvast.agent.lib.util.SignatureUtilsTest.TestClass(int, int)"));
+        assertThat(signature.getDeclaringType(), is("se.crisp.codekvast.agent.lib.util.SignatureUtilsTest$TestClass"));
+        assertThat(signature.getExceptionTypes(), is("java.lang.UnsupportedOperationException"));
+        assertThat(signature.getMethodName(), is("<init>"));
+        assertThat(signature.getModifiers(), is(""));
+        assertThat(signature.getPackageName(), is("se.crisp.codekvast.agent.lib.util"));
+        assertThat(signature.getParameterTypes(), is("int, int"));
+        assertThat(signature.getReturnType(), is(""));
+    }
+
     @SuppressWarnings("unused")
     public interface TestInterface {
         void foo();
@@ -108,6 +163,22 @@ public class SignatureUtilsTest {
 
     @SuppressWarnings({"EmptyMethod", "unused"})
     public static class TestClass {
+        private final int i;
+        private final int j;
+
+        TestClass(int i, int j) throws UnsupportedOperationException {
+            this.i = i;
+            this.j = j;
+        }
+
+        public TestClass() {
+            this(0, 0);
+        }
+
+        protected TestClass(int i) {
+            this(i, 0);
+        }
+
         public static Collection<List<String>> publicStaticMethod1(String p1, Collection<Integer> p2) {
             return null;
         }

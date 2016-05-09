@@ -1,23 +1,17 @@
 /**
  * Copyright (c) 2015-2016 Crisp AB
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR
+ * ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
+ * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package se.crisp.codekvast.agent.lib.util;
 
@@ -26,6 +20,7 @@ import org.aspectj.lang.Signature;
 import org.aspectj.runtime.reflect.Factory;
 import se.crisp.codekvast.agent.lib.model.MethodSignature;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
@@ -41,7 +36,7 @@ public class SignatureUtils {
     public static final String PROTECTED = "protected";
     public static final String PACKAGE_PRIVATE = "package-private";
     public static final String PRIVATE = "private";
-    public static final String[] VISIBILITY_KEYWORDS = {PUBLIC, PROTECTED, PRIVATE};
+    private static final String[] VISIBILITY_KEYWORDS = {PUBLIC, PROTECTED, PRIVATE};
 
     /**
      * Converts a (method) signature to a string containing the bare minimum to uniquely identify the method, namely: <ul> <li>The declaring
@@ -59,14 +54,22 @@ public class SignatureUtils {
         return stripModifiersAndReturnType ? stripModifiersAndReturnType(s) : s;
     }
 
-    public static String stripModifiersAndReturnType(String signature) {
+    static String stripModifiersAndReturnType(String signature) {
         // Search backwards from the '(' for a space character...
         int pos = signature.indexOf("(");
+        if (pos < 0) {
+            // Constructor
+            pos = signature.length();
+        }
         while (pos >= 0 && signature.charAt(pos) != ' ') {
             pos -= 1;
         }
+        String separator = pos < 0 ? " " : "";
+        if (pos < 0) {
+            pos = 0;
+        }
         String modifiers = signature.substring(0, pos);
-        return getVisibility(modifiers) + signature.substring(pos);
+        return getVisibility(modifiers) + separator + signature.substring(pos);
     }
 
     private static String getVisibility(String modifiers) {
@@ -82,8 +85,8 @@ public class SignatureUtils {
     /**
      * Uses AspectJ for creating the same signature as AbstractCodekvastAspect.
      *
-     * @param clazz        The class containing the method
-     * @param method       The method to make a signature of
+     * @param clazz  The class containing the method
+     * @param method The method to make a signature of
      * @return The same signature object as an AspectJ execution pointcut will provide in JoinPoint.getSignature(). Returns null unless the
      * method is not synthetic.
      */
@@ -103,10 +106,30 @@ public class SignatureUtils {
     }
 
     /**
+     * Uses AspectJ for creating the same signature as AbstractCodekvastAspect.
+     *
+     * @param clazz       The class containing the method
+     * @param constructor The constructor to make a signature of
+     * @return The same signature object as an AspectJ execution pointcut will provide in JoinPoint.getSignature(). Returns null unless the
+     * constructor is not synthetic.
+     */
+    private static Signature makeSignature(Class clazz, Constructor constructor) {
+        if (clazz == null || constructor.isSynthetic()) {
+            return null;
+        }
+
+        return new Factory(null, clazz).makeConstructorSig(constructor.getModifiers(),
+                                                           clazz,
+                                                           constructor.getParameterTypes(),
+                                                           null,
+                                                           constructor.getExceptionTypes());
+    }
+
+    /**
      * Converts a java.lang.reflect.Method to a MethodSignature object.
      *
-     * @param clazz        The class containing the method
-     * @param method       The method to make a signature of
+     * @param clazz  The class containing the method
+     * @param method The method to make a signature of
      * @return A MethodSignature or null if the methodFilter stops the method.
      * @see #makeSignature(Class, Method)
      */
@@ -118,18 +141,45 @@ public class SignatureUtils {
             return null;
         }
 
-        MethodSignature methodSignature = MethodSignature.builder()
-                                                         .aspectjString(signatureToString(aspectjSignature, true))
-                                                         .declaringType(aspectjSignature.getDeclaringTypeName())
-                                                         .exceptionTypes(classArrayToString(aspectjSignature.getExceptionTypes()))
-                                                         .methodName(aspectjSignature.getName())
-                                                         .modifiers(Modifier.toString(aspectjSignature.getModifiers()))
-                                                         .packageName(aspectjSignature.getDeclaringType().getPackage().getName())
-                                                         .parameterTypes(classArrayToString(aspectjSignature.getParameterTypes()))
-                                                         .returnType(aspectjSignature.getReturnType().getName())
-                                                         .build();
+        return MethodSignature.builder()
+                              .aspectjString(signatureToString(aspectjSignature, true))
+                              .declaringType(aspectjSignature.getDeclaringTypeName())
+                              .exceptionTypes(classArrayToString(aspectjSignature.getExceptionTypes()))
+                              .methodName(aspectjSignature.getName())
+                              .modifiers(Modifier.toString(aspectjSignature.getModifiers()))
+                              .packageName(aspectjSignature.getDeclaringType().getPackage().getName())
+                              .parameterTypes(classArrayToString(aspectjSignature.getParameterTypes()))
+                              .returnType(aspectjSignature.getReturnType().getName())
+                              .build();
 
-        return methodSignature;
+    }
+
+    /**
+     * Converts a java.lang.reflect.Constructor to a MethodSignature object.
+     *
+     * @param clazz       The class containing the method.
+     * @param constructor The constructor to make a signature of.
+     * @return A MethodSignature or null if the methodFilter stops the constructor.
+     * @see #makeSignature(Class, Method)
+     */
+    public static MethodSignature makeConstructorSignature(Class<?> clazz, Constructor constructor) {
+        org.aspectj.lang.reflect.ConstructorSignature aspectjSignature =
+                (org.aspectj.lang.reflect.ConstructorSignature) makeSignature(clazz, constructor);
+
+        if (aspectjSignature == null) {
+            return null;
+        }
+
+        return MethodSignature.builder()
+                              .aspectjString(signatureToString(aspectjSignature, true))
+                              .declaringType(aspectjSignature.getDeclaringTypeName())
+                              .exceptionTypes(classArrayToString(aspectjSignature.getExceptionTypes()))
+                              .methodName(aspectjSignature.getName())
+                              .modifiers(Modifier.toString(aspectjSignature.getModifiers()))
+                              .packageName(aspectjSignature.getDeclaringType().getPackage().getName())
+                              .parameterTypes(classArrayToString(aspectjSignature.getParameterTypes()))
+                              .returnType("")
+                              .build();
 
     }
 

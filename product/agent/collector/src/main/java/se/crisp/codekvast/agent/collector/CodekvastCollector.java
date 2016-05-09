@@ -208,15 +208,16 @@ public class CodekvastCollector {
 
     private static String toMethodExecutionPointcut(MethodAnalyzer filter) {
         if (filter.selectsPrivateMethods()) {
-            return "execution(* *..*(..))";
+            return "execution(* *..*(..)) || execution(*..new(..))";
         }
         if (filter.selectsPackagePrivateMethods()) {
-            return "execution(!private * *..*(..))";
+            return "execution(!private * *..*(..)) || execution(!private *..new(..))";
         }
         if (filter.selectsProtectedMethods()) {
-            return "execution(public * *..*(..)) || execution(protected * *..*(..))";
+            return "execution(public * *..*(..)) || execution(protected * *..*(..)) " +
+                    "|| execution(public *..new(..)) || execution(protected *..new(..))";
         }
-        return "execution(public * *..*(..))";
+        return "execution(public * *..*(..)) || execution(public *..new(..))";
     }
 
     private static class InvocationDumpingTimerTask extends TimerTask {

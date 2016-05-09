@@ -42,6 +42,7 @@ public class CollectorIntegrationTest {
     public void beforeTest() throws Exception {
         collectorConfig = CollectorConfigFactory.createSampleCollectorConfig().toBuilder()
                                                 .appName("SampleApp")
+                                                .aspectjOptions("-verbose -showWeaveInfo")
                                                 .packages("sample")
                                                 .dataPath(temporaryFolder.newFolder())
                                                 .build();
@@ -80,6 +81,8 @@ public class CollectorIntegrationTest {
         String result = ProcessUtils.executeCommand(command);
 
         // then
+        System.out.println("result = " + result);
+
         assertThat(result, containsString("Found " + temporaryFolder.getRoot().getAbsolutePath()));
 
         walkFileTree(collectorOutputFiles, collectorConfig.getDataPath());
@@ -87,7 +90,7 @@ public class CollectorIntegrationTest {
         assertThat(collectorOutputFiles.keySet(), hasItems("aop.xml", "invocations.dat.00000", "jvm.dat"));
 
         List<String> lines = readLinesFrom("invocations.dat.00000");
-        assertThat(lines.size(), is(5));
+        assertThat(lines.size(), is(6));
         assertThat(lines, hasItem("public sample.app.SampleApp.main(java.lang.String[])"));
         assertThat(lines, hasItem("public sample.app.SampleApp.add(int, int)"));
     }
