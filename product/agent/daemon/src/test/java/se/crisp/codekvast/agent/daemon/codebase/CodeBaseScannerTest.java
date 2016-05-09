@@ -48,17 +48,17 @@ public class CodeBaseScannerTest {
     @Test
     public void testScanCodeBaseForDirectoryWithMyClassFiles() throws URISyntaxException {
         int numClasses = scanner.scanSignatures(codeBase);
-        assertThat(numClasses, is(10));
+        assertThat(numClasses, is(9));
 
         Collection<CodeBaseEntry> entries = codeBase.getEntries();
         assertThat(entries, notNullValue());
-        assertThat(entries.size(), is(17));
+        assertThat(entries.size(), is(25));
         assertThat(entries.stream()
                           .filter(e -> e.getSignatureStatus() == SignatureStatus.EXCLUDED_BY_PACKAGE_NAME)
                           .count(), is(1L));
         assertThat(entries.stream()
                           .filter(e -> e.getSignatureStatus() == SignatureStatus.EXCLUDED_BY_VISIBILITY)
-                          .count(), is(1L));
+                          .count(), is(2L));
         assertThat(entries.stream()
                           .filter(e -> e.getSignatureStatus() == SignatureStatus.EXCLUDED_SINCE_TRIVIAL)
                           .count(), is(3L));
@@ -90,6 +90,12 @@ public class CodeBaseScannerTest {
     public void testFindBaseMethodForScannerTest4() throws URISyntaxException {
         scanner.findTrackedMethods(codeBase, of("se."), of("acme."), ScannerTest4.class);
         assertThat(codeBase.getSignatures().size(), is(11));
+    }
+
+    @Test
+    public void testFindConstructorsForScannerTest4() throws URISyntaxException {
+        scanner.findTrackedConstructors(codeBase, ScannerTest4.class);
+        assertThat(codeBase.getSignatures().size(), is(3));
     }
 
 }

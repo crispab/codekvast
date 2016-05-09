@@ -25,6 +25,7 @@ import lombok.EqualsAndHashCode;
 import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 import se.crisp.codekvast.agent.lib.util.SignatureUtils;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
@@ -130,6 +131,13 @@ public class MethodAnalyzer {
                 || isEquals(method)
                 || isHashCode(method)) {
             return SignatureStatus.EXCLUDED_SINCE_TRIVIAL;
+        }
+        return SignatureStatus.NOT_INVOKED;
+    }
+
+    public SignatureStatus apply(Constructor constructor) {
+        if (!shouldIncludeByModifiers(constructor.getModifiers())) {
+            return SignatureStatus.EXCLUDED_BY_VISIBILITY;
         }
         return SignatureStatus.NOT_INVOKED;
     }

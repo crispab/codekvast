@@ -30,6 +30,7 @@ import se.crisp.codekvast.agent.lib.model.MethodSignature;
 import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 import se.crisp.codekvast.agent.lib.util.SignatureUtils;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;
 import java.util.Set;
@@ -51,12 +52,12 @@ public class CodeBaseScanner {
      * Scans the code base for public methods in the correct packages. The result is stored in the code base.
      *
      * @param codeBase The code base to scan.
-     * @return The number of scanned classes.
+     * @return The number of classes containing at least one included method.
      */
     public int scanSignatures(CodeBase codeBase) {
-        int result = 0;
         long startedAt = System.currentTimeMillis();
         log.debug("Scanning code base {}", codeBase);
+        int result = 0;
 
         URLClassLoader appClassLoader = new URLClassLoader(codeBase.getUrls(), System.class.getClassLoader());
         Set<String> packages = new TreeSet<>(codeBase.getConfig().getNormalizedPackages());
@@ -67,7 +68,9 @@ public class CodeBaseScanner {
         for (String type : recognizedTypes) {
             try {
                 Class<?> clazz = Class.forName(type, false, appClassLoader);
-                result += findTrackedMethods(codeBase, packages, excludePackages, clazz);
+                findTrackedConstructors(codeBase, clazz);
+                findTrackedMethods(codeBase, packages, excludePackages, clazz);
+                result += 1;
             } catch (ClassNotFoundException | NoClassDefFoundError e) {
                 log.warn("Cannot analyze " + type + ": " + e);
             }
@@ -99,15 +102,39 @@ public class CodeBaseScanner {
         return recordingClassNameFilter.getMatchedClassNames();
     }
 
-    int findTrackedMethods(CodeBase codeBase, Set<String> packages, Set<String> excludePackages, Class<?> clazz) {
+    void findTrackedConstructors(CodeBase codeBase, Class<?> clazz) {
         if (clazz.isInterface()) {
             log.debug("Ignoring interface {}", clazz);
-            return 0;
+            return;
         }
 
         log.debug("Analyzing {}", clazz);
         MethodAnalyzer methodAnalyzer = codeBase.getConfig().getMethodAnalyzer();
-        int result = 1;
+        try {
+            Constructor[] declaredConstructors = clazz.getDeclaredConstructors();
+
+            for (Constructor constructor : declaredConstructors) {
+                SignatureStatus status = methodAnalyzer.apply(constructor);
+                MethodSignature thisSignature = SignatureUtils.makeConstructorSignature(clazz, constructor);
+                codeBase.addSignature(thisSignature, thisSignature, status);
+            }
+
+            for (Class<?> innerClass : clazz.getDeclaredClasses()) {
+                findTrackedConstructors(codeBase, innerClass);
+            }
+        } catch (NoClassDefFoundError e) {
+            log.warn("Cannot analyze {}: {}", clazz, e.toString());
+        }
+    }
+
+    void findTrackedMethods(CodeBase codeBase, Set<String> packages, Set<String> excludePackages, Class<?> clazz) {
+        if (clazz.isInterface()) {
+            log.debug("Ignoring interface {}", clazz);
+            return;
+        }
+
+        log.debug("Analyzing {}", clazz);
+        MethodAnalyzer methodAnalyzer = codeBase.getConfig().getMethodAnalyzer();
         try {
             Method[] declaredMethods = clazz.getDeclaredMethods();
             Method[] methods = clazz.getMethods();
@@ -134,12 +161,11 @@ public class CodeBaseScanner {
             }
 
             for (Class<?> innerClass : clazz.getDeclaredClasses()) {
-                result += findTrackedMethods(codeBase, packages, excludePackages, innerClass);
+                findTrackedMethods(codeBase, packages, excludePackages, innerClass);
             }
         } catch (NoClassDefFoundError e) {
             log.warn("Cannot analyze {}: {}", clazz, e.toString());
         }
-        return result;
     }
 
     private boolean shouldExcludeSignature(MethodSignature signature, Set<String> excludePackages) {
