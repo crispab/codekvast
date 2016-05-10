@@ -1,5 +1,4 @@
 import org.apache.tools.ant.filters.ReplaceTokens
-import org.ajoberstar.grgit.Grgit
 
 apply plugin: 'distribution'
 apply plugin: 'com.jfrog.bintray'
@@ -157,16 +156,20 @@ task assertPushedWorkspace(type: Exec) {
 
 $status""")
         }
+
+        if (status.contains("[behind ")) {
+            throw new IllegalStateException("""Will not ship when Git workspace is behind origin:
+
+$status""")
+        }
     }
 }
 
 task shipIt {
-    description "Builds and uploads to bintray"
+    description "Makes a clean build and uploads to Bintray and Docker Hub"
     group = "publishing"
 
-    dependsOn assertPushedWorkspace,
-            clean,
-            build,
+    dependsOn assertPushedWorkspace, clean, build,
             tasks.getByPath(":product:bintrayUpload"),
             tasks.getByPath(":product:agent:collector:bintrayUpload"),
             tasks.getByPath(":product:warehouse:pushDockerImage")

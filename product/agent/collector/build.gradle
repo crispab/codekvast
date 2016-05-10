@@ -88,6 +88,7 @@ publishing {
         shadowJar(MavenPublication) {
             groupId 'se.crisp.codekvast'
             artifactId 'codekvast-collector'
+            version codekvastVersion
             from components.shadow
             artifact sourcesJar { classifier "sources" }
             artifact javadocJar { classifier "javadoc" }
@@ -109,7 +110,7 @@ bintray {
         userOrg = 'crisp'
         repo = 'maven-repo'
         name = 'codekvast-collector'
-        desc = 'Just the javaagent part of Codekvast.'
+        desc = 'The javaagent part of Codekvast.'
         vcsUrl = 'https://github.com/crispab/codekvast.git'
         licenses = ['MIT']
         githubRepo = 'crispab/codekvast'
