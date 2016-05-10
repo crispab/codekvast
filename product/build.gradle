@@ -128,7 +128,7 @@ task assertCleanWorkspace(type: Exec) {
     description "Asserts that the Git workspace is clean before publishing to Bintray and Docker Hub"
     group "publishing"
 
-    commandLine "git", "status", "--short"
+    commandLine 'git', 'status', '--short'
     workingDir rootDir
     standardOutput = new ByteArrayOutputStream()
 
@@ -142,11 +142,29 @@ $status""")
     }
 }
 
+task assertPushedWorkspace(type: Exec) {
+    description "Asserts that the Git workspace is pushed before publishing to Bintray and Docker Hub"
+    group "publishing"
+    dependsOn assertCleanWorkspace
+    commandLine 'git', 'status', '--short', '--branch'
+    workingDir rootDir
+    standardOutput = new ByteArrayOutputStream()
+
+    doLast {
+        def status = standardOutput.toString().trim()
+        if (status.contains("[ahead ")) {
+            throw new IllegalStateException("""Will not ship when Git workspace is ahead of origin:
+
+$status""")
+        }
+    }
+}
+
 task shipIt {
     description "Builds and uploads to bintray"
     group = "publishing"
 
-    dependsOn assertCleanWorkspace,
+    dependsOn assertPushedWorkspace,
             clean,
             build,
             tasks.getByPath(":product:bintrayUpload"),
