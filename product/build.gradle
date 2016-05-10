@@ -124,14 +124,20 @@ bintrayUpload {
     }
 }
 
-task assertCleanWorkspace {
+task assertCleanWorkspace(type: Exec) {
     description "Asserts that the Git workspace is clean before publishing to Bintray and Docker Hub"
     group "publishing"
 
+    commandLine "git", "status", "--short"
+    workingDir rootDir
+    standardOutput = new ByteArrayOutputStream()
+
     doLast {
-        def status = Grgit.open(dir: rootDir).status()
-        if (!status.staged.allChanges.empty || !status.unstaged.allChanges.empty) {
-            throw new IllegalStateException("Git workspace is not clean!")
+        def status = standardOutput.toString().trim()
+        if (!status.isEmpty()) {
+            throw new IllegalStateException("""Will not ship when Git workspace is dirty:
+
+$status""")
         }
     }
 }
