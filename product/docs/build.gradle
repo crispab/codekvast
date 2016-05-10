@@ -15,7 +15,7 @@ dependencies {
 }
 
 description = "Home for the Codekvast documentation, which built by asciidoctor"
-version = project.parent.version
+version = codekvastVersion
 
 asciidoctor {
     dependsOn jrubyPrepareGems

@@ -6,7 +6,7 @@ apply plugin: 'org.unbroken-dome.test-sets'
 
 description = "The collector part of Codekvast, the code that runs inside the instrumented app's JVM"
 archivesBaseName = "codekvast-collector"
-version = project.parent.parent.version
+version = codekvastVersion
 
 configurations {
     aspectjweaver
@@ -19,15 +19,16 @@ testSets {
 check.dependsOn integrationTest
 
 dependencies {
-    compile project(":product:agent:agent-lib"), { transitive = false }
-    compile aspectjWeaver
-
-    aspectjweaver aspectjWeaver
+    compile project(":product:agent:agent-lib")
+    compileOnly aspectjWeaver
 
     // Absolutely NO other compile or runtime dependencies are allowed here!
     // All (transitive) compile and runtime dependencies will end up in the instrumented app's system
     // class path, which is unacceptable.
 
+    aspectjweaver aspectjWeaver
+
+    testCompile aspectjWeaver
     testCompile junit
     testCompile mockito
     testCompile lombok
@@ -52,7 +53,8 @@ shadowJar {
 }
 
 integrationTest {
-    dependsOn shadowJar
+    inputs.files shadowJar.outputs.files
+
     systemProperty 'integrationTest.codekvastCollector', shadowJar.outputs.files.asPath
     systemProperty 'integrationTest.aspectjweaver', configurations.aspectjweaver.asPath
     systemProperty 'integrationTest.jacocoagent', "${configurations.jacocoagent.asPath}=destfile=build/jacoco/integrationTest2.exec,output=file,dumponexit=true"

@@ -15,7 +15,7 @@ apply from: "$projectDir/gradle/functionTest.gradle"
 description = 'The central Codekvast warehouse'
 applicationName = 'codekvast-warehouse'
 archivesBaseName = 'codekvast-warehouse'
-version = project.parent.parent.version
+version = codekvastVersion
 group = "crisp"
 mainClassName = 'se.crisp.codekvast.warehouse.CodekvastWarehouse'
 

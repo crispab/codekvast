@@ -3,18 +3,19 @@ apply from: "$rootDir/gradle/license.gradle"
 
 description = "Code that is shared between the Codekvast daemon and collector"
 archivesBaseName = "codekvast-agent-lib"
-version = project.parent.parent.version
+version = codekvastVersion
 
 dependencies {
     compileOnly lombok
-    compile aspectjWeaver
-    compile "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
+    compileOnly aspectjWeaver
+    compileOnly "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
 
     // Absolutely NO other compile or runtime dependencies are allowed here!
 
     // All transitive compile and runtime dependencies will end up in the collected app's system
     // class path.
 
+    testCompile aspectjWeaver
     testCompile lombok
     testCompile junit
     testCompile mockito
