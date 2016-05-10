@@ -28,6 +28,7 @@ import static org.junit.Assert.assertThat;
 public class CollectorIntegrationTest {
 
     private final String aspectjweaver = System.getProperty("integrationTest.aspectjweaver");
+    private final String jacocoagent = System.getProperty("integrationTest.jacocoagent");
     private final String codekvastCollector = System.getProperty("integrationTest.codekvastCollector");
     private final String classpath = System.getProperty("integrationTest.classpath");
 
@@ -56,6 +57,7 @@ public class CollectorIntegrationTest {
 
         // then
         assertThat(aspectjweaver, notNullValue());
+        assertThat(jacocoagent, notNullValue());
         assertThat(codekvastCollector, notNullValue());
         assertThat(classpath, notNullValue());
     }
@@ -116,7 +118,8 @@ public class CollectorIntegrationTest {
     private String buildJavaCommand(String configPath) {
         String sysProps = configPath == null ? "" : "-Dcodekvast.configuration=" + configPath;
         return String.format(
-                "java -javaagent:%s -javaagent:%s -cp %s %s %s %s",
+                "java -javaagent:%s -javaagent:%s -javaagent:%s -cp %s %s %s %s",
+                jacocoagent,
                 codekvastCollector,
                 aspectjweaver,
                 classpath,

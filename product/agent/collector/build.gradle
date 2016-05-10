@@ -10,6 +10,7 @@ version = project.parent.parent.version
 
 configurations {
     aspectjweaver
+    jacocoagent
 }
 
 testSets {
@@ -33,6 +34,7 @@ dependencies {
 
     integrationTestCompile project(":product:support:testsupport")
 
+    jacocoagent 'org.jacoco:org.jacoco.agent:0.7.6.201602180812:runtime@jar'
 }
 
 shadowJar {
@@ -53,6 +55,7 @@ integrationTest {
     dependsOn shadowJar
     systemProperty 'integrationTest.codekvastCollector', shadowJar.outputs.files.asPath
     systemProperty 'integrationTest.aspectjweaver', configurations.aspectjweaver.asPath
+    systemProperty 'integrationTest.jacocoagent', "${configurations.jacocoagent.asPath}=destfile=build/jacoco/integrationTest2.exec,output=file,dumponexit=true"
     systemProperty 'integrationTest.classpath', file("build/classes/integrationTest/")
 }
 
