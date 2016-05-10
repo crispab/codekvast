@@ -93,6 +93,7 @@ public class CollectorIntegrationTest {
         assertThat(lines.size(), is(6));
         assertThat(lines, hasItem("public sample.app.SampleApp.main(java.lang.String[])"));
         assertThat(lines, hasItem("public sample.app.SampleApp.add(int, int)"));
+        assertThat(lines, hasItem("public sample.app.SampleApp()"));
     }
 
     private List<String> readLinesFrom(String basename) throws IOException {
