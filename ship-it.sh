@@ -31,7 +31,7 @@ if [ $(git status --porcelain | wc -l) -gt 0 ]; then
     #exit 2
 fi
 
-git status --porcelain --branch | egrep -q '^## master.*\[\w+ \d+\] ' && {
+git status --porcelain --branch | egrep -q '^## master.*\[\w+ \d+\]' && {
     echo "The Git workspace is not synced with origin. Git status:"
     git status --short --branch
     exit 2
