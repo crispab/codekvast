@@ -26,12 +26,12 @@ git status --porcelain --branch | egrep -q '^## master\.\.\.origin/master' || {
 }
 
 if [ $(git status --porcelain | wc -l) -gt 0 ]; then
-    echo "The Git workspace is not clean:"
-    git status --short
-    #exit 2
+    echo "The Git workspace is not clean. Git status:"
+    git status --short --branch
+    exit 2
 fi
 
-git status --porcelain --branch | egrep -q '^## master.*\[\w+ \d+\]' && {
+git status --porcelain --branch | egrep -q '^## master\.\.\.origin/master$' || {
     echo "The Git workspace is not synced with origin. Git status:"
     git status --short --branch
     exit 2
@@ -46,10 +46,10 @@ echo "Building product..."
 ${GRADLEW} :product:build
 
 echo "Uploading distributions to Bintray..."
-${GRADLEW} :product:bintrayUpload
+#${GRADLEW} :product:bintrayUpload
 
 echo "Uploading codekvast-collector.jar to Bintray and jcenter..."
-${GRADLEW} :product:agent:collector:bintrayUpload
+#${GRADLEW} :product:agent:collector:bintrayUpload
 
 echo "Pushing codekvast-warehouse to Docker Hub..."
-${GRADLEW} :product:warehouse:pushDockerImage
+#${GRADLEW} :product:warehouse:pushDockerImage
