@@ -2,36 +2,54 @@
 
 set -e
 
-declare GIT_STATUS=$(git status --porcelain --branch)
+declare GRADLE_PROPERTIES=$HOME/.gradle/gradle.properties
 
-if [  $(echo "$GIT_STATUS" | egrep -v "^##" | wc -l) -gt 0 ]; then
-    echo "The Git workspace is not clean. Git status:"
-    echo "$GIT_STATUS"
+if [ ! -e  ${GRADLE_PROPERTIES} ]; then
+    echo "$GRADLE_PROPERTIES is missing"
     exit 1
 fi
 
-if [ $(echo "$GIT_STATUS" | egrep "^##" | grep -i '\[ahead ' | wc -l) -gt 0 ]; then
-    echo "The Git workspace is not pushed to origin. Git status:"
-    echo "$GIT_STATUS"
-    # exit 2
+grep -Eq '^\s*bintrayUser\s*[:=]\s*\S+$' ${GRADLE_PROPERTIES} || {
+    echo "bintrayUser=xxx is missing in $GRADLE_PROPERTIES"
+    exit 1
+}
+
+grep -Eq '^\s*bintrayKey\s*[:=]\s*\S+$' ${GRADLE_PROPERTIES} || {
+    echo "bintrayKey=xxx is missing in $GRADLE_PROPERTIES"
+    exit 1
+}
+
+git status --porcelain --branch | egrep -q '^## master\.\.\.origin/master' || {
+    echo "The Git workspace is not on the master branch. Git status:"
+    git status --short --branch
+    exit 2
+}
+
+if [ $(git status --porcelain | wc -l) -gt 0 ]; then
+    echo "The Git workspace is not clean:"
+    git status --short
+    #exit 2
 fi
 
-if [ $(echo "$GIT_STATUS" | egrep "^##" | grep -i '\[behind ' | wc -l) -gt 0 ]; then
-    echo "The Git workspace is not pulled from origin. Git status:"
-    echo "$GIT_STATUS"
-    # exit 3
-fi
+git status --porcelain --branch | egrep -q '^## master.*\[\w+ \d+\] ' && {
+    echo "The Git workspace is not synced with origin. Git status:"
+    git status --short --branch
+    exit 2
+}
 
 declare GRADLEW=$(dirname $0)/gradlew
 
 echo "Cleaning workspace..."
-# $GRADLEW :product:clean
+${GRADLEW} :product:clean
 
 echo "Building product..."
-# $GRADLEW :product:build
+${GRADLEW} :product:build
 
 echo "Uploading distributions to Bintray..."
+${GRADLEW} :product:bintrayUpload
 
-echo "Uploading codekvast-collector.jar to jcenter..."
+echo "Uploading codekvast-collector.jar to Bintray and jcenter..."
+${GRADLEW} :product:agent:collector:bintrayUpload
 
 echo "Pushing codekvast-warehouse to Docker Hub..."
+${GRADLEW} :product:warehouse:pushDockerImage

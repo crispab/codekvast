@@ -123,48 +123,6 @@ bintrayUpload {
     }
 }
 
-task assertCleanWorkspace(type: Exec) {
-    description "Asserts that the Git workspace is clean before publishing to Bintray and Docker Hub"
-    group "publishing"
-
-    commandLine 'git', 'status', '--short'
-    workingDir rootDir
-    standardOutput = new ByteArrayOutputStream()
-
-    doLast {
-        def status = standardOutput.toString().trim()
-        if (!status.isEmpty()) {
-            throw new IllegalStateException("""Will not ship when Git workspace is dirty:
-
-$status""")
-        }
-    }
-}
-
-task assertPushedWorkspace(type: Exec) {
-    description "Asserts that the Git workspace is pushed before publishing to Bintray and Docker Hub"
-    group "publishing"
-    dependsOn assertCleanWorkspace
-    commandLine 'git', 'status', '--short', '--branch'
-    workingDir rootDir
-    standardOutput = new ByteArrayOutputStream()
-
-    doLast {
-        def status = standardOutput.toString().trim()
-        if (status.contains("[ahead ")) {
-            throw new IllegalStateException("""Will not ship when Git workspace is ahead of origin:
-
-$status""")
-        }
-
-        if (status.contains("[behind ")) {
-            throw new IllegalStateException("""Will not ship when Git workspace is behind origin:
-
-$status""")
-        }
-    }
-}
-
 task shipIt {
     description "Makes a clean build and uploads to Bintray and Docker Hub"
     group = "publishing"
