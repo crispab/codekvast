@@ -215,12 +215,23 @@ There is the convenience script `tools/src/script/gradle` which simplifies invoc
 and use `gradle` instead of `path/to/gradlew`
 
 #### Software publishing
-Codekvast binaries are published to Bintray. To be able to upload to Bintray you need the following lines in your `~/.gradle/gradle.properties`:
+Codekvast binaries are published to Bintray and to Docker Hub.
 
-    bintrayUser=my-bintray-user
-    bintrayKey=my-bintray-key
+You execute the publishing to both Bintray and Docker Hub by executing `./ship-it.sh` in the root of the project.
 
-You also need to be member of the Crisp organisation in Bintray.
+Preconditions:
+
+1. Clean workspace (no work in progress).
+1. On the master branch.
+1. Synced with origin (pushed and pulled).
+1. Bintray credentials in  `~/.gradle/gradle.properties`: 
+    
+    `bintrayUser=my-bintray-user`
+    
+    `bintrayKey=my-bintray-key`
+    
+1. `my-bintray-user` must be member of the Crisp organisation at Bintray.
+1. Logged in to Docker Hub and member of the crisp organisation.
 
 #### IDE
 

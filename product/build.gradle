@@ -67,8 +67,8 @@ distributions {
 
 bintray {
     // These are supposed to be defined in $HOME/.gradle/gradle.properties
-    user = project.hasProperty('bintrayUser') ? bintrayUser : "undefined"
-    key = project.hasProperty('bintrayKey') ? bintrayKey : "undefined"
+    user = project.findProperty('bintrayUser') ?: "undefined"
+    key = project.findProperty('bintrayKey') ?: "undefined"
 
     filesSpec {
         from tasks.getByPath(":product:daemonDistTar")
@@ -109,26 +109,4 @@ bintray {
 
         publicDownloadNumbers = true
     }
-}
-
-bintrayUpload {
-    doFirst {
-        def gradleProperties = new File(System.properties['user.home'], ".gradle/gradle.properties")
-        if (!project.hasProperty('bintrayUser')) {
-            throw new IllegalArgumentException("You must define bintrayUser in $gradleProperties before trying to upload to Bintray")
-        }
-        if (!project.hasProperty('bintrayKey')) {
-            throw new IllegalArgumentException("You must define bintrayKey in $gradleProperties before trying to upload to Bintray")
-        }
-    }
-}
-
-task shipIt {
-    description "Makes a clean build and uploads to Bintray and Docker Hub"
-    group = "publishing"
-
-    dependsOn assertPushedWorkspace, clean, build,
-            tasks.getByPath(":product:bintrayUpload"),
-            tasks.getByPath(":product:agent:collector:bintrayUpload"),
-            tasks.getByPath(":product:warehouse:pushDockerImage")
 }

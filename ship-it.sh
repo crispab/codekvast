@@ -37,6 +37,11 @@ git status --porcelain --branch | egrep -q '^## master\.\.\.origin/master$' || {
     exit 2
 }
 
+docker info 2>/dev/null |grep -Eq "^Username: " || {
+    echo "Not logged in to Docker"
+    exit 3
+}
+
 declare GRADLEW=$(dirname $0)/gradlew
 
 echo "Cleaning workspace..."
