@@ -2,6 +2,7 @@
 
 set -e
 
+declare GRADLEW=$(dirname $0)/gradlew
 declare GRADLE_PROPERTIES=$HOME/.gradle/gradle.properties
 
 if [ ! -e  ${GRADLE_PROPERTIES} ]; then
@@ -49,10 +50,6 @@ if [ "${answer}" != 'y' ]; then
     exit 4
 fi
 
-exit 0
-
-declare GRADLEW=$(dirname $0)/gradlew
-
 echo "Cleaning workspace..."
 ${GRADLEW} :product:clean
 
@@ -60,10 +57,10 @@ echo "Building product..."
 ${GRADLEW} :product:build
 
 echo "Uploading distributions to Bintray..."
-#${GRADLEW} :product:bintrayUpload
+${GRADLEW} :product:bintrayUpload
 
 echo "Uploading codekvast-collector.jar to Bintray and jcenter..."
-#${GRADLEW} :product:agent:collector:bintrayUpload
+${GRADLEW} :product:agent:collector:bintrayUpload
 
 echo "Pushing codekvast-warehouse to Docker Hub..."
-#${GRADLEW} :product:warehouse:pushDockerImage
+${GRADLEW} :product:warehouse:pushDockerImage
