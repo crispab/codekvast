@@ -42,6 +42,15 @@ docker info 2>/dev/null |grep -Eq "^Username: " || {
     exit 3
 }
 
+echo -n "About to build and publish $(grep codekvastVersion $(dirname $0)/gradle.properties)
+Are you sure [N/y]? "
+read answer
+if [ "${answer}" != 'y' ]; then
+    exit 4
+fi
+
+exit 0
+
 declare GRADLEW=$(dirname $0)/gradlew
 
 echo "Cleaning workspace..."
