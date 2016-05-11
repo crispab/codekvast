@@ -98,8 +98,8 @@ publishing {
 
 bintray {
     // These are supposed to be defined in $HOME/.gradle/gradle.properties
-    user = project.hasProperty('bintrayUser') ? bintrayUser : "undefined"
-    key = project.hasProperty('bintrayKey') ? bintrayKey : "undefined"
+    user = project.findProperty('bintrayUser') ?: "undefined"
+    key = project.findProperty('bintrayKey') ?: "undefined"
 
     publications = ['shadowJar']
 
@@ -108,8 +108,8 @@ bintray {
 
     pkg {
         userOrg = 'crisp'
-        repo = 'maven-repo'
-        name = 'codekvast-collector'
+        repo = bintrayRepo
+        name = bintrayPkgName
         desc = 'The javaagent part of Codekvast.'
         vcsUrl = 'https://github.com/crispab/codekvast.git'
         licenses = ['MIT']

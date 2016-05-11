@@ -98,7 +98,7 @@ bintray {
     pkg {
         userOrg = bintrayUserOrg
         repo = bintrayRepo
-        name = 'distributions'
+        name = bintrayPkgName
         desc = 'Codekvast is a Runtime Intelligence tool used for identifying Truly Dead Code, i.e., code that no-one has accessed in a certain period of time'
         websiteUrl = 'https://codekvast.crisp.se'
         vcsUrl = 'https://github.com/crispab/codekvast.git'

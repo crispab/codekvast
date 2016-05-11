@@ -50,17 +50,23 @@ if [ "${answer}" != 'y' ]; then
     exit 4
 fi
 
+echo "Stopping the Gradle daemon..."
+${GRADLEW} --stop
+
+echo "Cleaning Gradle build state..."
+rm -fr $(dirname $0)/.gradle
+
 echo "Cleaning workspace..."
 ${GRADLEW} :product:clean
 
 echo "Building product..."
 ${GRADLEW} :product:build
 
-echo "Uploading distributions to Bintray..."
-${GRADLEW} :product:bintrayUpload
+echo "Uploading distributions to Bintray codekvast repo..."
+${GRADLEW} :product:bintrayUpload -PbintrayRepo=codekvast -PbintrayPkgName=distributions
 
-echo "Uploading codekvast-collector.jar to Bintray and jcenter..."
-${GRADLEW} :product:agent:collector:bintrayUpload
+echo "Uploading codekvast-collector to Bintray maven-repo (and jcenter)..."
+${GRADLEW} :product:agent:collector:bintrayUpload -PbintrayRepo=maven-repo -PbintrayPkgName=codekvast-collector
 
 echo "Pushing codekvast-warehouse to Docker Hub..."
 ${GRADLEW} :product:warehouse:pushDockerImage
