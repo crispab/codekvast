@@ -108,8 +108,8 @@ bintray {
 
     pkg {
         userOrg = 'crisp'
-        repo = bintrayRepo
-        name = bintrayPkgName
+        repo = project.findProperty('bintrayRepo') ?: 'unspecified'
+        name = project.findProperty('bintrayPkgName') ?: 'unspecified'
         desc = 'The javaagent part of Codekvast.'
         vcsUrl = 'https://github.com/crispab/codekvast.git'
         licenses = ['MIT']

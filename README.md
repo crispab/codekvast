@@ -217,7 +217,7 @@ and use `gradle` instead of `path/to/gradlew`
 #### Software publishing
 Codekvast binaries are published to Bintray and to Docker Hub.
 
-You execute the publishing to both Bintray and Docker Hub by executing `./ship-it.sh` in the root of the project.
+You execute the publishing to both Bintray and Docker Hub by executing `tools/ship-it.sh` in the root of the project.
 
 Preconditions:
 
