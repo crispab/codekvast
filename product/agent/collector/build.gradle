@@ -113,6 +113,7 @@ bintray {
         desc = 'The javaagent part of Codekvast.'
         websiteUrl = 'http://codekvast.crisp.se'
         vcsUrl = 'https://github.com/crispab/codekvast.git'
+        issueTrackerUrl = 'https://github.com/crispab/codekvast/issues'
         licenses = ['MIT']
         githubRepo = 'crispab/codekvast'
         githubReleaseNotesFile = 'RELEASE-NOTES.md'
