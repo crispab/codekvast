@@ -5,6 +5,7 @@ set -e
 declare GRADLEW=$(dirname $0)/gradlew
 declare GRADLE_PROPERTIES=$HOME/.gradle/gradle.properties
 
+echo "Checking that we have Bintray credentials..."
 if [ ! -e  ${GRADLE_PROPERTIES} ]; then
     echo "$GRADLE_PROPERTIES is missing"
     exit 1
@@ -20,6 +21,7 @@ grep -Eq '^\s*bintrayKey\s*[:=]\s*\S+$' ${GRADLE_PROPERTIES} || {
     exit 1
 }
 
+echo "Checking that Git workspace is clean..."
 git status --porcelain --branch | egrep -q '^## master\.\.\.origin/master' || {
     echo "The Git workspace is not on the master branch. Git status:"
     git status --short --branch
@@ -32,18 +34,22 @@ if [ $(git status --porcelain | wc -l) -gt 0 ]; then
     exit 2
 fi
 
+echo "Checking that we are in sync with Git origin..."
+git fetch
 git status --porcelain --branch | egrep -q '^## master\.\.\.origin/master$' || {
     echo "The Git workspace is not synced with origin. Git status:"
     git status --short --branch
     exit 2
 }
 
+echo "Checking that we are logged in to Docker Hub..."
 docker info 2>/dev/null |grep -Eq "^Username: " || {
     echo "Not logged in to Docker"
     exit 3
 }
 
-echo -n "About to build and publish $(grep codekvastVersion $(dirname $0)/gradle.properties)
+echo -n "Everything looks fine.
+About to build and publish $(grep codekvastVersion $(dirname $0)/gradle.properties)
 Are you sure [N/y]? "
 read answer
 if [ "${answer}" != 'y' ]; then
