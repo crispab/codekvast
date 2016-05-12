@@ -53,6 +53,7 @@ About to build and publish $(grep codekvastVersion $(dirname $0)/gradle.properti
 Are you sure [N/y]? "
 read answer
 if [ "${answer}" != 'y' ]; then
+    echo "Nothing done."
     exit 4
 fi
 
