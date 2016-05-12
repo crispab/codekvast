@@ -50,7 +50,7 @@ docker info 2>/dev/null |egrep --quiet "^Username: " || {
 }
 
 echo -n "Everything looks fine.
-About to build and publish $(grep codekvastVersion $(dirname $0)/gradle.properties)
+About to build and publish $(grep codekvastVersion gradle.properties)
 Are you sure [N/y]? "
 read answer
 if [ "${answer}" != 'y' ]; then
