@@ -108,15 +108,22 @@ bintray {
 
     pkg {
         userOrg = 'crisp'
-        repo = project.findProperty('bintrayRepo') ?: 'unspecified'
-        name = project.findProperty('bintrayPkgName') ?: 'unspecified'
+        repo = 'maven-repo'
+        name = 'codekvast-collector'
         desc = 'The javaagent part of Codekvast.'
+        websiteUrl = 'http://codekvast.crisp.se'
         vcsUrl = 'https://github.com/crispab/codekvast.git'
         licenses = ['MIT']
         githubRepo = 'crispab/codekvast'
         githubReleaseNotesFile = 'RELEASE-NOTES.md'
-
         publicDownloadNumbers = true
+
+        version {
+            name = project.codekvastVersion
+            vcsTag = project.gitIdFull
+            released = project.gitTimeIso
+        }
+
     }
 }
 

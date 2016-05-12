@@ -71,10 +71,10 @@ echo "Building product..."
 ${GRADLEW} :product:build
 
 echo "Uploading distributions to Bintray codekvast repo..."
-${GRADLEW} :product:bintrayUpload -PbintrayRepo=codekvast -PbintrayPkgName=distributions
+${GRADLEW} :product:dist:bintrayUpload
 
 echo "Uploading codekvast-collector to Bintray maven-repo (and jcenter)..."
-${GRADLEW} :product:agent:collector:bintrayUpload -PbintrayRepo=maven-repo -PbintrayPkgName=codekvast-collector
+${GRADLEW} :product:agent:collector:bintrayUpload
 
 echo "Pushing codekvast-warehouse to Docker Hub..."
 ${GRADLEW} :product:warehouse:pushDockerImage

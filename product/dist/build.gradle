@@ -1,0 +1,111 @@
+apply plugin: 'distribution'
+apply plugin: 'com.jfrog.bintray'
+description = "Packaging Codekvast for distribution"
+
+distributions {
+    daemon {
+        baseName = 'codekvast-daemon'
+        contents {
+            from tasks.getByPath(":product:agent:daemon:bootRepackage"), {
+                rename { "codekvast-daemon.jar" }
+            }
+            from tasks.getByPath(":product:agent:daemon:processResources"), {
+                include 'exposed-application.properties'
+                rename { 'application.properties' }
+            }
+            from tasks.getByPath(":product:agent:daemon:processResources"), {
+                include 'codekvast-collector.conf'
+                include 'tomcat/**'
+                include '*.sh'
+                into 'conf'
+            }
+            from tasks.getByPath(":product:agent:collector:javaagents"), {
+                into "javaagents"
+            }
+            from tasks.getByPath(":product:docs:asciidoctor"), {
+                exclude "html5/**"
+                exclude "images/**"
+            }
+            from file("$rootDir/RELEASE-NOTES.md")
+            from file("$rootDir/LICENSE")
+        }
+    }
+
+    warehouse {
+        baseName = 'codekvast-warehouse'
+        contents {
+            from tasks.getByPath(":product:warehouse:bootRepackage"), {
+                rename { "codekvast-warehouse.jar" }
+            }
+            from tasks.getByPath(":product:warehouse:processResources"), {
+                include 'exposed-application.properties'
+                rename { 'application.properties' }
+            }
+            from tasks.getByPath(":product:docs:asciidoctor"), {
+                exclude "html5/**"
+                exclude "images/**"
+            }
+            from file("$rootDir/RELEASE-NOTES.md")
+            from file("$rootDir/LICENSE")
+        }
+    }
+
+    ansible {
+        baseName = 'codekvast-ansible'
+        contents {
+            from file("src/dist/ansible"), {
+           //     expand(project.properties)
+            }
+        }
+    }
+}
+
+bintray {
+    // These are supposed to be defined in $HOME/.gradle/gradle.properties
+    user = project.findProperty('bintrayUser') ?: "undefined"
+    key = project.findProperty('bintrayKey') ?: "undefined"
+
+    filesSpec {
+        from tasks.getByPath(":product:dist:daemonDistZip")
+        from tasks.getByPath(":product:dist:warehouseDistZip")
+        from tasks.getByPath(":product:dist:ansibleDistZip")
+
+        from tasks.getByPath(":product:docs:asciidoctor"), {
+            include "CodekvastUserManual.html"
+            rename { "CodekvastUserManual-${codekvastVersion}.html" }
+        }
+
+        from file("$rootDir/product/warehouse/docker-compose.yml"), {
+            rename { "docker-compose-${codekvastVersion}.yml" }
+        }
+
+        from file("$rootDir/RELEASE-NOTES.md"), {
+            rename { "RELEASE-NOTES-${codekvastVersion}.md" }
+        }
+
+        into "."
+    }
+
+    dryRun = false
+    publish = true
+
+    pkg {
+        userOrg = bintrayUserOrg
+        repo = 'codekvast'
+        name = 'distributions'
+        desc = 'Codekvast is a Runtime Intelligence tool used for identifying Truly Dead Code, i.e., code that no-one has accessed in a certain period of time'
+        websiteUrl = 'http://codekvast.crisp.se'
+        vcsUrl = 'https://github.com/crispab/codekvast.git'
+        licenses = ['MIT']
+        labels = ['runtime-intelligence', 'dead-code', 'dead-code-detector', 'truly-dead-code', 'YANIA', 'java', 'java-6', 'jvm']
+        githubRepo = 'crispab/codekvast'
+        githubReleaseNotesFile = 'RELEASE-NOTES.md'
+        publicDownloadNumbers = true
+
+        version {
+            name = project.codekvastVersion
+            vcsTag = project.gitIdFull
+            released = project.gitTimeIso
+        }
+    }
+}

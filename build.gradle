@@ -1,7 +1,10 @@
 buildscript {
     apply from: "$rootDir/gradle/buildscript.gradle", to: buildscript
 }
+
 import org.ajoberstar.grgit.Grgit
+
+import java.text.SimpleDateFormat
 
 wrapper {
     gradleVersion = '2.13'
@@ -35,10 +38,11 @@ subprojects {
 
     // For easy consumption in processResources
     ext.gitId = gitVersionTokens['git.id']
+    ext.gitIdFull = gitHead.id.toString()
     ext.gitCommitter = gitVersionTokens['git.committer']
     ext.gitShortMessage = gitVersionTokens['git.shortMessage']
     ext.gitTime = gitVersionTokens['git.time']
-
+    ext.gitTimeIso = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ").format(new Date(gitHead.time * 1000L))
     ext.codekvastDisplayVersion = "${codekvastVersion}-${gitId}".toString()
 
     repositories { jcenter() }

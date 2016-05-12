@@ -3,7 +3,7 @@
   remote_user: root
 
   vars:
-    codekvast_version: @gradle.version@
+    codekvast_version: @codekvastVersion@
     run_codekvast_daemon_as: root
     codekvast_warehouse: host-where-the-codekvast-warehouse-is-running
     verify_codekvast_warehouse_host_key: true
