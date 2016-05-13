@@ -1,4 +1,7 @@
 # Codekvast Release Notes
+## 0.18.2
+
+1. New download URLs in Bintray
 
 ## 0.18.1
 
