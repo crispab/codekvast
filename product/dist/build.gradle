@@ -82,7 +82,7 @@ bintray {
     key = project.findProperty('bintrayKey') ?: System.getenv('BINTRAY_KEY')
 
     filesSpec {
-        from "$buildDir/bintrayStage/"
+        from bintrayStage
         into codekvastVersion
     }
 
@@ -110,5 +110,3 @@ bintray {
         }
     }
 }
-
-bintrayUpload.dependsOn bintrayStage
