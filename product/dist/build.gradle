@@ -64,8 +64,13 @@ task bintrayStage(type: Sync) {
     from daemonDistZip
     from warehouseDistZip
     from ansibleDistZip
-    from tasks.getByPath(':product:docs:asciidoctor'), { include 'CodekvastUserManual.html' }
-    from file("$rootDir/product/warehouse/docker-compose.yml")
+    from tasks.getByPath(':product:docs:asciidoctor'), {
+        include 'CodekvastUserManual.html'
+        rename { "CodekvastUserManual-${codekvastVersion}.html" }
+    }
+    from file("$rootDir/product/warehouse/docker-compose.yml"), {
+        rename { 'codekvast-warehouse.docker-compose.yml' }
+    }
     from file("$rootDir/RELEASE-NOTES.md")
 
     into "$buildDir/bintrayStage"
