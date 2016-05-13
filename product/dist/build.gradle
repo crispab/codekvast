@@ -63,8 +63,8 @@ distributions {
 
 bintray {
     // These are supposed to be defined in $HOME/.gradle/gradle.properties
-    user = project.findProperty('bintrayUser') ?: 'undefined'
-    key = project.findProperty('bintrayKey') ?: 'undefined'
+    user = project.findProperty('bintrayUser') ?: System.getenv('BINTRAY_USER')
+    key = project.findProperty('bintrayKey') ?: System.getenv('BINTRAY_KEY')
 
     filesSpec {
         from daemonDistZip

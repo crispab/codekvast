@@ -7,20 +7,25 @@ declare GRADLEW=./gradlew
 declare GRADLE_PROPERTIES=$HOME/.gradle/gradle.properties
 
 echo "Checking that we have Bintray credentials..."
-if [ ! -e  ${GRADLE_PROPERTIES} ]; then
-    echo "$GRADLE_PROPERTIES is missing"
-    exit 1
+if [ -n "$BINTRAY_USER" -a -n "$BINTRAY_KEY" ]; then
+    echo "Environment variables BINTRAY_USER and BINTRAY_KEY are defined"
+else
+    if [ ! -e  ${GRADLE_PROPERTIES} ]; then
+        echo "$GRADLE_PROPERTIES is missing and BINTRAY_USER and/or BINTRAY_KEY is undefined"
+        exit 1
+    fi
+
+    egrep --quiet '^\s*bintrayUser\s*[:=]\s*\S+$' ${GRADLE_PROPERTIES} || {
+        echo "bintrayUser=xxx is missing in $GRADLE_PROPERTIES"
+        exit 1
+    }
+
+    egrep --quiet '^\s*bintrayKey\s*[:=]\s*\S+$' ${GRADLE_PROPERTIES} || {
+        echo "bintrayKey=xxx is missing in $GRADLE_PROPERTIES"
+        exit 1
+    }
+    echo "Found Bintray credentials in  $GRADLE_PROPERTIES"
 fi
-
-egrep --quiet '^\s*bintrayUser\s*[:=]\s*\S+$' ${GRADLE_PROPERTIES} || {
-    echo "bintrayUser=xxx is missing in $GRADLE_PROPERTIES"
-    exit 1
-}
-
-egrep --quiet '^\s*bintrayKey\s*[:=]\s*\S+$' ${GRADLE_PROPERTIES} || {
-    echo "bintrayKey=xxx is missing in $GRADLE_PROPERTIES"
-    exit 1
-}
 
 echo "Checking that Git workspace is clean..."
 git status --porcelain --branch | egrep --quiet '^## master\.\.\.origin/master' || {

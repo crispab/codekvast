@@ -98,8 +98,8 @@ publishing {
 
 bintray {
     // These are supposed to be defined in $HOME/.gradle/gradle.properties
-    user = project.findProperty('bintrayUser') ?: "undefined"
-    key = project.findProperty('bintrayKey') ?: "undefined"
+    user = project.findProperty('bintrayUser') ?: System.getenv('BINTRAY_USER')
+    key = project.findProperty('bintrayKey') ?: System.getenv('BINTRAY_KEY')
 
     publications = ['shadowJar']
 
@@ -125,17 +125,5 @@ bintray {
             released = project.gitTimeIso
         }
 
-    }
-}
-
-bintrayUpload {
-    doFirst {
-        def gradleProperties = new File(System.properties['user.home'], ".gradle/gradle.properties")
-        if (!project.hasProperty('bintrayUser')) {
-            throw new IllegalArgumentException("You must define bintrayUser in $gradleProperties before trying to upload to Bintray")
-        }
-        if (!project.hasProperty('bintrayKey')) {
-            throw new IllegalArgumentException("You must define bintrayKey in $gradleProperties before trying to upload to Bintray")
-        }
     }
 }
