@@ -66,10 +66,10 @@ fi
 tools/build-it.sh
 
 echo "Uploading distributions to Bintray codekvast repo..."
-${GRADLEW} :product:dist:bintrayUpload -Porg.gradle.configureondemand=false
+${GRADLEW} :product:dist:bintrayUpload
 
 echo "Uploading codekvast-collector to Bintray maven-repo (and jcenter)..."
-${GRADLEW} :product:agent:collector:bintrayUpload -Porg.gradle.configureondemand=false
+${GRADLEW} :product:agent:collector:bintrayUpload
 
 echo "Pushing codekvast-warehouse to Docker Hub..."
 ${GRADLEW} :product:warehouse:pushDockerImage
