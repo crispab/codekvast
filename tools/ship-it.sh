@@ -63,17 +63,7 @@ if [ "${answer}" != 'y' ]; then
     exit 4
 fi
 
-echo "Stopping the Gradle daemon..."
-${GRADLEW} --stop
-
-echo "Cleaning Gradle build state..."
-rm -fr ./.gradle
-
-echo "Cleaning workspace..."
-${GRADLEW} :product:clean
-
-echo "Building product..."
-${GRADLEW} :product:build
+tools/build-it.sh
 
 echo "Uploading distributions to Bintray codekvast repo..."
 ${GRADLEW} :product:dist:bintrayUpload
