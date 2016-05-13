@@ -84,7 +84,7 @@ bintray {
             rename { "RELEASE-NOTES-${codekvastVersion}.md" }
         }
 
-        into '.'
+        into codekvastVersion
     }
 
     dryRun = false

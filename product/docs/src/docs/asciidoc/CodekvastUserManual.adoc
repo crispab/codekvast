@@ -1,9 +1,9 @@
 = Codekvast User Manual
 :author: Olle Hallin
 :email: olle.hallin@crisp.se
-:revnumber: {codekvast-version}
-:revdate: {git-time}
-:revremark: {git-id}
+:revnumber: {codekvastVersion}
+:revdate: {gitTime}
+:revremark: {gitId}
 :imagesdir: images
 :data-uri:
 :numbered:
@@ -155,9 +155,9 @@ Execute the following commands in a shell:
 [source,bash,subs="attributes,verbatim"]
 ----
 apt-get install ansible # <1>
-wget {bintray-download-prefix}/codekvast-ansible-{codekvast-version}.zip
-unzip codekvast-ansible-{codekvast-version}.zip
-cd codekvast-ansible-{codekvast-version}
+wget {bintrayDownloadPrefix}/codekvast-ansible-{codekvastVersion}.zip
+unzip codekvast-ansible-{codekvastVersion}.zip
+cd codekvast-ansible-{codekvastVersion}
 ----
 <1> This works for Debian-based distros. For Redhat, use `yum install ansible` instead.
 
@@ -180,13 +180,13 @@ Execute the following commands in a shell:
 ----
 RUN_DAEMON_AS_USER=root # <1>
 sudo /etc/init.d/codekvast-daemon stop # <2>
-sudo wget {bintray-download-prefix}/codekvast-daemon-{codekvast-version}.zip
-sudo unzip codekvast-daemon-{codekvast-version}.zip -d /opt
-sudo chown $RUN_DAEMON_AS_USER /opt/codekvast-daemon-{codekvast-version}/codekvast-daemon.jar # <1>
+sudo wget {bintrayDownloadPrefix}/codekvast-daemon-{codekvastVersion}.zip
+sudo unzip codekvast-daemon-{codekvastVersion}.zip -d /opt
+sudo chown $RUN_DAEMON_AS_USER /opt/codekvast-daemon-{codekvastVersion}/codekvast-daemon.jar # <1>
 sudo rm -f /etc/init.d/codekvast-daemon # <2>
-sudo ln -s /opt/codekvast-daemon-{codekvast-version}/codekvast-daemon.jar /etc/init.d/codekvast-daemon # <3>
+sudo ln -s /opt/codekvast-daemon-{codekvastVersion}/codekvast-daemon.jar /etc/init.d/codekvast-daemon # <3>
 sudo update-rc.d codekvast-daemon defaults # <4>
-sudo vi /opt/codekvast-daemon-{codekvast-version}/application.properties # <5>
+sudo vi /opt/codekvast-daemon-{codekvastVersion}/application.properties # <5>
 ----
 <1> Insert the name of the user that runs your application(s) here. Codekvast Daemon needs permission to delete consumed
 collection data files. You can also assign proper owner and/or permissions to /tmp/codekvast/.collector/ so that codekvast-daemon can remove
@@ -197,7 +197,7 @@ The daemon will run with the same user as the owner of the application jar file.
 <4> This works for Debian-based distros. For Redhat, use `chkconfig --add codekvast-daemon` instead.
 <5> Configure the daemon to suit your needs.
 
-If you have configured `uploadToHost` in `/opt/codekvast-daemon-{codekvast-version}/application.properties` you also need
+If you have configured `uploadToHost` in `/opt/codekvast-daemon-{codekvastVersion}/application.properties` you also need
 to make sure that SCP works without asking for a password. See <<configuring-scp-to-codekvast-warehouse>>.
 
 [[configuring-scp-to-codekvast-warehouse]]
@@ -207,11 +207,11 @@ that the Codekvast Daemons can connect with ssh and scp to Codekvast Warehouse w
 
 This is done by creating and uploading a public key from each Codekvast Daemon server to the Codekvast Warehouse server.
 
-For each Codekvast Daemon server, enter the following commands with the same user as the owner of `/opt/codekvast-daemon-{codekvast-version}/codekvast-daemon.jar`:
+For each Codekvast Daemon server, enter the following commands with the same user as the owner of `/opt/codekvast-daemon-{codekvastVersion}/codekvast-daemon.jar`:
 
 [source,bash,subs="attributes,verbatim"]
 ----
-SCP_TARGET=$( grep uploadToHost /opt/codekvast-daemon-{codekvast-version}/application.properties | cut -d= -f2- ) # <1>
+SCP_TARGET=$( grep uploadToHost /opt/codekvast-daemon-{codekvastVersion}/application.properties | cut -d= -f2- ) # <1>
 ssh-keygen # <2>
 ssh-copy-id $SCP_TARGET # <3>
 ----
@@ -254,8 +254,8 @@ After 10-15 seconds there will be an INFO logging containing the words "Will upl
 [source,bash,subs="attributes,verbatim"]
 ----
 cd path/to/tomcat # <1>
-cp /opt/codekvast-daemon-{codekvast-version}/codekvast-collector.conf conf/ # <2>
-cp /opt/codekvast-daemon-{codekvast-version}/tomcat/setenv.sh bin/
+cp /opt/codekvast-daemon-{codekvastVersion}/codekvast-collector.conf conf/ # <2>
+cp /opt/codekvast-daemon-{codekvastVersion}/tomcat/setenv.sh bin/
 ----
 <1> Substitute `path/to` with the actual path were Tomcat is installed.
 <2> Edit `conf/codekvast-collector.conf` to suit your needs. See <<configuring-codekvast-collector, Configuring Codekvast Collector>>.
@@ -264,7 +264,7 @@ cp /opt/codekvast-daemon-{codekvast-version}/tomcat/setenv.sh bin/
 
 [source,cmd,subs="attributes,verbatim"]
 ----
-set CODEKVAST_HOME="path\to\codekvast-daemon-{codekvast-version}" # <1>
+set CODEKVAST_HOME="path\to\codekvast-daemon-{codekvastVersion}" # <1>
 cd path\to\tomcat # <2>
 mkdir endorsed
 copy %CODEKVAST_HOME%\javaagents\* endorsed
@@ -273,7 +273,7 @@ copy %CODEKVAST_HOME%\codekvast-collector.conf conf\ # <4>
 ----
 <1> Substitute `path\to` with the actual path were Codekvast is installed.
 <2> Substitute `path\to` with the actual path were Tomcat is installed.
-<3> Edit `bin\setenv.bat` so that CODEKVAST_HOME matches the path were codekvast-daemon-{codekvast-version} is installed.
+<3> Edit `bin\setenv.bat` so that CODEKVAST_HOME matches the path were codekvast-daemon-{codekvastVersion} is installed.
 <4> Edit `conf\codekvast-collector.conf` to suit your needs. See <<configuring-codekvast-collector, Configuring Codekvast Collector>>.
 
 ==== Other applications
@@ -282,21 +282,21 @@ Use <<install-collector-tomcat-linux, the installation guide for Tomcat>> as a b
 
 The goal is to make
 
-`-javaagent:/path/to/codekvast-collector-{codekvast-version}.jar -javaagent:/path/to/aspectjweaver-{aspectj-version}.jar`
+`-javaagent:/path/to/codekvast-collector-{codekvastVersion}.jar -javaagent:/path/to/aspectjweaver-{aspectjVersion}.jar`
 
 appear as the first arguments to the `java` command and `codekvast-collector.conf` or `codekvast.conf` appear in any of the locations that
 Codekvast Collector expects it. See <<codekvast-collector-config-file-location, Configuring Codekvast Collector>>.
 
 [TIP]
 ====
-There is a helper script called `/opt/codekvast-daemon{codekvast-version}/showJvmParams.sh` which produces a valid JAVA_OPTS that can be pasted
+There is a helper script called `/opt/codekvast-daemon{codekvastVersion}/showJvmParams.sh` which produces a valid JAVA_OPTS that can be pasted
 into your application's start script.
 ====
 
 ==== Trouble shooting
 
 If you get `LinkageError` on some aspectj-related type::
-. Move `aspectjweaver-{aspectj-version}.jar` to a separate directory (called `/path/to/endorsed` below).
+. Move `aspectjweaver-{aspectjVersion}.jar` to a separate directory (called `/path/to/endorsed` below).
 . Add `-Djava.endorsed.dir=/path/to/endorsed/` to the `java` command.
 
 No data in /tmp/codekvast::
@@ -317,8 +317,8 @@ This works for Mac OS X and Linux. Windows is not supported.
 
 [source,bash,subs="attributes,verbatim"]
 ----
-wget {bintray-download-prefix}/docker-compose-{codekvast-version}.yml
-docker-compose -p codekvast -f docker-compose-{codekvast-version}.yml up -d
+wget {bintrayDownloadPrefix}/docker-compose-{codekvastVersion}.yml
+docker-compose -p codekvast -f docker-compose-{codekvastVersion}.yml up -d
 ----
 
 The MariaDB database files will be located in `/var/lib/codekvast-database`.
@@ -341,13 +341,13 @@ sudo mysql << EOF  # <2>
 create database if not exists codekvast_warehouse;
 grant all on codekvast_warehouse.* to 'codekvast'@'localhost' identified by 'codekvast';
 EOF
-sudo wget {bintray-download-prefix}/codekvast-warehouse-{codekvast-version}.zip
-sudo unzip codekvast-warehouse-{codekvast-version}.zip -d /opt
-sudo chown codekvast:codekvast /opt/codekvast-warehouse-{codekvast-version}/codekvast-warehouse.jar # <1>
+sudo wget {bintrayDownloadPrefix}/codekvast-warehouse-{codekvastVersion}.zip
+sudo unzip codekvast-warehouse-{codekvastVersion}.zip -d /opt
+sudo chown codekvast:codekvast /opt/codekvast-warehouse-{codekvastVersion}/codekvast-warehouse.jar # <1>
 sudo rm -f /etc/init.d/codekvast-warehouse
-sudo ln -s /opt/codekvast-warehouse-{codekvast-version}/codekvast-warehouse.jar /etc/init.d/codekvast-warehouse # <3>
+sudo ln -s /opt/codekvast-warehouse-{codekvastVersion}/codekvast-warehouse.jar /etc/init.d/codekvast-warehouse # <3>
 sudo update-rc.d codekvast-warehouse defaults # <4>
-sudo vi /opt/codekvast-warehouse-{codekvast-version}/application.properties # <5>
+sudo vi /opt/codekvast-warehouse-{codekvastVersion}/application.properties # <5>
 ----
 <1> The service will run with the same user as the owner of the application jar file.
 <2> You might need to add the options -u<username> and -p<password> to the mysql command.
@@ -388,7 +388,7 @@ first found file will win)
 .. $\{CATALINA_HOME}/conf
 .. ${catalina.base}/conf
 .. $\{CATALINA_BASE}/conf
-. It looks for codekvast-collector.conf and codekvast.conf in the `conf/` sibling directory to where codekvast-collector-{codekvast-version}.jar is located.
+. It looks for codekvast-collector.conf and codekvast.conf in the `conf/` sibling directory to where codekvast-collector-{codekvastVersion}.jar is located.
 . It looks for codekvast-collector.conf and codekvast.conf in `/etc/codekvast`.
 . It looks for codekvast-collector.conf and codekvast.conf in `/etc`.
 
@@ -600,13 +600,13 @@ See {aspectj-ltw-config}.
 
 [[configuring-codekvast-daemon]]
 === Codekvast Daemon
-The daemon reads it configuration from /opt/codekvast-daemon-{codekvast-version}/application.properties.
+The daemon reads it configuration from /opt/codekvast-daemon-{codekvastVersion}/application.properties.
 
 The file is self-documenting.
 
 [[configuring-codekvast-warehouse]]
 === Codekvast Warehouse
-The warehouse reads it configuration from /opt/codekvast-warehouse-{codekvast-version}/application.properties.
+The warehouse reads it configuration from /opt/codekvast-warehouse-{codekvastVersion}/application.properties.
 
 The file is self-documenting.
 

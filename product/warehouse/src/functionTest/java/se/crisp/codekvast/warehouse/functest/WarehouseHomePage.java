@@ -18,11 +18,11 @@ public class WarehouseHomePage extends PageObject {
 
     @WhenPageOpens
     public void waitUntilVersionAppears() {
-        element(By.id("codekvast-version")).waitUntilVisible();
+        element(By.id("codekvastVersion")).waitUntilVisible();
     }
 
     public String codekvastVersion() {
-        return find(By.id("codekvast-version")).getText();
+        return find(By.id("codekvastVersion")).getText();
     }
 
     public String apiDocsHref() {
