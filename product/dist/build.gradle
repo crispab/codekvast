@@ -5,7 +5,7 @@ description = 'Packaging Codekvast for distribution'
 distributions {
 
     daemon {
-        baseName = 'codekvast-daemon'
+        baseName = "codekvast-daemon-$codekvastVersion"
         contents {
             from tasks.getByPath(':product:agent:daemon:bootRepackage'), {
                 rename { 'codekvast-daemon.jar' }
@@ -33,7 +33,7 @@ distributions {
     }
 
     warehouse {
-        baseName = 'codekvast-warehouse'
+        baseName = "codekvast-warehouse-$codekvastVersion"
         contents {
             from tasks.getByPath(':product:warehouse:bootRepackage'), {
                 rename { 'codekvast-warehouse.jar' }
@@ -52,13 +52,23 @@ distributions {
     }
 
     ansible {
-        baseName = 'codekvast-ansible'
+        baseName = "codekvast-ansible-$codekvastVersion"
         contents {
-            from file('src/dist/ansible'), {
-                // TODO: expand(project.properties)
-            }
+            from file('src/dist/ansible')
+            expand(project.properties)
         }
     }
+}
+
+task bintrayStage(type: Sync) {
+    from daemonDistZip
+    from warehouseDistZip
+    from ansibleDistZip
+    from tasks.getByPath(':product:docs:asciidoctor'), { include 'CodekvastUserManual.html' }
+    from file("$rootDir/product/warehouse/docker-compose.yml")
+    from file("$rootDir/RELEASE-NOTES.md")
+
+    into "$buildDir/bintrayStage"
 }
 
 bintray {
@@ -67,23 +77,7 @@ bintray {
     key = project.findProperty('bintrayKey') ?: System.getenv('BINTRAY_KEY')
 
     filesSpec {
-        from daemonDistZip
-        from warehouseDistZip
-        from ansibleDistZip
-
-        from tasks.getByPath(':product:docs:asciidoctor'), {
-            include 'CodekvastUserManual.html'
-            rename { "CodekvastUserManual-${codekvastVersion}.html" }
-        }
-
-        from file("$rootDir/product/warehouse/docker-compose.yml"), {
-            rename { "docker-compose-${codekvastVersion}.yml" }
-        }
-
-        from file("$rootDir/RELEASE-NOTES.md"), {
-            rename { "RELEASE-NOTES-${codekvastVersion}.md" }
-        }
-
+        from "$buildDir/bintrayStage/"
         into codekvastVersion
     }
 
@@ -111,3 +105,5 @@ bintray {
         }
     }
 }
+
+bintrayUpload.dependsOn bintrayStage

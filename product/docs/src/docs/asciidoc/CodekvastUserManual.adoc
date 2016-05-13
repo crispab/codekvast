@@ -317,8 +317,8 @@ This works for Mac OS X and Linux. Windows is not supported.
 
 [source,bash,subs="attributes,verbatim"]
 ----
-wget {bintrayDownloadPrefix}/docker-compose-{codekvastVersion}.yml
-docker-compose -p codekvast -f docker-compose-{codekvastVersion}.yml up -d
+wget {bintrayDownloadPrefix}/docker-compose.yml
+docker-compose -p codekvast up -d
 ----
 
 The MariaDB database files will be located in `/var/lib/codekvast-database`.

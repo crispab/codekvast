@@ -146,11 +146,11 @@ Pre-built binaries, a User Manual and Docker Compose files are available for dow
 
 * codekvast-warehouse-x.x.x.zip contains *Codekvast Warehouse* as a regular Linux System-V service. Install MariaDB separately.
 
-* docker-compose-x.x.x.yml is a Docker Compose file for running Codekvast Warehouse and MariaDB as Docker images.
+* docker-compose.yml is a Docker Compose file for running Codekvast Warehouse and MariaDB as Docker images.
 
-* CodekvastUserManual-x.x.x.html is a complete User Manual for all three components. It contains installation and configuration guides.
+* CodekvastUserManual.html is a complete User Manual for all three components. It contains installation and configuration guides.
 
-* RELEASE-NOTES-x.x.x.md contains release notes.
+* RELEASE-NOTES.md contains release notes.
 
 ## Development Guide
 

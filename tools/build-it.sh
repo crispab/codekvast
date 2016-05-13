@@ -12,8 +12,7 @@ echo "Cleaning Gradle build state..."
 rm -fr ./.gradle
 
 echo "Cleaning workspace..."
-find product -name node_modules -type d | xargs rm -fr
-find product -name build -type d | xargs rm -fr
+find product -name build -type d | grep -v node_modules | xargs rm -fr
 
 echo "Building..."
 ${GRADLEW} build
