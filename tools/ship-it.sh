@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -e
-
 cd $(dirname $0)/..
 declare GRADLEW=./gradlew
 declare GRADLE_PROPERTIES=$HOME/.gradle/gradle.properties
