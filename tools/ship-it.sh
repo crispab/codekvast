@@ -8,6 +8,7 @@ declare GRADLEW=./gradlew
 declare GRADLE_PROPERTIES=$HOME/.gradle/gradle.properties
 declare CODEKVAST_VERSION=$(grep codekvastVersion gradle.properties | egrep --only-matching '[0-9.]+')
 declare GIT_HASH=$(git rev-parse --short HEAD)
+declare WAREHOUSE_IMAGE_NAME='crisp/codekvast_warehouse'
 
 echo "Checking that we have Bintray credentials..."
 if [ -n "$BINTRAY_USER" -a -n "$BINTRAY_KEY" ]; then
@@ -71,12 +72,12 @@ tools/build-it.sh
 # Continue after errors
 set +e
 
-echo "Uploading distributions to Bintray codekvast repo..."
+echo "Uploading distributions to Bintray..."
 ${GRADLEW} :product:dist:bintrayUpload
 
-echo "Uploading codekvast-collector to Bintray maven-repo (and jcenter)..."
+echo "Uploading codekvast-collector to jcenter..."
 ${GRADLEW} :product:agent:collector:bintrayUpload
 
-echo "Pushing codekvast-warehouse to Docker Hub..."
-product/warehouse/gradle/pushToDockerHub.sh 'crisp/codekvast-warehouse' $CODEKVAST_VERSION $GIT_HASH
-
+echo "Pushing $WAREHOUSE_IMAGE_NAME to Docker Hub..."
+product/warehouse/gradle/tagDockerImage.sh $WAREHOUSE_IMAGE_NAME $CODEKVAST_VERSION $GIT_HASH
+product/warehouse/gradle/pushToDockerHub.sh $WAREHOUSE_IMAGE_NAME $CODEKVAST_VERSION $GIT_HASH

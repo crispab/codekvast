@@ -21,18 +21,3 @@ distDocker {
 
     dependsOn ':product:warehouse:test', pullLatestDockerImage
 }
-
-task tagDockerImage(type: Exec) {
-    description 'Assigns version tags the latest Docker image'
-    group 'Distribution'
-    commandLine "$projectDir/gradle/tagDockerImage.sh", warehouseImageName, codekvastVersion, gitId
-    dependsOn ':product:warehouse:distDocker'
-}
-
-task pushDockerImage(type: Exec) {
-    description 'Pushes the codekvast-warehouse Docker image to Docker hub'
-    group 'Distribution'
-    commandLine "$projectDir/gradle/pushToDockerHub.sh", warehouseImageName, codekvastVersion, gitId
-    dependsOn ':product:warehouse:tagDockerImage', check
-}
-

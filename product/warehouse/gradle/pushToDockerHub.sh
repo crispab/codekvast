@@ -22,8 +22,6 @@ if [ -z "$IMAGE_ID" ]; then
     exit 3
 fi
 
-$(dirname $0)/tagDockerImageWithLatest.sh
-
 echo "Pushing image $IMAGE_ID to Docker Hub ..."
 docker push $IMAGE_NAME:$VERSION
 docker push $IMAGE_NAME:$TAG
