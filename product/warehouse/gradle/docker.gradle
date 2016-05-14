@@ -1,16 +1,14 @@
 //--- Docker ---------------------------------------------------------------------------------------
 
-ext.warehouseImageName = 'crisp/codekvast-warehouse'
-
 task pullLatestDockerImage(type: Exec) {
-    description "Pulls the latest $warehouseImageName from Docker Hub"
+    description "Pulls the latest $codekvastWarehouseImageName from Docker Hub"
     group 'Distribution'
-    commandLine 'docker', 'pull', "$warehouseImageName:latest"
+    commandLine 'docker', 'pull', "$codekvastWarehouseImageName:latest"
     ignoreExitValue true
 }
 
 distDocker {
-    description "Builds the Docker image $warehouseImageName:latest"
+    description "Builds the Docker image $codekvastWarehouseImageName:latest"
     group 'Distribution'
     baseImage 'java:8-jre'
     maintainer 'Olle Hallin "olle.hallin@crisp.se"'

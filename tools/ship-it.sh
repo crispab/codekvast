@@ -8,7 +8,7 @@ declare GRADLEW=./gradlew
 declare GRADLE_PROPERTIES=$HOME/.gradle/gradle.properties
 declare CODEKVAST_VERSION=$(grep codekvastVersion gradle.properties | egrep --only-matching '[0-9.]+')
 declare GIT_HASH=$(git rev-parse --short HEAD)
-declare WAREHOUSE_IMAGE_NAME='crisp/codekvast_warehouse'
+declare WAREHOUSE_IMAGE_NAME=$(grep codekvastWarehouseImageName gradle.properties | sed 's/.*[:=]//g' | tr -d [:blank:])
 
 echo "Checking that we have Bintray credentials..."
 if [ -n "$BINTRAY_USER" -a -n "$BINTRAY_KEY" ]; then
