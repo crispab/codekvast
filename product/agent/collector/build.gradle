@@ -104,7 +104,7 @@ bintray {
     publications = ['shadowJar']
 
     dryRun = false
-    publish = Boolean.valueOf(project.findProperty('bintrayPublish' ?: 'true'))
+    publish = true
 
     pkg {
         userOrg = 'crisp'
