@@ -7,7 +7,7 @@ cd $(dirname $0)/..
 declare GRADLEW=./gradlew
 declare GRADLE_PROPERTIES=$HOME/.gradle/gradle.properties
 declare CODEKVAST_VERSION=$(grep codekvastVersion gradle.properties | egrep --only-matching '[0-9.]+')
-declare GIT_HASH=$(git rev-parse HEAD | cut -c1-7)
+declare GIT_HASH=$(git rev-parse --short HEAD)
 
 echo "Checking that we have Bintray credentials..."
 if [ -n "$BINTRAY_USER" -a -n "$BINTRAY_KEY" ]; then
@@ -58,7 +58,7 @@ docker info 2>/dev/null |egrep --quiet "^Username: " || {
 }
 
 echo -n "Everything looks fine.
-About to build and publish $CODEKVAST_VERSION.$GIT_HASH
+About to build and publish $CODEKVAST_VERSION-$GIT_HASH
 Are you sure [N/y]? "
 read answer
 if [ "${answer}" != 'y' ]; then
