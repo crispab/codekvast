@@ -2,6 +2,7 @@
 ## 0.18.2
 
 1. New download URLs in Bintray
+1. Added support for unit testing TypeScript with Karma.
 
 ## 0.18.1
 
