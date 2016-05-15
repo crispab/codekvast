@@ -1,8 +1,10 @@
+// --- End-to-end function test -----------------------------------------------------------------------------------
+
 testSets {
     functionTest
 }
 
-functionTest.dependsOn test
+functionTest.dependsOn test, npmInstall
 check.dependsOn functionTest
 
 dependencies {
@@ -11,6 +13,8 @@ dependencies {
     functionTestCompile project(':product:support:testsupport')
     functionTestCompile 'net.serenity-bdd:serenity-core:1.1.31'
     functionTestCompile 'net.serenity-bdd:serenity-junit:1.1.31'
+
+    functionTestRuntime 'com.codeborne:phantomjsdriver:1.2.1'
 }
 
 task startFunctionTestEnvironment(type: Exec) {

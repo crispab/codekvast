@@ -1,6 +1,4 @@
-/**
- * Gradle stuff related to the local development environment.
- */
+// --- Rapid Application Development ------------------------------------------------------------------------------------------
 
 configurations {
     springLoaded
