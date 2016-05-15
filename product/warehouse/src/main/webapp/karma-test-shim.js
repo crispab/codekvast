@@ -37,8 +37,7 @@ function createPathRecords(pathsMapping, appPath) {
     // '/base/dist/vg-player/vg-player.js?f4523daf879cfb7310ef6242682ccf10b2041b3e'
     var pathParts = appPath.split('/');
     var moduleName = './' + pathParts.slice(Math.max(pathParts.length - 2, 1)).join('/');
-    // moduleName = moduleName.replace(/\.js$/, '');
-    console.log("moduleName(" + appPath + ")=" + moduleName);
+    moduleName = moduleName.replace(/\.js$/, '');
     pathsMapping[moduleName] = appPath + '?' + window.__karma__.files[appPath];
     return pathsMapping;
 }
@@ -55,7 +54,6 @@ function resolveTestFiles() {
     return Object.keys(window.__karma__.files)  // All files served by Karma.
         .filter(onlySpecFiles)
         .map(function (moduleName) {
-            console.log("resolveTestFiles(" + moduleName + ")")
             // loads all spec files via their global module names (e.g.
             // 'base/dist/vg-player/vg-player.spec')
             return System.import(moduleName);

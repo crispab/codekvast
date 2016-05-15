@@ -45,11 +45,8 @@ module.exports = function (config) {
             'karma-phantomjs-launcher'
         ],
 
-        // Coverage reporter generates the coverage
         reporters: ['progress', 'dots', 'coverage'],
 
-        // Source files that you wanna generate coverage for.
-        // Do not include tests or libraries (these files will be instrumented by Istanbul)
         preprocessors: {
             'app/**/!(*spec).js': ['coverage']
         },

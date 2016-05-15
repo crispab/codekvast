@@ -4,7 +4,7 @@ testSets {
     functionTest
 }
 
-functionTest.dependsOn test, npmInstall
+functionTest.dependsOn test, testTypeScript
 check.dependsOn functionTest
 
 dependencies {
@@ -87,6 +87,7 @@ functionTest {
     group 'Function test'
     dependsOn test, endpointForFunctionTestWarehouse
     finalizedBy stopFunctionTestEnvironment
+    shouldRunAfter integrationTest
 
     doFirst {
         def endpoint = endpointForFunctionTestWarehouse.endpoint()

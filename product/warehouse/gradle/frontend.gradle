@@ -33,6 +33,7 @@ task compileTypeScript(type: Exec) {
         include '**/*.js.map'
     }
 }
+clean.dependsOn cleanCompileTypeScript
 
 task compileAndWatchTypeScript(type: Exec) {
     description "Runs the TypeScript compiler in watch mode"
@@ -76,6 +77,7 @@ jar {
             exclude 'index.html'
             exclude 'node_modules/**'
             exclude 'npm-debug.log**'
+            exclude 'karma*'
         }
     }
 
@@ -103,4 +105,27 @@ task npmStart(type: Exec) {
     workingDir "src/main/webapp"
     executable "npm"
     args "start"
+}
+
+task testTypeScript(type: Exec) {
+    description "Runs Typescript unit tests with Karma and Jasmine"
+    group "Frontend Development"
+
+    dependsOn compileTypeScript
+
+    workingDir "src/main/webapp"
+    executable "npm"
+    args "run", "test"
+}
+check.dependsOn testTypeScript
+
+task testAndWatchTypeScript(type: Exec) {
+    description "Runs JS unit tests continuously with Karma and Jasmine"
+    group "Frontend Development"
+
+    dependsOn compileTypeScript
+
+    workingDir "src/main/webapp"
+    executable "npm"
+    args "run", "test:w"
 }
