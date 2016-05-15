@@ -94,8 +94,10 @@ functionTest {
 
         systemProperty 'expectedCodekvastVersion', codekvastDisplayVersion
         systemProperty 'webdriver.base.url', "http://$endpoint"
-        systemProperty 'serenity.outputDirectory', "build/reports/serenity"
-        systemProperty 'serenity.console.colors', true
+
+        // Make Serenity follow Gradle instead of Maven conventions
+        systemProperty 'properties', file('src/functionTest/resources/serenity.properties').absolutePath
+        systemProperty 'serenity.outputDirectory', file('build/functionTest-serenity').absolutePath
     }
 }
 
