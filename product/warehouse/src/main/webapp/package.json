@@ -13,16 +13,26 @@
   "devDependencies": {
     "concurrently": "^2.0.0",
     "jasmine-core": "2.4.1",
+    "karma": "0.13.22",
+    "karma-chrome-launcher": "1.0.1",
+    "karma-coverage": "1.0.0",
+    "karma-firefox-launcher": "1.0.0",
+    "karma-jasmine": "1.0.2",
+    "karma-phantomjs-launcher": "1.0.0",
     "lite-server": "^2.2.0",
     "phantomjs-prebuilt": "2.1.7",
+    "remap-istanbul": "0.6.4",
+    "systemjs": "0.19.26",
     "typescript": "^1.8.10",
     "typings": "^0.8.1"
   },
   "scripts": {
     "lite": "lite-server",
     "postinstall": "typings install",
+    "posttest": "node_modules/.bin/remap-istanbul -i ../../../build/karma/coverage/coverage-final.json -o ../../../../build/reports/js-coverage -t html",
     "start": "tsc && concurrently \"npm run tsc:w\" \"npm run lite\" ",
-    "test": "lite-server --open=unit-tests.html",
+    "test": "karma start karma.conf.js --single-run",
+    "test:w": "karma start karma.conf.js --auto-watch",
     "tsc": "tsc",
     "tsc:w": "tsc -w",
     "typings": "typings"
