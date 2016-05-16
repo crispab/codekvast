@@ -26,6 +26,8 @@
     </form>
 </div>
 
+<h2 *ngIf="errorMessage">{{errorMessage}}</h2>
+
 <div *ngIf="data" class="container">
     <h2>Search Results</h2>
     <p>{{diagnostics}}</p>

@@ -44,7 +44,7 @@ export class WarehouseService {
     }
 
     private handleError(error: any) {
-        let errMsg = error.message || 'Server error';
+        let errMsg = error.message || JSON.stringify(error);
         console.error(errMsg);
         return Observable.throw(errMsg);
     }

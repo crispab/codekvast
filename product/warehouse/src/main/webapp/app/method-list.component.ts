@@ -1,12 +1,11 @@
-import {NgFor} from 'angular2/common';
 import {Component} from 'angular2/core';
 import {WarehouseService} from './warehouse.service';
 import {MethodData} from './model/MethodData';
 
 @Component({
-    selector: 'ck-method', templateUrl: 'app/method.component.html', providers: [NgFor, WarehouseService]
+    selector: 'ck-method-list', templateUrl: 'app/method-list.component.html', providers: [WarehouseService]
 })
-export class MethodComponent {
+export class MethodListComponent {
 
     signature: string;
     maxResults: number = 100;
