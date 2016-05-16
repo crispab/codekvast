@@ -8,7 +8,7 @@ import {Method} from './model/Method';
 @Injectable()
 export class WarehouseService {
 
-    private methodsUrl = 'api/v1/methods';
+    private methodsUrl = '/api/v1/methods';
     private headers = new Headers();
 
     constructor(private http: Http, private configService: ConfigService) {

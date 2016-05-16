@@ -1,9 +1,12 @@
 import {Component} from 'angular2/core';
+import {HTTP_PROVIDERS}    from 'angular2/http';
 import {ConfigService} from './config.service';
+import {MethodComponent} from './method.component';
 
 @Component({
-    selector: 'codekvast-warehouse', templateUrl: 'app/app.component.html',
-    providers: [ConfigService]
+    selector: 'ck-app', templateUrl: 'app/app.component.html',
+    providers: [HTTP_PROVIDERS, ConfigService],
+    directives: [MethodComponent]
 })
 export class AppComponent {
 

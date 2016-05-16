@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.OPTIONS;
 import static se.crisp.codekvast.warehouse.api.ApiService.DEFAULT_MAX_RESULTS_STR;
 
 /**
@@ -30,7 +31,7 @@ import static se.crisp.codekvast.warehouse.api.ApiService.DEFAULT_MAX_RESULTS_ST
  * @author olle.hallin@crisp.se
  */
 @RestController
-@RequestMapping(value = "/api/", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 @Slf4j
 public class ApiController {
 
@@ -52,7 +53,16 @@ public class ApiController {
         return ResponseEntity.badRequest().body(violations.toString());
     }
 
-    @RequestMapping(method = GET, value = "/v1/methods")
+    @RequestMapping(method = OPTIONS, value = "/api/v1/methods")
+    public ResponseEntity<Void> allow_CORS_for_getMethods1() {
+
+        // Make it possible to invoke getMethods1() from a server started with 'gradle npmStart'...
+        return ResponseEntity.ok()
+                             .header("Access-Control-Allow-Origin", "http://localhost:3000")
+                             .build();
+    }
+
+    @RequestMapping(method = GET, value = "/api/v1/methods")
     public GetMethodsResponse1 getMethods1(@RequestParam(value = "signature", defaultValue = "%") String signature,
                                            @RequestParam(name = "maxResults", defaultValue = DEFAULT_MAX_RESULTS_STR) Integer maxResults) {
         return doGetMethods(signature, maxResults);
@@ -76,25 +86,24 @@ public class ApiController {
         return response;
     }
 
-    @RequestMapping(method = GET, value = "/instant")
+    @RequestMapping(method = GET, value = "/api/instant")
     public Instant getInstant() {
         return Instant.now();
     }
 
-    @RequestMapping(method = GET, value = "/localDateTime")
+    @RequestMapping(method = GET, value = "/api/localDateTime")
     public LocalDateTime getLocalDateTime() {
         return LocalDateTime.now();
     }
 
-    @RequestMapping(method = GET, value = "/localDateTime/iso")
+    @RequestMapping(method = GET, value = "/api/localDateTime/iso")
     public String getLocalDateTimeString(Locale locale) {
         DateTimeFormatter dtf = DateTimeFormatter.ISO_LOCAL_DATE_TIME.withLocale(locale);
         return LocalDateTime.now().format(dtf);
     }
 
-    @RequestMapping(method = GET, value = "/version")
+    @RequestMapping(method = GET, value = "/api/version")
     public CodekvastSettings getVersion() {
         return settings;
     }
-
 }
