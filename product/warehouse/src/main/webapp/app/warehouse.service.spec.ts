@@ -20,32 +20,32 @@ describe('WarehouseService', () => {
     }));
 
     it('should construct a get methods url without parameters', done => {
-        expect(warehouse.constructGetMethodsUrl()).toBe('api/v1/methods');
+        expect(warehouse.constructGetMethodsUrl()).toBe('/api/v1/methods');
         done();
     });
 
     it('should construct a get methods url with only signature parameter', done => {
-        expect(warehouse.constructGetMethodsUrl("sig")).toBe('api/v1/methods\?signature=sig');
+        expect(warehouse.constructGetMethodsUrl("sig")).toBe('/api/v1/methods\?signature=sig');
         done();
     });
 
     it('should construct a get methods url with only empty signature parameter', done => {
-        expect(warehouse.constructGetMethodsUrl('')).toBe('api/v1/methods');
+        expect(warehouse.constructGetMethodsUrl('')).toBe('/api/v1/methods');
         done();
     });
 
     it('should construct a get methods url with only maxResults parameter', done => {
-        expect(warehouse.constructGetMethodsUrl(undefined, 100)).toBe('api/v1/methods\?maxResults=100');
+        expect(warehouse.constructGetMethodsUrl(undefined, 100)).toBe('/api/v1/methods\?maxResults=100');
         done();
     });
 
     it('should construct a get methods url with both signature maxResults parameter', done => {
-        expect(warehouse.constructGetMethodsUrl("sig", 100)).toBe('api/v1/methods\?signature=sig&maxResults=100');
+        expect(warehouse.constructGetMethodsUrl("sig", 100)).toBe('/api/v1/methods\?signature=sig&maxResults=100');
         done();
     });
 
     it('should return mocked response', done => {
-        let response = {data: ["ru", "es"]};
+        let response = {methods: ["ru", "es"]};
 
         mockBackend.connections.subscribe(connection => {
             connection.mockRespond(new Response({
@@ -56,10 +56,10 @@ describe('WarehouseService', () => {
                 body: JSON.stringify(response)}));
         });
 
-        warehouse.getMethods().subscribe(languages => {
-            expect(languages.length).toBe(2);
-            expect(languages).toContain('ru');
-            expect(languages).toContain('es');
+        warehouse.getMethods().subscribe(data => {
+            expect(data.methods.length).toBe(2);
+            expect(data.methods).toContain('ru');
+            expect(data.methods).toContain('es');
             done();
         });
     });
