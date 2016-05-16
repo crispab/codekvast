@@ -154,12 +154,13 @@ Execute the following commands in a shell:
 
 [source,bash,subs="attributes,verbatim"]
 ----
-apt-get install ansible # <1>
+apt-get update # <1>
+apt-get install wget ansible unzip # <1>
 wget {bintrayDownloadPrefix}/codekvast-ansible-{codekvastVersion}.zip
 unzip codekvast-ansible-{codekvastVersion}.zip
 cd codekvast-ansible-{codekvastVersion}
 ----
-<1> This works for Debian-based distros. For Redhat, use `yum install ansible` instead.
+<1> This works for Debian-based distros. For Redhat, use `yum` instead of `apt-get`.
 
 Now, edit `codekvast-daemon.yml` and `inventory` to suit your needs.
 

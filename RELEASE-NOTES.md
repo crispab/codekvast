@@ -1,4 +1,9 @@
 # Codekvast Release Notes
+
+## 0.18.3
+
+1. Made the Ansible playbook for codekvast-daemon work with Ansible 1.5.4
+
 ## 0.18.2
 
 1. New download URLs in Bintray

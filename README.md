@@ -238,13 +238,11 @@ Preconditions:
 **Intellij Ultimate Edition 16+** is the recommended IDE with the following plugins:
 
 1. **Lombok Support** (required)
-1. **JavaScript Support** (required)
+1. JavaScript Support (optional)
+1. Karma (optional)
 1. Git (optional)
 1. Github (optional)
-1. AspectJ Support (optional)
 1. Docker (optional)
-1. AngularJS (optional)
-1. Karma (optional)
 
 Do like this to open Codekvast in Intellij the first time:
 
