@@ -1,3 +1,5 @@
+import groovy.util.slurpersupport.GPathResult
+
 //--- Frontend -----------------------------------------------------------------------------------
 
 task npmInstall(type: Exec) {
@@ -54,9 +56,20 @@ def referencedNodeModulesSpec = copySpec {
     slurper.setFeature('http://apache.org/xml/features/disallow-doctype-decl', false)
 
     from('src/main/webapp') {
-        slurper.parse(file('src/main/webapp/index.html')).head.script.each {
-            logger.debug "Including {}", it.@src
-            include it.@src.toString()
+        def doc = slurper.parse(file('src/main/webapp/index.html'))
+        doc.head.link.each {
+            def href = it.@href.toString()
+            if (href.startsWith('node_modules') && href.endsWith('.css')) {
+                logger.info 'Including {}', href
+                include href
+            }
+        }
+        doc.head.script.each {
+            def src = it.@src.toString()
+            if (src) {
+                logger.info 'Including {}', src
+                include src
+            }
         }
     }
 }
