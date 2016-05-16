@@ -7,17 +7,42 @@ import {WarehouseService} from './warehouse.service';
 
 describe('WarehouseService', () => {
 
-    let mockBackend, service;
+    let mockBackend, warehouse;
 
     //setup
-    beforeEachProviders(() => [ConfigService, WarehouseService, MockBackend, BaseRequestOptions, provide(Http, {
-        useFactory: (backend, options) => new Http(backend, options), deps: [MockBackend, BaseRequestOptions]
-    })]);
+    beforeEachProviders(() => [ConfigService, WarehouseService, MockBackend, BaseRequestOptions,
+        provide(Http, {deps: [MockBackend, BaseRequestOptions], useFactory: (backend, options) => new Http(backend, options)})
+    ]);
 
-    beforeEach(inject([MockBackend, WarehouseService], (_mockBackend, _service) => {
+    beforeEach(inject([MockBackend, WarehouseService], (_mockBackend, _warehouse) => {
         mockBackend = _mockBackend;
-        service = _service;
-    }))
+        warehouse = _warehouse;
+    }));
+
+    it('should construct a get methods url without parameters', done => {
+        expect(warehouse.constructGetMethodsUrl()).toBe('api/v1/methods');
+        done();
+    });
+
+    it('should construct a get methods url with only signature parameter', done => {
+        expect(warehouse.constructGetMethodsUrl("sig")).toBe('api/v1/methods\?signature=sig');
+        done();
+    });
+
+    it('should construct a get methods url with only empty signature parameter', done => {
+        expect(warehouse.constructGetMethodsUrl('')).toBe('api/v1/methods');
+        done();
+    });
+
+    it('should construct a get methods url with only maxResults parameter', done => {
+        expect(warehouse.constructGetMethodsUrl(undefined, 100)).toBe('api/v1/methods\?maxResults=100');
+        done();
+    });
+
+    it('should construct a get methods url with both signature maxResults parameter', done => {
+        expect(warehouse.constructGetMethodsUrl("sig", 100)).toBe('api/v1/methods\?signature=sig&maxResults=100');
+        done();
+    });
 
     it('should return mocked response', done => {
         let response = {data: ["ru", "es"]};
@@ -31,7 +56,7 @@ describe('WarehouseService', () => {
                 body: JSON.stringify(response)}));
         });
 
-        service.getMethods(null).subscribe(languages => {
+        warehouse.getMethods().subscribe(languages => {
             expect(languages.length).toBe(2);
             expect(languages).toContain('ru');
             expect(languages).toContain('es');

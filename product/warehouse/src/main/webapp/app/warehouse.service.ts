@@ -1,5 +1,5 @@
 import {Injectable} from 'angular2/core';
-import {Http, Headers, RequestOptions, Response} from 'angular2/http';
+import {Http, Headers, Response} from 'angular2/http';
 import 'rxjs/Rx';
 import {Observable} from 'rxjs/Observable';
 import {ConfigService} from './config.service';
@@ -9,24 +9,30 @@ import {Method} from './model/Method';
 export class WarehouseService {
 
     private methodsUrl = 'api/v1/methods';
-    opts: RequestOptions;
+    private headers = new Headers();
 
     constructor(private http: Http, private configService: ConfigService) {
-        var headers: Headers = new Headers();
-        headers.append('content-type', 'application/json; charset=utf-8');
-        this.opts = new RequestOptions();
-        this.opts.headers = headers;
+        this.headers.append('content-type', 'application/json; charset=utf-8');
     }
 
-    getMethods(signature: string): Observable<Method[]> {
-        return this.http.get(this.constructMethodsUrl(signature))
+    getMethods(signature?: string, maxResults?: number): Observable<Method[]> {
+        return this.http.get(this.constructGetMethodsUrl(signature, maxResults), {headers: this.headers})
             .map(this.extractMethodData)
             .catch(this.handleError);
     }
 
-    private constructMethodsUrl(signature: string): string {
-        let params = signature ? `?signature=${signature}` : '';
-        return this.configService.getApiPrefix() + this.methodsUrl + params;
+    constructGetMethodsUrl(signature: string, maxResults: number): string {
+        let url = this.configService.getApiPrefix() + this.methodsUrl;
+        let delimiter = '?';
+        if (signature !== undefined && signature.length > 0) {
+            url += `${delimiter}signature=${signature}`;
+            delimiter = '&';
+        }
+        if (maxResults !== undefined) {
+            url += `${delimiter}maxResults=${maxResults}`;
+            delimiter = '&';
+        }
+        return  url;
     }
 
     private extractMethodData(res: Response) {
