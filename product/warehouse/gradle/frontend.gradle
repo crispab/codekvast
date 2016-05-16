@@ -54,19 +54,19 @@ def referencedNodeModulesSpec = copySpec {
 
     def slurper = new XmlSlurper()
     slurper.setFeature('http://apache.org/xml/features/disallow-doctype-decl', false)
+    def html = slurper.parse(file('src/main/webapp/index.html'))
 
     from('src/main/webapp') {
-        def doc = slurper.parse(file('src/main/webapp/index.html'))
-        doc.head.link.each {
+        html.head.link.each {
             def href = it.@href.toString()
-            if (href.startsWith('node_modules') && href.endsWith('.css')) {
+            if (href.startsWith('node_modules')) {
                 logger.info 'Including {}', href
                 include href
             }
         }
-        doc.head.script.each {
+        html.head.script.each {
             def src = it.@src.toString()
-            if (src) {
+            if (src.startsWith('node_modules')) {
                 logger.info 'Including {}', src
                 include src
             }
@@ -82,15 +82,11 @@ jar {
     // All webapp stuff except tools config, tests and those things that need special treatment...
     into('static') {
         from('src/main/webapp') {
+            include 'app/**'
+            include 'css/**'
             exclude '**/*.js.map'
             exclude '**/*.spec.js'
             exclude '**/*.ts'
-            exclude '*.json'
-            exclude '*tests.html'
-            exclude 'index.html'
-            exclude 'node_modules/**'
-            exclude 'npm-debug.log**'
-            exclude 'karma*'
         }
     }
 

@@ -45,7 +45,7 @@ describe('WarehouseService', () => {
     });
 
     it('should return mocked response', done => {
-        let response = {methods: ["ru", "es"]};
+        let response = {methods: ['foo', 'bar']};
 
         mockBackend.connections.subscribe(connection => {
             connection.mockRespond(new Response({
@@ -58,8 +58,8 @@ describe('WarehouseService', () => {
 
         warehouse.getMethods().subscribe(data => {
             expect(data.methods.length).toBe(2);
-            expect(data.methods).toContain('ru');
-            expect(data.methods).toContain('es');
+            expect(data.methods).toContain('foo');
+            expect(data.methods).toContain('bar');
             done();
         });
     });

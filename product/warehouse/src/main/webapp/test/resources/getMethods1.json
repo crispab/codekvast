@@ -1,0 +1,2199 @@
+{
+  "timestamp": 1463432125556,
+  "request": {
+    "signature": "%",
+    "maxResults": 100,
+    "onlyTrulyDeadMethods": false,
+    "normalizeSignature": true,
+    "orderBy": "INVOKED_AT_ASC",
+    "normalizedSignature": "%"
+  },
+  "queryTimeMillis": 13,
+  "numMethods": 42,
+  "methods": [
+    {
+      "id": 2,
+      "signature": "sample.app.TrackedClass.packagePrivateMethod()",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.TrackedClass",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 3,
+      "signature": "sample.app.guice.TimedInterceptor()",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "sample.app.guice",
+      "declaringType": "sample.app.guice.TimedInterceptor",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 4,
+      "signature": "sample.app.guice.TimedInterceptorModule()",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "sample.app.guice",
+      "declaringType": "sample.app.guice.TimedInterceptorModule",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 5,
+      "signature": "sample.lib.used.Bar1.InnerClassNeverUsed.methodInInnerClassNeverUsed()",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "sample.lib.used",
+      "declaringType": "sample.lib.used.Bar1$InnerClassNeverUsed",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 11,
+      "signature": "sample.app.TrackedClass.privateMethod()",
+      "visibility": "private",
+      "modifiers": "private",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.TrackedClass",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 12,
+      "signature": "sample.lib.used.Bar1.InnerClassNeverUsed(sample.lib.used.Bar1)",
+      "visibility": "private",
+      "modifiers": "private",
+      "packageName": "sample.lib.used",
+      "declaringType": "sample.lib.used.Bar1$InnerClassNeverUsed",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 13,
+      "signature": "sample.lib.used.Bar1.privateMethodNeverUsed()",
+      "visibility": "private",
+      "modifiers": "private",
+      "packageName": "sample.lib.used",
+      "declaringType": "sample.lib.used.Bar1",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 15,
+      "signature": "sample.app.AbstractTracked.protectedMethod()",
+      "visibility": "protected",
+      "modifiers": "protected",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.AbstractTracked",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 16,
+      "signature": "sample.app.guice.TimedInterceptorModule.configure()",
+      "visibility": "protected",
+      "modifiers": "protected",
+      "packageName": "sample.app.guice",
+      "declaringType": "sample.app.guice.TimedInterceptorModule",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 19,
+      "signature": "sample.app.SampleApp.meaningOfLife()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.SampleApp",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 22,
+      "signature": "sample.app.TrackedClass.compareTo(sample.app.TrackedClass)",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.TrackedClass",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 23,
+      "signature": "sample.app.TrackedClass.equals(java.lang.Object)",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.TrackedClass",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "status": "EXCLUDED_SINCE_TRIVIAL"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 24,
+      "signature": "sample.app.TrackedClass.getCount()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.TrackedClass",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "status": "EXCLUDED_SINCE_TRIVIAL"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 25,
+      "signature": "sample.app.TrackedClass.hashCode()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.TrackedClass",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "status": "EXCLUDED_SINCE_TRIVIAL"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 27,
+      "signature": "sample.app.TrackedClass.setCount(int)",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.TrackedClass",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "status": "EXCLUDED_SINCE_TRIVIAL"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 28,
+      "signature": "sample.app.TrackedClass.setCount2(int, int)",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.TrackedClass",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 29,
+      "signature": "sample.app.TrackedClass.toString()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.TrackedClass",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 30,
+      "signature": "sample.app.guice.TimedInterceptor.invoke(org.aopalliance.intercept.MethodInvocation)",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.app.guice",
+      "declaringType": "sample.app.guice.TimedInterceptor",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 31,
+      "signature": "sample.lib.excluded.ExcludedClass()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.lib.excluded",
+      "declaringType": "sample.lib.excluded.ExcludedClass",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 32,
+      "signature": "sample.lib.excluded.ExcludedClass.foobar()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.lib.excluded",
+      "declaringType": "sample.lib.excluded.ExcludedClass",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "status": "EXCLUDED_BY_PACKAGE_NAME"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 33,
+      "signature": "sample.lib.not_used.FooImpl()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.lib.not_used",
+      "declaringType": "sample.lib.not_used.FooImpl",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 34,
+      "signature": "sample.lib.not_used.FooImpl.doSomeStuff()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.lib.not_used",
+      "declaringType": "sample.lib.not_used.FooImpl",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 37,
+      "signature": "sample.lib.used.Bar1.m1()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.lib.used",
+      "declaringType": "sample.lib.used.Bar1",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 38,
+      "signature": "sample.lib.used.Bar1.publicMethodUnusedDeclaredOnBar()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.lib.used",
+      "declaringType": "sample.lib.used.Bar1",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 41,
+      "signature": "sample.lib.used.Bar3()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.lib.used",
+      "declaringType": "sample.lib.used.Bar3",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 42,
+      "signature": "sample.lib.used.Bar3.m1()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.lib.used",
+      "declaringType": "sample.lib.used.Bar3",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 1,
+      "signature": "sample.app.AbstractTracked()",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.AbstractTracked",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 1463403148101,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 1463403148101,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1463403148101,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 6,
+      "signature": "sample.app.SampleApp.invokeTracked(int)",
+      "visibility": "private",
+      "modifiers": "private",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.SampleApp",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 1463403148101,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 1463403148101,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1463403148101,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 7,
+      "signature": "sample.app.SampleApp.invokeUntracked(int)",
+      "visibility": "private",
+      "modifiers": "private",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.SampleApp",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 1463403148101,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 1463403148101,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1463403148101,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 8,
+      "signature": "sample.app.SampleApp.invokeUntrackedLogged(int)",
+      "visibility": "private",
+      "modifiers": "private",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.SampleApp",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 1463403148101,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 1463403148101,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1463403148101,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 9,
+      "signature": "sample.app.SampleApp.measureMethodCallTrackingOverhead()",
+      "visibility": "private",
+      "modifiers": "private",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.SampleApp",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 1463403148101,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 1463403148101,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1463403148101,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 10,
+      "signature": "sample.app.SampleApp.tryToLoadClass(java.lang.String, boolean)",
+      "visibility": "private",
+      "modifiers": "private",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.SampleApp",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 1463403148101,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 1463403148101,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1463403148101,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 17,
+      "signature": "sample.app.SampleApp()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.SampleApp",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 1463403148101,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 1463403148101,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1463403148101,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 18,
+      "signature": "sample.app.SampleApp.main(java.lang.String[])",
+      "visibility": "public",
+      "modifiers": "public static",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.SampleApp",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 1463403148101,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 1463403148101,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1463403148101,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 20,
+      "signature": "sample.app.SampleApp.run()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.SampleApp",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 1463403148101,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 1463403148101,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1463403148101,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 21,
+      "signature": "sample.app.TrackedClass()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.TrackedClass",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 1463403148101,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 1463403148101,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1463403148101,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 26,
+      "signature": "sample.app.TrackedClass.publicMethod()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.TrackedClass",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 1463403148101,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 1463403148101,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1463403148101,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 14,
+      "signature": "sample.lib.used.Bar1.privateMethodUsed()",
+      "visibility": "private",
+      "modifiers": "private",
+      "packageName": "sample.lib.used",
+      "declaringType": "sample.lib.used.Bar1",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 1463403161110,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 1463403161110,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1463403161110,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 35,
+      "signature": "sample.lib.used.Bar1()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.lib.used",
+      "declaringType": "sample.lib.used.Bar1",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 1463403161110,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 1463403161110,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1463403161110,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 36,
+      "signature": "sample.lib.used.Bar1.declaredOnBar()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.lib.used",
+      "declaringType": "sample.lib.used.Bar1",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 1463403161110,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 1463403161110,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1463403161110,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 39,
+      "signature": "sample.lib.used.Bar2()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.lib.used",
+      "declaringType": "sample.lib.used.Bar2",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 1463403161110,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 1463403161110,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1463403161110,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    },
+    {
+      "id": 40,
+      "signature": "sample.lib.used.Bar2.declaredOnBar2()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.lib.used",
+      "declaringType": "sample.lib.used.Bar2",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1463395976000,
+          "dumpedAtMillis": 1463403161000,
+          "invokedAtMillis": 1463403161110,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "olles-laptop2.local"
+          ],
+          "tags": [
+            "development",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+            "os.version=4.4.0-22-generic",
+            "sample"
+          ],
+          "collectedSinceMillis": 1463395976000,
+          "collectedToMillis": 1463403161000,
+          "invokedAtMillis": 1463403161110,
+          "collectedDays": 0
+        }
+      ],
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1463403161110,
+      "collectedSinceMillis": 1463395976000,
+      "collectedToMillis": 1463403161000,
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_91-8u91-b14-0ubuntu4~16.04.1-b14",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.4.0-22-generic",
+        "sample"
+      ]
+    }
+  ]
+}
