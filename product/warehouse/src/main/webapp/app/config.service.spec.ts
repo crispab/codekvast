@@ -3,16 +3,27 @@ import {ConfigService} from "./config.service";
 
 describe('ConfigService', () => {
 
-    let config: ConfigService;
+    it('config.getApiPrefix() should return value of window.CODEKVAST_API when defined',
+        () => {
+            window['CODEKVAST_API'] = 'somePrefix';
+            expect(new ConfigService().getApiPrefix()).toEqual('somePrefix')
+        });
 
-    beforeEach(() => {
-        window['CODEKVAST_API'] = 'somePrefix';
-        window['CODEKVAST_VERSION'] = 'someVersion';
+    it('config.getApiPrefix() should return empty string when undefined',
+        () => {
+            window['CODEKVAST_API'] = undefined;
+            expect(new ConfigService().getApiPrefix()).toEqual('')
+        });
 
-        config = new ConfigService();
-    });
+    it('config.getVersion() should return value of window.CODEKVAST_VERSION when defined',
+        () => {
+            window['CODEKVAST_VERSION'] = 'someVersion';
+            expect(new ConfigService().getVersion()).toEqual('someVersion')
+        })
 
-    it('config.getApiPrefix() should return value of window.CODEKVAST_API', () => expect(config.getApiPrefix()).toEqual('somePrefix'));
-
-    it('config.getVersion() should return value of window.CODEKVAST_VERSION', () => expect(config.getVersion()).toEqual('someVersion'))
+    it('config.getVersion() should return "undefined" of window.CODEKVAST_VERSION when undefined',
+        () => {
+            window['CODEKVAST_VERSION'] = undefined;
+            expect(new ConfigService().getVersion()).toEqual('unknown')
+        })
 });

@@ -31,7 +31,7 @@
   "scripts": {
     "lite": "lite-server",
     "postinstall": "typings install",
-    "posttest": "node_modules/.bin/remap-istanbul -i ../../../build/karma/coverage/coverage-final.json -o ../../../../build/reports/js-coverage -t html",
+    "posttest": "node_modules/.bin/remap-istanbul -i ../../../build/karma/coverage-final.json -o ../../../../build/reports/js-coverage -t html",
     "start": "tsc && concurrently \"npm run tsc:w\" \"npm run lite\" ",
     "test": "karma start karma.conf.js --single-run",
     "test:w": "karma start karma.conf.js --auto-watch",

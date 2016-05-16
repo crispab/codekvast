@@ -11,6 +11,7 @@ module.exports = function (config) {
             {pattern: 'node_modules/systemjs/dist/system.src.js', included: true, watched: true},
             {pattern: 'node_modules/rxjs/bundles/Rx.js', included: true, watched: true},
             {pattern: 'node_modules/angular2/bundles/angular2.dev.js', included: true, watched: true},
+            {pattern: 'node_modules/angular2/bundles/http.dev.js', included: true, watched: true},
             {pattern: 'node_modules/angular2/bundles/testing.dev.js', included: true, watched: true},
             {pattern: 'karma-test-shim.js', included: true, watched: true},
 
@@ -53,7 +54,7 @@ module.exports = function (config) {
 
         coverageReporter: {
             reporters: [
-                {type: 'json', subdir: '.', file: '../../../../build/karma/coverage/coverage-final.json'}
+                {type: 'json', subdir: '.', file: '../../../../build/karma/coverage-final.json'}
             ]
         }
     })

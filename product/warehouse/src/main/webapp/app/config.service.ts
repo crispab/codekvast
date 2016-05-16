@@ -11,8 +11,8 @@ export class ConfigService {
     private _apiPrefix: String;
 
     constructor() {
-        this._apiPrefix = window['CODEKVAST_API'];
-        this._version = window['CODEKVAST_VERSION'];
+        this._apiPrefix = window['CODEKVAST_API'] || '';
+        this._version = window['CODEKVAST_VERSION'] || 'unknown';
     }
 
     getVersion(): String {
