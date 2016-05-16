@@ -54,7 +54,7 @@ module.exports = function (config) {
 
         coverageReporter: {
             reporters: [
-                {type: 'json', subdir: '.', file: '../../../../build/karma/coverage-final.json'}
+                {type: 'json', subdir: '../../../../build/karma', file: 'coverage-final.json'}
             ]
         }
     })
