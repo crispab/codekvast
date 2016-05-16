@@ -3,6 +3,7 @@
 ## 0.18.3
 
 1. Made the Ansible playbook for codekvast-daemon work with Ansible 1.5.4
+1. Implemented rudimentary web UI for showing warehouse data.
 
 ## 0.18.2
 
