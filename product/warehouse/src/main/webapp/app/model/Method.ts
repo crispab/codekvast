@@ -1,5 +1,5 @@
-import {Environment} from "./Environment";
-import {Application} from "./Application";
+import {Environment} from './Environment';
+import {Application} from './Application';
 
 export class Method {
     collectedDays: number;

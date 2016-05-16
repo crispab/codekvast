@@ -3,7 +3,7 @@ import {Http, Headers, Response} from 'angular2/http';
 import 'rxjs/Rx';
 import {Observable} from 'rxjs/Observable';
 import {ConfigService} from './config.service';
-import {Method} from './model/Method';
+import {MethodData} from './model/MethodData';
 
 @Injectable()
 export class WarehouseService {
@@ -15,7 +15,7 @@ export class WarehouseService {
         this.headers.append('content-type', 'application/json; charset=utf-8');
     }
 
-    getMethods(signature?: string, maxResults?: number): Observable<Method[]> {
+    getMethods(signature?: string, maxResults?: number): Observable<MethodData> {
         return this.http.get(this.constructGetMethodsUrl(signature, maxResults), {headers: this.headers})
             .map(this.extractMethodData)
             .catch(this.handleError);
@@ -40,12 +40,12 @@ export class WarehouseService {
             throw new Error('Response status: ' + res.status);
         }
         let body = res.json();
-        return body.data || {};
+        return body || {};
     }
 
     private handleError(error: any) {
         let errMsg = error.message || 'Server error';
-        console.error(errMsg); // log to console instead
+        console.error(errMsg);
         return Observable.throw(errMsg);
     }
 }

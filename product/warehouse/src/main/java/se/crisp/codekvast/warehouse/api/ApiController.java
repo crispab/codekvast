@@ -13,6 +13,7 @@ import se.crisp.codekvast.warehouse.api.model.MethodDescriptor1;
 import se.crisp.codekvast.warehouse.bootstrap.CodekvastSettings;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.time.Instant;
@@ -35,6 +36,7 @@ import static se.crisp.codekvast.warehouse.api.ApiService.DEFAULT_MAX_RESULTS_ST
 @Slf4j
 public class ApiController {
 
+    private static final String API_V1_METHODS = "/api/v1/methods";
     private final ApiService apiService;
     private final CodekvastSettings settings;
 
@@ -53,19 +55,31 @@ public class ApiController {
         return ResponseEntity.badRequest().body(violations.toString());
     }
 
-    @RequestMapping(method = OPTIONS, value = "/api/v1/methods")
-    public ResponseEntity<Void> allow_CORS_for_getMethods1() {
-
-        // Make it possible to invoke getMethods1() from a server started with 'gradle npmStart'...
-        return ResponseEntity.ok()
-                             .header("Access-Control-Allow-Origin", "http://localhost:3000")
-                             .build();
+    /**
+     * Make it possible to invoke getMethods1() from another server running in localhost (e.g., 'npm start' or debugging with IDEA in
+     * Chrome...
+     */
+    private ResponseEntity.BodyBuilder addCorsHeaderForLocalhost(HttpServletRequest request) {
+        ResponseEntity.BodyBuilder builder = ResponseEntity.ok();
+        String origin = request.getHeader("Origin");
+        if (origin != null && origin.contains("//localhost")) {
+            builder.header("Access-Control-Allow-Origin", origin);
+        }
+        return builder;
     }
 
-    @RequestMapping(method = GET, value = "/api/v1/methods")
-    public GetMethodsResponse1 getMethods1(@RequestParam(value = "signature", defaultValue = "%") String signature,
-                                           @RequestParam(name = "maxResults", defaultValue = DEFAULT_MAX_RESULTS_STR) Integer maxResults) {
-        return doGetMethods(signature, maxResults);
+    // This happens when running from 'npm start'
+    @RequestMapping(method = OPTIONS, value = API_V1_METHODS)
+    public ResponseEntity<Void> allow_any_localhost_port_for_getMethods1(HttpServletRequest request) {
+        return addCorsHeaderForLocalhost(request).build();
+    }
+
+    @RequestMapping(method = GET, value = API_V1_METHODS)
+    public ResponseEntity<GetMethodsResponse1> getMethods1(HttpServletRequest request,
+                                                           @RequestParam(value = "signature", defaultValue = "%") String signature,
+                                                           @RequestParam(name = "maxResults", defaultValue = DEFAULT_MAX_RESULTS_STR)
+                                                                       Integer maxResults) {
+        return addCorsHeaderForLocalhost(request).body(doGetMethods(signature, maxResults));
     }
 
     private GetMethodsResponse1 doGetMethods(String signature, Integer maxResults) {

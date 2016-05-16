@@ -1,6 +1,6 @@
 <div class="container">
     <h1>Search Methods</h1>
-    <form *ngIf="active" (ngSubmit)="search()" #searchForm="ngForm">
+    <form (ngSubmit)="search()" #searchForm="ngForm">
 
         <div class="form-group col-lg-10">
             <label for="signature">Signature</label>
@@ -24,4 +24,15 @@
             <button type="submit" class="form-control btn btn-default" [disabled]="!searchForm.form.valid">Search</button>
         </div>
     </form>
+</div>
+
+<div *ngIf="data" class="container">
+    <h2>Search Results</h2>
+    <p>{{diagnostics}}</p>
+    <ul class="list-unstyled">
+        <li *ngFor="#method of data.methods">
+            <span class="badge">{{method.id}}</span>
+            {{method.signature}}
+        </li>
+    </ul>
 </div>

@@ -1,25 +1,28 @@
+import {NgFor} from 'angular2/common';
 import {Component} from 'angular2/core';
 import {WarehouseService} from './warehouse.service';
+import {MethodData} from './model/MethodData';
 
 @Component({
-    selector: 'ck-method', templateUrl: 'app/method.component.html', providers: [WarehouseService]
+    selector: 'ck-method', templateUrl: 'app/method.component.html', providers: [NgFor, WarehouseService]
 })
 export class MethodComponent {
 
     signature: string;
     maxResults: number = 100;
-    active = true;
-    methods: any[] = [];
+    data: MethodData;
     errorMessage: string;
 
     constructor(private warehouse: WarehouseService) {
     }
 
     search() {
-        this.active = false;
         this.warehouse.getMethods(this.signature, this.maxResults).subscribe(
-            (data) => this.methods = data,
+            (data) => this.data = data,
             (error) => this.errorMessage = error);
-        setTimeout(()=> this.active = true, 0);
+    }
+
+    get diagnostic() {
+        return this.data ? JSON.stringify(this.data) : undefined;
     }
 }
