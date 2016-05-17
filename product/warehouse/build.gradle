@@ -6,7 +6,7 @@ apply plugin: 'flyway'
 apply plugin: 'org.unbroken-dome.test-sets'
 apply plugin: 'spring-boot'
 
-apply from: "$projectDir/gradle/devtools.gradle"
+apply from: "$projectDir/gradle/backend.gradle"
 apply from: "$projectDir/gradle/docker.gradle"
 apply from: "$projectDir/gradle/frontend.gradle"
 apply from: "$projectDir/gradle/integrationTest.gradle"

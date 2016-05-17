@@ -16,13 +16,13 @@ if [ -z "$DOCKER_USERNAME" ]; then
     exit 2
 fi
 
-declare IMAGE_ID=$(docker images |grep $IMAGE_NAME | grep "$TAG" | awk '{print $3}')
+declare IMAGE_ID=$(docker images |grep ${IMAGE_NAME} | grep ${TAG} | awk '{print $3}')
 if [ -z "$IMAGE_ID" ]; then
     echo "No Docker image $IMAGE_NAME:$TAG has been built, do 'gradle distDocker' first!" >&2
     exit 3
 fi
 
 echo "Pushing image $IMAGE_ID to Docker Hub ..."
-docker push $IMAGE_NAME:$VERSION
-docker push $IMAGE_NAME:$TAG
-docker push $IMAGE_NAME:latest
+docker push ${IMAGE_NAME}:${VERSION}
+docker push ${IMAGE_NAME}:${TAG}
+docker push ${IMAGE_NAME}:latest
