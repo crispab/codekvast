@@ -8,32 +8,39 @@ dependencies {
     springLoaded springLoadedAgent
 }
 
-task startMariadb(type: Exec) {
+task startMariadb {
     description 'Starts MariaDB 10 in a Docker container, on port 3306'
     group 'Backend Development'
 
-    commandLine 'docker', 'run', '-d', '--restart=unless-stopped',
-            '--name', 'codekvast_database',
-            '-p', '3306:3306',
-            '-e', 'MYSQL_ROOT_PASSWORD=root',
-            '-e', 'MYSQL_DATABASE=codekvast_warehouse',
-            '-e', 'MYSQL_USER=codekvast',
-            '-e', 'MYSQL_PASSWORD=codekvast',
-            '-e', 'TERM=xterm-256color',
-            'mariadb:10',
-            '--character-set-server=utf8',
-            '--collation-server=utf8_general_ci',
-            '--default-storage-engine=innodb'
+    doLast {
+        def running = "docker ps".execute().in.text.contains("0.0.0.0:3306->3306/tcp")
+        if (running) {
+            throw new StopActionException("Mariadb is already running")
+        }
+        def created = "docker ps -a".execute().in.text.contains("codekvast_database")
+        if (created) {
+            def command = "docker start codekvast_database"
+            logger.lifecycle(command)
+            command.execute().waitFor()
+        } else {
+            def command = 'docker pull mariadb:10'
+            logger.lifecycle(command)
+            command.execute().waitFor()
 
-    outputs.upToDateWhen {
-        Socket socket = new Socket()
-        try {
-            socket.connect(new InetSocketAddress(3306), 500)
-            return true
-        } catch (Exception ignored) {
-            return false
-        } finally {
-            socket.close()
+            command = 'docker run -d --restart=unless-stopped ' +
+                    '--name codekvast_database ' +
+                    '-p 3306:3306 ' +
+                    '-e MYSQL_ROOT_PASSWORD=root ' +
+                    '-e MYSQL_DATABASE=codekvast_warehouse ' +
+                    '-e MYSQL_USER=codekvast ' +
+                    '-e MYSQL_PASSWORD=codekvast ' +
+                    '-e TERM=xterm-256color ' +
+                    'mariadb:10 ' +
+                    '--character-set-server=utf8 ' +
+                    '--collation-server=utf8_general_ci ' +
+                    '--default-storage-engine=innodb ';
+            logger.lifecycle(command)
+            command.execute().waitFor()
         }
     }
 }
@@ -69,4 +76,20 @@ bootRun {
     ] + run.jvmArgs
 
     args = run.args
+}
+
+//--- Packaging ------------------------------------------------------------------------------------------------------------------
+springBoot {
+    executable = true
+    embeddedLaunchScriptProperties = [
+            'initInfoProvides'        : applicationName,
+            'initInfoShortDescription': 'Codekvast Warehouse',
+            'initInfoDescription'     : 'Codekvast Warehouse aggregates data from many Codekvast Daemons',
+    ]
+    excludeDevtools = true
+}
+
+bootRepackage {
+    // Set a classifier, or else gradle distZip will overwrite the repackaged jar...
+    classifier = 'all'
 }

@@ -49,19 +49,3 @@ processResources {
         exclude "*application*.properties"
     }
 }
-
-//--- Packaging ------------------------------------------------------------------------------------------------------------------
-springBoot {
-    executable = true
-    embeddedLaunchScriptProperties = [
-            'initInfoProvides'        : applicationName,
-            'initInfoShortDescription': 'Codekvast Warehouse',
-            'initInfoDescription'     : 'Codekvast Warehouse aggregates data from many Codekvast Daemons',
-    ]
-    excludeDevtools = true
-}
-
-bootRepackage {
-    // Set a classifier, or else gradle distZip will overwrite the repackaged jar...
-    classifier = 'all'
-}
