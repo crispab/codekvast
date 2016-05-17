@@ -21,11 +21,11 @@ task startMariadb {
         if (created) {
             def command = "docker start codekvast_database"
             logger.lifecycle(command)
-            command.execute().waitFor()
+            assert command.execute().waitFor() == 0
         } else {
             def command = 'docker pull mariadb:10'
             logger.lifecycle(command)
-            command.execute().waitFor()
+            assert command.execute().waitFor() == 0
 
             command = 'docker run -d --restart=unless-stopped ' +
                     '--name codekvast_database ' +
@@ -40,7 +40,7 @@ task startMariadb {
                     '--collation-server=utf8_general_ci ' +
                     '--default-storage-engine=innodb '
             logger.lifecycle(command)
-            command.execute().waitFor()
+            assert command.execute().waitFor() == 0
         }
     }
 }
