@@ -25,6 +25,8 @@
     <option name="PASS_PARENT_ENVS" value="true" />
     <module name="warehouse_main" />
     <envs />
-    <method />
+    <method>
+      <option name="Gradle.BeforeRunTask" enabled="true" tasks="processResources startMariadb" externalProjectPath="$PROJECT_DIR$/product/warehouse" vmOptions="" scriptParameters="" />
+    </method>
   </configuration>
 </component>
