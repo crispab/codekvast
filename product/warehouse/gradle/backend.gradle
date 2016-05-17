@@ -12,11 +12,11 @@ task startMariadb {
     description 'Starts MariaDB 10 in a Docker container, on port 3306'
     group 'Backend Development'
 
+    outputs.upToDateWhen {
+        "docker ps".execute().in.text.contains("codekvast_database")
+    }
+
     doLast {
-        def running = "docker ps".execute().in.text.contains("0.0.0.0:3306->3306/tcp")
-        if (running) {
-            throw new StopActionException("Mariadb is already running")
-        }
         def created = "docker ps -a".execute().in.text.contains("codekvast_database")
         if (created) {
             def command = "docker start codekvast_database"
@@ -38,7 +38,7 @@ task startMariadb {
                     'mariadb:10 ' +
                     '--character-set-server=utf8 ' +
                     '--collation-server=utf8_general_ci ' +
-                    '--default-storage-engine=innodb ';
+                    '--default-storage-engine=innodb '
             logger.lifecycle(command)
             command.execute().waitFor()
         }
