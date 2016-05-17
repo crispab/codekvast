@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="bootRun codekvast-daemon" type="GradleRunConfiguration" factoryName="Gradle" singleton="true">
+  <configuration default="false" name="bootRun codekvast-daemon" type="GradleRunConfiguration" factoryName="Gradle" folderName="Daemon" singleton="true">
     <ExternalSystemSettings>
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$/product/agent/daemon" />

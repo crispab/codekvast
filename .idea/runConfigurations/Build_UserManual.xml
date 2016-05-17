@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Build UserManual" type="GradleRunConfiguration" factoryName="Gradle">
+  <configuration default="false" name="Build UserManual" type="GradleRunConfiguration" factoryName="Gradle" folderName="Docs">
     <ExternalSystemSettings>
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$/product/docs" />

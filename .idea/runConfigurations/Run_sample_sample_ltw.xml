@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run sample:sample-ltw" type="GradleRunConfiguration" factoryName="Gradle">
+  <configuration default="false" name="Run sample:sample-ltw" type="GradleRunConfiguration" factoryName="Gradle" folderName="Sample">
     <ExternalSystemSettings>
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$/sample/sample-ltw" />
