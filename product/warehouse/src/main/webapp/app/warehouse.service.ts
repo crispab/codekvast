@@ -39,8 +39,12 @@ export class WarehouseService {
         if (res.status < 200 || res.status >= 300) {
             throw new Error('Response status: ' + res.status);
         }
-        let body = res.json();
-        return body || {};
+
+	// TODO: let data = MethodData.fromJson(res.json());
+	// data.computeFields()
+	// return data;
+	
+        return res.json();
     }
 
     private handleError(error: any) {

@@ -30,11 +30,21 @@
 
 <div *ngIf="data" class="container">
     <h2>Search Results</h2>
-    <p>{{diagnostics}}</p>
-    <ul class="list-unstyled">
-        <li *ngFor="#method of data.methods">
-            <span class="badge">{{method.id}}</span>
-            {{method.signature}}
-        </li>
-    </ul>
+    <p>Found {{data.numMethods}} methods in {{data.queryTimeMillis}} ms</p>
+    <table>
+        <tr>
+            <th>Signature</th>
+            <th>Last Invoked At</th>
+            <th>Collected Since</th>
+            <th>Collected To</th>
+            <th>Collected Days</th>
+        </tr>
+        <tr *ngFor="let method of data.methods">
+            <td>{{method.signature}}</td>
+            <td>{{method.lastInvokedAt}}</td>
+            <td>{{method.collectedSince}}</td>
+            <td>{{method.collectedTo}}</td>
+            <td>{{method.collectedDays}}</td>
+        </tr>
+    </table>
 </div>

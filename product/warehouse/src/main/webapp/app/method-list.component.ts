@@ -21,7 +21,4 @@ export class MethodListComponent {
             (error) => this.errorMessage = error);
     }
 
-    get diagnostic() {
-        return this.data ? JSON.stringify(this.data) : undefined;
-    }
 }
