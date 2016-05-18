@@ -6,11 +6,11 @@ sourceSets {
 
 defaultTasks 'run'
 
-ext.tomcatDownloadUrl = "http://archive.apache.org/dist/tomcat/tomcat-7/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}.zip"
+ext.tomcatDownloadUrl = "https://dl.bintray.com/crisp/codekvast/apache-tomcat-${tomcatVersion}.zip"
 ext.tomcatDir = file("$buildDir/tomcat")
 ext.catalinaBase = file("$tomcatDir/apache-tomcat-${tomcatVersion}")
 
-ext.jenkinsDownloadUrl = "http://archives.jenkins-ci.org/war/${jenkinsVersion}/jenkins.war"
+ext.jenkinsDownloadUrl = "https://dl.bintray.com/crisp/codekvast/jenkins-${jenkinsVersion}.war"
 
 task installJenkinsInTomcat7 {
     def downloadDir = file("$rootDir/.tmp/download")
@@ -57,8 +57,9 @@ task installJenkinsInTomcat7 {
 
         logger.lifecycle "Copying jenkins.war into $webappsDir ..."
         copy {
-            from "$downloadDir/jenkins.war"
-            into webappsDir
+            from "$downloadDir/jenkins-${jenkinsVersion}.war"
+            into "$webappsDir"
+            rename { "jenkins.war" }
         }
 
         if (jenkinsDir.exists()) {
