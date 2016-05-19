@@ -1,4 +1,4 @@
-export class Application implements Serializable<Application> {
+export class Application {
     dumpedAtMillis: number;
     invokedAtMillis: number;
     name: string;
