@@ -6,4 +6,9 @@ export class Environment {
     invokedAtMillis: number;
     name: String;
     tags: String[];
+
+    // computed fields
+    collectedSince: Date;
+    collectedTo: Date;
+    invokedAt: Date;
 }

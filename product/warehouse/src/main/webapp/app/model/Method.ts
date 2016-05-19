@@ -20,16 +20,4 @@ export class Method {
     collectedSince: Date;
     collectedTo: Date;
     lastInvokedAt: Date;
-
-    public computeFields() {
-        if (this.collectedSinceMillis > 0) {
-            this.collectedSince = new Date(this.collectedSinceMillis);
-        }
-        if (this.collectedToMillis > 0) {
-            this.collectedTo = new Date(this.collectedToMillis);
-        }
-        if (this.lastInvokedAtMillis > 0) {
-            this.lastInvokedAt = new Date(this.lastInvokedAtMillis);
-        }
-    }
 }

@@ -6,9 +6,8 @@ export class Application {
     status: String;
     version: string
 
-    deserialize(input) {
-        this.dumpedAtMillis = input.dumpedAtMillis;
-        return this;
-    }
-
+    // computed fields
+    dumpedAt: Date;
+    invokedAt: Date;
+    startedAt: Date;
 }

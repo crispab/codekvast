@@ -18,6 +18,7 @@ export class WarehouseService {
     getMethods(signature?: string, maxResults?: number): Observable<MethodData> {
         return this.http.get(this.constructGetMethodsUrl(signature, maxResults), {headers: this.headers})
             .map(this.extractMethodData)
+            .map(this.computeFields, this)
             .catch(this.handleError);
     }
 
@@ -35,15 +36,11 @@ export class WarehouseService {
         return  url;
     }
 
-    private extractMethodData(res: Response) {
+    private extractMethodData(res: Response): MethodData {
         if (res.status < 200 || res.status >= 300) {
             throw new Error('Response status: ' + res.status);
         }
 
-	// TODO: let data = MethodData.fromJson(res.json());
-	// data.computeFields()
-	// return data;
-	
         return res.json();
     }
 
@@ -51,5 +48,31 @@ export class WarehouseService {
         let errMsg = error.message || JSON.stringify(error);
         console.error(errMsg);
         return Observable.throw(errMsg);
+    }
+
+    private makeDate(millis: number): Date {
+        return millis === 0 ? undefined : new Date(millis);
+    }
+
+    private computeFields(data: MethodData): MethodData {
+
+        data.methods.forEach((m) => {
+            m.collectedSince = this.makeDate(m.collectedSinceMillis);
+            m.collectedTo = this.makeDate(m.collectedToMillis);
+            m.lastInvokedAt = this.makeDate(m.lastInvokedAtMillis);
+
+            m.occursInApplications.forEach((a) => {
+                a.dumpedAt = this.makeDate(a.dumpedAtMillis);
+                a.invokedAt = this.makeDate(a.invokedAtMillis);
+                a.startedAt = this.makeDate(a.startedAtMillis);
+            });
+
+            m.collectedInEnvironments.forEach((e) => {
+                e.collectedSince = this.makeDate(e.collectedSinceMillis);
+                e.collectedTo = this.makeDate(e.collectedSinceMillis);
+                e.invokedAt = this.makeDate(e.invokedAtMillis);
+            });
+        });
+        return data;
     }
 }
