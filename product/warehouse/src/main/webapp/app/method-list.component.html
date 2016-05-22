@@ -41,10 +41,10 @@
         </tr>
         <tr *ngFor="let method of data.methods">
             <td>{{method.signature}}</td>
-            <td>{{method.lastInvokedAt}}</td>
-            <td>{{method.collectedSince}}</td>
-            <td>{{method.collectedTo}}</td>
-            <td>{{method.collectedDays}}</td>
+            <td>{{method.lastInvokedAtMillis | ck_timestamp}}</td>
+            <td>{{method.collectedSinceMillis | ck_timestamp}}</td>
+            <td>{{method.collectedToMillis | ck_timestamp}}</td>
+            <td>{{method.collectedDays }}</td>
         </tr>
     </table>
 </div>

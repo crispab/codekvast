@@ -15,9 +15,4 @@ export class Method {
     signature: string;
     tags: string[];
     visibility: string;
-
-    // computed fields
-    collectedSince: Date;
-    collectedTo: Date;
-    lastInvokedAt: Date;
 }

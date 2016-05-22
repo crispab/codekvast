@@ -5,9 +5,4 @@ export class Application {
     startedAtMillis: number;
     status: String;
     version: string
-
-    // computed fields
-    dumpedAt: Date;
-    invokedAt: Date;
-    startedAt: Date;
 }
