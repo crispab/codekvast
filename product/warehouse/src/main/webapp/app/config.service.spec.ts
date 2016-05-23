@@ -21,7 +21,7 @@ describe('ConfigService', () => {
             expect(new ConfigService().getVersion()).toEqual('someVersion')
         })
 
-    it('config.getVersion() should return "undefined" of window.CODEKVAST_VERSION when undefined',
+    it('config.getVersion() should return "unknown" of window.CODEKVAST_VERSION when undefined',
         () => {
             window['CODEKVAST_VERSION'] = undefined;
             expect(new ConfigService().getVersion()).toEqual('unknown')
