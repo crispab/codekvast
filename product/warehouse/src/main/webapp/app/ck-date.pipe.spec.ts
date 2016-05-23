@@ -1,6 +1,6 @@
 import {describe, expect, it, inject, beforeEach, beforeEachProviders} from 'angular2/testing';
 import {DatePipe} from 'angular2/src/common/pipes/date_pipe';
-import {TimestampPipe} from './timestamp.pipe';
+import {CkDatePipe} from './ck-date.pipe';
 
 describe('WarehouseService', () => {
 
@@ -11,7 +11,7 @@ describe('WarehouseService', () => {
 
     beforeEach(inject([DatePipe], (_datePipe) => {
         datePipe = _datePipe;
-        pipe = new TimestampPipe(datePipe);
+        pipe = new CkDatePipe(datePipe);
     }));
 
     it("Should return null for null", done => {

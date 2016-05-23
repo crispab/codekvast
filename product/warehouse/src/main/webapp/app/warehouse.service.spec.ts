@@ -9,7 +9,6 @@ describe('WarehouseService', () => {
 
     let mockBackend, warehouse;
 
-    //setup
     beforeEachProviders(() => [ConfigService, WarehouseService, MockBackend, BaseRequestOptions,
         provide(Http, {deps: [MockBackend, BaseRequestOptions], useFactory: (backend, options) => new Http(backend, options)})
     ]);

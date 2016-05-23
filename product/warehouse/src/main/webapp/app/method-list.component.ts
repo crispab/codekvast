@@ -1,13 +1,13 @@
 import {Component} from 'angular2/core';
 import {WarehouseService} from './warehouse.service';
 import {MethodData} from './model/MethodData';
-import {TimestampPipe} from './timestamp.pipe';
+import {CkDatePipe} from './ck-date.pipe';
 
 @Component({
     selector: 'ck-method-list',
     templateUrl: 'app/method-list.component.html',
     providers: [WarehouseService],
-    pipes: [TimestampPipe]
+    pipes: [CkDatePipe]
 })
 export class MethodListComponent {
 
