@@ -13,7 +13,7 @@ describe('AppComponent', () => {
         app = new AppComponent(config);
     });
 
-    it('app.apiPrefix() should return value of configService.apiPrefix()', () => expect(app.apiPrefix()).toEqual('somePrefix'));
+    it('app.apiPrefix() should return value of configService.apiPrefix()', () => expect(app.apiPrefix).toEqual('somePrefix'));
 
-    it('app.version() should return value of configService.version()', () => expect(app.version()).toEqual('someVersion'))
+    it('app.version() should return value of configService.version()', () => expect(app.version).toEqual('someVersion'))
 });

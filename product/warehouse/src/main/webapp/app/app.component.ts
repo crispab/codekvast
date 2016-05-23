@@ -11,15 +11,11 @@ import {MethodListComponent} from './method-list.component';
 export class AppComponent {
 
     now: Date = new Date();
+    apiPrefix;
+    version;
 
-    constructor(private _config: ConfigService) {
-    }
-
-    apiPrefix(): String {
-        return this._config.getApiPrefix();
-    }
-
-    version(): String {
-        return this._config.getVersion();
+    constructor(_config: ConfigService) {
+        this.apiPrefix = _config.getApiPrefix();
+        this.version = _config.getVersion();
     }
 }
