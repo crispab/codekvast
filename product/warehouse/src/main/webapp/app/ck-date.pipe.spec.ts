@@ -11,7 +11,7 @@ describe('WarehouseService', () => {
 
     beforeEach(inject([DatePipe], (_datePipe) => {
         datePipe = _datePipe;
-        pipe = new CkDatePipe(datePipe);
+        pipe = new CkDatePipe();
     }));
 
     it("Should return null for null", done => {
