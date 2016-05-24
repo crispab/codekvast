@@ -3,7 +3,6 @@ ext {
     h2databaseVersion = '1.4.191'
     jacksonVersion = '2.6.4' // TODO: upgrade to Jackson 2.7.x
     opencsvVersion = '3.7'
-    springBootVersion = '1.4.0.RELEASE'
     springfoxVersion = '2.4.0'
 
     aspectjWeaver = "org.aspectj:aspectjweaver:$aspectjVersion"
