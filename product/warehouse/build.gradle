@@ -10,7 +10,7 @@ apply from: "$projectDir/gradle/backend.gradle"
 apply from: "$projectDir/gradle/docker.gradle"
 apply from: "$projectDir/gradle/frontend.gradle"
 apply from: "$projectDir/gradle/integrationTest.gradle"
-apply from: "$projectDir/gradle/functionTest.gradle"
+apply from: "$projectDir/gradle/systemTest.gradle"
 
 description = 'The central Codekvast warehouse'
 applicationName = 'codekvast-warehouse'

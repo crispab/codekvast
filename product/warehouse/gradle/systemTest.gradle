@@ -1,0 +1,112 @@
+// --- End-to-end system test -----------------------------------------------------------------------------------
+
+testSets {
+    systemTest
+}
+
+systemTest.dependsOn test, testTypeScript
+check.dependsOn systemTest
+
+dependencies {
+    systemTestCompileOnly lombok
+
+    systemTestCompile project(':product:support:testsupport')
+    systemTestCompile 'net.serenity-bdd:serenity-core:1.1.31'
+    systemTestCompile 'net.serenity-bdd:serenity-junit:1.1.31'
+
+    systemTestRuntime 'com.codeborne:phantomjsdriver:1.2.1'
+}
+
+task startSystemTestEnvironment(type: Exec) {
+    description 'docker-compose up'
+    group 'System test'
+    dependsOn ':product:warehouse:distDocker'
+    commandLine 'docker-compose',
+            '-p', 'warehouse-systest',
+            '-f', 'src/systemTest/resources/docker-compose.yml',
+            'up', '-d'
+}
+
+task stopSystemTestEnvironment(type: Exec) {
+    description 'docker-compose stop'
+    group 'System test'
+    commandLine 'docker-compose',
+            '-p', 'warehouse-systest',
+            '-f', 'src/systemTest/resources/docker-compose.yml',
+            'stop'
+}
+
+task downSystemTestEnvironment(type: Exec) {
+    description 'docker-compose down'
+    group 'System test'
+    commandLine 'docker-compose',
+            '-p', 'warehouse-systest',
+            '-f', 'src/systemTest/resources/docker-compose.yml',
+            'down'
+}
+
+task psSystemTestEnvironment(type: Exec) {
+    description 'docker-compose ps'
+    group 'System test'
+    commandLine 'docker-compose',
+            '-p', 'warehouse-systest',
+            '-f', 'src/systemTest/resources/docker-compose.yml',
+            'ps'
+}
+
+task logsSystemTestEnvironment(type: Exec) {
+    description 'docker-compose logs'
+    group 'System test'
+    commandLine 'docker-compose',
+            '-p', 'warehouse-systest',
+            '-f', 'src/systemTest/resources/docker-compose.yml',
+            'logs'
+}
+
+task endpointForSystemTestWarehouse(type: Exec) {
+    description 'docker-compose port'
+    group 'System test'
+    dependsOn startSystemTestEnvironment
+
+    commandLine 'docker-compose',
+            '-p', 'warehouse-systest',
+            '-f', 'src/systemTest/resources/docker-compose.yml',
+            'port',
+            'app',
+            '8080'
+
+    standardOutput = new ByteArrayOutputStream()
+
+    ext.endpoint = {
+        return standardOutput.toString().trim()
+    }
+}
+
+systemTest {
+    description 'Runs function tests against Codekvast Warehouse in a Docker container'
+    group 'System test'
+    dependsOn test, endpointForSystemTestWarehouse
+    finalizedBy stopSystemTestEnvironment
+    shouldRunAfter integrationTest
+
+    doFirst {
+        def endpoint = endpointForSystemTestWarehouse.endpoint()
+        waitForPortOpenAt endpoint
+
+        systemProperty 'expectedCodekvastVersion', codekvastDisplayVersion
+        systemProperty 'webdriver.base.url', "http://$endpoint"
+
+        // Make Serenity follow Gradle instead of Maven conventions
+        systemProperty 'properties', file('src/systemTest/resources/serenity.properties').absolutePath
+        systemProperty 'serenity.outputDirectory', file('build/systemTest-serenity').absolutePath
+    }
+}
+
+def waitForPortOpenAt(String endpoint) {
+    String[] parts = endpoint.split(':')
+    Socket socket = new Socket()
+    socket.connect(new InetSocketAddress(parts[0], Integer.parseInt(parts[1])), 15_000);
+    socket.close()
+}
+
+check.dependsOn systemTest
