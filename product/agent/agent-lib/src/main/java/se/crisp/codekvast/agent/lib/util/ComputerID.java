@@ -30,12 +30,12 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * This is a computed value of the computer identity. It uses various stuff for computing the value, that is unlikely to change between
+ * This is a computed value of the computer identity.
+ * It uses various stuff for computing the value, that is unlikely to change between
  * reboots.
  *
  * @author olle.hallin@crisp.se
@@ -43,15 +43,6 @@ import java.util.TreeSet;
 @Value
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ComputerID {
-
-    private static final Set<String> virtualInterfaceNames = new HashSet<String>();
-
-    static {
-        virtualInterfaceNames.add("vbox");
-        virtualInterfaceNames.add("docker");
-        virtualInterfaceNames.add("veth");
-        // TODO: Are there other strange interface names to avoid?
-    }
 
     private final String value;
 
@@ -83,13 +74,36 @@ public class ComputerID {
         try {
             for (Enumeration<NetworkInterface> it = NetworkInterface.getNetworkInterfaces(); it.hasMoreElements(); ) {
                 NetworkInterface ni = it.nextElement();
-                if (!ni.isLoopback() && !virtualInterfaceNames.contains(ni.getName())) {
+                if (shouldIncludeInterface(ni)) {
                     items.add(prettyPrintMacAddress(ni.getHardwareAddress()));
                 }
             }
         } catch (SocketException ignore) {
             // Cannot enumerate network interfaces
         }
+    }
+
+    private static boolean shouldIncludeInterface(NetworkInterface ni) throws SocketException {
+        if (ni.isLoopback()) {
+            return false;
+        }
+        if (ni.isVirtual()) {
+            return false;
+        }
+        String name = ni.getName();
+        if (name.matches("br-[0-9a-f]+$")) {
+            return false;
+        }
+        if (name.matches("lxcbr[0-9]+$")) {
+            return false;
+        }
+        if (name.matches("docker[0-9]+$")) {
+            return false;
+        }
+        if (name.matches("veth[0-9a-f]+$")) {
+            return false;
+        }
+        return true;
     }
 
     private static String prettyPrintMacAddress(byte[] macAddress) throws SocketException {
