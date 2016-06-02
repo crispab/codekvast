@@ -15,6 +15,7 @@ export class MethodListComponent {
     maxResults: number = 100;
     data: MethodData;
     errorMessage: string;
+    dateFormat = 'age';
 
     constructor(private warehouse: WarehouseService) {
     }

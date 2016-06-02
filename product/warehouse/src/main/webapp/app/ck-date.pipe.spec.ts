@@ -6,6 +6,9 @@ describe('WarehouseService', () => {
 
     let pipe;
     let datePipe;
+    let minutes = 60 * 1000;
+    let hours = 60 * minutes;
+    let days = 24 * hours;
 
     beforeEachProviders(() => [DatePipe]);
 
@@ -24,17 +27,23 @@ describe('WarehouseService', () => {
         done();
     });
 
-    it("Should return delegate to DatePipe when no format", done => {
+    it("Should delegate to DatePipe when no pattern", done => {
         let value = new Date();
         expect(pipe.transform(value)).toBe(datePipe.transform(value));
         done();
     });
 
-    it("Should return delegate to DatePipe when unrecognized format", done => {
+    it("Should delegate to DatePipe when unrecognized pattern", done => {
         let value = new Date();
         let pattern = 'shortDate'; // NOTE: not the default pattern 'mediumDate'
         expect(pipe.transform(value, pattern)).toBe(datePipe.transform(value, pattern));
         done();
     });
 
+    it("Should recognize 'age' pattern", done => {
+        let now = new Date().getTime();
+        let value = new Date(now - 2 * days - 4 * hours - 36 * minutes);
+        expect(pipe.transform(value, 'age')).toBe('2d 4h');
+        done();
+    });
 });

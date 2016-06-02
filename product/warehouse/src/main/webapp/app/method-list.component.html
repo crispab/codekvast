@@ -4,20 +4,12 @@
 
         <div class="form-group col-lg-10">
             <label for="signature">Signature</label>
-            <input type="text"
-                   class="form-control"
-                   [(ngModel)]="signature"
-                   ngControl="signature">
+            <input type="text" class="form-control" [(ngModel)]="signature" ngControl="signature">
         </div>
 
         <div class="form-group col-lg-2">
             <label for="maxResults">Max Results</label>
-            <input type="number"
-                   min="1"
-                   max="10000"
-                   class="form-control"
-                   [(ngModel)]="maxResults"
-                    ngControl="maxResults">
+            <input type="number" min="1" max="10000" class="form-control" [(ngModel)]="maxResults" ngControl="maxResults">
         </div>
 
         <div class="form-group col-lg-1">
@@ -41,9 +33,9 @@
         </tr>
         <tr *ngFor="let method of data.methods">
             <td>{{method.signature}}</td>
-            <td>{{method.lastInvokedAtMillis | ck_date}}</td>
-            <td>{{method.collectedSinceMillis | ck_date}}</td>
-            <td>{{method.collectedToMillis | ck_date}}</td>
+            <td>{{method.lastInvokedAtMillis | ck_date:dateFormat}}</td>
+            <td>{{method.collectedSinceMillis | ck_date:dateFormat}}</td>
+            <td>{{method.collectedToMillis | ck_date:dateFormat}}</td>
             <td>{{method.collectedDays }}</td>
         </tr>
     </table>
