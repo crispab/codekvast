@@ -4,6 +4,9 @@
 # containers get the same name no matter what directory the file lives in.
 #-----------------------------------------------------------------------
 
+# On what port should Codekvast Warehouse expose the REST API (0=random)?
+declare WAREHOUSE_API_PORT=0
+
 # Where to look for data files from Codekvast Daemons?
 declare WAREHOUSE_INPUT_DIR=/tmp/codekvast/warehouse
 
@@ -37,7 +40,7 @@ services:
     - SPRING_PROFILES_ACTIVE=docker
 
     ports:
-    - "8080"
+    - "${WAREHOUSE_API_PORT}:8080"
 
   db:
     image: mariadb:10
