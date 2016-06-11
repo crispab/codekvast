@@ -91,7 +91,10 @@ systemTest {
 
     doFirst {
         def endpoint = endpointForSystemTestWarehouse.endpoint()
+        logger.lifecycle("Waiting for {}", endpoint)
         waitForPortOpenAt endpoint
+
+        logger.lifecycle("Running system tests against {}", endpoint)
 
         systemProperty 'expectedCodekvastVersion', codekvastDisplayVersion
         systemProperty 'webdriver.base.url', "http://$endpoint"
