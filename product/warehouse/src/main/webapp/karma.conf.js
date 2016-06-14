@@ -3,10 +3,24 @@ module.exports = function (config) {
 
         basePath: '',
 
-        frameworks: ['jasmine'],
+        browsers: ['PhantomJS'],
+
+        plugins: [
+            'karma-jasmine',
+            'karma-coverage',
+            'karma-chrome-launcher',
+            'karma-firefox-launcher',
+            'karma-phantomjs-launcher',
+            'karma-phantomjs-shim'
+        ],
+
+        frameworks: ['jasmine', 'phantomjs-shim'],
 
         files: [
             // paths loaded by Karma
+            {pattern: 'node_modules/es6-shim/es6-shim.min.js', included: true, watched: true},
+            {pattern: 'node_modules/intl/dist/Intl.min.js', included: true, watched: true},
+            {pattern: 'node_modules/intl/locale-data/jsonp/en.js', included: true, watched: true},
             {pattern: 'node_modules/angular2/bundles/angular2-polyfills.js', included: true, watched: true},
             {pattern: 'node_modules/systemjs/dist/system.src.js', included: true, watched: true},
             {pattern: 'node_modules/rxjs/bundles/Rx.js', included: true, watched: true},
@@ -34,17 +48,6 @@ module.exports = function (config) {
         logLevel: config.LOG_INFO,
 
         colors: true,
-
-        browsers: ['Firefox'],
-
-        // Karma plugins loaded
-        plugins: [
-            'karma-jasmine',
-            'karma-coverage',
-            'karma-chrome-launcher',
-            'karma-firefox-launcher',
-            'karma-phantomjs-launcher'
-        ],
 
         reporters: ['progress', 'dots', 'coverage'],
 
