@@ -86,8 +86,8 @@ systemTest {
     description 'Runs function tests against Codekvast Warehouse in a Docker container'
     group 'System test'
     dependsOn endpointForSystemTestWarehouse, npmInstall
-    // finalizedBy stopSystemTestEnvironment
-    // shouldRunAfter integrationTest
+    finalizedBy stopSystemTestEnvironment
+    shouldRunAfter integrationTest
 
     doFirst {
         def endpoint = endpointForSystemTestWarehouse.endpoint()
