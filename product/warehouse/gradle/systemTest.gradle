@@ -11,10 +11,10 @@ dependencies {
     systemTestCompileOnly lombok
 
     systemTestCompile project(':product:support:testsupport')
-    systemTestCompile 'net.serenity-bdd:serenity-core:1.1.31'
-    systemTestCompile 'net.serenity-bdd:serenity-junit:1.1.31'
+    systemTestCompile 'net.serenity-bdd:serenity-core:1.1.36'
+    systemTestCompile 'net.serenity-bdd:serenity-junit:1.1.36'
 
-    systemTestRuntime 'com.codeborne:phantomjsdriver:1.2.1'
+    systemTestRuntime 'com.codeborne:phantomjsdriver:1.3.0'
 }
 
 task startSystemTestEnvironment(type: Exec) {
@@ -85,9 +85,9 @@ task endpointForSystemTestWarehouse(type: Exec) {
 systemTest {
     description 'Runs function tests against Codekvast Warehouse in a Docker container'
     group 'System test'
-    dependsOn test, endpointForSystemTestWarehouse
-    finalizedBy stopSystemTestEnvironment
-    shouldRunAfter integrationTest
+    dependsOn endpointForSystemTestWarehouse
+    // finalizedBy stopSystemTestEnvironment
+    // shouldRunAfter integrationTest
 
     doFirst {
         def endpoint = endpointForSystemTestWarehouse.endpoint()
@@ -101,7 +101,6 @@ systemTest {
 
         // Make Serenity follow Gradle instead of Maven conventions
         systemProperty 'properties', file('src/systemTest/resources/serenity.properties').absolutePath
-        systemProperty 'serenity.outputDirectory', file('build/systemTest-serenity').absolutePath
     }
 }
 

@@ -1,4 +1,4 @@
-package se.crisp.codekvast.warehouse.functest;
+package se.crisp.codekvast.warehouse.systemtest;
 
 import net.serenitybdd.junit.runners.SerenityRunner;
 import net.thucydides.core.annotations.Managed;
@@ -27,7 +27,9 @@ public class WhenBrowsingWarehouse {
      * Verify that the app has started in a Docker container and that Gradle has defined the base url...
      */
     @Test
-    public void should_have_webdriver_base_url() {
+    public void should_have_system_properties() {
+        assertThat(expectedVersion, not(nullValue()));
+        assertThat(webDriverBaseUrl, not(nullValue()));
         assertThat(webDriverBaseUrl, startsWith("http://0.0.0.0:"));
     }
 

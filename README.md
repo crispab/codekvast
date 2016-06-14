@@ -90,6 +90,8 @@ It will also build and start Codekvast Daemon and Codekvast Warehouse.
 
 1. Install [Docker Engine 1.10.3+](https://docs.docker.com/engine/installation/) and [Docker Compose 1.6.2+](https://docs.docker.com/compose/install/)
 
+1. Install PhantomJS
+
 1. Open a terminal window
 
 1. Do `git clone https://github.com/crispab/codekvast.git && cd codekvast`
@@ -169,7 +171,9 @@ The following stack is used when developing Codekvast (in alphabetical order):
 1. Java 8
 1. Lombok
 1. MariaDB 10+ (Codekvast Warehouse)
+1. NodeJS
 1. Node Package Manager (npm)
+1. PhantomJS
 1. Spring Boot
 1. TypeScript
 
@@ -201,6 +205,23 @@ Use the following command to install the Node Package Manager (npm), which is us
 
     sudo apt-get install nodejs npm
     
+#### PhantomJS
+
+Install PhantomJS globally (Ubuntu, Debian):
+
+    sudo npm install -g phantomjs-prebuilt
+    sudo updatedb
+    locate phantomjs | egrep '/bin/phantomjs$'
+
+Note the exact location of `phantomjs`
+(On Ubuntu this is `/usr/lib/node_modules/phantomjs-prebuilt/bin/phantomjs`).
+
+Edit `$HOME/.gradle/gradle.properties` and add
+
+    systemProp.phantomjs.binary.path = /path/to/phantomjs
+
+where `/path/to/phantomjs` is the path to your installed PhantomJS binary.
+
 #### Docker Engine & Docker Compose
 
 Docker Engine 1.10 or later and Docker Compose 1.6 or later is required for Codekvast Warehouse.
