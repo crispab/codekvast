@@ -412,7 +412,7 @@ public class MariadbIntegrationTest {
         // given
         generateQueryTestData();
 
-        // when find by signat
+        // when find by signature
         List<MethodDescriptor1> methods = apiService.getMethods(
                 GetMethodsRequest1.defaults()
                                   .signature(testDataGenerator.getMethod(1).getSignature().substring(1))

@@ -31,7 +31,12 @@
     <inspection_tool class="ClassComplexity" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="m_limit" value="80" />
     </inspection_tool>
-    <inspection_tool class="ClassCoupling" enabled="true" level="WARNING" enabled_by_default="true">
+    <inspection_tool class="ClassCoupling" enabled="true" level="WARNING" enabled_by_default="false">
+      <scope name="Production" level="WARNING" enabled="true">
+        <option name="m_includeJavaClasses" value="false" />
+        <option name="m_includeLibraryClasses" value="false" />
+        <option name="m_limit" value="15" />
+      </scope>
       <option name="m_includeJavaClasses" value="false" />
       <option name="m_includeLibraryClasses" value="false" />
       <option name="m_limit" value="15" />
@@ -134,7 +139,12 @@
       <option name="loggerFactoryMethodName" value="getLogger,getLogger,getLog,getLogger" />
     </inspection_tool>
     <inspection_tool class="MarkerInterface" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="MethodCount" enabled="true" level="WARNING" enabled_by_default="true">
+    <inspection_tool class="MethodCount" enabled="true" level="WARNING" enabled_by_default="false">
+      <scope name="Production" level="WARNING" enabled="true">
+        <option name="m_limit" value="20" />
+        <option name="ignoreGettersAndSetters" value="false" />
+        <option name="ignoreOverridingMethods" value="false" />
+      </scope>
       <option name="m_limit" value="20" />
       <option name="ignoreGettersAndSetters" value="true" />
       <option name="ignoreOverridingMethods" value="true" />
@@ -177,6 +187,9 @@
       <option name="warnImplicitResults" value="false" />
     </inspection_tool>
     <inspection_tool class="Singleton" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="SpringAutowiredFieldsWarningInspection" enabled="true" level="WARNING" enabled_by_default="false">
+      <scope name="Production" level="WARNING" enabled="true" />
+    </inspection_tool>
     <inspection_tool class="SpringBootApplicationProperties" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="SpringJavaAutowiringInspection" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="SqlIdentifierInspection" enabled="false" level="WARNING" enabled_by_default="false" />
