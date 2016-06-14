@@ -10,11 +10,10 @@ module.exports = function (config) {
             'karma-coverage',
             'karma-chrome-launcher',
             'karma-firefox-launcher',
-            'karma-phantomjs-launcher',
-            'karma-phantomjs-shim'
+            'karma-phantomjs-launcher'
         ],
 
-        frameworks: ['jasmine', 'phantomjs-shim'],
+        frameworks: ['jasmine'],
 
         files: [
             // paths loaded by Karma
