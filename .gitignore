@@ -27,3 +27,4 @@ npm-debug.log**
 **/src/main/webapp/app/**/*.js
 **/src/main/webapp/app/**/*.js.map
 a.a
+phantomjsdriver.log
