@@ -11,8 +11,8 @@ task npmInstall(type: Exec) {
 
     inputs.file file('package.json')
     inputs.file file('typings.json')
-    outputs.dir file('node_modules')
-    outputs.dir file('typings')
+    outputs.dir fileTree('node_modules')
+    outputs.dir fileTree('typings')
 }
 
 task compileTypeScript(type: Exec) {
