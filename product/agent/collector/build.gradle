@@ -35,7 +35,7 @@ dependencies {
 
     integrationTestCompile project(":product:support:testsupport")
 
-    jacocoagent 'org.jacoco:org.jacoco.agent:0.7.6.201602180812:runtime@jar'
+    jacocoagent 'org.jacoco:org.jacoco.agent:0.7.7.201606060606:runtime@jar'
 }
 
 shadowJar {
