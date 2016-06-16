@@ -13,9 +13,14 @@
 
     // packages tells the System loader how to load when no filename and/or no extension
     var packages = {
-        'app': {main: 'main.js', defaultExtension: 'js'},
-        'rxjs': {defaultExtension: 'js'}
+        'app': {main: 'main.js', defaultExtension: 'js'}
     };
+
+    if (System.packageWithIndex) {
+        packages['rxjs'] = {defaultExtension: 'js'};
+    } else {
+        packages['rxjs'] = {main: '/bundles/Rx.umd.js', defaultExtension: 'js'};
+    }
 
     var ngPackageNames = [
         'common',
