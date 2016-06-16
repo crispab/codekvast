@@ -1,7 +1,7 @@
-import {provide} from 'angular2/core';
-import {Http, Response, BaseRequestOptions, Headers} from 'angular2/http';
-import {describe, expect, it, inject, beforeEach, beforeEachProviders} from 'angular2/testing';
-import {MockBackend} from 'angular2/http/testing';
+import {provide} from '@angular/core';
+import {Http, Response, ResponseType, BaseRequestOptions, Headers} from '@angular/http';
+import {describe, expect, it, inject, beforeEach, beforeEachProviders} from '@angular/core/testing';
+import {MockBackend} from '@angular/http/testing';
 import {ConfigService} from './config.service';
 import {WarehouseService} from './warehouse.service';
 

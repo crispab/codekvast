@@ -16,23 +16,23 @@ module.exports = function (config) {
         frameworks: ['jasmine'],
 
         files: [
-            // paths loaded by Karma
-            {pattern: 'node_modules/es6-shim/es6-shim.min.js', included: true, watched: true},
-            {pattern: 'node_modules/intl/dist/Intl.min.js', included: true, watched: true},
-            {pattern: 'node_modules/intl/locale-data/jsonp/en.js', included: true, watched: true},
-            {pattern: 'node_modules/angular2/bundles/angular2-polyfills.js', included: true, watched: true},
-            {pattern: 'node_modules/systemjs/dist/system.src.js', included: true, watched: true},
-            {pattern: 'node_modules/rxjs/bundles/Rx.js', included: true, watched: true},
-            {pattern: 'node_modules/angular2/bundles/angular2.dev.js', included: true, watched: true},
-            {pattern: 'node_modules/angular2/bundles/http.dev.js', included: true, watched: true},
-            {pattern: 'node_modules/angular2/bundles/testing.dev.js', included: true, watched: true},
-            {pattern: 'karma-test-shim.js', included: true, watched: true},
+            'node_modules/es6-shim/es6-shim.min.js',
+            'node_modules/core-js/client/shim.min.js',
+            'node_modules/zone.js/dist/zone.js',
+            'node_modules/reflect-metadata/Reflect.js',
+            'node_modules/systemjs/dist/system.src.js',
+            'node_modules/intl/dist/Intl.min.js',
+            'node_modules/intl/locale-data/jsonp/en.js',
+            'karma-test-shim.js',
+            'systemjs.config.js',
 
-            // paths loaded via module imports
+            // Our built application code
             {pattern: 'app/**/*.js', included: false, watched: true},
+            {pattern: 'app/**/*.html', included: false, watched: true},
+            {pattern: 'app/**/*.css', included: false, watched: true},
 
             // paths to support debugging with source maps in dev tools
-            {pattern: 'app/**/*.ts', included: false, watched: false},
+            {pattern: 'app/**/*.ts', included: false, watched: true},
             {pattern: 'app/**/*.js.map', included: false, watched: false}
         ],
 

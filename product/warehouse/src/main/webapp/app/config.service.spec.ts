@@ -1,4 +1,4 @@
-import {window} from "angular2/src/facade/browser";
+import {window} from "@angular/platform-browser/src/facade/browser";
 import {ConfigService} from "./config.service";
 
 describe('ConfigService', () => {

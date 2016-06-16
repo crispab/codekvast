@@ -1,4 +1,5 @@
-import {bootstrap} from "angular2/platform/browser";
+import {bootstrap} from "@angular/platform-browser-dynamic";
+import {DatePipe} from "@angular/common";
 import {AppComponent} from "./app.component";
 
-bootstrap(AppComponent);
+bootstrap(AppComponent, [DatePipe]);

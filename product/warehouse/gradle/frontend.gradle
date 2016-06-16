@@ -49,7 +49,7 @@ task compileAndWatchTypeScript(type: Exec) {
 // This copySpec defines what node_modules that should be included in the jar. It has to be a separate spec, or else
 // no .class files will be included. Strange...
 
-def referencedNodeModulesSpec = copySpec {
+def includedNodeModulesSpec = copySpec {
     logger.info "Including scripts linked from index.html..."
 
     def slurper = new XmlSlurper()
@@ -74,6 +74,29 @@ def referencedNodeModulesSpec = copySpec {
     }
 }
 
+def systemjsNodeModulesSpec = copySpec {
+    logger.info "Including scripts referenced from systemjs.config.js..."
+
+    def ngPackageNames = [
+            'common',
+            'compiler',
+            'core',
+            'http',
+            'platform-browser',
+            'platform-browser-dynamic',
+            'router',
+            'router-deprecated',
+            'upgrade'
+    ];
+
+    from('src/main/webapp') {
+        ngPackageNames.forEach {
+            include "node_modules/@angular/$it/**"
+        }
+        include 'node_modules/rxjs/**'
+    }
+}
+
 jar {
     dependsOn compileTypeScript
 
@@ -84,6 +107,7 @@ jar {
         from('src/main/webapp') {
             include 'app/**'
             include 'css/**'
+            include 'systemjs.config.js'
             exclude '**/*.js.map'
             exclude '**/*.spec.js'
             exclude '**/*.ts'
@@ -101,7 +125,8 @@ jar {
 
     // Also include referenced node_modules...
     into('static') {
-        with referencedNodeModulesSpec
+        with includedNodeModulesSpec
+        with systemjsNodeModulesSpec
     }
 }
 

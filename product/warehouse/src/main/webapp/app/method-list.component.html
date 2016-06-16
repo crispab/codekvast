@@ -33,9 +33,9 @@
         </tr>
         <tr *ngFor="let method of data.methods">
             <td>{{method.signature}}</td>
-            <td>{{method.lastInvokedAtMillis | ck_date:dateFormat}}</td>
-            <td>{{method.collectedSinceMillis | ck_date:dateFormat}}</td>
-            <td>{{method.collectedToMillis | ck_date:dateFormat}}</td>
+            <td>{{method.lastInvokedAtMillis | ckAge:dateFormat}}</td>
+            <td>{{method.collectedSinceMillis | ckAge:dateFormat}}</td>
+            <td>{{method.collectedToMillis | ckAge:dateFormat}}</td>
             <td>{{method.collectedDays }}</td>
         </tr>
     </table>

@@ -3,45 +3,35 @@
 <head>
     <title>Codekvast Warehouse</title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <!-- 1. Style sheets -->
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="css/codekvast.css"/>
 
-    <!--
-        <script src="node_modules/angular2/es6/dev/src/testing/shims_for_IE.js"></script>
-    -->
-
-    <script src="node_modules/es6-shim/es6-shim.min.js"></script>
-    <script src="node_modules/systemjs/dist/system-polyfills.js"></script>
-    <script src="node_modules/intl/dist/Intl.min.js"></script>
-    <script src="node_modules/intl/locale-data/jsonp/en.js"></script>
-    <script src="node_modules/angular2/bundles/angular2-polyfills.js"></script>
-    <script src="node_modules/systemjs/dist/system.src.js"></script>
-    <script src="node_modules/rxjs/bundles/Rx.js"></script>
-    <script src="node_modules/angular2/bundles/angular2.dev.js"></script>
-    <script src="node_modules/angular2/bundles/http.dev.js"></script>
-
+    <!-- 2. Configure Codekvast -->
     <script>
         CODEKVAST_API = 'http://localhost:8080';
         CODEKVAST_VERSION = '${project.codekvastDisplayVersion}'
     </script>
 
-    <!-- 2. Configure SystemJS -->
+    <!-- 3. Load polyfills -->
+    <script src="node_modules/core-js/client/shim.min.js"></script>
+    <script src="node_modules/zone.js/dist/zone.js"></script>
+    <script src="node_modules/reflect-metadata/Reflect.js"></script>
+    <script src="node_modules/systemjs/dist/system.src.js"></script>
+
+    <!-- 4. Configure SystemJS -->
+    <script src="systemjs.config.js"></script>
     <script>
-        System.config({
-            packages: {
-                app: {
-                    format: 'register',
-                    defaultExtension: 'js'
-                }
-            }
+        System.import('app').catch(function (err) {
+            console.error(err);
         });
-        System.import('app/main')
-                .then(null, console.error.bind(console));
     </script>
+
 </head>
 
-<!-- 3. Display the application -->
+<!-- 5. Display the application -->
 <body>
-<ck-app>Loading...</ck-app>
+    <ck-app>Loading...</ck-app>
 </body>
 </html>

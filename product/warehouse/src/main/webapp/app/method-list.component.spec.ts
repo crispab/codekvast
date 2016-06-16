@@ -1,7 +1,8 @@
-import {describe, inject, beforeEach, beforeEachProviders, TestComponentBuilder} from 'angular2/testing';
+import {describe, inject, beforeEach, beforeEachProviders} from '@angular/core/testing';
+import {TestComponentBuilder} from '@angular/compiler/testing';
 import {MethodListComponent} from './method-list.component';
-import {setBaseTestProviders} from 'angular2/testing';
-import { TEST_BROWSER_PLATFORM_PROVIDERS, TEST_BROWSER_APPLICATION_PROVIDERS} from 'angular2/platform/testing/browser';
+import {setBaseTestProviders} from '@angular/core/testing';
+import { TEST_BROWSER_PLATFORM_PROVIDERS, TEST_BROWSER_APPLICATION_PROVIDERS} from '@angular/platform-browser/testing';
 setBaseTestProviders(TEST_BROWSER_PLATFORM_PROVIDERS, TEST_BROWSER_APPLICATION_PROVIDERS);
 
 describe('MethodListComponent', () => {
@@ -11,9 +12,7 @@ describe('MethodListComponent', () => {
     let tcb;
 
     //setup
-    beforeEachProviders(() => [
-        TestComponentBuilder, MethodListComponent
-    ]);
+    beforeEachProviders(() => [TestComponentBuilder, MethodListComponent]);
 
     beforeEach(inject([TestComponentBuilder], _tcb => {
         tcb = _tcb

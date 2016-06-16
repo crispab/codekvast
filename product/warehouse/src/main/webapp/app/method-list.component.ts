@@ -1,13 +1,13 @@
-import {Component} from 'angular2/core';
+import {Component} from '@angular/core';
 import {WarehouseService} from './warehouse.service';
 import {MethodData} from './model/MethodData';
-import {CkDatePipe} from './ck-date.pipe';
+import {CkAgePipe} from './ck-age.pipe';
 
 @Component({
     selector: 'ck-method-list',
     templateUrl: 'app/method-list.component.html',
     providers: [WarehouseService],
-    pipes: [CkDatePipe]
+    pipes: [CkAgePipe]
 })
 export class MethodListComponent {
 

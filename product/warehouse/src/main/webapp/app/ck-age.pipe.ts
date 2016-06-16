@@ -1,13 +1,14 @@
-import {Pipe} from 'angular2/core';
-import {DatePipe} from 'angular2/src/common/pipes/date_pipe';
-import {InvalidPipeArgumentException} from 'angular2/src/common/pipes/invalid_pipe_argument_exception';
-import {isDate, isNumber} from 'angular2/src/facade/lang';
+import {Injectable, Pipe, PipeTransform} from '@angular/core';
+import {DatePipe} from '@angular/common';
 
-@Pipe({name: 'ck_date'})
-export class CkDatePipe extends DatePipe {
+@Pipe({name: 'ckAge'})
+@Injectable()
+export class CkAgePipe implements PipeTransform {
 
     private hourMillis = 60 * 60 * 1000;
     private dayMillis = 24 * this.hourMillis;
+
+    constructor(private datePipe: DatePipe) {}
 
     transform(value: any, pattern?: string): string {
         if (value === 0) {
@@ -16,21 +17,25 @@ export class CkDatePipe extends DatePipe {
         if (pattern === 'age') {
             return this.getAge(value);
         }
-        return super.transform(value, pattern);
+        return this.datePipe.transform(value, pattern);
     }
 
-    supports(obj: any): boolean {
-        return isDate(obj) || isNumber(obj);
+    private isDate(value: any): boolean {
+        return value instanceof Date && !isNaN(value.valueOf());
+    }
+
+    private isInteger(value: any): boolean {
+        return Number.isInteger(value);
     }
 
     private getAge(value: any): string {
-        if (isNumber(value)) {
+        if (this.isInteger(value)) {
             return this.getAgeMillis(value);
         }
-        if (isDate(value)) {
+        if (this.isDate(value)) {
             return this.getAgeMillis(value.getTime())
         }
-        throw new InvalidPipeArgumentException(DatePipe, value);
+        throw "CkAgePipe only understands integers and dates"
     }
 
     private getAgeMillis(value: number): string {

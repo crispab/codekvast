@@ -1,18 +1,13 @@
 {
   "compilerOptions": {
-    "charset": "utf8",
     "target": "es5",
-    "module": "system",
+    "module": "commonjs",
     "moduleResolution": "node",
     "sourceMap": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "removeComments": false,
-    "noImplicitAny": false,
-    "noEmitOnError": true,
-    "preserveConstEnums": true,
-    "newLine": "lf",
-    "pretty": true
+    "noImplicitAny": false
   },
   "exclude": [
     "node_modules",
