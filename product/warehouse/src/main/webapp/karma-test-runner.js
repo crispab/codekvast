@@ -13,14 +13,14 @@ function isSpecFile(path) {
     return path.slice(-8) == '.spec.js';
 }
 
-function isBuiltFile(path) {
-    var builtPath = '/base/app';
-    return isJsFile(path) && (path.substr(0, builtPath.length) == builtPath);
+function isAppFile(path) {
+    var appPath = '/app';
+    return isJsFile(path) && (path.substr(0, appPath.length) == appPath);
 }
 
 var allSpecFiles = Object.keys(window.__karma__.files)
     .filter(isSpecFile)
-    .filter(isBuiltFile);
+    .filter(isAppFile);
 
 // Load our SystemJS configuration.
 Promise.all([

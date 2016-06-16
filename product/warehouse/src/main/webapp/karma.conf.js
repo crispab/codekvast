@@ -23,8 +23,9 @@ module.exports = function (config) {
             'node_modules/systemjs/dist/system.src.js',
             'node_modules/intl/dist/Intl.min.js',
             'node_modules/intl/locale-data/jsonp/en.js',
-            'karma-test-shim.js',
             'systemjs.config.js',
+
+            'karma-test-runner.js',
 
             // Our built application code
             {pattern: 'app/**/*.js', included: false, watched: true},
@@ -39,7 +40,8 @@ module.exports = function (config) {
         // proxied base paths
         proxies: {
             // required for component assets fetched by Angular's compiler
-            '/app/': '/base/app/'
+            // '/app/': '/base/app/',
+            '/left/node_modules/': '/right/node_modules/'
         },
 
         port: 9876,
