@@ -1,8 +1,8 @@
 /**
  * Injectable wrapper for front-end config rendered as JavaScript literals in the index.html host page.
  */
-import {Injectable} from "@angular/core";
-import {window} from "@angular/platform-browser/src/facade/browser";
+import {Injectable} from '@angular/core';
+import {window} from '@angular/platform-browser/src/facade/browser';
 
 @Injectable()
 export class ConfigService {

@@ -1,14 +1,14 @@
 import {Injectable, Pipe, PipeTransform} from '@angular/core';
 import {DatePipe} from '@angular/common';
 
-@Pipe({name: 'ckAge'})
-@Injectable()
+@Pipe({name: 'ckAge'}) @Injectable()
 export class CkAgePipe implements PipeTransform {
 
     private hourMillis = 60 * 60 * 1000;
     private dayMillis = 24 * this.hourMillis;
 
-    constructor(private datePipe: DatePipe) {}
+    constructor(private datePipe: DatePipe) {
+    }
 
     transform(value: any, pattern?: string): string {
         if (value === 0) {

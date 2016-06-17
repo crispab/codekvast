@@ -17,8 +17,8 @@ export class WarehouseService {
 
     getMethods(signature?: string, maxResults?: number): Observable<MethodData> {
         return this.http.get(this.constructGetMethodsUrl(signature, maxResults), {headers: this.headers})
-            .map(this.extractMethodData)
-            .catch(this.handleError);
+                   .map(this.extractMethodData)
+                   .catch(this.handleError);
     }
 
     constructGetMethodsUrl(signature: string, maxResults: number): string {
@@ -32,7 +32,7 @@ export class WarehouseService {
             url += `${delimiter}maxResults=${maxResults}`;
             delimiter = '&';
         }
-        return  url;
+        return url;
     }
 
     private extractMethodData(res: Response): MethodData {

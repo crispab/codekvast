@@ -1,5 +1,5 @@
 import {provide} from '@angular/core';
-import {Http, Response, ResponseType, BaseRequestOptions, Headers} from '@angular/http';
+import {Http, Response, BaseRequestOptions, Headers} from '@angular/http';
 import {describe, expect, it, inject, beforeEach, beforeEachProviders} from '@angular/core/testing';
 import {MockBackend} from '@angular/http/testing';
 import {ConfigService} from './config.service';
@@ -9,8 +9,15 @@ describe('WarehouseService', () => {
 
     let mockBackend, warehouse;
 
-    beforeEachProviders(() => [ConfigService, WarehouseService, MockBackend, BaseRequestOptions,
-        provide(Http, {deps: [MockBackend, BaseRequestOptions], useFactory: (backend, options) => new Http(backend, options)})
+    beforeEachProviders(() => [
+        ConfigService,
+        WarehouseService,
+        MockBackend,
+        BaseRequestOptions,
+        provide(Http, {
+            deps: [MockBackend, BaseRequestOptions],
+            useFactory: (backend, options) => new Http(backend, options)
+        })
     ]);
 
     beforeEach(inject([MockBackend, WarehouseService], (_mockBackend, _warehouse) => {
@@ -52,7 +59,8 @@ describe('WarehouseService', () => {
                 merge: null,
                 status: 200,
                 headers: new Headers(),
-                body: JSON.stringify(response)}));
+                body: JSON.stringify(response)
+            }));
         });
 
         warehouse.getMethods().subscribe(data => {
