@@ -4,7 +4,7 @@ testSets {
     systemTest
 }
 
-systemTest.dependsOn test, testTypeScript
+systemTest.dependsOn test, npmTest
 check.dependsOn systemTest
 
 dependencies {

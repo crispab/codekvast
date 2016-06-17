@@ -5,7 +5,7 @@ import {MethodListComponent} from './method-list.component';
 
 @Component({
     selector: 'ck-app',
-    templateUrl: '/src/app/app.component.html',
+    template: require('./app.component.html'),
     providers: [HTTP_PROVIDERS, ConfigService],
     directives: [MethodListComponent]
 })

@@ -1,10 +1,8 @@
-import groovy.util.slurpersupport.GPathResult
-
 //--- Frontend -----------------------------------------------------------------------------------
 
 task npmInstall(type: Exec) {
-    description "Installs the node modules required for frontend development"
-    group "Frontend Development"
+    description 'Installs the node modules required for frontend development'
+    group 'Frontend Development'
 
     workingDir 'src/main/webapp'
     commandLine 'npm', 'install'
@@ -15,151 +13,73 @@ task npmInstall(type: Exec) {
     outputs.dir fileTree('typings')
 }
 
-task compileTypeScript(type: Exec) {
-    description "Runs the TypeScript compiler"
-    group "Frontend Development"
-
-    dependsOn npmInstall
-    workingDir 'src/main/webapp'
-    commandLine 'npm', 'run', 'tsc'
-
-    inputs.file 'src/main/webapp/package.json'
-    inputs.file 'src/main/webapp/tsconfig.json'
-    inputs.file 'src/main/webapp/typings.json'
-    inputs.files fileTree('src/main/webapp/app') {
-        include '**/*.ts'
-    }
-
-    outputs.files fileTree('src/main/webapp/app') {
-        include '**/*.js'
-        include '**/*.js.map'
-    }
-}
-clean.dependsOn cleanCompileTypeScript
-
-task compileAndWatchTypeScript(type: Exec) {
-    description "Runs the TypeScript compiler in watch mode"
-    group "Frontend Development"
-
-    dependsOn npmInstall
-    workingDir 'src/main/webapp'
-    commandLine 'npm', 'run', 'tsc:w'
-}
-
-// This copySpec defines what node_modules that should be included in the jar. It has to be a separate spec, or else
-// no .class files will be included. Strange...
-
-def includedNodeModulesSpec = copySpec {
-    logger.info "Including scripts linked from index.html..."
-
-    def slurper = new XmlSlurper()
-    slurper.setFeature('http://apache.org/xml/features/disallow-doctype-decl', false)
-    def html = slurper.parse(file('src/main/webapp/index.html'))
-
-    from('src/main/webapp') {
-        html.head.link.each {
-            def href = it.@href.toString()
-            if (href.startsWith('node_modules')) {
-                logger.info 'Including {}', href
-                include href
-            }
-        }
-        html.head.script.each {
-            def src = it.@src.toString()
-            if (src.startsWith('node_modules')) {
-                logger.info 'Including {}', src
-                include src
-            }
-        }
-    }
-}
-
-def systemjsNodeModulesSpec = copySpec {
-    logger.info "Including scripts referenced from systemjs.config.js..."
-
-    def ngPackageNames = [
-            'common',
-            'compiler',
-            'core',
-            'http',
-            'platform-browser',
-            'platform-browser-dynamic',
-            'router',
-            'router-deprecated',
-            'upgrade'
-    ];
-
-    from('src/main/webapp') {
-        ngPackageNames.forEach {
-            include "node_modules/@angular/$it/**"
-        }
-        include 'node_modules/rxjs/**'
-    }
-}
-
-jar {
-    dependsOn compileTypeScript
-
-    // Spring Boot automatically serves static content from static/**
-
-    // All webapp stuff except tools config, tests and those things that need special treatment...
-    into('static') {
-        from('src/main/webapp') {
-            include 'app/**'
-            include 'css/**'
-            include 'systemjs.config.js'
-            exclude '**/*.js.map'
-            exclude '**/*.spec.js'
-            exclude '**/*.ts'
-        }
-    }
-
-    // The index.html page needs some editing...
-    into('static') {
-        from('src/main/webapp') {
-            include 'index.html'
-            expand(project.properties)
-            filter { line -> return line.contains('CODEKVAST_API') ? "        CODEKVAST_API=''" : line }
-        }
-    }
-
-    // Also include referenced node_modules...
-    into('static') {
-        with includedNodeModulesSpec
-        with systemjsNodeModulesSpec
-    }
-}
-
-task npmStart(type: Exec) {
-    description "Starts tsc --watch and a NodeJS Lite server on port 3000"
-    group "Frontend Development"
-
-    dependsOn npmInstall
-
-    workingDir "src/main/webapp"
-    executable "npm"
-    args "start"
-}
-
-task testTypeScript(type: Exec) {
+task npmTest(type: Exec) {
     description "Runs Typescript unit tests with Karma and Jasmine"
     group "Frontend Development"
 
-    dependsOn compileTypeScript
+    dependsOn npmInstall
 
-    workingDir "src/main/webapp"
-    executable "npm"
-    args "run", "test"
+    def timestampFile = file("$projectDir/build/npmTest.timestamp")
+
+    inputs.file 'src/main/webapp/package.json'
+    inputs.file 'src/main/webapp/tsconfig.json'
+    inputs.file 'src/main/webapp/webpack.config.json'
+    inputs.files fileTree('config')
+    inputs.files fileTree('src/main/webapp/src')
+    inputs.file timestampFile
+    outputs.file timestampFile
+
+    workingDir 'src/main/webapp'
+    executable 'npm'
+    args 'run', 'test'
+
+    doLast {
+        "touch ${timestampFile.absolutePath}".execute()
+    }
 }
-check.dependsOn testTypeScript
+check.dependsOn npmTest
 
-task testAndWatchTypeScript(type: Exec) {
-    description "Runs JS unit tests continuously with Karma and Jasmine"
+
+task npmStart(type: Exec) {
+    description 'Starts the webpack dev server on port 3000'
+    group 'Frontend Development'
+
+    dependsOn npmInstall
+
+    workingDir 'src/main/webapp'
+    executable 'npm'
+    args 'start'
+}
+
+task npmBuild(type: Exec) {
+    description "Buils the frontend webpack for production"
     group "Frontend Development"
+    // dependsOn npmTest
 
-    dependsOn compileTypeScript
+    inputs.file file('src/main/webapp/package.json')
+    inputs.file file('src/main/webapp/tsconfig.json')
+    inputs.file file('src/main/webapp/webpack.config.json')
+    inputs.files fileTree('src/main/webapp/config')
+    inputs.files fileTree('src/main/webapp/src')
 
-    workingDir "src/main/webapp"
-    executable "npm"
-    args "run", "test:w"
+    outputs.files fileTree('src/main/webapp/dist')
+
+    workingDir file('src/main/webapp')
+    executable 'npm'
+    args 'run', 'build'
+}
+clean.dependsOn cleanNpmBuild
+
+jar {
+    dependsOn npmBuild
+
+    // Spring Boot automatically serves static content from static/**
+
+    // Output from npmBuild
+    into('static') {
+        from('src/main/webapp/dist') {
+            exclude '**/*.css.map'
+            exclude '**/*.js.map'
+        }
+    }
 }
