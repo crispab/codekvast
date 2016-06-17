@@ -5,7 +5,7 @@ import {CkAgePipe} from './ck-age.pipe';
 
 @Component({
     selector: 'ck-method-list',
-    templateUrl: 'app/method-list.component.html',
+    templateUrl: '/src/app/method-list.component.html',
     providers: [WarehouseService],
     pipes: [CkAgePipe]
 })

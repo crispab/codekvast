@@ -28,3 +28,4 @@ npm-debug.log**
 **/src/main/webapp/src/**/*.js.map
 a.a
 phantomjsdriver.log
+/product/warehouse/src/main/webapp/dist/
