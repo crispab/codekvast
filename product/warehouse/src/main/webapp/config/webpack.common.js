@@ -42,12 +42,25 @@ module.exports = {
     },
 
     plugins: [
+        new webpack.EnvironmentPlugin([
+            'CODEKVAST_VERSION'
+        ]),
+
         new webpack.optimize.CommonsChunkPlugin({
             name: ['app', 'vendor', 'polyfills']
         }),
 
         new HtmlWebpackPlugin({
-            template: 'src/index.html'
+            inject: false,
+            template: require('html-webpack-template'),
+            title: 'Codekvast Warehouse',
+            minify: false,
+            mobile: true,
+            appMountId: 'ck-app',
+            window: {
+                CODEKVAST_API: process.env.ENV === 'production' ? '' : 'http://localhost:8080',
+                CODEKVAST_VERSION: process.env.CODEKVAST_VERSION
+            }
         })
     ]
 };

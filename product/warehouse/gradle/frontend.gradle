@@ -67,6 +67,7 @@ task npmBuild(type: Exec) {
     workingDir file('src/main/webapp')
     executable 'npm'
     args 'run', 'build'
+    environment['CODEKVAST_VERSION']=codekvastDisplayVersion
 }
 clean.dependsOn cleanNpmBuild
 

@@ -7,6 +7,7 @@
     "start": "webpack-dev-server --inline --progress --port 3000",
     "test": "karma start",
     "build": "rimraf dist && webpack --config config/webpack.prod.js --progress --profile --bail",
+    "build:q": "webpack --config config/webpack.dev.js --progress --bail",
     "postinstall": "typings install"
   },
   "license": "MIT",
@@ -31,6 +32,7 @@
     "file-loader": "^0.8.5",
     "html-loader": "^0.4.3",
     "html-webpack-plugin": "^2.15.0",
+    "html-webpack-template": "^5.0.0",
     "jasmine-core": "^2.4.1",
     "karma": "^0.13.22",
     "karma-jasmine": "^1.0.2",
