@@ -22,7 +22,7 @@ task startSystemTestEnvironment {
     group 'System test'
     dependsOn ':product:warehouse:distDocker'
     doLast {
-        executeDockerCompose("up -d")
+        executeDockerCompose("up -d --force-recreate")
     }
 }
 
@@ -47,7 +47,7 @@ task psSystemTestEnvironment {
     description 'docker-compose ps'
     group 'System test'
     doLast {
-        executeDockerCompose("ps")
+        logger.lifecycle executeDockerCompose("ps")
     }
 }
 
@@ -63,7 +63,7 @@ systemTest {
     description 'Runs function tests against Codekvast Warehouse in a Docker container'
     group 'System test'
     dependsOn npmInstall, startSystemTestEnvironment
-    finalizedBy stopSystemTestEnvironment
+    // finalizedBy stopSystemTestEnvironment
     shouldRunAfter integrationTest
 
     doFirst {
@@ -83,7 +83,7 @@ systemTest {
 
 def String executeDockerCompose(String args) {
     def command = "docker-compose -p warehouse-systest -f src/systemTest/resources/docker-compose.yml $args"
-    def process = command.execute()
+    def process = command.execute(["CODEKVAST_VERSION=$codekvastDisplayVersion"], projectDir)
     assert process.waitFor() == 0
     def result = process.in.text.trim()
     logger.info("Result of {}: {}", command, result)
