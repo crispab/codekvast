@@ -68,16 +68,16 @@ systemTest {
     def failures = 0;
 
     afterTest { descriptor, result ->
-        logger.lifecycle("test={}, result={}", descriptor, result)
+        logger.debug("test={}, result={}", descriptor, result)
         failures += result.failedTestCount;
     }
 
     doFirst {
         def endpoint = executeDockerCompose("port app 8080")
-        logger.lifecycle("Waiting for {}", endpoint)
+        logger.lifecycle("Waiting for http://{}", endpoint)
         waitForPortOpenAt endpoint
 
-        logger.lifecycle("Running system tests against {}", endpoint)
+        logger.lifecycle("Running system tests against http://{}", endpoint)
 
         systemProperty 'phantomjs.binary.path', file('src/webapp/node_modules/phantomjs-prebuilt/bin/phantomjs').absolutePath
         systemProperty 'expectedCodekvastVersion', codekvastDisplayVersion
