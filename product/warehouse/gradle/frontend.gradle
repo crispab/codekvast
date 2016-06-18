@@ -18,6 +18,7 @@ task npmTest(type: Exec) {
     group "Frontend Development"
 
     dependsOn npmInstall
+    mustRunAfter test
 
     def timestampFile = file("$projectDir/build/npmTest.timestamp")
 
@@ -54,7 +55,7 @@ task npmStart(type: Exec) {
 task npmBuild(type: Exec) {
     description "Buils the frontend webpack for production"
     group "Frontend Development"
-    // dependsOn npmTest
+    dependsOn npmTest
 
     inputs.file file('src/main/webapp/package.json')
     inputs.file file('src/main/webapp/tsconfig.json')
