@@ -63,8 +63,14 @@ systemTest {
     description 'Runs function tests against Codekvast Warehouse in a Docker container'
     group 'System test'
     dependsOn npmInstall, startSystemTestEnvironment
-    // finalizedBy stopSystemTestEnvironment
     shouldRunAfter integrationTest
+
+    def failures = 0;
+
+    afterTest { descriptor, result ->
+        logger.lifecycle("test={}, result={}", descriptor, result)
+        failures += result.failedTestCount;
+    }
 
     doFirst {
         def endpoint = executeDockerCompose("port app 8080")
@@ -78,6 +84,13 @@ systemTest {
         systemProperty 'webdriver.base.url', "http://$endpoint"
         systemProperty 'properties', file('src/systemTest/resources/serenity.properties').absolutePath
         environment['CODEKVAST_VERSION'] = codekvastDisplayVersion
+    }
+
+    doLast {
+        if (failures == 0) {
+            logger.lifecycle("Stopping system test environment")
+            executeDockerCompose("stop")
+        }
     }
 }
 

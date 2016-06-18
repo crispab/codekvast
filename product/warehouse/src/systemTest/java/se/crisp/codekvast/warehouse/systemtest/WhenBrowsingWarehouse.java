@@ -2,6 +2,7 @@ package se.crisp.codekvast.warehouse.systemtest;
 
 import net.serenitybdd.junit.runners.SerenityRunner;
 import net.thucydides.core.annotations.Managed;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.WebDriver;
@@ -23,6 +24,11 @@ public class WhenBrowsingWarehouse {
 
     WarehouseHomePage warehouseHomePage;
 
+    @Before
+    public void beforeTest() throws Exception {
+        warehouseHomePage.open();
+    }
+
     /**
      * Verify that the app has started in a Docker container and that Gradle has defined the base url...
      */
@@ -33,20 +39,14 @@ public class WhenBrowsingWarehouse {
         assertThat(webDriverBaseUrl, startsWith("http://0.0.0.0:"));
     }
 
-    /**
-     * Verify that Gradle filtering of index.html works and that Angular2 starts...
-     */
     @Test
     public void should_see_codekvast_version_on_home_page() {
-        // given
-
-        // when
-        warehouseHomePage.open();
-
-        // then
         assertThat(warehouseHomePage.codekvastVersion(), is(expectedVersion));
+    }
+
+    @Test
+    public void should_have_correct_api_href() {
         assertThat(warehouseHomePage.apiDocsHref(), startsWith(webDriverBaseUrl + "/"));
-        assertThat(warehouseHomePage.apiDocsHref(), not(startsWith("http:localhost:8080/")));
     }
 
 }
