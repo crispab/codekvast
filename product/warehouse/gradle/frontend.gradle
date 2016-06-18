@@ -4,7 +4,7 @@ task npmInstall(type: Exec) {
     description 'Installs the node modules required for frontend development'
     group 'Frontend Development'
 
-    workingDir 'src/main/webapp'
+    workingDir 'src/webapp'
     commandLine 'npm', 'install'
 
     inputs.file file('package.json')
@@ -22,15 +22,15 @@ task npmTest(type: Exec) {
 
     def timestampFile = file("$projectDir/build/npmTest.timestamp")
 
-    inputs.file 'src/main/webapp/package.json'
-    inputs.file 'src/main/webapp/tsconfig.json'
-    inputs.file 'src/main/webapp/webpack.config.json'
+    inputs.file 'src/webapp/package.json'
+    inputs.file 'src/webapp/tsconfig.json'
+    inputs.file 'src/webapp/webpack.config.json'
     inputs.files fileTree('config')
-    inputs.files fileTree('src/main/webapp/src')
+    inputs.files fileTree('src/webapp/src')
     inputs.file timestampFile
     outputs.file timestampFile
 
-    workingDir 'src/main/webapp'
+    workingDir 'src/webapp'
     executable 'npm'
     args 'run', 'test'
 
@@ -47,7 +47,7 @@ task npmStart(type: Exec) {
 
     dependsOn npmInstall
 
-    workingDir 'src/main/webapp'
+    workingDir 'src/webapp'
     executable 'npm'
     args 'start'
 }
@@ -57,15 +57,15 @@ task npmBuild(type: Exec) {
     group "Frontend Development"
     dependsOn npmTest
 
-    inputs.file file('src/main/webapp/package.json')
-    inputs.file file('src/main/webapp/tsconfig.json')
-    inputs.file file('src/main/webapp/webpack.config.json')
-    inputs.files fileTree('src/main/webapp/config')
-    inputs.files fileTree('src/main/webapp/src')
+    inputs.file file('src/webapp/package.json')
+    inputs.file file('src/webapp/tsconfig.json')
+    inputs.file file('src/webapp/webpack.config.json')
+    inputs.files fileTree('src/webapp/config')
+    inputs.files fileTree('src/webapp/src')
 
-    outputs.files fileTree('src/main/webapp/dist')
+    outputs.files fileTree('src/webapp/dist')
 
-    workingDir file('src/main/webapp')
+    workingDir file('src/webapp')
     executable 'npm'
     args 'run', 'build'
     environment['CODEKVAST_VERSION']=codekvastDisplayVersion
@@ -79,7 +79,7 @@ jar {
 
     // Output from npmBuild
     into('static') {
-        from('src/main/webapp/dist') {
+        from('src/webapp/dist') {
             exclude '**/*.css.map'
             exclude '**/*.js.map'
         }

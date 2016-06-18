@@ -20,7 +20,7 @@ Install jq with `sudo apt-get install jq`
 
 The frontend is developed with TypeScript and Angular2.
 
-It is located in `src/main/webapp`. This is a vanilla Angular2 project, except for that the output from tsc is stored in `src/main/webapp/app` to make
+It is located in `src/webapp`. This is a vanilla Angular2 project, except for that the output from tsc is stored in `src/webapp/app` to make
 it easier to integrate with Gradle.
 
 There are a number of Gradle tasks that wrap npm commands, to make it simpler to use.
