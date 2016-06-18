@@ -1,12 +1,5 @@
 //--- Docker ---------------------------------------------------------------------------------------
 
-task pullLatestDockerImage(type: Exec) {
-    description "Pulls the latest $codekvastWarehouseImageName from Docker Hub"
-    group 'Distribution'
-    commandLine 'docker', 'pull', "$codekvastWarehouseImageName:latest"
-    ignoreExitValue true
-}
-
 distDocker {
     description "Builds the Docker image $codekvastWarehouseImageName:latest"
     group 'Distribution'
@@ -17,5 +10,22 @@ distDocker {
     volume '/tmp/codekvast'
     tagVersion 'latest'
 
-    dependsOn ':product:warehouse:test', pullLatestDockerImage
+    def imageIdFile = file("$buildDir/tmp/dockerImageId")
+
+    inputs.files fileTree('build/distributions')
+    inputs.file imageIdFile
+    outputs.file imageIdFile
+
+    dependsOn ':product:warehouse:test'
+
+    doFirst {
+        def command = "docker pull $codekvastWarehouseImageName:latest"
+        logger.lifecycle command
+        command.execute().waitFor()
+    }
+
+    doLast {
+        def imageId = "docker images -q $codekvastWarehouseImageName:latest".execute().text
+        imageIdFile.text = "$imageId\n"
+    }
 }
