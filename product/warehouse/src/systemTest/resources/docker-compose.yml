@@ -3,7 +3,7 @@ version: '2'
 services:
 
   app:
-    image: crisp/codekvast-warehouse:latest
+    image: crisp/codekvast-warehouse:${CODEKVAST_VERSION}
 
     links:
     - db:database

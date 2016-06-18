@@ -79,5 +79,4 @@ echo "Uploading codekvast-collector to jcenter..."
 ${GRADLEW} :product:agent:collector:bintrayUpload
 
 echo "Pushing $WAREHOUSE_IMAGE_NAME to Docker Hub..."
-tools/tagDockerImage.sh ${WAREHOUSE_IMAGE_NAME} ${CODEKVAST_VERSION} ${GIT_HASH}
 tools/pushToDockerHub.sh ${WAREHOUSE_IMAGE_NAME} ${CODEKVAST_VERSION} ${GIT_HASH}

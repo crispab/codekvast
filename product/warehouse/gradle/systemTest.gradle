@@ -17,80 +17,57 @@ dependencies {
     systemTestRuntime 'com.codeborne:phantomjsdriver:1.3.0'
 }
 
-task startSystemTestEnvironment(type: Exec) {
+task startSystemTestEnvironment {
     description 'docker-compose up'
     group 'System test'
     dependsOn ':product:warehouse:distDocker'
-    commandLine 'docker-compose',
-            '-p', 'warehouse-systest',
-            '-f', 'src/systemTest/resources/docker-compose.yml',
-            'up', '-d'
+    doLast {
+        executeDockerCompose("up -d")
+    }
 }
 
-task stopSystemTestEnvironment(type: Exec) {
+task stopSystemTestEnvironment {
     description 'docker-compose stop'
     group 'System test'
-    commandLine 'docker-compose',
-            '-p', 'warehouse-systest',
-            '-f', 'src/systemTest/resources/docker-compose.yml',
-            'stop'
+    doLast {
+        executeDockerCompose("stop")
+    }
 }
 
-task downSystemTestEnvironment(type: Exec) {
+task downSystemTestEnvironment {
     description 'docker-compose down'
     group 'System test'
-    commandLine 'docker-compose',
-            '-p', 'warehouse-systest',
-            '-f', 'src/systemTest/resources/docker-compose.yml',
-            'down'
+    doLast {
+        executeDockerCompose("down")
+    }
 }
+clean.dependsOn downSystemTestEnvironment
 
-task psSystemTestEnvironment(type: Exec) {
+task psSystemTestEnvironment {
     description 'docker-compose ps'
     group 'System test'
-    commandLine 'docker-compose',
-            '-p', 'warehouse-systest',
-            '-f', 'src/systemTest/resources/docker-compose.yml',
-            'ps'
+    doLast {
+        executeDockerCompose("ps")
+    }
 }
 
-task logsSystemTestEnvironment(type: Exec) {
+task logsSystemTestEnvironment {
     description 'docker-compose logs'
     group 'System test'
-    commandLine 'docker-compose',
-            '-p', 'warehouse-systest',
-            '-f', 'src/systemTest/resources/docker-compose.yml',
-            'logs'
-}
-
-task endpointForSystemTestWarehouse(type: Exec) {
-    description 'docker-compose port'
-    group 'System test'
-    dependsOn startSystemTestEnvironment
-
-    commandLine 'docker-compose',
-            '-p', 'warehouse-systest',
-            '-f', 'src/systemTest/resources/docker-compose.yml',
-            'port',
-            'app',
-            '8080'
-
-    standardOutput = new ByteArrayOutputStream()
-
-    ext.endpoint = {
-        return standardOutput.toString().trim()
+    doLast {
+        executeDockerCompose("logs")
     }
 }
 
 systemTest {
     description 'Runs function tests against Codekvast Warehouse in a Docker container'
     group 'System test'
-    dependsOn endpointForSystemTestWarehouse, npmInstall
+    dependsOn npmInstall, startSystemTestEnvironment
     finalizedBy stopSystemTestEnvironment
     shouldRunAfter integrationTest
 
     doFirst {
-        def endpoint = endpointForSystemTestWarehouse.endpoint()
+        def endpoint = executeDockerCompose("port app 8080")
         logger.lifecycle("Waiting for {}", endpoint)
         waitForPortOpenAt endpoint
 
@@ -100,7 +77,17 @@ systemTest {
         systemProperty 'expectedCodekvastVersion', codekvastDisplayVersion
         systemProperty 'webdriver.base.url', "http://$endpoint"
         systemProperty 'properties', file('src/systemTest/resources/serenity.properties').absolutePath
+        environment['CODEKVAST_VERSION'] = codekvastDisplayVersion
     }
+}
+
+def String executeDockerCompose(String args) {
+    def command = "docker-compose -p warehouse-systest -f src/systemTest/resources/docker-compose.yml $args"
+    def process = command.execute()
+    assert process.waitFor() == 0
+    def result = process.in.text.trim()
+    logger.info("Result of {}: {}", command, result)
+    return result
 }
 
 def waitForPortOpenAt(String endpoint) {
@@ -108,6 +95,7 @@ def waitForPortOpenAt(String endpoint) {
     Socket socket = new Socket()
     socket.connect(new InetSocketAddress(parts[0], Integer.parseInt(parts[1])), 15_000);
     socket.close()
+    sleep(2000)
 }
 
 check.dependsOn systemTest

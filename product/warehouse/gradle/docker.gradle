@@ -1,20 +1,21 @@
 //--- Docker ---------------------------------------------------------------------------------------
+import java.security.MessageDigest
 
 distDocker {
-    description "Builds the Docker image $codekvastWarehouseImageName:latest"
+    description "Builds the Docker image $codekvastWarehouseImageName:$codekvastDisplayVersion"
     group 'Distribution'
     baseImage 'java:8-jre'
     maintainer 'Olle Hallin "olle.hallin@crisp.se"'
     runCommand 'mkdir -p /var/log /tmp/codekvast'
     volume '/var/log'
     volume '/tmp/codekvast'
-    tagVersion 'latest'
+    tagVersion codekvastDisplayVersion
 
-    def imageIdFile = file("$buildDir/tmp/dockerImageId")
+    def imageFingerprintFile = file("$buildDir/dockerImageFingerprint")
+    def distDir = file('build/distributions')
 
-    inputs.files fileTree('build/distributions')
-    inputs.file imageIdFile
-    outputs.file imageIdFile
+    outputs.file imageFingerprintFile
+    outputs.upToDateWhen { isUpToDate(imageFingerprintFile, distDir, codekvastDisplayVersion) }
 
     dependsOn ':product:warehouse:test'
 
@@ -25,7 +26,49 @@ distDocker {
     }
 
     doLast {
-        def imageId = "docker images -q $codekvastWarehouseImageName:latest".execute().text
-        imageIdFile.text = "$imageId\n"
+        def imageId = "docker images -q $codekvastWarehouseImageName:$codekvastDisplayVersion".execute().text.trim()
+
+        assert "docker tag $imageId $codekvastWarehouseImageName:$codekvastVersion".execute().waitFor() == 0
+        assert "docker tag $imageId $codekvastWarehouseImageName:latest".execute().waitFor() == 0
+        logger.lifecycle "docker images $codekvastWarehouseImageName".execute().text.trim()
+
+        imageFingerprintFile.text = createFingerprint(distDir)
     }
+}
+
+def boolean isUpToDate(File imageFingerprintFile, File distDir, String codekvastDisplayVersion) {
+    def imageId = "docker images -q $codekvastWarehouseImageName:$codekvastDisplayVersion".execute().text.trim()
+    def oldMd5 = imageFingerprintFile.exists() ? imageFingerprintFile.text.trim() : null;
+    def newMd5 = createFingerprint(distDir).trim()
+
+    logger.debug("isUpToDate: imageId={}, old MD5={}, new MD5={}", imageId, oldMd5, newMd5)
+    return !imageId.isEmpty() && oldMd5 == newMd5;
+}
+
+def String createFingerprint(File distDir) {
+    def result = '';
+    distDir.eachFileMatch ~/.*\.tar$/, { file ->
+        result += generateMD5(file) + "\n";
+    }
+    logger.debug("MD5 of {} is {}", distDir, result)
+    return result
+}
+
+def String generateMD5(File file) {
+    logger.debug("Generating MD5 of {} ...", file)
+    MessageDigest digest = MessageDigest.getInstance("MD5")
+    int bufferSize = 32 * 1024
+    file.eachByte( bufferSize) { bytes, len ->
+        logger.debug("Read {} bytes from {}", len, file)
+        if (len == bufferSize) {
+            digest.update(bytes)
+        } else {
+            for (int i = 0; i < len; i++) {
+                digest.update(bytes[i]);
+            }
+        }
+    }
+    def result = file.name + ":" + new BigInteger(1, digest.digest()).toString(16).padLeft(32, '0')
+    logger.debug("MD5 of {} is {}", file, result)
+    return result
 }
