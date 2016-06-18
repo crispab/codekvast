@@ -5,6 +5,7 @@
 1. Made the Ansible playbook for codekvast-daemon work with Ansible 1.5.4
 1. Implemented rudimentary web UI for showing warehouse data.
 1. Renamed codekvast-warehouse.docker-compose.yml to codekvast-warehouse.sh
+1. Switched to building frontend with Webpack
 
 ## 0.18.2
 
