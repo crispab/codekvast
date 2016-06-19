@@ -2,7 +2,7 @@ import {describe, expect, it, inject, beforeEach, beforeEachProviders} from '@an
 import {DatePipe} from '@angular/common';
 import {CkAgePipe} from './ck-age.pipe';
 
-describe('WarehouseService', () => {
+describe('CkAgePipe', () => {
 
     let pipe;
     let datePipe;

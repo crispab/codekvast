@@ -8,7 +8,7 @@ describe('ConfigService', () => {
         expect(new ConfigService().getApiPrefix()).toEqual('somePrefix')
     });
 
-    it('config.getApiPrefix() should return empty string when undefined', () => {
+    it('config.getApiPrefix() should return empty string when window.CODEKVAST_API is undefined', () => {
         window['CODEKVAST_API'] = undefined;
         expect(new ConfigService().getApiPrefix()).toEqual('')
     });
@@ -18,7 +18,7 @@ describe('ConfigService', () => {
         expect(new ConfigService().getVersion()).toEqual('someVersion')
     })
 
-    it('config.getVersion() should return "unknown" of window.CODEKVAST_VERSION when undefined', () => {
+    it('config.getVersion() should return "unknown" if window.CODEKVAST_VERSION is undefined', () => {
         window['CODEKVAST_VERSION'] = undefined;
         expect(new ConfigService().getVersion()).toEqual('unknown')
     })

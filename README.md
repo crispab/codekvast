@@ -196,7 +196,7 @@ Use the following command to install OpenJDK 8 (Ubuntu, Debian):
 
 The Codekvast Warehouse web UI is developed with npm, TypeScript and Angular2.
 
-npm is used for managing the frontend development environment.
+npm is used for managing the frontend development environment. Webpack is used as frontend bundler.
  
 Use the following command to install the Node Package Manager (npm), which is used to manage all JavaScript-related stuff (Ubuntu, Debian):
 
