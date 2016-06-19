@@ -53,7 +53,7 @@ task npmStart(type: Exec) {
 }
 
 task npmBuild(type: Exec) {
-    description "Buils the frontend webpack for production"
+    description "Builds the frontend webpack bundles for production"
     group "Frontend Development"
     dependsOn npmTest
 
@@ -70,7 +70,17 @@ task npmBuild(type: Exec) {
     args 'run', 'build'
     environment['CODEKVAST_VERSION']=codekvastDisplayVersion
 }
-clean.dependsOn cleanNpmBuild
+
+task npmClean(type: Exec) {
+    description "Cleans the frontend webpack bundles"
+    group "Frontend Development"
+
+    workingDir file('src/webapp')
+    executable 'npm'
+    args 'run', 'clean'
+}
+
+clean.dependsOn npmClean
 
 jar {
     dependsOn npmBuild

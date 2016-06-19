@@ -6,7 +6,9 @@
   "scripts": {
     "start": "webpack-dev-server --inline --progress --port 3000",
     "test": "karma start",
-    "build": "rimraf dist && webpack --config config/webpack.prod.js --progress --profile --bail",
+    "clean": "rimraf dist",
+    "prebuild": "rimraf dist",
+    "build": "webpack --config config/webpack.prod.js --progress --profile --bail",
     "build:q": "webpack --config config/webpack.dev.js --progress --bail",
     "postinstall": "typings install"
   },

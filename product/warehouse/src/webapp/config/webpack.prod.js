@@ -25,11 +25,7 @@ module.exports = webpackMerge(commonConfig, {
         new webpack.optimize.DedupePlugin(),
         new webpack.optimize.UglifyJsPlugin(),
         new ExtractTextPlugin('[name].[hash].css'),
-        new webpack.DefinePlugin({
-            'process.env': {
-                'ENV': JSON.stringify(ENV)
-            }
-        })
+        new webpack.DefinePlugin({ 'process.env': { 'ENV': JSON.stringify(ENV)}})
     ]
 });
 
