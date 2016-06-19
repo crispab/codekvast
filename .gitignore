@@ -24,8 +24,8 @@ typings/
 target/
 tools/downloaded/
 npm-debug.log**
-**/src/webapp/src/**/*.js
-**/src/webapp/src/**/*.js.map
+product/warehouse/src/webapp/src/**/*.js
+product/warehouse/src/webapp/src/**/*.js.map
 a.a
 phantomjsdriver.log
-/product/warehouse/src/webapp/dist/
+product/warehouse/src/webapp/dist/
