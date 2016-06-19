@@ -46,9 +46,12 @@ def boolean isUpToDate(File imageFingerprintFile, File distDir, String codekvast
 }
 
 def String createFingerprint(File distDir) {
-    def result = '';
+    def result = null;
     distDir.eachFileMatch ~/.*\.tar$/, { file ->
-        result += generateMD5(file) + "\n";
+        if (result != null) {
+            throw new IllegalStateException("More than one tar file in ${distDir}. Forgot to clean after stepping version?")
+        }
+        result = generateMD5(file) + "\n";
     }
     logger.debug("MD5 of {} is {}", distDir, result)
     return result
