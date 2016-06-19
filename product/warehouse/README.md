@@ -18,28 +18,22 @@ Install jq with `sudo apt-get install jq`
 
 ## Frontend
 
-The frontend is developed with TypeScript and Angular2.
+The frontend is developed with TypeScript, Angular2, npm and Webpack.
 
-It is located in `src/webapp`. This is a vanilla Angular2 project, except for that the output from tsc is stored in `src/webapp/app` to make
-it easier to integrate with Gradle.
+It is located in `src/webapp`.
 
 There are a number of Gradle tasks that wrap npm commands, to make it simpler to use.
 
-The IDEA TypeScript compiler is disabled, since it interferes with the one managed by NPM.
-
-The frontend can be developed with a running backend (gradle bootRun) and with a NodeJS Lite Server for the frontend stuff.
+The frontend can be developed with a running backend (gradle bootRun) and with a webpack-dev-server for the frontend stuff.
  
 Start the frontend development environment with `gradle npmStart`
 
-This will start the TypeScript compiler tsc in watch mode, and then launches a Lite Server accessible
-at [http://localhost:3000](http://localhost:3000) (the webapp) and 3001 ([Browser Sync](https://www.browsersync.io)).
+This will start Webpack watch mode, and then launches a webpack-dev-server accessible
+at [http://localhost:3000](http://localhost:3000) (the webapp).
 
-When finished, stop the Lite Server with Ctrl-C.
+When finished, stop with Ctrl-C.
 
-The next time `gradle assemble` is executed, the result of the TypeScript compilation is copied to the Spring-boot jar.
-
-**NOTE:** npmStart also starts [Browser Sync](https://www.browsersync.io), which means that you could test the webapp simultaneously in more than one browser
- (e.g., Chrome and Firefox).
+The next time `gradle assemble` is executed, the result of the Webpack bundling is copied to the Spring-boot jar.
 
 ## File watch limits
 On some Linux distros, Both IntelliJ IDEA and the Node.js uses the system service `inotify` to watch directories for changed files.

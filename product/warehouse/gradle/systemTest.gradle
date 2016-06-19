@@ -41,7 +41,7 @@ task downSystemTestEnvironment {
     description 'docker-compose down'
     group 'System test'
     doLast {
-        executeDockerCompose("down")
+        executeDockerCompose("down -v")
     }
 }
 clean.dependsOn downSystemTestEnvironment
@@ -88,8 +88,8 @@ systemTest {
 
     doLast {
         if (failures == 0) {
-            logger.lifecycle("Stopping system test environment")
-            executeDockerCompose("stop")
+            logger.lifecycle("Removing system test environment")
+            executeDockerCompose("down -v")
         }
     }
 }
@@ -107,7 +107,7 @@ def waitForAppReadyAt(String endpoint) {
     def url = "http://" + endpoint
     logger.debug("Trying to to GET {}", url)
 
-    int numberOfAttempts = 30;
+    int numberOfAttempts = 60;
     int remainingAttempts = numberOfAttempts;
     while (true) {
         try {
