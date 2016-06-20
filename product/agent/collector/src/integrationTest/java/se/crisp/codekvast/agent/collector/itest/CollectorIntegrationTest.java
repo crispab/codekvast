@@ -92,10 +92,10 @@ public class CollectorIntegrationTest {
         assertThat(collectorOutputFiles.keySet(), hasItems("aop.xml", "invocations.dat.00000", "jvm.dat"));
 
         List<String> lines = readLinesFrom("invocations.dat.00000");
-        assertThat(lines.size(), is(6));
         assertThat(lines, hasItem("public sample.app.SampleApp.main(java.lang.String[])"));
         assertThat(lines, hasItem("public sample.app.SampleApp.add(int, int)"));
         assertThat(lines, hasItem("public sample.app.SampleApp()"));
+        assertThat(lines.size(), is(6));
     }
 
     private List<String> readLinesFrom(String basename) throws IOException {
