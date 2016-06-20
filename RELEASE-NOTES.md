@@ -1,5 +1,12 @@
 # Codekvast Release Notes
 
+## 0.18.4
+
+1. Warehouse: Switched from embedded Tomcat to Undertow.
+1. Warehouse: Switched from tomcat-jdbc to HikariCp.
+1. Warehouse: Runs Karma tests against PhantomJS, Firefox and Chrome unless headless environment.
+1. Bug fixes in build scripts.
+
 ## 0.18.3
 
 1. Made the Ansible playbook for codekvast-daemon work with Ansible 1.5.4
