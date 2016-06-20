@@ -19,6 +19,10 @@ version = codekvastVersion
 group = "crisp"
 mainClassName = 'se.crisp.codekvast.warehouse.CodekvastWarehouse'
 
+configurations {
+    compile.exclude module: "spring-boot-starter-tomcat"
+}
+
 dependencies {
     compileOnly lombok
     compile project(':product:agent:agent-lib')
@@ -30,6 +34,7 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
     compile 'org.springframework.boot:spring-boot-starter-logging'
     compile 'org.springframework.boot:spring-boot-starter-web'
+    compile 'org.springframework.boot:spring-boot-starter-undertow'
     compile "io.springfox:springfox-swagger2:${springfoxVersion}"
 
     runtime 'org.springframework.boot:spring-boot-starter-actuator'
