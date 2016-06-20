@@ -7,10 +7,10 @@ task npmInstall(type: Exec) {
     workingDir 'src/webapp'
     commandLine 'npm', 'install'
 
-    inputs.file file('package.json')
-    inputs.file file('typings.json')
-    outputs.dir fileTree('node_modules')
-    outputs.dir fileTree('typings')
+    inputs.file file('src/webapp/package.json')
+    inputs.file file('src/webapp/typings.json')
+    outputs.dir fileTree('src/webapp/node_modules')
+    outputs.dir fileTree('src/webapp/typings')
 }
 
 task npmTest(type: Exec) {
