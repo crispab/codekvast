@@ -59,7 +59,7 @@ module.exports = {
             appMountId: 'ck-app',
             window: {
                 CODEKVAST_API: process.env.ENV === 'production' ? '' : 'http://localhost:8080',
-                CODEKVAST_VERSION: process.env.CODEKVAST_VERSION
+                CODEKVAST_VERSION: process.env.CODEKVAST_VERSION || 'dev'
             }
         })
     ]

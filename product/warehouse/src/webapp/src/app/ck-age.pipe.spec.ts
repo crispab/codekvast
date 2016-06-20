@@ -43,7 +43,7 @@ describe('CkAgePipe', () => {
     it("Should recognize 'age' pattern", done => {
         let now = new Date().getTime();
         let value = new Date(now - 2 * days - 4 * hours - 36 * minutes);
-        expect(pipe.transform(value, 'age')).toBe('2d 4h');
+        expect(pipe.transform(value, 'age')).toBe('2d 4h 36m');
         done();
     });
 });

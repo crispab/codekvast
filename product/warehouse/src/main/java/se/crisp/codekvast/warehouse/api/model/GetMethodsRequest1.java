@@ -15,6 +15,7 @@ import javax.validation.constraints.Size;
 @Builder
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@ToString
 public class GetMethodsRequest1 {
 
     public enum OrderBy {INVOKED_AT_ASC, INVOKED_AT_DESC, SIGNATURE}

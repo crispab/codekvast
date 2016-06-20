@@ -4,7 +4,8 @@ import {DatePipe} from '@angular/common';
 @Pipe({name: 'ckAge'}) @Injectable()
 export class CkAgePipe implements PipeTransform {
 
-    private hourMillis = 60 * 60 * 1000;
+    private minuteMillis = 60 * 1000;
+    private hourMillis = 60 * this.minuteMillis;
     private dayMillis = 24 * this.hourMillis;
 
     constructor(private datePipe: DatePipe) {
@@ -50,7 +51,15 @@ export class CkAgePipe implements PipeTransform {
         }
         if (age > this.hourMillis) {
             let hours = Math.trunc(age / this.hourMillis);
+            age -= hours * this.hourMillis;
             result += delimiter + hours + "h";
+            delimiter = " ";
+        }
+        if (age > this.minuteMillis) {
+            let minutes = Math.trunc(age / this.minuteMillis);
+            age -= minutes * this.minuteMillis;
+            result += delimiter + minutes + "m";
+            delimiter = " ";
         }
         return result;
     }
