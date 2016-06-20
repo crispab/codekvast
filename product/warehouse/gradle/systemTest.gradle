@@ -97,7 +97,7 @@ systemTest {
 def String executeDockerCompose(String args) {
     def command = "docker-compose -p warehouse-systest -f src/systemTest/resources/docker-compose.yml $args"
     def process = command.execute(["CODEKVAST_VERSION=$codekvastDisplayVersion"], projectDir)
-    assert process.waitFor() == 0
+    process.waitFor()
     def result = process.in.text.trim()
     logger.info("Result of {}: {}", command, result)
     return result
