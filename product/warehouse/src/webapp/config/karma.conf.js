@@ -2,35 +2,20 @@ var webpackConfig = require('./webpack.test');
 
 module.exports = function (config) {
     var _config = {
-        basePath: '',
-
-        frameworks: ['jasmine'],
-
-        files: [
-            {pattern: './config/karma-test-shim.js', watched: false}
-        ],
-
-        preprocessors: {
-            './config/karma-test-shim.js': ['webpack', 'sourcemap']
-        },
-
-        webpack: webpackConfig,
-
-        webpackMiddleware: {
-            stats: 'errors-only'
-        },
-
-        webpackServer: {
-            noInfo: true
-        },
-
-        reporters: ['mocha'],
-        port: 9876,
-        colors: true,
-        logLevel: config.LOG_INFO,
         autoWatch: false,
-        browsers: ['PhantomJS'],
-        singleRun: true
+        basePath: '',
+        browsers: process.env.DISPLAY ? ['PhantomJS', 'Chrome', 'Firefox'] : ['PhantomJS'],
+        colors: true,
+        files: [{pattern: './config/karma-test-shim.js', watched: false}],
+        frameworks: ['jasmine'],
+        logLevel: config.LOG_INFO,
+        port: 9876,
+        preprocessors: { './config/karma-test-shim.js': ['webpack', 'sourcemap']},
+        reporters: ['mocha'],
+        singleRun: true,
+        webpack: webpackConfig,
+        webpackMiddleware: { stats: 'errors-only'},
+        webpackServer: { noInfo: true}
     };
 
     config.set(_config);
