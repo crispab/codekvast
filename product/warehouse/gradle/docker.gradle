@@ -19,12 +19,6 @@ distDocker {
 
     dependsOn ':product:warehouse:test'
 
-    doFirst {
-        def command = "docker pull $codekvastWarehouseImageName:latest"
-        logger.lifecycle command
-        command.execute().waitFor()
-    }
-
     doLast {
         def imageId = "docker images -q $codekvastWarehouseImageName:$codekvastDisplayVersion".execute().text.trim()
 
