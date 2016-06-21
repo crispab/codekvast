@@ -6,6 +6,7 @@
 1. Warehouse: Switched from tomcat-jdbc to HikariCp.
 1. Warehouse: Runs Karma tests against PhantomJS, Firefox and Chrome unless headless environment.
 1. Bug fixes in build scripts.
+1. Upgraded to Gradle 2.14.
 
 ## 0.18.3
 
