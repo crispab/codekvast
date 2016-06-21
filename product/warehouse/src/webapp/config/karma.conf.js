@@ -4,7 +4,7 @@ module.exports = function (config) {
     var _config = {
         autoWatch: false,
         basePath: '',
-        browsers: process.env.DISPLAY ? ['PhantomJS', 'Chrome', 'Firefox'] : ['PhantomJS'],
+        browsers: ['PhantomJS'],
         colors: true,
         files: [{pattern: './config/karma-test-shim.js', watched: false}],
         frameworks: ['jasmine'],

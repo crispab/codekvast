@@ -20,14 +20,13 @@ task npmTest(type: Exec) {
     dependsOn npmInstall
     mustRunAfter test
 
-    def timestampFile = file("$projectDir/build/npmTest.timestamp")
+    def timestampFile = file("$buildDir/npmTest.timestamp")
 
     inputs.file 'src/webapp/package.json'
     inputs.file 'src/webapp/tsconfig.json'
     inputs.file 'src/webapp/webpack.config.json'
-    inputs.files fileTree('config')
+    inputs.files fileTree('src/webapp/config')
     inputs.files fileTree('src/webapp/src')
-    inputs.file timestampFile
     outputs.file timestampFile
 
     workingDir 'src/webapp'
@@ -35,7 +34,7 @@ task npmTest(type: Exec) {
     args 'run', 'test'
 
     doLast {
-        "touch ${timestampFile.absolutePath}".execute()
+        timestampFile.text = "${java.time.Instant.now()}\n"
     }
 }
 check.dependsOn npmTest
