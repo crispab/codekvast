@@ -19,10 +19,6 @@ testSets {
 integrationTest.dependsOn test
 check.dependsOn integrationTest
 
-configurations {
-    springLoaded
-}
-
 dependencies {
     compileOnly lombok
     compile project(':product:agent:agent-lib')
@@ -45,8 +41,6 @@ dependencies {
     testCompile "org.springframework.boot:spring-boot-starter-test"
 
     integrationTestCompile project(":product:support:testsupport")
-
-    springLoaded springLoadedAgent
 }
 
 processResources {
@@ -103,11 +97,9 @@ run {
 run.dependsOn startDatabase
 
 bootRun {
-    jvmArgs = [
-            "-javaagent:${configurations.springLoaded.asPath}",
-            '-noverify',
-    ] + run.jvmArgs
+    jvmArgs = run.jvmArgs
     args = run.args
+    addResources = true
 }
 
 bootRun.dependsOn startDatabase
