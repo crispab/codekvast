@@ -5,6 +5,7 @@
 #-----------------------------------------------------------------------
 
 # On what port should Codekvast Warehouse expose the REST API (0=random)?
+# Edit to suit your needs.
 declare WAREHOUSE_API_PORT=0
 
 # Where to look for data files from Codekvast Daemons?
@@ -17,9 +18,7 @@ declare WAREHOUSE_LOG_DIR=/var/log
 declare DATABASE_DIR=/var/lib/codekvast-database
 
 #--- No changes below this line! ---------------------------------------
-declare DOCKER_COMPOSE_FILE=/tmp/codekvast-warehouse.docker-compose.yml
-
-cat << EOF > ${DOCKER_COMPOSE_FILE}
+cat << EOF | docker-compose -p codekvast -f- $@
 version: '2'
 
 services:
@@ -61,4 +60,3 @@ services:
     command: --character-set-server=utf8 --collation-server=utf8_general_ci --default-storage-engine=innodb
 EOF
 
-docker-compose -p codekvast -f ${DOCKER_COMPOSE_FILE} $@
