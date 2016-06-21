@@ -55,4 +55,5 @@ processResources {
     from "src/main/resources", {
         exclude "*application*.properties"
     }
+    filteringCharset = 'UTF-8'
 }
