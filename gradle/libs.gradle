@@ -13,6 +13,6 @@ ext {
 
     h2database = "com.h2database:h2:$h2databaseVersion"
     logback = 'ch.qos.logback:logback-classic:1.1.7'
-    lombok = 'org.projectlombok:lombok:1.16.8'
+    lombok = 'org.projectlombok:lombok:1.16.10'
     mariadbDriver = 'org.mariadb.jdbc:mariadb-java-client:1.4.6'
 }
