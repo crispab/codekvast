@@ -11,6 +11,9 @@ declare WAREHOUSE_API_PORT=0
 # Where to look for data files from Codekvast Daemons?
 declare WAREHOUSE_INPUT_DIR=/tmp/codekvast/warehouse
 
+# How should Docker handle restarts of warehouse containers?
+declare WAREHOUSE_RESTART_POLICY=unless-stopped
+
 # Where to put log files?
 declare WAREHOUSE_LOG_DIR=/var/log
 
@@ -33,7 +36,7 @@ services:
     links:
     - db:database
 
-    restart: on-failure:10
+    restart: ${WAREHOUSE_RESTART_POLICY}
 
     environment:
     - SPRING_PROFILES_ACTIVE=docker
