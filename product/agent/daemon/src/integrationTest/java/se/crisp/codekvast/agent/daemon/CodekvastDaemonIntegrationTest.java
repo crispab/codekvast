@@ -5,10 +5,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.agent.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.agent.daemon.beans.JvmState;
@@ -39,16 +39,15 @@ import static org.mockito.Mockito.when;
 /**
  * @author olle.hallin@crisp.se
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = CodekvastDaemon.class)
-@IntegrationTest({
-        "spring.datasource.url=jdbc:h2:mem:integrationTest",
-        "codekvast.environment=integration-test",
-        "codekvast.dataPath = /tmp/codekvast/.daemonIntegrationTest/.collector",
-        "codekvast.exportFile=/tmp/codekvast/.daemonIntegrationTest/.export/codekvast-data.zip",
-        "codekvast.dataProcessingInitialDelaySeconds=1000000",
-
-})
+@RunWith(SpringRunner.class)
+@SpringBootTest(
+        properties = {
+                "spring.datasource.url=jdbc:h2:mem:integrationTest",
+                "codekvast.environment=integration-test",
+                "codekvast.dataPath = /tmp/codekvast/.daemonIntegrationTest/.collector",
+                "codekvast.exportFile=/tmp/codekvast/.daemonIntegrationTest/.export/codekvast-data.zip",
+                "codekvast.dataProcessingInitialDelaySeconds=1000000",
+        })
 @Transactional(rollbackFor = Exception.class)
 public class CodekvastDaemonIntegrationTest {
 
