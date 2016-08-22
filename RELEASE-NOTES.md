@@ -294,7 +294,7 @@ instructions.
 
 ## 0.10.1
 
-1. Added Redhat 6 startscript for codekvast-agent.
+1. Added Redhat 6 start script for codekvast-agent.
 
 ## 0.10.0
 
@@ -311,7 +311,7 @@ instructions.
 
 ## 0.9.3
 
-1. Java compiler for 1.6 & 1.7 uses correct bootclasspath.
+1. Java compiler for 1.6 & 1.7 uses correct boot classpath.
 
 ## 0.9.2
 
