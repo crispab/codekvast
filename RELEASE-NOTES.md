@@ -1,7 +1,8 @@
 # Codekvast Release Notes
 
 ## 0.18.5
-1. ???
+1. Upgraded to Gradle 3.0
+1. Upgraded to Jackson 2.8.2 and chromedriver 2.23.1
 
 ## 0.18.4
 

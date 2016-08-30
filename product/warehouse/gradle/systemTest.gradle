@@ -22,7 +22,7 @@ dependencies {
     systemTestRuntime 'org.seleniumhq.selenium:selenium-chrome-driver:2.53.1'
     systemTestRuntime 'org.seleniumhq.selenium:selenium-firefox-driver:2.53.1'
 
-    chromeDriver 'com.github.igor-suhorukov:chromedriver:2.21.1:linux64@bin'
+    chromeDriver 'com.github.igor-suhorukov:chromedriver:2.23.1:linux64@bin'
 }
 
 task startSystemTestEnvironment {
