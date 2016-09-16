@@ -1,21 +1,18 @@
-import {describe, expect, it, inject, beforeEach, beforeEachProviders} from '@angular/core/testing';
 import {DatePipe} from '@angular/common';
 import {CkAgePipe} from './ck-age.pipe';
 
+let pipe : CkAgePipe;
+let parentPipe: DatePipe;
+let minutes = 60 * 1000;
+let hours = 60 * minutes;
+let days = 24 * hours;
+
 describe('CkAgePipe', () => {
 
-    let pipe;
-    let datePipe;
-    let minutes = 60 * 1000;
-    let hours = 60 * minutes;
-    let days = 24 * hours;
-
-    beforeEachProviders(() => [DatePipe]);
-
-    beforeEach(inject([DatePipe], (_datePipe) => {
-        datePipe = _datePipe;
-        pipe = new CkAgePipe(_datePipe);
-    }));
+    beforeEach(() => {
+        parentPipe = new DatePipe();
+        pipe = new CkAgePipe(parentPipe);
+    });
 
     it("Should return null for null", done => {
         expect(pipe.transform(null)).toBe(null);
@@ -27,16 +24,16 @@ describe('CkAgePipe', () => {
         done();
     });
 
-    it("Should delegate to DatePipe when no pattern", done => {
+    it("Should delegate to parent DatePipe when no pattern", done => {
         let value = new Date();
-        expect(pipe.transform(value)).toBe(datePipe.transform(value));
+        expect(pipe.transform(value)).toBe(parentPipe.transform(value));
         done();
     });
 
-    it("Should delegate to DatePipe when unrecognized pattern", done => {
+    it("Should delegate to parent DatePipe when unrecognized pattern", done => {
         let value = new Date();
         let pattern = 'shortDate'; // NOTE: not the default pattern 'mediumDate'
-        expect(pipe.transform(value, pattern)).toBe(datePipe.transform(value, pattern));
+        expect(pipe.transform(value, pattern)).toBe(parentPipe.transform(value, pattern));
         done();
     });
 
