@@ -1,30 +1,13 @@
-/*
-import {provide} from '@angular/core';
-import {Http, Response, BaseRequestOptions, Headers} from '@angular/http';
-import {describe, expect, it, inject, beforeEach, beforeEachProviders} from '@angular/core/testing';
-import {MockBackend} from '@angular/http/testing';
 import {ConfigService} from './config.service';
 import {WarehouseService} from './warehouse.service';
 
+let warehouse;
+
 describe('WarehouseService', () => {
 
-    let mockBackend, warehouse;
-
-    beforeEachProviders(() => [
-        ConfigService,
-        WarehouseService,
-        MockBackend,
-        BaseRequestOptions,
-        provide(Http, {
-            deps: [MockBackend, BaseRequestOptions],
-            useFactory: (backend, options) => new Http(backend, options)
-        })
-    ]);
-
-    beforeEach(inject([MockBackend, WarehouseService], (_mockBackend, _warehouse) => {
-        mockBackend = _mockBackend;
-        warehouse = _warehouse;
-    }));
+    beforeEach(() => {
+        warehouse = new WarehouseService(null, new ConfigService());
+    });
 
     it('should construct a get methods url without parameters', done => {
         expect(warehouse.constructGetMethodsUrl()).toBe('/api/v1/methods');
@@ -51,26 +34,4 @@ describe('WarehouseService', () => {
         done();
     });
 
-    it('should return mocked response', done => {
-        let response = {methods: ['foo', 'bar']};
-
-        mockBackend.connections.subscribe(connection => {
-            connection.mockRespond(new Response({
-                url: '',
-                merge: null,
-                status: 200,
-                headers: new Headers(),
-                body: JSON.stringify(response)
-            }));
-        });
-
-        warehouse.getMethods().subscribe(data => {
-            expect(data.methods.length).toBe(2);
-            expect(data.methods).toContain('foo');
-            expect(data.methods).toContain('bar');
-            done();
-        });
-    });
-
 });
-*/
