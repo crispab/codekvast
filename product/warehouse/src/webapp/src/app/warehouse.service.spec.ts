@@ -1,7 +1,10 @@
-import {ConfigService} from './config.service';
 import {WarehouseService} from './warehouse.service';
+import {TestBed} from '@angular/core/testing';
+import {AppModule} from './app.module';
+import {ConfigService} from './config.service';
+import {HttpModule} from '@angular/http';
 
-let warehouse;
+let warehouse: WarehouseService;
 
 describe('WarehouseService', () => {
 
@@ -9,18 +12,19 @@ describe('WarehouseService', () => {
         warehouse = new WarehouseService(null, new ConfigService());
     });
 
+
     it('should construct a get methods url without parameters', done => {
-        expect(warehouse.constructGetMethodsUrl()).toBe('/api/v1/methods');
+        expect(warehouse.constructGetMethodsUrl(undefined, undefined)).toBe('/api/v1/methods');
         done();
     });
 
     it('should construct a get methods url with only signature parameter', done => {
-        expect(warehouse.constructGetMethodsUrl("sig")).toBe('/api/v1/methods\?signature=sig');
+        expect(warehouse.constructGetMethodsUrl("sig", undefined)).toBe('/api/v1/methods\?signature=sig');
         done();
     });
 
     it('should construct a get methods url with only empty signature parameter', done => {
-        expect(warehouse.constructGetMethodsUrl('')).toBe('/api/v1/methods');
+        expect(warehouse.constructGetMethodsUrl('', undefined)).toBe('/api/v1/methods');
         done();
     });
 

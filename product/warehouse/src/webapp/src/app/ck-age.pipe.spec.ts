@@ -2,7 +2,7 @@ import {DatePipe} from '@angular/common';
 import {CkAgePipe} from './ck-age.pipe';
 
 let pipe : CkAgePipe;
-let parentPipe = new DatePipe("en_US");
+let parentPipe = new DatePipe('en');
 let minutes = 60 * 1000;
 let hours = 60 * minutes;
 let days = 24 * hours;

@@ -4,7 +4,7 @@ import {CkAgePipe} from './ck-age.pipe';
 import {HttpModule} from '@angular/http';
 import {MethodListComponent} from './method-list.component';
 import {NgModule} from '@angular/core';
-import {FormsModule}   from '@angular/forms';
+import {FormsModule} from '@angular/forms';
 
 @NgModule({
     imports: [BrowserModule, FormsModule, HttpModule],

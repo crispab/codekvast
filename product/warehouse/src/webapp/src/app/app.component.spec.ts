@@ -1,19 +1,35 @@
 import {AppComponent} from './app.component';
-import {ConfigService} from './config.service';
+import {TestBed} from '@angular/core/testing';
+import {AppModule} from './app.module';
 
 describe('AppComponent', () => {
 
-    let config: ConfigService;
     let app: AppComponent;
 
     beforeEach(() => {
-        config = new ConfigService();
-        spyOn(config, 'getApiPrefix').and.returnValue('somePrefix');
-        spyOn(config, 'getVersion').and.returnValue('someVersion');
-        app = new AppComponent(config);
+        TestBed.configureTestingModule({
+            imports: [AppModule]
+        });
+        app = TestBed.createComponent(AppComponent).componentInstance;
     });
 
-    it('app.apiPrefix() should return value of configService.apiPrefix()', () => expect(app.apiPrefix).toEqual('somePrefix'));
+    it('app.apiPrefix should return value of window.CODEKVAST_API when defined', () => {
+        window['CODEKVAST_API'] = 'somePrefix';
+        expect(app.getApiPrefix()).toEqual('somePrefix')
+    });
 
-    it('app.version() should return value of configService.version()', () => expect(app.version).toEqual('someVersion'))
+    it('app.getApiPrefix() should return empty string when window.CODEKVAST_API is undefined', () => {
+        window['CODEKVAST_API'] = undefined;
+        expect(app.getApiPrefix()).toEqual('')
+    });
+
+    it('app.getVersion() should return value of window.CODEKVAST_VERSION when defined', () => {
+        window['CODEKVAST_VERSION'] = 'someVersion';
+        expect(app.getVersion()).toEqual('someVersion')
+    });
+
+    it('app.getVersion() should return "unknown" if window.CODEKVAST_VERSION is undefined', () => {
+        window['CODEKVAST_VERSION'] = undefined;
+        expect(app.getVersion()).toEqual('unknown')
+    })
 });
