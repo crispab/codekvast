@@ -1,11 +1,12 @@
 //--- Frontend -----------------------------------------------------------------------------------
 
-task npmInstall(type: Exec) {
-    description 'Installs the node modules required for frontend development'
+task frontendInstall(type: Exec) {
+    description 'Installs the node modules and tools required for frontend development'
     group 'Frontend Development'
 
     workingDir 'src/webapp'
-    commandLine 'npm', 'install'
+    executable 'npm'
+    args 'install'
 
     inputs.file file('src/webapp/package.json')
     inputs.file file('src/webapp/typings.json')
@@ -13,14 +14,14 @@ task npmInstall(type: Exec) {
     outputs.dir fileTree('src/webapp/typings')
 }
 
-task npmTest(type: Exec) {
+task frontendTest(type: Exec) {
     description "Runs Typescript unit tests with Karma and Jasmine"
     group "Frontend Development"
 
-    dependsOn npmInstall
+    dependsOn frontendInstall
     mustRunAfter test
 
-    def timestampFile = file("$buildDir/npmTest.timestamp")
+    def timestampFile = file("$buildDir/frontendTest.timestamp")
 
     inputs.file 'src/webapp/package.json'
     inputs.file 'src/webapp/tsconfig.json'
@@ -37,24 +38,24 @@ task npmTest(type: Exec) {
         timestampFile.text = "${java.time.Instant.now()}\n"
     }
 }
-check.dependsOn npmTest
+check.dependsOn frontendTest
 
 
-task npmStart(type: Exec) {
+task frontendStart(type: Exec) {
     description 'Starts the webpack dev server on port 3000'
     group 'Frontend Development'
 
-    dependsOn npmInstall
+    dependsOn frontendInstall
 
     workingDir 'src/webapp'
     executable 'npm'
     args 'start'
 }
 
-task npmBuild(type: Exec) {
+task frontendBuild(type: Exec) {
     description "Builds the frontend webpack bundles for production"
     group "Frontend Development"
-    dependsOn npmTest
+    dependsOn frontendTest
 
     inputs.file file('src/webapp/package.json')
     inputs.file file('src/webapp/tsconfig.json')
@@ -70,7 +71,7 @@ task npmBuild(type: Exec) {
     environment['CODEKVAST_VERSION']=codekvastDisplayVersion
 }
 
-task npmClean(type: Exec) {
+task frontendClean(type: Exec) {
     description "Cleans the frontend webpack bundles"
     group "Frontend Development"
 
@@ -79,14 +80,14 @@ task npmClean(type: Exec) {
     args 'run', 'clean'
 }
 
-clean.dependsOn npmClean
+clean.dependsOn frontendClean
 
 jar {
-    dependsOn npmBuild
+    dependsOn frontendBuild
 
     // Spring Boot automatically serves static content from static/**
 
-    // Output from npmBuild
+    // Output from frontendBuild
     into('static') {
         from('src/webapp/dist') {
             exclude '**/*.css.map'

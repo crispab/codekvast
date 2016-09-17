@@ -4,7 +4,7 @@ testSets {
     systemTest
 }
 
-systemTest.dependsOn test, npmTest
+systemTest.dependsOn test, frontendTest
 check.dependsOn systemTest
 
 configurations {
@@ -74,7 +74,7 @@ task logsSystemTestEnvironment {
 systemTest {
     description 'Runs function tests against Codekvast Warehouse in a Docker container'
     group 'System test'
-    dependsOn npmInstall, startSystemTestEnvironment
+    dependsOn frontendInstall, startSystemTestEnvironment
     shouldRunAfter integrationTest
 
     def failures = 0;
