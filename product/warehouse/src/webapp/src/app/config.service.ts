@@ -2,7 +2,7 @@
  * Injectable wrapper for front-end config rendered as JavaScript literals in the index.html host page.
  */
 import {Injectable} from '@angular/core';
-import {window} from '@angular/platform-browser/src/facade/browser';
+// TODO import {window} from '@angular/platform-browser/src/facade/browser';
 
 @Injectable()
 export class ConfigService {
@@ -11,8 +11,8 @@ export class ConfigService {
     private _apiPrefix: String;
 
     constructor() {
-        this._apiPrefix = window['CODEKVAST_API'] || '';
-        this._version = window['CODEKVAST_VERSION'] || 'unknown';
+        this._apiPrefix = ''; // TODO window['CODEKVAST_API'] || '';
+        this._version = 'unknown'; // window['CODEKVAST_VERSION'] || 'unknown';
     }
 
     getVersion(): String {

@@ -6,8 +6,7 @@ import {CkAgePipe} from './ck-age.pipe';
 @Component({
     selector: 'ck-method-list',
     template: require('./method-list.component.html'),
-    providers: [WarehouseService],
-    pipes: [CkAgePipe]
+    providers: [WarehouseService, CkAgePipe],
 })
 export class MethodListComponent {
 

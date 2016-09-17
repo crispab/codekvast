@@ -1,15 +1,14 @@
-import {NgModule} from '@angular/core';
-import {HttpModule} from '@angular/http';
-import {BrowserModule} from '@angular/platform-browser';
 import {AppComponent} from './app.component';
+import {BrowserModule} from '@angular/platform-browser';
 import {CkAgePipe} from './ck-age.pipe';
-import {ConfigService} from './config.service';
+import {HttpModule} from '@angular/http';
 import {MethodListComponent} from './method-list.component';
-import {WarehouseService} from './warehouse.service';
+import {NgModule} from '@angular/core';
+import {FormsModule}   from '@angular/forms';
 
 @NgModule({
-    declarations: [AppComponent, CkAgePipe, ConfigService,MethodListComponent, WarehouseService],
-    imports: [BrowserModule, HttpModule],
+    imports: [BrowserModule, FormsModule, HttpModule],
+    declarations: [AppComponent, CkAgePipe, MethodListComponent],
     bootstrap: [AppComponent]
 })
 export class AppModule {
