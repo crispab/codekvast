@@ -4,21 +4,24 @@
 # containers get the same name no matter what directory the file lives in.
 #-----------------------------------------------------------------------
 
+# Which version of Codekvast Warehouse?
+declare WAREHOUSE_VERSION=${WAREHOUSE_VERSION:-latest}
+
 # On what port should Codekvast Warehouse expose the REST API (0=random)?
 # Edit to suit your needs.
-declare WAREHOUSE_API_PORT=0
+declare WAREHOUSE_API_PORT=${WAREHOUSE_API_PORT:-0}
 
 # Where to look for data files from Codekvast Daemons?
-declare WAREHOUSE_INPUT_DIR=/tmp/codekvast/warehouse
+declare WAREHOUSE_INPUT_DIR=${WAREHOUSE_INPUT_DIR:-/tmp/codekvast/warehouse}
 
 # How should Docker handle restarts of warehouse containers?
-declare WAREHOUSE_RESTART_POLICY=unless-stopped
+declare WAREHOUSE_RESTART_POLICY=${WAREHOUSE_RESTART_POLICY:-unless-stopped}
 
 # Where to put log files?
-declare WAREHOUSE_LOG_DIR=/var/log
+declare WAREHOUSE_LOG_DIR=${WAREHOUSE_LOG_DIR:-/var/log}
 
 # Where should the MariaDB database live?
-declare DATABASE_DIR=/var/lib/codekvast-database
+declare WAREHOUSE_DATABASE_DIR=${WAREHOUSE_LOG_DIR:-/var/lib/codekvast-database}
 
 #--- No changes below this line! ---------------------------------------
 cat << EOF | docker-compose -p codekvast -f- $@
@@ -27,7 +30,7 @@ version: '2'
 services:
 
   app:
-    image: crisp/codekvast-warehouse:latest
+    image: crisp/codekvast-warehouse:${WAREHOUSE_VERSION}
 
     volumes:
     - ${WAREHOUSE_INPUT_DIR}:/tmp/codekvast/.warehouse
@@ -55,11 +58,10 @@ services:
     - TERM=xterm-256color
 
     volumes:
-    - ${DATABASE_DIR}:/var/lib/mysql
+    - ${WAREHOUSE_DATABASE_DIR}:/var/lib/mysql
 
     expose:
     - "3306"
 
     command: --character-set-server=utf8 --collation-server=utf8_general_ci --default-storage-engine=innodb
 EOF
-
