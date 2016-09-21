@@ -7,7 +7,8 @@ import org.ajoberstar.grgit.Grgit
 import java.text.SimpleDateFormat
 
 wrapper {
-    gradleVersion = '3.0'
+    gradleVersion = '3.1'
+    distributionType = 'all'
 }
 
 apply plugin: 'idea'

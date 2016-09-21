@@ -24,6 +24,8 @@ declare WAREHOUSE_LOG_DIR=${WAREHOUSE_LOG_DIR:-/var/log}
 declare WAREHOUSE_DATABASE_DIR=${WAREHOUSE_DATABASE_DIR:-/var/lib/codekvast-database}
 
 #--- No changes below this line! ---------------------------------------
+declare COLON=${WAREHOUSE_VOLUME_SEPARATOR:-:}
+
 cat << EOF | docker-compose -p ${WAREHOUSE_CONTAINER_PREFIX:-codekvast} -f- $@
 version: '2'
 
@@ -33,8 +35,8 @@ services:
     image: crisp/codekvast-warehouse:${WAREHOUSE_VERSION}
 
     volumes:
-    - ${WAREHOUSE_INPUT_DIR}:/tmp/codekvast/.warehouse
-    - ${WAREHOUSE_LOG_DIR}:/var/log
+    - ${WAREHOUSE_INPUT_DIR}${COLON}/tmp/codekvast/.warehouse
+    - ${WAREHOUSE_LOG_DIR}${COLON}/var/log
 
     links:
     - db:database
@@ -58,7 +60,7 @@ services:
     - TERM=xterm-256color
 
     volumes:
-    - ${WAREHOUSE_DATABASE_DIR}:/var/lib/mysql
+    - ${WAREHOUSE_DATABASE_DIR}${COLON}/var/lib/mysql
 
     expose:
     - "3306"
