@@ -26,7 +26,7 @@ There are a number of Gradle tasks that wrap npm commands, to make it simpler to
 
 The frontend can be developed with a running backend (gradle bootRun) and with a webpack-dev-server for the frontend stuff.
  
-Start the frontend development environment with `gradle npmStart`
+Start the frontend development environment with `gradle frontendStart`
 
 This will start Webpack watch mode, and then launches a webpack-dev-server accessible
 at [http://localhost:3000](http://localhost:3000) (the webapp).
@@ -38,7 +38,7 @@ The next time `gradle assemble` is executed, the result of the Webpack bundling 
 ## File watch limits
 On some Linux distros, Both IntelliJ IDEA and the Node.js uses the system service `inotify` to watch directories for changed files.
 
-If the limit is to low, `gradle npmStart` will fail.
+If the limit is to low, `gradle frontendStart` will fail.
 
 If you happen to use Ubuntu, here is the remedy:
 
