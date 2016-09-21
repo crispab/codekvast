@@ -21,10 +21,10 @@ declare WAREHOUSE_RESTART_POLICY=${WAREHOUSE_RESTART_POLICY:-unless-stopped}
 declare WAREHOUSE_LOG_DIR=${WAREHOUSE_LOG_DIR:-/var/log}
 
 # Where should the MariaDB database live?
-declare WAREHOUSE_DATABASE_DIR=${WAREHOUSE_LOG_DIR:-/var/lib/codekvast-database}
+declare WAREHOUSE_DATABASE_DIR=${WAREHOUSE_DATABASE_DIR:-/var/lib/codekvast-database}
 
 #--- No changes below this line! ---------------------------------------
-cat << EOF | docker-compose -p codekvast -f- $@
+cat << EOF | docker-compose -p ${WAREHOUSE_CONTAINER_PREFIX:-codekvast} -f- $@
 version: '2'
 
 services:

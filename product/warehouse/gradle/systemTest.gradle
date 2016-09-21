@@ -30,9 +30,12 @@ task startSystemTestEnvironment {
     group 'System test'
     dependsOn ':product:warehouse:distDocker'
     doLast {
-        def forceRecreate = System.getenv('LEAVE_SYSTEM_TEST_ENVIRONMENT_RUNNING') == null ? "--force-recreate": ""
+        def forceRecreate = System.getenv('LEAVE_SYSTEM_TEST_ENVIRONMENT_RUNNING') == null ? "--force-recreate" : ""
         executeDockerCompose("up -d $forceRecreate")
         def endpoint = executeDockerCompose("port app 8080")
+        if (endpoint == "") {
+            throw new IllegalStateException("Failed to execute 'docker-compose up'")
+        }
         logger.lifecycle("Waiting for http://{} to respond", endpoint)
         waitForAppReadyAt endpoint
     }
@@ -107,12 +110,24 @@ systemTest {
 }
 
 String executeDockerCompose(String args) {
-    def command = "docker-compose -p warehouse-systest -f src/systemTest/resources/docker-compose.yml $args"
-    def process = command.execute(["CODEKVAST_VERSION=$codekvastDisplayVersion"], projectDir)
-    process.waitFor()
-    def result = process.in.text.trim()
-    logger.info("Result of {}: {}", command, result)
-    return result
+    def command = "src/docker/codekvast-warehouse.sh $args"
+    def process = command.execute([
+            "WAREHOUSE_VERSION=$codekvastDisplayVersion",
+            "WAREHOUSE_CONTAINER_PREFIX=warehousesystest",
+            "WAREHOUSE_API_PORT=0",
+            "WAREHOUSE_RESTART_POLICY='on-failure:10'",
+            "WAREHOUSE_INPUT_DIR=/tmp/warehousesystest/input",
+            "WAREHOUSE_LOG_DIR=/tmp/warehousesystest/log",
+            "WAREHOUSE_DATABASE_DIR=/tmp/warehousesystest/db"
+    ], projectDir)
+    def rc = process.waitFor()
+    def stderr = process.err.text.trim()
+    def stdout = process.in.text.trim()
+    if (rc != 0) {
+        throw new IllegalStateException("Failed to execute docker-compose $args: $stderr")
+    }
+    logger.info("Result of {}: {}", command, stdout)
+    return stdout
 }
 
 def waitForAppReadyAt(String endpoint) {
@@ -126,7 +141,7 @@ def waitForAppReadyAt(String endpoint) {
             def text = new URL(url).text
             return
         } catch (ignored) {
-            logger.debug("Failed to get {}, will try {} more times.", url, remainingAttempts )
+            logger.debug("Failed to get {}, will try {} more times.", url, remainingAttempts)
         }
         remainingAttempts -= 1
         if (remainingAttempts == 0) {
