@@ -30,7 +30,7 @@ task startSystemTestEnvironment {
     group 'System test'
     dependsOn ':product:warehouse:distDocker'
     doLast {
-        def forceRecreate = System.getenv('LEAVE_SYSTEM_TEST_ENVIRONMENT_RUNNING') == null ? "--force-recreate": "";
+        def forceRecreate = System.getenv('LEAVE_SYSTEM_TEST_ENVIRONMENT_RUNNING') == null ? "--force-recreate": ""
         executeDockerCompose("up -d $forceRecreate")
         def endpoint = executeDockerCompose("port app 8080")
         logger.lifecycle("Waiting for http://{} to respond", endpoint)
@@ -77,11 +77,11 @@ systemTest {
     dependsOn frontendInstall, startSystemTestEnvironment
     shouldRunAfter integrationTest
 
-    def failures = 0;
+    def failures = 0
 
     afterTest { descriptor, result ->
         logger.debug("test={}, result={}", descriptor, result)
-        failures += result.failedTestCount;
+        failures += result.failedTestCount
     }
 
     doFirst {
@@ -106,7 +106,7 @@ systemTest {
     }
 }
 
-def String executeDockerCompose(String args) {
+String executeDockerCompose(String args) {
     def command = "docker-compose -p warehouse-systest -f src/systemTest/resources/docker-compose.yml $args"
     def process = command.execute(["CODEKVAST_VERSION=$codekvastDisplayVersion"], projectDir)
     process.waitFor()
@@ -119,20 +119,20 @@ def waitForAppReadyAt(String endpoint) {
     def url = "http://" + endpoint
     logger.debug("Trying to to GET {}", url)
 
-    int numberOfAttempts = 60;
-    int remainingAttempts = numberOfAttempts;
+    int numberOfAttempts = 60
+    int remainingAttempts = numberOfAttempts
     while (true) {
         try {
             def text = new URL(url).text
             return
         } catch (ignored) {
-            logger.debug("Failed to get {}, will try {} more times.", url, remainingAttempts );
+            logger.debug("Failed to get {}, will try {} more times.", url, remainingAttempts )
         }
-        remainingAttempts -= 1;
+        remainingAttempts -= 1
         if (remainingAttempts == 0) {
             throw new IllegalStateException(url + " did not respond within " + numberOfAttempts + " seconds")
         }
-        sleep(1000);
+        sleep(1000)
     }
 }
 
