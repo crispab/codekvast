@@ -2,44 +2,49 @@ import {DatePipe} from '@angular/common';
 import {CkAgePipe} from './ck-age.pipe';
 
 let pipe : CkAgePipe;
-let parentPipe = new DatePipe('en');
-let minutes = 60 * 1000;
-let hours = 60 * minutes;
-let days = 24 * hours;
+let parentPipe: DatePipe;
+
+
+function getPastDate(days : number, hours : number, minutes : number ): Date {
+    let minuteMillis = 60 * 1000;
+    let hourMillis = 60 * minuteMillis;
+    let dayMillis = 24 * hourMillis;
+    let now = new Date().getTime();
+    return new Date(now - days * dayMillis - hours*hourMillis - minutes * minuteMillis);
+}
 
 describe('CkAgePipe', () => {
 
     beforeEach(() => {
+        parentPipe = {
+            transform(value: any, pattern?: string): string {
+                return 'parentPipe(' + pattern + ')' + value;
+            }
+        } as DatePipe;
         pipe = new CkAgePipe(parentPipe);
     });
 
-    it("Should return null for null", done => {
-        expect(pipe.transform(null)).toBe(null);
-        done();
-    });
-
-    it("Should return null for zero", done => {
+    it('Should return null for zero', () => {
         expect(pipe.transform(0)).toBe(null);
-        done();
     });
 
-    it("Should delegate to parent DatePipe when no pattern", done => {
-        let value = new Date();
+    it('Should delegate to parent when no pattern', () => {
+        let value = 'foobar';
         expect(pipe.transform(value)).toBe(parentPipe.transform(value));
-        done();
     });
 
-    it("Should delegate to parent DatePipe when unrecognized pattern", done => {
-        let value = new Date();
-        let pattern = 'shortDate'; // NOTE: not the default pattern 'mediumDate'
+    it('Should delegate to parent when unrecognized pattern', () => {
+        let value = 'foobar';
+        let pattern = 'pattern';
         expect(pipe.transform(value, pattern)).toBe(parentPipe.transform(value, pattern));
-        done();
     });
 
-    it("Should recognize 'age' pattern", done => {
-        let now = new Date().getTime();
-        let value = new Date(now - 2 * days - 4 * hours - 36 * minutes);
-        expect(pipe.transform(value, 'age')).toBe('2d 4h 36m');
-        done();
+    it('Should recognize "age" pattern', () => {
+        expect(pipe.transform(getPastDate(2, 4, 36), 'age')).toBe('2d 4h 36m');
     });
+
+    xit('Should reject non-dates and non-integers', () => {
+        expect(pipe.transform('foobar', 'age')).toThrowError();
+    });
+
 });

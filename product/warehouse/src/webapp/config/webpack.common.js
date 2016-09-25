@@ -10,6 +10,8 @@ module.exports = {
         'app': './src/main.ts'
     },
 
+    bail: true,
+
     resolve: {
         extensions: ['', '.js', '.ts']
     },

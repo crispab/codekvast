@@ -34,9 +34,9 @@ export class CkAgePipe implements PipeTransform {
             return this.getAgeMillis(value);
         }
         if (this.isDate(value)) {
-            return this.getAgeMillis(value.getTime())
+            return this.getAgeMillis(value.getTime());
         }
-        throw "CkAgePipe only understands integers and dates"
+        throw new Error("CkAgePipe only understands integers and dates");
     }
 
     private getAgeMillis(value: number): string {
