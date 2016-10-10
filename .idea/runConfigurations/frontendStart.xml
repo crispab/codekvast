@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="bootRun codekvast-warehouse" type="GradleRunConfiguration" factoryName="Gradle" folderName="Warehouse" singleton="true">
+  <configuration default="false" name="frontendStart" type="GradleRunConfiguration" factoryName="Gradle" folderName="Warehouse" singleton="true">
     <ExternalSystemSettings>
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$/product/warehouse" />
@@ -10,7 +10,7 @@
       </option>
       <option name="taskNames">
         <list>
-          <option value="bootRun" />
+          <option value="frontendStart" />
         </list>
       </option>
       <option name="vmOptions" value="" />

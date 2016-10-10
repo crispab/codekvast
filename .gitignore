@@ -1,12 +1,12 @@
-.idea/
 !.idea/codeStyleSettings.xml
 !.idea/compiler.xml
 !.idea/encodings.xml
 !.idea/findbugs-idea.xml
 !.idea/inspectionProfiles/
-!.idea/runConfigurations/
+!.idea/runConfigurations/*
 !.idea/sqldialects.xml
 !.idea/typescript-compiler.xml
+.idea/
 **/*.bak
 **/*.ipr
 **/*.iml
