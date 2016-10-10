@@ -29,7 +29,7 @@ The frontend can be developed with a running backend (gradle bootRun) and with a
 Start the frontend development environment with `gradle frontendStart`
 
 This will start Webpack watch mode, and then launches a webpack-dev-server accessible
-at [http://localhost:3000](http://localhost:3000) (the webapp).
+at [http://localhost:8081](http://localhost:8081) (the webapp).
 
 When finished, stop with Ctrl-C.
 

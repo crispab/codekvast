@@ -42,7 +42,7 @@ check.dependsOn frontendTest
 
 
 task frontendStart(type: Exec) {
-    description 'Starts the webpack dev server on port 3000'
+    description 'Starts the webpack dev server on port 8081'
     group 'Frontend Development'
 
     dependsOn frontendInstall

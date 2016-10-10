@@ -5,7 +5,7 @@
   "private": true,
 
   "scripts": {
-    "start": "webpack-dev-server --inline --progress --port 3000",
+    "start": "webpack-dev-server --inline --progress --port 8081",
     "test": "karma start",
     "clean": "rimraf dist",
     "prebuild": "rimraf dist",
