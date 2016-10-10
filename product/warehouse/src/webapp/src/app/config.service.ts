@@ -7,7 +7,7 @@ import {Injectable} from '@angular/core';
 export class ConfigService {
 
     getVersion(): String {
-        return window['CODEKVAST_VERSION'] || 'unknown';
+        return window['CODEKVAST_VERSION'] || 'dev';
     }
 
     getApiPrefix(): String {

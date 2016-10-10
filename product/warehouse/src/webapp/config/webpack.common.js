@@ -55,12 +55,12 @@ module.exports = {
         new HtmlWebpackPlugin({
             inject: false,
             template: require('html-webpack-template'),
-            title: 'Codekvast Warehouse',
+            title: 'Codekvast Warehouse ' + (process.env.CODEKVAST_VERSION || 'dev'),
             minify: false,
             mobile: true,
             appMountId: 'ck-app',
             window: {
-                CODEKVAST_API: process.env.ENV === 'production' ? '' : 'http://localhost:8080',
+                CODEKVAST_API: process.env.CODEKVAST_API,
                 CODEKVAST_VERSION: process.env.CODEKVAST_VERSION || 'dev'
             }
         })

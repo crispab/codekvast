@@ -13,7 +13,7 @@ describe('AppComponent', () => {
         app = TestBed.createComponent(AppComponent).componentInstance;
     });
 
-    it('app.apiPrefix should return value of window.CODEKVAST_API when defined', () => {
+    it('app.getApiPrefix() should return value of window.CODEKVAST_API when defined', () => {
         window['CODEKVAST_API'] = 'somePrefix';
         expect(app.getApiPrefix()).toEqual('somePrefix')
     });
@@ -30,6 +30,6 @@ describe('AppComponent', () => {
 
     it('app.getVersion() should return "unknown" if window.CODEKVAST_VERSION is undefined', () => {
         window['CODEKVAST_VERSION'] = undefined;
-        expect(app.getVersion()).toEqual('unknown')
+        expect(app.getVersion()).toEqual('dev')
     })
 });
