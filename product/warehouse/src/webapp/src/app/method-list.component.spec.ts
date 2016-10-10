@@ -3,35 +3,23 @@ import {By} from '@angular/platform-browser';
 import {DebugElement} from '@angular/core';
 import {MethodListComponent} from './method-list.component';
 import {AppModule} from './app.module';
-import {ConfigService} from './config.service';
 import {WarehouseService} from './warehouse.service';
+import {ConfigService} from './config.service';
 
 let component: MethodListComponent;
 let fixture: ComponentFixture<MethodListComponent>;
 let signatureDE: DebugElement;
 let signatureElement: HTMLElement;
 
-let configServiceStub = {
-
-    getVersion(): String {
-        return 'version';
-    },
-
-    getApiPrefix(): String {
-        return 'apiPrefix';
-    }
-};
-
-let warehouseServiceStub = {
-
-};
-
 describe('MethodListComponent', () => {
     beforeEach(() => {
+
+        let warehouseServiceStub = {};
+
         TestBed.configureTestingModule({
             imports: [AppModule],
             providers: [
-                {provide: ConfigService, useValue: configServiceStub},
+                {provide: ConfigService, useValue: {}},
                 {provide: WarehouseService, useValue: warehouseServiceStub}
             ] });
 
