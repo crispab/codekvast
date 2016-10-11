@@ -1,71 +1,55 @@
 //--- Docker ---------------------------------------------------------------------------------------
 import java.security.MessageDigest
 
-distDocker {
+task buildDockerImage {
     description "Builds the Docker image $codekvastWarehouseImageName:$codekvastDisplayVersion"
     group 'Distribution'
-    baseImage 'java:8-jre'
-    maintainer 'Olle Hallin "olle.hallin@crisp.se"'
-    runCommand 'mkdir -p /var/log /tmp/codekvast'
-    volume '/var/log'
-    volume '/tmp/codekvast'
-    tagVersion codekvastDisplayVersion
 
-    def imageFingerprintFile = file("$buildDir/dockerImageFingerprint")
-    def distDir = file('build/distributions')
+    def jarFile = file("build/libs/${archivesBaseName}-${codekvastVersion}-all.jar")
+    def dockerFile = file("src/docker/Dockerfile")
+    def dockerDir = file('build/docker')
 
-    outputs.file imageFingerprintFile
-    outputs.upToDateWhen { isUpToDate(imageFingerprintFile, distDir, codekvastDisplayVersion) }
+    inputs.file dockerFile
+    inputs.file jarFile
+    outputs.dir dockerDir
 
-    dependsOn ':product:warehouse:test'
+    dependsOn ':product:warehouse:test', ':product:warehouse:bootRepackage'
 
     doLast {
-        def imageId = "docker images -q $codekvastWarehouseImageName:$codekvastDisplayVersion".execute().text.trim()
+        mkdir dockerDir
 
+        assert dockerFile.exists()
+        copy {
+            from dockerFile
+            into dockerDir
+            expand(project.properties)
+        }
+
+        assert jarFile.exists()
+        copy {
+            from jarFile
+            into dockerDir
+        }
+
+        def imageId = executeDockerBuild(dockerDir)
+
+        assert "docker tag $imageId $codekvastWarehouseImageName:$codekvastDisplayVersion".execute().waitFor() == 0
         assert "docker tag $imageId $codekvastWarehouseImageName:$codekvastVersion".execute().waitFor() == 0
         assert "docker tag $imageId $codekvastWarehouseImageName:latest".execute().waitFor() == 0
         logger.lifecycle "docker images $codekvastWarehouseImageName".execute().text.trim()
-
-        imageFingerprintFile.text = createFingerprint(distDir)
     }
 }
+assemble.dependsOn buildDockerImage
 
-def boolean isUpToDate(File imageFingerprintFile, File distDir, String codekvastDisplayVersion) {
-    def imageId = "docker images -q $codekvastWarehouseImageName:$codekvastDisplayVersion".execute().text.trim()
-    def oldMd5 = imageFingerprintFile.exists() ? imageFingerprintFile.text.trim() : null;
-    def newMd5 = createFingerprint(distDir).trim()
-
-    logger.debug("isUpToDate: imageId={}, old MD5={}, new MD5={}", imageId, oldMd5, newMd5)
-    return !imageId.isEmpty() && oldMd5 == newMd5;
-}
-
-def String createFingerprint(File distDir) {
-    def result = null;
-    distDir.eachFileMatch ~/.*\.tar$/, { file ->
-        if (result != null) {
-            throw new IllegalStateException("More than one tar file in ${distDir}. Forgot to clean after stepping version?")
-        }
-        result = generateMD5(file) + "\n";
+String executeDockerBuild(File dockerDir) {
+    def command = "docker build --quiet $dockerDir"
+    def process = command.execute()
+    def rc = process.waitFor()
+    def stderr = process.err.text.trim()
+    def stdout = process.in.text.trim()
+    if (rc != 0) {
+        throw new IllegalStateException("Failed to execute $command: $stderr")
     }
-    logger.debug("MD5 of {} is {}", distDir, result)
-    return result
-}
-
-def String generateMD5(File file) {
-    logger.debug("Generating MD5 of {} ...", file)
-    MessageDigest digest = MessageDigest.getInstance("MD5")
-    int bufferSize = 32 * 1024
-    file.eachByte( bufferSize) { bytes, len ->
-        logger.debug("Read {} bytes from {}", len, file)
-        if (len == bufferSize) {
-            digest.update(bytes)
-        } else {
-            for (int i = 0; i < len; i++) {
-                digest.update(bytes[i]);
-            }
-        }
-    }
-    def result = file.name + ":" + new BigInteger(1, digest.digest()).toString(16).padLeft(32, '0')
-    logger.debug("MD5 of {} is {}", file, result)
-    return result
+    logger.info("Result of {}: {}", command, stdout)
+    return stdout
 }

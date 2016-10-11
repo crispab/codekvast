@@ -28,7 +28,7 @@ dependencies {
 task startSystemTestEnvironment {
     description 'docker-compose up'
     group 'System test'
-    dependsOn ':product:warehouse:distDocker'
+    dependsOn ':product:warehouse:buildDockerImage'
     doLast {
         def forceRecreate = System.getenv('LEAVE_SYSTEM_TEST_ENVIRONMENT_RUNNING') == null ? "--force-recreate" : ""
         executeDockerCompose("up -d $forceRecreate")

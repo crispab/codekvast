@@ -43,9 +43,6 @@ services:
 
     restart: ${WAREHOUSE_RESTART_POLICY}
 
-    environment:
-    - SPRING_PROFILES_ACTIVE=docker
-
     ports:
     - "${WAREHOUSE_API_PORT}:8080"
 

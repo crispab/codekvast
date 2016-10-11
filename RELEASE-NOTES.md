@@ -5,6 +5,7 @@
 1. Upgraded to Jackson 2.8.2 and chromedriver 2.23.1
 1. Upgraded to Spring Boot 1.4.1
 1. Improved codekvast-warehouse.sh to use environment variables
+1. Switched to java:8-jre-alpine for codekvast-warehouse Docker image (reduced image size from 332 MB to 129 MB)
 
 ## 0.18.4
 

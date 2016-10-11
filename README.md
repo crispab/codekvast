@@ -110,15 +110,13 @@ It will also build and start Codekvast Daemon and Codekvast Warehouse.
     
     You can access Jenkins #2 at http://localhost:8082/jenkins
     
-1. In terminal window #3 do `./gradlew :product:warehouse:distDocker`
+1. In terminal window #3 do `./gradlew :product:warehouse:buildDockerImage`
  
     This will build a local Docker image for Codekvast Warehouse from the sources.
     
-1. In terminal window #3 do `cd product/warehouse`
+1. In terminal window #3 do `product/warehouse/src/docker/codekvast-warehouse.sh up -d`
 
-1. In terminal window #3 do `docker-compose up -d`
-
-    This will launch two Docker containers: **warehouse_db_1** (MariaDB) and **warehouse_app_1** (the Codekvast Warehouse app).
+    This will launch two Docker containers: **codekvast_db_1** (MariaDB) and **codekvast_app_1** (the Codekvast Warehouse app).
     
     The warehouse app is configured to look for zip files in /tmp/codekvast/.warehouse and import them into the MariaDB database.
     

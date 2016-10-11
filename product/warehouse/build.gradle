@@ -1,16 +1,9 @@
 apply from: "$rootDir/gradle/java-8.gradle"
 apply from: "$rootDir/gradle/license.gradle"
 apply plugin: 'application'
-apply plugin: 'docker'
 apply plugin: 'flyway'
 apply plugin: 'org.unbroken-dome.test-sets'
 apply plugin: 'spring-boot'
-
-apply from: "$projectDir/gradle/backend.gradle"
-apply from: "$projectDir/gradle/docker.gradle"
-apply from: "$projectDir/gradle/frontend.gradle"
-apply from: "$projectDir/gradle/integrationTest.gradle"
-apply from: "$projectDir/gradle/systemTest.gradle"
 
 description = 'The central Codekvast warehouse'
 applicationName = 'codekvast-warehouse'
@@ -18,6 +11,12 @@ archivesBaseName = 'codekvast-warehouse'
 version = codekvastVersion
 group = "crisp"
 mainClassName = 'se.crisp.codekvast.warehouse.CodekvastWarehouse'
+
+apply from: "$projectDir/gradle/backend.gradle"
+apply from: "$projectDir/gradle/docker.gradle"
+apply from: "$projectDir/gradle/frontend.gradle"
+apply from: "$projectDir/gradle/integrationTest.gradle"
+apply from: "$projectDir/gradle/systemTest.gradle"
 
 configurations.compile {
     exclude module: 'spring-boot-starter-tomcat'
