@@ -1,6 +1,4 @@
 //--- Docker ---------------------------------------------------------------------------------------
-import java.security.MessageDigest
-
 task buildDockerImage {
     description "Builds the Docker image $codekvastWarehouseImageName:$codekvastDisplayVersion"
     group 'Distribution'
