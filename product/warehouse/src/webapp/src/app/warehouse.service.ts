@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
-import {Http, Headers, Response} from '@angular/http';
-import 'rxjs/Rx';
+import {Http, Headers, Response, RequestOptionsArgs} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import {ConfigService} from './config.service';
 import {MethodData} from './model/MethodData';
+import '../rxjs-operators';
 
 @Injectable()
 export class WarehouseService {
@@ -16,23 +16,33 @@ export class WarehouseService {
     }
 
     getMethods(signature?: string, maxResults?: number): Observable<MethodData> {
-        return this.http.get(this.constructGetMethodsUrl(signature, maxResults), {headers: this.headers})
+        const search: string = this.constructGetMethodsSearch(signature, maxResults);
+        let url: string = this.constructUrl();
+        if (search.length > 0) {
+            url = url + "?" + search;
+        }
+        console.log("url=%s", url);
+        return this.http.get(url, { headers: this.headers})
                    .map(this.extractMethodData)
                    .catch(this.handleError);
     }
 
-    constructGetMethodsUrl(signature: string, maxResults: number): string {
-        let url = this.configService.getApiPrefix() + this.methodsUrl;
-        let delimiter = '?';
-        if (signature !== undefined && signature.length > 0) {
-            url += `${delimiter}signature=${signature}`;
+    constructUrl(): string {
+        return this.configService.getApiPrefix() + this.methodsUrl;
+    }
+
+    constructGetMethodsSearch(signature: string, maxResults: number): string {
+        let search = '';
+        let delimiter = '';
+        if (signature !== undefined && signature.trim().length > 0) {
+            search += `${delimiter}signature=${signature}`;
             delimiter = '&';
         }
         if (maxResults !== undefined) {
-            url += `${delimiter}maxResults=${maxResults}`;
+            search += `${delimiter}maxResults=${maxResults}`;
             delimiter = '&';
         }
-        return url;
+        return search;
     }
 
     private extractMethodData(res: Response): MethodData {

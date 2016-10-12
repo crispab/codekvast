@@ -1,8 +1,5 @@
 import {WarehouseService} from './warehouse.service';
-import {TestBed} from '@angular/core/testing';
-import {AppModule} from './app.module';
 import {ConfigService} from './config.service';
-import {HttpModule} from '@angular/http';
 
 let warehouse: WarehouseService;
 
@@ -13,28 +10,33 @@ describe('WarehouseService', () => {
     });
 
 
-    it('should construct a get methods url without parameters', done => {
-        expect(warehouse.constructGetMethodsUrl(undefined, undefined)).toBe('/api/v1/methods');
+    it('should construct a get methods search without parameters', done => {
+        expect(warehouse.constructGetMethodsSearch(undefined, undefined)).toBe('');
         done();
     });
 
-    it('should construct a get methods url with only signature parameter', done => {
-        expect(warehouse.constructGetMethodsUrl("sig", undefined)).toBe('/api/v1/methods\?signature=sig');
+    it('should construct a get methods search with only signature parameter', done => {
+        expect(warehouse.constructGetMethodsSearch("sig", undefined)).toBe('signature=sig');
         done();
     });
 
-    it('should construct a get methods url with only empty signature parameter', done => {
-        expect(warehouse.constructGetMethodsUrl('', undefined)).toBe('/api/v1/methods');
+    it('should construct a get methods search with only blank signature parameter', done => {
+        expect(warehouse.constructGetMethodsSearch(' ', undefined)).toBe('');
         done();
     });
 
-    it('should construct a get methods url with only maxResults parameter', done => {
-        expect(warehouse.constructGetMethodsUrl(undefined, 100)).toBe('/api/v1/methods\?maxResults=100');
+    it('should construct a get methods search with only maxResults parameter', done => {
+        expect(warehouse.constructGetMethodsSearch(undefined, 100)).toBe('maxResults=100');
         done();
     });
 
-    it('should construct a get methods url with both signature maxResults parameter', done => {
-        expect(warehouse.constructGetMethodsUrl("sig", 100)).toBe('/api/v1/methods\?signature=sig&maxResults=100');
+    it('should construct a get methods search with blank signature and maxResults parameter', done => {
+        expect(warehouse.constructGetMethodsSearch(' ', 100)).toBe('maxResults=100');
+        done();
+    });
+
+    it('should construct a get methods search with both signature maxResults parameter', done => {
+        expect(warehouse.constructGetMethodsSearch("sig", 100)).toBe('signature=sig&maxResults=100');
         done();
     });
 
