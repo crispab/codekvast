@@ -8,6 +8,6 @@ integrationTest.dependsOn test
 check.dependsOn integrationTest
 
 dependencies {
-    integrationTestCompile project(':product:support:testsupport')
+    integrationTestCompile project(':product:testsupport')
     integrationTestCompileOnly lombok
 }

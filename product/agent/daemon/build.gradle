@@ -40,7 +40,7 @@ dependencies {
     testCompile mockito
     testCompile "org.springframework.boot:spring-boot-starter-test"
 
-    integrationTestCompile project(":product:support:testsupport")
+    integrationTestCompile project(":product:testsupport")
 }
 
 processResources {

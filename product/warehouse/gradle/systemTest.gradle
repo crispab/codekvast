@@ -14,7 +14,7 @@ configurations {
 dependencies {
     systemTestCompileOnly lombok
 
-    systemTestCompile project(':product:support:testsupport')
+    systemTestCompile project(':product:testsupport')
     systemTestCompile 'net.serenity-bdd:serenity-core:1.1.42'
     systemTestCompile 'net.serenity-bdd:serenity-junit:1.1.42'
 

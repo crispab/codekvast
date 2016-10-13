@@ -6,7 +6,7 @@ include ':product:agent:collector'
 include ':product:agent:daemon'
 include ':product:dist'
 include ':product:docs'
-include ':product:support:testsupport'
+include ':product:testsupport'
 include ':product:warehouse'
 
 include ':tools'
