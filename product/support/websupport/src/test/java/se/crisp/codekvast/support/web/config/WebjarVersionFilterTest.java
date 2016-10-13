@@ -21,7 +21,7 @@ import static org.mockito.Mockito.*;
 public class WebjarVersionFilterTest {
     // These webjars must be defined in build.gradle at scope runtime or testRuntime
     private static final String RECOGNIZED_WEBJAR_WITHOUT_VERSION1 = "/webjars/sockjs-client/sockjs-client.js";
-    private static final String RECOGNIZED_WEBJAR_WITH_VERSION1 = "/webjars/sockjs-client/1.0.2/sockjs-client.js";
+    private static final String RECOGNIZED_WEBJAR_WITH_VERSION1 = "/webjars/sockjs-client/1.1.1/sockjs-client.js";
     private static final String RECOGNIZED_WEBJAR_WITHOUT_VERSION2 = "/webjars/d3js/d3js.js";
     private static final String RECOGNIZED_WEBJAR_WITH_VERSION2 = "/webjars/d3js/4.2.1/d3js.js";
 
