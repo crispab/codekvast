@@ -29,7 +29,7 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
     compile 'org.flywaydb:flyway-core'
     compile "com.opencsv:opencsv:$opencsvVersion"
-    compile 'com.hierynomus:sshj:0.17.2'
+    compile 'com.hierynomus:sshj:0.18.0'
 
     runtime aspectjWeaver
     runtime h2database

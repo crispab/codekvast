@@ -7,7 +7,6 @@ include ':product:agent:daemon'
 include ':product:dist'
 include ':product:docs'
 include ':product:support:testsupport'
-include ':product:support:websupport'
 include ':product:warehouse'
 
 include ':tools'

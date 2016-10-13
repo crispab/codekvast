@@ -3,7 +3,7 @@ ext {
     h2databaseVersion = '1.4.192'
     jacksonVersion = '2.8.3'
     opencsvVersion = '3.8'
-    springfoxVersion = '2.5.0'
+    springfoxVersion = '2.6.0'
 
     aspectjWeaver = "org.aspectj:aspectjweaver:$aspectjVersion"
 
