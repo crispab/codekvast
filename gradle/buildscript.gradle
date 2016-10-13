@@ -8,7 +8,7 @@ dependencies {
     classpath 'com.github.jengelman.gradle.plugins:gradle-processes:0.3.0'
     classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
     classpath 'com.h2database:h2:1.4.185'
-    classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7'
+    classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.2'
     classpath 'com.moowork.gradle:gradle-node-plugin:0.10'
     classpath 'com.ofg:uptodate-gradle-plugin:1.6.0'
     classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.10.0'
