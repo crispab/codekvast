@@ -9,6 +9,7 @@ task buildDockerImage {
 
     inputs.file dockerFile
     inputs.file jarFile
+    inputs.property "version", codekvastDisplayVersion
     outputs.dir dockerDir
 
     dependsOn ':product:warehouse:test', ':product:warehouse:bootRepackage'
