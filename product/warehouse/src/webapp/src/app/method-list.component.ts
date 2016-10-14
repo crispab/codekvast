@@ -23,10 +23,13 @@ export class MethodListComponent {
     search() {
         this.warehouse
             .getMethods(this.signature, this.maxResults)
-            .subscribe(
-                data => this.data = data,
-                error => this.errorMessage = error,
-                () => console.log("getMethods() complete"));
+            .subscribe(data => {
+                this.data = data;
+                this.errorMessage = undefined
+            }, error => {
+                this.data = undefined;
+                this.errorMessage = error
+            }, () => console.log("getMethods() complete"));
     }
 
 }
