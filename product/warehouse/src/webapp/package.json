@@ -3,7 +3,6 @@
   "version": "0.18.5",
   "description": "The web interface for Codekvast Warehouse",
   "private": true,
-
   "scripts": {
     "start": "webpack-dev-server --inline --progress --port 8081",
     "test": "karma start",
@@ -13,9 +12,7 @@
     "build:q": "webpack --config config/webpack.dev.js --progress",
     "postinstall": "typings install"
   },
-
   "license": "MIT",
-
   "dependencies": {
     "@angular/common": "2.0.1",
     "@angular/compiler": "2.0.1",
@@ -28,10 +25,10 @@
     "bootstrap": "3.3.7",
     "core-js": "^2.4.1",
     "intl": "1.2.5",
+    "ng2-bootstrap": "^1.1.14",
     "rxjs": "5.0.0-beta.12",
     "zone.js": "^0.6.25"
   },
-
   "devDependencies": {
     "angular2-template-loader": "^0.5.0",
     "awesome-typescript-loader": "^2.2.4",
