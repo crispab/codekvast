@@ -3,10 +3,7 @@ package se.crisp.codekvast.warehouse.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import se.crisp.codekvast.warehouse.api.model.GetMethodsRequest1;
 import se.crisp.codekvast.warehouse.api.model.GetMethodsResponse1;
 import se.crisp.codekvast.warehouse.api.model.MethodDescriptor1;
@@ -23,7 +20,6 @@ import java.util.List;
 import java.util.Locale;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.OPTIONS;
 import static se.crisp.codekvast.warehouse.api.ApiService.DEFAULT_MAX_RESULTS_STR;
 
 /**
@@ -55,31 +51,13 @@ public class ApiController {
         return ResponseEntity.badRequest().body(violations.toString());
     }
 
-    /**
-     * Make it possible to invoke getMethods1() from another server running in localhost (e.g., 'npm start' or debugging with IDEA in
-     * Chrome...
-     */
-    private ResponseEntity.BodyBuilder addCorsHeaderForLocalhost(HttpServletRequest request) {
-        ResponseEntity.BodyBuilder builder = ResponseEntity.ok();
-        String origin = request.getHeader("Origin");
-        if (origin != null && origin.contains("//localhost")) {
-            builder.header("Access-Control-Allow-Origin", origin);
-        }
-        return builder;
-    }
-
-    // This happens when running from 'npm start'
-    @RequestMapping(method = OPTIONS, value = API_V1_METHODS)
-    public ResponseEntity<Void> allow_any_localhost_port_for_getMethods1(HttpServletRequest request) {
-        return addCorsHeaderForLocalhost(request).build();
-    }
-
     @RequestMapping(method = GET, value = API_V1_METHODS)
+    @CrossOrigin(origins = "http://localhost:8081")
     public ResponseEntity<GetMethodsResponse1> getMethods1(HttpServletRequest request,
                                                            @RequestParam(value = "signature", defaultValue = "%") String signature,
                                                            @RequestParam(name = "maxResults", defaultValue = DEFAULT_MAX_RESULTS_STR)
                                                                        Integer maxResults) {
-        return addCorsHeaderForLocalhost(request).body(doGetMethods(signature, maxResults));
+        return ResponseEntity.ok().body(doGetMethods(signature, maxResults));
     }
 
     private GetMethodsResponse1 doGetMethods(String signature, Integer maxResults) {
