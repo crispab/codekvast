@@ -182,13 +182,15 @@ Development tools live under `tools/`.
 
 ### Development environment
 
-#### JDK
+#### JDK and Node.js
 
-Java 8  is required. OpenJDK is recommended.
+Java 8 is required. OpenJDK is recommended.
 
-Use the following command to install OpenJDK 8 (Ubuntu, Debian):
+Node.js and NPM are required.
 
-    sudo apt-get install openjdk-8-jdk
+Use the following command to install OpenJDK 8, Node.js and npm (Ubuntu, Debian):
+
+    sudo apt-get install openjdk-8-jdk npm nodejs-legacy
 
 #### TypeScript
 
