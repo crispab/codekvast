@@ -1,7 +1,7 @@
 ext {
     aspectjVersion = '1.8.9'
     h2databaseVersion = '1.4.192'
-    jacksonVersion = '2.8.3'
+    jacksonVersion = '2.8.4'
     opencsvVersion = '3.8'
     springfoxVersion = '2.6.0'
 

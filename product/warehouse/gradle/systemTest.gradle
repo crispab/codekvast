@@ -19,8 +19,8 @@ dependencies {
     systemTestCompile 'net.serenity-bdd:serenity-junit:1.1.42'
 
     systemTestRuntime 'com.codeborne:phantomjsdriver:1.3.0'
-    systemTestRuntime 'org.seleniumhq.selenium:selenium-chrome-driver:2.53.1'
-    systemTestRuntime 'org.seleniumhq.selenium:selenium-firefox-driver:2.53.1'
+    systemTestRuntime 'org.seleniumhq.selenium:selenium-chrome-driver:3.0.1'
+    systemTestRuntime 'org.seleniumhq.selenium:selenium-firefox-driver:3.0.1'
 
     chromeDriver 'com.github.igor-suhorukov:chromedriver:2.24:linux64@bin'
 }
