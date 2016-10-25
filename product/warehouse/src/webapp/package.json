@@ -14,18 +14,18 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@angular/common": "2.1.0",
-    "@angular/compiler": "2.1.0",
-    "@angular/core": "2.1.0",
-    "@angular/forms": "2.1.0",
-    "@angular/http": "2.1.0",
-    "@angular/platform-browser": "2.1.0",
-    "@angular/platform-browser-dynamic": "2.1.0",
-    "@angular/router": "3.1.0",
+    "@angular/common": "2.1.1",
+    "@angular/compiler": "2.1.1",
+    "@angular/core": "2.1.1",
+    "@angular/forms": "2.1.1",
+    "@angular/http": "2.1.1",
+    "@angular/platform-browser": "2.1.1",
+    "@angular/platform-browser-dynamic": "2.1.1",
+    "@angular/router": "3.1.1",
     "bootstrap": "3.3.7",
     "core-js": "^2.4.1",
     "intl": "1.2.5",
-    "ng2-bootstrap": "^1.1.14",
+    "ng-bootstrap": "^1.0.0-beta.2",
     "rxjs": "5.0.0-beta.12",
     "zone.js": "^0.6.25"
   },
@@ -54,10 +54,10 @@
     "rimraf": "^2.5.4",
     "style-loader": "^0.13.1",
     "ts-loader": "^0.9.1",
-    "typescript": "^2.0.3",
+    "typescript": "^2.0.6",
     "typings": "^1.4.0",
     "webpack": "^1.13.2",
     "webpack-dev-server": "^1.16.1",
-    "webpack-merge": "^0.14.1"
+    "webpack-merge": "^0.15.0"
   }
 }
