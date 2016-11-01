@@ -5,8 +5,6 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
@@ -54,6 +52,7 @@ import static se.crisp.codekvast.warehouse.integtest.testdata.ImportDescriptor.*
 /**
  * @author olle.hallin@crisp.se
  */
+@SuppressWarnings("SpringAutowiredFieldsWarningInspection")
 @SpringBootTest(
         classes = {CodekvastWarehouse.class, TestDataGenerator.class},
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
