@@ -6,8 +6,5 @@ import '@angular/platform-browser';
 import '@angular/platform-browser-dynamic';
 import '@angular/router';
 import './rxjs-operators';
-
-// RxJS
-// Other vendors for example jQuery, Lodash or Bootstrap
-// You can import js, ts, css, sass, ...
-
+import 'angular2-template-loader'
+import '@ng-bootstrap/ng-bootstrap';

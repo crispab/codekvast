@@ -8,8 +8,6 @@ import {ConfigService} from './config.service';
 })
 export class AppComponent {
 
-    now: Date = new Date();
-
     constructor(private _config: ConfigService) {
     }
 
