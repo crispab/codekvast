@@ -3,7 +3,7 @@ apply from: "$rootDir/gradle/license.gradle"
 apply plugin: 'application'
 apply plugin: 'flyway'
 apply plugin: 'org.unbroken-dome.test-sets'
-apply plugin: 'spring-boot'
+apply plugin: 'org.springframework.boot'
 
 description = 'The central Codekvast warehouse'
 applicationName = 'codekvast-warehouse'
