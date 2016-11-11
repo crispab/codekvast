@@ -81,61 +81,6 @@ the only functionality offered is a REST API for getting information about a met
      1. Add a mechanism for informing daemons that they safely can prune data.
      1. Add more mechanisms for receiving data from daemons (currently supported: zip files, optionally pushed by scp).  
 
-## How To Kick The Tyres
-
-The following procedure will download and start two different versions of Jenkins and launch them in Tomcat 7, with Codekvast Collector attached.
-It will also build and start Codekvast Daemon and Codekvast Warehouse.
-
-1. Install **JDK 8** (OpenJDK or Oracle are fine.) 
-
-1. Install [Docker Engine 1.10.3+](https://docs.docker.com/engine/installation/) and [Docker Compose 1.6.2+](https://docs.docker.com/compose/install/)
-
-1. Open a terminal window
-
-1. Do `git clone https://github.com/crispab/codekvast.git && cd codekvast`
-
-1. Open 3 more terminal windows or tabs with `codekvast` as working directory.
-
-1. In terminal window #1 do `./gradlew :sample:jenkins1:run`
-
-    This will download and start Jenkins inside Tomcat with Codekvast Collector attached.
-    
-    You can access Jenkins #1 at http://localhost:8081/jenkins
-
-    _NOTE:_ The download of jenkins.war could take some time. Be patient!
-    
-1. In terminal window #2 do `./gradlew :sample:jenkins2:run`
-   
-    Downloads and starts another version of Jenkins inside another Tomcat also with Codekvast Collector attached.
-    
-    You can access Jenkins #2 at http://localhost:8082/jenkins
-    
-1. In terminal window #3 do `./gradlew :product:warehouse:buildDockerImage`
- 
-    This will build a local Docker image for Codekvast Warehouse from the sources.
-    
-1. In terminal window #3 do `product/warehouse/src/docker/codekvast-warehouse.sh up -d`
-
-    This will launch two Docker containers: **codekvast_db_1** (MariaDB) and **codekvast_app_1** (the Codekvast Warehouse app).
-    
-    The warehouse app is configured to look for zip files in /tmp/codekvast/.warehouse and import them into the MariaDB database.
-    
-    Do `docker-compose port app 8080` and note the port that was allocated to warehouse_app_1 (the number after "0.0.0.0:"). Note this port number.
-    
-1. In terminal window #4 do `sudo chmod o+rw /tmp/codekvast/.warehouse` or else the Codekvast Daemon cannot create it's zip files there.
-    
-1. In terminal window #4 do `./gradlew :product:agent:daemon:run`
-
-    This will launch **Codekvast daemon**, that will process output from the collectors attached to the two Jenkins instances.
-    
-    The daemon will regularly produce zip data files in /tmp/codekvast/.warehouse (where Codekvast Warehouse will find and consume them).
-    
-1. Open a web browser to 0.0.0.0:&lt;warehouse_app_1-port&gt; (output from the `docker-compose port` command above)
-
-   Play around with the Swagger UI console.
-
-1. In each terminal window press `Ctrl-C`to terminate.
-
 ### Pre-built binaries and Docker Compose recipes
 
 Pre-built binaries, a User Manual and Docker Compose files are available for download from [Codekvast at Bintray](https://bintray.com/crisp/codekvast/distributions/view#files)
@@ -144,7 +89,7 @@ Pre-built binaries, a User Manual and Docker Compose files are available for dow
 
 * codekvast-warehouse-x.x.x.zip contains *Codekvast Warehouse* as a regular Linux System-V service. Install MariaDB separately.
 
-* codekvast-warehouse.sh is a shell script that runs Codekvast Warehouse and MariaDB as Docker images.
+* codekvast-warehouse.sh is a Docker Compose script that runs Codekvast Warehouse and MariaDB as Docker images.
 
 * CodekvastUserManual.html is a complete User Manual for all three components. It contains installation and configuration guides.
 
@@ -197,10 +142,6 @@ Use the following command to install OpenJDK 8, Node.js and npm (Ubuntu, Debian)
 The Codekvast Warehouse web UI is developed with npm, TypeScript and Angular2.
 
 npm is used for managing the frontend development environment. Webpack is used as frontend bundler.
- 
-Use the following command to install the Node Package Manager (npm), which is used to manage all JavaScript-related stuff (Ubuntu, Debian):
-
-    sudo apt-get install nodejs npm
     
 #### Docker Engine & Docker Compose
 
