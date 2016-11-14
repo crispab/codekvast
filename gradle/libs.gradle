@@ -1,9 +1,9 @@
 ext {
     aspectjVersion = '1.8.9'
-    h2databaseVersion = '1.4.192'
-    jacksonVersion = '2.8.4'
+    h2databaseVersion = '1.4.193'
+    jacksonVersion = '2.8.5'
     opencsvVersion = '3.8'
-    springfoxVersion = '2.6.0'
+    springfoxVersion = '2.6.1'
 
     aspectjWeaver = "org.aspectj:aspectjweaver:$aspectjVersion"
 
@@ -14,5 +14,5 @@ ext {
     h2database = "com.h2database:h2:$h2databaseVersion"
     logback = 'ch.qos.logback:logback-classic:1.1.7'
     lombok = 'org.projectlombok:lombok:1.16.10'
-    mariadbDriver = 'org.mariadb.jdbc:mariadb-java-client:1.5.4'
+    mariadbDriver = 'org.mariadb.jdbc:mariadb-java-client:1.5.5'
 }
