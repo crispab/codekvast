@@ -95,6 +95,8 @@ public class CodeBaseScanner {
         // We're only interested in it's ability to enumerate everything inside a class loader.
         // The actual Reflections object is immediately discarded. Our data is collected by the filter.
 
+        // TODO: Replace Reflections with Guava's ClassPath
+
         RecordingClassFileFilter recordingClassNameFilter = new RecordingClassFileFilter(packages);
 
         new Reflections(appClassLoader, new SubTypesScanner(), recordingClassNameFilter);
