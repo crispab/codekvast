@@ -4,6 +4,7 @@ import {ConfigService} from './config.service';
 @Component({
     selector: 'ck-top-nav',
     template: require('./top-nav.component.html'),
+    styles: [require('./top-nav.component.css')],
     providers: [ConfigService]
 })
 export class TopNavComponent {
