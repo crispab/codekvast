@@ -38,13 +38,12 @@ interval is started.
 There is exactly one collector per JVM. The collector uses http://en.wikipedia.org/wiki/AspectJ[AspectJ, role="external", window="_new"]
 for hooking into your application. *The collector requires Java 6 or higher.*
 
-Codekvast Daemon:: Analyses the application's <<application-binaries, binaries>> to produce an <<method-inventory, inventory>> of the
-application. The
-inventory consists of all the method signatures that the collector potentially can record. The daemon combines the method inventory with the invocation data
- from the collector(s) and uploads it to the warehouse. There is one daemon per server host. One daemon can collect invocation data from
- several JVMs that are executing in the same host. *The daemon requires Java 8 or higher.*
+Codekvast Daemon:: The daemon analyses the application's <<application-binaries, binaries>> to produce an <<method-inventory, inventory>> of the
+application. It also consumes the invocation data produced by the collector(s). The inventory consists of all the method signatures that the collector potentially can record. The daemon combines the method inventory with the invocation data
+from the collector(s) and uploads it to the warehouse. There is one daemon per server host. One daemon can collect invocation data from
+several JVMs that are executing in the same host. *The daemon requires Java 8 or higher.*
 
-Codekvast Warehouse:: Receives inventory and invocation data from the daemon(s), stores it in a database and makes it available for browsing
+Codekvast Warehouse:: The warehouse receives inventory and invocation data from the daemon(s), stores it in a database and makes it available for browsing
 in a web interface. It also offers a REST interface to facilitate IDE plugin development. There is only one warehouse. *The warehouse requires Java 8 or higher plus MariaDB server 10 or higher*
 
 [TIP]
@@ -164,7 +163,7 @@ cd codekvast-ansible-{codekvastVersion}
 
 Now, edit `codekvast-daemon.yml` and `inventory` to suit your needs.
 
-Finally, let Ansible to the heavy lifting of installing and configuring Codekvast Daemon in the hosts in `inventory`:
+Finally, let Ansible do the heavy lifting of installing and configuring Codekvast Daemon in the hosts in `inventory`:
 
 [source,bash,subs="attributes,verbatim"]
 ----
