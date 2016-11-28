@@ -1,17 +1,17 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {DebugElement} from '@angular/core';
-import {MethodListComponent} from './method-list.component';
+import {SearchMethods} from './search-methods.component';
 import {AppModule} from './app.module';
 import {WarehouseService} from './warehouse.service';
 import {ConfigService} from './config.service';
 
-let component: MethodListComponent;
-let fixture: ComponentFixture<MethodListComponent>;
+let component: SearchMethods;
+let fixture: ComponentFixture<SearchMethods>;
 let signatureDE: DebugElement;
 let signatureElement: HTMLElement;
 
-describe('MethodListComponent', () => {
+describe('SearchMethods', () => {
     beforeEach(() => {
 
         let warehouseServiceStub = {};
@@ -23,7 +23,7 @@ describe('MethodListComponent', () => {
                 {provide: WarehouseService, useValue: warehouseServiceStub}
             ] });
 
-        fixture = TestBed.createComponent(MethodListComponent);
+        fixture = TestBed.createComponent(SearchMethods);
 
         component = fixture.componentInstance;
 

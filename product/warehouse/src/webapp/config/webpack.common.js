@@ -57,7 +57,6 @@ module.exports = {
             template: require('html-webpack-template'),
             title: 'Codekvast Warehouse ' + (process.env.CODEKVAST_VERSION || 'dev'),
             links: ['https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css'],
-            baseHref: "/",
             mobile: true,
             minify: false,
             appMountId: 'ck-app',
