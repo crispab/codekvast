@@ -13,6 +13,7 @@
 **/*.log.*.zip
 **/*~
 **/src/docs/asciidoc/images/architecture-diagram.*
+**/src/docs/asciidoc/.asciidoctor/
 .gradle
 .nodejs/
 .tmp/
