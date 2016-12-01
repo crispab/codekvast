@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -34,7 +35,7 @@ public class TestDataGenerator {
         for (Class testClass : testClasses) {
             Method[] declaredMethods = testClass.getDeclaredMethods();
 
-            Arrays.sort(declaredMethods, (o1, o2) -> o1.getName().compareTo(o2.getName()));
+            Arrays.sort(declaredMethods, Comparator.comparing(Method::getName));
 
             for (Method method : declaredMethods) {
                 if (!method.getName().contains("jacoco")) {

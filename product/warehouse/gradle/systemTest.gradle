@@ -75,7 +75,7 @@ task logsSystemTestEnvironment {
 }
 
 systemTest {
-    description 'Runs function tests against Codekvast Warehouse in a Docker container'
+    description 'Runs end-to-end tests against Codekvast Warehouse in a Docker container'
     group 'System test'
     dependsOn frontendInstall, startSystemTestEnvironment
     shouldRunAfter integrationTest
