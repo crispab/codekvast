@@ -132,9 +132,7 @@ public class ZipFileImporterImpl implements ZipFileImporter {
                 }
             }
         }
-        if (count > 0) {
-            log.debug("Imported {} {} in {} ms", count, what, Duration.between(startedAt, now()).toMillis());
-        }
+        log.debug("Imported {} {} in {} ms", count, what, Duration.between(startedAt, now()).toMillis());
     }
 
     private void readApplications(InputStreamReader reader, ImportDAO.ImportContext context) {

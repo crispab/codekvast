@@ -107,31 +107,17 @@ public class ImportDAOImpl implements ImportDAO {
         long jvmId = context.getJvmId(invocation.getLocalJvmId());
         Timestamp invokedAt = new Timestamp(invocation.getInvokedAtMillis());
 
-        Timestamp oldInvokedAt =
-                queryForTimestamp("SELECT invokedAtMillis FROM invocations WHERE applicationId = ? AND methodId = ? AND jvmId = ? ",
-                                  applicationId, methodId, jvmId);
-
-        boolean databaseTouched = false;
-        if (oldInvokedAt == null) {
-            jdbcTemplate.update("INSERT INTO invocations(applicationId, methodId, jvmId, invokedAtMillis, invocationCount, status) " +
-                                        "VALUES(?, ?, ?, ?, ?, ?) ",
-                                applicationId, methodId, jvmId, invokedAt.getTime(),
-                                invocation.getInvocationCount(), invocation.getStatus().name());
-            log.trace("Inserted invocation {}:{}:{} {}", applicationId, methodId, jvmId, invokedAt);
-            databaseTouched = true;
-        } else if (invokedAt.after(oldInvokedAt)) {
-            jdbcTemplate.update("UPDATE invocations SET invokedAtMillis = ?, invocationCount = invocationCount + ?, status = ? " +
-                                        "WHERE applicationId = ? AND methodId = ? AND jvmId = ? ",
-                                invokedAt.getTime(), invocation.getInvocationCount(), invocation.getStatus().name(),
-                                applicationId, methodId, jvmId);
-            log.trace("Updated invocation {}:{}:{} {}", applicationId, methodId, jvmId, invokedAt);
-            databaseTouched = true;
-        } else if (oldInvokedAt.equals(invokedAt)) {
-            log.trace("Ignoring invocation, same row exists in database");
-        } else {
-            log.trace("Ignoring invocation, a newer row exists in database");
-        }
-        return databaseTouched;
+        int rows =
+                jdbcTemplate.update("INSERT INTO invocations(applicationId, methodId, jvmId, invokedAtMillis, invocationCount, status) " +
+                                            "VALUES(?, ?, ?, ?, ?, ?) " +
+                                            "ON DUPLICATE KEY UPDATE " +
+                                            "invokedAtMillis = GREATEST(invokedAtMillis, VALUES(invokedAtMillis)), " +
+                                            "invocationCount = invocationCount + VALUES(invocationCount)," +
+                                            "status = VALUES(status)",
+                                    applicationId, methodId, jvmId, invokedAt.getTime(),
+                                    invocation.getInvocationCount(), invocation.getStatus().name());
+        log.trace("{} invocation {}:{}:{} {}", rows == 1 ? "Inserted" : "Updated", applicationId, methodId, jvmId, invokedAt);
+        return true;
     }
 
     private Long doInsertRow(PreparedStatementCreator psc) {

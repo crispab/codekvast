@@ -1,10 +1,7 @@
 package se.crisp.codekvast.warehouse.integtest;
 
 import org.flywaydb.core.Flyway;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
@@ -122,14 +119,14 @@ public class MariadbIntegrationTest {
     }
 
     @Test
-    public void should_apply_all_flyway_migrations_to_an_empty_database() throws Exception {
+    public void should_have_applied_all_flyway_migrations_to_an_empty_database() throws Exception {
         // given
 
         // when
 
         // then
-        assertThat(flyway.info().applied().length, is(9));
-        assertThat(flyway.info().pending().length, is(0));
+        assertThat("Wrong number of applied Flyway migrations", flyway.info().applied().length, is(9));
+        assertThat("Wrong number of pending Flyway migrations", flyway.info().pending().length, is(0));
     }
 
     @Test
@@ -141,16 +138,33 @@ public class MariadbIntegrationTest {
         importer.importZipFile(getZipFile("/file_import/sample-ltw-v1-1.zip"));
 
         // then
-        assertThat(countRowsInTable("import_file_info"), is(1));
-        assertThat(countRowsInTable("applications"), is(1));
-        assertThat(countRowsInTable("invocations"), is(11));
-        assertThat(countRowsInTable("jvms"), is(2));
-        assertThat(countRowsInTable("methods"), is(11));
+        assertThat("Wrong number of import_file_info rows", countRowsInTable("import_file_info"), is(1));
+        assertThat("Wrong number of applications rows", countRowsInTable("applications"), is(1));
+        assertThat("Wrong number of jvms rows", countRowsInTable("jvms"), is(2));
+        assertThat("Wrong number of methods rows", countRowsInTable("methods"), is(11));
+        assertThat("Wrong number of invocations rows", countRowsInTable("invocations"), is(11));
+    }
+
+    @Test
+    @Ignore("Used only when tuning the SQL")
+    public void should_import_large_zipFiles_fast() throws Exception {
+        // given
+
+        // when
+        importer.importZipFile(getZipFile("/file_import/sample-jenkins-v1-1.zip"));
+        importer.importZipFile(getZipFile("/file_import/sample-jenkins-v1-2.zip"));
+
+        // then
+        assertThat("Wrong number of import_file_info rows", countRowsInTable("import_file_info"), is(2));
+        assertThat("Wrong number of applications rows", countRowsInTable("applications"), is(1));
+        assertThat("Wrong number of jvms rows", countRowsInTable("jvms"), is(1));
+        assertThat("Wrong number of methods rows", countRowsInTable("methods"), is(14423));
+        assertThat("Wrong number of invocations rows", countRowsInTable("invocations"), is(14423));
     }
 
     @Test
     @Sql(scripts = "/sql/base-data.sql")
-    public void should_store_all_signature_statuses_correctly() throws Exception {
+    public void should_store_all_signature_status_enum_values_correctly() throws Exception {
         // given
 
         // when
@@ -163,7 +177,7 @@ public class MariadbIntegrationTest {
         }
 
         // then
-        assertThat(countRowsInTable("invocations"), is(SignatureStatus.values().length));
+        assertThat("Wrong number of invocations rows", countRowsInTable("invocations"), is(SignatureStatus.values().length));
     }
 
     @Test
@@ -221,7 +235,7 @@ public class MariadbIntegrationTest {
     }
 
     @Test
-    public void should_import_application_with_different_versions() throws Exception {
+    public void should_import_same_application_with_different_versions() throws Exception {
         // given
         Application app1 = createApplication(10L);
 
@@ -332,10 +346,9 @@ public class MariadbIntegrationTest {
                                     .build();
 
         // when
-        boolean imported = importDAO.saveInvocation(inv1, importContext);
+        importDAO.saveInvocation(inv1, importContext);
 
         // then
-        assertThat(imported, is(true));
         assertThat(countRowsInTable("invocations"), is(1));
         assertThat(countRowsInTableWhere("invocations", "invokedAtMillis=?", 10000L), is(1));
 
@@ -343,10 +356,9 @@ public class MariadbIntegrationTest {
         Invocation inv2 = inv1.toBuilder().invokedAtMillis(20000L).build();
 
         // when
-        imported = importDAO.saveInvocation(inv2, importContext);
+        importDAO.saveInvocation(inv2, importContext);
 
         // then
-        assertThat(imported, is(true));
         assertThat(countRowsInTable("invocations"), is(1));
         assertThat(countRowsInTableWhere("invocations", "invokedAtMillis=?", inv1.getInvokedAtMillis()), is(0));
         assertThat(countRowsInTableWhere("invocations", "invokedAtMillis=?", inv2.getInvokedAtMillis()), is(1));
@@ -354,19 +366,15 @@ public class MariadbIntegrationTest {
         // given the same invocation is saved again with the same timestamp
 
         // when
-        imported = importDAO.saveInvocation(inv2, importContext);
-
-        // then
-        assertThat(imported, is(false));
+        importDAO.saveInvocation(inv2, importContext);
 
         // given the same invocation is saved again but with and older timestamp
         Invocation inv3 = inv1.toBuilder().invokedAtMillis(inv2.getInvokedAtMillis() - 100).build();
 
         // when
-        imported = importDAO.saveInvocation(inv3, importContext);
+        importDAO.saveInvocation(inv3, importContext);
 
         // then
-        assertThat(imported, is(false));
         assertThat(countRowsInTable("invocations"), is(1));
         assertThat(countRowsInTableWhere("invocations", "invokedAtMillis=?", inv1.getInvokedAtMillis()), is(0));
         assertThat(countRowsInTableWhere("invocations", "invokedAtMillis=?", inv2.getInvokedAtMillis()), is(1));
