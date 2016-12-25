@@ -1,5 +1,5 @@
 ext {
-    aspectjVersion = '1.8.9'
+    aspectjVersion = '1.8.10'
     h2databaseVersion = '1.4.193'
     jacksonVersion = '2.8.5'
     opencsvVersion = '3.8'
@@ -9,10 +9,10 @@ ext {
 
     junit = "junit:junit:4.12"
     mockito = "org.mockito:mockito-core:1.10.19"
-    slf4jApi = "org.slf4j:slf4j-api:1.7.21"
+    slf4jApi = "org.slf4j:slf4j-api:1.7.22"
 
     h2database = "com.h2database:h2:$h2databaseVersion"
-    logback = 'ch.qos.logback:logback-classic:1.1.7'
-    lombok = 'org.projectlombok:lombok:1.16.10'
-    mariadbDriver = 'org.mariadb.jdbc:mariadb-java-client:1.5.5'
+    logback = 'ch.qos.logback:logback-classic:1.1.8'
+    lombok = 'org.projectlombok:lombok:1.16.12'
+    mariadbDriver = 'org.mariadb.jdbc:mariadb-java-client:1.5.6'
 }
