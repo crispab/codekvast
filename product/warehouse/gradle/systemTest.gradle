@@ -15,12 +15,14 @@ dependencies {
     systemTestCompileOnly lombok
 
     systemTestCompile project(':product:testsupport')
-    systemTestCompile 'net.serenity-bdd:serenity-core:1.2.1'
-    systemTestCompile 'net.serenity-bdd:serenity-junit:1.2.1'
+    systemTestCompile 'org.gebish:geb-spock:1.0'
+    systemTestCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
+    systemTestCompile 'org.seleniumhq.selenium:selenium-api:2.53.1'
 
     systemTestRuntime 'com.codeborne:phantomjsdriver:1.3.0'
-    systemTestRuntime 'org.seleniumhq.selenium:selenium-chrome-driver:3.0.1'
-    systemTestRuntime 'org.seleniumhq.selenium:selenium-firefox-driver:3.0.1'
+    systemTestRuntime 'org.seleniumhq.selenium:selenium-chrome-driver:2.53.1'
+    systemTestRuntime 'org.seleniumhq.selenium:selenium-firefox-driver:2.53.1'
+    systemTestRuntime 'org.seleniumhq.selenium:selenium-support:2.53.1'
 
     chromeDriver 'com.github.igor-suhorukov:chromedriver:2.24:linux64@bin'
 }
@@ -94,10 +96,12 @@ systemTest {
         "chmod +x ${configurations.chromeDriver.asPath}".execute().waitFor()
 
         systemProperty 'phantomjs.binary.path', file('src/webapp/node_modules/phantomjs-prebuilt/bin/phantomjs').absolutePath
+        systemProperty "geb.driver", "org.openqa.selenium.phantomjs.PhantomJSDriver"
+
+        systemProperty "geb.build.reportsDir", "$reportsDir/geb"
+        systemProperty 'geb.build.baseUrl', "http://$endpoint"
+
         systemProperty 'expectedCodekvastVersion', codekvastDisplayVersion
-        systemProperty 'webdriver.base.url', "http://$endpoint"
-        systemProperty 'webdriver.chrome.driver', configurations.chromeDriver.asPath
-        systemProperty 'properties', file('src/systemTest/resources/serenity.properties').absolutePath
         environment['CODEKVAST_VERSION'] = codekvastDisplayVersion
     }
 

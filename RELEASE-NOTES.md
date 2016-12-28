@@ -7,6 +7,7 @@
 1. Upgraded to Spring Boot 1.4.3
 1. Improved codekvast-warehouse.sh to use environment variables
 1. Switched to java:8-jre-alpine for codekvast-warehouse Docker image (reduced image size from 332 MB to 129 MB)
+1. Replaced Serenity with Geb + Spock.
 
 ## 0.18.4
 
