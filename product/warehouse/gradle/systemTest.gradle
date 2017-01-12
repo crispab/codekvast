@@ -11,18 +11,20 @@ configurations {
     chromeDriver
 }
 
+def seleniumVersion = '2.53.1'
+
 dependencies {
     systemTestCompileOnly lombok
 
     systemTestCompile project(':product:testsupport')
-    systemTestCompile 'org.gebish:geb-spock:1.0'
+    systemTestCompile 'org.gebish:geb-spock:1.1'
     systemTestCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
-    systemTestCompile 'org.seleniumhq.selenium:selenium-api:2.53.1'
+    systemTestCompile "org.seleniumhq.selenium:selenium-api:$seleniumVersion"
 
-    systemTestRuntime 'com.codeborne:phantomjsdriver:1.3.0'
-    systemTestRuntime 'org.seleniumhq.selenium:selenium-chrome-driver:2.53.1'
-    systemTestRuntime 'org.seleniumhq.selenium:selenium-firefox-driver:2.53.1'
-    systemTestRuntime 'org.seleniumhq.selenium:selenium-support:2.53.1'
+    systemTestRuntime "com.codeborne:phantomjsdriver:1.3.0"
+    systemTestRuntime "org.seleniumhq.selenium:selenium-chrome-driver:$seleniumVersion"
+    systemTestRuntime "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
+    systemTestRuntime "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
 
     chromeDriver 'com.github.igor-suhorukov:chromedriver:2.24:linux64@bin'
 }
