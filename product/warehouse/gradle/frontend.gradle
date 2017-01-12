@@ -10,8 +10,8 @@ task frontendInstall(type: Exec) {
 
     inputs.file file('src/webapp/package.json')
     inputs.file file('src/webapp/typings.json')
-    outputs.dir fileTree('src/webapp/node_modules')
-    outputs.dir fileTree('src/webapp/typings')
+    outputs.dir file('src/webapp/node_modules')
+    outputs.dir file('src/webapp/typings')
 }
 
 task frontendTest(type: Exec) {
