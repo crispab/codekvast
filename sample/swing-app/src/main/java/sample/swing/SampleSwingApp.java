@@ -19,7 +19,8 @@ public class SampleSwingApp extends JFrame {
 
     private static void initializeCodekvast() {
         CollectorConfig config = CollectorConfigFactory
-                .builder()
+                .createTemplateConfig()
+                .toBuilder()
                 .appName(ConfigUtils.expandVariables(null, "$APP_NAME"))
                 .appVersion("from static aspect")
                 .codeBase("$APP_HOME/lib")

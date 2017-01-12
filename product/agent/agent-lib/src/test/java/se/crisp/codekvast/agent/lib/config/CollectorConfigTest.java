@@ -79,4 +79,8 @@ public class CollectorConfigTest {
         assertThat(config.getExcludePackages(), is("excludePackages"));
     }
 
+    @Test
+    public void testCreateTemplateConfig() throws Exception {
+        CollectorConfig config = CollectorConfigFactory.createTemplateConfig();
+    }
 }

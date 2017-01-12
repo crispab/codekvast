@@ -45,8 +45,7 @@ public class CollectorConfigFactory {
     private static final File DEFAULT_DATA_PATH = new File("/tmp/codekvast/.collector");
     private static final String SAMPLE_TAGS = "key1=value1, key2=value2";
     private static final String OVERRIDE_SEPARATOR = ";";
-    private static final String UNSPECIFIED_VERSION = "unspecified";
-
+    private static final String UNSPECIFIED = "unspecified";
     private static final String TAGS_KEY = "tags";
 
     private CollectorConfigFactory() {
@@ -101,7 +100,7 @@ public class CollectorConfigFactory {
 
         return CollectorConfig.builder()
                               .appName(validateAppName(ConfigUtils.getMandatoryStringValue(props, "appName")))
-                              .appVersion(ConfigUtils.getOptionalStringValue(props, "appVersion", UNSPECIFIED_VERSION))
+                              .appVersion(ConfigUtils.getOptionalStringValue(props, "appVersion", UNSPECIFIED))
                               .aspectjOptions(ConfigUtils.getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
                               .clobberAopXml(ConfigUtils.getOptionalBooleanValue(props, "clobberAopXml", DEFAULT_CLOBBER_AOP_XML))
                               .codeBase(ConfigUtils.getMandatoryStringValue(props, "codeBase"))
@@ -183,7 +182,7 @@ public class CollectorConfigFactory {
     }
 
     public static CollectorConfig createSampleCollectorConfig() {
-        return CollectorConfigFactory.builder()
+        return CollectorConfigFactory.createTemplateConfig().toBuilder()
                                      .appName("Sample Application Name")
                                      .codeBase(SAMPLE_CODEBASE_URI1 + " , " + SAMPLE_CODEBASE_URI2)
                                      .packages("com.acme. , foo.bar.")
@@ -192,16 +191,21 @@ public class CollectorConfigFactory {
                                      .build();
     }
 
-    public static CollectorConfig.CollectorConfigBuilder builder() {
+    public static CollectorConfig createTemplateConfig() {
         return CollectorConfig.builder()
-                              .appVersion(UNSPECIFIED_VERSION)
+                              .appName(UNSPECIFIED)
+                              .appVersion(UNSPECIFIED)
                               .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
                               .clobberAopXml(DEFAULT_CLOBBER_AOP_XML)
+                              .codeBase(UNSPECIFIED)
                               .collectorResolutionSeconds(DEFAULT_COLLECTOR_RESOLUTION_SECONDS)
                               .dataPath(ConfigUtils.getDataPath(new Properties(), DEFAULT_DATA_PATH))
                               .methodVisibility(DEFAULT_METHOD_VISIBILITY)
+                              .packages(UNSPECIFIED)
+                              .excludePackages("")
                               .tags(createSystemPropertiesTags() + ", " + SAMPLE_TAGS)
-                              .verbose(DEFAULT_VERBOSE);
+                              .verbose(DEFAULT_VERBOSE)
+                              .build();
     }
 
 }
