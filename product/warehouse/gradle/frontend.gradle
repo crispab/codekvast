@@ -34,6 +34,9 @@ task frontendTest(type: Exec) {
     executable 'npm'
     args 'run', 'test'
 
+    // Kludge to make it work in Jenkins
+    environment("PHANTOMJS_BIN", "node_modules/.bin/phantomjs")
+
     doLast {
         timestampFile.parentFile.mkdirs()
         timestampFile.text = "${java.time.Instant.now()}\n"
