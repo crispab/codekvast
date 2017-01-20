@@ -2,9 +2,9 @@ node {
     stage('Prepare') {
         checkout scm
         sh """
-        printenv
-        # rm -fr ./.gradle
-        # find product -name build -type d | grep -v node_modules | xargs rm -fr
+        printenv | sort
+        rm -fr ./.gradle
+        find product -name build -type d | grep -v node_modules | xargs rm -fr
         """
     }
 
