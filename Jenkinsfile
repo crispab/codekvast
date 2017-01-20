@@ -3,25 +3,25 @@ node {
         checkout scm
         sh """
         rm -fr ./.gradle
-        ./gradlew --no-daemon clean
+        find product -name build -type d | grep -v node_modules | xargs rm -fr
         """
     }
     stage('Compile') {
-        sh "./gradlew --no-daemon classes"
+        sh "./gradlew classes"
     }
-    stage('Unit test') {
-        sh "./gradlew --no-daemon test"
+    stage('Backend unit test') {
+        sh "./gradlew test"
+    }
+    stage('Frontend unit test') {
+        sh './gradlew frontendTest'
     }
     stage('Integration test') {
-        sh './gradlew --no-daemon integrationTest'
-    }
-    stage('Frontend test') {
-        sh './gradlew --no-daemon frontendTest'
+        sh './gradlew integrationTest'
     }
     stage('System test') {
-        sh './gradlew --no-daemon systemTest'
+        sh './gradlew systemTest'
     }
     stage('Assemble') {
-        sh './gradlew --no-daemon assemble'
+        sh './gradlew assemble'
     }
 }
