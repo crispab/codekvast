@@ -1,0 +1,50 @@
+= Heroku User Journey
+:author: Olle Hallin, Per Lundholm
+:email: olle.hallin@crisp.se, per.lundholm@crisp.se
+:revnumber: {codekvastVersion}
+:revdate: {gitTime}
+:revremark: {gitId}
+:imagesdir: images
+:data-uri:
+:numbered:
+:linkattrs:
+:toc: left
+:toclevels: 3
+:icons: font
+:source-highlighter: prettify
+:attribute-missing: warn
+
+[abstract]
+== Introduction
+The Heroku User Journey describes our vision of the user experience
+when monitoring a Heroku application for truly dead code.
+
+Setting is someone that have an Heroku application already and wish
+to find its truly dead code.
+
+== The Journey
+
+=== Discovering Codekvast
+In the Heroku console, our user is looking for tools that can improve their code
+and finds Codekvast. Removing truly dead code sounds intriguing so our user set out
+try Codekvast.
+
+=== Registering at codekvast.io
+
+=== Adding Codekvast to their app
+
+[source,bash,subs="attributes,verbatim"]
+----
+heroku addons:create codekvast:priceplan
+----
+=== Adding Codekvast to their Maven pom
+
+=== Build
+
+User runs the Heroku build that deploys a new version of their app which has
+been instrumented for the Codekvast agent.
+
+=== Check their dashboard at codekvast.io
+
+The app will report usage constantly to the Codekvast web. Our user will can see
+methods that are never used.
