@@ -1,5 +1,10 @@
 node {
-    scm checkout
+    stage('Debug') {
+        sh """
+        pwd
+        ls -l
+        """
+    }
     stage('Compile') {
         sh "./gradlew clean classes"
     }
