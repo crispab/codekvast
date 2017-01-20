@@ -1,11 +1,6 @@
 node {
-    stage('Debug') {
-        sh """
-        pwd
-        ls -l
-        """
-    }
     stage('Compile') {
+        checkout scm
         sh "./gradlew clean classes"
     }
     stage('Unit test') {
