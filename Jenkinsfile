@@ -1,7 +1,13 @@
 node {
-    stage('Compile') {
+    stage('Prepare') {
         checkout scm
-        sh "./gradlew --no-daemon clean classes"
+        sh """
+        rm -fr ./.gradle
+        ./gradlew --no-daemon clean
+        """
+    }
+    stage('Compile') {
+        sh "./gradlew --no-daemon classes"
     }
     stage('Unit test') {
         sh "./gradlew --no-daemon test"
