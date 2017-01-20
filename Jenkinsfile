@@ -2,26 +2,29 @@ node {
     stage('Prepare') {
         checkout scm
         sh """
+        printenv | sort
         rm -fr ./.gradle
-        ./gradlew --no-daemon clean
+        find product -name build -type d | grep -v node_modules | xargs rm -fr
         """
     }
+
     stage('Compile') {
-        sh "./gradlew --no-daemon classes"
+        sh "./gradlew classes"
     }
+
     stage('Unit test') {
-        sh "./gradlew --no-daemon test"
+        sh "./gradlew test"
     }
+
     stage('Integration test') {
-        sh './gradlew --no-daemon integrationTest'
+        sh './gradlew integrationTest'
     }
-    stage('Frontend test') {
-        sh './gradlew --no-daemon frontendTest'
-    }
+
     stage('System test') {
-        sh './gradlew --no-daemon systemTest'
+        sh './gradlew systemTest'
     }
+
     stage('Assemble') {
-        sh './gradlew --no-daemon assemble'
+        sh './gradlew check assemble'
     }
 }

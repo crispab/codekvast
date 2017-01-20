@@ -4,7 +4,7 @@ task frontendInstall(type: Exec) {
     description 'Installs the node modules and tools required for frontend development'
     group 'Frontend Development'
 
-    workingDir 'src/webapp'
+    workingDir file('src/webapp')
     executable 'npm'
     args 'install'
 
@@ -30,11 +30,15 @@ task frontendTest(type: Exec) {
     inputs.files fileTree('src/webapp/src')
     outputs.file timestampFile
 
-    workingDir 'src/webapp'
+    workingDir file('src/webapp')
     executable 'npm'
     args 'run', 'test'
 
+    // Kludge to make it work in Jenkins
+    environment("PHANTOMJS_BIN", "node_modules/.bin/phantomjs")
+
     doLast {
+        timestampFile.parentFile.mkdirs()
         timestampFile.text = "${java.time.Instant.now()}\n"
     }
 }
@@ -47,7 +51,7 @@ task frontendStart(type: Exec) {
 
     dependsOn frontendInstall
 
-    workingDir 'src/webapp'
+    workingDir file('src/webapp')
     executable 'npm'
     args 'start'
 }
