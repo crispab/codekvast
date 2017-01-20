@@ -1,4 +1,5 @@
 node {
+    scm checkout
     stage('Compile') {
         sh "./gradlew clean classes"
     }
