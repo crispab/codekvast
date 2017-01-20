@@ -14,14 +14,17 @@ node {
 
     stage('Unit test') {
         sh "./gradlew test"
+        junit '**/build/test-results/test/*.xml'
     }
 
     stage('Integration test') {
         sh './gradlew integrationTest'
+        junit '**/build/integrationTest-results/*.xml'
     }
 
     stage('System test') {
         sh './gradlew systemTest'
+        junit '**/build/systemTest-results/*.xml'
     }
 
     stage('Assemble') {
