@@ -12,12 +12,8 @@ node {
         sh "./gradlew classes"
     }
 
-    stage('Backend unit test') {
+    stage('Unit test') {
         sh "./gradlew test"
-    }
-
-    stage('Frontend unit test') {
-        sh './gradlew frontendTest'
     }
 
     stage('Integration test') {
@@ -29,6 +25,6 @@ node {
     }
 
     stage('Assemble') {
-        sh './gradlew assemble'
+        sh './gradlew check assemble'
     }
 }
