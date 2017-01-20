@@ -17,11 +17,7 @@ node {
     }
 
     stage('Frontend unit test') {
-        sh '''
-        pushd product/warehouse > /dev/null
-        ../../gradlew frontendTest
-        popd > /dev/null
-        '''
+        sh './gradlew frontendTest'
     }
 
     stage('Integration test') {
