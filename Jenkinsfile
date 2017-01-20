@@ -1,21 +1,21 @@
 node {
     stage('Compile') {
         checkout scm
-        sh "./gradlew clean classes"
+        sh "./gradlew --no-daemon clean classes"
     }
     stage('Unit test') {
-        sh "./gradlew test"
+        sh "./gradlew --no-daemon test"
     }
     stage('Integration test') {
-        sh './gradlew integrationTest'
+        sh './gradlew --no-daemon integrationTest'
     }
     stage('Frontend test') {
-        sh './gradlew frontendTest'
+        sh './gradlew --no-daemon frontendTest'
     }
     stage('System test') {
-        sh './gradlew systemTest'
+        sh './gradlew --no-daemon systemTest'
     }
     stage('Assemble') {
-        sh './gradlew assemble'
+        sh './gradlew --no-daemon assemble'
     }
 }
