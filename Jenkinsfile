@@ -1,4 +1,6 @@
 node {
+    concurrent: false
+
     timestamps {
         stage('Prepare') {
             checkout scm
@@ -24,7 +26,8 @@ node {
         }
 
         stage('System test') {
-            sh './gradlew systemTest'
+            // TODO: Make Karma tests work in Jenkins too
+            sh './gradlew systemTest -x :product:warehouse:frontendTest'
             junit '**/build/systemTest-results/*.xml'
         }
 

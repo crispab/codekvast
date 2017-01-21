@@ -35,7 +35,7 @@ task frontendTest(type: Exec) {
     args 'run', 'test'
 
     // Kludge to make it work in Jenkins
-    environment("PHANTOMJS_BIN", "node_modules/phantomjs-prebuilt/bin/phantomjs")
+    environment("PHANTOMJS_BIN", file("src/webapp/node_modules/phantomjs-prebuilt/bin/phantomjs"))
 
     doLast {
         timestampFile.parentFile.mkdirs()
