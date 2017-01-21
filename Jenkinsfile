@@ -22,7 +22,7 @@ node {
         }
 
         stage('JavaScript unit test') {
-            withEnv(['PHANTOMJS_BIN=/usr/local/bin/phantomjs']) {
+            withEnv(['PHANTOMJS_BIN=/usr/local/lib/node_modules/phantomjs-prebuilt/bin/phantomjs']) {
                 sh "./gradlew :product:warehouse:frontendTest"
                 // TODO: publish JS test report
             }
