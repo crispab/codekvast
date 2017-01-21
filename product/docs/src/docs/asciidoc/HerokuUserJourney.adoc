@@ -56,3 +56,8 @@ been instrumented for the Codekvast agent.
 
 The app will report usage constantly to the Codekvast web. Our user will can see
 methods that are never used.
+
+[source,bash,subs="attributes,verbatim"]
+----
+heroku addons:open codekvast
+----
