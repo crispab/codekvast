@@ -11,13 +11,18 @@ node {
             """
         }
 
-        stage('Compile') {
+        stage('Compile Java') {
             sh "./gradlew classes"
         }
 
-        stage('Unit test') {
+        stage('Java unit test') {
             sh "./gradlew test"
             junit '**/build/test-results/test/*.xml'
+        }
+
+        stage('JavaScript unit test') {
+            sh "./gradlew :product:warehouse:frontendTest"
+            // TODO: publish Jasmine report
         }
 
         stage('Integration test') {
@@ -26,8 +31,7 @@ node {
         }
 
         stage('System test') {
-            // TODO: Make Karma tests work in Jenkins too
-            sh './gradlew systemTest -x :product:warehouse:frontendTest'
+            sh './gradlew systemTest'
             junit '**/build/systemTest-results/*.xml'
         }
 
