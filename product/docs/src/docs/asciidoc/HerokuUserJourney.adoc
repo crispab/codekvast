@@ -31,6 +31,11 @@ try Codekvast.
 
 === Registering at codekvast.io
 
+To use Codekvast, you need a api-key so that your app can connect to the dashboard.
+
+Our user gets redirected from the Heroku website to codekvast.io website where they
+are asked to sign up.
+
 === Adding Codekvast to their app
 
 [source,bash,subs="attributes,verbatim"]
@@ -38,6 +43,9 @@ try Codekvast.
 heroku addons:create codekvast:priceplan
 ----
 === Adding Codekvast to their Maven pom
+
+Our user reads on codekvast.io how to modify their pom so that the app gets instrumented
+by Codekvast.
 
 === Build
 
