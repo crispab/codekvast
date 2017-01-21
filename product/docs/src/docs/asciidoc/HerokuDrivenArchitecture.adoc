@@ -1,0 +1,48 @@
+= Heroku Driven Architecture
+:author: Olle Hallin, Per Lundholm
+:email: olle.hallin@crisp.se, per.lundholm@crisp.se
+:revnumber: {codekvastVersion}
+:revdate: {gitTime}
+:revremark: {gitId}
+:imagesdir: images
+:data-uri:
+:numbered:
+:linkattrs:
+:toc: left
+:toclevels: 3
+:icons: font
+:source-highlighter: prettify
+:attribute-missing: warn
+
+[Abstract]
+
+Heroku drives architectural change to Codekvast as it is a cloud service. Here we will document
+our findings.
+
+== What may be problems
+
+We suspect that the current architecture, designed for a very different scenario, may cause problems
+for an app in Heroku.
+
+The repository codekvast-sample-heroku contains an example we use to investigate where a Heroku app
+stumbles.
+
+=== List methods
+
+Currently, there is a daemon running on the same host as the application that in runtime loads classes
+from binaries to find all methods of all classes. That list is compared with the list of methods
+invoked.
+
+We suspect that it will be hard to set up where the binaries are to be find. While perhaps possible, the
+user experience might still suffer.
+
+=== Running a daemon
+
+Heroku has support for background jobs so that running a daemon might be possible but would require
+some configuration by the user.
+
+=== Storing data in files
+
+Heroku allows you to use the file system for temporary files. You risk loosing data, especially when
+deploying new version. There is some restarting going one every 24 hours as well, which might cause
+problems.
