@@ -8,7 +8,7 @@
     "test": "karma start",
     "clean": "rimraf dist",
     "prebuild": "rimraf dist",
-    "build": "webpack --config config/webpack.prod.js --progress",
+    "build": "webpack --config config/webpack.prod.js",
     "build:q": "webpack --config config/webpack.dev.js --progress",
     "postinstall": "typings install"
   },
