@@ -33,13 +33,19 @@ node {
             junit '**/build/integrationTest-results/*.xml'
         }
 
+        stage('Build Docker image') {
+            sh './gradlew :product:warehouse:buildDockerImage'
+        }
+
         stage('System test') {
-            sh './gradlew systemTest -x :product:warehouse:frontendTest'
+            sh './gradlew systemTest'
             junit '**/build/systemTest-results/*.xml'
         }
 
-        stage('Assemble') {
-            sh './gradlew check assemble'
+        stage('Documentation') {
+            sh './gradlew :product:docs:asciidoctor'
+            archiveArtifacts '**/build/asciidoc/html5/*.html'
         }
+
     }
 }
