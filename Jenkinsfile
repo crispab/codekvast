@@ -22,11 +22,11 @@ node {
         }
 
         stage('JavaScript unit test') {
-            echo "JavaScript unit tests disabled due to Jenkins is running in a too small EC2 instance"
-            // withEnv(['PHANTOMJS_BIN=/usr/local/lib/node_modules/phantomjs-prebuilt/bin/phantomjs']) {
-            //     sh "./gradlew :product:warehouse:frontendTest"
-            //     // TODO: publish JS test report
-            // }
+            // echo "JavaScript unit tests disabled due to Jenkins is running in a too small EC2 instance"
+            withEnv(['PHANTOMJS_BIN=/usr/local/lib/node_modules/phantomjs-prebuilt/bin/phantomjs']) {
+                sh "./gradlew :product:warehouse:frontendTest"
+                // TODO: publish JS test report
+            }
         }
 
         stage('Integration test') {
