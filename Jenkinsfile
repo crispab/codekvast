@@ -21,7 +21,7 @@ node {
         }
 
         stage('JavaScript unit test') {
-            sh "./gradlew :product:warehouse:frontendTest"
+            sh "./gradlew --no-daemon :product:warehouse:frontendTest"
             // TODO: publish Jasmine report
         }
 
