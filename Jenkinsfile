@@ -21,7 +21,8 @@ node {
         }
 
         stage('JavaScript unit test') {
-            sh "./gradlew --no-daemon :product:warehouse:frontendTest"
+            echo "Currently disabled due to Jenkins problems"
+            // sh "./gradlew --no-daemon :product:warehouse:frontendTest"
             // TODO: publish Jasmine report
         }
 
@@ -31,7 +32,7 @@ node {
         }
 
         stage('System test') {
-            sh './gradlew systemTest'
+            sh './gradlew systemTest -x :product:warehouse:frontendTest'
             junit '**/build/systemTest-results/*.xml'
         }
 
