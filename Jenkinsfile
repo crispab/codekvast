@@ -24,9 +24,15 @@ node {
         stage('JavaScript unit test') {
             // echo "JavaScript unit tests currently disabled due to Jenkins problems"
             sh """
+            which node
             node --version
+
+            which npm
             npm --version
-            product/warehouse/src/webapp/node_modules/phantomjs-prebuilt/bin/phantomjs --version
+
+            which phantomjs
+            phantomjs --version
+
             """
 
             sh "./gradlew :product:warehouse:frontendTest"

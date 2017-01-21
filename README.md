@@ -114,8 +114,10 @@ The following stack is used when developing Codekvast (in alphabetical order):
 1. MariaDB 10+ (Codekvast Warehouse)
 1. NodeJS
 1. Node Package Manager (npm)
+1. PhantomJS
 1. Spring Boot
 1. TypeScript
+1. Webpack
 
 ### Directory structure
 
@@ -131,12 +133,13 @@ Development tools live under `tools/`.
 
 Java 8 is required. OpenJDK is recommended.
 
-Node.js and NPM are required.
+Node.js, NPM and PhantomJS are required.
 
-Use the following command to install OpenJDK 8, Node.js and npm (Ubuntu, Debian):
+Use the following command to install OpenJDK 8, Node.js, npm and PhantomJS (Ubuntu, Debian):
 
     sudo apt-get install openjdk-8-jdk npm nodejs-legacy
-
+    sudo npm install -g phantomjs-prebuilt
+    
 #### TypeScript
 
 The Codekvast Warehouse web UI is developed with npm, TypeScript and Angular2.
