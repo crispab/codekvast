@@ -8,6 +8,7 @@ node {
             printenv | sort
             rm -fr ./.gradle
             find product -name build -type d | grep -v node_modules | xargs rm -fr
+            ./gradlew --stop
             """
         }
 
@@ -22,6 +23,12 @@ node {
 
         stage('JavaScript unit test') {
             // echo "JavaScript unit tests currently disabled due to Jenkins problems"
+            sh """
+            node --version
+            npm --version
+            product/warehouse/src/webapp/node_modules/phantomjs-prebuilt/bin/phantomjs --version
+            """
+
             sh "./gradlew :product:warehouse:frontendTest"
             // TODO: publish Jasmine report
         }
