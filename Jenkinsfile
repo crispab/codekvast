@@ -13,7 +13,7 @@ node {
         }
 
         stage('Compile Java') {
-            sh "./gradlew classes"
+            sh "./gradlew classes testClasses integrationTestClasses systemTestClasses"
         }
 
         stage('Java unit test') {
@@ -22,21 +22,10 @@ node {
         }
 
         stage('JavaScript unit test') {
-            // echo "JavaScript unit tests currently disabled due to Jenkins problems"
-            sh """
-            which node
-            node --version
-
-            which npm
-            npm --version
-
-            which phantomjs
-            phantomjs --version
-
-            """
-
-            sh "./gradlew :product:warehouse:frontendTest"
-            // TODO: publish Jasmine report
+            withEnv(['PHANTOMJS_BIN=/usr/local/bin/phantomjs']) {
+                sh "./gradlew :product:warehouse:frontendTest"
+                // TODO: publish JS test report
+            }
         }
 
         stage('Integration test') {
