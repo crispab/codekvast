@@ -36,3 +36,5 @@ asciidoctor {
             'bintrayDownloadPrefix': "$bintrayDownloadPrefix/$codekvastVersion"
     ]
 }
+
+build.dependsOn asciidoctor

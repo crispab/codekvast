@@ -40,8 +40,9 @@ node {
             }
 
             stage('Documentation') {
-                sh './gradlew :product:docs:asciidoctor'
+                sh './gradlew :product:docs:build'
                 archiveArtifacts '**/build/asciidoc/html5/*.html'
+                step([$class: 'JacocoPublisher'])
             }
 
         }
