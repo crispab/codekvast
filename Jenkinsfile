@@ -47,8 +47,19 @@ node {
                     classPattern: 'product/**/build/classes/main',
                     execPattern: '**/build/jacoco/*.exec',
                     changeBuildStatus: true,
+                    maximumBranchCoverage: '30',
+                    minimumBranchCoverage: '20',
+                    maximumClassCoverage: '90',
+                    minimumClassCoverage: '80',
+                    maximumComplexityCoverage: '40',
+                    minimumComplexityCoverage: '30',
+                    maximumInstructionCoverage: '60',
+                    minimumInstructionCoverage: '50',
                     maximumLineCoverage: '80',
-                    minimumLineCoverage: '70'])
+                    minimumLineCoverage: '70',
+                    maximumMethodCoverage: '70',
+                    minimumMethodCoverage: '60',
+                    ])
             }
 
         }
