@@ -14,7 +14,7 @@
 :source-highlighter: prettify
 :attribute-missing: warn
 
-[Abstract]
+[abstract]
 
 Heroku drives architectural change to Codekvast as it is a cloud service. Here we will document
 our findings.
