@@ -42,7 +42,13 @@ node {
             stage('Documentation') {
                 sh './gradlew :product:docs:build'
                 archiveArtifacts '**/build/asciidoc/html5/*.html'
-                step([$class: 'JacocoPublisher'])
+
+                step([$class: 'JacocoPublisher',
+                    classPattern: 'product/**/build/classes/main',
+                    execPattern: '**/build/jacoco/*.exec',
+                    changeBuildStatus: true,
+                    maximumLineCoverage: '80',
+                    minimumLineCoverage: '70'])
             }
 
         }
