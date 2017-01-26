@@ -1,13 +1,10 @@
 description = "Illustrates how to weave the sample-concrete-aspect when preparing swing-app for Java Web Start (JWS)"
 
+apply plugin: 'org.akhikhl.gretty'
 apply plugin: 'war'
-apply plugin: 'jetty'
 
 configurations {
     theapp
-}
-
-configurations {
     aspectjtools
     aspects
 }
@@ -26,10 +23,7 @@ war {
     from configurations.theapp
 }
 
-jettyRunWar {
-    contextPath = ''
-}
-
+gretty.contextPath = ''
 
 task weaveClasses {
     dependsOn classes
@@ -41,24 +35,23 @@ task weaveClasses {
     inputs.dir inpath
     outputs.dir destDir
 
-    def iajcArgs = [destDir      : destDir,
-                    source       : project.convention.plugins.java.sourceCompatibility,
-                    target       : project.convention.plugins.java.targetCompatibility,
-                    inpath       : inpath,
-                    xlint        : "ignore",
-                    fork         : 'true',
-                    aspectPath   : project.configurations.aspects.asPath,
-                    showWeaveInfo: 'true',
-                    log          : logFile
-    ]
-
-    ant.taskdef(resource: "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties",
-            classpath: project.configurations.aspectjtools.asPath)
-
     doLast {
+        def iajcArgs = [destDir      : destDir,
+                        source       : project.convention.plugins.java.sourceCompatibility,
+                        target       : project.convention.plugins.java.targetCompatibility,
+                        inpath       : inpath,
+                        xlint        : "ignore",
+                        fork         : 'true',
+                        aspectPath   : project.configurations.aspects.asPath,
+                        showWeaveInfo: 'true',
+                        log          : logFile
+        ]
+
+        ant.taskdef(resource: "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties",
+                classpath: project.configurations.aspectjtools.asPath)
+
         file(destDir).renameTo file(inpath)
         mkdir destDir
         ant.iajc iajcArgs
     }
 }
-
