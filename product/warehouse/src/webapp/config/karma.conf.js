@@ -11,11 +11,21 @@ module.exports = function (config) {
         logLevel: config.LOG_INFO,
         port: 9876,
         preprocessors: { './config/karma-test-shim.js': ['webpack', 'sourcemap']},
-        reporters: ['mocha'],
+        reporters: ['mocha', 'junit'],
         singleRun: true,
         webpack: webpackConfig,
         webpackMiddleware: { stats: 'errors-only'},
-        webpackServer: { noInfo: true}
+        webpackServer: { noInfo: true},
+
+        junitReporter: {
+            outputDir: '../../build/frontendTest-results',
+            outputFile: undefined,
+            suite: '',
+            useBrowserName: true,
+            nameFormatter: undefined,
+            classNameFormatter: undefined,
+            properties: {}
+        }
     };
 
     config.set(_config);

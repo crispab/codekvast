@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.collector.itest;
+package integrationTest.collector;
 
 import org.junit.Before;
 import org.junit.Rule;

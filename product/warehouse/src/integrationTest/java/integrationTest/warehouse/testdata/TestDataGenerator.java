@@ -1,11 +1,10 @@
-package se.crisp.codekvast.warehouse.integtest.testdata;
+package integrationTest.warehouse.testdata;
 
 import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO.Application;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO.ImportContext;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO.Invocation;
-import se.crisp.codekvast.warehouse.integtest.testdata.ImportDescriptor.MethodDescriptor;
 
 import javax.inject.Inject;
 import java.lang.reflect.Method;
@@ -23,7 +22,7 @@ public class TestDataGenerator {
 
     private final ImportDAO importDao;
 
-    private final List<MethodDescriptor> methods = new ArrayList<>();
+    private final List<ImportDescriptor.MethodDescriptor> methods = new ArrayList<>();
 
     @Inject
     public TestDataGenerator(ImportDAO importDao) {
@@ -39,7 +38,7 @@ public class TestDataGenerator {
 
             for (Method method : declaredMethods) {
                 if (!method.getName().contains("jacoco")) {
-                    methods.add(new MethodDescriptor(localId, method));
+                    methods.add(new ImportDescriptor.MethodDescriptor(localId, method));
                     localId += 1;
                 }
             }
@@ -50,7 +49,7 @@ public class TestDataGenerator {
         return methods.size();
     }
 
-    public MethodDescriptor getMethod(int index) {
+    public ImportDescriptor.MethodDescriptor getMethod(int index) {
         return methods.get(index);
     }
 
@@ -79,7 +78,7 @@ public class TestDataGenerator {
     }
 
     private void importMethods(ImportDescriptor descriptor, ImportContext context) {
-        for (MethodDescriptor methodDescriptor : descriptor.getMethods()) {
+        for (ImportDescriptor.MethodDescriptor methodDescriptor : descriptor.getMethods()) {
             Method method = methodDescriptor.getMethod();
             String signature = method.toString();
             String packageName = method.getDeclaringClass().getPackage().getName();

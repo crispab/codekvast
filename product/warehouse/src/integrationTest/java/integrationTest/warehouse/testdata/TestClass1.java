@@ -1,4 +1,4 @@
-package se.crisp.codekvast.warehouse.integtest.testdata;
+package integrationTest.warehouse.testdata;
 
 import java.io.IOException;
 import java.sql.SQLException;

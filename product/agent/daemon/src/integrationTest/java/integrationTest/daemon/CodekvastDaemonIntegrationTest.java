@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.daemon;
+package integrationTest.daemon;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -7,9 +7,9 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
+import se.crisp.codekvast.agent.daemon.CodekvastDaemon;
 import se.crisp.codekvast.agent.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.agent.daemon.beans.JvmState;
 import se.crisp.codekvast.agent.daemon.codebase.CodeBase;
@@ -41,6 +41,7 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(
+        classes = CodekvastDaemon.class,
         properties = {
                 "spring.datasource.url=jdbc:h2:mem:integrationTest",
                 "codekvast.environment=integration-test",

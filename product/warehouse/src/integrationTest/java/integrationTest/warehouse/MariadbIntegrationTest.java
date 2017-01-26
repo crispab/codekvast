@@ -1,4 +1,4 @@
-package se.crisp.codekvast.warehouse.integtest;
+package integrationTest.warehouse;
 
 import org.flywaydb.core.Flyway;
 import org.junit.*;
@@ -25,7 +25,7 @@ import se.crisp.codekvast.warehouse.file_import.ImportDAO.ImportContext;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO.ImportStatistics;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO.Invocation;
 import se.crisp.codekvast.warehouse.file_import.ZipFileImporter;
-import se.crisp.codekvast.warehouse.integtest.testdata.TestDataGenerator;
+import integrationTest.warehouse.testdata.TestDataGenerator;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolationException;
@@ -44,7 +44,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeTrue;
 import static se.crisp.codekvast.warehouse.file_import.ImportDAO.Jvm;
 import static se.crisp.codekvast.warehouse.file_import.ImportDAO.Method;
-import static se.crisp.codekvast.warehouse.integtest.testdata.ImportDescriptor.*;
+import static integrationTest.warehouse.testdata.ImportDescriptor.*;
 
 /**
  * @author olle.hallin@crisp.se
@@ -439,8 +439,8 @@ public class MariadbIntegrationTest {
 
         String signature = testDataGenerator.getMethod(0).getSignature();
 
-        String prefix = signature.substring(signature.indexOf("se.crisp"), signature.indexOf(".method"));
-        assertThat(prefix, startsWith("se.crisp"));
+        String prefix = signature.substring(signature.indexOf("integrationTest.warehouse"), signature.indexOf(".method"));
+        assertThat(prefix, startsWith("integrationTest.warehouse"));
         assertThat(prefix, endsWith("TestClass1"));
 
         // when find many

@@ -1,4 +1,4 @@
-package se.crisp.codekvast.warehouse.integtest.testdata;
+package integrationTest.warehouse.testdata;
 
 import lombok.Builder;
 import lombok.NonNull;

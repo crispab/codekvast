@@ -22,7 +22,7 @@ node {
 
             stage('JavaScript unit test') {
                 sh "./gradlew :product:warehouse:frontendTest"
-                // TODO: publish JS test report
+                junit '**/build/frontendTest-results/*.xml'
             }
 
             stage('Integration test') {

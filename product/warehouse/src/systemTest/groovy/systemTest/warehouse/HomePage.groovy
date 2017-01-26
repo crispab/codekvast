@@ -1,3 +1,5 @@
+package systemTest.warehouse
+
 import geb.Page
 
 class HomePage extends Page {

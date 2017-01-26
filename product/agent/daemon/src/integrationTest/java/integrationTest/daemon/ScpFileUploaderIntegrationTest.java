@@ -1,4 +1,4 @@
-package se.crisp.codekvast.agent.daemon;
+package integrationTest.daemon;
 
 import org.junit.Before;
 import org.junit.ClassRule;

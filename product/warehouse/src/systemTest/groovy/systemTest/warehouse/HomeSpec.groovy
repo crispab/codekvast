@@ -1,3 +1,5 @@
+package systemTest.warehouse
+
 import geb.spock.GebSpec
 
 class HomeSpec extends GebSpec {
