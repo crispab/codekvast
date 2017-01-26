@@ -12,7 +12,7 @@ ext {
     slf4jApi = "org.slf4j:slf4j-api:1.7.22"
 
     h2database = "com.h2database:h2:$h2databaseVersion"
-    logback = 'ch.qos.logback:logback-classic:1.1.8'
+    logback = 'ch.qos.logback:logback-classic:1.1.9'
     lombok = 'org.projectlombok:lombok:1.16.12'
     mariadbDriver = 'org.mariadb.jdbc:mariadb-java-client:1.5.7'
 }
