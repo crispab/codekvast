@@ -20,7 +20,7 @@ node {
                 junit '**/build/test-results/test/*.xml'
             }
 
-            stage('JavaScript unit test') {
+            stage('TypeScript unit test') {
                 sh "./gradlew :product:warehouse:frontendTest"
                 junit '**/build/frontendTest-results/*.xml'
                 archiveArtifacts 'product/warehouse/build/frontendTest-coverage/**'
