@@ -5,6 +5,7 @@
     "alwaysStrict": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "inlineSourceMap": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "newLine": "LF",
@@ -16,7 +17,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "removeComments": false,
-    "sourceMap": true,
+    "sourceMap": false,
     "suppressImplicitAnyIndexErrors": true,
     "target": "es5"
   }

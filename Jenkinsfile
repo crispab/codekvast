@@ -23,6 +23,7 @@ node {
             stage('JavaScript unit test') {
                 sh "./gradlew :product:warehouse:frontendTest"
                 junit '**/build/frontendTest-results/*.xml'
+                archiveArtifacts 'product/warehouse/build/frontendTest-coverage/**'
             }
 
             stage('Integration test') {

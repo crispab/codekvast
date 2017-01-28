@@ -7,11 +7,11 @@ module.exports = function (config) {
         browsers: ['PhantomJS'],
         colors: true,
         files: [{pattern: './config/karma-test-shim.js', watched: false}],
-        frameworks: ['jasmine'],
+        frameworks: ['jasmine', 'source-map-support'],
         logLevel: config.LOG_INFO,
         port: 9876,
         preprocessors: { './config/karma-test-shim.js': ['webpack', 'sourcemap']},
-        reporters: ['mocha', 'junit'],
+        reporters: ['mocha', 'junit', 'coverage'],
         singleRun: true,
         webpack: webpackConfig,
         webpackMiddleware: { stats: 'errors-only'},
@@ -25,6 +25,16 @@ module.exports = function (config) {
             nameFormatter: undefined,
             classNameFormatter: undefined,
             properties: {}
+        },
+
+        coverageReporter: {
+            reporters: [
+                {
+                    type: 'json',
+                    dir: '../../build/frontendTest-coverage',
+                    subdir: '.'
+                }
+            ]
         }
     };
 
