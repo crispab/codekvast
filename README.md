@@ -109,6 +109,7 @@ The following stack is used when developing Codekvast (in alphabetical order):
 1. Github
 1. Gradle 
 1. H2 database (disk persistent data, server embedded in Codekvast Daemon)
+1. Inkscape (SVG graphics)
 1. Java 8
 1. Lombok
 1. MariaDB 10+ (Codekvast Warehouse)
@@ -137,12 +138,13 @@ Node.js, NPM and PhantomJS are required.
 
 Use the following command to install OpenJDK 8, Node.js, npm and PhantomJS (Ubuntu, Debian):
 
+    sudo update
     sudo apt-get install openjdk-8-jdk npm nodejs-legacy
     sudo npm install -g phantomjs-prebuilt
     
 #### TypeScript
 
-The Codekvast Warehouse web UI is developed with npm, TypeScript and Angular2.
+The Codekvast Warehouse web UI is developed with TypeScript and Angular2. Twitter Bootstrap is used as design framework.
 
 npm is used for managing the frontend development environment. Webpack is used as frontend bundler.
     
@@ -152,6 +154,11 @@ Docker Engine 1.10 or later and Docker Compose 1.6 or later is required for Code
 
 Install [Docker Engine 1.10.3+](https://docs.docker.com/engine/installation/) and [Docker Compose 1.6.2+](https://docs.docker.com/compose/install/) using
 the official instructions.
+
+#### Inkscape
+
+Graphics including the Codekvast logo is crafted in SVG format, and exported to PNG in various variants and sizes.
+Inkscape is an excellent, free and cross-platform SVG editor.
 
 #### Build tool
 
@@ -180,7 +187,7 @@ Preconditions:
 
 #### IDE
 
-**Intellij Ultimate Edition 16+** is the recommended IDE with the following plugins:
+**Intellij Ultimate Edition 2016+** is the recommended IDE with the following plugins:
 
 1. **Lombok Support** (required)
 1. JavaScript Support (optional)
