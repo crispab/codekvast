@@ -13,6 +13,7 @@ wrapper {
 
 apply plugin: 'idea'
 idea.project.vcs = 'Git'
+apply plugin: 'nebula-aggregate-javadocs'
 
 subprojects {
     buildscript { repositories { jcenter() } }
