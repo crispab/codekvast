@@ -71,3 +71,9 @@ task coverageReport(type: JacocoReport) {
 
 }
 build.dependsOn coverageReport
+
+javadoc {
+    failOnError = false
+    exclude 'sample/**'
+    exclude 'untracked/**'
+}

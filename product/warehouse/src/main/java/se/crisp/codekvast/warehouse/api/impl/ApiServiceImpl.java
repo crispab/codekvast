@@ -143,7 +143,7 @@ public class ApiServiceImpl implements ApiService {
         private final Map<ApplicationId, ApplicationDescriptor1> applications = new HashMap<>();
         private final Map<String, EnvironmentDescriptor1> environments = new HashMap<>();
 
-        MethodDescriptor1.MethodDescriptor1Builder builder;
+        private MethodDescriptor1.MethodDescriptor1Builder builder;
         private int rows;
 
         MethodDescriptor1.MethodDescriptor1Builder getBuilder() {

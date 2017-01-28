@@ -37,7 +37,7 @@ public interface AppVersionStrategy {
 
     /**
      * Can this strategy handle these args?
-     * @param args The white-space separated value from {@link CollectorConfig#getAppVersion()}
+     * @param args The white-space separated value from {@link CollectorConfig#appVersion}
      * @return true if-and-only-if the strategy recognizes the args.
      */
     boolean canHandle(String[] args);
