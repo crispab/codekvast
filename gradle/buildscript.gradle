@@ -10,7 +10,7 @@ dependencies {
     classpath 'com.h2database:h2:1.4.193'
     classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
     classpath 'com.ofg:uptodate-gradle-plugin:1.6.2'
-    classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.10.0'
+    classpath 'gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.13.1'
     classpath 'org.ajoberstar:grgit:1.6.0'
     classpath 'org.flywaydb:flyway-gradle-plugin:3.1'
     classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.4.4.RELEASE'

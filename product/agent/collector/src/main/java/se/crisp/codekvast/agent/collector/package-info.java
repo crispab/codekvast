@@ -20,8 +20,8 @@
  * THE SOFTWARE.
  */
 /**
- * Various beans.
+ * This is the main entry point to the Codekvast Collector.
  *
  * @author olle.hallin@crisp.se
  */
-package se.crisp.codekvast.agent.daemon.beans;
+package se.crisp.codekvast.agent.collector;

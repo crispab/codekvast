@@ -1,8 +1,14 @@
-apply plugin: 'license'
+apply plugin: "com.github.hierynomus.license"
 
 license {
     header file("$rootDir/LICENSE")
-    includes (['**/main/**.java', '**/main/**.sql'])
+    ext.year = Calendar.getInstance().get(Calendar.YEAR)
+
+    include '**/main/*.java'
+    include '**/main/*.sql'
+
+    strictCheck true
+    mapping 'java', 'SLASHSTAR_STYLE'
 }
 
 licenseFormat {
