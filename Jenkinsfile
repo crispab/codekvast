@@ -39,9 +39,11 @@ node {
                 junit '**/build/systemTest-results/*.xml'
             }
 
-            stage('Documentation') {
-                sh './gradlew :product:docs:build'
+            stage('Documentation & reports') {
+                sh './gradlew :product:docs:build javadoc'
                 archiveArtifacts '**/build/asciidoc/html5/*.html'
+
+                step([$class: 'JavadocArchiver', javadocDir: 'product/**/build/docs/javadoc', keepAll: false])
 
                 step([$class: 'JacocoPublisher',
                     classPattern: 'product/**/build/classes/main',
