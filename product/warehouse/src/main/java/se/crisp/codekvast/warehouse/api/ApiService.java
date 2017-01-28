@@ -27,9 +27,8 @@ public interface ApiService {
      *
      * Use case:
      * <ol>
-     *     <li>In IDEA: Right-click a method name -> Copy Reference (Ctrl-Alt-Shift-C)</li>
-     *     <li>In Codekvast Warehouse web UI: paste into the
-     * search field (Ctrl-V)</li>
+     *     <li>In IDEA: Right-click a method name -&gt; Copy Reference (Ctrl-Alt-Shift-C)</li>
+     *     <li>In Codekvast Warehouse web UI: paste into the search field (Ctrl-V)</li>
      * </ol>
      *
      * @param request The request parameters

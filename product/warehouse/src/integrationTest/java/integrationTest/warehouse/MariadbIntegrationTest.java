@@ -388,7 +388,7 @@ public class MariadbIntegrationTest {
 
         // when
         List<MethodDescriptor1> methods = apiService.getMethods(
-                GetMethodsRequest1.defaults()
+                GetMethodsRequest1.defaults().toBuilder()
                                   .signature(testDataGenerator.getMethod(1).getSignature().replace(".method", "#method"))
                                   .build());
 
@@ -408,7 +408,7 @@ public class MariadbIntegrationTest {
 
         // when find substring
         List<MethodDescriptor1> methods = apiService.getMethods(
-                GetMethodsRequest1.defaults()
+                GetMethodsRequest1.defaults().toBuilder()
                                   .signature(testDataGenerator.getMethod(1).getSignature().substring(3))
                                   .build());
 
@@ -423,7 +423,7 @@ public class MariadbIntegrationTest {
 
         // when find by signature
         List<MethodDescriptor1> methods = apiService.getMethods(
-                GetMethodsRequest1.defaults()
+                GetMethodsRequest1.defaults().toBuilder()
                                   .signature(testDataGenerator.getMethod(1).getSignature().substring(1))
                                   .normalizeSignature(false)
                                   .build());
@@ -445,7 +445,7 @@ public class MariadbIntegrationTest {
 
         // when find many
         List<MethodDescriptor1> methods = apiService.getMethods(
-                GetMethodsRequest1.defaults()
+                GetMethodsRequest1.defaults().toBuilder()
                                   .signature(prefix)
                                   .build());
 
@@ -454,7 +454,7 @@ public class MariadbIntegrationTest {
 
         // when find many with max results
         methods = apiService.getMethods(
-                GetMethodsRequest1.defaults()
+                GetMethodsRequest1.defaults().toBuilder()
                                   .signature(prefix)
                                   .maxResults(2)
                                   .build());
@@ -469,7 +469,7 @@ public class MariadbIntegrationTest {
         generateQueryTestData();
 
         // when query with too short signature
-        apiService.getMethods(GetMethodsRequest1.defaults().signature("").build());
+        apiService.getMethods(GetMethodsRequest1.defaults().toBuilder().signature("").build());
     }
 
     @Test
@@ -479,7 +479,7 @@ public class MariadbIntegrationTest {
 
         // when find exact signature
         List<MethodDescriptor1> methods = apiService.getMethods(
-                GetMethodsRequest1.defaults().signature("foobar").build());
+                GetMethodsRequest1.defaults().toBuilder().signature("foobar").build());
 
         // then
         assertThat(methods, hasSize(0));

@@ -63,7 +63,7 @@ public class ApiController {
     private GetMethodsResponse1 doGetMethods(String signature, Integer maxResults) {
         long startedAt = System.currentTimeMillis();
 
-        GetMethodsRequest1 request = GetMethodsRequest1.defaults().signature(signature).maxResults(maxResults).build();
+        GetMethodsRequest1 request = GetMethodsRequest1.defaults().toBuilder().signature(signature).maxResults(maxResults).build();
 
         List<MethodDescriptor1> methods = apiService.getMethods(request);
 

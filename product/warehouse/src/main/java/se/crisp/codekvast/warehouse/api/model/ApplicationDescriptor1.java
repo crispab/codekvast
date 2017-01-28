@@ -48,6 +48,8 @@ public class ApplicationDescriptor1 implements Comparable<ApplicationDescriptor1
 
     /**
      * Merge two application descriptors, taking the min and max values of both.
+     * @param that The other descriptor to merge with.
+     * @return An application descriptor with extreme values of startedAtMillis, dumpedAtMillis, invokedAtMillis and the latest status.
      */
     public ApplicationDescriptor1 mergeWith(ApplicationDescriptor1 that) {
         return that == null ? this

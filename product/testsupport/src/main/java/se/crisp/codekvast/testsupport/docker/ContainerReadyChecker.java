@@ -23,12 +23,12 @@ package se.crisp.codekvast.testsupport.docker;
 public interface ContainerReadyChecker {
 
     /**
-     * The internal port which is going to be used
+     * @return The internal port which is going to be used
      */
     int getInternalPort();
 
     /**
-     * How long shall we wait for the container to become ready?
+     * @return How many seconds shall we wait for the container to become ready?
      */
     int getTimeoutSeconds();
 

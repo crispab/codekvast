@@ -40,13 +40,25 @@ import java.util.Map;
  */
 public interface ImportDAO {
 
+    /**
+     *
+     * @param metaInfo Meta info about one export file received from an agent.
+     * @return true iff the file already has been imported.
+     */
     boolean isFileImported(ExportFileMetaInfo metaInfo);
 
+    /**
+     * Marks an import file as processed.
+     * @param metaInfo The meta data about the import file.
+     * @param importStatistics Statistics collected during the import.
+     */
     void recordFileAsImported(ExportFileMetaInfo metaInfo, ImportStatistics importStatistics);
 
     /**
      * An idempotent method for adding an application to the database.
      *
+     * @param application The application being added.
+     * @param context The import context.
      * @return true iff the application was actually inserted in the database.
      */
     boolean saveApplication(Application application, ImportContext context);
@@ -54,6 +66,8 @@ public interface ImportDAO {
     /**
      * An idempotent method for adding a method to the database.
      *
+     * @param method The method being saved.
+     * @param context The import context.
      * @return true iff the method was actually inserted in the database.
      */
     boolean saveMethod(Method method, ImportContext context);
@@ -61,6 +75,9 @@ public interface ImportDAO {
     /**
      * An idempotent method for adding a jvm to the database.
      *
+     * @param jvm The JVM being saved.
+     * @param jvmData Data about the JVM being saved.
+     * @param context The import context.
      * @return true iff the jvm was actually inserted in the database.
      */
     boolean saveJvm(Jvm jvm, JvmData jvmData, ImportContext context);
@@ -68,6 +85,8 @@ public interface ImportDAO {
     /**
      * An idempotent method for adding an invocation to the database.
      *
+     * @param invocation The invocation being saved.
+     * @param context The import context.
      * @return true iff the invocation was actually inserted or updated in the database.
      */
     boolean saveInvocation(Invocation invocation, ImportContext context);

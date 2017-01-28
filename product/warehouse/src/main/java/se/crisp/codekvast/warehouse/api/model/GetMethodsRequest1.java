@@ -12,7 +12,7 @@ import javax.validation.constraints.Size;
  *
  * @author olle.hallin@crisp.se
  */
-@Builder
+@Builder(toBuilder = true)
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString
@@ -55,12 +55,13 @@ public class GetMethodsRequest1 {
         return normalizeSignature ? sig.replace("#", ".") : signature;
     }
 
-    public static GetMethodsRequest1Builder defaults() {
+    public static GetMethodsRequest1 defaults() {
         return builder()
                 .maxResults(ApiService.DEFAULT_MAX_RESULTS)
                 .normalizeSignature(ApiService.DEFAULT_NORMALIZE_SIGNATURE)
                 .onlyTrulyDeadMethods(ApiService.DEFAULT_ONLY_TRULY_DEAD_METHODS)
-                .orderBy(ApiService.DEFAULT_ORDER_BY);
+                .orderBy(ApiService.DEFAULT_ORDER_BY)
+                .build();
     }
 
 }
