@@ -15,5 +15,4 @@ dependencies {
     classpath 'org.flywaydb:flyway-gradle-plugin:3.1'
     classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.4.4.RELEASE'
     classpath 'org.unbroken-dome.gradle-plugins:gradle-testsets-plugin:1.2.0'
-    classpath 'com.netflix.nebula:gradle-aggregate-javadocs-plugin:2.2.+'
 }

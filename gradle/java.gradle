@@ -73,7 +73,6 @@ task coverageReport(type: JacocoReport) {
 build.dependsOn coverageReport
 
 javadoc {
+    title  "Codekvast version $codekvastDisplayVersion"
     failOnError = false
-    exclude 'sample/**'
-    exclude 'untracked/**'
 }
