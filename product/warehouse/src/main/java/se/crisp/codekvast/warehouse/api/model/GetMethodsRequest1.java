@@ -57,6 +57,7 @@ public class GetMethodsRequest1 {
 
     public static GetMethodsRequest1 defaults() {
         return builder()
+                .signature("")
                 .maxResults(ApiService.DEFAULT_MAX_RESULTS)
                 .normalizeSignature(ApiService.DEFAULT_NORMALIZE_SIGNATURE)
                 .onlyTrulyDeadMethods(ApiService.DEFAULT_ONLY_TRULY_DEAD_METHODS)
