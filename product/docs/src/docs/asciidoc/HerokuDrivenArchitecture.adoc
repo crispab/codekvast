@@ -19,15 +19,27 @@
 Heroku drives architectural change to Codekvast as it is a cloud service. Here we will document
 our findings.
 
-== What may be problems
+== Codekvast's goals
+
+1. Modify the application so that interesting method invocations are recorded.
+1. Produce an inventory of _all_ interesting methods, that _potentially_ can be invoked in production.
+1. When the app is deployed, upload the inventory to the warehouse.
+1. In production, periodically upload actual method invocations to the warehouse.
+
+== Current solution
+The current solution works like this:
+
+1. A modified start script configures two Java Agents: `codekvast-collector.jar` and `aspectjweaver.jar`.
+The collector uses `/etc/codekvast.conf` for preparing an aspect that is woven into the application by `aspectjweaver.jar` at load-time (Load-Time Weaving, LTW)
+1. The Codekvast Daemon is a stand-alone Java app that is deployed in all the production servers.
+It has access to all the application binaries deployed to that server.
+1. Codekvast Daemon uploads the inventory to the warehouse each time it detects that a new version of the app has been started.
+1. The daemon uploads execution data to the warehouse every time it detects that the collector has created a new data file in the local file system.
+
+=== What may be problems
 
 We suspect that the current architecture, designed for a very different scenario, may cause problems
 for an app in Heroku.
-
-The repository codekvast-sample-heroku contains an example we use to investigate where a Heroku app
-stumbles.
-
-=== List methods
 
 Currently, there is a daemon running on the same host as the application that in runtime loads classes
 from binaries to find all methods of all classes. That list is compared with the list of methods
@@ -36,13 +48,56 @@ invoked.
 We suspect that it will be hard to set up where the binaries are to be find. While perhaps possible, the
 user experience might still suffer.
 
-=== Running a daemon
+==== Running a daemon
 
 Heroku has support for background jobs so that running a daemon might be possible but would require
 some configuration by the user.
 
-=== Storing data in files
+==== Storing data in files
 
 Heroku allows you to use the file system for temporary files. You risk loosing data, especially when
 deploying new version. There is some restarting going one every 24 hours as well, which might cause
 problems.
+
+== Alternative build-time solution
+
+Heroku supports Java projects built with Maven or Gradle.
+
+Codekvast could achieve it's goals by providing a plugin for each of those tools.
+
+The plugins should:
+
+1. Read it's configuration from `pom.xml` or `build.gradle`.
+1. Pre-process the produced application artifact (war, executable jar) and weave the Codekvast collector into relevant classes
+1. Post-process the produced application artifact and produce an inventory file.
+1. Upload the inventory file to the Codekvast warehouse-as-a-service.
+
+If we do it like this, no daemon is needed.
+No modification to the start script will be needed, since the Codekvast collector does not use
+Load-Time Weaving (LTW) anymore.
+
+The last goal - periodically uploading invocation data to the warehouse - can be done directly by the collector.
+
+=== SWOT analysis for a build-time solution
+
+==== Strengths
+
+* Simple. Register a Codekvast API account, configure a Maven/Gradle plugin. Done.
+* Will support any deployment platform, not only Heroku.
+* Will support Java Web Start. JWS does not support Java Agents.
+
+==== Weaknesses
+
+* Requires that the product is built with Maven or Gradle.
+* The builds will take longer.
+* The collector will be more complicated. It should stream data directly to the Codekvast Warehouse. This can be a problem
+in certain organisations. In Heroku it will not be a problem however.
+
+==== Opportunities
+
+* Simpler to support other languages than JVM-based, like Ruby, Erlang etc.
+
+==== Threats
+
+?
+
