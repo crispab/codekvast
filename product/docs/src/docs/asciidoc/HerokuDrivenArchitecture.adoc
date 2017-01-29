@@ -83,6 +83,7 @@ The last goal - periodically uploading invocation data to the warehouse - can be
 ==== Strengths
 
 * Simple. Register a Codekvast API account, configure a Maven/Gradle plugin. Done.
+* Fewer moving parts. No daemon to deploy and operate.
 * Will support any deployment platform, not only Heroku.
 * Will support Java Web Start. JWS does not support Java Agents.
 
