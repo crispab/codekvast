@@ -1,7 +1,6 @@
-slackSend teamDomain: 'codekvast', tokenCredentialId: 'slack-token-codekvast',
-    message: "Build Started - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
-
 node {
+    slackSend message: "Build Started - ${env.JOB_NAME} ${env.BUILD_NUMBER}", teamDomain: 'codekvast', channel: '#builds', tokenCredentialId: 'codekvast.slack.com'
+
     timestamps {
         withEnv(['PHANTOMJS_BIN=/usr/local/lib/node_modules/phantomjs-prebuilt/bin/phantomjs']) {
             stage('Prepare') {
@@ -72,6 +71,5 @@ node {
 
         }
     }
+    slackSend message: "Build Finished - ${env.JOB_NAME} ${env.BUILD_NUMBER}", teamDomain: 'codekvast', channel: '#builds', tokenCredentialId: 'codekvast.slack.com'
 }
-slackSend teamDomain: 'codekvast', tokenCredentialId: 'codekvast.slack.com',
-    message: "Build Finished - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
