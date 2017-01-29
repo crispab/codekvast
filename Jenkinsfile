@@ -1,7 +1,11 @@
+slackSend teamDomain: 'codekvast', channel: 'github', tokenCredentialId: 'slack-token-codekvast'
+    // message: "Build Finished - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+
 node {
     timestamps {
         withEnv(['PHANTOMJS_BIN=/usr/local/lib/node_modules/phantomjs-prebuilt/bin/phantomjs']) {
             stage('Prepare') {
+
                 checkout scm
                 sh """
                 printenv | sort
@@ -63,8 +67,11 @@ node {
                     maximumMethodCoverage: '70',
                     minimumMethodCoverage: '60',
                     ])
+
             }
 
         }
     }
 }
+slackSend teamDomain: 'codekvast', channel: 'github', tokenCredentialId: 'codekvast.slack.com'
+    // message: "Build Finished - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
