@@ -1,4 +1,4 @@
-slackSend teamDomain: 'codekvast', channel: 'github', tokenCredentialId: 'slack-token-codekvast'
+slackSend teamDomain: 'codekvast', tokenCredentialId: 'slack-token-codekvast'
     // message: "Build Finished - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
 
 node {
@@ -73,5 +73,5 @@ node {
         }
     }
 }
-slackSend teamDomain: 'codekvast', channel: 'github', tokenCredentialId: 'codekvast.slack.com'
+slackSend teamDomain: 'codekvast', tokenCredentialId: 'codekvast.slack.com'
     // message: "Build Finished - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
