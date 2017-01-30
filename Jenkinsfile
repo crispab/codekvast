@@ -5,7 +5,7 @@ node {
 
                 checkout scm
                 sh """
-                export GIT_HASH=$(git rev-parse --short HEAD)
+                export GIT_HASH=\$(git rev-parse --short HEAD)
                 printenv | sort
 
                 slackMessage "$Build Started"
