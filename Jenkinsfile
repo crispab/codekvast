@@ -76,5 +76,5 @@ node {
 }
 
 def slackMessage(message) {
-    slackSend message: "${env.GIT_HASH} ${message} - ${env.JOB_NAME}#${env.BUILD_NUMBER}, teamDomain: 'codekvast', channel: '#builds', tokenCredentialId: 'codekvast.slack.com'
+    slackSend message: "${env.GIT_HASH} ${message} - ${env.JOB_NAME}#${env.BUILD_NUMBER}", teamDomain: 'codekvast', channel: '#builds', tokenCredentialId: 'codekvast.slack.com'
 }
