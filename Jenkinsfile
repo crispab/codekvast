@@ -75,5 +75,5 @@ node {
 slackNotification "Build Finished"
 
 def slackNotification(message) {
-    slackSend message: "${java.time.LocalDateTime.now()} ${message} - ${env.JOB_NAME}#${env.BUILD_NUMBER}", teamDomain: 'codekvast', channel: '#builds', tokenCredentialId: 'codekvast.slack.com'
+    slackSend message: "${java.time.LocalDateTime.now()} ${message} ${env.BUILD_URL}", teamDomain: 'codekvast', channel: '#builds', tokenCredentialId: 'codekvast.slack.com'
 }
