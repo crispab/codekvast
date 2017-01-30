@@ -75,5 +75,5 @@ node {
 
 def slackNotification(message) {
     def gitHash = sh returnStdout: true, script: 'git rev-parse --short HEAD'
-    slackSend message: "${gitHash} ${message} - ${env.JOB_NAME}#${env.BUILD_NUMBER}", teamDomain: 'codekvast', channel: '#builds', tokenCredentialId: 'codekvast.slack.com'
+    slackSend message: "${gitHash.trim()} ${message} - ${env.JOB_NAME}#${env.BUILD_NUMBER}", teamDomain: 'codekvast', channel: '#builds', tokenCredentialId: 'codekvast.slack.com'
 }
