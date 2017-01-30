@@ -1,5 +1,7 @@
+def gitHash = null
+
 def slackMessage(message) {
-    slackSend message: "${env.GIT_HASH} ${message} - ${env.JOB_NAME}#${env.BUILD_NUMBER}", teamDomain: 'codekvast', channel: '#builds', tokenCredentialId: 'codekvast.slack.com'
+    slackSend message: "${gitHash} ${message} - ${env.JOB_NAME}#${env.BUILD_NUMBER}", teamDomain: 'codekvast', channel: '#builds', tokenCredentialId: 'codekvast.slack.com'
 }
 
 node {
@@ -7,8 +9,8 @@ node {
         withEnv(['PHANTOMJS_BIN=/usr/local/lib/node_modules/phantomjs-prebuilt/bin/phantomjs']) {
             stage('Prepare') {
                 checkout scm
+                gitHash = sh returnStdout: true, script: 'git rev-parse --short HEAD'
                 sh """
-                export GIT_HASH=\$(git rev-parse --short HEAD)
                 printenv | sort
                 rm -fr ./.gradle
                 find product -name build -type d | grep -v node_modules | xargs rm -fr
@@ -75,6 +77,6 @@ node {
 
         }
     }
-    slackMessage: "Build Finished"
+    slackMessage "Build Finished"
 }
 
