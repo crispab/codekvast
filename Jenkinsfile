@@ -1,23 +1,16 @@
-def gitHash = null
-
-def slackMessage(message) {
-    slackSend message: "${gitHash} ${message} - ${env.JOB_NAME}#${env.BUILD_NUMBER}", teamDomain: 'codekvast', channel: '#builds', tokenCredentialId: 'codekvast.slack.com'
-}
-
 node {
     timestamps {
         withEnv(['PHANTOMJS_BIN=/usr/local/lib/node_modules/phantomjs-prebuilt/bin/phantomjs']) {
             stage('Prepare') {
                 checkout scm
-                gitHash = sh returnStdout: true, script: 'git rev-parse --short HEAD'
+                slackNotification "Build Started"
+
                 sh """
                 printenv | sort
                 rm -fr ./.gradle
                 find product -name build -type d | grep -v node_modules | xargs rm -fr
                 ./gradlew --stop
                 """
-
-                slackMessage "Build Started"
             }
 
             stage('Compile Java') {
@@ -77,6 +70,10 @@ node {
 
         }
     }
-    slackMessage "Build Finished"
+    slackNotification "Build Finished"
 }
 
+def slackNotification(message) {
+    def gitHash = sh returnStdout: true, script: 'git rev-parse --short HEAD'
+    slackSend message: "${gitHash} ${message} - ${env.JOB_NAME}#${env.BUILD_NUMBER}", teamDomain: 'codekvast', channel: '#builds', tokenCredentialId: 'codekvast.slack.com'
+}
