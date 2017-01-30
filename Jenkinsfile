@@ -1,9 +1,10 @@
+slackNotification "Build Started"
+
 node {
     timestamps {
         withEnv(['PHANTOMJS_BIN=/usr/local/lib/node_modules/phantomjs-prebuilt/bin/phantomjs']) {
             stage('Prepare') {
                 checkout scm
-                slackNotification "Build Started"
 
                 sh """
                 printenv | sort
@@ -70,10 +71,9 @@ node {
 
         }
     }
-    slackNotification "Build Finished"
 }
+slackNotification "Build Finished"
 
 def slackNotification(message) {
-    def gitHash = sh returnStdout: true, script: 'git rev-parse --short HEAD'
-    slackSend message: "${gitHash.trim()} ${message} - ${env.JOB_NAME}#${env.BUILD_NUMBER}", teamDomain: 'codekvast', channel: '#builds', tokenCredentialId: 'codekvast.slack.com'
+    slackSend message: "${java.time.LocalDateTime.now()} ${message} - ${env.JOB_NAME}#${env.BUILD_NUMBER}", teamDomain: 'codekvast', channel: '#builds', tokenCredentialId: 'codekvast.slack.com'
 }
