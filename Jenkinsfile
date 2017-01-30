@@ -1,13 +1,14 @@
 node {
-    slackSend message: "Build Started - ${env.JOB_NAME} #${env.BUILD_NUMBER}", teamDomain: 'codekvast', channel: '#builds', tokenCredentialId: 'codekvast.slack.com'
-
     timestamps {
         withEnv(['PHANTOMJS_BIN=/usr/local/lib/node_modules/phantomjs-prebuilt/bin/phantomjs']) {
             stage('Prepare') {
 
                 checkout scm
                 sh """
+                export GIT_HASH=$(git rev-parse --short HEAD)
                 printenv | sort
+
+                slackMessage "$Build Started"
                 rm -fr ./.gradle
                 find product -name build -type d | grep -v node_modules | xargs rm -fr
                 ./gradlew --stop
@@ -71,5 +72,9 @@ node {
 
         }
     }
-    slackSend message: "Build Finished - ${env.JOB_NAME} #${env.BUILD_NUMBER}", teamDomain: 'codekvast', channel: '#builds', tokenCredentialId: 'codekvast.slack.com'
+    slackMessage: "Build Finished"
+}
+
+def slackMessage(message) {
+    slackSend message: "${env.GIT_HASH} ${message} - ${env.JOB_NAME}#${env.BUILD_NUMBER}, teamDomain: 'codekvast', channel: '#builds', tokenCredentialId: 'codekvast.slack.com'
 }
