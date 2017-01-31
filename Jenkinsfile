@@ -1,4 +1,4 @@
-slackNotification 'gray', '"Build Started"
+slackNotification 'gray', 'Build Started'
 try {
 
     node {
@@ -73,9 +73,9 @@ try {
             }
         }
     }
-    slackNotification 'green', '"Build Finished"
+    slackNotification 'green', 'Build Finished'
 } catch(err) {
-    slackNotification 'red', '"Build Failed: $err"
+    slackNotification 'red', "Build Failed: $err"
 }
 
 def slackNotification(color, message) {
