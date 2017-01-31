@@ -1,4 +1,4 @@
-slackNotification 'good', 'Build Started'
+slackNotification null, 'Build Started'
 try {
 
     node {
@@ -16,7 +16,7 @@ try {
                 }
 
                 stage('Compile Java') {
-                    sh "./gradlew foobar classes testClasses integrationTestClasses systemTestClasses"
+                    sh "./gradlew classes testClasses integrationTestClasses systemTestClasses"
                 }
 
                 stage('Java unit test') {
