@@ -1,7 +1,6 @@
 slackNotification null, 'Build Started'
-try {
-
-    node {
+node {
+    try {
         timestamps {
             withEnv(['PHANTOMJS_BIN=/usr/local/lib/node_modules/phantomjs-prebuilt/bin/phantomjs']) {
                 stage('Prepare') {
@@ -74,13 +73,15 @@ try {
 
             }
         }
+        slackNotification 'good', 'Build Finished'
+    } catch(err) {
+        slackNotification 'danger', "Build Failed: $err"
+        throw err
+    } finally {
+        stage('Cleanup') {
+            sh 'tools/jenkins-cleanup.sh'
+        }
     }
-    slackNotification 'good', 'Build Finished'
-} catch(err) {
-    slackNotification 'danger', "Build Failed: $err"
-    throw err
-} finally {
-    sh 'tools/jenkins-cleanup.sh'
 }
 
 def slackNotification(color, message) {
