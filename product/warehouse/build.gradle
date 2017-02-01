@@ -28,7 +28,7 @@ dependencies {
     compileOnly lombok
     compile project(':product:agent:agent-lib')
     compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
-    compile "com.opencsv:opencsv:$opencsvVersion"
+    compile opencsv
     compile 'javax.inject:javax.inject:1'
     compile 'org.flywaydb:flyway-core'
     compile 'org.springframework.boot:spring-boot-devtools'
