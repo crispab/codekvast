@@ -68,6 +68,8 @@ try {
                         minimumMethodCoverage: '60',
                         ])
 
+                    sh 'tools/uptodate-report.sh'
+                    archiveArtifacts 'build/reports/**'
                 }
 
             }
@@ -77,6 +79,8 @@ try {
 } catch(err) {
     slackNotification 'danger', "Build Failed: $err"
     throw err
+} finally {
+    sh 'tools/jenkins-cleanup.sh'
 }
 
 def slackNotification(color, message) {
