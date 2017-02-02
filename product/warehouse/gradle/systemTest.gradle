@@ -17,7 +17,7 @@ dependencies {
     systemTestCompileOnly lombok
 
     systemTestCompile project(':product:testsupport')
-    systemTestCompile 'org.gebish:geb-spock:1.1'
+    systemTestCompile 'org.gebish:geb-spock:1.1.1'
     systemTestCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
     systemTestCompile "org.seleniumhq.selenium:selenium-api:$seleniumVersion"
 
