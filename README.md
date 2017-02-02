@@ -126,6 +126,8 @@ The product itself lives under `product/`.
 
 Sample projects to use when testing Codekvast lives under `sample/`.
 
+GitHub pages (i.e., http://codekvast.crisp.se) lives under `docs/`
+
 Development tools live under `tools/`.
 
 ### Development environment

@@ -30,3 +30,6 @@ product/warehouse/src/webapp/src/**/*.js.map
 a.a
 phantomjsdriver.log
 product/warehouse/src/webapp/dist/
+_site
+.sass-cache
+.jekyll-metadata
