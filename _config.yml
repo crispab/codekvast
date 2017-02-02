@@ -9,8 +9,7 @@
 title: Codekvast
 email: codekvast@crisp.se
 description: > # this means to ignore newlines until "baseurl:"
-  Codekvast detects Truly Dead Code in Java applications. Truly Dead Code is code that is in production,
-  but no real user has used for a certain period of time.
+  Codekvast detects Truly Dead Code in Java-based applications.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "http://codekvast.crisp.se" # the base hostname & protocol for your site
 # twitter_username: ollehallin
