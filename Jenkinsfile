@@ -46,8 +46,19 @@ node {
                 stage('Documentation & reports') {
                     sh './gradlew :product:docs:build :product:aggregateJavadoc'
 
-                    archiveArtifacts '**/build/asciidoc/html5/*.html'
-                    step([$class: 'JavadocArchiver', javadocDir: 'product/build/docs/javadoc', keepAll: false])
+                    publishHTML([allowMissing: true,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true,
+                        reportDir: 'product/docs/build/asciidoc/html5',
+                        reportFiles: 'CodekvastUserManual.html',
+                        reportName: 'User Manual'])
+
+                    publishHTML([allowMissing: true,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true,
+                        reportDir: 'product/build/docs/javadoc',
+                        reportFiles: 'index.html',
+                        reportName: 'API docs'])
 
                     step([$class: 'JacocoPublisher',
                         classPattern: 'product/**/build/classes/main',
