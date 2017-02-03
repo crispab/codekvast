@@ -25,8 +25,15 @@ node {
 
                 stage('TypeScript unit test') {
                     sh "./gradlew :product:warehouse:frontendTest"
+
                     junit '**/build/frontendTest-results/*.xml'
-                    archiveArtifacts 'product/warehouse/build/frontendTest-coverage/**'
+
+                    publishHTML([allowMissing: true,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true,
+                        reportDir: 'product/warehouse/build/frontendTest-coverage',
+                        reportFiles: 'index.html',
+                        reportName: 'Frontend Coverage Report'])
                 }
 
                 stage('Integration test') {
