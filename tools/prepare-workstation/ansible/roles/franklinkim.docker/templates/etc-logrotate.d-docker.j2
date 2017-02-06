@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+
+/var/lib/docker/containers/*/*.log {
+  rotate 7
+  daily
+  compress
+  size=1M
+  missingok
+  delaycompress
+  copytruncate
+  create 640 root adm
+}

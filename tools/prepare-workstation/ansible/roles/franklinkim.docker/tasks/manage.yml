@@ -1,0 +1,31 @@
+---
+
+- name: Managing images
+  docker_image:
+    name: "{{ item.name if item.name is defined else item }}"
+    nocache: "{{ item.nocache | default(omit) }}"
+    path: "{{ item.path | default(omit) }}"
+    state: "{{ item.state | default(omit) }}"
+    tag: "{{ item.tag | default(omit) }}"
+    timeout: "{{ item.timeout | default(omit) }}"
+  with_items: "{{ docker_images }}"
+  register: docker_images_stat
+  failed_when: docker_images_stat.msg and "Image builded:" not in docker_images_stat.msg
+
+- name: Managing containers
+  docker:
+    count: "{{ item.count | default(omit) }}"
+    command: "{{ item.command | default(omit) }}"
+    env: "{{ item.env | default(omit) }}"
+    expose: "{{ item.expose | default(omit) }}"
+    hostname: "{{ item.hostname | default(omit) }}"
+    image: "{{ item.image }}"
+    links: "{{ item.links | default(omit) }}"
+    name: "{{ item.name | default(omit) }}"
+    ports: "{{ item.ports | default(omit) }}"
+    privileged: "{{ item.privileged | default(omit) }}"
+    pull: "{{ item.pull | default(omit) }}"
+    state: "{{ item.state | default(omit) }}"
+    volumes: "{{ item.volumes | default(omit) }}"
+    volumes_from: "{{ item.volumes_from | default(omit) }}"
+  with_items: "{{ docker_containers }}"

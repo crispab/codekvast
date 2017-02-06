@@ -1,0 +1,14 @@
+---
+
+galaxy_name: franklinkim.docker
+github_user: weareinteractive
+github_name: ansible-docker
+badges: |
+  [![Build Status](https://img.shields.io/travis/weareinteractive/ansible-docker.svg)](https://travis-ci.org/weareinteractive/ansible-docker)
+  [![Galaxy](http://img.shields.io/badge/galaxy-franklinkim.docker-blue.svg)](https://galaxy.ansible.com/list#/roles/3275)
+  [![GitHub Tags](https://img.shields.io/github/tag/weareinteractive/ansible-docker.svg)](https://github.com/weareinteractive/ansible-docker)
+  [![GitHub Stars](https://img.shields.io/github/stars/weareinteractive/ansible-docker.svg)](https://github.com/weareinteractive/ansible-docker)
+description: |
+  > * installs docker
+  > * configures docker
+  > * adds logrotate for docker container logs

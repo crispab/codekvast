@@ -1,0 +1,24 @@
+---
+- name: Install OpenJDK
+  package: name={{ item }} state=present
+  with_items:
+  - openjdk-8-jdk
+  - openjdk-8-source
+  - openjdk-8-doc
+
+- name: Install Git
+  package: name={{ item }} state=present
+  with_items:
+  - git
+
+- name: Install Node and NPM
+  package: name={{ item }} state=present
+  with_items:
+  - npm
+  - nodejs-legacy
+
+- name: Install PhantomJS
+  shell: npm install -g phantomjs-prebuilt creates=/usr/local/bin/phantomjs
+
+- name: Install gradlew finder
+  template: src=gradlew-finder.sh dest=/usr/local/bin/gradle mode=a=rx

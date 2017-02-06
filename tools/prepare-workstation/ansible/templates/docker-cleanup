@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+#
+# {{ ansible_managed }}
+#
+
+docker system prune --force
+

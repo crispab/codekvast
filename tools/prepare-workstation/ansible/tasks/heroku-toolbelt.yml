@@ -1,0 +1,12 @@
+---
+- name: Install Heroku APT key
+  apt_key: url=https://cli-assets.heroku.com/apt/release.key state=present
+
+- name: Make sure Heroku APT source is defined
+  apt_repository:
+    filename: heroku
+    repo: "deb https://cli-assets.heroku.com/branches/stable/apt ./"
+    state: present
+
+- name: Install Heroku Toolbelt
+  package: name=heroku state=present

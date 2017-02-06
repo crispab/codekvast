@@ -1,0 +1,16 @@
+---
+
+- include: install_ubuntu.yml
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- include: install_suse.yml
+  when: ansible_distribution == 'Suse' or ansible_distribution == 'openSUSE'
+
+- name: 'Installing Ansible dependencies'
+  easy_install:
+    name: pip
+
+- name: 'Installing Ansible PIP dependencies'
+  pip:
+    name: docker-py
+    state: present

@@ -1,0 +1,7 @@
+---
+
+- name: Configuring service
+  service:
+    name: docker
+    enabled: "{{ docker_service_enabled }}"
+    state: "{{ docker_service_state }}"

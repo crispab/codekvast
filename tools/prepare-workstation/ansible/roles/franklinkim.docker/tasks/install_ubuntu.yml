@@ -1,0 +1,32 @@
+---
+
+- name: 'Installing dependencies'
+  apt:
+    pkg: "{{ item }}"
+    state: present
+  with_items:
+    - apt-transport-https
+    - ca-certificates
+
+- name: 'Adding APT key'
+  apt_key:
+    id: "58118E89F3A912897C070ADBF76221572C52609D"
+    keyserver: "hkp://p80.pool.sks-keyservers.net:80"
+
+- debug: var=distribution_release
+  when: distribution_release is defined
+
+- name: 'Adding APT repository'
+  apt_repository:
+    filename: docker
+    repo: "deb https://apt.dockerproject.org/repo {{ ansible_distribution | lower }}-{{ distribution_release | default(ansible_distribution_release) }} main"
+    state: present
+    update_cache: yes
+
+- name: 'Installing APT packages'
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - python-setuptools
+    - "{{ docker_package }}"

@@ -132,6 +132,13 @@ Development tools live under `tools/`.
 
 ### Development environment
 
+There is a Bash script that prepares the development environment.
+
+It works for Ubuntu, and is called `tools/prepare-workstation/run.sh`.
+It uses Ansible for setting up the workstation so that it works for Codekvast.
+
+If you run some other OS or prefer to do it by hand, here are the requirements:
+
 #### JDK and Node.js
 
 Java 8 is required. OpenJDK is recommended.
@@ -166,7 +173,7 @@ Inkscape is an excellent, free and cross-platform SVG editor.
 
 Codekvast uses **Gradle** as build tool. It uses the Gradle Wrapper, `gradlew`, which is checked in at the root of the workspace.
 There is the convenience script `tools/src/script/gradle` which simplifies invocation of gradlew. Install that script in your PATH
-and use `gradle` instead of `path/to/gradlew`
+(e.g., /usr/local/bin) and use `gradle` instead of `path/to/gradlew`
 
 #### Software publishing
 Codekvast binaries are published to Bintray and to Docker Hub.

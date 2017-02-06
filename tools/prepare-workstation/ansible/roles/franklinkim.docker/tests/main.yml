@@ -1,0 +1,9 @@
+---
+
+- hosts: all
+  sudo: yes
+  roles:
+    - franklinkim.docker
+  vars:
+    docker_options:
+      - "--bip=10.0.3.1/24"

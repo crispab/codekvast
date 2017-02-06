@@ -1,0 +1,16 @@
+---
+  
+- name: 'Installing dependencies'
+  zypper:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - ca-certificates
+
+- name: 'Installing packages'
+  zypper:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - python-setuptools
+    - docker

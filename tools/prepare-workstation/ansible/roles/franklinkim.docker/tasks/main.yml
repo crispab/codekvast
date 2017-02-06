@@ -1,0 +1,29 @@
+---
+
+- include: config.yml
+  tags:
+    - development
+    - docker
+    - config
+    - docker-config
+
+- include: install.yml
+  tags:
+    - development
+    - docker
+    - install
+    - docker-install
+
+- include: manage.yml
+  tags:
+    - development
+    - docker
+    - manage
+    - docker-manage
+
+- include: service.yml
+  tags:
+    - development
+    - docker
+    - service
+    - docker-service
