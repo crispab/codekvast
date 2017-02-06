@@ -7,7 +7,7 @@ mkdir -p $(dirname ${REPORT_FILE})
 cd product
 
 echo "Java:" | tee ${REPORT_FILE}
-../gradlew uptodate | egrep "^'" | sort -u | tr -d "'" | tee -a ${REPORT_FILE}
+../gradlew uptodate --max-workers=1 | egrep "^'" | sort -u | tr -d "'" | tee -a ${REPORT_FILE}
 
 echo -e "\nJavaScript:" | tee -a ${REPORT_FILE}
 cd warehouse/src/webapp
