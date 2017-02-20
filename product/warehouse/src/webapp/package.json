@@ -26,8 +26,8 @@
     "@ng-bootstrap/ng-bootstrap": "1.0.0-alpha.20",
     "core-js": "2.4.1",
     "intl": "1.2.5",
-    "rxjs": "5.1.0",
-    "zone.js": "0.7.6"
+    "rxjs": "5.1.1",
+    "zone.js": "0.7.7"
   },
   "devDependencies": {
     "angular2-template-loader": "0.6.0",
