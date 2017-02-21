@@ -26,7 +26,7 @@
     "@ng-bootstrap/ng-bootstrap": "1.0.0-alpha.20",
     "core-js": "2.4.1",
     "intl": "1.2.5",
-    "rxjs": "5.1.1",
+    "rxjs": "5.2.0",
     "zone.js": "0.7.7"
   },
   "devDependencies": {
@@ -53,7 +53,7 @@
     "karma-webpack": "2.0.2",
     "null-loader": "0.1.1",
     "raw-loader": "0.5.1",
-    "reflect-metadata": "0.1.9",
+    "reflect-metadata": "0.1.10",
     "remap-istanbul": "0.6.4",
     "rimraf": "2.6.0",
     "source-map-loader": "0.1.6",
