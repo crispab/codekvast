@@ -143,12 +143,12 @@ If you run some other OS or prefer to do it by hand, here are the requirements:
 
 Java 8 is required. OpenJDK is recommended.
 
-Node.js, NPM and PhantomJS are required.
+Node.js 6, NPM 3.10+ and PhantomJS are required.
 
 Use the following command to install OpenJDK 8, Node.js, npm and PhantomJS (Ubuntu, Debian):
 
-    sudo update
-    sudo apt-get install openjdk-8-jdk npm nodejs-legacy
+    curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+    sudo apt-get install openjdk-8-jdk openjdk-8-doc openjdk-8-source nodejs
     sudo npm install -g phantomjs-prebuilt
     
 #### TypeScript

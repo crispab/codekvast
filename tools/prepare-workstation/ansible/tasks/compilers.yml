@@ -6,16 +6,22 @@
   - openjdk-8-source
   - openjdk-8-doc
 
-- name: Install Git
+- name: Install git and curl
   package: name={{ item }} state=present
   with_items:
   - git
+  - curl
 
-- name: Install Node and NPM
+- name: Define NodeJS APT source
+  shell: curl -sL https://deb.nodesource.com/setup_6.x | bash -
+  args:
+    creates: /etc/apt/sources.list.d/nodesource.list
+
+- name: Install NodeJS
   package: name={{ item }} state=present
   with_items:
-  - npm
-  - nodejs-legacy
+  - nodejs
+  - build-essential
 
 - name: Install PhantomJS
   shell: npm install -g phantomjs-prebuilt creates=/usr/local/bin/phantomjs
