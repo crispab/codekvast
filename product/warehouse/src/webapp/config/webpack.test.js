@@ -4,18 +4,27 @@ module.exports = {
     devtool: 'inline-source-map',
 
     resolve: {
-        extensions: ['', '.ts', '.js']
+        extensions: ['.ts', '.js']
     },
 
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.ts$/,
                 loaders: ['awesome-typescript-loader', 'angular2-template-loader']
             },
             {
+                enforce: 'post',
+                test: /\.ts$/,
+                loader: 'istanbul-instrumenter-loader',
+                exclude: [
+                    'node_modules',
+                    /\.spec\.ts$/
+                ]
+            },
+            {
                 test: /\.html$/,
-                loader: 'html'
+                loader: 'html-loader'
 
             },
             {
@@ -30,17 +39,7 @@ module.exports = {
             {
                 test: /\.css$/,
                 include: helpers.root('src', 'app'),
-                loader: 'raw'
-            }
-        ],
-        postLoaders: [
-            {
-                test: /\.ts$/,
-                loader: 'istanbul-instrumenter-loader',
-                exclude: [
-                    'node_modules',
-                    /\.spec\.ts$/
-                ]
+                loader: 'raw-loader'
             }
         ]
     }
