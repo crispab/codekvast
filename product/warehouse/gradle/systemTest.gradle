@@ -11,7 +11,7 @@ configurations {
     chromeDriver
 }
 
-def seleniumVersion = '3.1.0'
+def seleniumVersion = '3.2.0'
 
 dependencies {
     systemTestCompileOnly lombok
