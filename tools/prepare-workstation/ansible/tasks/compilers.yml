@@ -12,13 +12,16 @@
   - git
   - curl
 
+- name: Uninstall nodejs-legacy
+  package: name=nodejs-legacy state=absent
+
 - name: Define NodeJS APT source
   shell: curl -sL https://deb.nodesource.com/setup_6.x | bash -
   args:
     creates: /etc/apt/sources.list.d/nodesource.list
 
 - name: Install NodeJS
-  package: name={{ item }} state=present
+  package: name={{ item }} state=latest
   with_items:
   - nodejs
   - build-essential
