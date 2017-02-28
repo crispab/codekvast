@@ -1,12 +1,12 @@
-import {NgModule}             from '@angular/core';
+import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {Dashboard}            from './dashboard.component';
-import {SearchMethods}        from './search-methods.component';
+import {Dashboard} from './dashboard.component';
+import {SearchMethods} from './search-methods.component';
 
 const routes: Routes = [
     {
         path: '',
-        redirectTo: '/dashboard',
+        redirectTo: 'dashboard',
         pathMatch: 'full'
     },
     {
@@ -16,6 +16,10 @@ const routes: Routes = [
     {
         path: 'search',
         component: SearchMethods
+    }, {
+        path: '**',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
     }
 ];
 
