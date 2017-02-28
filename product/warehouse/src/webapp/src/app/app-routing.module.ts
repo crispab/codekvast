@@ -8,12 +8,10 @@ const routes: Routes = [
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full'
-    },
-    {
+    }, {
         path: 'dashboard',
         component: Dashboard
-    },
-    {
+    }, {
         path: 'search',
         component: SearchMethods
     }, {
