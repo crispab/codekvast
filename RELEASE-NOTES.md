@@ -2,9 +2,9 @@
 
 ## 0.18.5
 1. Upgraded to Gradle 3.3
-1. Upgraded to Angular 2.4.5, Typescript 2
+1. Upgraded to Angular 2.4.7, Typescript 2
 1. Started implementing Warehouse web interface
-1. Upgraded to Spring Boot 1.4.4
+1. Upgraded to Spring Boot 1.5
 1. Improved codekvast-warehouse.sh to use environment variables
 1. Switched to java:8-jre-alpine for codekvast-warehouse Docker image (reduced image size from 332 MB to 129 MB)
 1. Replaced Serenity with Geb + Spock.
