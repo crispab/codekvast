@@ -18,7 +18,7 @@ module.exports = function (config) {
         webpackServer: { noInfo: true},
 
         junitReporter: {
-            outputDir: '../../build/frontendTest-results',
+            outputDir: '../../build/test-results/frontendTest',
             outputFile: undefined,
             suite: '',
             useBrowserName: true,
@@ -31,7 +31,7 @@ module.exports = function (config) {
             reporters: [
                 {
                     type: 'json',
-                    dir: '../../build/frontendTest-coverage',
+                    dir: '../../build/reports/frontend-coverage',
                     subdir: '.'
                 }
             ]

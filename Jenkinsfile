@@ -26,19 +26,19 @@ node {
                 stage('TypeScript unit test') {
                     sh "./gradlew :product:warehouse:frontendTest"
 
-                    junit '**/build/frontendTest-results/*.xml'
+                    junit '**/build/test-results/frontendTest/*.xml'
 
                     publishHTML([allowMissing: true,
                         alwaysLinkToLastBuild: true,
                         keepAll: true,
-                        reportDir: 'product/warehouse/build/frontendTest-coverage',
+                        reportDir: 'product/warehouse/build/reports/frontend-coverage',
                         reportFiles: 'index.html',
                         reportName: 'Frontend Coverage Report'])
                 }
 
                 stage('Integration test') {
                     sh './gradlew integrationTest'
-                    junit '**/build/integrationTest-results/*.xml'
+                    junit '**/build/test-results/integrationTest/*.xml'
                 }
 
                 stage('Build Docker image') {
@@ -47,7 +47,7 @@ node {
 
                 stage('System test') {
                     sh './gradlew systemTest -x :product:warehouse:frontendTest'
-                    junit '**/build/systemTest-results/*.xml'
+                    junit '**/build/test-results/systemTest/*.xml'
                 }
 
                 stage('Documentation & reports') {

@@ -11,7 +11,7 @@
     "build": "webpack --config config/webpack.prod.js",
     "build:q": "webpack --config config/webpack.dev.js --progress",
     "postinstall": "typings install",
-    "ts-coverage-remap": "remap-istanbul -i ../../build/frontendTest-coverage/coverage-final.json -o ../../build/frontendTest-coverage -t html"
+    "ts-coverage-remap": "remap-istanbul -i ../../build/reports/frontend-coverage/coverage-final.json -o ../../build/reports/frontend-coverage -t html"
   },
   "license": "MIT",
   "dependencies": {
