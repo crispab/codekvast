@@ -5,7 +5,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import sample.app.SampleApp;
 import se.crisp.codekvast.agent.lib.config.CollectorConfig;
 import se.crisp.codekvast.agent.lib.config.CollectorConfigFactory;
@@ -24,6 +24,7 @@ import java.util.TreeMap;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
+@SuppressWarnings("UseOfSystemOutOrSystemErr")
 @RunWith(MockitoJUnitRunner.class)
 public class CollectorIntegrationTest {
 
