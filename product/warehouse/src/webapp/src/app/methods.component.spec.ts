@@ -1,17 +1,17 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {DebugElement} from '@angular/core';
-import {SearchMethods} from './search-methods.component';
+import {Methods} from './methods.component';
 import {AppModule} from './app.module';
 import {WarehouseService} from './warehouse.service';
 import {ConfigService} from './config.service';
 
-let component: SearchMethods;
-let fixture: ComponentFixture<SearchMethods>;
+let component: Methods;
+let fixture: ComponentFixture<Methods>;
 let signatureDE: DebugElement;
 let signatureElement: HTMLElement;
 
-describe('SearchMethods', () => {
+describe('Methods', () => {
     beforeEach(() => {
 
         let warehouseServiceStub = {};
@@ -23,7 +23,7 @@ describe('SearchMethods', () => {
                 {provide: WarehouseService, useValue: warehouseServiceStub}
             ] });
 
-        fixture = TestBed.createComponent(SearchMethods);
+        fixture = TestBed.createComponent(Methods);
 
         component = fixture.componentInstance;
 

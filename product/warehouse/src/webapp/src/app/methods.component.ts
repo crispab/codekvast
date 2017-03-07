@@ -5,11 +5,11 @@ import {CkAgePipe} from './ck-age.pipe';
 import {DatePipe} from '@angular/common';
 
 @Component({
-    selector: 'ck-search-methods',
-    template: require('./search-methods.component.html'),
+    selector: 'ck-methods',
+    template: require('./methods.component.html'),
     providers: [WarehouseService, CkAgePipe, DatePipe],
 })
-export class SearchMethods {
+export class Methods {
 
     signature: string;
     maxResults: number = 100;

@@ -1,22 +1,22 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {Dashboard} from './dashboard.component';
-import {SearchMethods} from './search-methods.component';
+import {Status} from './status.component';
+import {Methods} from './methods.component';
 
 const routes: Routes = [
     {
         path: '',
-        redirectTo: 'dashboard',
+        redirectTo: 'methods',
         pathMatch: 'full'
     }, {
-        path: 'dashboard',
-        component: Dashboard
+        path: 'methods',
+        component: Methods
     }, {
-        path: 'search',
-        component: SearchMethods
+        path: 'status',
+        component: Status
     }, {
         path: '**',
-        redirectTo: 'dashboard',
+        redirectTo: 'methods',
         pathMatch: 'full'
     }
 ];
