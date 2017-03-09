@@ -1,10 +1,17 @@
-<div class="container">
-    <div class="xs-col-6">
-        <a routerLink="/status"> <img src="/assets/logo-codekvast-400x217.png" class="d-inline-block align-top" alt="logotype"> </a>
-    </div>
-    <nav class="navbar navbar-dark bg-primary">
-        <div class="nav navbar-nav">
-            <a class="nav-item nav-link" routerLink="/methods">Methods</a> <a class="nav-item nav-link" routerLink="/status">Status</a>
+<div class="container" id="top-nav">
+    <div class="row align-items-end">
+        <div class="col-1">
+            <a routerLink=""> <img src="/assets/logo-feathers-60x104.png" class="img-fluid" alt="logotype"></a>
         </div>
-    </nav>
+        <div class="col-4">
+            <h1>Codekvast</h1>
+            <p class="small" class="text-muted">The True Dead Code Detector</p>
+        </div>
+        <div class="col-7">
+            <nav class="nav nav-tabs">
+                <a routerLink="/methods" class="nav-link active">Methods</a> <a routerLink="/status" class="nav-link">Status</a>
+            </nav>
+        </div>
+
+    </div>
 </div>
