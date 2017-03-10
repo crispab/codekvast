@@ -23,6 +23,7 @@ package se.crisp.codekvast.agent.daemon.worker.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -41,7 +42,6 @@ import se.crisp.codekvast.agent.lib.model.Jvm;
 import se.crisp.codekvast.agent.lib.model.MethodSignature;
 import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -62,11 +62,11 @@ public class LocalWarehouseCollectorDataProcessorImpl extends AbstractCollectorD
     private final ObjectMapper objectMapper;
 
     @Inject
-    public LocalWarehouseCollectorDataProcessorImpl(@Nonnull DaemonConfig config,
-                                                    @Nonnull AppVersionResolver appVersionResolver,
-                                                    @Nonnull CodeBaseScanner codeBaseScanner,
-                                                    @Nonnull JdbcTemplate jdbcTemplate,
-                                                    @Nonnull ObjectMapper objectMapper) {
+    public LocalWarehouseCollectorDataProcessorImpl(@NonNull DaemonConfig config,
+                                                    @NonNull AppVersionResolver appVersionResolver,
+                                                    @NonNull CodeBaseScanner codeBaseScanner,
+                                                    @NonNull JdbcTemplate jdbcTemplate,
+                                                    @NonNull ObjectMapper objectMapper) {
         super(config, appVersionResolver, codeBaseScanner);
         this.jdbcTemplate = jdbcTemplate;
         this.objectMapper = objectMapper;
@@ -218,7 +218,7 @@ public class LocalWarehouseCollectorDataProcessorImpl extends AbstractCollectorD
             return methodSignature == null ? createInsertThinMethodStatement(con) : createInsertFatMethodStatement(con);
         }
 
-        @Nonnull
+        @NonNull
         @SuppressWarnings("ValueOfIncrementOrDecrementUsed")
         private PreparedStatement createInsertThinMethodStatement(Connection con) throws SQLException {
             PreparedStatement ps =
@@ -230,7 +230,7 @@ public class LocalWarehouseCollectorDataProcessorImpl extends AbstractCollectorD
             return ps;
         }
 
-        @Nonnull
+        @NonNull
         @SuppressWarnings("ValueOfIncrementOrDecrementUsed")
         private PreparedStatement createInsertFatMethodStatement(Connection con) throws SQLException {
             PreparedStatement ps =

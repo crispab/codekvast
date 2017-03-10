@@ -21,6 +21,7 @@
  */
 package se.crisp.codekvast.agent.daemon.worker.impl;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.ConnectionException;
@@ -32,7 +33,6 @@ import se.crisp.codekvast.agent.daemon.util.LogUtil;
 import se.crisp.codekvast.agent.daemon.worker.FileUploadException;
 import se.crisp.codekvast.agent.daemon.worker.FileUploader;
 
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
@@ -174,7 +174,7 @@ public class ScpFileUploaderImpl implements FileUploader {
         }
     }
 
-    @Nonnull
+    @NonNull
     private SSHClient createAuthenticatedSshClient() throws IOException {
         SSHClient sshClient = new SSHClient();
 
