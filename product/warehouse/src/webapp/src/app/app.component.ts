@@ -4,6 +4,7 @@ import {ConfigService} from './config.service';
 @Component({
     selector: '#ck-app',
     template: require('./app.component.html'),
+    styles: [require('./app.component.css')],
     providers: [ConfigService]
 })
 export class AppComponent {

@@ -1,19 +1,19 @@
 <div class="container">
-    <h1>Search Methods</h1>
-    <form (ngSubmit)="search()" #searchForm="ngForm">
+    <h5>Search Methods</h5>
+    <form class="form-inline" (ngSubmit)="search()" #searchForm="ngForm">
 
-        <div class="form-group col-lg-10">
+        <div class="form-group col-9">
             <label for="signature">Signature</label>
-            <input id="signature" name="signature" [(ngModel)]="signature" type="text" class="form-control">
+            <input id="signature" name="signature" [(ngModel)]="signature" type="text" class="form-control col-8">
         </div>
 
-        <div class="form-group col-lg-2">
+        <div class="form-group col-2">
             <label for="maxResults">Max Results</label>
             <input id="maxResults" name="maxResults" [(ngModel)]="maxResults" type="number" min="1" max="10000" class="form-control">
         </div>
 
-        <div class="form-group col-lg-1">
-            <button type="submit" class="form-control btn btn-default" [disabled]="!searchForm.form.valid">Search</button>
+        <div class="form-group col-1">
+            <button type="submit" class="form-control btn btn-info" [disabled]="!searchForm.form.valid">Search</button>
         </div>
     </form>
 </div>
@@ -21,7 +21,7 @@
 <h2 *ngIf="errorMessage">{{errorMessage}}</h2>
 
 <div *ngIf="data" class="container">
-    <h2>Search Results</h2>
+    <h4>Search Results</h4>
     <p>Found {{data.numMethods}} methods in {{data.queryTimeMillis}} ms</p>
     <table>
         <tr>

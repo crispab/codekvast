@@ -1,12 +1,35 @@
-<ck-top-nav></ck-top-nav>
+<div id="top-nav">
+    <div class="row align-items-end pt-1 pl-2">
+        <div class="col-1">
+            <a routerLink=""> <img src="/assets/logo-feathers-60x104.png" class="img-fluid" alt="logotype"></a>
+        </div>
+        <div class="col-3">
+            <h1>Codekvast</h1>
+            <p class="small" class="text-muted">The True Dead Code Detector</p>
+        </div>
+        <div class="col-8">
+            <nav class="nav nav-tabs">
+                <a routerLink="/methods" class="nav-link" routerLinkActive="active">Methods</a>
+                <a routerLink="/status" class="nav-link" routerLinkActive="active">Status</a>
+            </nav>
+        </div>
 
-<router-outlet></router-outlet>
+    </div>
+</div>
 
-<div class="navbar-fixed-bottom bg-faded clearfix">
-    <p class="small float-xs-left ml-1"><a id="api-docs" [attr.href]="getApiPrefix() + '/swagger-ui.html'" target="_new">API docs</a></p>
+<div class="container">
+    <router-outlet></router-outlet>
+</div>
 
-    <p class="small float-xs-right mr-1">
-        Codekvast Warehouse version
-        <span id="codekvastVersion">{{ getVersion() }}</span>
-    </p>
+<div id="footer" class="fixed-bottom">
+    <div class="row">
+        <div class="col-2 ml-2">
+            <p class="small"><a id="api-docs" [attr.href]="getApiPrefix() + '/swagger-ui.html'" target="_new">API docs</a></p>
+        </div>
+
+        <div class="col-3 push-7">
+            <p class="small"> Codekvast Warehouse version <span id="codekvastVersion">{{ getVersion() }}</span>
+            </p>
+        </div>
+    </div>
 </div>
