@@ -22,19 +22,19 @@ our findings.
 == Codekvast's goals
 
 1. Modify the application so that interesting method invocations are recorded.
-1. Produce an inventory of _all_ interesting methods, that _potentially_ can be invoked in production.
-1. When the app is deployed, upload the inventory to the warehouse.
-1. In production, periodically upload actual method invocations to the warehouse.
+2. Produce an inventory of _all_ interesting methods, that _potentially_ can be invoked in production.
+3. When the app is deployed, upload the inventory to the warehouse.
+4. In production, periodically upload actual method invocations to the warehouse.
 
 == Current solution
 The current solution works like this:
 
 1. A modified start script configures two Java Agents: `codekvast-collector.jar` and `aspectjweaver.jar`.
 The collector uses `/etc/codekvast.conf` for preparing an aspect that is woven into the application by `aspectjweaver.jar` at load-time (Load-Time Weaving, LTW)
-1. The Codekvast Daemon is a stand-alone Java app that is deployed in all the production servers.
+2. The Codekvast Daemon is a stand-alone Java app that is deployed in all the production servers.
 It has access to all the application binaries deployed to that server.
-1. Codekvast Daemon uploads the inventory to the warehouse each time it detects that a new version of the app has been started.
-1. The daemon uploads execution data to the warehouse every time it detects that the collector has created a new data file in the local file system.
+3. Codekvast Daemon uploads the inventory to the warehouse each time it detects that a new version of the app has been started.
+4. The daemon uploads execution data to the warehouse every time it detects that the collector has created a new data file in the local file system.
 
 === What may be problems
 
@@ -68,9 +68,9 @@ Codekvast could achieve it's goals by providing a plugin for each of those tools
 The plugins should:
 
 1. Read it's configuration from `pom.xml` or `build.gradle`.
-1. Pre-process the produced application artifact (war, executable jar) and weave the Codekvast collector into relevant classes
-1. Post-process the produced application artifact and produce an inventory file.
-1. Upload the inventory file to the Codekvast warehouse-as-a-service.
+2. Pre-process the produced application artifact (war, executable jar) and weave the Codekvast collector into relevant classes
+3. Post-process the produced application artifact and produce an inventory file.
+4. Upload the inventory file to the Codekvast warehouse-as-a-service.
 
 If we do it like this, no daemon is needed.
 No modification to the start script will be needed, since the Codekvast collector does not use
