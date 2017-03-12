@@ -1,3 +1,11 @@
-#top-nav {
-    border: 1px solid darkblue;
+body {
+    /* Margin bottom by footer height */
+    margin-bottom: 46px;
+}
+
+footer {
+    position: fixed;
+    height: 46px;
+    bottom: 0;
+    width: 100%;
 }

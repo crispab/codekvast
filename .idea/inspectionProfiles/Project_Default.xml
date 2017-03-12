@@ -106,7 +106,7 @@
     <inspection_tool class="HtmlUnknownTag" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="10">
+          <list size="11">
             <item index="0" class="java.lang.String" itemvalue="nobr" />
             <item index="1" class="java.lang.String" itemvalue="noembed" />
             <item index="2" class="java.lang.String" itemvalue="comment" />
@@ -117,6 +117,7 @@
             <item index="7" class="java.lang.String" itemvalue="ck-app" />
             <item index="8" class="java.lang.String" itemvalue="ck-top-nav" />
             <item index="9" class="java.lang.String" itemvalue="ck-method-list" />
+            <item index="10" class="java.lang.String" itemvalue="router-outlet" />
           </list>
         </value>
       </option>
