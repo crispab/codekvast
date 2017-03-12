@@ -12,7 +12,7 @@ import {DatePipe} from '@angular/common';
 export class MethodsComponent {
 
     signature: string;
-    maxResults: number = 100;
+    maxResults = 100;
     data: MethodData;
     errorMessage: string;
     dateFormat = 'age';

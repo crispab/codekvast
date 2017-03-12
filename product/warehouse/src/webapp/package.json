@@ -33,7 +33,7 @@
   "devDependencies": {
     "angular2-template-loader": "0.6.2",
     "awesome-typescript-loader": "3.1.2",
-    "css-loader": "0.27.1",
+    "css-loader": "0.27.2",
     "extract-text-webpack-plugin": "2.1.0",
     "file-loader": "0.10.1",
     "html-loader": "0.4.5",
