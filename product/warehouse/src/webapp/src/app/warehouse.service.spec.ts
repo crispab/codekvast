@@ -14,7 +14,7 @@ describe('WarehouseService', () => {
     });
 
     it('should construct a get methods search with only signature parameter', () => {
-        expect(warehouse.constructGetMethodsSearch("sig", undefined)).toBe('signature=sig');
+        expect(warehouse.constructGetMethodsSearch('sig', undefined)).toBe('signature=sig');
     });
 
     it('should construct a get methods search with only blank signature parameter', () => {
@@ -30,7 +30,7 @@ describe('WarehouseService', () => {
     });
 
     it('should construct a get methods search with both signature maxResults parameter', () => {
-        expect(warehouse.constructGetMethodsSearch("sig", 100)).toBe('signature=sig&maxResults=100');
+        expect(warehouse.constructGetMethodsSearch('sig', 100)).toBe('signature=sig&maxResults=100');
     });
 
 });

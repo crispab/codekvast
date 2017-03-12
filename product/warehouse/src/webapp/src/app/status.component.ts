@@ -3,7 +3,7 @@ import {Component} from '@angular/core';
     selector: 'ck-status',
     template: require('./status.component.html'),
 })
-export class Status {
+export class StatusComponent {
 
     constructor() {
     }

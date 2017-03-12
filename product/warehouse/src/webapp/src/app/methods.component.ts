@@ -9,7 +9,7 @@ import {DatePipe} from '@angular/common';
     template: require('./methods.component.html'),
     providers: [WarehouseService, CkAgePipe, DatePipe],
 })
-export class Methods {
+export class MethodsComponent {
 
     signature: string;
     maxResults: number = 100;
@@ -25,11 +25,11 @@ export class Methods {
             .getMethods(this.signature, this.maxResults)
             .subscribe(data => {
                 this.data = data;
-                this.errorMessage = undefined
+                this.errorMessage = undefined;
             }, error => {
                 this.data = undefined;
-                this.errorMessage = error
-            }, () => console.log("getMethods() complete"));
+                this.errorMessage = error;
+            }, () => console.log('getMethods() complete'));
     }
 
 }

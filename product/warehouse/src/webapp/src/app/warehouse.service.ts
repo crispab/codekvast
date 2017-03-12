@@ -19,9 +19,9 @@ export class WarehouseService {
         const search: string = this.constructGetMethodsSearch(signature, maxResults);
         let url: string = this.constructUrl();
         if (search.length > 0) {
-            url = url + "?" + search;
+            url = url + '?' + search;
         }
-        console.log("url=%s", url);
+        console.log('url=%s', url);
         return this.http.get(url, { headers: this.headers})
                    .map(this.extractMethodData)
                    .catch(this.handleError);

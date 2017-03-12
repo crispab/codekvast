@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {Status} from './status.component';
-import {Methods} from './methods.component';
+import {StatusComponent} from './status.component';
+import {MethodsComponent} from './methods.component';
 
 const routes: Routes = [
     {
@@ -10,10 +10,10 @@ const routes: Routes = [
         pathMatch: 'full'
     }, {
         path: 'methods',
-        component: Methods
+        component: MethodsComponent
     }, {
         path: 'status',
-        component: Status
+        component: StatusComponent
     }, {
         path: '**',
         redirectTo: 'methods',

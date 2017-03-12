@@ -36,30 +36,30 @@ export class CkAgePipe implements PipeTransform {
         if (this.isDate(value)) {
             return this.getAgeMillis(value.getTime());
         }
-        throw new SyntaxError("CkAgePipe only understands integers and dates");
+        throw new SyntaxError('CkAgePipe only understands integers and dates');
     }
 
     private getAgeMillis(value: number): string {
         let age = new Date().getTime() - value;
-        let result = "";
-        let delimiter = "";
+        let result = '';
+        let delimiter = '';
         if (age > this.dayMillis) {
             let days = Math.trunc(age / this.dayMillis);
             age -= days * this.dayMillis;
-            result += days + "d";
-            delimiter = " ";
+            result += days + 'd';
+            delimiter = ' ';
         }
         if (age > this.hourMillis) {
             let hours = Math.trunc(age / this.hourMillis);
             age -= hours * this.hourMillis;
-            result += delimiter + hours + "h";
-            delimiter = " ";
+            result += delimiter + hours + 'h';
+            delimiter = ' ';
         }
         if (age > this.minuteMillis) {
             let minutes = Math.trunc(age / this.minuteMillis);
             age -= minutes * this.minuteMillis;
-            result += delimiter + minutes + "m";
-            delimiter = " ";
+            result += delimiter + minutes + 'm';
+            delimiter = ' ';
         }
         return result;
     }
