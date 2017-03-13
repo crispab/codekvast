@@ -9,6 +9,7 @@ uptodate {
     addExcludedVersionPatterns '.*-alpha.*'
     addExcludedVersionPatterns '.*-beta.*'
     addExcludedVersionPatterns '.*-rc.*'
+    addExcludedVersionPatterns '.*\\.pr[0-9]+$'
     addExcludedVersionPatterns '.*-b[0-9]+$'
     addExcludedVersionPatterns '.*-[0-9]$'
 }
