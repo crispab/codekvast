@@ -121,5 +121,8 @@ jar {
             exclude '**/*.js.map'
             exclude '**/test/**'
         }
+        from('src/webapp') {
+            include 'assets/**'
+        }
     }
 }

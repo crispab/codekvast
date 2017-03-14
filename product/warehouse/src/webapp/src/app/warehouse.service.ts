@@ -22,7 +22,7 @@ export class WarehouseService {
             url = url + '?' + search;
         }
 
-        if (signature === '#CANNED#') {
+        if (signature === '-----' && this.configService.getVersion() === 'dev') {
             console.log('Returning a canned response instead of %s', url);
             return new Observable<MethodData>(subscriber => subscriber.next(require('./test/canned/v1/MethodData.json')));
         }
