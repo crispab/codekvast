@@ -37,7 +37,7 @@ Start the frontend development environment with
     npm start
     
 This will start Webpack watch mode, and then launches a webpack-dev-server accessible
-at [http://localhost:8081](http://localhost:8081) (the webapp).
+at [http://localhost:8088](http://localhost:8088) (the webapp).
 
 When finished, stop with Ctrl-C.
 

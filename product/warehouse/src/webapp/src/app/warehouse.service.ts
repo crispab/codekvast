@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Http, Headers, Response} from '@angular/http';
+import {Headers, Http, Response} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import {ConfigService} from './config.service';
 import {MethodData} from './model/MethodData';
@@ -21,6 +21,12 @@ export class WarehouseService {
         if (search.length > 0) {
             url = url + '?' + search;
         }
+
+        if (signature === '#CANNED#') {
+            console.log('Returning a canned response instead of %s', url);
+            return new Observable<MethodData>(subscriber => subscriber.next(require('./test/canned/v1/MethodData.json')));
+        }
+
         console.log('url=%s', url);
         return this.http.get(url, { headers: this.headers})
                    .map(this.extractMethodData)

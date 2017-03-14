@@ -1,0 +1,5679 @@
+{
+  "timestamp": 1489517106629,
+  "request": {
+    "signature": "%",
+    "maxResults": 100,
+    "onlyTrulyDeadMethods": false,
+    "normalizeSignature": true,
+    "orderBy": "INVOKED_AT_ASC",
+    "normalizedSignature": "%"
+  },
+  "queryTimeMillis": 206,
+  "numMethods": 100,
+  "methods": [
+    {
+      "id": 2,
+      "signature": "sample.app.TrackedClass.packagePrivateMethod()",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.TrackedClass",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 3,
+      "signature": "sample.app.guice.TimedInterceptor()",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "sample.app.guice",
+      "declaringType": "sample.app.guice.TimedInterceptor",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 4,
+      "signature": "sample.app.guice.TimedInterceptorModule()",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "sample.app.guice",
+      "declaringType": "sample.app.guice.TimedInterceptorModule",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 5,
+      "signature": "sample.lib.used.Bar1.InnerClassNeverUsed.methodInInnerClassNeverUsed()",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "sample.lib.used",
+      "declaringType": "sample.lib.used.Bar1$InnerClassNeverUsed",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 11,
+      "signature": "sample.app.TrackedClass.privateMethod()",
+      "visibility": "private",
+      "modifiers": "private",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.TrackedClass",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 12,
+      "signature": "sample.lib.used.Bar1.InnerClassNeverUsed(sample.lib.used.Bar1)",
+      "visibility": "private",
+      "modifiers": "private",
+      "packageName": "sample.lib.used",
+      "declaringType": "sample.lib.used.Bar1$InnerClassNeverUsed",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 13,
+      "signature": "sample.lib.used.Bar1.privateMethodNeverUsed()",
+      "visibility": "private",
+      "modifiers": "private",
+      "packageName": "sample.lib.used",
+      "declaringType": "sample.lib.used.Bar1",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 15,
+      "signature": "sample.app.AbstractTracked.protectedMethod()",
+      "visibility": "protected",
+      "modifiers": "protected",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.AbstractTracked",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 16,
+      "signature": "sample.app.guice.TimedInterceptorModule.configure()",
+      "visibility": "protected",
+      "modifiers": "protected",
+      "packageName": "sample.app.guice",
+      "declaringType": "sample.app.guice.TimedInterceptorModule",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 19,
+      "signature": "sample.app.SampleApp.meaningOfLife()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.SampleApp",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 22,
+      "signature": "sample.app.TrackedClass.compareTo(sample.app.TrackedClass)",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.TrackedClass",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 23,
+      "signature": "sample.app.TrackedClass.equals(java.lang.Object)",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.TrackedClass",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "status": "EXCLUDED_SINCE_TRIVIAL"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 24,
+      "signature": "sample.app.TrackedClass.getCount()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.TrackedClass",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "status": "EXCLUDED_SINCE_TRIVIAL"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 25,
+      "signature": "sample.app.TrackedClass.hashCode()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.TrackedClass",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "status": "EXCLUDED_SINCE_TRIVIAL"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 27,
+      "signature": "sample.app.TrackedClass.setCount(int)",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.TrackedClass",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "status": "EXCLUDED_SINCE_TRIVIAL"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 28,
+      "signature": "sample.app.TrackedClass.setCount2(int, int)",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.TrackedClass",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 29,
+      "signature": "sample.app.TrackedClass.toString()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.TrackedClass",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 30,
+      "signature": "sample.app.guice.TimedInterceptor.invoke(org.aopalliance.intercept.MethodInvocation)",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.app.guice",
+      "declaringType": "sample.app.guice.TimedInterceptor",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 31,
+      "signature": "sample.lib.excluded.ExcludedClass()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.lib.excluded",
+      "declaringType": "sample.lib.excluded.ExcludedClass",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 32,
+      "signature": "sample.lib.excluded.ExcludedClass.foobar()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.lib.excluded",
+      "declaringType": "sample.lib.excluded.ExcludedClass",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "status": "EXCLUDED_BY_PACKAGE_NAME"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 33,
+      "signature": "sample.lib.not_used.FooImpl()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.lib.not_used",
+      "declaringType": "sample.lib.not_used.FooImpl",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 34,
+      "signature": "sample.lib.not_used.FooImpl.doSomeStuff()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.lib.not_used",
+      "declaringType": "sample.lib.not_used.FooImpl",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 37,
+      "signature": "sample.lib.used.Bar1.m1()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.lib.used",
+      "declaringType": "sample.lib.used.Bar1",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 38,
+      "signature": "sample.lib.used.Bar1.publicMethodUnusedDeclaredOnBar()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.lib.used",
+      "declaringType": "sample.lib.used.Bar1",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 41,
+      "signature": "sample.lib.used.Bar3()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.lib.used",
+      "declaringType": "sample.lib.used.Bar3",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 42,
+      "signature": "sample.lib.used.Bar3.m1()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.lib.used",
+      "declaringType": "sample.lib.used.Bar3",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 43,
+      "signature": "hudson.AbstractMarkupText()",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.AbstractMarkupText",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 44,
+      "signature": "hudson.BulkChange.1()",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.BulkChange$1",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 45,
+      "signature": "hudson.ClassicPluginStrategy.1()",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.ClassicPluginStrategy$1",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 46,
+      "signature": "hudson.ClassicPluginStrategy.2(java.io.OutputStream, long)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.ClassicPluginStrategy$2",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 47,
+      "signature": "hudson.ClassicPluginStrategy.3(org.apache.tools.zip.ZipOutputStream)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.ClassicPluginStrategy$3",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 48,
+      "signature": "hudson.ClassicPluginStrategy.DependencyClassLoader.1(hudson.ClassicPluginStrategy.DependencyClassLoader)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.ClassicPluginStrategy$DependencyClassLoader$1",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 49,
+      "signature": "hudson.DNSMultiCast.1(hudson.DNSMultiCast, jenkins.model.Jenkins)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.DNSMultiCast$1",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 50,
+      "signature": "hudson.DescriptorExtensionList.1()",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.DescriptorExtensionList$1",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 51,
+      "signature": "hudson.DescriptorExtensionList.2()",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.DescriptorExtensionList$2",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 52,
+      "signature": "hudson.DescriptorExtensionList.2.1(hudson.DescriptorExtensionList.2, java.lang.Iterable)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.DescriptorExtensionList$2$1",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 53,
+      "signature": "hudson.DescriptorExtensionList.2.2(hudson.DescriptorExtensionList.2, java.util.Iterator)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.DescriptorExtensionList$2$2",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 57,
+      "signature": "hudson.ExtensionFinder.GuiceFinder.1(hudson.ExtensionFinder.GuiceFinder)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.ExtensionFinder$GuiceFinder$1",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 58,
+      "signature": "hudson.ExtensionFinder.GuiceFinder.2(hudson.ExtensionFinder.GuiceFinder)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.ExtensionFinder$GuiceFinder$2",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 59,
+      "signature": "hudson.ExtensionFinder.GuiceFinder.3(hudson.ExtensionFinder.GuiceFinder, com.google.inject.Injector)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.ExtensionFinder$GuiceFinder$3",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 61,
+      "signature": "hudson.ExtensionFinder.GuiceFinder.FaultTolerantScope.1(hudson.ExtensionFinder.GuiceFinder.FaultTolerantScope, com.google.inject.Provider, com.google.inject.Key)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.ExtensionFinder$GuiceFinder$FaultTolerantScope$1",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 62,
+      "signature": "hudson.ExtensionFinder.GuiceFinder.FaultTolerantScope.1.error(com.google.inject.Key, java.lang.Throwable)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.ExtensionFinder$GuiceFinder$FaultTolerantScope$1",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 63,
+      "signature": "hudson.ExtensionFinder.GuiceFinder.SezpozModule.1(hudson.ExtensionFinder.GuiceFinder.SezpozModule, net.java.sezpoz.IndexItem)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.ExtensionFinder$GuiceFinder$SezpozModule$1",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 64,
+      "signature": "hudson.ExtensionFinder.Sezpoz.1(hudson.ExtensionFinder.Sezpoz, java.util.List)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.ExtensionFinder$Sezpoz$1",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 65,
+      "signature": "hudson.ExtensionFinder.Sezpoz.listDelta(java.lang.Class, java.util.List)",
+      "visibility": "package-private",
+      "modifiers": "static",
+      "packageName": "hudson",
+      "declaringType": "hudson.ExtensionFinder$Sezpoz",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 66,
+      "signature": "hudson.ExtensionList.1(hudson.ExtensionList, java.util.Iterator)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.ExtensionList$1",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 67,
+      "signature": "hudson.ExtensionList.2(hudson.ExtensionList)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.ExtensionList$2",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 68,
+      "signature": "hudson.ExtensionList.3()",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.ExtensionList$3",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 69,
+      "signature": "hudson.ExtensionListView.1(java.lang.Class)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.ExtensionListView$1",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 70,
+      "signature": "hudson.ExtensionListView.2(java.lang.Class)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.ExtensionListView$2",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 71,
+      "signature": "hudson.FilePath.1(hudson.FilePath, hudson.util.io.ArchiverFactory, java.io.OutputStream, hudson.util.DirScanner)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$1",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 72,
+      "signature": "hudson.FilePath.10(hudson.FilePath, hudson.FilePath.TarCompression, java.io.InputStream)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$10",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 73,
+      "signature": "hudson.FilePath.11(hudson.FilePath, hudson.FilePath.FileCallable)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$11",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 74,
+      "signature": "hudson.FilePath.12(hudson.FilePath)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$12",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 75,
+      "signature": "hudson.FilePath.13(hudson.FilePath)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$13",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 76,
+      "signature": "hudson.FilePath.14(hudson.FilePath)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$14",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 77,
+      "signature": "hudson.FilePath.15(hudson.FilePath)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$15",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 78,
+      "signature": "hudson.FilePath.16(hudson.FilePath, java.lang.String, java.lang.String)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$16",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 79,
+      "signature": "hudson.FilePath.17(hudson.FilePath, boolean, java.lang.String, java.lang.String, java.lang.String)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$17",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 80,
+      "signature": "hudson.FilePath.18(hudson.FilePath, java.lang.String, java.lang.String)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$18",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 81,
+      "signature": "hudson.FilePath.19(hudson.FilePath)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$19",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 82,
+      "signature": "hudson.FilePath.2(hudson.FilePath, hudson.remoting.RemoteInputStream)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$2",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 83,
+      "signature": "hudson.FilePath.20(hudson.FilePath)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$20",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 84,
+      "signature": "hudson.FilePath.21(hudson.FilePath)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$21",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 85,
+      "signature": "hudson.FilePath.22(hudson.FilePath, long)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$22",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 86,
+      "signature": "hudson.FilePath.23(hudson.FilePath, long)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$23",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 87,
+      "signature": "hudson.FilePath.24(hudson.FilePath)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$24",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 88,
+      "signature": "hudson.FilePath.25(hudson.FilePath)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$25",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 89,
+      "signature": "hudson.FilePath.26(hudson.FilePath)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$26",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 90,
+      "signature": "hudson.FilePath.27(hudson.FilePath)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$27",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 91,
+      "signature": "hudson.FilePath.28(hudson.FilePath)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$28",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 92,
+      "signature": "hudson.FilePath.29(hudson.FilePath, int)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$29",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 93,
+      "signature": "hudson.FilePath.3(hudson.FilePath)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$3",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 94,
+      "signature": "hudson.FilePath.30(hudson.FilePath)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$30",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 95,
+      "signature": "hudson.FilePath.31(hudson.FilePath, java.io.FileFilter)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$31",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 96,
+      "signature": "hudson.FilePath.32(hudson.FilePath, java.lang.String, java.lang.String, boolean)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$32",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 97,
+      "signature": "hudson.FilePath.33(hudson.FilePath, hudson.remoting.Pipe)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$33",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 98,
+      "signature": "hudson.FilePath.34(hudson.FilePath, java.io.RandomAccessFile)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$34",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 99,
+      "signature": "hudson.FilePath.35(hudson.FilePath, hudson.remoting.Pipe, long)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$35",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 100,
+      "signature": "hudson.FilePath.36(hudson.FilePath)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.FilePath$36",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 0,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 1,
+      "signature": "sample.app.AbstractTracked()",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.AbstractTracked",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 1489355538422,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 1489355538422,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1489355538422,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 6,
+      "signature": "sample.app.SampleApp.invokeTracked(int)",
+      "visibility": "private",
+      "modifiers": "private",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.SampleApp",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 1489355538422,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 1489355538422,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1489355538422,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 7,
+      "signature": "sample.app.SampleApp.invokeUntracked(int)",
+      "visibility": "private",
+      "modifiers": "private",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.SampleApp",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 1489355538422,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 1489355538422,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1489355538422,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 8,
+      "signature": "sample.app.SampleApp.invokeUntrackedLogged(int)",
+      "visibility": "private",
+      "modifiers": "private",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.SampleApp",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 1489355538422,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 1489355538422,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1489355538422,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 9,
+      "signature": "sample.app.SampleApp.measureMethodCallTrackingOverhead()",
+      "visibility": "private",
+      "modifiers": "private",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.SampleApp",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 1489355538422,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 1489355538422,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1489355538422,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 10,
+      "signature": "sample.app.SampleApp.tryToLoadClass(java.lang.String, boolean)",
+      "visibility": "private",
+      "modifiers": "private",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.SampleApp",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 1489355538422,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 1489355538422,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1489355538422,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 17,
+      "signature": "sample.app.SampleApp()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.SampleApp",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 1489355538422,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 1489355538422,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1489355538422,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 18,
+      "signature": "sample.app.SampleApp.main(java.lang.String[])",
+      "visibility": "public",
+      "modifiers": "public static",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.SampleApp",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 1489355538422,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 1489355538422,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1489355538422,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 20,
+      "signature": "sample.app.SampleApp.run()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.SampleApp",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 1489355538422,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 1489355538422,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1489355538422,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 21,
+      "signature": "sample.app.TrackedClass()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.TrackedClass",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 1489355538422,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 1489355538422,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1489355538422,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 26,
+      "signature": "sample.app.TrackedClass.publicMethod()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.app",
+      "declaringType": "sample.app.TrackedClass",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 1489355538422,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 1489355538422,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1489355538422,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 14,
+      "signature": "sample.lib.used.Bar1.privateMethodUsed()",
+      "visibility": "private",
+      "modifiers": "private",
+      "packageName": "sample.lib.used",
+      "declaringType": "sample.lib.used.Bar1",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 1489355549425,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 1489355549425,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1489355549425,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 35,
+      "signature": "sample.lib.used.Bar1()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.lib.used",
+      "declaringType": "sample.lib.used.Bar1",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 1489355549425,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 1489355549425,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1489355549425,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 36,
+      "signature": "sample.lib.used.Bar1.declaredOnBar()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.lib.used",
+      "declaringType": "sample.lib.used.Bar1",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 1489355549425,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 1489355549425,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1489355549425,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 39,
+      "signature": "sample.lib.used.Bar2()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.lib.used",
+      "declaringType": "sample.lib.used.Bar2",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 1489355549425,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 1489355549425,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1489355549425,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 40,
+      "signature": "sample.lib.used.Bar2.declaredOnBar2()",
+      "visibility": "public",
+      "modifiers": "public",
+      "packageName": "sample.lib.used",
+      "declaringType": "sample.lib.used.Bar2",
+      "occursInApplications": [
+        {
+          "name": "sample-ltw",
+          "version": "1.3",
+          "startedAtMillis": 1489355538000,
+          "dumpedAtMillis": 1489355550000,
+          "invokedAtMillis": 1489355549425,
+          "status": "EXACT_MATCH"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489355538000,
+          "collectedToMillis": 1489355550000,
+          "invokedAtMillis": 1489355549425,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489355550000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1489355549425,
+      "collectedSinceMillis": 1489355538000
+    },
+    {
+      "id": 54,
+      "signature": "hudson.ExpressionFactory2()",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.ExpressionFactory2",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 1489516419962,
+          "status": "EXACT_MATCH"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 1489516419962,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1489516419962,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 60,
+      "signature": "hudson.ExtensionFinder.GuiceFinder.FaultTolerantScope(boolean)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.ExtensionFinder$GuiceFinder$FaultTolerantScope",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 1489516429965,
+          "status": "EXACT_MATCH"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 1489516429965,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1489516429965,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 55,
+      "signature": "hudson.ExpressionFactory2.JellyJexlContext(org.apache.commons.jelly.JellyContext)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.ExpressionFactory2$JellyJexlContext",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 1489516714965,
+          "status": "EXACT_MATCH"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 1489516714965,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1489516714965,
+      "collectedSinceMillis": 1489513441000
+    },
+    {
+      "id": 56,
+      "signature": "hudson.ExpressionFactory2.JellyMap(org.apache.commons.jelly.JellyContext)",
+      "visibility": "package-private",
+      "modifiers": "",
+      "packageName": "hudson",
+      "declaringType": "hudson.ExpressionFactory2$JellyMap",
+      "occursInApplications": [
+        {
+          "name": "Jenkins",
+          "version": "1.598",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517008000,
+          "invokedAtMillis": 1489516714965,
+          "status": "EXACT_MATCH"
+        },
+        {
+          "name": "Jenkins",
+          "version": "1.600",
+          "startedAtMillis": 1489513441000,
+          "dumpedAtMillis": 1489517029000,
+          "invokedAtMillis": 0,
+          "status": "NOT_INVOKED"
+        }
+      ],
+      "collectedInEnvironments": [
+        {
+          "name": "Gradle",
+          "hostNames": [
+            "fjottas"
+          ],
+          "tags": [
+            "development",
+            "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+            "os.name=Linux",
+            "os.arch=amd64",
+            "java.runtime.name=OpenJDK Runtime Environment",
+            "sample",
+            "os.version=4.8.0-41-generic"
+          ],
+          "collectedSinceMillis": 1489513441000,
+          "collectedToMillis": 1489517029000,
+          "invokedAtMillis": 1489516714965,
+          "collectedDays": 0
+        }
+      ],
+      "tags": [
+        "development",
+        "java.runtime.name=OpenJDK Runtime Environment",
+        "java.runtime.version=1.8.0_121-8u121-b13-0ubuntu1.16.10.2-b13",
+        "os.arch=amd64",
+        "os.name=Linux",
+        "os.version=4.8.0-41-generic",
+        "sample"
+      ],
+      "collectedToMillis": 1489517029000,
+      "collectedDays": 0,
+      "lastInvokedAtMillis": 1489516714965,
+      "collectedSinceMillis": 1489513441000
+    }
+  ]
+}

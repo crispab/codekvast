@@ -69,7 +69,7 @@ task frontendLint(type: Exec) {
 check.dependsOn frontendLint
 
 task frontendStart(type: Exec) {
-    description 'Starts the webpack dev server on port 8081'
+    description 'Starts the webpack dev server on port 8088'
     group 'Frontend Development'
 
     dependsOn frontendInstall
@@ -119,6 +119,7 @@ jar {
         from('src/webapp/dist') {
             exclude '**/*.css.map'
             exclude '**/*.js.map'
+            exclude '**/test/**'
         }
     }
 }

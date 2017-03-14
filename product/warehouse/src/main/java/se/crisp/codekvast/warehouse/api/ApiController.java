@@ -73,7 +73,7 @@ public class ApiController {
     }
 
     @RequestMapping(method = GET, value = API_V1_METHODS)
-    @CrossOrigin(origins = "http://localhost:8081")
+    @CrossOrigin(origins = "http://localhost:8088")
     public ResponseEntity<GetMethodsResponse1> getMethods1(HttpServletRequest request,
                                                            @RequestParam(value = "signature", defaultValue = "%") String signature,
                                                            @RequestParam(name = "maxResults", defaultValue = DEFAULT_MAX_RESULTS_STR)

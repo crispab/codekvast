@@ -10,7 +10,7 @@
     "lint": "tslint ./src/**/*.ts -t verbose",
     "postinstall": "typings install",
     "prebuild": "rimraf dist",
-    "start": "webpack-dev-server --inline --progress --port 8081",
+    "start": "webpack-dev-server --inline --progress --port 8088",
     "test": "karma start && npm run ts-coverage-remap",
     "ts-coverage-remap": "remap-istanbul -i ../../build/reports/frontend-coverage/coverage-final.json -o ../../build/reports/frontend-coverage -t html"
   },
@@ -64,7 +64,7 @@
     "typescript": "2.2.1",
     "typings": "2.1.0",
     "webpack": "2.2.1",
-    "webpack-dev-server": "2.4.1",
+    "webpack-dev-server": "2.4.2",
     "webpack-merge": "4.0.0"
   }
 }
