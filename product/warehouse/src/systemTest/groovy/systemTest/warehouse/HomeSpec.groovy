@@ -10,6 +10,6 @@ class HomeSpec extends GebSpec {
 
         then:
         codekvastVersion == System.getProperty('expectedCodekvastVersion')
-        apiDocsHref.startsWith System.getProperty('geb.build.baseUrl') + "/"
+        apiDocsHref == System.getProperty('geb.build.baseUrl') + "/swagger-ui.html"
     }
 }
