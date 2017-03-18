@@ -4,8 +4,8 @@ license {
     header file("$rootDir/LICENSE")
     ext.year = Calendar.getInstance().get(Calendar.YEAR)
 
-    include '**/main/*.java'
-    include '**/main/*.sql'
+    include '**/*.java'
+    include '**/*.sql'
 
     strictCheck true
     mapping 'java', 'SLASHSTAR_STYLE'
