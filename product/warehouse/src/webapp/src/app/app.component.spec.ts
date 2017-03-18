@@ -28,7 +28,7 @@ describe('AppComponent', () => {
         expect(app.getVersion()).toEqual('someVersion');
     });
 
-    it('app.getVersion() should return "unknown" if window.CODEKVAST_VERSION is undefined', () => {
+    it('app.getVersion() should return "dev" if window.CODEKVAST_VERSION is undefined', () => {
         window['CODEKVAST_VERSION'] = undefined;
         expect(app.getVersion()).toEqual('dev');
     });

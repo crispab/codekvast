@@ -15,7 +15,7 @@ echo "Cleaning workspace..."
 find product -name build -type d | grep -v node_modules | xargs rm -fr
 
 echo "Building..."
-${GRADLEW} build
+${GRADLEW} build $@
 
 echo "Generating coverage report..."
 ${GRADLEW} coverageReport
