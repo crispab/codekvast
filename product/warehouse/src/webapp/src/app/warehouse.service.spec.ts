@@ -17,6 +17,10 @@ describe('WarehouseService', () => {
         expect(warehouse.constructGetMethodsSearch('sig', undefined)).toBe('signature=sig');
     });
 
+    it('should construct a get methods search with signature parameter copied from IDEA with Copy Reference', () => {
+        expect(warehouse.constructGetMethodsSearch('sample.app.SampleApp#run', undefined)).toBe('signature=sample.app.SampleApp.run');
+    });
+
     it('should construct a get methods search with only blank signature parameter', () => {
         expect(warehouse.constructGetMethodsSearch(' ', undefined)).toBe('');
     });

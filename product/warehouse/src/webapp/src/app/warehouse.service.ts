@@ -41,7 +41,7 @@ export class WarehouseService {
         let search = '';
         let delimiter = '';
         if (signature !== undefined && signature.trim().length > 0) {
-            search += `${delimiter}signature=${signature}`;
+            search += `${delimiter}signature=${signature.replace('#', '.')}`;
             delimiter = '&';
         }
         if (maxResults !== undefined) {
