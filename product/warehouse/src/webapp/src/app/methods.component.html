@@ -1,44 +1,59 @@
-<form class="form-inline" (ngSubmit)="search()" #searchForm="ngForm">
+<div id="container" class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <form (ngSubmit)="search()" #searchForm="ngForm">
+                <div class="form-group row">
+                    <label for="signature" class="col-2 col-form-label">Signature</label>
+                    <div class="col-10">
+                        <input class="form-control"
+                               id="signature"
+                               name="signature"
+                               [(ngModel)]="signature"
+                               type="text"
+                               placeholder="Method signature">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="maxResults" class="col-2 col-form-label">Max&nbsp;Results</label>
+                    <div class="col-2">
+                        <input class="form-control"
+                               id="maxResults"
+                               name="maxResults"
+                               [(ngModel)]="maxResults"
+                               type="number"
+                               min="1"
+                               max="10000">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm" [disabled]="!searchForm.form.valid">Search
+                    </button>
+                    <div *ngIf="data">
+                        <small class="ml-2 col-form-label form-text text-muted">Found {{data.numMethods}} methods in
+                                                                                {{data.queryTimeMillis}} ms
+                        </small>
+                    </div>
+                </div>
+            </form>
 
-    <div class="form-group col-8">
-        <label class="sr-only" for="signature">Signature</label>
-        <input class="form-control col-8"
-               id="signature"
-               name="signature"
-               [(ngModel)]="signature"
-               type="text"
-               placeholder="Method signature">
+            <div *ngIf="errorMessage">{{errorMessage}}</div>
+
+            <div *ngIf="data">
+                <table id="search-results" class="table table-responsive table-striped table-hover table-sm">
+                    <thead>
+                    <tr>
+                        <th>Signature</th>
+                        <th>Invocation&nbsp;Age</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr *ngFor="let method of data.methods">
+                        <td>{{method.signature}}</td>
+                        <td>{{method.lastInvokedAtMillis | ckAge:dateFormat}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-
-    <div class="form-group col-3">
-        <label class="mr-sm-2" for="maxResults">Max Results</label>
-        <input class="form-control" id="maxResults" name="maxResults" [(ngModel)]="maxResults" type="number" min="1" max="10000">
-    </div>
-
-    <div class="form-group col-1">
-        <button type="submit" class="form-control btn btn-primary" [disabled]="!searchForm.form.valid">Search</button>
-    </div>
-</form>
-
-<h2 *ngIf="errorMessage">{{errorMessage}}</h2>
-
-<div *ngIf="data" class="container">
-    <p class="pl-3 small">Found {{data.numMethods}} methods in {{data.queryTimeMillis}} ms</p>
-    <table class="table table-striped table-hover table-sm">
-        <thead>
-        <tr>
-            <th>Signature</th>
-            <th>Collected Days</th>
-            <th>Last Invoked At</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        <tr *ngFor="let method of data.methods">
-            <td scope="row">{{method.signature}}</td>
-            <td>{{method.collectedDays }}</td>
-            <td>{{method.lastInvokedAtMillis | ckAge:dateFormat}}</td>
-        </tr>
-        </tbody>
-    </table>
 </div>
+

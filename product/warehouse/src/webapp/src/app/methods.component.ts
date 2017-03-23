@@ -7,6 +7,7 @@ import {DatePipe} from '@angular/common';
 @Component({
     selector: 'ck-methods',
     template: require('./methods.component.html'),
+    styles: [require('./methods.component.css')],
     providers: [WarehouseService, CkAgePipe, DatePipe],
 })
 export class MethodsComponent {
