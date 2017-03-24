@@ -1,4 +1,4 @@
-slackNotification null, 'Build Started'
+slackNotification null, 'Build Started', null
 def startedAt = java.time.Instant.now()
 node {
     try {
@@ -68,23 +68,30 @@ node {
                         reportFiles: 'index.html',
                         reportName: 'API docs'])
 
-                    // step([$class: 'JacocoPublisher',
-                    //     classPattern: 'product/**/build/classes/main',
-                    //     execPattern: '**/build/jacoco/*.exec',
-                    //     changeBuildStatus: true,
-                    //     maximumBranchCoverage: '30',
-                    //     minimumBranchCoverage: '20',
-                    //     maximumClassCoverage: '90',
-                    //     minimumClassCoverage: '80',
-                    //     maximumComplexityCoverage: '40',
-                    //     minimumComplexityCoverage: '30',
-                    //     maximumInstructionCoverage: '50',
-                    //     minimumInstructionCoverage: '40',
-                    //     maximumLineCoverage: '80',
-                    //     minimumLineCoverage: '70',
-                    //     maximumMethodCoverage: '70',
-                    //     minimumMethodCoverage: '60',
-                    //     ])
+                    step([$class: 'JacocoPublisher',
+                        classPattern: 'product/**/build/classes/main',
+                        execPattern: '**/build/jacoco/*.exec',
+                        buildOverBuild: true,
+                        changeBuildStatus: true,
+                        deltaBranchCoverage: '10',
+                        deltaClassCoverage: '10',
+                        deltaComplexityCoverage: '10',
+                        deltaInstructionCoverage: '10',
+                        deltaLineCoverage: '10',
+                        deltaMethodCoverage: '10',
+                        maximumBranchCoverage: '30',
+                        minimumBranchCoverage: '20',
+                        maximumClassCoverage: '90',
+                        minimumClassCoverage: '80',
+                        maximumComplexityCoverage: '40',
+                        minimumComplexityCoverage: '30',
+                        maximumInstructionCoverage: '50',
+                        minimumInstructionCoverage: '40',
+                        maximumLineCoverage: '80',
+                        minimumLineCoverage: '70',
+                        maximumMethodCoverage: '70',
+                        minimumMethodCoverage: '60',
+                        ])
 
                     echo "Running tools/uptodate-report.sh"
                     sh 'tools/uptodate-report.sh'
@@ -93,13 +100,9 @@ node {
 
             }
         }
-        def duration = java.time.Duration.between(startedAt, java.time.Instant.now())
-        echo "Build finished in $duration"
-        slackNotification 'good', "Build finished in $duration"
+        slackNotification 'good', "Build finished", startedAt
     } catch(err) {
-        def duration = java.time.Duration.between(startedAt, java.time.Instant.now())
-        echo "Build failed in $duration: $err"
-        slackNotification 'danger', "Build failed in $duration: $err"
+        slackNotification 'danger', "Build failed", startedAt
         throw err
     } finally {
         stage('Cleanup') {
@@ -108,6 +111,7 @@ node {
     }
 }
 
-def slackNotification(color, message) {
-    slackSend color: color, message: "${java.time.LocalDateTime.now()} ${message} ${env.BUILD_URL}", teamDomain: 'codekvast', channel: '#builds', tokenCredentialId: 'codekvast.slack.com'
+def slackNotification(color, message, startedAt) {
+    def duration = startedAt == null ? "" : " in ${java.time.Duration.between(startedAt, java.time.Instant.now())}""
+    slackSend color: color, message: "${java.time.LocalDateTime.now()} ${message}${duration} ${env.BUILD_URL}", teamDomain: 'codekvast', channel: '#builds', tokenCredentialId: 'codekvast.slack.com'
 }
