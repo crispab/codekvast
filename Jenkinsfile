@@ -1,4 +1,5 @@
 slackNotification null, 'Build Started'
+def startedAt = java.time.Instant.now()
 node {
     try {
         timestamps {
@@ -91,9 +92,11 @@ node {
 
             }
         }
-        slackNotification 'good', 'Build Finished'
+        def duration = new java.time.Duration(startedAt, java.time.Instant.now())
+        slackNotification 'good', "Build finished in $duration"
     } catch(err) {
-        slackNotification 'danger', "Build Failed: $err"
+        def duration = new java.time.Duration(startedAt, java.time.Instant.now())
+        slackNotification 'danger', "Build failed in $duration: $err"
         throw err
     } finally {
         stage('Cleanup') {
