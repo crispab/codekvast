@@ -86,6 +86,7 @@ node {
                         minimumMethodCoverage: '60',
                         ])
 
+                    echo "Running tools/uptodate-report.sh"
                     sh 'tools/uptodate-report.sh'
                     archiveArtifacts 'build/reports/**'
                 }
@@ -93,9 +94,11 @@ node {
             }
         }
         def duration = java.time.Duration.between(startedAt, java.time.Instant.now())
+        echo "Build finished in $duration"
         slackNotification 'good', "Build finished in $duration"
     } catch(err) {
         def duration = java.time.Duration.between(startedAt, java.time.Instant.now())
+        echo "Build failed in $duration: $err"
         slackNotification 'danger', "Build failed in $duration: $err"
         throw err
     } finally {
