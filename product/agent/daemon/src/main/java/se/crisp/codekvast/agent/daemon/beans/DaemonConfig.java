@@ -54,6 +54,7 @@ public class DaemonConfig {
     @NonNull
     private String uploadToPath;
     private String uploadToHost;
+    @Builder.Default
     private int uploadToPort = 22;
     private String uploadToUsername;
     private String uploadToPassword;
