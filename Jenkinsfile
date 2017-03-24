@@ -92,10 +92,10 @@ node {
 
             }
         }
-        def duration = new java.time.Duration(startedAt, java.time.Instant.now())
+        def duration = java.time.Duration.between(startedAt, java.time.Instant.now())
         slackNotification 'good', "Build finished in $duration"
     } catch(err) {
-        def duration = new java.time.Duration(startedAt, java.time.Instant.now())
+        def duration = java.time.Duration.between(startedAt, java.time.Instant.now())
         slackNotification 'danger', "Build failed in $duration: $err"
         throw err
     } finally {
