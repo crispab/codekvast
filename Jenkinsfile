@@ -68,31 +68,32 @@ node {
                         reportFiles: 'index.html',
                         reportName: 'API docs'])
 
-                    step([$class: 'JacocoPublisher',
-                        classPattern: 'product/**/build/classes/main',
-                        execPattern: '**/build/jacoco/*.exec',
-                        buildOverBuild: true,
-                        changeBuildStatus: true,
-                        deltaBranchCoverage: '10',
-                        deltaClassCoverage: '10',
-                        deltaComplexityCoverage: '10',
-                        deltaInstructionCoverage: '10',
-                        deltaLineCoverage: '10',
-                        deltaMethodCoverage: '10',
-                        maximumBranchCoverage: '30',
-                        minimumBranchCoverage: '20',
-                        maximumClassCoverage: '90',
-                        minimumClassCoverage: '80',
-                        maximumComplexityCoverage: '40',
-                        minimumComplexityCoverage: '30',
-                        maximumInstructionCoverage: '50',
-                        minimumInstructionCoverage: '40',
-                        maximumLineCoverage: '80',
-                        minimumLineCoverage: '70',
-                        maximumMethodCoverage: '70',
-                        minimumMethodCoverage: '60',
-                        ])
-
+// JacocoPublisher is broken, it hangs
+//                    step([$class: 'JacocoPublisher',
+//                        classPattern: 'product/**/build/classes/main',
+//                        execPattern: '**/build/jacoco/*.exec',
+//                        buildOverBuild: true,
+//                        changeBuildStatus: true,
+//                        deltaBranchCoverage: '10',
+//                        deltaClassCoverage: '10',
+//                        deltaComplexityCoverage: '10',
+//                        deltaInstructionCoverage: '10',
+//                        deltaLineCoverage: '10',
+//                        deltaMethodCoverage: '10',
+//                        maximumBranchCoverage: '30',
+//                        minimumBranchCoverage: '20',
+//                        maximumClassCoverage: '90',
+//                        minimumClassCoverage: '80',
+//                        maximumComplexityCoverage: '40',
+//                        minimumComplexityCoverage: '30',
+//                        maximumInstructionCoverage: '50',
+//                        minimumInstructionCoverage: '40',
+//                        maximumLineCoverage: '80',
+//                        minimumLineCoverage: '70',
+//                        maximumMethodCoverage: '70',
+//                        minimumMethodCoverage: '60',
+//                        ])
+//
                     echo "Running tools/uptodate-report.sh"
                     sh 'tools/uptodate-report.sh'
                     archiveArtifacts 'build/reports/**'
