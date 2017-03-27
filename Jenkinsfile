@@ -112,7 +112,11 @@ node {
     }
 }
 
+def prettyDuration(java.time.Duration d) {
+    d.toString().replaceFirst("^PT", "").replaceAll("([A-Z])", "\$1 ").toLowerCase()
+}
+
 def slackNotification(color, message, startedAt) {
-    def duration = startedAt == null ? "" : " in ${java.time.Duration.between(startedAt, java.time.Instant.now())}"
+    def duration = startedAt == null ? "" : " in ${prettyDuration(java.time.Duration.between(startedAt, java.time.Instant.now()))}"
     slackSend color: color, message: "${java.time.LocalDateTime.now()} ${message}${duration} ${env.BUILD_URL}", teamDomain: 'codekvast', channel: '#builds', tokenCredentialId: 'codekvast.slack.com'
 }
