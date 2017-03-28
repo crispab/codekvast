@@ -14,6 +14,16 @@ rm -fr ./.gradle
 echo "Cleaning workspace..."
 find product -name build -type d | grep -v node_modules | xargs rm -fr
 
+if [ -z "$PHANTOMJS_BIN" ]; then
+    echo "Locating phantomjs ..."
+    export PHANTOMJS_BIN=$(which phantomjs)
+fi
+
+if [ -z "$PHANTOMJS_BIN" ]; then
+    echo "phantomjs is missing, cannot run JavScript tests"
+    exit 1
+fi
+
 echo "Building..."
 ${GRADLEW} build $@
 
