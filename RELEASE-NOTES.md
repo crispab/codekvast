@@ -2,7 +2,7 @@
 
 ## 0.18.5
 1. Upgraded to Gradle 3.3
-1. Upgraded to Angular 2.4.7, Typescript 2
+1. Upgraded to Angular 4, Typescript 2
 1. Started implementing Warehouse web interface
 1. Upgraded to Spring Boot 1.5
 1. Improved codekvast-warehouse.sh to use environment variables
