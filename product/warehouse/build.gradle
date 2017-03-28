@@ -4,13 +4,13 @@ apply plugin: 'application'
 apply plugin: 'flyway'
 apply plugin: 'org.unbroken-dome.test-sets'
 apply plugin: 'org.springframework.boot'
-apply plugin: "groovy"
+apply plugin: 'groovy'
 
 description = 'The central Codekvast warehouse'
 applicationName = 'codekvast-warehouse'
 archivesBaseName = 'codekvast-warehouse'
 version = codekvastVersion
-group = "crisp"
+group = 'crisp'
 mainClassName = 'se.crisp.codekvast.warehouse.CodekvastWarehouse'
 
 apply from: "$projectDir/src/main/build.gradle"
@@ -48,12 +48,12 @@ dependencies {
 }
 
 processResources {
-    from "src/main/resources", {
-        include "*application*.properties"
+    from 'src/main/resources', {
+        include '*application*.properties'
         expand(project.properties)
     }
-    from "src/main/resources", {
-        exclude "*application*.properties"
+    from 'src/main/resources', {
+        exclude '*application*.properties'
     }
     filteringCharset = 'UTF-8'
 }
