@@ -9,6 +9,7 @@ check.dependsOn systemTest
 
 configurations {
     chromeDriver
+    // geckoDriver
 }
 
 def seleniumVersion = '3.3.1'
@@ -28,6 +29,7 @@ dependencies {
     systemTestRuntime "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
 
     chromeDriver 'com.github.igor-suhorukov:chromedriver:2.27:linux64@bin'
+    // geckoDriver '???'
 }
 
 task startSystemTestEnvironment {
@@ -98,9 +100,16 @@ systemTest {
 
         "chmod +x ${configurations.chromeDriver.asPath}".execute().waitFor()
 
-//        systemProperty "geb.driver", "org.openqa.selenium.chrome.ChromeDriver"
-        systemProperty "webdriver.chrome.driver", configurations.chromeDriver.asPath
+        // PhantomJS
         systemProperty "geb.driver", "org.openqa.selenium.phantomjs.PhantomJSDriver"
+
+        // Chrome
+        // systemProperty "geb.driver", "org.openqa.selenium.chrome.ChromeDriver"
+        // systemProperty "webdriver.chrome.driver", configurations.chromeDriver.asPath
+
+        // Firefox
+        // systemProperty "geb.driver", "org.openqa.selenium.firefox.FirefoxDriver"
+        // systemProperty "webdriver.gecko.driver", configurations.geckoDriver.asPath
 
         systemProperty "geb.build.reportsDir", "$reportsDir/systemTest/dumps"
         systemProperty 'geb.build.baseUrl', "http://$endpoint"

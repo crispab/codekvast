@@ -55,6 +55,7 @@ task frontendLint(type: Exec) {
     inputs.file 'src/webapp/tslint.json'
     inputs.files fileTree('src/webapp/config')
     inputs.files fileTree('src/webapp/src')
+    inputs.property "version", codekvastDisplayVersion
     outputs.file timestampFile
 
     workingDir file('src/webapp')
@@ -89,6 +90,7 @@ task frontendBuild(type: Exec) {
     inputs.file file('src/webapp/webpack.config.json')
     inputs.files fileTree('src/webapp/config')
     inputs.files fileTree('src/webapp/src')
+    inputs.property "version", codekvastDisplayVersion
 
     outputs.files fileTree('src/webapp/dist')
 
