@@ -117,5 +117,6 @@ def prettyDuration(java.time.Duration d) {
 
 def slackNotification(color, message, startedAt) {
     def duration = startedAt == null ? "" : " in ${prettyDuration(java.time.Duration.between(startedAt, java.time.Instant.now()))}"
-    slackSend color: color, message: "${java.time.LocalDateTime.now()} ${message}${duration} ${env.BUILD_URL}/console", teamDomain: 'codekvast', channel: '#builds', tokenCredentialId: 'codekvast.slack.com'
+    def console = "${env.BUILD_URL}/console".replace('//console', '/console')
+    slackSend color: color, message: "${java.time.LocalDateTime.now()} ${message}${duration} ${console}", teamDomain: 'codekvast', channel: '#builds', tokenCredentialId: 'codekvast.slack.com'
 }
