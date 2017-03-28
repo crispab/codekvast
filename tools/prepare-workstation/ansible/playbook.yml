@@ -2,9 +2,10 @@
 - hosts: all
   connection: local
   become: yes
+
   vars:
-  - docker_compose_version: 1.10.0
-  - docker_machine_version: 0.9.0
+  - docker_compose_version: 1.11.2
+  - docker_machine_version: 0.10.0
 
   roles:
   - role: franklinkim.docker
@@ -12,4 +13,3 @@
   post_tasks:
   - include: tasks/compilers.yml
   - include: tasks/docker.yml
-  - include: tasks/heroku-toolbelt.yml

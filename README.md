@@ -103,7 +103,7 @@ If you have read this far, you're probably eager to do some Codekvast developmen
 
 The following stack is used when developing Codekvast (in alphabetical order):
 
-1. Angular2
+1. Angular 4
 1. AspectJ (in Load-Time Weaving mode)
 1. Docker 1.10.3+ and Docker Compose 1.6.2+ (For running MariaDB and Codekvast Warehouse)
 1. Github
@@ -150,10 +150,15 @@ Use the following command to install OpenJDK 8, Node.js, npm and PhantomJS (Ubun
     curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
     sudo apt-get install openjdk-8-jdk openjdk-8-doc openjdk-8-source nodejs
     sudo npm install -g phantomjs-prebuilt
+
+You also must define the environment variable `PHANTOMJS_BIN` to point to the phantomjs executable.
+Put this into your `/etc/profile.d/phantomjs.sh` or your `$HOME/.profile` or similar:
+
+    export PHANTOMJS_BIN=$(which phantomjs)
     
 #### TypeScript
 
-The Codekvast Warehouse web UI is developed with TypeScript and Angular2. Twitter Bootstrap is used as design framework.
+The Codekvast Warehouse web UI is developed with TypeScript and Angular 4. Twitter Bootstrap is used as design framework.
 
 npm is used for managing the frontend development environment. Webpack is used as frontend bundler.
     
