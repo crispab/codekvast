@@ -13,11 +13,11 @@ version = codekvastVersion
 group = "crisp"
 mainClassName = 'se.crisp.codekvast.warehouse.CodekvastWarehouse'
 
-apply from: "$projectDir/gradle/backend.gradle"
-apply from: "$projectDir/gradle/docker.gradle"
-apply from: "$projectDir/gradle/frontend.gradle"
-apply from: "$projectDir/gradle/integrationTest.gradle"
-apply from: "$projectDir/gradle/systemTest.gradle"
+apply from: "$projectDir/src/main/build.gradle"
+apply from: "$projectDir/src/webapp/build.gradle"
+apply from: "$projectDir/src/docker/build.gradle"
+apply from: "$projectDir/src/integrationTest/build.gradle"
+apply from: "$projectDir/src/systemTest/build.gradle"
 
 configurations.compile {
     exclude module: 'spring-boot-starter-tomcat'

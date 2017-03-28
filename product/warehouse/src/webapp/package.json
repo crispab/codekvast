@@ -58,12 +58,12 @@
     "remap-istanbul": "0.9.5",
     "rimraf": "2.6.1",
     "source-map-loader": "0.2.0",
-    "style-loader": "0.16.0",
+    "style-loader": "0.16.1",
     "ts-loader": "2.0.3",
     "tslint": "4.5.1",
-    "typescript": "2.2.1",
+    "typescript": "2.2.2",
     "typings": "2.1.0",
-    "webpack": "2.3.1",
+    "webpack": "2.3.2",
     "webpack-dev-server": "2.4.2",
     "webpack-merge": "4.1.0"
   }

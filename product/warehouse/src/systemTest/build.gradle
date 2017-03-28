@@ -98,6 +98,8 @@ systemTest {
 
         "chmod +x ${configurations.chromeDriver.asPath}".execute().waitFor()
 
+//        systemProperty "geb.driver", "org.openqa.selenium.chrome.ChromeDriver"
+        systemProperty "webdriver.chrome.driver", configurations.chromeDriver.asPath
         systemProperty "geb.driver", "org.openqa.selenium.phantomjs.PhantomJSDriver"
 
         systemProperty "geb.build.reportsDir", "$reportsDir/systemTest/dumps"
