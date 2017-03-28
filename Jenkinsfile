@@ -11,7 +11,6 @@ node {
                     printenv | sort
                     rm -fr ./.gradle
                     find product -name build -type d | grep -v node_modules | xargs rm -fr
-                    ./gradlew --stop
                     """
                 }
 
