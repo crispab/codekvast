@@ -1,14 +1,14 @@
 import {Component} from '@angular/core';
 import {WarehouseService} from './warehouse.service';
 import {MethodData} from './model/MethodData';
-import {CkAgePipe} from './ck-age.pipe';
+import {AgePipe} from './age.pipe';
 import {DatePipe} from '@angular/common';
 
 @Component({
     selector: 'ck-methods',
     template: require('./methods.component.html'),
     styles: [require('./methods.component.css')],
-    providers: [WarehouseService, CkAgePipe, DatePipe],
+    providers: [WarehouseService, AgePipe, DatePipe],
 })
 export class MethodsComponent {
 

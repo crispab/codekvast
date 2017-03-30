@@ -1,7 +1,7 @@
 import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
 import {BrowserModule} from '@angular/platform-browser';
-import {CkAgePipe} from './ck-age.pipe';
+import {AgePipe} from './age.pipe';
 import {FormsModule} from '@angular/forms';
 import {HttpModule} from '@angular/http';
 import {StatusComponent} from './status.component';
@@ -12,7 +12,7 @@ import {APP_BASE_HREF} from '@angular/common';
 
 @NgModule({
     imports: [BrowserModule, FormsModule, HttpModule, AppRoutingModule, NgbModule.forRoot()],
-    declarations: [AppComponent, CkAgePipe, StatusComponent, MethodsComponent],
+    declarations: [AppComponent, AgePipe, StatusComponent, MethodsComponent],
     providers: [{provide: APP_BASE_HREF, useValue : '/' }],
     bootstrap: [AppComponent]
 })

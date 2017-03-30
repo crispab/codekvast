@@ -1,7 +1,7 @@
 import {DatePipe} from '@angular/common';
-import {CkAgePipe} from './ck-age.pipe';
+import {AgePipe} from './age.pipe';
 
-let pipe: CkAgePipe;
+let pipe: AgePipe;
 let parentPipe: DatePipe;
 
 function getPastDate(days: number, hours: number, minutes: number): Date {
@@ -12,7 +12,7 @@ function getPastDate(days: number, hours: number, minutes: number): Date {
     return new Date(now - days * dayMillis - hours * hourMillis - minutes * minuteMillis);
 }
 
-describe('CkAgePipe', () => {
+describe('AgePipe', () => {
 
     beforeEach(() => {
         parentPipe = {
@@ -20,7 +20,7 @@ describe('CkAgePipe', () => {
                 return 'parentPipe(' + pattern + ')' + value;
             }
         } as DatePipe;
-        pipe = new CkAgePipe(parentPipe);
+        pipe = new AgePipe(parentPipe);
     });
 
     it('Should return null for zero', () => {

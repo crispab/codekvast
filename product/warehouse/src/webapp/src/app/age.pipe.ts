@@ -2,7 +2,7 @@ import {Injectable, Pipe, PipeTransform} from '@angular/core';
 import {DatePipe} from '@angular/common';
 
 @Pipe({name: 'ckAge'}) @Injectable()
-export class CkAgePipe implements PipeTransform {
+export class AgePipe implements PipeTransform {
 
     private minuteMillis = 60 * 1000;
     private hourMillis = 60 * this.minuteMillis;
@@ -36,7 +36,7 @@ export class CkAgePipe implements PipeTransform {
         if (this.isDate(value)) {
             return this.getAgeMillis(value.getTime());
         }
-        throw new SyntaxError('CkAgePipe only understands integers and dates');
+        throw new SyntaxError('AgePipe only understands integers and dates');
     }
 
     private getAgeMillis(value: number): string {
