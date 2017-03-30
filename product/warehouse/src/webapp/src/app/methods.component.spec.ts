@@ -111,4 +111,31 @@ describe('MethodsComponent', () => {
         expect(component.sortedMethods()[0].lastInvokedAtMillis).toBe(2);
     });
 
+    it('headerClassesSignature() should handle sort by signature ascending', () => {
+        component.data = mockData;
+        component.sortBySignature()
+        component.sortAscending = true;
+        expect(component.headerClassesSignature()).toEqual({
+            'sort-ascending': true,
+            'sort-descending': false
+        });
+        expect(component.headerClassesAge()).toEqual({
+            'sort-ascending': false,
+            'sort-descending': false
+        });
+    });
+
+    it('headerClassesAge() should handle sort by age descending', () => {
+        component.data = mockData;
+        component.sortByAge();
+        component.sortAscending = false;
+        expect(component.headerClassesSignature()).toEqual({
+            'sort-ascending': false,
+            'sort-descending': false
+        });
+        expect(component.headerClassesAge()).toEqual({
+            'sort-ascending': false,
+            'sort-descending': true
+        });
+    });
 });
