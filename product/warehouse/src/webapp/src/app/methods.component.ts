@@ -3,6 +3,7 @@ import {WarehouseService} from './warehouse.service';
 import {MethodData} from './model/MethodData';
 import {AgePipe} from './age.pipe';
 import {DatePipe} from '@angular/common';
+import {Method} from './model/Method';
 
 @Component({
     selector: 'ck-methods',
@@ -44,4 +45,27 @@ export class MethodsComponent {
             }, () => console.log('getMethods() complete'));
     }
 
+    sortedMethods(): Method[] {
+        if (!this.data) {
+            return null;
+        }
+        const greaterThan = this.sortAscending ? +1 : -1;
+        return this.data.methods.sort((m1, m2) => {
+           if (this.sortColumn === 'signature') {
+               if (m1.signature > m2.signature) {
+                   return greaterThan;
+               } else if (m1.signature === m2.signature) {
+                   return 0;
+               } else {
+                   return -greaterThan;
+               }
+           } else if (this.sortColumn === 'age') {
+               return this.sortAscending
+                   ? m2.lastInvokedAtMillis - m1.lastInvokedAtMillis
+                   : m1.lastInvokedAtMillis - m2.lastInvokedAtMillis;
+           } else {
+               return 0;
+           }
+        });
+    }
 }

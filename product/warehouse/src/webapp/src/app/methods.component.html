@@ -27,8 +27,8 @@
 
     <div *ngIf="errorMessage">{{errorMessage}}</div>
 
-    <div *ngIf="data" class="row">
-        <div class="col-8">
+    <div *ngIf="sortedMethods" class="row">
+        <div class="col">
             <table id="search-results" class="table table-responsive table-striped table-hover table-sm">
                 <thead>
                 <tr>
@@ -38,7 +38,7 @@
                 </thead>
 
                 <tbody>
-                <tr *ngFor="let method of data.methods">
+                <tr *ngFor="let method of sortedMethods">
                     <td>{{method.signature}}</td>
                     <td>{{method.lastInvokedAtMillis | ckAge:dateFormat}}</td>
                 </tr>
