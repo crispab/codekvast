@@ -17,8 +17,19 @@ export class MethodsComponent {
     data: MethodData;
     errorMessage: string;
     dateFormat = 'age';
+    sortColumn = 'signature';
+    sortAscending = true;
 
     constructor(private warehouse: WarehouseService) {
+    }
+
+    sortBy(column: string) {
+        if (this.sortColumn === column) {
+            this.sortAscending = !this.sortAscending;
+        } else {
+            this.sortColumn = column;
+        }
+        console.log(`Sorting by ${this.sortColumn}, ascending=${this.sortAscending}`);
     }
 
     search() {
