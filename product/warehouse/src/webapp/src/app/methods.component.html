@@ -27,20 +27,20 @@
 
     <div *ngIf="errorMessage">{{errorMessage}}</div>
 
-    <div *ngIf="sortedMethods()" class="row">
-        <div class="col">
+    <div *ngIf="sortedMethods()" class="row ml-1">
+        <div class="col-8">
             <table id="search-results" class="table table-responsive table-striped table-hover table-sm">
                 <thead>
                 <tr>
                     <th (click)="sortBySignature()">Signature <i [ngClass]="headerClassesSignature()" aria-hidden="true"></i></th>
-                    <th (click)="sortByAge()">Invocation&nbsp;Age <i [ngClass]="headerClassesAge()" aria-hidden="true"></i></th>
+                    <th class="w-25" (click)="sortByAge()">Age <i [ngClass]="headerClassesAge()" aria-hidden="true"></i></th>
                 </tr>
                 </thead>
 
                 <tbody>
                 <tr *ngFor="let method of sortedMethods()">
                     <td>{{method.signature}}</td>
-                    <td>{{method.lastInvokedAtMillis | ckAge:dateFormat}}</td>
+                    <td>{{method.lastInvokedAtMillis | ckAge:dateFormat }}</td>
                 </tr>
                 </tbody>
             </table>
