@@ -40,7 +40,7 @@ export class MethodsComponent {
             'fa': true,
             'fa-sort-asc': this.sortAscending,
             'fa-sort-desc': !this.sortAscending,
-            'invisible': c !== this.sortColumn
+            'invisible': c !== this.sortColumn // avoid column width fluctuations
         };
     }
 
