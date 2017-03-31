@@ -12,15 +12,15 @@ import {Method} from './model/Method';
     providers: [WarehouseService, AgePipe, DatePipe],
 })
 export class MethodsComponent {
-    private SIGNATURE = 'signature';
-    private AGE = 'age';
+    static readonly SIGNATURE_COLUMN = 'signature';
+    static readonly AGE_COLUMN = 'age';
 
     signature: string;
     maxResults = 100;
     data: MethodData;
     errorMessage: string;
     dateFormat = 'age';
-    sortColumn = this.SIGNATURE;
+    sortColumn = MethodsComponent.SIGNATURE_COLUMN;
     sortAscending = true;
 
     constructor(private warehouse: WarehouseService) {
@@ -35,29 +35,29 @@ export class MethodsComponent {
         console.log(`Sorting by ${this.sortColumn}, ascending=${this.sortAscending}`);
     }
 
-    private getHeaderClasses(c: string) {
+    private getHeaderClassesFor(column: string) {
         return {
             'fa': true,
             'fa-sort-asc': this.sortAscending,
             'fa-sort-desc': !this.sortAscending,
-            'invisible': c !== this.sortColumn // avoid column width fluctuations
+            'invisible': column !== this.sortColumn // avoid column width fluctuations
         };
     }
 
     headerClassesSignature() {
-        return this.getHeaderClasses(this.SIGNATURE);
+        return this.getHeaderClassesFor(MethodsComponent.SIGNATURE_COLUMN);
     }
 
     headerClassesAge() {
-        return this.getHeaderClasses(this.AGE);
+        return this.getHeaderClassesFor(MethodsComponent.AGE_COLUMN);
     }
 
     sortBySignature() {
-        this.sortBy(this.SIGNATURE);
+        this.sortBy(MethodsComponent.SIGNATURE_COLUMN);
     }
 
     sortByAge() {
-        this.sortBy(this.AGE);
+        this.sortBy(MethodsComponent.AGE_COLUMN);
     }
 
     sortedMethods(): Method[] {
@@ -67,9 +67,9 @@ export class MethodsComponent {
 
         return this.data.methods.sort((m1: Method, m2: Method) => {
             let cmp = 0;
-            if (this.sortColumn === this.SIGNATURE) {
+            if (this.sortColumn === MethodsComponent.SIGNATURE_COLUMN) {
                 cmp = m1.signature.localeCompare(m2.signature);
-            } else if (this.sortColumn === this.AGE) {
+            } else if (this.sortColumn === MethodsComponent.AGE_COLUMN) {
                 cmp = m1.lastInvokedAtMillis - m2.lastInvokedAtMillis;
             }
             return this.sortAscending ? cmp : -cmp;
