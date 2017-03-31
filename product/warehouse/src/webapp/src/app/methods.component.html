@@ -34,17 +34,22 @@
                 <tr>
                     <th (click)="sortBySignature()">Signature <i [ngClass]="headerClassesSignature()" aria-hidden="true"></i></th>
                     <th class="w-25" (click)="sortByAge()">Age <i [ngClass]="headerClassesAge()" aria-hidden="true"></i></th>
+                    <th></th>
                 </tr>
                 </thead>
 
                 <tbody>
-                <tr *ngFor="let method of sortedMethods()">
+                <tr *ngFor="let method of sortedMethods()"  (click)="showMethodDetail(method)">
                     <td>{{method.signature}}</td>
                     <td>{{method.lastInvokedAtMillis | ckAge:dateFormat }}</td>
+                    <td><i [ngClass]="rowClasses(method)" aria-hidden="true"></i></td>
                 </tr>
                 </tbody>
             </table>
         </div>
+
+        <div class="col-4">
+            <ck-method-detail #methodDetail></ck-method-detail>
+        </div>
     </div>
 </div>
-

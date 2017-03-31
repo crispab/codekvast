@@ -1,9 +1,10 @@
-import {Component} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {WarehouseService} from './warehouse.service';
 import {MethodData} from './model/MethodData';
 import {AgePipe} from './age.pipe';
 import {DatePipe} from '@angular/common';
 import {Method} from './model/Method';
+import {MethodDetailComponent} from './method-detail.component';
 
 @Component({
     selector: 'ck-methods',
@@ -22,6 +23,8 @@ export class MethodsComponent {
     dateFormat = 'age';
     sortColumn = MethodsComponent.SIGNATURE_COLUMN;
     sortAscending = true;
+
+    @ViewChild('methodDetail') public methodDetail: MethodDetailComponent;
 
     constructor(private warehouse: WarehouseService) {
     }
@@ -88,4 +91,16 @@ export class MethodsComponent {
             }, () => console.log('getMethods() complete'));
     }
 
+    showMethodDetail(m: Method) {
+        this.methodDetail.method = m;
+    }
+
+    rowClasses(m: Method) {
+        let visible = this.methodDetail && this.methodDetail.method && this.methodDetail.method.id === m.id;
+        return {
+            'fa': true,
+            'fa-arrow-right': true,
+            'invisible': !visible,
+        };
+    }
 }
