@@ -37,8 +37,10 @@ export class MethodsComponent {
 
     private getHeaderClasses(c: string) {
         return {
-            'sort-ascending': c === this.sortColumn && this.sortAscending,
-            'sort-descending': c === this.sortColumn && !this.sortAscending
+            'fa': true,
+            'fa-sort-asc': this.sortAscending,
+            'fa-sort-desc': !this.sortAscending,
+            'invisible': c !== this.sortColumn
         };
     }
 

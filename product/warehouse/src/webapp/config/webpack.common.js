@@ -56,7 +56,10 @@ module.exports = {
             inject: false,
             template: require('html-webpack-template'),
             title: 'Codekvast Warehouse ' + (process.env.CODEKVAST_VERSION || 'dev'),
-            links: ['https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css'],
+            links: [
+                'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css',
+                'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'
+            ],
             mobile: true,
             minify: false,
             appMountId: 'ck-app',

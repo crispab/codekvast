@@ -116,12 +116,16 @@ describe('MethodsComponent', () => {
         component.sortBySignature()
         component.sortAscending = true;
         expect(component.headerClassesSignature()).toEqual({
-            'sort-ascending': true,
-            'sort-descending': false
+            'fa': true,
+            'fa-sort-asc': true,
+            'fa-sort-desc': false,
+            'invisible': false
         });
         expect(component.headerClassesAge()).toEqual({
-            'sort-ascending': false,
-            'sort-descending': false
+            'fa': true,
+            'fa-sort-asc': true,
+            'fa-sort-desc': false,
+            'invisible': true
         });
     });
 
@@ -130,12 +134,16 @@ describe('MethodsComponent', () => {
         component.sortByAge();
         component.sortAscending = false;
         expect(component.headerClassesSignature()).toEqual({
-            'sort-ascending': false,
-            'sort-descending': false
+            'fa': true,
+            'fa-sort-asc': false,
+            'fa-sort-desc': true,
+            'invisible': true
         });
         expect(component.headerClassesAge()).toEqual({
-            'sort-ascending': false,
-            'sort-descending': true
+            'fa': true,
+            'fa-sort-asc': false,
+            'fa-sort-desc': true,
+            'invisible': false
         });
     });
 });
