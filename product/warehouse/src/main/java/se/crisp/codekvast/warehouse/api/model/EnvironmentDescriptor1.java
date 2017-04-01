@@ -87,12 +87,12 @@ public class EnvironmentDescriptor1 implements Comparable<EnvironmentDescriptor1
                                         .invokedAtMillis(Math.max(this.invokedAtMillis, that.invokedAtMillis))
                                         .collectedToMillis(Math.max(this.collectedToMillis, that.collectedToMillis))
                                         .collectedSinceMillis(Math.min(this.collectedSinceMillis, that.collectedSinceMillis))
-                                        .hostNames(add(this.hostNames, that.hostNames))
-                                        .tags(add(this.tags, that.tags))
+                                        .hostNames(union(this.hostNames, that.hostNames))
+                                        .tags(union(this.tags, that.tags))
                                         .build();
     }
 
-    private Set<String> add(Set<String> left, Set<String> right) {
+    private Set<String> union(Set<String> left, Set<String> right) {
         Set<String> result = new HashSet<>(left);
         result.addAll(right);
         return result;

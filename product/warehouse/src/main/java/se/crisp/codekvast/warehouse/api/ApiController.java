@@ -91,9 +91,9 @@ public class ApiController {
         GetMethodsResponse1 response = GetMethodsResponse1.builder()
                                                           .timestamp(startedAt)
                                                           .request(request)
-                                                          .queryTimeMillis(System.currentTimeMillis() - startedAt)
                                                           .numMethods(methods.size())
                                                           .methods(methods)
+                                                          .queryTimeMillis(System.currentTimeMillis() - startedAt)
                                                           .build();
         log.debug("Response: {}", response);
         return response;

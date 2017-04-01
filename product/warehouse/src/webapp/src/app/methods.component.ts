@@ -98,6 +98,17 @@ export class MethodsComponent {
         this.selectedMethod = m;
     }
 
+    prettyPrintSignature(m: Method) {
+        console.log('Selected: %o', m);
+
+        let result = '';
+        if (m.modifiers) {
+            result += m.modifiers + ' ';
+        }
+        result += m.signature;
+        return result;
+    }
+
     rowIconClasses(m: Method) {
         let visible = this.selectedMethod && this.selectedMethod.id === m.id;
         return {
