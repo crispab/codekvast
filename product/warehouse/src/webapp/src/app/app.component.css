@@ -1,11 +1,25 @@
-body {
-    /* Margin bottom by footer height */
-    margin-bottom: 46px;
+/*
+* {
+    padding: 0;
+    margin: 0;
+}
+html, body {
+    height: 100%;
+}
+*/
+
+#container {
+    height: 100%;
+    border-collapse: collapse;
 }
 
 footer {
-    position: fixed;
-    height: 46px;
-    bottom: 0;
     width: 100%;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+}
+
+footer li {
+    border-left: 1px solid darkblue;
 }

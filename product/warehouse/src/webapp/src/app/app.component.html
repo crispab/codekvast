@@ -1,36 +1,53 @@
-<div id="top-nav">
-    <div class="row align-items-end pt-1 pl-2">
-        <div class="col-1">
-            <a routerLink=""> <img src="/assets/logo-feathers-60x104.png" class="img-fluid" alt="logotype"></a>
-        </div>
-        <div class="col-3">
-            <h1>Codekvast</h1>
-            <p class="small" class="text-muted">The True Dead Code Detector</p>
-        </div>
-        <div class="col-8">
-            <nav class="nav nav-tabs">
-                <a routerLink="/methods" class="nav-link" routerLinkActive="active">Methods</a> <a routerLink="/status"
-                                                                                                   class="nav-link"
-                                                                                                   routerLinkActive="active">Status</a>
-            </nav>
-        </div>
+<table id="container">
+    <thead id="masthead">
+    <tr>
+        <td valign="top">
+            <div id="top-nav" class="container">
+                <div class="row align-items-end pt-1 pl-2">
+                    <div class="col-1">
+                        <a routerLink=""> <img src="/assets/logo-feathers-60x104.png" class="img-fluid" alt="logotype"></a>
+                    </div>
+                    <div class="col-3">
+                        <h1>Codekvast</h1>
+                        <p class="small" class="text-muted">The True Dead Code Detector</p>
+                    </div>
 
-    </div>
-</div>
+                    <div class="col-8">
+                        <nav class="nav nav-tabs">
+                            <a routerLink="/methods" class="nav-link" routerLinkActive="active">Methods</a> <a routerLink="/status"
+                                                                                                               class="nav-link"
+                                                                                                               routerLinkActive="active">Status</a>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    </thead>
 
-<div class="mt-3">
-    <router-outlet></router-outlet>
-</div>
+    <tbody>
+    <tr>
+        <td>
+            <section id="main">
+                <router-outlet></router-outlet>
+            </section>
+        </td>
+    </tr>
+    </tbody>
 
-<footer class="navbar-fixed-bottom">
-    <div class="bg-info clearfix">
-        <div class="ml-2 mt-1 mb-1 btn btn-secondary float-left">
-            <span class="small"><a id="api-docs" [attr.href]="getApiPrefix() + '/swagger-ui.html'" target="_new">API docs</a></span>
-        </div>
-        <div class="mr-2 mt-1 mb-1 btn btn-secondary float-right">
-            <span class="small">
-                Codekvast version <span id="codekvastVersion">{{ getVersion() }}</span>
-            </span>
-        </div>
-    </div>
-</footer>
+    <tfoot>
+    <tr>
+        <td valign="bottom">
+            <footer class="bg-info small">
+                <ul class="nav justify-content-end mr-1">
+                    <li class="nav-item px-3"><a id="api-docs" [attr.href]="getApiPrefix() + '/swagger-ui.html'" target="_new">API docs</a>
+                    </li>
+                    <li class="nav-item px-3">Codekvast version
+                        <span id="codekvastVersion">{{ getVersion() }}</span>
+                    </li>
+                </ul>
+            </footer>
+        </td>
+    </tr>
+    </tfoot>
+</table>
