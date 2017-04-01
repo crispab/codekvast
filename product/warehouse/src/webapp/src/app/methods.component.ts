@@ -83,6 +83,11 @@ export class MethodsComponent {
             .subscribe(data => {
                 this.data = data;
                 this.errorMessage = undefined;
+                if (this.data.methods.length === 1) {
+                    this.selectMethod(this.data.methods[0]);
+                } else {
+                    this.selectMethod(null);
+                }
             }, error => {
                 this.data = undefined;
                 this.errorMessage = error;

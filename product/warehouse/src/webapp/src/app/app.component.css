@@ -8,9 +8,9 @@ html, body {
 }
 */
 
-#container {
-    height: 100%;
-    border-collapse: collapse;
+#top-nav {
+    margin-left: 0;
+    margin-bottom: 2em;
 }
 
 footer {

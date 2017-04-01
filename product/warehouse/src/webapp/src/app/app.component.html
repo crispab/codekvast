@@ -1,53 +1,34 @@
-<table id="container">
-    <thead id="masthead">
-    <tr>
-        <td valign="top">
-            <div id="top-nav" class="container">
-                <div class="row align-items-end pt-1 pl-2">
-                    <div class="col-1">
-                        <a routerLink=""> <img src="/assets/logo-feathers-60x104.png" class="img-fluid" alt="logotype"></a>
-                    </div>
-                    <div class="col-3">
-                        <h1>Codekvast</h1>
-                        <p class="small" class="text-muted">The True Dead Code Detector</p>
-                    </div>
-
-                    <div class="col-8">
-                        <nav class="nav nav-tabs">
-                            <a routerLink="/methods" class="nav-link" routerLinkActive="active">Methods</a> <a routerLink="/status"
-                                                                                                               class="nav-link"
-                                                                                                               routerLinkActive="active">Status</a>
-                        </nav>
-                    </div>
-                </div>
+<div id="container">
+    <div id="top-nav" class="container sticky-top">
+        <div class="row align-items-end pt-1 pl-3">
+            <div class="col-1">
+                <a routerLink=""> <img src="/assets/logo-feathers-60x104.png" class="img-fluid" alt="logotype"></a>
             </div>
-        </td>
-    </tr>
-    </thead>
+            <div class="col-3">
+                <h1>Codekvast</h1>
+                <p class="small text-muted">The True Dead Code Detector</p>
+            </div>
 
-    <tbody>
-    <tr>
-        <td>
-            <section id="main">
-                <router-outlet></router-outlet>
-            </section>
-        </td>
-    </tr>
-    </tbody>
+            <div class="col-8">
+                <nav class="nav nav-tabs">
+                    <a routerLink="/methods" class="nav-link" routerLinkActive="active">Methods</a>
+                    <a routerLink="/status" class="nav-link" routerLinkActive="active">Status</a>
+                </nav>
+            </div>
+        </div>
+    </div>
 
-    <tfoot>
-    <tr>
-        <td valign="bottom">
-            <footer class="bg-info small">
-                <ul class="nav justify-content-end mr-1">
-                    <li class="nav-item px-3"><a id="api-docs" [attr.href]="getApiPrefix() + '/swagger-ui.html'" target="_new">API docs</a>
-                    </li>
-                    <li class="nav-item px-3">Codekvast version
-                        <span id="codekvastVersion">{{ getVersion() }}</span>
-                    </li>
-                </ul>
-            </footer>
-        </td>
-    </tr>
-    </tfoot>
-</table>
+    <section id="main" class="ml-1">
+        <router-outlet></router-outlet>
+    </section>
+
+    <footer class="bg-info small">
+        <ul class="nav justify-content-end mr-1">
+            <li class="nav-item px-3"><a id="api-docs" [attr.href]="getApiPrefix() + '/swagger-ui.html'" target="_new">API docs</a>
+            </li>
+            <li class="nav-item px-3">Codekvast version
+                <span id="codekvastVersion">{{ getVersion() }}</span>
+            </li>
+        </ul>
+    </footer>
+</div>
