@@ -39,7 +39,7 @@
                 </thead>
 
                 <tbody>
-                <tr *ngFor="let method of sortedMethods()" (click)="selectMethod(method)">
+                <tr *ngFor="let method of sortedMethods()" (mouseenter)="selectMethod(method)">
                     <td>{{method.signature}}</td>
                     <td>{{method.lastInvokedAtMillis | ckAge:dateFormat }}</td>
                     <td><i [ngClass]="rowIconClasses(method)" aria-hidden="true"></i></td>
@@ -48,8 +48,18 @@
             </table>
         </div>
 
-        <div *ngIf="selectedMethod" class="col-4">
-            <table class="table table-bordered">
+        <div *ngIf="selectedMethod" id="method-details" class="col-4">
+            <table class="table table-bordered table-sm">
+                <thead>
+                <tr>
+                    <th colspan="2">Collection Details
+                        <button type="button" class="close" aria-label="Close" (click)="selectMethod(null)">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
                 <tr>
                     <th>Id:</th>
                     <td>{{ selectedMethod.id }}</td>
@@ -74,6 +84,7 @@
                     <th>Last Invoked Age:</th>
                     <td>{{ selectedMethod.lastInvokedAtMillis | ckAge:'age' }}</td>
                 </tr>
+                </tbody>
             </table>
 
             <!--

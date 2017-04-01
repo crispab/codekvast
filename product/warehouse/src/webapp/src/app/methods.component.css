@@ -1,3 +1,11 @@
+/*
 #container > div.row > div {
     border: 1px solid darkblue;
+}
+*/
+#method-details {
+    height: 25em;
+    position: fixed;
+    left: 67%;
+    bottom: 46px;
 }
