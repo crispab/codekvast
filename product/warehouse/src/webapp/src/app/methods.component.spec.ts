@@ -111,17 +111,17 @@ describe('MethodsComponent', () => {
         expect(component.sortedMethods()[0].lastInvokedAtMillis).toBe(2);
     });
 
-    it('headerClassesSignature() should handle sort by signature ascending', () => {
+    it('headerIconClassesSignature() should handle sort by signature ascending', () => {
         component.data = mockData;
         component.sortBySignature()
         component.sortAscending = true;
-        expect(component.headerClassesSignature()).toEqual({
+        expect(component.headerIconClassesSignature()).toEqual({
             'fa': true,
             'fa-sort-asc': true,
             'fa-sort-desc': false,
             'invisible': false
         });
-        expect(component.headerClassesAge()).toEqual({
+        expect(component.headerIconClassesAge()).toEqual({
             'fa': true,
             'fa-sort-asc': true,
             'fa-sort-desc': false,
@@ -129,17 +129,17 @@ describe('MethodsComponent', () => {
         });
     });
 
-    it('headerClassesAge() should handle sort by age descending', () => {
+    it('headerIconClassesAge() should handle sort by age descending', () => {
         component.data = mockData;
         component.sortByAge();
         component.sortAscending = false;
-        expect(component.headerClassesSignature()).toEqual({
+        expect(component.headerIconClassesSignature()).toEqual({
             'fa': true,
             'fa-sort-asc': false,
             'fa-sort-desc': true,
             'invisible': true
         });
-        expect(component.headerClassesAge()).toEqual({
+        expect(component.headerIconClassesAge()).toEqual({
             'fa': true,
             'fa-sort-asc': false,
             'fa-sort-desc': true,

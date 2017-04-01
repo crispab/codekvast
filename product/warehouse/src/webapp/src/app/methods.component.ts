@@ -1,10 +1,9 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component} from '@angular/core';
 import {WarehouseService} from './warehouse.service';
 import {MethodData} from './model/MethodData';
 import {AgePipe} from './age.pipe';
 import {DatePipe} from '@angular/common';
 import {Method} from './model/Method';
-import {MethodDetailComponent} from './method-detail.component';
 
 @Component({
     selector: 'ck-methods',
@@ -23,8 +22,7 @@ export class MethodsComponent {
     dateFormat = 'age';
     sortColumn = MethodsComponent.SIGNATURE_COLUMN;
     sortAscending = true;
-
-    @ViewChild('methodDetail') public methodDetail: MethodDetailComponent;
+    selectedMethod: Method;
 
     constructor(private warehouse: WarehouseService) {
     }
@@ -38,7 +36,7 @@ export class MethodsComponent {
         console.log(`Sorting by ${this.sortColumn}, ascending=${this.sortAscending}`);
     }
 
-    private getHeaderClassesFor(column: string) {
+    private getHeaderIconClassesFor(column: string) {
         return {
             'fa': true,
             'fa-sort-asc': this.sortAscending,
@@ -47,12 +45,12 @@ export class MethodsComponent {
         };
     }
 
-    headerClassesSignature() {
-        return this.getHeaderClassesFor(MethodsComponent.SIGNATURE_COLUMN);
+    headerIconClassesSignature() {
+        return this.getHeaderIconClassesFor(MethodsComponent.SIGNATURE_COLUMN);
     }
 
-    headerClassesAge() {
-        return this.getHeaderClassesFor(MethodsComponent.AGE_COLUMN);
+    headerIconClassesAge() {
+        return this.getHeaderIconClassesFor(MethodsComponent.AGE_COLUMN);
     }
 
     sortBySignature() {
@@ -91,12 +89,12 @@ export class MethodsComponent {
             }, () => console.log('getMethods() complete'));
     }
 
-    showMethodDetail(m: Method) {
-        this.methodDetail.method = m;
+    selectMethod(m: Method) {
+        this.selectedMethod = m;
     }
 
-    rowClasses(m: Method) {
-        let visible = this.methodDetail && this.methodDetail.method && this.methodDetail.method.id === m.id;
+    rowIconClasses(m: Method) {
+        let visible = this.selectedMethod && this.selectedMethod.id === m.id;
         return {
             'fa': true,
             'fa-arrow-right': true,
