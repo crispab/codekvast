@@ -73,6 +73,10 @@ export class MethodsComponent {
             } else if (this.sortColumn === MethodsComponent.AGE_COLUMN) {
                 cmp = m1.lastInvokedAtMillis - m2.lastInvokedAtMillis;
             }
+            if (cmp === 0) {
+                // Make sure the sorting is stable
+                cmp = m1.id - m2.id;
+            }
             return this.sortAscending ? cmp : -cmp;
         });
     }

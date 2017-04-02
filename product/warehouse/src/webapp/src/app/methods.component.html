@@ -35,25 +35,25 @@
         <thead>
         <tr>
             <th class="signature-column" (click)="sortBySignature()">Signature <i [ngClass]="headerIconClassesSignature()" aria-hidden="true"></i></th>
-            <th class="age-column" (click)="sortByAge()">Age <i [ngClass]="headerIconClassesAge()" aria-hidden="true"></i></th>
+            <th class="age-column" (click)="sortByAge()">Last Invoked <i [ngClass]="headerIconClassesAge()" aria-hidden="true"></i></th>
             <th class="icon-column"></th>
         </tr>
         </thead>
 
         <tbody>
-        <tr *ngFor="let method of sortedMethods()" (click)="selectMethod(method)">
+        <tr *ngFor="let method of sortedMethods()" (mouseenter)="selectMethod(method)">
             <td class="signature-column wrap-word">{{method.signature}}</td>
-            <td class="age-column wrap-word">{{method.lastInvokedAtMillis | ckAge:dateFormat }}</td>
+            <td class="age-column wrap-word" title="{{method.lastInvokedAtMillis | ckAge:'short'}}">{{method.lastInvokedAtMillis | ckAge:dateFormat }}</td>
             <td class="icon-column"><i [ngClass]="rowIconClasses(method)" aria-hidden="true"></i></td>
         </tr>
         </tbody>
     </table>
 
-    <div *ngIf="selectedMethod" id="method-details">
+    <div *ngIf="selectedMethod" id="method-collection-overview">
         <table class="table table-bordered table-sm">
             <thead>
             <tr>
-                <th colspan="2">Collection Details
+                <th colspan="2">Collection Overview
                     <button type="button" class="close" aria-label="Close" (click)="selectMethod(null)">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -68,24 +68,20 @@
                 </th>
             </tr>
             <tr>
+                <th>Last Invoked At:</th>
+                <td>{{ selectedMethod.lastInvokedAtMillis | ckAge:'short' }}</td>
+            </tr>
+            <tr>
                 <th>Collected Days:</th>
                 <td>{{ selectedMethod.collectedDays }}</td>
             </tr>
             <tr>
                 <th>Collected Since:</th>
-                <td>{{ selectedMethod.collectedSinceMillis | ckAge }}</td>
+                <td>{{ selectedMethod.collectedSinceMillis | ckAge:'short' }}</td>
             </tr>
             <tr>
                 <th>Collected To:</th>
-                <td>{{ selectedMethod.collectedToMillis | ckAge }}</td>
-            </tr>
-            <tr>
-                <th>Last Invoked At:</th>
-                <td>{{ selectedMethod.lastInvokedAtMillis | ckAge }}</td>
-            </tr>
-            <tr>
-                <th>Last Invoked Age:</th>
-                <td>{{ selectedMethod.lastInvokedAtMillis | ckAge:'age' }}</td>
+                <td>{{ selectedMethod.collectedToMillis | ckAge:'short' }}</td>
             </tr>
             </tbody>
         </table>
