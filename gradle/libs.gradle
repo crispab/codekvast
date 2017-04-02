@@ -7,11 +7,11 @@ ext {
     aspectjWeaver = "org.aspectj:aspectjweaver:$aspectjVersion"
 
     junit = 'junit:junit:4.12'
-    mockito = 'org.mockito:mockito-core:2.7.19'
+    mockito = 'org.mockito:mockito-core:2.7.21'
     slf4jApi = 'org.slf4j:slf4j-api:1.7.25'
 
     h2database = "com.h2database:h2:$h2databaseVersion"
-    logback = 'ch.qos.logback:logback-classic:1.2.2'
+    logback = 'ch.qos.logback:logback-classic:1.2.3'
     lombok = 'org.projectlombok:lombok:1.16.16'
     mariadbDriver = 'org.mariadb.jdbc:mariadb-java-client:1.5.9'
     opencsv = 'com.opencsv:opencsv:3.9'
