@@ -126,7 +126,7 @@ The product itself lives under `product/`.
 
 Sample projects to use when testing Codekvast lives under `sample/`.
 
-GitHub pages (i.e., http://codekvast.crisp.se) lives under `docs/`
+GitHub pages (i.e., http://codekvast.crisp.se) lives under the Git branch `gh-pages`.
 
 Development tools live under `tools/`.
 
@@ -152,13 +152,15 @@ Use the following command to install OpenJDK 8, Node.js, npm and PhantomJS (Ubun
     sudo npm install -g phantomjs-prebuilt
 
 You also must define the environment variable `PHANTOMJS_BIN` to point to the phantomjs executable.
+(This is due to a bug in the karma-phantomjs-launcher, which does not use PATH.)
+
 Put this into your `/etc/profile.d/phantomjs.sh` or your `$HOME/.profile` or similar:
 
     export PHANTOMJS_BIN=$(which phantomjs)
     
 #### TypeScript
 
-The Codekvast Warehouse web UI is developed with TypeScript and Angular 4. Twitter Bootstrap is used as design framework.
+The Codekvast Warehouse web UI is developed with TypeScript and Angular 4. Twitter Bootstrap is used as CSS framework.
 
 npm is used for managing the frontend development environment. Webpack is used as frontend bundler.
     
@@ -201,9 +203,10 @@ Preconditions:
 
 #### IDE
 
-**Intellij Ultimate Edition 2016+** is the recommended IDE with the following plugins:
+**Intellij Ultimate Edition 2017+** is the recommended IDE with the following plugins:
 
 1. **Lombok Support** (required)
+1. Angular 2 TypeScript Live Templates (optional)
 1. JavaScript Support (optional)
 1. Karma (optional)
 1. Git (optional)
