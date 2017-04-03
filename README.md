@@ -182,7 +182,15 @@ Codekvast uses **Gradle** as build tool. It uses the Gradle Wrapper, `gradlew`, 
 There is the convenience script `tools/src/script/gradle` which simplifies invocation of gradlew. Install that script in your PATH
 (e.g., /usr/local/bin) and use `gradle` instead of `path/to/gradlew`
 
-#### Software publishing
+### Continuous Integration
+
+Codekvast is built by Jenkins at http://jenkins.crisp.se on every push, to all branches.
+
+The pipeline is defined by `Jenkinsfile`.
+
+To access http://jenkins.crisp.se you need to be either a Member or an Outside collaborator of https://github.com/orgs/crispab/people.
+
+### Software publishing
 Codekvast binaries are published to Bintray and to Docker Hub.
 
 You execute the publishing to both Bintray and Docker Hub by executing `tools/ship-it.sh` in the root of the project.
