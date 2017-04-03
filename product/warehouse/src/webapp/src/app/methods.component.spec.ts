@@ -6,6 +6,7 @@ import {AppModule} from './app.module';
 import {WarehouseService} from './warehouse.service';
 import {ConfigService} from './config.service';
 import {MethodData} from './model/MethodData';
+import {Method} from './model/Method';
 
 let component: MethodsComponent;
 let fixture: ComponentFixture<MethodsComponent>;
@@ -146,4 +147,23 @@ describe('MethodsComponent', () => {
             'invisible': false
         });
     });
+
+    it('isSelectedMethod() should handle no selected', () => {
+        component.selectMethod(null);
+        expect(component.isSelectedMethod({id: 1} as Method)).toBeFalsy();
+    });
+
+    it('isSelectedMethod() should handle selected method', () => {
+        component.selectMethod({id: 1} as Method);
+        expect(component.isSelectedMethod({id: 1} as Method)).toBeTruthy();
+    });
+
+    it('isSelectedMethod() should handle not selected method', () => {
+        component.selectMethod({id: 1} as Method);
+        expect(component.isSelectedMethod({id: 2} as Method)).toBeFalsy();
+    });
+
+    it('Should prettyPrintAppStatus("EXCLUDED_SINCE_TRIVIAL") as "Excluded since trivial"', () => {
+        expect(component.prettyPrintAppStatus('EXCLUDED_SINCE_TRIVIAL')).toBe('Excluded since trivial');
+    })
 });

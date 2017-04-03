@@ -53,6 +53,10 @@ export class MethodsComponent {
         return this.getHeaderIconClassesFor(MethodsComponent.AGE_COLUMN);
     }
 
+    isSelectedMethod(m: Method) {
+        return this.selectedMethod !== null && this.selectedMethod.id === m.id;
+    }
+
     sortBySignature() {
         this.sortBy(MethodsComponent.SIGNATURE_COLUMN);
     }
@@ -102,23 +106,7 @@ export class MethodsComponent {
         this.selectedMethod = m;
     }
 
-    prettyPrintSignature(m: Method) {
-        console.log('Selected: %o', m);
-
-        let result = '';
-        if (m.modifiers) {
-            result += m.modifiers + ' ';
-        }
-        result += m.signature;
-        return result;
-    }
-
-    rowIconClasses(m: Method) {
-        let visible = this.selectedMethod && this.selectedMethod.id === m.id;
-        return {
-            'fa': true,
-            'fa-arrow-right': true,
-            'invisible': !visible,
-        };
+    prettyPrintAppStatus(s: string) {
+        return s.substr(0, 1).toUpperCase() + s.substr(1).toLowerCase().replace(/_/g, ' ');
     }
 }

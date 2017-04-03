@@ -20,7 +20,7 @@
             </button>
 
             <div *ngIf="data">
-                <small class="ml-2 col-form-label form-text text-muted">Found {{data.numMethods}} methods in {{data.queryTimeMillis}} ms</small>
+                <small class="ml-2 col-form-label form-text text-muted">{{ data.timestamp | date:'shortTime' }}: Found {{data.numMethods}} methods in {{data.queryTimeMillis}} ms</small>
             </div>
 
             <div *ngIf="errorMessage">
@@ -36,15 +36,16 @@
         <tr>
             <th class="signature-column" (click)="sortBySignature()">Signature <i [ngClass]="headerIconClassesSignature()" aria-hidden="true"></i></th>
             <th class="age-column" (click)="sortByAge()">Last Invoked <i [ngClass]="headerIconClassesAge()" aria-hidden="true"></i></th>
-            <th class="icon-column"></th>
         </tr>
         </thead>
 
         <tbody>
-        <tr *ngFor="let method of sortedMethods()" (mouseenter)="selectMethod(method)">
+        <tr *ngFor="let method of sortedMethods()"
+            (mouseenter)="selectMethod(method)"
+            [class.table-active]="isSelectedMethod(method)">
+
             <td class="signature-column wrap-word">{{method.signature}}</td>
             <td class="age-column wrap-word" title="{{method.lastInvokedAtMillis | ckAge:'short'}}">{{method.lastInvokedAtMillis | ckAge:dateFormat }}</td>
-            <td class="icon-column"><i [ngClass]="rowIconClasses(method)" aria-hidden="true"></i></td>
         </tr>
         </tbody>
     </table>
@@ -53,7 +54,7 @@
         <table class="table table-bordered table-sm">
             <thead>
             <tr>
-                <th colspan="2">Collection Overview
+                <th colspan="2">Method {{ selectedMethod.id}} Overview
                     <button type="button" class="close" aria-label="Close" (click)="selectMethod(null)">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -63,26 +64,48 @@
 
             <tbody>
             <tr>
-                <th colspan="2" class="wrap-word">
-                    <code>{{ prettyPrintSignature(selectedMethod)}}</code>
-                </th>
+                <th colspan="2">Appears in environments</th>
             </tr>
+            <ng-container *ngFor="let env of selectedMethod.collectedInEnvironments">
+                <tr>
+                    <td>Name:</td>
+                    <td>{{ env.name }}</td>
+                </tr>
+                <tr>
+                    <td>Collected days:</td>
+                    <td>{{ env.collectedDays }}</td>
+                </tr>
+                <tr>
+                    <td>Collected since:</td>
+                    <td>{{ env.collectedSinceMillis | ckAge:'short' }}</td>
+                </tr>
+                <tr>
+                    <td>Collected to:</td>
+                    <td>{{ env.collectedToMillis | ckAge:'short' }}</td>
+                </tr>
+                <tr>
+                    <td>Last invoked:</td>
+                    <td>{{ env.invokedAtMillis | ckAge:'short' }}</td>
+                </tr>
+                <tr>
+                    <td>Hosts:</td>
+                    <td>{{ env.hostNames.join(', ') }}</td>
+                </tr>
+            </ng-container>
             <tr>
-                <th>Last Invoked At:</th>
-                <td>{{ selectedMethod.lastInvokedAtMillis | ckAge:'short' }}</td>
+                <th colspan="2">Appears in applications</th>
             </tr>
-            <tr>
-                <th>Collected Days:</th>
-                <td>{{ selectedMethod.collectedDays }}</td>
-            </tr>
-            <tr>
-                <th>Collected Since:</th>
-                <td>{{ selectedMethod.collectedSinceMillis | ckAge:'short' }}</td>
-            </tr>
-            <tr>
-                <th>Collected To:</th>
-                <td>{{ selectedMethod.collectedToMillis | ckAge:'short' }}</td>
-            </tr>
+
+            <ng-container *ngFor="let app of selectedMethod.occursInApplications">
+                <tr>
+                    <td>Name:</td>
+                    <td>{{ app.name }} {{ app.version }}</td>
+                </tr>
+                <tr title="{{ prettyPrintAppStatus(app.status) }}">
+                    <td>Last invoked:</td>
+                    <td>{{ app.invokedAtMillis | ckAge:'short' }}</td>
+                </tr>
+            </ng-container>
             </tbody>
         </table>
 
