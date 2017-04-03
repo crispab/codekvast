@@ -17,3 +17,7 @@ github_username:  crispab/codekvast
 
 # Build settings
 markdown: kramdown
+
+google_analytics: 
+show_downloads: true
+theme: jekyll-theme-tactile
