@@ -67,11 +67,11 @@ if [ "${answer}" != 'y' ]; then
     exit 4
 fi
 
+tools/build-it.sh
+
 echo "Creating Git tag ${CODEKVAST_VERSION}"
 git tag -m "Version ${CODEKVAST_VERSION}" ${CODEKVAST_VERSION}
 git push --tags
-
-tools/build-it.sh
 
 # Continue after errors
 set +e
