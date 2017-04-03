@@ -1,5 +1,7 @@
 # Codekvast Release Notes
 
+## 0.18.6
+
 ## 0.18.5
 1. Implemented a simple web interface to Warehouse.
 1. Upgraded to Gradle 3.4.
