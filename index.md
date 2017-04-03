@@ -1,6 +1,8 @@
-# Codekvast - the Truly Dead Code Detector
-
-## Overview
+---
+layout: page
+title: Codekvast - the Truly Dead Code Detector
+---
+# Overview
 
 Codekvast detects **Truly Dead Code** in **Java-applications**.
 
@@ -21,11 +23,15 @@ By using the web interface offered Codekvast Warehouse, you can find out whether
 *Codekvast collects the data. You then combine that with your domain knowledge to make informed decisions about what is truly dead code
 that safely could be deleted.*
 
-### Performance
+# Performance
 
 Codekvast Collector is extremely efficient. It adds approximately *15 ns* to each method invocation. If this is unacceptable,
 you can exclude certain time critical packages from collection.
 
-## License
+# License
 
 Codekvast is released under the MIT license.
+
+# Need more info?
+
+Please see [Codekvast on GitHub](https://github.com/{{ site.github_username }}).
