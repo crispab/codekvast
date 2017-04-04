@@ -1,12 +1,27 @@
-/*
-#container > div.row > div {
-    border: 1px solid darkblue;
+#content {
+    height: inherit;
 }
-*/
-table#search-results {
-    padding-left: 1em;
+
+#search-form {
+    background-color: beige;
+}
+
+#search-results {
+    background-color: darkgrey;
+    float: left;
     width: 75%;
-    table-layout: fixed;
+    height: 100%;
+    overflow: auto;
+    /*table-layout: fixed;*/
+}
+
+
+#method-details {
+    background-color: antiquewhite;
+    float: left;
+    width: 25%;
+    height: 100%;
+    overflow: auto;
 }
 
 .wrap-word{
@@ -26,12 +41,4 @@ table#search-results {
 
 .age-column {
     width: 14%;
-}
-
-#method-collection-overview {
-    height: 25em;
-    position: fixed;
-    left: 75%;
-    margin-left: 1em;
-    top: 15.5em;
 }
