@@ -1,13 +1,8 @@
 #content {
-    height: inherit;
-}
-
-#search-form {
-    background-color: beige;
+    height: 100%;
 }
 
 #search-results {
-    background-color: darkgrey;
     float: left;
     width: 75%;
     height: 100%;
@@ -17,7 +12,6 @@
 
 
 #method-details {
-    background-color: antiquewhite;
     float: left;
     width: 25%;
     height: 100%;
