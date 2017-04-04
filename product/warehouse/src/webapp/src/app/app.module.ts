@@ -2,7 +2,7 @@ import {AgePipe} from './age.pipe';
 import {APP_BASE_HREF} from '@angular/common';
 import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
-import {BrowserModule} from '@angular/platform-browser';
+import {BrowserModule, Title} from '@angular/platform-browser';
 import {FormsModule} from '@angular/forms';
 import {HomeComponent} from './home.component';
 import {HttpModule} from '@angular/http';
@@ -19,6 +19,7 @@ import {StatusComponent} from './status.component';
         AgePipe, AppComponent, HomeComponent, MethodsComponent, StatusComponent,
     ],
     providers: [
+        Title,
         {
             provide: APP_BASE_HREF,
             useValue: '/'

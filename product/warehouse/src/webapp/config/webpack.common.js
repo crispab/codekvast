@@ -55,7 +55,7 @@ module.exports = {
         new HtmlWebpackPlugin({
             inject: false,
             template: require('html-webpack-template'),
-            title: 'Codekvast Warehouse ' + (process.env.CODEKVAST_VERSION || 'dev'),
+            title: 'Codekvast',
             links: [
                 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css',
                 'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'
