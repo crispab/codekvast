@@ -1,15 +1,10 @@
-#content {
-    height: 100%;
-}
-
 #search-results {
     float: left;
     width: 75%;
     height: 100%;
     overflow: auto;
-    /*table-layout: fixed;*/
+    table-layout: fixed;
 }
-
 
 #method-details {
     float: left;

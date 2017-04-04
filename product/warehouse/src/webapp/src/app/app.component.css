@@ -1,10 +1,10 @@
 html, body {
     height: 100%;
-    overflow: hidden;
+    overflow: hidden !important;
 }
 
-#container {
-    height: 100%;
+#ck-app {
+    height: 100% !important;
 }
 
 #top-nav {

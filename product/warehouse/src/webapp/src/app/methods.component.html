@@ -1,136 +1,39 @@
-<div id="content">
-    <div id="search-form" class="container-fluid">
-        <form (ngSubmit)="search()" #searchForm="ngForm">
-            <div class="form-group row">
-                <label for="signature" class="col-2 col-form-label">Signature</label>
-                <div class="col-6">
-                    <input class="form-control"
-                           id="signature"
-                           name="signature"
-                           [(ngModel)]="signature"
-                           type="text"
-                           placeholder="Search method signature">
-                </div>
+<div id="search-form" class="container-fluid">
+    <form (ngSubmit)="search()" #searchForm="ngForm">
+        <div class="form-group row">
+            <label for="signature" class="col-2 col-form-label">Signature</label>
+            <div class="col-6">
+                <input class="form-control"
+                       id="signature"
+                       name="signature"
+                       [(ngModel)]="signature"
+                       type="text"
+                       placeholder="Search method signature">
             </div>
-            <div class="form-group row">
-                <label for="maxResults" class="col-2 col-form-label">Max&nbsp;Results</label>
-                <div class="col-2">
-                    <input class="form-control" id="maxResults" name="maxResults" [(ngModel)]="maxResults" type="number" min="1" max="10000">
-                </div>
-                <button type="submit" class="btn btn-primary btn-sm" [disabled]="!searchForm.form.valid">Search
-                </button>
-
-                <div *ngIf="data">
-                    <small class="ml-2 col-form-label form-text text-muted">{{ data.timestamp | date:'shortTime' }}: Found {{data.numMethods}}
-                                                                            methods in {{data.queryTimeMillis}} ms
-                    </small>
-                </div>
-
-                <div *ngIf="errorMessage">
-                    <small class="ml-2 col-form-label form-text text-muted" title="{{ errorMessage }}">{{ communicationFailure() }}</small>
-                </div>
-            </div>
-        </form>
-    </div>
-
-    <div id="search-results">
-        <!--
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce nec lorem mauris. Nulla fermentum tincidunt nulla et dignissim. In
-    porttitor sem id velit lobortis aliquam. Duis et purus ac orci porttitor luctus at quis leo. Mauris vulputate pellentesque est, sit amet
-    egestas tellus facilisis sit amet. Cras sodales bibendum tellus, a gravida tortor hendrerit sed. Pellentesque blandit posuere nisl, sit
-    amet cursus nisl dignissim non.
-
-    Vivamus at orci sit amet elit lacinia posuere sit amet malesuada elit. Duis quis luctus magna. Phasellus pharetra urna a dolor vulputate
-    ultrices. Nam ornare orci justo, et fringilla lacus. Etiam tristique enim sed enim tempus tincidunt. Fusce rutrum dui at erat iaculis
-    suscipit. Aenean id urna sit amet arcu pulvinar accumsan. Aenean malesuada, nisi sed ultricies tempus, elit nisl interdum leo, sit amet
-    bibendum eros arcu pretium nisi. Nam magna dolor, lacinia adipiscing iaculis ac, viverra sit amet ligula. Fusce vitae est sit amet ipsum
-    iaculis molestie a ac nisi. Curabitur porta nunc quis magna interdum nec hendrerit ligula suscipit. Curabitur non accumsan sapien. Donec
-    non ligula a lorem lobortis scelerisque ac a sem. Sed porta blandit odio a ullamcorper.
-
-    Mauris in suscipit quam. Duis sit amet ipsum purus. Donec sed nunc lacus. Cras mattis felis quis lacus ultrices pharetra tristique nibh
-    venenatis. In id eros sed libero iaculis commodo quis vitae neque. Nulla gravida neque in tortor congue id mattis massa auctor. Cras
-    auctor tincidunt ipsum, in suscipit risus iaculis sed. Nulla at eros nec urna auctor tincidunt eu ac diam. Aenean nulla metus, accumsan
-    eu dignissim vitae, congue sed nisl.
-
-    Pellentesque ut nunc eget metus malesuada vulputate ac aliquam nibh. Pellentesque felis erat, tristique nec semper vel, dignissim ut
-    nisl. Donec ac dui purus. Nunc in ligula lacus. In vehicula scelerisque convallis. Ut in ornare ante. Vestibulum ante ipsum primis in
-    faucibus orci luctus et ultrices posuere cubilia Curae; Etiam et libero a nibh venenatis tristique vitae vitae ligula. Phasellus vitae
-    tempor ante.
-
-    Proin egestas commodo enim. Curabitur eu justo non felis tempus fermentum ut vitae augue. Ut cursus ultrices metus eu vehicula. Praesent
-    sem nulla, eleifend eget adipiscing a, tempor sit amet lectus. Suspendisse congue fringilla urna vitae dapibus. Phasellus iaculis, velit
-    at ornare feugiat, nunc dolor scelerisque dolor, sed placerat enim magna sit amet magna. Quisque gravida arcu eu neque porttitor rutrum.
-    Donec tempus urna interdum libero faucibus ac lacinia sapien bibendum. Quisque sed odio et metus molestie tincidunt. Sed congue mauris
-    non ante pharetra eu facilisis velit rhoncus. Aenean dictum purus sit amet tortor ultricies auctor. Aliquam nunc quam, porttitor porta
-    fringilla et, bibendum sit amet urna. Vestibulum id tellus sed ipsum dignissim pharetra. Quisque non ipsum nec mauris ullamcorper
-    interdum non et velit.
-
-    Fusce lorem leo, molestie nec ultricies a, vulputate a ante. Aenean vel mauris libero, sit amet tempor sapien. Suspendisse vel purus sit
-    amet nunc placerat suscipit tincidunt et arcu. Donec sit amet magna diam. Nam a lacus libero. Proin vitae lectus at lorem rhoncus
-    aliquet ut ut ligula. Nam ante dui, placerat quis fermentum quis, eleifend ac justo. Morbi gravida urna eu risus scelerisque id tempus
-    leo adipiscing. Morbi vel libero eu felis congue venenatis sed eget tellus. Ut metus libero, auctor sed congue eu, fringilla vel purus.
-    Donec urna lorem, congue ac dapibus in, sollicitudin id nunc. Sed ullamcorper, nibh imperdiet ullamcorper ultrices, tortor leo elementum
-    elit, sit amet auctor lectus justo et sem.
-
-    Pellentesque sit amet erat sed orci ultricies rutrum sed eget est. Aenean quis elit arcu, ac rhoncus magna. Suspendisse eu magna vitae
-    ligula porta condimentum sit amet et lacus. Donec at varius erat. Curabitur semper dapibus lorem ac faucibus. Praesent ornare vehicula
-    nisi in fermentum. Curabitur viverra lectus in odio dictum sed imperdiet magna vulputate. In hac habitasse platea dictumst. Suspendisse
-    potenti. Proin facilisis, nunc et laoreet ornare, justo quam ultrices nibh, ut suscipit lectus nibh non dolor. Nam elementum, neque
-    scelerisque luctus hendrerit, nisi nisl sagittis est, id facilisis quam lacus at dui. Morbi sagittis suscipit iaculis. Duis a magna ut
-    mauris vehicula tempus. Nulla at quam arcu.
-    Pellentesque ut nunc eget metus malesuada vulputate ac aliquam nibh. Pellentesque felis erat, tristique nec semper vel, dignissim ut
-    nisl. Donec ac dui purus. Nunc in ligula lacus. In vehicula scelerisque convallis. Ut in ornare ante. Vestibulum ante ipsum primis in
-    faucibus orci luctus et ultrices posuere cubilia Curae; Etiam et libero a nibh venenatis tristique vitae vitae ligula. Phasellus vitae
-    tempor ante.
-
-    Proin egestas commodo enim. Curabitur eu justo non felis tempus fermentum ut vitae augue. Ut cursus ultrices metus eu vehicula. Praesent
-    sem nulla, eleifend eget adipiscing a, tempor sit amet lectus. Suspendisse congue fringilla urna vitae dapibus. Phasellus iaculis, velit
-    at ornare feugiat, nunc dolor scelerisque dolor, sed placerat enim magna sit amet magna. Quisque gravida arcu eu neque porttitor rutrum.
-    Donec tempus urna interdum libero faucibus ac lacinia sapien bibendum. Quisque sed odio et metus molestie tincidunt. Sed congue mauris
-    non ante pharetra eu facilisis velit rhoncus. Aenean dictum purus sit amet tortor ultricies auctor. Aliquam nunc quam, porttitor porta
-    fringilla et, bibendum sit amet urna. Vestibulum id tellus sed ipsum dignissim pharetra. Quisque non ipsum nec mauris ullamcorper
-    interdum non et velit.
-
-    Fusce lorem leo, molestie nec ultricies a, vulputate a ante. Aenean vel mauris libero, sit amet tempor sapien. Suspendisse vel purus sit
-    amet nunc placerat suscipit tincidunt et arcu. Donec sit amet magna diam. Nam a lacus libero. Proin vitae lectus at lorem rhoncus
-    aliquet ut ut ligula. Nam ante dui, placerat quis fermentum quis, eleifend ac justo. Morbi gravida urna eu risus scelerisque id tempus
-    leo adipiscing. Morbi vel libero eu felis congue venenatis sed eget tellus. Ut metus libero, auctor sed congue eu, fringilla vel purus.
-    Donec urna lorem, congue ac dapibus in, sollicitudin id nunc. Sed ullamcorper, nibh imperdiet ullamcorper ultrices, tortor leo elementum
-    elit, sit amet auctor lectus justo et sem.
-
-    Pellentesque sit amet erat sed orci ultricies rutrum sed eget est. Aenean quis elit arcu, ac rhoncus magna. Suspendisse eu magna vitae
-    ligula porta condimentum sit amet et lacus. Donec at varius erat. Curabitur semper dapibus lorem ac faucibus. Praesent ornare vehicula
-    nisi in fermentum. Curabitur viverra lectus in odio dictum sed imperdiet magna vulputate. In hac habitasse platea dictumst. Suspendisse
-    potenti. Proin facilisis, nunc et laoreet ornare, justo quam ultrices nibh, ut suscipit lectus nibh non dolor. Nam elementum, neque
-    scelerisque luctus hendrerit, nisi nisl sagittis est, id facilisis quam lacus at dui. Morbi sagittis suscipit iaculis. Duis a magna ut
-    mauris vehicula tempus. Nulla at quam arcu.
-    -->
-
-        <div *ngIf="sortedMethods()">
-            <table class="table table-responsive table-striped table-bordered table-sm">
-                <thead>
-                <tr>
-                    <th class="signature-column" (click)="sortBySignature()">Signature <i [ngClass]="headerIconClassesSignature()"
-                                                                                          aria-hidden="true"></i></th>
-                    <th class="age-column" (click)="sortByAge()">Last Invoked <i [ngClass]="headerIconClassesAge()" aria-hidden="true"></i></th>
-                </tr>
-                </thead>
-
-                <tbody>
-                <tr *ngFor="let method of sortedMethods()" (mouseenter)="selectMethod(method)" [class.table-active]="isSelectedMethod(method)">
-
-                    <td class="signature-column wrap-word">{{method.signature}}</td>
-                    <td class="age-column wrap-word" title="{{method.lastInvokedAtMillis | ckAge:'short'}}">{{method.lastInvokedAtMillis |
-                                                                                                            ckAge:dateFormat }}
-                    </td>
-                </tr>
-                </tbody>
-            </table>
         </div>
-    </div>
+        <div class="form-group row">
+            <label for="maxResults" class="col-2 col-form-label">Max&nbsp;Results</label>
+            <div class="col-2">
+                <input class="form-control" id="maxResults" name="maxResults" [(ngModel)]="maxResults" type="number" min="1" max="10000">
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm" [disabled]="!searchForm.form.valid">Search
+            </button>
 
-    <div id="method-details">
-        <!--
+            <div *ngIf="data">
+                <small class="ml-2 col-form-label form-text text-muted">{{ data.timestamp | date:'shortTime' }}: Found {{data.numMethods}}
+                                                                        methods in {{data.queryTimeMillis}} ms
+                </small>
+            </div>
+
+            <div *ngIf="errorMessage">
+                <small class="ml-2 col-form-label form-text text-muted" title="{{ errorMessage }}">{{ communicationFailure() }}</small>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div id="search-results" class="container-fluid">
+    <!--
     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce nec lorem mauris. Nulla fermentum tincidunt nulla et dignissim. In
     porttitor sem id velit lobortis aliquam. Duis et purus ac orci porttitor luctus at quis leo. Mauris vulputate pellentesque est, sit amet
     egestas tellus facilisis sit amet. Cras sodales bibendum tellus, a gravida tortor hendrerit sed. Pellentesque blandit posuere nisl, sit
@@ -174,64 +77,158 @@
     potenti. Proin facilisis, nunc et laoreet ornare, justo quam ultrices nibh, ut suscipit lectus nibh non dolor. Nam elementum, neque
     scelerisque luctus hendrerit, nisi nisl sagittis est, id facilisis quam lacus at dui. Morbi sagittis suscipit iaculis. Duis a magna ut
     mauris vehicula tempus. Nulla at quam arcu.
+    Pellentesque ut nunc eget metus malesuada vulputate ac aliquam nibh. Pellentesque felis erat, tristique nec semper vel, dignissim ut
+    nisl. Donec ac dui purus. Nunc in ligula lacus. In vehicula scelerisque convallis. Ut in ornare ante. Vestibulum ante ipsum primis in
+    faucibus orci luctus et ultrices posuere cubilia Curae; Etiam et libero a nibh venenatis tristique vitae vitae ligula. Phasellus vitae
+    tempor ante.
+
+    Proin egestas commodo enim. Curabitur eu justo non felis tempus fermentum ut vitae augue. Ut cursus ultrices metus eu vehicula. Praesent
+    sem nulla, eleifend eget adipiscing a, tempor sit amet lectus. Suspendisse congue fringilla urna vitae dapibus. Phasellus iaculis, velit
+    at ornare feugiat, nunc dolor scelerisque dolor, sed placerat enim magna sit amet magna. Quisque gravida arcu eu neque porttitor rutrum.
+    Donec tempus urna interdum libero faucibus ac lacinia sapien bibendum. Quisque sed odio et metus molestie tincidunt. Sed congue mauris
+    non ante pharetra eu facilisis velit rhoncus. Aenean dictum purus sit amet tortor ultricies auctor. Aliquam nunc quam, porttitor porta
+    fringilla et, bibendum sit amet urna. Vestibulum id tellus sed ipsum dignissim pharetra. Quisque non ipsum nec mauris ullamcorper
+    interdum non et velit.
+
+    Fusce lorem leo, molestie nec ultricies a, vulputate a ante. Aenean vel mauris libero, sit amet tempor sapien. Suspendisse vel purus sit
+    amet nunc placerat suscipit tincidunt et arcu. Donec sit amet magna diam. Nam a lacus libero. Proin vitae lectus at lorem rhoncus
+    aliquet ut ut ligula. Nam ante dui, placerat quis fermentum quis, eleifend ac justo. Morbi gravida urna eu risus scelerisque id tempus
+    leo adipiscing. Morbi vel libero eu felis congue venenatis sed eget tellus. Ut metus libero, auctor sed congue eu, fringilla vel purus.
+    Donec urna lorem, congue ac dapibus in, sollicitudin id nunc. Sed ullamcorper, nibh imperdiet ullamcorper ultrices, tortor leo elementum
+    elit, sit amet auctor lectus justo et sem.
+
+    Pellentesque sit amet erat sed orci ultricies rutrum sed eget est. Aenean quis elit arcu, ac rhoncus magna. Suspendisse eu magna vitae
+    ligula porta condimentum sit amet et lacus. Donec at varius erat. Curabitur semper dapibus lorem ac faucibus. Praesent ornare vehicula
+    nisi in fermentum. Curabitur viverra lectus in odio dictum sed imperdiet magna vulputate. In hac habitasse platea dictumst. Suspendisse
+    potenti. Proin facilisis, nunc et laoreet ornare, justo quam ultrices nibh, ut suscipit lectus nibh non dolor. Nam elementum, neque
+    scelerisque luctus hendrerit, nisi nisl sagittis est, id facilisis quam lacus at dui. Morbi sagittis suscipit iaculis. Duis a magna ut
+    mauris vehicula tempus. Nulla at quam arcu.
     -->
 
-        <table *ngIf="selectedMethod" class="table table-bordered table-sm">
+    <div *ngIf="sortedMethods()">
+        <table class="table table-responsive table-striped table-bordered table-sm">
             <thead>
             <tr>
-                <th colspan="2">Method {{ selectedMethod.id}} Overview
-                    <button type="button" class="close" aria-label="Close" (click)="selectMethod(null)">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </th>
+                <th class="signature-column" (click)="sortBySignature()">Signature <i [ngClass]="headerIconClassesSignature()"
+                                                                                      aria-hidden="true"></i></th>
+                <th class="age-column" (click)="sortByAge()">Last Invoked <i [ngClass]="headerIconClassesAge()" aria-hidden="true"></i></th>
             </tr>
             </thead>
 
             <tbody>
-            <tr>
-                <th colspan="2">Appears in environments</th>
+            <tr *ngFor="let method of sortedMethods()" (mouseenter)="selectMethod(method)" [class.table-active]="isSelectedMethod(method)">
+                <td class="signature-column wrap-word">{{method.signature}}</td>
+                <td class="age-column wrap-word" title="{{method.lastInvokedAtMillis | ckAge:'short'}}">
+                    {{method.lastInvokedAtMillis | ckAge:dateFormat }}
+                </td>
             </tr>
-            <ng-container *ngFor="let env of selectedMethod.collectedInEnvironments">
-                <tr>
-                    <td>Name:</td>
-                    <td>{{ env.name }}</td>
-                </tr>
-                <tr>
-                    <td>Collected days:</td>
-                    <td>{{ env.collectedDays }}</td>
-                </tr>
-                <tr>
-                    <td>Collected since:</td>
-                    <td>{{ env.collectedSinceMillis | ckAge:'short' }}</td>
-                </tr>
-                <tr>
-                    <td>Collected to:</td>
-                    <td>{{ env.collectedToMillis | ckAge:'short' }}</td>
-                </tr>
-                <tr>
-                    <td>Last invoked:</td>
-                    <td>{{ env.invokedAtMillis | ckAge:'short' }}</td>
-                </tr>
-                <tr>
-                    <td>Hosts:</td>
-                    <td>{{ env.hostNames.join(', ') }}</td>
-                </tr>
-            </ng-container>
-            <tr>
-                <th colspan="2">Appears in applications</th>
-            </tr>
-
-            <ng-container *ngFor="let app of selectedMethod.occursInApplications">
-                <tr>
-                    <td>Name:</td>
-                    <td>{{ app.name }} {{ app.version }}</td>
-                </tr>
-                <tr title="{{ prettyPrintAppStatus(app.status) }}">
-                    <td>Last invoked:</td>
-                    <td>{{ app.invokedAtMillis | ckAge:'short' }}</td>
-                </tr>
-            </ng-container>
             </tbody>
         </table>
     </div>
+</div>
+
+<div id="method-details" class="container-fluid">
+    <!--
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce nec lorem mauris. Nulla fermentum tincidunt nulla et dignissim. In
+    porttitor sem id velit lobortis aliquam. Duis et purus ac orci porttitor luctus at quis leo. Mauris vulputate pellentesque est, sit amet
+    egestas tellus facilisis sit amet. Cras sodales bibendum tellus, a gravida tortor hendrerit sed. Pellentesque blandit posuere nisl, sit
+    amet cursus nisl dignissim non.
+
+    Vivamus at orci sit amet elit lacinia posuere sit amet malesuada elit. Duis quis luctus magna. Phasellus pharetra urna a dolor vulputate
+    ultrices. Nam ornare orci justo, et fringilla lacus. Etiam tristique enim sed enim tempus tincidunt. Fusce rutrum dui at erat iaculis
+    suscipit. Aenean id urna sit amet arcu pulvinar accumsan. Aenean malesuada, nisi sed ultricies tempus, elit nisl interdum leo, sit amet
+    bibendum eros arcu pretium nisi. Nam magna dolor, lacinia adipiscing iaculis ac, viverra sit amet ligula. Fusce vitae est sit amet ipsum
+    iaculis molestie a ac nisi. Curabitur porta nunc quis magna interdum nec hendrerit ligula suscipit. Curabitur non accumsan sapien. Donec
+    non ligula a lorem lobortis scelerisque ac a sem. Sed porta blandit odio a ullamcorper.
+
+    Mauris in suscipit quam. Duis sit amet ipsum purus. Donec sed nunc lacus. Cras mattis felis quis lacus ultrices pharetra tristique nibh
+    venenatis. In id eros sed libero iaculis commodo quis vitae neque. Nulla gravida neque in tortor congue id mattis massa auctor. Cras
+    auctor tincidunt ipsum, in suscipit risus iaculis sed. Nulla at eros nec urna auctor tincidunt eu ac diam. Aenean nulla metus, accumsan
+    eu dignissim vitae, congue sed nisl.
+
+    Pellentesque ut nunc eget metus malesuada vulputate ac aliquam nibh. Pellentesque felis erat, tristique nec semper vel, dignissim ut
+    nisl. Donec ac dui purus. Nunc in ligula lacus. In vehicula scelerisque convallis. Ut in ornare ante. Vestibulum ante ipsum primis in
+    faucibus orci luctus et ultrices posuere cubilia Curae; Etiam et libero a nibh venenatis tristique vitae vitae ligula. Phasellus vitae
+    tempor ante.
+
+    Proin egestas commodo enim. Curabitur eu justo non felis tempus fermentum ut vitae augue. Ut cursus ultrices metus eu vehicula. Praesent
+    sem nulla, eleifend eget adipiscing a, tempor sit amet lectus. Suspendisse congue fringilla urna vitae dapibus. Phasellus iaculis, velit
+    at ornare feugiat, nunc dolor scelerisque dolor, sed placerat enim magna sit amet magna. Quisque gravida arcu eu neque porttitor rutrum.
+    Donec tempus urna interdum libero faucibus ac lacinia sapien bibendum. Quisque sed odio et metus molestie tincidunt. Sed congue mauris
+    non ante pharetra eu facilisis velit rhoncus. Aenean dictum purus sit amet tortor ultricies auctor. Aliquam nunc quam, porttitor porta
+    fringilla et, bibendum sit amet urna. Vestibulum id tellus sed ipsum dignissim pharetra. Quisque non ipsum nec mauris ullamcorper
+    interdum non et velit.
+
+    Fusce lorem leo, molestie nec ultricies a, vulputate a ante. Aenean vel mauris libero, sit amet tempor sapien. Suspendisse vel purus sit
+    amet nunc placerat suscipit tincidunt et arcu. Donec sit amet magna diam. Nam a lacus libero. Proin vitae lectus at lorem rhoncus
+    aliquet ut ut ligula. Nam ante dui, placerat quis fermentum quis, eleifend ac justo. Morbi gravida urna eu risus scelerisque id tempus
+    leo adipiscing. Morbi vel libero eu felis congue venenatis sed eget tellus. Ut metus libero, auctor sed congue eu, fringilla vel purus.
+    Donec urna lorem, congue ac dapibus in, sollicitudin id nunc. Sed ullamcorper, nibh imperdiet ullamcorper ultrices, tortor leo elementum
+    elit, sit amet auctor lectus justo et sem.
+
+    Pellentesque sit amet erat sed orci ultricies rutrum sed eget est. Aenean quis elit arcu, ac rhoncus magna. Suspendisse eu magna vitae
+    ligula porta condimentum sit amet et lacus. Donec at varius erat. Curabitur semper dapibus lorem ac faucibus. Praesent ornare vehicula
+    nisi in fermentum. Curabitur viverra lectus in odio dictum sed imperdiet magna vulputate. In hac habitasse platea dictumst. Suspendisse
+    potenti. Proin facilisis, nunc et laoreet ornare, justo quam ultrices nibh, ut suscipit lectus nibh non dolor. Nam elementum, neque
+    scelerisque luctus hendrerit, nisi nisl sagittis est, id facilisis quam lacus at dui. Morbi sagittis suscipit iaculis. Duis a magna ut
+    mauris vehicula tempus. Nulla at quam arcu.
+    -->
+
+    <table *ngIf="selectedMethod" class="table table-bordered table-sm">
+        <thead>
+        <tr>
+            <th colspan="2">Method {{ selectedMethod.id}} Overview
+                <button type="button" class="close" aria-label="Close" (click)="selectMethod(null)">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr>
+            <th colspan="2">Appears in environments</th>
+        </tr>
+        <ng-container *ngFor="let env of selectedMethod.collectedInEnvironments">
+            <tr>
+                <td>Name:</td>
+                <td>{{ env.name }}</td>
+            </tr>
+            <tr>
+                <td>Collected days:</td>
+                <td>{{ env.collectedDays }}</td>
+            </tr>
+            <tr>
+                <td>Collected since:</td>
+                <td>{{ env.collectedSinceMillis | ckAge:'short' }}</td>
+            </tr>
+            <tr>
+                <td>Collected to:</td>
+                <td>{{ env.collectedToMillis | ckAge:'short' }}</td>
+            </tr>
+            <tr>
+                <td>Last invoked:</td>
+                <td>{{ env.invokedAtMillis | ckAge:'short' }}</td>
+            </tr>
+            <tr>
+                <td>Hosts:</td>
+                <td>{{ env.hostNames.join(', ') }}</td>
+            </tr>
+        </ng-container>
+        <tr>
+            <th colspan="2">Appears in applications</th>
+        </tr>
+
+        <ng-container *ngFor="let app of selectedMethod.occursInApplications">
+            <tr>
+                <td>Name:</td>
+                <td>{{ app.name }} {{ app.version }}</td>
+            </tr>
+            <tr title="{{ prettyPrintAppStatus(app.status) }}">
+                <td>Last invoked:</td>
+                <td>{{ app.invokedAtMillis | ckAge:'short' }}</td>
+            </tr>
+        </ng-container>
+        </tbody>
+    </table>
 </div>
