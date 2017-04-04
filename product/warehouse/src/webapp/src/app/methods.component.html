@@ -24,7 +24,7 @@
             </div>
 
             <div *ngIf="errorMessage">
-                <small class="ml-2 col-form-label form-text text-muted" title="{{ errorMessage }}">Communication failure</small>
+                <small class="ml-2 col-form-label form-text text-muted" title="{{ errorMessage }}">{{ communicationFailure() }}</small>
             </div>
         </div>
     </form>

@@ -24,7 +24,7 @@ export class MethodsComponent {
     sortAscending = true;
     selectedMethod: Method;
 
-    constructor(private warehouse: WarehouseService) {
+    constructor(private warehouse: WarehouseService, private datePipe: DatePipe) {
     }
 
     private sortBy(column: string) {
@@ -108,5 +108,10 @@ export class MethodsComponent {
 
     prettyPrintAppStatus(s: string) {
         return s.substr(0, 1).toUpperCase() + s.substr(1).toLowerCase().replace(/_/g, ' ');
+    }
+
+    communicationFailure() {
+        let now = this.datePipe.transform(new Date(), 'shortTime')
+        return now + ': Communication failure'
     }
 }
