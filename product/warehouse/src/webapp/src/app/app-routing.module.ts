@@ -1,22 +1,30 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
+import {HomeComponent} from './home.component';
 import {StatusComponent} from './status.component';
 import {MethodsComponent} from './methods.component';
 
 const routes: Routes = [
     {
         path: '',
-        redirectTo: 'methods',
+        redirectTo: 'home',
         pathMatch: 'full'
-    }, {
+    },
+    {
+        path: 'home',
+        component: HomeComponent
+    },
+    {
         path: 'methods',
         component: MethodsComponent
-    }, {
+    },
+    {
         path: 'status',
         component: StatusComponent
-    }, {
+    },
+    {
         path: '**',
-        redirectTo: 'methods',
+        redirectTo: 'home',
         pathMatch: 'full'
     }
 ];
