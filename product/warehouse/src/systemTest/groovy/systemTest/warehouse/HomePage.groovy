@@ -3,10 +3,10 @@ package systemTest.warehouse
 import geb.Page
 
 class HomePage extends Page {
-    static url = "/"
+    static url = '/'
 
     static content = {
-        codekvastVersion { $("#codekvastVersion").text() }
-        apiDocsHref { $("#api-docs").@href }
+        codekvastVersion { $('#codekvastVersion').text() }
+        apiDocsHref { $('#api-docs').@href }
     }
 }

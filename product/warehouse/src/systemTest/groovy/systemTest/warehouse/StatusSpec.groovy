@@ -3,12 +3,12 @@ package systemTest.warehouse
 import geb.spock.GebSpec
 
 class StatusSpec extends GebSpec {
-    def "Status page should render correctly"() {
+    def 'Status page should render correctly'() {
         when:
         to StatusPage
-        report "status"
+        report 'status'
 
         then:
-        header == "Status"
+        header == 'Status'
     }
 }

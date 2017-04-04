@@ -3,9 +3,9 @@ package systemTest.warehouse
 import geb.Page
 
 class StatusPage extends Page {
-    static url = "/status"
+    static url = '/status'
 
     static content = {
-        header { $("ck-status h2").text() }
+        header { $('ck-status #header').text() }
     }
 }

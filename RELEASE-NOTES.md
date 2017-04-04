@@ -2,6 +2,7 @@
 
 ## 0.18.6
 1. Restructured and cleaned up README.md
+1. Added /home to Warehouse.
 
 ## 0.18.5
 1. Implemented a simple web interface to Warehouse.
