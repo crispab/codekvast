@@ -25,7 +25,7 @@ if [ -z "$PHANTOMJS_BIN" ]; then
 fi
 
 echo "Building..."
-${GRADLEW} build $@
+${GRADLEW} --no-daemon --configure-on-demand=false --max-workers=1 build $@
 
 echo "Generating coverage report..."
 ${GRADLEW} coverageReport
