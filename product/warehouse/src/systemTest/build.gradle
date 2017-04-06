@@ -36,6 +36,12 @@ task startSystemTestEnvironment {
     description 'docker-compose up'
     group 'System test'
     dependsOn systemTestClasses, buildDockerImage
+
+    inputs.dir file("build/docker")
+    inputs.dir file("src/systemTest")
+    outputs.dir file("build/reports/systemTest")
+    outputs.dir file("build/test-results/systemTest")
+
     doLast {
         def forceRecreate = System.getenv('LEAVE_SYSTEM_TEST_ENVIRONMENT_RUNNING') == null ? "--force-recreate" : ""
         executeDockerCompose("up -d $forceRecreate")
@@ -86,6 +92,10 @@ systemTest {
     group 'System test'
     dependsOn frontendInstall, startSystemTestEnvironment
     shouldRunAfter integrationTest
+
+    inputs.files startSystemTestEnvironment.inputs.files
+    outputs.files startSystemTestEnvironment.outputs.files
+
 
     def failures = 0
 
