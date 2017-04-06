@@ -46,7 +46,7 @@ node {
                 }
 
                 stage('System test') {
-                    sh './gradlew systemTest -x :product:warehouse:frontendTest'
+                    sh './gradlew systemTest'
                     junit '**/build/test-results/systemTest/*.xml'
                 }
 
@@ -112,6 +112,7 @@ node {
 }
 
 def prettyDuration(java.time.Duration d) {
+    // Transform e.g., "PT3M42S" to "3m 42s"
     d.toString().replaceFirst("^PT", "").replaceAll("([A-Z])", "\$1 ").toLowerCase()
 }
 

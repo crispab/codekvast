@@ -88,11 +88,12 @@ task frontendBuild(type: Exec) {
     inputs.file file('src/webapp/package.json')
     inputs.file file('src/webapp/tsconfig.json')
     inputs.file file('src/webapp/webpack.config.json')
-    inputs.files fileTree('src/webapp/config')
-    inputs.files fileTree('src/webapp/src')
+    inputs.dir file('src/webapp/assets')
+    inputs.dir file('src/webapp/config')
+    inputs.dir file('src/webapp/src')
     inputs.property "version", codekvastDisplayVersion
 
-    outputs.files fileTree('src/webapp/dist')
+    outputs.dir file('src/webapp/dist')
 
     workingDir file('src/webapp')
     executable 'npm'
