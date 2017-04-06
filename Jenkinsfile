@@ -51,7 +51,7 @@ node {
                 }
 
                 stage('Documentation & reports') {
-                    sh './gradlew :product:docs:build :product:aggregateJavadoc'
+                    sh './gradlew -Dorg.gradle.configureondemand=false :product:docs:build :product:aggregateJavadoc'
 
                     publishHTML([allowMissing: true,
                         alwaysLinkToLastBuild: true,
