@@ -1,26 +1,16 @@
-html, body {
+html,
+body {
     height: 100%;
-    overflow: hidden !important;
 }
 
-#ck-app {
-    height: 100% !important;
+div#app {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
-#top-nav {
-    margin-left: 0;
+header {
     margin-bottom: 2em;
-}
-
-#main-section {
-    height: 100%;
-}
-
-footer {
-    width: 100%;
-    position: fixed;
-    left: 0;
-    bottom: 0;
 }
 
 footer li {

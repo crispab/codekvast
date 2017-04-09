@@ -1,3 +1,8 @@
+ck-home {
+    height: 100%;
+    overflow: auto;
+}
+
 .table-header {
     font-weight: bold;
 }

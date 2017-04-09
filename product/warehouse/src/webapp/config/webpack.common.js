@@ -62,7 +62,7 @@ module.exports = {
             ],
             mobile: true,
             minify: false,
-            appMountId: 'ck-app',
+            appMountId: 'app',
             window: {
                 CODEKVAST_API: process.env.CODEKVAST_API,
                 CODEKVAST_VERSION: process.env.CODEKVAST_VERSION || 'dev'

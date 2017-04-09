@@ -1,0 +1,145 @@
+<html lang="en"><!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta content="ie=edge" http-equiv="x-ua-compatible">
+    <title>Codekvast Home</title>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        div#app {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        footer li {
+            border-left: 1px solid darkblue;
+        }
+
+        ck-home {
+            height: 100%;
+            overflow: auto;
+        }
+
+        .table-header[_ngcontent-c1] {
+            font-weight: bold;
+        }
+
+        .use-case[_ngcontent-c1] {
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app" ng-version="4.0.1">
+    <header class="container" id="top-nav">
+        <div class="row align-items-end pt-1 pl-3">
+            <div class="col-1">
+                <a routerlink="" ng-reflect-router-link="" href="/"> <img alt="logotype" class="img" src="assets/logo-feathers-60x104.png"></a>
+            </div>
+            <div class="col-3">
+                <h1>Codekvast</h1>
+                <p class="small text-muted">The Truly Dead Code Detector</p>
+            </div>
+
+            <div class="col-8">
+                <nav class="nav nav-tabs">
+                    <a class="nav-link active"
+                       routerlink="/home"
+                       routerlinkactive="active"
+                       ng-reflect-router-link="/home"
+                       ng-reflect-router-link-active="active"
+                       href="/home">Home</a> <a class="nav-link"
+                                                routerlink="/methods"
+                                                routerlinkactive="active"
+                                                ng-reflect-router-link="/methods"
+                                                ng-reflect-router-link-active="active"
+                                                href="/methods">Methods</a> <a class="nav-link"
+                                                                               routerlink="/status"
+                                                                               routerlinkactive="active"
+                                                                               ng-reflect-router-link="/status"
+                                                                               ng-reflect-router-link-active="active"
+                                                                               href="/status">Status</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <router-outlet></router-outlet>
+
+    <ck-home _nghost-c1="" ng-version="4.0.1">
+        <div _ngcontent-c1="" class="container">
+            <h3 _ngcontent-c1="">What is this?</h3>
+            <p _ngcontent-c1="">Codekvast collects usage data for your applications.</p>
+            <p _ngcontent-c1="">The collected data helps you identify <em _ngcontent-c1="">Truly Dead Code</em>, i.e., <em _ngcontent-c1="">code
+                                                                                                                                            that
+                                                                                                                                            no-one
+                                                                                                                                            has
+                                                                                                                                            used
+                                                                                                                                            in
+                                                                                                                                            production
+                                                                                                                                            for
+                                                                                                                                            a
+                                                                                                                                            certain
+                                                                                                                                            period
+                                                                                                                                            of
+                                                                                                                                            time</em>.
+            </p>
+            <p _ngcontent-c1="">By continuously removing truly dead code, you will keep your code base compact. The smaller code base, the
+                                faster development cycle.</p>
+            <p _ngcontent-c1="">Codekvast does not modify your code in any way, it just <em _ngcontent-c1="">enables you to make informed
+                                                                                                             decisions.</em></p>
+
+            <h4 _ngcontent-c1="" class="my-3">Functions</h4>
+            <div _ngcontent-c1="" class="row">
+                <div _ngcontent-c1="" class="col-2 table-header">Name</div>
+                <div _ngcontent-c1="" class="col-4 table-header">Summary</div>
+                <div _ngcontent-c1="" class="col-6 table-header">Use Case</div>
+            </div>
+            <div _ngcontent-c1="" class="row mt-4">
+                <div _ngcontent-c1="" class="col-2"><a _ngcontent-c1=""
+                                                       routerlink="/methods"
+                                                       ng-reflect-router-link="/methods"
+                                                       href="/methods">Methods</a></div>
+                <div _ngcontent-c1="" class="col-4">Shows collected data about one or more methods.</div>
+                <div _ngcontent-c1="" class="col-6 use-case">
+                    <p _ngcontent-c1="">As a developer looking at the source code for a method that is <b _ngcontent-c1="">ugly/incomprehensible/untestable/&lt;insert-reason-here&gt;</b>
+                    </p>
+                    <p _ngcontent-c1="">I want to see when and where it has been invoked</p>
+                    <p _ngcontent-c1="">So I that can make an informed decision whether it is safe to delete it.</p>
+                </div>
+            </div>
+            <div _ngcontent-c1="" class="row mt-4">
+                <div _ngcontent-c1="" class="col-2"><a _ngcontent-c1=""
+                                                       routerlink="/status"
+                                                       ng-reflect-router-link="/status"
+                                                       href="/status">Status</a></div>
+                <div _ngcontent-c1="" class="col-4">Shows a summary of the collection status.</div>
+                <div _ngcontent-c1="" class="col-6 use-case">
+                    <p _ngcontent-c1="">As a developer or manager</p>
+                    <p _ngcontent-c1="">I want to see the status of the data collection process</p>
+                    <p _ngcontent-c1="">So that I can judge the trustworthiness of the collected data.</p>
+                </div>
+            </div>
+        </div>
+    </ck-home>
+
+    <footer class="bg-info small">
+        <ul class="nav justify-content-end mr-1">
+            <li class="nav-item px-3"><a id="api-docs" target="_new" href="http://localhost:8080/swagger-ui.html">API docs</a>
+            </li>
+            <li class="nav-item px-3">Codekvast version
+                <span id="codekvastVersion">dev</span>
+            </li>
+        </ul>
+    </footer>
+</div>
+</body>
+</html>

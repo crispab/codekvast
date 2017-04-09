@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ViewEncapsulation} from '@angular/core';
 import {WarehouseService} from './warehouse.service';
 import {MethodData} from './model/MethodData';
 import {AgePipe} from './age.pipe';
@@ -9,6 +9,7 @@ import {Method} from './model/Method';
     selector: 'ck-methods',
     template: require('./methods.component.html'),
     styles: [require('./methods.component.css')],
+    encapsulation: ViewEncapsulation.None,
     providers: [WarehouseService, AgePipe, DatePipe],
 })
 export class MethodsComponent {

@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {ConfigService} from './config.service';
 import {NavigationEnd, Router} from '@angular/router';
 import {TitleCasePipe} from '@angular/common';
@@ -7,9 +7,10 @@ import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/map';
 
 @Component({
-    selector: '#ck-app',
+    selector: '#app',
     template: require('./app.component.html'),
     styles: [require('./app.component.css')],
+    encapsulation: ViewEncapsulation.None, // or else styling of html and body won't work in app.component.css
     providers: [ConfigService, TitleCasePipe]
 })
 export class AppComponent implements OnInit {

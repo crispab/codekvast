@@ -1,33 +1,42 @@
-#search-results {
-    float: left;
-    width: 75%;
+ck-methods {
     height: 100%;
-    overflow: auto;
-    table-layout: fixed;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
-#method-details {
-    float: left;
-    width: 25%;
+.content {
+    display: flex;
+    flex-direction: row;
     height: 100%;
+    overflow: hidden;
+}
+
+.content div {
     overflow: auto;
 }
 
-.wrap-word{
-    white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
-    white-space: -pre-wrap;      /* Opera 4-6 */
-    white-space: -o-pre-wrap;    /* Opera 7 */
-    white-space: pre-wrap;       /* css-3 */
-    word-wrap: break-word;       /* Internet Explorer 5.5+ */
-    white-space: -webkit-pre-wrap; /* Newer versions of Chrome/Safari*/
+.content div#methods-table {
+    flex: 2;
+}
+
+.content div#details-table {
+    flex: 1;
+    margin-left: 2em;
+}
+
+.wrap-word {
+    word-wrap: break-word;
     word-break: break-all;
     white-space: normal;
 }
 
 .signature-column {
     width: 86%;
+    min-width: 86%;
 }
 
 .age-column {
     width: 14%;
+    max-width: 14%;
 }
