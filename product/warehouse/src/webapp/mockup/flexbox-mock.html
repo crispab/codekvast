@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta content="ie=edge" http-equiv="x-ua-compatible">
 
-    <title>Codekvast Methods</title>
+    <title>Flexbox mock</title>
 
     <meta content="width=device-width, initial-scale=1" name="viewport">
 
@@ -13,10 +13,6 @@
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
     <style>
-        body {
-            margin: 0;
-        }
-
         html,
         body,
         #wrapper {
@@ -26,6 +22,7 @@
         #wrapper,
         .content {
             display: flex;
+            height: 100%;
         }
 
         #wrapper {
@@ -34,6 +31,8 @@
 
         .content {
             flex: 1;
+            height: 100%;
+            overflow: hidden;
         }
 
         .content div.main {
@@ -86,782 +85,781 @@
         </div>
 
     </header>
-    <div class="search container mt-5">
-        <div class="container-fluid" id="search-form">
-            <form novalidate="" class="ng-untouched ng-pristine ng-valid">
-                <div class="form-group row">
-                    <label class="col-2 col-form-label" for="signature">Signature</label>
-                    <div class="col-6">
-                        <input class="form-control ng-untouched ng-pristine ng-valid"
-                               id="signature"
-                               name="signature"
-                               placeholder="Search method signature"
-                               type="text">
+        <div class="search container mt-5">
+            <div class="container-fluid" id="search-form">
+                <form novalidate="" class="ng-untouched ng-pristine ng-valid">
+                    <div class="form-group row">
+                        <label class="col-2 col-form-label" for="signature">Signature</label>
+                        <div class="col-6">
+                            <input class="form-control ng-untouched ng-pristine ng-valid"
+                                   id="signature"
+                                   name="signature"
+                                   placeholder="Search method signature"
+                                   type="text">
+                        </div>
                     </div>
-                </div>
-                <div class="form-group row">
-                    <label class="col-2 col-form-label" for="maxResults">Max&nbsp;Results</label>
-                    <div class="col-2">
-                        <input class="form-control ng-untouched ng-pristine ng-valid"
-                               id="maxResults"
-                               max="10000"
-                               min="1"
-                               name="maxResults"
-                               type="number">
-                    </div>
-                    <button class="btn btn-primary btn-sm" type="submit">Search
-                    </button>
-
-                    <div>
-                        <small class="ml-2 col-form-label form-text text-muted">4:45 PM: Found 100 methods in 680 ms
-                        </small>
-                    </div>
-
-                </div>
-            </form>
-        </div>
-    </div>
-    <div class="content mx-4">
-        <div class="main">
-            <table class="table table-responsive table-striped table-bordered table-sm">
-                <thead>
-                <tr>
-                    <th class="signature-column">Signature <i class="fa fa-sort-asc"></i></th>
-                    <th class="age-column">Last Invoked <i class="fa fa-sort-asc invisible"></i></th>
-                </tr>
-                </thead>
-
-                <tbody>
-
-                <tr>
-                    <td class="signature-column wrap-word"><b>FIRST:</b> hudson.AbstractMarkupText()</td>
-                    <td class="age-column wrap-word"></td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.BulkChange.1()</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.ClassicPluginStrategy.1()</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.ClassicPluginStrategy.2(java.io.OutputStream, long)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr class="table-active">
-                    <td class="signature-column wrap-word">
-                        hudson.ClassicPluginStrategy.3(org.apache.tools.zip.ZipOutputStream)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">
-                        hudson.ClassicPluginStrategy.DependencyClassLoader.1(hudson.ClassicPluginStrategy.DependencyClassLoader)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.DescriptorExtensionList.1()</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">
-                        hudson.DescriptorExtensionList.2.1(hudson.DescriptorExtensionList.2, java.lang.Iterable)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">
-                        hudson.DescriptorExtensionList.2.2(hudson.DescriptorExtensionList.2, java.util.Iterator)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.DescriptorExtensionList.2()</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.DNSMultiCast.1(hudson.DNSMultiCast, jenkins.model.Jenkins)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">
-                        hudson.ExpressionFactory2.JellyJexlContext(org.apache.commons.jelly.JellyContext)
-                    </td>
-                    <td class="age-column wrap-word" title="3/14/2017, 7:38 PM">
-                        22d 20h 6m
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">
-                        hudson.ExpressionFactory2.JellyMap(org.apache.commons.jelly.JellyContext)
-                    </td>
-                    <td class="age-column wrap-word" title="3/14/2017, 7:38 PM">
-                        22d 20h 6m
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.ExpressionFactory2()</td>
-                    <td class="age-column wrap-word" title="4/3/2017, 10:46 AM">
-                        3d 5h 58m
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">
-                        hudson.ExtensionFinder.GuiceFinder.1(hudson.ExtensionFinder.GuiceFinder)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">
-                        hudson.ExtensionFinder.GuiceFinder.2(hudson.ExtensionFinder.GuiceFinder)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">
-                        hudson.ExtensionFinder.GuiceFinder.3(hudson.ExtensionFinder.GuiceFinder, com.google.inject.Injector)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">
-                        hudson.ExtensionFinder.GuiceFinder.FaultTolerantScope.1.error(com.google.inject.Key, java.lang.Throwable)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">
-                        hudson.ExtensionFinder.GuiceFinder.FaultTolerantScope.1(hudson.ExtensionFinder.GuiceFinder.FaultTolerantScope,
-                        com.google.inject.Provider, com.google.inject.Key)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">
-                        hudson.ExtensionFinder.GuiceFinder.FaultTolerantScope(boolean)
-                    </td>
-                    <td class="age-column wrap-word" title="4/3/2017, 10:46 AM">
-                        3d 5h 58m
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">
-                        hudson.ExtensionFinder.GuiceFinder.SezpozModule.1(hudson.ExtensionFinder.GuiceFinder.SezpozModule,
-                        net.java.sezpoz.IndexItem)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">
-                        hudson.ExtensionFinder.Sezpoz.1(hudson.ExtensionFinder.Sezpoz, java.util.List)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.ExtensionFinder.Sezpoz.listDelta(java.lang.Class, java.util.List)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.ExtensionList.1(hudson.ExtensionList, java.util.Iterator)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.ExtensionList.2(hudson.ExtensionList)</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.ExtensionList.3()</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.ExtensionListView.1(java.lang.Class)</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.ExtensionListView.2(java.lang.Class)</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.1(hudson.FilePath, hudson.util.io.ArchiverFactory,
-                                                           java.io.OutputStream, hudson.util.DirScanner)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.10(hudson.FilePath, hudson.FilePath.TarCompression,
-                                                           java.io.InputStream)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.11(hudson.FilePath, hudson.FilePath.FileCallable)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.12(hudson.FilePath)</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.13(hudson.FilePath)</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.14(hudson.FilePath)</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.15(hudson.FilePath)</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.16(hudson.FilePath, java.lang.String, java.lang.String)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.17(hudson.FilePath, boolean, java.lang.String,
-                                                           java.lang.String, java.lang.String)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.18(hudson.FilePath, java.lang.String, java.lang.String)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.19(hudson.FilePath)</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.2(hudson.FilePath, hudson.remoting.RemoteInputStream)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.20(hudson.FilePath)</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.21(hudson.FilePath)</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.22(hudson.FilePath, long)</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.23(hudson.FilePath, long)</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.24(hudson.FilePath)</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.25(hudson.FilePath)</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.26(hudson.FilePath)</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.27(hudson.FilePath)</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.28(hudson.FilePath)</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.29(hudson.FilePath, int)</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.3(hudson.FilePath)</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.30(hudson.FilePath)</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.31(hudson.FilePath, java.io.FileFilter)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.32(hudson.FilePath, java.lang.String, java.lang.String,
-                                                           boolean)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.33(hudson.FilePath, hudson.remoting.Pipe)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.34(hudson.FilePath, java.io.RandomAccessFile)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.35(hudson.FilePath, hudson.remoting.Pipe, long)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">hudson.FilePath.36(hudson.FilePath)</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.app.AbstractTracked.protectedMethod()</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.app.AbstractTracked()</td>
-                    <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
-                        24d 16h 53m
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">
-                        sample.app.guice.TimedInterceptor.invoke(org.aopalliance.intercept.MethodInvocation)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.app.guice.TimedInterceptor()</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.app.guice.TimedInterceptorModule.configure()</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.app.guice.TimedInterceptorModule()</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.app.SampleApp.invokeTracked(int)</td>
-                    <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
-                        24d 16h 53m
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.app.SampleApp.invokeUntracked(int)</td>
-                    <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
-                        24d 16h 53m
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.app.SampleApp.invokeUntrackedLogged(int)</td>
-                    <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
-                        24d 16h 53m
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.app.SampleApp.main(java.lang.String[])</td>
-                    <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
-                        24d 16h 53m
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.app.SampleApp.meaningOfLife()</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">
-                        sample.app.SampleApp.measureMethodCallTrackingOverhead()
-                    </td>
-                    <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
-                        24d 16h 53m
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.app.SampleApp.run()</td>
-                    <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
-                        24d 16h 53m
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.app.SampleApp.tryToLoadClass(java.lang.String, boolean)
-                    </td>
-                    <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
-                        24d 16h 53m
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.app.SampleApp()</td>
-                    <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
-                        24d 16h 53m
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">
-                        sample.app.TrackedClass.compareTo(sample.app.TrackedClass)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.app.TrackedClass.equals(java.lang.Object)</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.app.TrackedClass.getCount()</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.app.TrackedClass.hashCode()</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.app.TrackedClass.packagePrivateMethod()</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.app.TrackedClass.privateMethod()</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.app.TrackedClass.publicMethod()</td>
-                    <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
-                        24d 16h 53m
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.app.TrackedClass.setCount(int)</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.app.TrackedClass.setCount2(int, int)</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.app.TrackedClass.toString()</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.app.TrackedClass()</td>
-                    <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
-                        24d 16h 53m
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.lib.excluded.ExcludedClass.foobar()</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.lib.excluded.ExcludedClass()</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.lib.not_used.FooImpl.doSomeStuff()</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.lib.not_used.FooImpl()</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.lib.used.Bar1.declaredOnBar()</td>
-                    <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
-                        24d 16h 52m
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">
-                        sample.lib.used.Bar1.InnerClassNeverUsed.methodInInnerClassNeverUsed()
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">
-                        sample.lib.used.Bar1.InnerClassNeverUsed(sample.lib.used.Bar1)
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.lib.used.Bar1.m1()</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.lib.used.Bar1.privateMethodNeverUsed()</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.lib.used.Bar1.privateMethodUsed()</td>
-                    <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
-                        24d 16h 52m
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.lib.used.Bar1.publicMethodUnusedDeclaredOnBar()
-                    </td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.lib.used.Bar1()</td>
-                    <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
-                        24d 16h 52m
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.lib.used.Bar2.declaredOnBar2()</td>
-                    <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
-                        24d 16h 52m
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.lib.used.Bar2()</td>
-                    <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
-                        24d 16h 52m
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word">sample.lib.used.Bar3.m1()</td>
-                    <td class="age-column wrap-word">
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="signature-column wrap-word"><b>LAST:</b>sample.lib.used.Bar3()</td>
-                    <td class="age-column wrap-word"></td>
-                </tr>
-                </tbody>
-            </table>
-
-        </div>
-        <div class="aside">
-            <table class="table table-bordered table-sm">
-                <thead>
-                <tr>
-                    <th colspan="2">Method 47 Overview
-                        <button aria-label="Close" class="close" type="button">
-                            <span>×</span>
+                    <div class="form-group row">
+                        <label class="col-2 col-form-label" for="maxResults">Max&nbsp;Results</label>
+                        <div class="col-2">
+                            <input class="form-control ng-untouched ng-pristine ng-valid"
+                                   id="maxResults"
+                                   max="10000"
+                                   min="1"
+                                   name="maxResults"
+                                   type="number">
+                        </div>
+                        <button class="btn btn-primary btn-sm" type="submit">Search
                         </button>
-                    </th>
-                </tr>
-                </thead>
 
-                <tbody>
-                <tr>
-                    <th colspan="2">Appears in environments</th>
-                </tr>
-                <tr>
-                    <td>Name:</td>
-                    <td>Gradle</td>
-                </tr>
-                <tr>
-                    <td>Collected days:</td>
-                    <td>19</td>
-                </tr>
-                <tr>
-                    <td>Collected since:</td>
-                    <td>3/14/2017, 8:13 PM</td>
-                </tr>
-                <tr>
-                    <td>Collected to:</td>
-                    <td>4/3/2017, 10:57 AM</td>
-                </tr>
-                <tr>
-                    <td>Last invoked:</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>Hosts:</td>
-                    <td>fjottas</td>
-                </tr>
+                        <div>
+                            <small class="ml-2 col-form-label form-text text-muted">4:45 PM: Found 100 methods in 680 ms
+                            </small>
+                        </div>
 
-                <tr>
-                    <th colspan="2">Appears in applications</th>
-                </tr>
-
-                <tr>
-                    <td>Name:</td>
-                    <td>Jenkins 1.598</td>
-                </tr>
-                <tr title="Not invoked">
-                    <td>Last invoked:</td>
-                    <td></td>
-                </tr>
-                <!---->
-                <tr>
-                    <td>Name:</td>
-                    <td>Jenkins 1.600</td>
-                </tr>
-                <tr title="Not invoked">
-                    <td>Last invoked:</td>
-                    <td></td>
-                </tr>
-
-                </tbody>
-            </table>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
+        <div class="content mx-4">
+            <div class="main">
+                <table class="table table-responsive table-striped table-bordered table-sm">
+                    <thead>
+                    <tr>
+                        <th class="signature-column">Signature <i class="fa fa-sort-asc"></i></th>
+                        <th class="age-column">Last Invoked <i class="fa fa-sort-asc invisible"></i></th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+
+                    <tr>
+                        <td class="signature-column wrap-word"><b>FIRST:</b> hudson.AbstractMarkupText()</td>
+                        <td class="age-column wrap-word"></td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.BulkChange.1()</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.ClassicPluginStrategy.1()</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.ClassicPluginStrategy.2(java.io.OutputStream, long)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr class="table-active">
+                        <td class="signature-column wrap-word">
+                            hudson.ClassicPluginStrategy.3(org.apache.tools.zip.ZipOutputStream)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">
+                            hudson.ClassicPluginStrategy.DependencyClassLoader.1(hudson.ClassicPluginStrategy.DependencyClassLoader)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.DescriptorExtensionList.1()</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">
+                            hudson.DescriptorExtensionList.2.1(hudson.DescriptorExtensionList.2, java.lang.Iterable)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">
+                            hudson.DescriptorExtensionList.2.2(hudson.DescriptorExtensionList.2, java.util.Iterator)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.DescriptorExtensionList.2()</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.DNSMultiCast.1(hudson.DNSMultiCast, jenkins.model.Jenkins)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">
+                            hudson.ExpressionFactory2.JellyJexlContext(org.apache.commons.jelly.JellyContext)
+                        </td>
+                        <td class="age-column wrap-word" title="3/14/2017, 7:38 PM">
+                            22d 20h 6m
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">
+                            hudson.ExpressionFactory2.JellyMap(org.apache.commons.jelly.JellyContext)
+                        </td>
+                        <td class="age-column wrap-word" title="3/14/2017, 7:38 PM">
+                            22d 20h 6m
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.ExpressionFactory2()</td>
+                        <td class="age-column wrap-word" title="4/3/2017, 10:46 AM">
+                            3d 5h 58m
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">
+                            hudson.ExtensionFinder.GuiceFinder.1(hudson.ExtensionFinder.GuiceFinder)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">
+                            hudson.ExtensionFinder.GuiceFinder.2(hudson.ExtensionFinder.GuiceFinder)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">
+                            hudson.ExtensionFinder.GuiceFinder.3(hudson.ExtensionFinder.GuiceFinder, com.google.inject.Injector)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">
+                            hudson.ExtensionFinder.GuiceFinder.FaultTolerantScope.1.error(com.google.inject.Key, java.lang.Throwable)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">
+                            hudson.ExtensionFinder.GuiceFinder.FaultTolerantScope.1(hudson.ExtensionFinder.GuiceFinder.FaultTolerantScope,
+                            com.google.inject.Provider, com.google.inject.Key)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">
+                            hudson.ExtensionFinder.GuiceFinder.FaultTolerantScope(boolean)
+                        </td>
+                        <td class="age-column wrap-word" title="4/3/2017, 10:46 AM">
+                            3d 5h 58m
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">
+                            hudson.ExtensionFinder.GuiceFinder.SezpozModule.1(hudson.ExtensionFinder.GuiceFinder.SezpozModule,
+                            net.java.sezpoz.IndexItem)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">
+                            hudson.ExtensionFinder.Sezpoz.1(hudson.ExtensionFinder.Sezpoz, java.util.List)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.ExtensionFinder.Sezpoz.listDelta(java.lang.Class, java.util.List)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.ExtensionList.1(hudson.ExtensionList, java.util.Iterator)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.ExtensionList.2(hudson.ExtensionList)</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.ExtensionList.3()</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.ExtensionListView.1(java.lang.Class)</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.ExtensionListView.2(java.lang.Class)</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.1(hudson.FilePath, hudson.util.io.ArchiverFactory,
+                                                               java.io.OutputStream, hudson.util.DirScanner)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.10(hudson.FilePath, hudson.FilePath.TarCompression,
+                                                               java.io.InputStream)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.11(hudson.FilePath, hudson.FilePath.FileCallable)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.12(hudson.FilePath)</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.13(hudson.FilePath)</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.14(hudson.FilePath)</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.15(hudson.FilePath)</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.16(hudson.FilePath, java.lang.String, java.lang.String)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.17(hudson.FilePath, boolean, java.lang.String, java.lang.String,
+                                                               java.lang.String)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.18(hudson.FilePath, java.lang.String, java.lang.String)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.19(hudson.FilePath)</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.2(hudson.FilePath, hudson.remoting.RemoteInputStream)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.20(hudson.FilePath)</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.21(hudson.FilePath)</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.22(hudson.FilePath, long)</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.23(hudson.FilePath, long)</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.24(hudson.FilePath)</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.25(hudson.FilePath)</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.26(hudson.FilePath)</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.27(hudson.FilePath)</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.28(hudson.FilePath)</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.29(hudson.FilePath, int)</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.3(hudson.FilePath)</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.30(hudson.FilePath)</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.31(hudson.FilePath, java.io.FileFilter)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.32(hudson.FilePath, java.lang.String, java.lang.String, boolean)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.33(hudson.FilePath, hudson.remoting.Pipe)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.34(hudson.FilePath, java.io.RandomAccessFile)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.35(hudson.FilePath, hudson.remoting.Pipe, long)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">hudson.FilePath.36(hudson.FilePath)</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.app.AbstractTracked.protectedMethod()</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.app.AbstractTracked()</td>
+                        <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
+                            24d 16h 53m
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">
+                            sample.app.guice.TimedInterceptor.invoke(org.aopalliance.intercept.MethodInvocation)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.app.guice.TimedInterceptor()</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.app.guice.TimedInterceptorModule.configure()</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.app.guice.TimedInterceptorModule()</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.app.SampleApp.invokeTracked(int)</td>
+                        <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
+                            24d 16h 53m
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.app.SampleApp.invokeUntracked(int)</td>
+                        <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
+                            24d 16h 53m
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.app.SampleApp.invokeUntrackedLogged(int)</td>
+                        <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
+                            24d 16h 53m
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.app.SampleApp.main(java.lang.String[])</td>
+                        <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
+                            24d 16h 53m
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.app.SampleApp.meaningOfLife()</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">
+                            sample.app.SampleApp.measureMethodCallTrackingOverhead()
+                        </td>
+                        <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
+                            24d 16h 53m
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.app.SampleApp.run()</td>
+                        <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
+                            24d 16h 53m
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.app.SampleApp.tryToLoadClass(java.lang.String, boolean)
+                        </td>
+                        <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
+                            24d 16h 53m
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.app.SampleApp()</td>
+                        <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
+                            24d 16h 53m
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">
+                            sample.app.TrackedClass.compareTo(sample.app.TrackedClass)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.app.TrackedClass.equals(java.lang.Object)</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.app.TrackedClass.getCount()</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.app.TrackedClass.hashCode()</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.app.TrackedClass.packagePrivateMethod()</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.app.TrackedClass.privateMethod()</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.app.TrackedClass.publicMethod()</td>
+                        <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
+                            24d 16h 53m
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.app.TrackedClass.setCount(int)</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.app.TrackedClass.setCount2(int, int)</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.app.TrackedClass.toString()</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.app.TrackedClass()</td>
+                        <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
+                            24d 16h 53m
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.lib.excluded.ExcludedClass.foobar()</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.lib.excluded.ExcludedClass()</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.lib.not_used.FooImpl.doSomeStuff()</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.lib.not_used.FooImpl()</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.lib.used.Bar1.declaredOnBar()</td>
+                        <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
+                            24d 16h 52m
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">
+                            sample.lib.used.Bar1.InnerClassNeverUsed.methodInInnerClassNeverUsed()
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">
+                            sample.lib.used.Bar1.InnerClassNeverUsed(sample.lib.used.Bar1)
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.lib.used.Bar1.m1()</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.lib.used.Bar1.privateMethodNeverUsed()</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.lib.used.Bar1.privateMethodUsed()</td>
+                        <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
+                            24d 16h 52m
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.lib.used.Bar1.publicMethodUnusedDeclaredOnBar()
+                        </td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.lib.used.Bar1()</td>
+                        <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
+                            24d 16h 52m
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.lib.used.Bar2.declaredOnBar2()</td>
+                        <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
+                            24d 16h 52m
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.lib.used.Bar2()</td>
+                        <td class="age-column wrap-word" title="3/12/2017, 10:52 PM">
+                            24d 16h 52m
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word">sample.lib.used.Bar3.m1()</td>
+                        <td class="age-column wrap-word">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="signature-column wrap-word"><b>LAST:</b>sample.lib.used.Bar3()</td>
+                        <td class="age-column wrap-word"></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+            </div>
+            <div class="aside">
+                <table class="table table-bordered table-sm">
+                    <thead>
+                    <tr>
+                        <th colspan="2">Method 47 Overview
+                            <button aria-label="Close" class="close" type="button">
+                                <span>×</span>
+                            </button>
+                        </th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr>
+                        <th colspan="2">Appears in environments</th>
+                    </tr>
+                    <tr>
+                        <td>Name:</td>
+                        <td>Gradle</td>
+                    </tr>
+                    <tr>
+                        <td>Collected days:</td>
+                        <td>19</td>
+                    </tr>
+                    <tr>
+                        <td>Collected since:</td>
+                        <td>3/14/2017, 8:13 PM</td>
+                    </tr>
+                    <tr>
+                        <td>Collected to:</td>
+                        <td>4/3/2017, 10:57 AM</td>
+                    </tr>
+                    <tr>
+                        <td>Last invoked:</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Hosts:</td>
+                        <td>fjottas</td>
+                    </tr>
+
+                    <tr>
+                        <th colspan="2">Appears in applications</th>
+                    </tr>
+
+                    <tr>
+                        <td>Name:</td>
+                        <td>Jenkins 1.598</td>
+                    </tr>
+                    <tr title="Not invoked">
+                        <td>Last invoked:</td>
+                        <td></td>
+                    </tr>
+                    <!---->
+                    <tr>
+                        <td>Name:</td>
+                        <td>Jenkins 1.600</td>
+                    </tr>
+                    <tr title="Not invoked">
+                        <td>Last invoked:</td>
+                        <td></td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
     <footer id="footer" class="bg-info small">
         <ul class="nav justify-content-end mr-1">
             <li class="nav-item px-3"><a id="api-docs" target="_new" href="http://localhost:8080/swagger-ui.html">API docs</a></li>
