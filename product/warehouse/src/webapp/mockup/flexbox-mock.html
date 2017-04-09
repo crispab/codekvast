@@ -19,8 +19,7 @@
             height: 100%;
         }
 
-        #wrapper,
-        .content {
+        #wrapper {
             display: flex;
             height: 100%;
         }
@@ -30,9 +29,14 @@
         }
 
         .content {
-            flex: 1;
+            display: flex;
+            flex-direction: row;
             height: 100%;
             overflow: hidden;
+        }
+
+        .content div {
+            overflow: auto;
         }
 
         .content div.main {
@@ -42,10 +46,6 @@
         .content div.aside {
             flex: 1;
             margin-left: 2em;
-        }
-
-        .content div {
-            overflow: auto;
         }
 
         .wrap-word {
