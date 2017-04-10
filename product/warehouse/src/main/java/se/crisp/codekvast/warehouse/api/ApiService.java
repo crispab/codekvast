@@ -27,6 +27,7 @@ import se.crisp.codekvast.warehouse.api.model.MethodDescriptor1;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * The service used by the {@link ApiController}.
@@ -41,7 +42,7 @@ public interface ApiService {
     boolean DEFAULT_NORMALIZE_SIGNATURE = true;
 
     /**
-     * Retrieve information about a certain method or methods.
+     * Retrieve information about a set of methods.
      *
      * Use case:
      * <ol>
@@ -55,4 +56,12 @@ public interface ApiService {
     @NotNull
     List<MethodDescriptor1> getMethods(@Valid GetMethodsRequest1 request);
 
+    /**
+     * Retrieve information about a particular method.
+     *
+     * @param methodId The primary key of the method.
+     *
+     * @return an optional MethodDescriptor1. Does never return null.
+     */
+    Optional<MethodDescriptor1> getMethodById(@NotNull Long methodId);
 }

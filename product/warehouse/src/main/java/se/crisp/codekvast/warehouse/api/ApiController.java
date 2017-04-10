@@ -31,7 +31,6 @@ import se.crisp.codekvast.warehouse.api.model.MethodDescriptor1;
 import se.crisp.codekvast.warehouse.bootstrap.CodekvastSettings;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.time.Instant;
@@ -39,6 +38,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static se.crisp.codekvast.warehouse.api.ApiService.DEFAULT_MAX_RESULTS_STR;
@@ -54,6 +54,8 @@ import static se.crisp.codekvast.warehouse.api.ApiService.DEFAULT_MAX_RESULTS_ST
 public class ApiController {
 
     private static final String API_V1_METHODS = "/api/v1/methods";
+    private static final String API_V1_METHOD = "/api/v1/method";
+
     private final ApiService apiService;
     private final CodekvastSettings settings;
 
@@ -74,11 +76,23 @@ public class ApiController {
 
     @RequestMapping(method = GET, value = API_V1_METHODS)
     @CrossOrigin(origins = "http://localhost:8088")
-    public ResponseEntity<GetMethodsResponse1> getMethods1(HttpServletRequest request,
-                                                           @RequestParam(value = "signature", defaultValue = "%") String signature,
+    public ResponseEntity<GetMethodsResponse1> getMethods1(@RequestParam(value = "signature", defaultValue = "%") String signature,
                                                            @RequestParam(name = "maxResults", defaultValue = DEFAULT_MAX_RESULTS_STR)
-                                                                       Integer maxResults) {
+                                                               Integer maxResults) {
         return ResponseEntity.ok().body(doGetMethods(signature, maxResults));
+    }
+
+    @RequestMapping(method = GET, value = API_V1_METHOD)
+    @CrossOrigin(origins = "http://localhost:8088")
+    public ResponseEntity<MethodDescriptor1> getMethod1(@RequestParam(value = "id") Long methodId) {
+        long startedAt = System.currentTimeMillis();
+
+        Optional<MethodDescriptor1> result = apiService.getMethodById(methodId);
+
+        log.debug("{} method with id={} in {} ms", result.isPresent() ? "Found" : "Cannot find", methodId, System.currentTimeMillis() - startedAt);
+
+        return result.map(method -> ResponseEntity.ok().body(method))
+                     .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     private GetMethodsResponse1 doGetMethods(String signature, Integer maxResults) {

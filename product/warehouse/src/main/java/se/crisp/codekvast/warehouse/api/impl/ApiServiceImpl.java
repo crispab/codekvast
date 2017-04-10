@@ -38,6 +38,7 @@ import se.crisp.codekvast.warehouse.api.model.MethodDescriptor1;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -60,43 +61,59 @@ public class ApiServiceImpl implements ApiService {
     @Override
     @Transactional(readOnly = true)
     public List<MethodDescriptor1> getMethods(@Valid GetMethodsRequest1 request) {
-        MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler(request);
+        MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler(request.getMaxResults());
 
-        // This is a simpler to understand approach than trying to do everything in the database.
-        // Let the database do the joining and selection, and the Java layer do the data reduction. The query will return several rows
-        // for each
-        // method that matches the WHERE clause, and the RowCallbackHandler reduces them to only one MethodDescriptor1 per method ID.
-        // This is probably doable in pure SQL too, provided you are a black-belt SQL ninja. Unfortunately I'm not that strong at SQL.
-
-        jdbcTemplate.query("SELECT i.methodId, a.name AS appName, a.version AS appVersion,\n" +
-                                   "  i.invokedAtMillis, i.status, j.startedAt, j.dumpedAt, j.environment, j.collectorHostname, j.tags,\n" +
-                                   "  m.visibility, m.signature, m.declaringType, m.methodName, m.modifiers, m.packageName\n" +
-                                   "  FROM invocations i\n" +
-                                   "  JOIN applications a ON a.id = i.applicationId \n" +
-                                   "  JOIN methods m ON m.id = i.methodId\n" +
-                                   "  JOIN jvms j ON j.id = i.jvmId\n" +
-                                   "WHERE m.signature LIKE ?\n" +
-                                   "ORDER BY i.methodId ASC", rowCallbackHandler,
+        jdbcTemplate.query(rowCallbackHandler.constructSelectStatement("m.signature LIKE ?"),
+                           rowCallbackHandler,
                            request.getNormalizedSignature());
 
         return rowCallbackHandler.getResult();
     }
 
+    @Override
+    public Optional<MethodDescriptor1> getMethodById(@NotNull Long methodId) {
+        MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler(1);
+
+        jdbcTemplate.query(rowCallbackHandler.constructSelectStatement("m.id = ?"),
+                           rowCallbackHandler,
+                           methodId);
+
+        return rowCallbackHandler.getResult().stream().findFirst();
+    }
+
     private class MethodDescriptorRowCallbackHandler implements RowCallbackHandler {
-        private final GetMethodsRequest1 params;
+        private final long maxResults;
 
         private final List<MethodDescriptor1> result = new ArrayList<>();
 
         private QueryState queryState;
 
-        private MethodDescriptorRowCallbackHandler(GetMethodsRequest1 params) {
-            this.params = params;
-            queryState = new QueryState(-1L, this.params);
+        private MethodDescriptorRowCallbackHandler(long maxResults) {
+            this.maxResults = maxResults;
+            queryState = new QueryState(-1L, this.maxResults);
+        }
+
+        String constructSelectStatement(String whereClause) {
+
+            // This is a simpler to understand approach than trying to do everything in the database.
+            // Let the database do the joining and selection, and the Java layer do the data reduction. The query will return several rows
+            // for each method that matches the WHERE clause, and the RowCallbackHandler reduces them to only one MethodDescriptor1 per method ID.
+            // This is probably doable in pure SQL too, provided you are a black-belt SQL ninja. Unfortunately I'm not that strong at SQL.
+
+            return String.format("SELECT i.methodId, a.name AS appName, a.version AS appVersion,\n" +
+                "  i.invokedAtMillis, i.status, j.startedAt, j.dumpedAt, j.environment, j.collectorHostname, j.tags,\n" +
+                "  m.visibility, m.signature, m.declaringType, m.methodName, m.modifiers, m.packageName\n" +
+                "  FROM invocations i\n" +
+                "  JOIN applications a ON a.id = i.applicationId \n" +
+                "  JOIN methods m ON m.id = i.methodId\n" +
+                "  JOIN jvms j ON j.id = i.jvmId\n" +
+                "  WHERE %s\n" +
+                "  ORDER BY i.methodId ASC", whereClause);
         }
 
         @Override
         public void processRow(ResultSet rs) throws SQLException {
-            if (result.size() >= params.getMaxResults()) {
+            if (result.size() >= maxResults) {
                 return;
             }
 
@@ -107,7 +124,7 @@ public class ApiServiceImpl implements ApiService {
                 // The query is sorted on methodId
                 log.trace("Found method {}:{}", id, signature);
                 queryState.addTo(result);
-                queryState = new QueryState(id, params);
+                queryState = new QueryState(id, this.maxResults);
             }
 
             queryState.countRow();
@@ -158,7 +175,7 @@ public class ApiServiceImpl implements ApiService {
     @RequiredArgsConstructor
     private class QueryState {
         private final long methodId;
-        private final GetMethodsRequest1 params;
+        private final long maxResults;
 
         private final Map<ApplicationId, ApplicationDescriptor1> applications = new HashMap<>();
         private final Map<String, EnvironmentDescriptor1> environments = new HashMap<>();
@@ -189,7 +206,7 @@ public class ApiServiceImpl implements ApiService {
         }
 
         void addTo(List<MethodDescriptor1> result) {
-            if (builder != null && result.size() < params.getMaxResults()) {
+            if (builder != null && result.size() < maxResults) {
                 log.trace("Adding method {} to result ({} result set rows)", methodId, rows);
                 builder.occursInApplications(new TreeSet<>(applications.values()));
                 builder.collectedInEnvironments(new TreeSet<>(environments.values()));

@@ -36,6 +36,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.TemporalUnit;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -382,7 +383,7 @@ public class MariadbIntegrationTest {
     }
 
     @Test
-    public void should_describe_IDEA_signature_correctly() throws Exception {
+    public void should_query_by_IDEA_signature_correctly() throws Exception {
         // given
         generateQueryTestData();
 
@@ -402,7 +403,7 @@ public class MariadbIntegrationTest {
     }
 
     @Test
-    public void should_describe_signature_suffix_correctly() throws Exception {
+    public void should_query_by_signature_suffix_correctly() throws Exception {
         // given
         generateQueryTestData();
 
@@ -417,7 +418,7 @@ public class MariadbIntegrationTest {
     }
 
     @Test
-    public void should_describe_signature_not_normalize_but_no_match() throws Exception {
+    public void should_query_by_signature_not_normalize_but_no_match() throws Exception {
         // given
         generateQueryTestData();
 
@@ -433,7 +434,7 @@ public class MariadbIntegrationTest {
     }
 
     @Test
-    public void should_describe_signatures_and_respect_max_results() throws Exception {
+    public void should_query_signatures_and_respect_max_results() throws Exception {
         // given
         generateQueryTestData();
 
@@ -473,7 +474,7 @@ public class MariadbIntegrationTest {
     }
 
     @Test
-    public void should_describe_signature_correctly() throws Exception {
+    public void should_query_unknown_signature_correctly() throws Exception {
         // given
         generateQueryTestData();
 
@@ -483,6 +484,32 @@ public class MariadbIntegrationTest {
 
         // then
         assertThat(methods, hasSize(0));
+    }
+
+    @Test
+    public void should_query_by_known_id() throws Exception {
+        // given
+        generateQueryTestData();
+
+        List<Long> validIds = jdbcTemplate.query("SELECT id FROM methods", (rs, rowNum) -> rs.getLong(1));
+
+        // when
+        Optional<MethodDescriptor1> result = apiService.getMethodById(validIds.get(0));
+
+        // then
+        assertThat(result.isPresent(), is(true));
+    }
+
+    @Test
+    public void should_query_by_unknown_id() throws Exception {
+        // given
+        generateQueryTestData();
+
+        // when
+        Optional<MethodDescriptor1> result = apiService.getMethodById(-1L);
+
+        // then
+        assertThat(result.isPresent(), is(false));
     }
 
     private void generateQueryTestData() {
