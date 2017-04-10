@@ -13,6 +13,11 @@ header {
     margin-bottom: 2em;
 }
 
+main {
+    height: 100%;
+    overflow: auto;
+}
+
 footer li {
     border-left: 1px solid darkblue;
 }
