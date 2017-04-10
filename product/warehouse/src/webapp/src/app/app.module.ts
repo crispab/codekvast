@@ -8,7 +8,7 @@ import {HomeComponent} from './home.component';
 import {HttpModule} from '@angular/http';
 import {MethodsComponent} from './methods.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
-import {NgModule} from '@angular/core';
+import {LOCALE_ID, NgModule} from '@angular/core';
 import {StatusComponent} from './status.component';
 
 @NgModule({
@@ -23,6 +23,10 @@ import {StatusComponent} from './status.component';
         {
             provide: APP_BASE_HREF,
             useValue: '/'
+        },
+        {
+            provide: LOCALE_ID,
+            useValue: window.navigator.language
         }
     ],
     bootstrap: [AppComponent]

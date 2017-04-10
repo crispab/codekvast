@@ -32,15 +32,17 @@ export class AgePipe implements PipeTransform {
 
     private getAge(value: any): string {
         if (this.isInteger(value)) {
-            return this.getAgeMillis(value);
+            return this.prettyPrintAgeMillis(value);
         }
         if (this.isDate(value)) {
-            return this.getAgeMillis(value.getTime());
+            return this.prettyPrintAgeMillis(value.getTime());
         }
         throw new SyntaxError('AgePipe only understands integers and dates');
     }
 
-    private getAgeMillis(value: number): string {
+    private prettyPrintAgeMillis(value: number): string {
+        // TODO: respect LOCALE_ID
+
         let age = new Date().getTime() - value;
         let result = '';
         let delimiter = '';
