@@ -61,39 +61,37 @@ public class ApiServiceImpl implements ApiService {
     @Override
     @Transactional(readOnly = true)
     public List<MethodDescriptor1> getMethods(@Valid GetMethodsRequest1 request) {
-        MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler(request.getMaxResults());
+        MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler("m.signature LIKE ?", request.getMaxResults());
 
-        jdbcTemplate.query(rowCallbackHandler.constructSelectStatement("m.signature LIKE ?"),
-                           rowCallbackHandler,
-                           request.getNormalizedSignature());
+        jdbcTemplate.query(rowCallbackHandler.getSelectStatement(), rowCallbackHandler, request.getNormalizedSignature());
 
         return rowCallbackHandler.getResult();
     }
 
     @Override
     public Optional<MethodDescriptor1> getMethodById(@NotNull Long methodId) {
-        MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler(1);
+        MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler("m.id = ?", 1);
 
-        jdbcTemplate.query(rowCallbackHandler.constructSelectStatement("m.id = ?"),
-                           rowCallbackHandler,
-                           methodId);
+        jdbcTemplate.query(rowCallbackHandler.getSelectStatement(), rowCallbackHandler, methodId);
 
         return rowCallbackHandler.getResult().stream().findFirst();
     }
 
     private class MethodDescriptorRowCallbackHandler implements RowCallbackHandler {
+        private final String whereClause;
         private final long maxResults;
 
         private final List<MethodDescriptor1> result = new ArrayList<>();
 
         private QueryState queryState;
 
-        private MethodDescriptorRowCallbackHandler(long maxResults) {
+        private MethodDescriptorRowCallbackHandler(String whereClause, long maxResults) {
+            this.whereClause = whereClause;
             this.maxResults = maxResults;
             queryState = new QueryState(-1L, this.maxResults);
         }
 
-        String constructSelectStatement(String whereClause) {
+        String getSelectStatement() {
 
             // This is a simpler to understand approach than trying to do everything in the database.
             // Let the database do the joining and selection, and the Java layer do the data reduction. The query will return several rows

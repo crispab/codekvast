@@ -22,7 +22,7 @@ dependencies {
     systemTestCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
     systemTestCompile "org.seleniumhq.selenium:selenium-api:$seleniumVersion"
 
-    systemTestRuntime "com.codeborne:phantomjsdriver:1.4.1"
+    systemTestRuntime "com.codeborne:phantomjsdriver:1.4.2"
     systemTestRuntime "org.seleniumhq.selenium:selenium-remote-driver:$seleniumVersion"
     systemTestRuntime "org.seleniumhq.selenium:selenium-chrome-driver:$seleniumVersion"
     systemTestRuntime "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"

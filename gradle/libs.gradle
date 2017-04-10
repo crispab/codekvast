@@ -1,13 +1,13 @@
 ext {
     aspectjVersion = '1.8.10'
     h2databaseVersion = '1.4.194'
-    jacksonVersion = '2.8.7'
+    jacksonVersion = '2.8.8'
     springfoxVersion = '2.6.1'
 
     aspectjWeaver = "org.aspectj:aspectjweaver:$aspectjVersion"
 
     junit = 'junit:junit:4.12'
-    mockito = 'org.mockito:mockito-core:2.7.21'
+    mockito = 'org.mockito:mockito-core:2.7.22'
     slf4jApi = 'org.slf4j:slf4j-api:1.7.25'
 
     h2database = "com.h2database:h2:$h2databaseVersion"

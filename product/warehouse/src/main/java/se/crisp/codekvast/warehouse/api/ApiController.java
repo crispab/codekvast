@@ -89,7 +89,7 @@ public class ApiController {
 
         Optional<MethodDescriptor1> result = apiService.getMethodById(methodId);
 
-        log.debug("{} method with id={} in {} ms", result.isPresent() ? "Found" : "Cannot find", methodId, System.currentTimeMillis() - startedAt);
+        log.debug("{} method with id={} in {} ms", result.isPresent() ? "Found" : "Could not find", methodId, System.currentTimeMillis() - startedAt);
 
         return result.map(method -> ResponseEntity.ok().body(method))
                      .orElseGet(() -> ResponseEntity.notFound().build());
