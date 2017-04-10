@@ -4,7 +4,8 @@ import {DatePipe} from '@angular/common';
 @Pipe({name: 'ckAge'}) @Injectable()
 export class AgePipe implements PipeTransform {
 
-    private minuteMillis = 60 * 1000;
+    private secondMillis = 1000;
+    private minuteMillis = 60 * this.secondMillis;
     private hourMillis = 60 * this.minuteMillis;
     private dayMillis = 24 * this.hourMillis;
 
@@ -43,23 +44,34 @@ export class AgePipe implements PipeTransform {
         let age = new Date().getTime() - value;
         let result = '';
         let delimiter = '';
+        let fields = 0;
         if (age > this.dayMillis) {
             let days = Math.trunc(age / this.dayMillis);
             age -= days * this.dayMillis;
             result += days + 'd';
             delimiter = ' ';
+            fields += 1;
         }
-        if (age > this.hourMillis) {
+        if (fields < 2 && age > this.hourMillis) {
             let hours = Math.trunc(age / this.hourMillis);
-            age -= hours * this.hourMillis;
             result += delimiter + hours + 'h';
+            age -= hours * this.hourMillis;
             delimiter = ' ';
+            fields += 1;
         }
-        if (age > this.minuteMillis) {
+        if (fields < 2 && age > this.minuteMillis) {
             let minutes = Math.trunc(age / this.minuteMillis);
-            age -= minutes * this.minuteMillis;
             result += delimiter + minutes + 'm';
+            age -= minutes * this.minuteMillis;
             delimiter = ' ';
+            fields += 1;
+        }
+        if (fields < 2 && age > this.secondMillis) {
+            let seconds = Math.trunc(age / this.secondMillis);
+            result += delimiter + seconds + 's';
+            // age -= seconds * this.secondMillis;
+            // delimiter = ' ';
+            // fields += 1;
         }
         return result;
     }

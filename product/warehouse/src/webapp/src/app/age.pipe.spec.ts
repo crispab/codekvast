@@ -4,12 +4,13 @@ import {AgePipe} from './age.pipe';
 let pipe: AgePipe;
 let parentPipe: DatePipe;
 
-function getPastDate(days: number, hours: number, minutes: number): Date {
-    let minuteMillis = 60 * 1000;
+function getPastDate(days: number, hours: number, minutes: number, seconds: number): Date {
+    let secondMillis = 1000;
+    let minuteMillis = 60 * secondMillis;
     let hourMillis = 60 * minuteMillis;
     let dayMillis = 24 * hourMillis;
     let now = new Date().getTime();
-    return new Date(now - days * dayMillis - hours * hourMillis - minutes * minuteMillis);
+    return new Date(now - days * dayMillis - hours * hourMillis - minutes * minuteMillis - seconds * secondMillis);
 }
 
 describe('AgePipe', () => {
@@ -38,8 +39,16 @@ describe('AgePipe', () => {
         expect(pipe.transform(value, pattern)).toBe(parentPipe.transform(value, pattern));
     });
 
-    it('Should recognize "age" pattern', () => {
-        expect(pipe.transform(getPastDate(2, 4, 36), 'age')).toBe('2d 4h 36m');
+    it('Should transform getPastDate(2, 4, 36, 12) to "2d 4h"', () => {
+        expect(pipe.transform(getPastDate(2, 4, 36, 12), 'age')).toBe('2d 4h');
+    });
+
+    it('Should transform getPastDate(0, 4, 36, 12) to "4h 36m"', () => {
+        expect(pipe.transform(getPastDate(0, 4, 36, 12), 'age')).toBe('4h 36m');
+    });
+
+    it('Should transform getPastDate(0, 0, 36, 12) to "36m 12s"', () => {
+        expect(pipe.transform(getPastDate(0, 0, 36, 12), 'age')).toBe('36m 12s');
     });
 
     it('Should throw error for non-dates and non-integers', () => {

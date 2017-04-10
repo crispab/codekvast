@@ -34,7 +34,7 @@
 
 <div class="content mx-4">
     <div id="methods-table">
-        <table *ngIf="sortedMethods()" class="table table-responsive table-striped table-bordered table-sm">
+        <table class="table table-responsive table-striped table-bordered table-sm">
             <thead>
             <tr>
                 <th class="signature-column" (click)="sortBySignature()">Signature <i [ngClass]="headerIconClassesSignature()"
@@ -45,7 +45,7 @@
 
             <tbody>
             <tr *ngFor="let method of sortedMethods()" (mouseenter)="selectMethod(method)" [class.table-active]="isSelectedMethod(method)">
-                <td class="signature-column wrap-word">{{method.signature}}</td>
+                <td class="signature-column wrap-word"><code>{{method.signature}}</code></td>
                 <td class="age-column wrap-word" title="{{method.lastInvokedAtMillis | ckAge:'short'}}">
                     {{method.lastInvokedAtMillis | ckAge:dateFormat }}
                 </td>
@@ -54,18 +54,19 @@
         </table>
     </div>
     <div id="details-table">
-        <table *ngIf="selectedMethod" class="table table-bordered table-sm">
+        <table class="table table-bordered table-sm">
             <thead>
             <tr>
-                <th colspan="2">Method {{ selectedMethod.id}} Overview
-                    <button type="button" class="close" aria-label="Close" (click)="selectMethod(null)">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </th>
+                <th colspan="2">Details <button type="button" class="close" aria-label="Close" (click)="selectMethod(null)">
+                    <span aria-hidden="true">&times;</span>
+                </button></th>
             </tr>
             </thead>
 
-            <tbody>
+            <tbody *ngIf="selectedMethod" >
+            <tr>
+                <td colspan="2" class="wrap-word"><code>{{ selectedMethod.signature}}</code></td>
+            </tr>
             <tr>
                 <th colspan="2">Appears in environments</th>
             </tr>
