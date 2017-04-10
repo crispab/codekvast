@@ -5,12 +5,10 @@ import org.junit.Test;
 import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 import se.crisp.codekvast.warehouse.api.model.ApplicationDescriptor1;
 import se.crisp.codekvast.warehouse.api.model.EnvironmentDescriptor1;
-import se.crisp.codekvast.warehouse.api.model.GetMethodsRequest1;
 import se.crisp.codekvast.warehouse.api.model.MethodDescriptor1;
 
-import java.util.Comparator;
-
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -62,50 +60,6 @@ public class MethodDescriptor1Test {
         System.out.println("json = " + objectMapper.writer()
                                                    .withDefaultPrettyPrinter()
                                                    .writeValueAsString(md));
-    }
-
-    @Test
-    public void should_provide_comparator_for_all_orderBy_values() throws Exception {
-        for (GetMethodsRequest1.OrderBy orderBy : GetMethodsRequest1.OrderBy.values()) {
-            assertThat(MethodDescriptor1.getComparator(orderBy), not(nullValue()));
-        }
-    }
-
-    @Test
-    public void should_compare_by_signature() throws Exception {
-        // given
-        MethodDescriptor1 md1 = buildMethodDescriptor(1L, "sig1", fifteenDaysAgo, oneDayAgo, twoDaysAgo, never);
-        MethodDescriptor1 md2 = buildMethodDescriptor(2L, "sig2", fifteenDaysAgo, oneDayAgo, twoDaysAgo, never);
-        MethodDescriptor1 md3 = buildMethodDescriptor(2L, "sig2", fifteenDaysAgo, oneDayAgo, twoDaysAgo, never);
-
-        // when
-        Comparator<MethodDescriptor1> comparator = new MethodDescriptor1.BySignatureComparator();
-
-        // then
-        assertThat(comparator.compare(md1, md2), is(-1));
-        assertThat(comparator.compare(md2, md1), is(1));
-        assertThat(comparator.compare(md2, md3), is(0));
-    }
-
-    @Test
-    public void should_compare_by_last_invoked_at_millis() throws Exception {
-        // given
-        MethodDescriptor1 md1 = buildMethodDescriptor(1L, "sig1", fifteenDaysAgo, oneDayAgo, twoDaysAgo, never);
-        MethodDescriptor1 md2 = buildMethodDescriptor(2L, "sig2", fifteenDaysAgo, oneDayAgo, oneDayAgo, never);
-        MethodDescriptor1 md3 = buildMethodDescriptor(2L, "sig2", fifteenDaysAgo, oneDayAgo, oneDayAgo, never);
-
-        // when
-        Comparator<MethodDescriptor1> comparatorAsc = new MethodDescriptor1.ByInvokedAtComparatorAsc();
-        Comparator<MethodDescriptor1> comparatorDesc = new MethodDescriptor1.ByInvokedAtComparatorDesc();
-
-        // then
-        assertThat(comparatorAsc.compare(md1, md2), is(-1));
-        assertThat(comparatorAsc.compare(md2, md1), is(1));
-        assertThat(comparatorAsc.compare(md2, md3), is(0));
-
-        assertThat(comparatorDesc.compare(md1, md2), is(1));
-        assertThat(comparatorDesc.compare(md2, md1), is(-1));
-        assertThat(comparatorDesc.compare(md2, md3), is(0));
     }
 
     private MethodDescriptor1 buildMethodDescriptor(long methodId, String signature, long collectedSinceMillis, long collectedToMillis,

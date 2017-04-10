@@ -15,11 +15,4 @@ project.gradle.projectsEvaluated {
         classpath = project.files(javaProjects.javadoc.classpath)
         title javaProjects.javadoc.title[0]
     }
-
-    // Disable license check and formatting for all test source sets
-    javaProjects*.tasks*.findAll { it.name.matches("license.*Test") }*.each { task ->
-        logger.debug "Disabling $task.name"
-        task.enabled = false
-    }
-
 }

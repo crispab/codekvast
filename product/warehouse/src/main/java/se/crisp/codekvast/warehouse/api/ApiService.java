@@ -28,8 +28,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-import static se.crisp.codekvast.warehouse.api.model.GetMethodsRequest1.OrderBy;
-
 /**
  * The service used by the {@link ApiController}.
  *
@@ -39,7 +37,6 @@ public interface ApiService {
 
     int DEFAULT_MAX_RESULTS = 100;
     String DEFAULT_MAX_RESULTS_STR = "" + DEFAULT_MAX_RESULTS;
-    OrderBy DEFAULT_ORDER_BY = OrderBy.INVOKED_AT_ASC;
     boolean DEFAULT_ONLY_TRULY_DEAD_METHODS = false;
     boolean DEFAULT_NORMALIZE_SIGNATURE = true;
 

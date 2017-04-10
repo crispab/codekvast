@@ -103,37 +103,4 @@ public class MethodDescriptor1 {
         collectedInEnvironments.stream().map(EnvironmentDescriptor1::getTags).forEach(tags -> result.addAll(tags));
         return result;
     }
-
-    public static Comparator<MethodDescriptor1> getComparator(GetMethodsRequest1.OrderBy orderBy) {
-        switch (orderBy) {
-        case INVOKED_AT_ASC:
-            return new ByInvokedAtComparatorAsc();
-        case INVOKED_AT_DESC:
-            return new ByInvokedAtComparatorDesc();
-        case SIGNATURE:
-            return new BySignatureComparator();
-        }
-        throw new IllegalArgumentException("Unknown OrderBy: " + orderBy);
-    }
-
-    public static class ByInvokedAtComparatorAsc implements Comparator<MethodDescriptor1> {
-        @Override
-        public int compare(MethodDescriptor1 o1, MethodDescriptor1 o2) {
-            return o1.getLastInvokedAtMillis().compareTo(o2.getLastInvokedAtMillis());
-        }
-    }
-
-    public static class ByInvokedAtComparatorDesc implements Comparator<MethodDescriptor1> {
-        @Override
-        public int compare(MethodDescriptor1 o1, MethodDescriptor1 o2) {
-            return o2.getLastInvokedAtMillis().compareTo(o1.getLastInvokedAtMillis());
-        }
-    }
-
-    public static class BySignatureComparator implements Comparator<MethodDescriptor1> {
-        @Override
-        public int compare(MethodDescriptor1 o1, MethodDescriptor1 o2) {
-            return o1.getSignature().compareTo(o2.getSignature());
-        }
-    }
 }

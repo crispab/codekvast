@@ -151,7 +151,6 @@ public class ApiServiceImpl implements ApiService {
 
         private List<MethodDescriptor1> getResult() {
             queryState.addTo(result);
-            result.sort(MethodDescriptor1.getComparator(params.getOrderBy()));
             return result;
         }
     }

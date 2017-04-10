@@ -39,8 +39,6 @@ import javax.validation.constraints.Size;
 @ToString
 public class GetMethodsRequest1 {
 
-    public enum OrderBy {INVOKED_AT_ASC, INVOKED_AT_DESC, SIGNATURE}
-
     /**
      * The signature to search for.
      */
@@ -65,11 +63,6 @@ public class GetMethodsRequest1 {
      */
     private final boolean normalizeSignature;
 
-    /**
-     * How to sort the result
-     */
-    @NonNull
-    private final OrderBy orderBy;
 
     public String getNormalizedSignature() {
         String sig = signature.contains("%") ? signature : "%" + signature + "%";
@@ -82,7 +75,6 @@ public class GetMethodsRequest1 {
                 .maxResults(ApiService.DEFAULT_MAX_RESULTS)
                 .normalizeSignature(ApiService.DEFAULT_NORMALIZE_SIGNATURE)
                 .onlyTrulyDeadMethods(ApiService.DEFAULT_ONLY_TRULY_DEAD_METHODS)
-                .orderBy(ApiService.DEFAULT_ORDER_BY)
                 .build();
     }
 
