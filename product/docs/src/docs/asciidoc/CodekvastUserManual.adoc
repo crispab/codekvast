@@ -384,11 +384,11 @@ first found file will win)
 . The file `${codekvast.home}/conf/codekvast-collector.conf` or `${codekvast.home}/conf/codekvast.conf` (codekvast.home is a Java system property)
 . The file `$\{CODEKVAST_HOME}/codekvast-collector.conf` or `$\{CODEKVAST_HOME}/codekvast.conf` (CODEKVAST_HOME is an environment variable)
 . The file `$\{CODEKVAST_HOME}/conf/codekvast-collector.conf` or `$\{CODEKVAST_HOME}/conf/codekvast.conf` (CODEKVAST_HOME is an environment variable)
-. In a similar way it looks for
-.. ${catalina.home}/conf
-.. $\{CATALINA_HOME}/conf
-.. ${catalina.base}/conf
-.. $\{CATALINA_BASE}/conf
+. In a similar way it looks for `codekvast-collector.conf` and `codekvast.conf` in
+.. `${catalina.home}/conf`
+.. `$\{CATALINA_HOME}/conf`
+.. `${catalina.base}/conf`
+.. `$\{CATALINA_BASE}/conf`
 . It looks for codekvast-collector.conf and codekvast.conf in the `conf/` sibling directory to where codekvast-collector-{codekvastVersion}.jar is located.
 . It looks for codekvast-collector.conf and codekvast.conf in `/etc/codekvast`.
 . It looks for codekvast-collector.conf and codekvast.conf in `/etc`.
@@ -590,14 +590,16 @@ They cannot know if a public or protected method is dead, since they cannot know
 
 [[about-clobberAopXml]]
 ==== About clobberAopXml
-Normally, codekvast-collector uses the information in codekvast.conf for producing a tailored aop.xml that then is fed to
+Normally, codekvast-collector uses the information in codekvast.conf for producing a tailored `$dataPath/$appName/aop.xml` that then is fed to
 aspectjweaver. This is done every time the instrumented application starts.
 
-If you have special needs, you can disable this behaviour by setting `clobberAopXml = false`.
+If you have special needs, you can disable this behaviour:
 
-This gives you a chance to fine-tune how the AspectJ weaver shall work.
-
-See {aspectj-ltw-config}.
+. Start the application so that an initial `$dataPath/$appName/aop.xml` is generated from `codekvast.conf`.
+. Stop the application
+. Edit `codekvast.conf` and set `clobberAopXml = false`.
+. Edit `$dataPath/$appName/aop.xml` to suit your needs. See {aspectj-ltw-config}.
+. Start the application.
 
 [[configuring-codekvast-daemon]]
 === Codekvast Daemon
