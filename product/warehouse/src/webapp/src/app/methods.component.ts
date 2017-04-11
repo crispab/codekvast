@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {WarehouseService} from './warehouse.service';
 import {AgePipe} from './age.pipe';
 import {DatePipe} from '@angular/common';
@@ -11,6 +11,7 @@ import {MethodsComponentState} from './methods.component.state';
     template: require('./methods.component.html'),
     styles: [require('./methods.component.css')],
     providers: [AgePipe, DatePipe],
+    encapsulation: ViewEncapsulation.None // make "ck-methods" rule in own css work.
 })
 export class MethodsComponent implements OnInit {
     static readonly SIGNATURE_COLUMN = 'signature';
