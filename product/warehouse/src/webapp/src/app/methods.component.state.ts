@@ -46,6 +46,14 @@ export class MethodsComponentState {
         return this.getHeaderIconClassesFor(MethodsComponent.AGE_COLUMN);
     }
 
+    rowIconClasses(id: number) {
+        let visible = this.selectedMethod && this.selectedMethod.id === id;
+        return {
+            'fa': visible,
+            'fa-ellipsis-h': visible
+        }
+    }
+
     sortBySignature() {
         this.sortBy(MethodsComponent.SIGNATURE_COLUMN);
     }

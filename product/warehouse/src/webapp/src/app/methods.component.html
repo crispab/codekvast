@@ -39,9 +39,15 @@
                (mouseleave)="state.selectMethod(null)">
             <thead>
             <tr>
-                <th class="signature-column" (click)="state.sortBySignature()">Signature <i [ngClass]="state.headerIconClassesSignature()"
-                                                                                      aria-hidden="true"></i></th>
-                <th class="age-column" (click)="state.sortByAge()">Last Invoked <i [ngClass]="state.headerIconClassesAge()" aria-hidden="true"></i></th>
+                <th (click)="state.sortBySignature()" class="w-100">
+                    Signature
+                    <i [ngClass]="state.headerIconClassesSignature()" aria-hidden="true"></i>
+                </th>
+                <th (click)="state.sortByAge()">
+                    Last&nbsp;Invoked
+                    <i [ngClass]="state.headerIconClassesAge()" aria-hidden="true"></i>
+                </th>
+                <td class="row-icon-column"><i class="fa fa-ellipsis-h invisible"></i></td>
             </tr>
             </thead>
 
@@ -54,6 +60,7 @@
                 <td class="age-column wrap-word" title="{{ method.lastInvokedAtMillis | ckAge:'short' }}">
                     {{ method.lastInvokedAtMillis | ckAge:state.dateFormat }}
                 </td>
+                <td class="icon-column"><i [ngClass]="state.rowIconClasses(method.id)"></i></td>
             </tr>
             </tbody>
         </table>
@@ -63,6 +70,10 @@
             <table class="table table-bordered table-striped">
                 <tr class="table-active">
                     <td colspan="3" class="wrap-word">{{ state.selectedMethod.signature }}</td>
+                </tr>
+                <tr>
+                    <th>ID:</th>
+                    <td>{{ state.selectedMethod.id }}</td>
                 </tr>
                 <tr>
                     <th>Last Invoked:</th>
