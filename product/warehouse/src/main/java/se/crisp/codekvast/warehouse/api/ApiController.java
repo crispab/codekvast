@@ -54,7 +54,7 @@ import static se.crisp.codekvast.warehouse.api.ApiService.DEFAULT_MAX_RESULTS_ST
 public class ApiController {
 
     private static final String API_V1_METHODS = "/api/v1/methods";
-    private static final String API_V1_METHOD = "/api/v1/method";
+    private static final String API_V1_METHOD = "/api/v1/method/detail/{id}";
 
     private final ApiService apiService;
     private final CodekvastSettings settings;
@@ -84,7 +84,7 @@ public class ApiController {
 
     @RequestMapping(method = GET, value = API_V1_METHOD)
     @CrossOrigin(origins = "http://localhost:8088")
-    public ResponseEntity<MethodDescriptor1> getMethod1(@RequestParam(value = "id") Long methodId) {
+    public ResponseEntity<MethodDescriptor1> getMethod1(@PathVariable(value = "id") Long methodId) {
         long startedAt = System.currentTimeMillis();
 
         Optional<MethodDescriptor1> result = apiService.getMethodById(methodId);

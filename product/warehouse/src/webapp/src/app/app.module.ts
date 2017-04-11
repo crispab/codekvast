@@ -6,9 +6,10 @@ import {BrowserModule, Title} from '@angular/platform-browser';
 import {FormsModule} from '@angular/forms';
 import {HomeComponent} from './home.component';
 import {HttpModule} from '@angular/http';
+import {LOCALE_ID, NgModule} from '@angular/core';
+import {MethodDetailComponent} from './method-detail.component';
 import {MethodsComponent} from './methods.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
-import {LOCALE_ID, NgModule} from '@angular/core';
 import {StatusComponent} from './status.component';
 
 @NgModule({
@@ -16,7 +17,7 @@ import {StatusComponent} from './status.component';
         AppRoutingModule, BrowserModule, FormsModule, HttpModule, NgbModule.forRoot(),
     ],
     declarations: [
-        AgePipe, AppComponent, HomeComponent, MethodsComponent, StatusComponent,
+        AgePipe, AppComponent, HomeComponent, MethodsComponent, MethodDetailComponent, StatusComponent,
     ],
     providers: [
         Title,
