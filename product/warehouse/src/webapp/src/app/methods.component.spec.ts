@@ -7,6 +7,7 @@ import {WarehouseService} from './warehouse.service';
 import {ConfigService} from './config.service';
 import {MethodData} from './model/MethodData';
 import {Method} from './model/Method';
+import {StateService} from './state.service';
 
 let component: MethodsComponent;
 let fixture: ComponentFixture<MethodsComponent>;
@@ -25,7 +26,6 @@ const mockData: MethodData = {
     ]
 } as MethodData;
 
-
 describe('MethodsComponent', () => {
     beforeEach(() => {
 
@@ -41,7 +41,8 @@ describe('MethodsComponent', () => {
                 {
                     provide: WarehouseService,
                     useValue: warehouseServiceStub
-                }
+                },
+                StateService
             ]
         });
 
@@ -60,69 +61,76 @@ describe('MethodsComponent', () => {
     });
 
     xit('should display a different signature', () => {
-        component.signature = 'New Signature';
+        component.state.signature = 'New Signature';
         fixture.detectChanges();
         expect(signatureElement.textContent).toBe('New Signature');
     });
 
     it('should initially sort by signature', () => {
         fixture.detectChanges();
-        expect(component.sortColumn).toBe('signature');
+        expect(component.state.sortColumn).toBe('signature');
     });
 
     it('should initially sort ascending', () => {
         fixture.detectChanges();
-        expect(component.sortAscending).toBe(true);
+        expect(component.state.sortAscending).toBe(true);
     });
 
     it('sortedMethods() should return null when null data', () => {
-        expect(component.sortedMethods()).toBeNull();
+        fixture.detectChanges();
+        expect(component.state.sortedMethods()).toBeNull();
     });
 
     it('sortedMethods() should return null when empty data', () => {
-        component.data = new MethodData();
-        expect(component.sortedMethods()).toBeNull();
+        fixture.detectChanges();
+        component.state.data = new MethodData();
+        expect(component.state.sortedMethods()).toBeNull();
     });
 
     it('sortedMethods() should handle sort by signature ascending', () => {
-        component.data = mockData;
-        component.sortBySignature();
-        component.sortAscending = true;
-        expect(component.sortedMethods()[0].signature).toBe('sig1');
+        fixture.detectChanges();
+        component.state.data = mockData;
+        component.state.sortBySignature();
+        component.state.sortAscending = true;
+        expect(component.state.sortedMethods()[0].signature).toBe('sig1');
     });
 
     it('sortedMethods() should handle sort by signature descending', () => {
-        component.data = mockData;
-        component.sortBySignature();
-        component.sortAscending = false;
-        expect(component.sortedMethods()[0].signature).toBe('sig2');
+        fixture.detectChanges();
+        component.state.data = mockData;
+        component.state.sortBySignature();
+        component.state.sortAscending = false;
+        expect(component.state.sortedMethods()[0].signature).toBe('sig2');
     });
 
     it('sortedMethods() should handle sort by age ascending', () => {
-        component.data = mockData;
-        component.sortByAge();
-        component.sortAscending = true;
-        expect(component.sortedMethods()[0].lastInvokedAtMillis).toBe(1);
+        fixture.detectChanges();
+        component.state.data = mockData;
+        component.state.sortByAge();
+        component.state.sortAscending = true;
+        expect(component.state.sortedMethods()[0].lastInvokedAtMillis).toBe(1);
     });
 
     it('sortedMethods() should handle sort by age descending', () => {
-        component.data = mockData;
-        component.sortByAge();
-        component.sortAscending = false;
-        expect(component.sortedMethods()[0].lastInvokedAtMillis).toBe(2);
+        fixture.detectChanges();
+        component.state.data = mockData;
+        component.state.sortByAge();
+        component.state.sortAscending = false;
+        expect(component.state.sortedMethods()[0].lastInvokedAtMillis).toBe(2);
     });
 
     it('headerIconClassesSignature() should handle sort by signature ascending', () => {
-        component.data = mockData;
-        component.sortBySignature()
-        component.sortAscending = true;
-        expect(component.headerIconClassesSignature()).toEqual({
+        fixture.detectChanges();
+        component.state.data = mockData;
+        component.state.sortBySignature();
+        component.state.sortAscending = true;
+        expect(component.state.headerIconClassesSignature()).toEqual({
             'fa': true,
             'fa-sort-asc': true,
             'fa-sort-desc': false,
             'invisible': false
         });
-        expect(component.headerIconClassesAge()).toEqual({
+        expect(component.state.headerIconClassesAge()).toEqual({
             'fa': true,
             'fa-sort-asc': true,
             'fa-sort-desc': false,
@@ -131,16 +139,17 @@ describe('MethodsComponent', () => {
     });
 
     it('headerIconClassesAge() should handle sort by age descending', () => {
-        component.data = mockData;
-        component.sortByAge();
-        component.sortAscending = false;
-        expect(component.headerIconClassesSignature()).toEqual({
+        fixture.detectChanges();
+        component.state.data = mockData;
+        component.state.sortByAge();
+        component.state.sortAscending = false;
+        expect(component.state.headerIconClassesSignature()).toEqual({
             'fa': true,
             'fa-sort-asc': false,
             'fa-sort-desc': true,
             'invisible': true
         });
-        expect(component.headerIconClassesAge()).toEqual({
+        expect(component.state.headerIconClassesAge()).toEqual({
             'fa': true,
             'fa-sort-asc': false,
             'fa-sort-desc': true,
@@ -149,18 +158,21 @@ describe('MethodsComponent', () => {
     });
 
     it('isSelectedMethod() should handle no selected', () => {
-        component.selectMethod(null);
-        expect(component.isSelectedMethod({id: 1} as Method)).toBeFalsy();
+        fixture.detectChanges();
+        component.state.selectMethod(null);
+        expect(component.state.isSelectedMethod({id: 1} as Method)).toBeFalsy();
     });
 
     it('isSelectedMethod() should handle selected method', () => {
-        component.selectMethod({id: 1} as Method);
-        expect(component.isSelectedMethod({id: 1} as Method)).toBeTruthy();
+        fixture.detectChanges();
+        component.state.selectMethod({id: 1} as Method);
+        expect(component.state.isSelectedMethod({id: 1} as Method)).toBeTruthy();
     });
 
     it('isSelectedMethod() should handle not selected method', () => {
-        component.selectMethod({id: 1} as Method);
-        expect(component.isSelectedMethod({id: 2} as Method)).toBeFalsy();
+        fixture.detectChanges();
+        component.state.selectMethod({id: 1} as Method);
+        expect(component.state.isSelectedMethod({id: 2} as Method)).toBeFalsy();
     });
 
     it('Should prettyPrintAppStatus("EXCLUDED_SINCE_TRIVIAL") as "Excluded since trivial"', () => {

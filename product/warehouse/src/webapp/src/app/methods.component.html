@@ -1,12 +1,12 @@
 <div id="search-form" class="container mt-5">
-    <form (ngSubmit)="search()" #searchForm="ngForm">
+    <form (ngSubmit)="state.search()" #searchForm="ngForm">
         <div class="form-group row">
             <label for="signature" class="col-2 col-form-label">Signature</label>
             <div class="col-6">
                 <input class="form-control"
                        id="signature"
                        name="signature"
-                       [(ngModel)]="signature"
+                       [(ngModel)]="state.signature"
                        type="text"
                        placeholder="Search method signature">
             </div>
@@ -14,19 +14,19 @@
         <div class="form-group row">
             <label for="maxResults" class="col-2 col-form-label">Max&nbsp;Results</label>
             <div class="col-2">
-                <input class="form-control" id="maxResults" name="maxResults" [(ngModel)]="maxResults" type="number" min="1" max="10000">
+                <input class="form-control" id="maxResults" name="maxResults" [(ngModel)]="state.maxResults" type="number" min="1" max="10000">
             </div>
             <button type="submit" class="btn btn-primary btn-sm" [disabled]="!searchForm.form.valid">Search
             </button>
 
-            <div *ngIf="data">
-                <small class="ml-2 col-form-label form-text text-muted">{{ data.timestamp | date:'shortTime' }}: Found {{data.numMethods}}
-                                                                        methods in {{data.queryTimeMillis}} ms
+            <div *ngIf="state.data">
+                <small class="ml-2 col-form-label form-text text-muted">{{ state.data.timestamp | date:'shortTime' }}: Found {{ state.data.numMethods }}
+                                                                        methods in {{ state.data.queryTimeMillis }} ms
                 </small>
             </div>
 
-            <div *ngIf="errorMessage">
-                <small class="ml-2 col-form-label form-text text-muted" title="{{ errorMessage }}">{{ communicationFailure() }}</small>
+            <div *ngIf="state.errorMessage">
+                <small class="ml-2 col-form-label form-text text-muted" title="{{ state.errorMessage }}">{{ communicationFailure() }}</small>
             </div>
         </div>
     </form>
@@ -34,20 +34,20 @@
 
 <div class="content mx-4">
     <div id="methods-table">
-        <table class="table table-responsive table-striped table-bordered table-sm">
+        <table class="table table-responsive table-striped table-bordered table-hover table-sm">
             <thead>
             <tr>
-                <th class="signature-column" (click)="sortBySignature()">Signature <i [ngClass]="headerIconClassesSignature()"
+                <th class="signature-column" (click)="state.sortBySignature()">Signature <i [ngClass]="state.headerIconClassesSignature()"
                                                                                       aria-hidden="true"></i></th>
-                <th class="age-column" (click)="sortByAge()">Last Invoked <i [ngClass]="headerIconClassesAge()" aria-hidden="true"></i></th>
+                <th class="age-column" (click)="state.sortByAge()">Last Invoked <i [ngClass]="state.headerIconClassesAge()" aria-hidden="true"></i></th>
             </tr>
             </thead>
 
             <tbody>
-            <tr *ngFor="let method of sortedMethods()" (mouseenter)="selectMethod(method)" [class.table-active]="isSelectedMethod(method)">
-                <td class="signature-column wrap-word"><code>{{method.signature}}</code></td>
-                <td class="age-column wrap-word" title="{{method.lastInvokedAtMillis | ckAge:'short'}}">
-                    {{method.lastInvokedAtMillis | ckAge:dateFormat }}
+            <tr *ngFor="let method of state.sortedMethods()" (click)="state.selectMethod(method)" [class.table-active]="state.isSelectedMethod(method)">
+                <td class="signature-column wrap-word">{{ method.signature }}</td>
+                <td class="age-column wrap-word" title="{{ method.lastInvokedAtMillis | ckAge:'short' }}">
+                    {{ method.lastInvokedAtMillis | ckAge:dateFormat }}
                 </td>
             </tr>
             </tbody>
@@ -57,23 +57,23 @@
         <table class="table table-bordered table-sm">
             <thead>
             <tr>
-                <th colspan="2">Details <button type="button" class="close" aria-label="Close" (click)="selectMethod(null)">
+                <th colspan="2">Details <button type="button" class="close" aria-label="Close" (click)="state.selectMethod(null)">
                     <span aria-hidden="true">&times;</span>
                 </button></th>
             </tr>
             </thead>
 
-            <tbody *ngIf="selectedMethod" >
+            <tbody *ngIf="state.selectedMethod" >
             <tr>
-                <td colspan="2" class="wrap-word"><code>{{ selectedMethod.signature}}</code></td>
+                <td colspan="2" class="wrap-word"><code>{{ state.selectedMethod.signature }}</code></td>
             </tr>
             <tr>
-                <td><button (click)="gotoDetail(selectedMethod.id)">View Details</button></td>
+                <td><button (click)="gotoDetail(state.selectedMethod.id)">View Details</button></td>
             </tr>
             <tr>
                 <th colspan="2">Appears in environments</th>
             </tr>
-            <ng-container *ngFor="let env of selectedMethod.collectedInEnvironments">
+            <ng-container *ngFor="let env of state.selectedMethod.collectedInEnvironments">
                 <tr>
                     <td>Name:</td>
                     <td>{{ env.name }}</td>
@@ -103,7 +103,7 @@
                 <th colspan="2">Appears in applications</th>
             </tr>
 
-            <ng-container *ngFor="let app of selectedMethod.occursInApplications">
+            <ng-container *ngFor="let app of state.selectedMethod.occursInApplications">
                 <tr>
                     <td>Name:</td>
                     <td>{{ app.name }} {{ app.version }}</td>
@@ -114,7 +114,7 @@
                 </tr>
             </ng-container>
             <tr>
-                <td><button (click)="gotoDetail(selectedMethod.id)">View Details</button></td>
+                <td><button (click)="gotoDetail(state.selectedMethod.id)">View Details</button></td>
             </tr>
             </tbody>
         </table>

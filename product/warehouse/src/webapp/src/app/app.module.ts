@@ -13,6 +13,7 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {StatusComponent} from './status.component';
 import {WarehouseService} from './warehouse.service';
 import {ConfigService} from './config.service';
+import {StateService} from './state.service';
 
 @NgModule({
     imports: [
@@ -25,6 +26,7 @@ import {ConfigService} from './config.service';
         ConfigService,
         Title,
         WarehouseService,
+        StateService,
         { provide: APP_BASE_HREF, useValue: '/'},
         { provide: LOCALE_ID, useValue: window.navigator.language},
     ],

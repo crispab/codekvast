@@ -1,21 +1,13 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {WarehouseService} from './warehouse.service';
 import {MethodData} from './model/MethodData';
 import {AgePipe} from './age.pipe';
 import {DatePipe} from '@angular/common';
 import {Method} from './model/Method';
 import {Router} from '@angular/router';
+import {StateService} from './state.service';
 
-@Component({
-    selector: 'ck-methods',
-    template: require('./methods.component.html'),
-    styles: [require('./methods.component.css')],
-    providers: [AgePipe, DatePipe],
-})
-export class MethodsComponent {
-    static readonly SIGNATURE_COLUMN = 'signature';
-    static readonly AGE_COLUMN = 'age';
-
+class MethodsComponentState {
     signature: string;
     maxResults = 100;
     data: MethodData;
@@ -25,7 +17,8 @@ export class MethodsComponent {
     sortAscending = true;
     selectedMethod: Method;
 
-    constructor(private router: Router, private warehouse: WarehouseService, private datePipe: DatePipe) {
+    constructor(private warehouse: WarehouseService) {
+        console.log('Created MethodsComponentState')
     }
 
     private sortBy(column: string) {
@@ -109,6 +102,30 @@ export class MethodsComponent {
         return this.selectedMethod !== null && this.selectedMethod.id === m.id;
     }
 
+}
+
+@Component({
+    selector: 'ck-methods',
+    template: require('./methods.component.html'),
+    styles: [require('./methods.component.css')],
+    providers: [AgePipe, DatePipe],
+})
+export class MethodsComponent implements OnInit {
+    static readonly SIGNATURE_COLUMN = 'signature';
+    static readonly AGE_COLUMN = 'age';
+
+    state: MethodsComponentState;
+
+    constructor(private router: Router,
+                private stateService: StateService,
+                private warehouse: WarehouseService,
+                private datePipe: DatePipe) {
+    }
+
+    ngOnInit(): void {
+        this.state = this.stateService.getState('methods', () => new MethodsComponentState(this.warehouse));
+    }
+
     prettyPrintAppStatus(s: string) {
         return s.substr(0, 1).toUpperCase() + s.substr(1).toLowerCase().replace(/_/g, ' ');
     }
@@ -119,7 +136,7 @@ export class MethodsComponent {
     }
 
     gotoDetail(id: number): void {
-        console.log(`Viewing details for method ${id}`)
+        console.log(`Viewing details for method ${id}`);
         //noinspection JSIgnoredPromiseFromCall
         this.router.navigate(['/method', id]);
     }
