@@ -23,8 +23,9 @@ export class MethodDetailComponent implements OnInit {
                 this.method = method;
                 this.errorMessage = undefined;
             }, error => {
+                console.error('Cannot get method details: %o', error)
                 this.method = undefined;
-                this.errorMessage = error;
+                this.errorMessage = error.statusText ? error.statusText : error;
             }, () => console.log(`getMethodById() complete`));
     }
 

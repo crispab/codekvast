@@ -7,5 +7,7 @@
         <p><code>{{ method.signature }}</code></p>
     </div>
 
+    <div *ngIf="errorMessage" class="alert alert-danger" role="alert">{{ errorMessage }}</div>
+
     <button (click)="goBack()">Back</button>
 </div>

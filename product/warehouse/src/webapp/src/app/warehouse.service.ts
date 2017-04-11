@@ -1,10 +1,11 @@
 import {ConfigService} from './config.service';
-import {Headers, Http, Response} from '@angular/http';
+import {Headers, Http} from '@angular/http';
 import {Injectable} from '@angular/core';
 import {MethodData} from './model/MethodData';
 import {Method} from './model/Method';
 import {Observable} from 'rxjs/Observable';
 import '../rxjs-operators';
+import {isNumber} from 'util';
 
 @Injectable()
 export class WarehouseService {
@@ -25,9 +26,7 @@ export class WarehouseService {
 
         const url: string = this.constructGetMethodsUrl(signature, maxResults);
         console.log('url=%s', url);
-        return this.http.get(url, { headers: this.headers})
-                   .map(this.extractMethodsData)
-                   .catch(this.handleError);
+        return this.http.get(url, { headers: this.headers}).map(res => res.json());
     }
 
     constructGetMethodsUrl(signature: string, maxResults: number): string {
@@ -37,47 +36,21 @@ export class WarehouseService {
             result += `${delimiter}signature=${signature.replace('#', '.')}`;
             delimiter = '&';
         }
-        if (maxResults !== undefined) {
+        if (isNumber(maxResults)) {
             result += `${delimiter}maxResults=${maxResults}`;
             delimiter = '&';
         }
         return result;
     }
 
-    private extractMethodsData(res: Response): MethodData {
-        if (res.status < 200 || res.status >= 300) {
-            throw new Error('Response status: ' + res.status);
-        }
-
-        return res.json();
-    }
-
-    private handleError(error: any) {
-        // TODO: improve error handling
-        let errMsg = error.message || JSON.stringify(error);
-        console.error(errMsg);
-        return Observable.throw(errMsg);
-    }
-
     getMethodById(id: number): Observable<Method> {
         const url = this.constructGetMethodByIdUrl(id);
         console.log('url=%s', url);
-        return this.http.get(url)
-                   .map(this.extractMethod)
-                   .catch(this.handleError);
+        return this.http.get(url).map(res => res.json());
     }
 
 
     constructGetMethodByIdUrl(id: number) {
         return this.configService.getApiPrefix() + this.METHOD_BY_ID_URL + id;
     }
-
-    private extractMethod(res: Response): Method {
-        if (res.status < 200 || res.status >= 300) {
-            throw new Error('Response status: ' + res.status);
-        }
-
-        return res.json();
-    }
-
 }

@@ -95,7 +95,7 @@ export class MethodsComponent {
                 }
             }, error => {
                 this.data = undefined;
-                this.errorMessage = error;
+                this.errorMessage = error.statusText ? error.statusText : error;
             }, () => console.log('getMethods() complete'));
     }
 

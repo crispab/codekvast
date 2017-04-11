@@ -43,6 +43,10 @@ describe('WarehouseService', () => {
         expect(warehouse.constructGetMethodsUrl('sig', 100)).toBe('xxx/api/v1/methods?signature=sig&maxResults=100');
     });
 
+    it('should construct a get methods url with a signature and null maxResults parameter', () => {
+        expect(warehouse.constructGetMethodsUrl('sig', null)).toBe('xxx/api/v1/methods?signature=sig');
+    });
+
     it('should construct a get methodById url ', () => {
         expect(warehouse.constructGetMethodByIdUrl(100)).toBe('xxx/api/v1/method/detail/100');
     });
