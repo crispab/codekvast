@@ -47,76 +47,37 @@
             <tr *ngFor="let method of state.sortedMethods()" (click)="state.selectMethod(method)" [class.table-active]="state.isSelectedMethod(method)">
                 <td class="signature-column wrap-word">{{ method.signature }}</td>
                 <td class="age-column wrap-word" title="{{ method.lastInvokedAtMillis | ckAge:'short' }}">
-                    {{ method.lastInvokedAtMillis | ckAge:dateFormat }}
+                    {{ method.lastInvokedAtMillis | ckAge:state.dateFormat }}
                 </td>
             </tr>
             </tbody>
         </table>
     </div>
     <div id="details-table">
-        <table class="table table-bordered table-sm">
-            <thead>
-            <tr>
-                <th colspan="2">Details <button type="button" class="close" aria-label="Close" (click)="state.selectMethod(null)">
+        <ng-container *ngIf="state.selectedMethod">
+
+            <div class="alert alert-info">Signature
+                <button type="button" class="close" aria-label="Close" (click)="state.selectMethod(null)">
                     <span aria-hidden="true">&times;</span>
-                </button></th>
-            </tr>
-            </thead>
+                </button>
+            </div>
 
-            <tbody *ngIf="state.selectedMethod" >
-            <tr>
-                <td colspan="2" class="wrap-word"><code>{{ state.selectedMethod.signature }}</code></td>
-            </tr>
-            <tr>
-                <td><button (click)="gotoDetail(state.selectedMethod.id)">View Details</button></td>
-            </tr>
-            <tr>
-                <th colspan="2">Appears in environments</th>
-            </tr>
-            <ng-container *ngFor="let env of state.selectedMethod.collectedInEnvironments">
-                <tr>
-                    <td>Name:</td>
-                    <td>{{ env.name }}</td>
-                </tr>
-                <tr>
-                    <td>Collected days:</td>
-                    <td>{{ env.collectedDays }}</td>
-                </tr>
-                <tr>
-                    <td>Collected since:</td>
-                    <td>{{ env.collectedSinceMillis | ckAge:'short' }}</td>
-                </tr>
-                <tr>
-                    <td>Collected to:</td>
-                    <td>{{ env.collectedToMillis | ckAge:'short' }}</td>
-                </tr>
-                <tr>
-                    <td>Last invoked:</td>
-                    <td>{{ env.invokedAtMillis | ckAge:'short' }}</td>
-                </tr>
-                <tr>
-                    <td>Hosts:</td>
-                    <td>{{ env.hostNames.join(', ') }}</td>
-                </tr>
-            </ng-container>
-            <tr>
-                <th colspan="2">Appears in applications</th>
-            </tr>
+            <p class="wrap-word">{{ state.selectedMethod.signature }}</p>
 
-            <ng-container *ngFor="let app of state.selectedMethod.occursInApplications">
-                <tr>
-                    <td>Name:</td>
-                    <td>{{ app.name }} {{ app.version }}</td>
-                </tr>
-                <tr title="{{ prettyPrintAppStatus(app.status) }}">
-                    <td>Last invoked:</td>
-                    <td>{{ app.invokedAtMillis | ckAge:'short' }}</td>
-                </tr>
-            </ng-container>
+            <div class="alert alert-info"> Last Invoked</div>
+            <p>{{ state.selectedMethod.lastInvokedAtMillis | ckAge:state.dateFormat }} (
+               {{ state.selectedMethod.lastInvokedAtMillis | ckAge:'short' }})</p>
+
+            <div class="alert alert-info"> Appears in environments</div>
+            <p *ngFor="let env of state.selectedMethod.collectedInEnvironments">{{ env.name }} ({{ env.collectedDays }} days)</p>
+
+            <div class="alert alert-info"> Appears in applications</div>
+            <div *ngFor="let app of state.selectedMethod.occursInApplications">
+                <p>{{ app.name }} {{ app.version }}</p>
+            </div>
             <tr>
-                <td><button (click)="gotoDetail(state.selectedMethod.id)">View Details</button></td>
+                <td><button (click)="gotoMethodDetail()">More...</button></td>
             </tr>
-            </tbody>
-        </table>
+        </ng-container>
     </div>
 </div>

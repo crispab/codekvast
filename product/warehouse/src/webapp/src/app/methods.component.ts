@@ -38,10 +38,11 @@ export class MethodsComponent implements OnInit {
         return now + ': Communication failure'
     }
 
-    gotoDetail(id: number): void {
-        console.log(`Viewing details for method ${id}`);
-        //noinspection JSIgnoredPromiseFromCall
-        this.router.navigate(['/method', id]);
+    gotoMethodDetail(): void {
+        if (this.state.selectedMethod) {
+            //noinspection JSIgnoredPromiseFromCall
+            this.router.navigate(['/method', this.state.selectedMethod.id]);
+        }
     }
 
 }
