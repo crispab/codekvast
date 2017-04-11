@@ -53,16 +53,17 @@ export class WarehouseService {
     }
 
     private handleError(error: any) {
+        // TODO: improve error handling
         let errMsg = error.message || JSON.stringify(error);
         console.error(errMsg);
         return Observable.throw(errMsg);
     }
 
-    getMethodById(id: number): Promise<Method> {
+    getMethodById(id: number): Observable<Method> {
         const url = this.constructGetMethodByIdUrl(id);
+        console.log('url=%s', url);
         return this.http.get(url)
-                   .toPromise()
-                   .then(response => response.json() as Method)
+                   .map(this.extractMethod)
                    .catch(this.handleError);
     }
 
@@ -70,4 +71,13 @@ export class WarehouseService {
     constructGetMethodByIdUrl(id: number) {
         return this.configService.getApiPrefix() + this.METHOD_BY_ID_URL + id;
     }
+
+    private extractMethod(res: Response): Method {
+        if (res.status < 200 || res.status >= 300) {
+            throw new Error('Response status: ' + res.status);
+        }
+
+        return res.json();
+    }
+
 }

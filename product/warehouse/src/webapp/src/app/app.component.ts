@@ -11,7 +11,7 @@ import 'rxjs/add/operator/map';
     template: require('./app.component.html'),
     styles: [require('./app.component.css')],
     encapsulation: ViewEncapsulation.None, // or else styling of html and body won't work in app.component.css
-    providers: [ConfigService, TitleCasePipe]
+    providers: [TitleCasePipe]
 })
 export class AppComponent implements OnInit {
     constructor(private configService: ConfigService,

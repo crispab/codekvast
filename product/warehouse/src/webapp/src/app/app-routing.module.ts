@@ -10,24 +10,19 @@ const routes: Routes = [
         path: '',
         redirectTo: 'home',
         pathMatch: 'full'
-    },
-    {
+    }, {
         path: 'home',
         component: HomeComponent
-    },
-    {
+    }, {
         path: 'methods',
         component: MethodsComponent
-    },
-    {
-        path: 'method/detail/:id',
+    }, {
+        path: 'method/:id',
         component: MethodDetailComponent
-    },
-    {
+    }, {
         path: 'status',
         component: StatusComponent
-    },
-    {
+    }, {
         path: '**',
         redirectTo: 'home',
         pathMatch: 'full'

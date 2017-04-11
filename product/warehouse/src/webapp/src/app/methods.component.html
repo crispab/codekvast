@@ -68,6 +68,9 @@
                 <td colspan="2" class="wrap-word"><code>{{ selectedMethod.signature}}</code></td>
             </tr>
             <tr>
+                <td><button (click)="gotoDetail(selectedMethod.id)">View Details</button></td>
+            </tr>
+            <tr>
                 <th colspan="2">Appears in environments</th>
             </tr>
             <ng-container *ngFor="let env of selectedMethod.collectedInEnvironments">
@@ -110,6 +113,9 @@
                     <td>{{ app.invokedAtMillis | ckAge:'short' }}</td>
                 </tr>
             </ng-container>
+            <tr>
+                <td><button (click)="gotoDetail(selectedMethod.id)">View Details</button></td>
+            </tr>
             </tbody>
         </table>
     </div>

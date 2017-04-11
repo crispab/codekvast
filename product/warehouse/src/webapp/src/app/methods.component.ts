@@ -4,12 +4,13 @@ import {MethodData} from './model/MethodData';
 import {AgePipe} from './age.pipe';
 import {DatePipe} from '@angular/common';
 import {Method} from './model/Method';
+import {Router} from '@angular/router';
 
 @Component({
     selector: 'ck-methods',
     template: require('./methods.component.html'),
     styles: [require('./methods.component.css')],
-    providers: [WarehouseService, AgePipe, DatePipe],
+    providers: [AgePipe, DatePipe],
 })
 export class MethodsComponent {
     static readonly SIGNATURE_COLUMN = 'signature';
@@ -24,7 +25,7 @@ export class MethodsComponent {
     sortAscending = true;
     selectedMethod: Method;
 
-    constructor(private warehouse: WarehouseService, private datePipe: DatePipe) {
+    constructor(private router: Router, private warehouse: WarehouseService, private datePipe: DatePipe) {
     }
 
     private sortBy(column: string) {
@@ -111,7 +112,14 @@ export class MethodsComponent {
     }
 
     communicationFailure() {
-        let now = this.datePipe.transform(new Date(), 'shortTime')
+        let now = this.datePipe.transform(new Date(), 'shortTime');
         return now + ': Communication failure'
     }
+
+    gotoDetail(id: number): void {
+        console.log(`Viewing details for method ${id}`)
+        //noinspection JSIgnoredPromiseFromCall
+        this.router.navigate(['/method', id]);
+    }
+
 }

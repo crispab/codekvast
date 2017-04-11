@@ -11,6 +11,8 @@ import {MethodDetailComponent} from './method-detail.component';
 import {MethodsComponent} from './methods.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {StatusComponent} from './status.component';
+import {WarehouseService} from './warehouse.service';
+import {ConfigService} from './config.service';
 
 @NgModule({
     imports: [
@@ -20,15 +22,11 @@ import {StatusComponent} from './status.component';
         AgePipe, AppComponent, HomeComponent, MethodsComponent, MethodDetailComponent, StatusComponent,
     ],
     providers: [
+        ConfigService,
         Title,
-        {
-            provide: APP_BASE_HREF,
-            useValue: '/'
-        },
-        {
-            provide: LOCALE_ID,
-            useValue: window.navigator.language
-        }
+        WarehouseService,
+        { provide: APP_BASE_HREF, useValue: '/'},
+        { provide: LOCALE_ID, useValue: window.navigator.language},
     ],
     bootstrap: [AppComponent]
 })
