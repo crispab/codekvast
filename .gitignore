@@ -30,3 +30,6 @@ npm-debug.log**
 a.a
 phantomjsdriver.log
 product/warehouse/src/webapp/dist/
+.settings/
+.project
+.classpath

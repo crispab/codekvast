@@ -19,6 +19,7 @@ subprojects {
 
     apply from: "$rootDir/gradle/libs.gradle"
 
+    apply plugin: 'eclipse'
     apply plugin: 'idea'
     idea {
         // Make spring loaded work when doing 'gradle bootRun'...
