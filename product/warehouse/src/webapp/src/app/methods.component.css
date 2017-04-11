@@ -25,6 +25,18 @@ div.wrapper {
     white-space: normal;
 }
 
+.signature-column {
+    width: 87%;
+}
+
+.age-column {
+    width: 13%;
+}
+
+.row-icon-column {
+    width: 2em;
+}
+
 #details-table .table-active {
     height: 6em;
 }
