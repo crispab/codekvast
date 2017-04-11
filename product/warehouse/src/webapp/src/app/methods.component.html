@@ -1,4 +1,4 @@
-<div class="wrapper d-flex flex-column h-100">
+<div class="wrapper d-flex flex-column h-100 mx-2">
 <div id="search-form" class="container mt-5">
     <form (ngSubmit)="state.search()" #searchForm="ngForm">
         <div class="form-group row">
@@ -35,7 +35,8 @@
 
 <div class="d-flex flex-row h-100 content mx-4">
     <div id="methods-table">
-        <table class="table table-responsive table-striped table-bordered table-hover table-sm" (mouseleave)="state.selectMethod(null)">
+        <table class="table table-striped table-bordered table-hover table-sm"
+               (mouseleave)="state.selectMethod(null)">
             <thead>
             <tr>
                 <th class="signature-column" (click)="state.sortBySignature()">Signature <i [ngClass]="state.headerIconClassesSignature()"
@@ -45,7 +46,10 @@
             </thead>
 
             <tbody>
-            <tr *ngFor="let method of state.sortedMethods()" (mouseenter)="state.selectMethod(method)" [class.table-active]="state.isSelectedMethod(method)">
+            <tr *ngFor="let method of state.sortedMethods()"
+                (mouseenter)="state.selectMethod(method)"
+                (click)="gotoMethodDetail(method.id)"
+                [class.table-active]="state.isSelectedMethod(method)">
                 <td class="signature-column wrap-word">{{ method.signature }}</td>
                 <td class="age-column wrap-word" title="{{ method.lastInvokedAtMillis | ckAge:'short' }}">
                     {{ method.lastInvokedAtMillis | ckAge:state.dateFormat }}
@@ -56,11 +60,38 @@
     </div>
     <div id="details-table">
         <ng-container *ngIf="state.selectedMethod">
-            <p><b>Signature: </b><span class="wrap-word">{{ state.selectedMethod.signature }}</span></p>
-            <p><b>Last Invoked: </b>{{ state.selectedLastInvoked() }}</p>
-            <p><b>Collected days: </b>{{ state.selectedMethod.collectedDays}}</p>
-            <p><b>Appears in environments (collected days): </b> {{ state.selectedAppearsInEnvironments() }}</p>
-            <p><b>Appears in applications: </b>{{ state.selectedAppearsInApplications() }}</p>
+            <table class="table table-bordered table-striped">
+                <tr class="table-active">
+                    <td colspan="3" class="wrap-word">{{ state.selectedMethod.signature }}</td>
+                </tr>
+                <tr>
+                    <th>Last Invoked:</th>
+                    <td>{{ state.selectedMethod.lastInvokedAtMillis | ckAge:'short' }}</td>
+                    <td class="w-25">{{ state.selectedMethod.lastInvokedAtMillis | ckAge:state.dateFormat }}</td>
+                </tr>
+                <tr>
+                    <th>Collected since:</th>
+                    <td>{{ state.selectedMethod.collectedSinceMillis|ckAge:'short'}}</td>
+                    <td>{{ state.selectedMethod.collectedSinceMillis|ckAge:state.dateFormat}}</td>
+                </tr>
+                <tr>
+                    <th colspan="3">Collected in environments since: </th>
+                </tr>
+                <tr *ngFor="let env of state.selectedMethod.collectedInEnvironments">
+                    <td>{{ env.name }}</td>
+                    <td>{{ env.collectedSinceMillis | ckAge:'short' }}</td>
+                    <td>{{ env.collectedSinceMillis | ckAge:state.dateFormat }}</td>
+                </tr>
+                <tr>
+                    <th colspan="3">Occurs in applications since: </th>
+                </tr>
+                <tr *ngFor="let app of state.selectedMethod.occursInApplications">
+                    <td>{{ app.name }} {{app.version }}</td>
+                    <td>{{ app.startedAtMillis | ckAge:'short' }}</td>
+                    <td>{{ app.startedAtMillis | ckAge:state.dateFormat }}</td>
+                </tr>
+            </table>
+
         </ng-container>
     </div>
 </div>

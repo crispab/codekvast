@@ -25,7 +25,7 @@ export class MethodsComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.state = this.stateService.getState('methods', () => new MethodsComponentState(this.warehouse, this.agePipe));
+        this.state = this.stateService.getState('methods', () => new MethodsComponentState(this.warehouse));
     }
 
     prettyPrintAppStatus(s: string) {
@@ -37,10 +37,10 @@ export class MethodsComponent implements OnInit {
         return now + ': Communication failure'
     }
 
-    gotoMethodDetail(): void {
+    gotoMethodDetail(id: number): void {
         if (this.state.selectedMethod) {
             //noinspection JSIgnoredPromiseFromCall
-            this.router.navigate(['/method', this.state.selectedMethod.id]);
+            this.router.navigate(['/method', id]);
         }
     }
 

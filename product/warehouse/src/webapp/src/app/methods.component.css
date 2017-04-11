@@ -34,3 +34,7 @@ div.wrapper {
     width: 14%;
     max-width: 14%;
 }
+
+#details-table .table-active {
+    height: 6em;
+}
