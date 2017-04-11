@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewEncapsulation} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {WarehouseService} from './warehouse.service';
 import {AgePipe} from './age.pipe';
 import {DatePipe} from '@angular/common';
@@ -10,8 +10,7 @@ import {MethodsComponentState} from './methods.component.state';
     selector: 'ck-methods',
     template: require('./methods.component.html'),
     styles: [require('./methods.component.css')],
-    providers: [AgePipe, DatePipe],
-    encapsulation: ViewEncapsulation.None // make "ck-methods" rule in own css work.
+    providers: [AgePipe, DatePipe]
 })
 export class MethodsComponent implements OnInit {
     static readonly SIGNATURE_COLUMN = 'signature';
@@ -22,11 +21,11 @@ export class MethodsComponent implements OnInit {
     constructor(private router: Router,
                 private stateService: StateService,
                 private warehouse: WarehouseService,
-                private datePipe: DatePipe) {
+                private agePipe: AgePipe) {
     }
 
     ngOnInit(): void {
-        this.state = this.stateService.getState('methods', () => new MethodsComponentState(this.warehouse));
+        this.state = this.stateService.getState('methods', () => new MethodsComponentState(this.warehouse, this.agePipe));
     }
 
     prettyPrintAppStatus(s: string) {
@@ -34,7 +33,7 @@ export class MethodsComponent implements OnInit {
     }
 
     communicationFailure() {
-        let now = this.datePipe.transform(new Date(), 'shortTime');
+        let now = this.agePipe.transform(new Date(), 'shortTime');
         return now + ': Communication failure'
     }
 

@@ -5,6 +5,7 @@ import {MethodData} from './model/MethodData';
 import {MethodsComponent} from './methods.component';
 import {Method} from './model/Method';
 import {WarehouseService} from './warehouse.service';
+import {AgePipe} from './age.pipe';
 
 export class MethodsComponentState {
     signature: string;
@@ -16,7 +17,7 @@ export class MethodsComponentState {
     sortAscending = true;
     selectedMethod: Method;
 
-    constructor(private warehouse: WarehouseService) {
+    constructor(private warehouse: WarehouseService, private agePipe: AgePipe) {
         console.log('Created MethodsComponentState')
     }
 
@@ -105,5 +106,20 @@ export class MethodsComponentState {
         return this.selectedMethod && this.selectedMethod.id === m.id;
     }
 
+    selectedLastInvoked() {
+        let millis = this.selectedMethod.lastInvokedAtMillis;
+        if (millis === 0) {
+            return ''
+        }
+        return `${this.agePipe.transform(millis, 'short')} (${this.agePipe.transform(millis, this.dateFormat)})`
+    }
+
+    selectedAppearsInEnvironments() {
+        return this.selectedMethod.collectedInEnvironments.map(e => `${e.name} (${e.collectedDays})`).join(', ');
+    }
+
+    selectedAppearsInApplications() {
+        return this.selectedMethod.occursInApplications.map(a => `${a.name} ${a.version}`).join(', ');
+    }
 }
 

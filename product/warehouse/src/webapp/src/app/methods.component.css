@@ -1,14 +1,8 @@
-ck-methods {
-    height: 100%;
+div.wrapper {
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
 }
 
 .content {
-    display: flex;
-    flex-direction: row;
-    height: 100%;
     overflow: hidden;
 }
 
