@@ -91,11 +91,13 @@ export class MethodsComponent {
                 if (this.data.methods.length === 1) {
                     this.selectMethod(this.data.methods[0]);
                 } else {
+                    // TODO: only unselect if selectedMethod is absent in new data
                     this.selectMethod(null);
                 }
             }, error => {
                 this.data = undefined;
                 this.errorMessage = error.statusText ? error.statusText : error;
+                this.selectMethod(null);
             }, () => console.log('getMethods() complete'));
     }
 
