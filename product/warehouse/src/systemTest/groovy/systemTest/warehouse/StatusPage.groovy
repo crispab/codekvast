@@ -6,6 +6,6 @@ class StatusPage extends Page {
     static url = '/status'
 
     static content = {
-        header { $('ck-status #header').text() }
+        header { $('ck-status h1').text() }
     }
 }
