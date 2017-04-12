@@ -137,6 +137,9 @@ systemTest {
 }
 
 String executeDockerCompose(String args) {
+    // Pre-create the directory used by the warehouse container, or else they will be created and owned by root
+    file('/tmp/codekvast/warehouse').mkdirs()
+
     def command = "src/docker/codekvast-warehouse.sh $args"
     def process = command.execute([
             "WAREHOUSE_VERSION=$codekvastDisplayVersion",
