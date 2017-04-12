@@ -175,7 +175,4 @@ describe('MethodsComponent', () => {
         expect(component.state.isSelectedMethod({id: 2} as Method)).toBeFalsy();
     });
 
-    it('Should prettyPrintAppStatus("EXCLUDED_SINCE_TRIVIAL") as "Excluded since trivial"', () => {
-        expect(component.prettyPrintAppStatus('EXCLUDED_SINCE_TRIVIAL')).toBe('Excluded since trivial');
-    })
 });

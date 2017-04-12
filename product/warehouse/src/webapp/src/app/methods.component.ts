@@ -28,10 +28,6 @@ export class MethodsComponent implements OnInit {
         this.state = this.stateService.getState(MethodsComponentState.KEY, () => new MethodsComponentState(this.warehouse));
     }
 
-    prettyPrintAppStatus(s: string) {
-        return s.substr(0, 1).toUpperCase() + s.substr(1).toLowerCase().replace(/_/g, ' ');
-    }
-
     communicationFailure() {
         let now = this.agePipe.transform(new Date(), 'shortTime');
         return now + ': Communication failure'
