@@ -1,5 +1,8 @@
 # Codekvast Release Notes
 
+## 0.18.7
+1. Added a landing page for feature voting, to make it simpler to use Google Analytics.
+
 ## 0.18.6
 1. Restructured and cleaned up README.md
 1. Added /home to Warehouse.
