@@ -4,7 +4,7 @@
 1. Restructured and cleaned up README.md
 1. Added /home to Warehouse.
 1. Improved Warehouse's /methods. Now the scrollbars work as expected.
-1. Added /method/:id
+1. Implemented Warehouse's method details page. Ugly, but working.
 
 ## 0.18.5
 1. Implemented a simple web interface to Warehouse.
