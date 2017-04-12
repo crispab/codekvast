@@ -8,7 +8,7 @@ import {WarehouseService} from './warehouse.service';
 
 export class MethodsComponentState {
     static KEY = 'methods';
-    
+
     signature: string;
     maxResults = 100;
     data: MethodData;
