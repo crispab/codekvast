@@ -1,9 +1,9 @@
 <div class="wrapper d-flex flex-column h-100 mx-2">
     <div id="search-form" class="container mt-5">
-        <h1 class="display-9">Methods</h1>
+        <h4>Search Method</h4>
         <form (ngSubmit)="state.search()" #searchForm="ngForm">
             <div class="form-group row">
-                <label for="signature" class="col-2 col-form-label">Signature</label>
+                <label for="signature" class="col-2 col-form-label">Signature:</label>
                 <div class="col-6">
                     <input class="form-control"
                            id="signature"
@@ -14,7 +14,7 @@
                 </div>
             </div>
             <div class="form-group row">
-                <label for="maxResults" class="col-2 col-form-label">Max&nbsp;Results</label>
+                <label for="maxResults" class="col-2 col-form-label">Max&nbsp;Results:</label>
                 <div class="col-2">
                     <input class="form-control"
                            id="maxResults"
@@ -28,23 +28,24 @@
                 </button>
 
                 <div *ngIf="state.data">
-                    <small class="ml-2 col-form-label form-text text-muted">{{ state.data.timestamp | date:'shortTime' }}: Found {{
+                    <small class="ml-2 col-form-label form-text text-muted">{{ state.data.timestamp | date:settings.dateFormat }}: Found {{
                                                                             state.data.numMethods }} methods in {{
                                                                             state.data.queryTimeMillis }} ms
                     </small>
                 </div>
 
                 <div *ngIf="state.errorMessage">
-                    <small class="ml-2 col-form-label form-text text-muted" title="{{ state.errorMessage }}">{{ communicationFailure() }}
+                    <small class="ml-2 col-form-label form-text text-muted" title="{{ state.errorMessage }}">{{ communicationFailure()
+                                                                                                             }}
                     </small>
                 </div>
             </div>
         </form>
     </div>
 
-    <div class="d-flex flex-row h-100 content mx-4">
+    <div class="d-flex flex-row h-100 content mx-4" (mouseleave)="state.selectMethod(null)">
         <div id="methods-table">
-            <table class="table table-striped table-bordered table-hover table-sm" (mouseleave)="state.selectMethod(null)">
+            <table class="table table-striped table-bordered table-hover table-sm">
                 <thead>
                 <tr>
                     <th (click)="state.sortBySignature()" class="signature-column">
@@ -63,8 +64,8 @@
                     (click)="gotoMethodDetail(method.id)"
                     [class.table-active]="state.isSelectedMethod(method)">
                     <td class="signature-column wrap-word">{{ method.signature }}</td>
-                    <td class="age-column wrap-word" title="{{ method.lastInvokedAtMillis | ckAge:'short' }}">
-                        {{ method.lastInvokedAtMillis | ckAge:state.dateFormat }}
+                    <td class="age-column wrap-word" title="{{ method.lastInvokedAtMillis | ckAge:settings.dateFormat }}">
+                        {{ method.lastInvokedAtMillis | ckAge:settings.ageFormat }}
                     </td>
                     <td class="icon-column"><i [ngClass]="state.rowIconClasses(method.id)"></i></td>
                 </tr>
@@ -73,38 +74,42 @@
         </div>
         <div id="details-table">
             <table *ngIf="state.selectedMethod" class="table table-bordered table-striped">
+                <tr>
+                    <th colspan="3">ID: {{ state.selectedMethod.id }}</th>
+                </tr>
                 <tr class="table-active">
                     <td colspan="3" class="wrap-word">{{ state.selectedMethod.signature }}</td>
                 </tr>
                 <tr>
-                    <th>ID:</th>
-                    <td>{{ state.selectedMethod.id }}</td>
+                    <td></td>
+                    <th>Date</th>
+                    <th>Age</th>
                 </tr>
                 <tr>
                     <th>Last Invoked:</th>
-                    <td>{{ state.selectedMethod.lastInvokedAtMillis | ckAge:'short' }}</td>
-                    <td class="w-25">{{ state.selectedMethod.lastInvokedAtMillis | ckAge:state.dateFormat }}</td>
+                    <td>{{ state.selectedMethod.lastInvokedAtMillis | ckAge:settings.dateFormat }}</td>
+                    <td class="w-25">{{ state.selectedMethod.lastInvokedAtMillis | ckAge:settings.ageFormat }}</td>
                 </tr>
                 <tr>
                     <th>Collected since:</th>
-                    <td>{{ state.selectedMethod.collectedSinceMillis|ckAge:'short'}}</td>
-                    <td>{{ state.selectedMethod.collectedSinceMillis|ckAge:state.dateFormat}}</td>
+                    <td>{{ state.selectedMethod.collectedSinceMillis|ckAge:settings.dateFormat}}</td>
+                    <td>{{ state.selectedMethod.collectedSinceMillis|ckAge:settings.ageFormat}}</td>
                 </tr>
                 <tr>
-                    <th colspan="3">Collected in environments since:</th>
+                    <th colspan="3">Collected in environments:</th>
                 </tr>
                 <tr *ngFor="let env of state.selectedMethod.collectedInEnvironments">
                     <td>{{ env.name }}</td>
-                    <td>{{ env.collectedSinceMillis | ckAge:'short' }}</td>
-                    <td>{{ env.collectedSinceMillis | ckAge:state.dateFormat }}</td>
+                    <td>{{ env.collectedSinceMillis | ckAge:settings.dateFormat }}</td>
+                    <td>{{ env.collectedSinceMillis | ckAge:settings.ageFormat }}</td>
                 </tr>
                 <tr>
-                    <th colspan="3">Occurs in applications since:</th>
+                    <th colspan="3">Occurs in applications:</th>
                 </tr>
                 <tr *ngFor="let app of state.selectedMethod.occursInApplications">
                     <td>{{ app.name }} {{app.version }}</td>
-                    <td>{{ app.startedAtMillis | ckAge:'short' }}</td>
-                    <td>{{ app.startedAtMillis | ckAge:state.dateFormat }}</td>
+                    <td>{{ app.startedAtMillis | ckAge:settings.dateFormat }}</td>
+                    <td>{{ app.startedAtMillis | ckAge:settings.ageFormat }}</td>
                 </tr>
             </table>
         </div>

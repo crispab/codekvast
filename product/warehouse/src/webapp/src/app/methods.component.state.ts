@@ -7,11 +7,12 @@ import {Method} from './model/Method';
 import {WarehouseService} from './warehouse.service';
 
 export class MethodsComponentState {
+    static KEY = 'methods';
+    
     signature: string;
     maxResults = 100;
     data: MethodData;
     errorMessage: string;
-    dateFormat = 'age';
     sortColumn = MethodsComponent.SIGNATURE_COLUMN;
     sortAscending = true;
     selectedMethod: Method;

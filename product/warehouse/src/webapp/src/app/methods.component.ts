@@ -5,6 +5,7 @@ import {DatePipe} from '@angular/common';
 import {Router} from '@angular/router';
 import {StateService} from './state.service';
 import {MethodsComponentState} from './methods.component.state';
+import {Settings} from './settings';
 
 @Component({
     selector: 'ck-methods',
@@ -16,16 +17,15 @@ export class MethodsComponent implements OnInit {
     static readonly SIGNATURE_COLUMN = 'signature';
     static readonly AGE_COLUMN = 'age';
 
+    settings: Settings;
     state: MethodsComponentState;
 
-    constructor(private router: Router,
-                private stateService: StateService,
-                private warehouse: WarehouseService,
-                private agePipe: AgePipe) {
+    constructor(private router: Router, private stateService: StateService, private warehouse: WarehouseService, private agePipe: AgePipe) {
     }
 
     ngOnInit(): void {
-        this.state = this.stateService.getState('methods', () => new MethodsComponentState(this.warehouse));
+        this.settings = this.stateService.getState(Settings.KEY, () => new Settings());
+        this.state = this.stateService.getState(MethodsComponentState.KEY, () => new MethodsComponentState(this.warehouse));
     }
 
     prettyPrintAppStatus(s: string) {

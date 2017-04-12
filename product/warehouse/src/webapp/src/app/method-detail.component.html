@@ -1,13 +1,129 @@
 <div class="container">
     <h2>Method Details</h2>
+    <button (click)="goBack()"><i class="fa fa-chevron-left mr-2"></i>Back</button>
 
     <div *ngIf="method">
-        <p>{{ method.id }}</p>
 
-        <p><code>{{ method.signature }}</code></p>
+        <table class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr class="bg-info">
+                <th colspan="2">Identity</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr>
+                <th>ID:</th>
+                <td>{{ method.id }}</td>
+            </tr>
+            <tr>
+                <th>Visibility:</th>
+                <td>{{ method.visibility }}</td>
+            </tr>
+            <tr>
+                <th>Signature:</th>
+                <td>{{ method.signature }}</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <table class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr class="bg-info">
+                <th colspan="3">Collection Summary</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr>
+                <th>Last Invoked:</th>
+                <th>{{ method.lastInvokedAtMillis | ckAge:settings.dateFormat }}</th>
+                <th>{{ method.lastInvokedAtMillis | ckAge:settings.ageFormat }}</th>
+            </tr>
+            <tr>
+                <th>Collected since:</th>
+                <td>{{ method.collectedSinceMillis | ckAge:settings.dateFormat }}</td>
+                <td>{{ method.collectedSinceMillis | ckAge:settings.ageFormat }}</td>
+            </tr>
+            <tr>
+                <th>Collected to:</th>
+                <td>{{ method.collectedToMillis | ckAge:settings.dateFormat }}</td>
+                <td>{{ method.collectedToMillis | ckAge:settings.ageFormat }}</td>
+            </tr>
+            <tr>
+                <th>Collected days:</th>
+                <td></td>
+                <td>{{ method.collectedDays }}</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <table *ngFor="let env of method.collectedInEnvironments" class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr class="bg-info">
+                <th colspan="3">Environment {{ env.name }}</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr>
+                <th>Last Invoked:</th>
+                <th>{{ env.invokedAtMillis | ckAge:settings.dateFormat }}</th>
+                <th>{{ env.invokedAtMillis | ckAge:settings.ageFormat }}</th>
+            </tr>
+            <tr>
+                <th>Collected since:</th>
+                <td>{{ env.collectedSinceMillis | ckAge:settings.dateFormat }}</td>
+                <td>{{ env.collectedSinceMillis | ckAge:settings.ageFormat }}</td>
+            </tr>
+            <tr>
+                <th>Collected to:</th>
+                <td>{{ env.collectedToMillis | ckAge:settings.dateFormat }}</td>
+                <td>{{ env.collectedToMillis | ckAge:settings.ageFormat }}</td>
+            </tr>
+            <tr>
+                <th>Collected days:</th>
+                <td></td>
+                <td>{{ env.collectedDays }}</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <table *ngFor="let app of method.occursInApplications" class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr class="bg-info">
+                <th colspan="3">Application {{ app.name }} {{ app.version }}</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr>
+                <th>Status:</th>
+                <th colspan="2">{{ app.status }}</th>
+            </tr>
+            <tr>
+                <th>Last Invoked:</th>
+                <th>{{ app.invokedAtMillis | ckAge:settings.dateFormat }}</th>
+                <th>{{ app.invokedAtMillis | ckAge:settings.ageFormat }}</th>
+            </tr>
+            <tr>
+                <th>Collected since:</th>
+                <td>{{ app.startedAtMillis | ckAge:settings.dateFormat }}</td>
+                <td>{{ app.startedAtMillis | ckAge:settings.ageFormat }}</td>
+            </tr>
+            <tr>
+                <th>Collected to:</th>
+                <td>{{ app.dumpedAtMillis | ckAge:settings.dateFormat }}</td>
+                <td>{{ app.dumpedAtMillis | ckAge:settings.ageFormat }}</td>
+            </tr>
+            <tr>
+                <th>Collected days:</th>
+                <td></td>
+                <td>{{ app.collectedDays }}</td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 
-    <div *ngIf="errorMessage" class="alert alert-danger" role="alert">{{ errorMessage }}</div>
-
-    <button (click)="goBack()">Back</button>
+    <button (click)="goBack()"><i class="fa fa-chevron-left mr-2"></i>Back</button>
 </div>
