@@ -4,6 +4,7 @@ import {HomeComponent} from './home.component';
 import {StatusComponent} from './status.component';
 import {MethodsComponent} from './methods.component';
 import {MethodDetailComponent} from './method-detail.component';
+import {ReportsComponent} from './reports.component';
 
 const routes: Routes = [
     {
@@ -22,6 +23,9 @@ const routes: Routes = [
     }, {
         path: 'status',
         component: StatusComponent
+    }, {
+        path: 'reports',
+        component: ReportsComponent
     }, {
         path: '**',
         redirectTo: 'home',

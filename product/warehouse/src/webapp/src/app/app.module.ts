@@ -14,13 +14,15 @@ import {StatusComponent} from './status.component';
 import {WarehouseService} from './warehouse.service';
 import {ConfigService} from './config.service';
 import {StateService} from './state.service';
+import {ReportsComponent} from './reports.component';
+import {VoteComponent} from './vote.component';
 
 @NgModule({
     imports: [
         AppRoutingModule, BrowserModule, FormsModule, HttpModule, NgbModule.forRoot(),
     ],
     declarations: [
-        AgePipe, AppComponent, HomeComponent, MethodsComponent, MethodDetailComponent, StatusComponent,
+        AgePipe, AppComponent, HomeComponent, MethodsComponent, MethodDetailComponent, ReportsComponent, StatusComponent, VoteComponent
     ],
     providers: [
         ConfigService,

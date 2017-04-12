@@ -88,7 +88,7 @@
     <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="9">
+          <list size="11">
             <item index="0" class="java.lang.String" itemvalue="th:if" />
             <item index="1" class="java.lang.String" itemvalue="th:text" />
             <item index="2" class="java.lang.String" itemvalue="th:action" />
@@ -98,6 +98,8 @@
             <item index="6" class="java.lang.String" itemvalue="ng-model" />
             <item index="7" class="java.lang.String" itemvalue="ng-strict-di" />
             <item index="8" class="java.lang.String" itemvalue="[attr.href]" />
+            <item index="9" class="java.lang.String" itemvalue="routerlink" />
+            <item index="10" class="java.lang.String" itemvalue="routerlinkactive" />
           </list>
         </value>
       </option>
@@ -106,7 +108,7 @@
     <inspection_tool class="HtmlUnknownTag" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="11">
+          <list size="12">
             <item index="0" class="java.lang.String" itemvalue="nobr" />
             <item index="1" class="java.lang.String" itemvalue="noembed" />
             <item index="2" class="java.lang.String" itemvalue="comment" />
@@ -118,6 +120,7 @@
             <item index="8" class="java.lang.String" itemvalue="ck-top-nav" />
             <item index="9" class="java.lang.String" itemvalue="ck-method-list" />
             <item index="10" class="java.lang.String" itemvalue="router-outlet" />
+            <item index="11" class="java.lang.String" itemvalue="ck-vote-for" />
           </list>
         </value>
       </option>
