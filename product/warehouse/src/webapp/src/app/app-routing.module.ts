@@ -5,6 +5,7 @@ import {StatusComponent} from './status.component';
 import {MethodsComponent} from './methods.component';
 import {MethodDetailComponent} from './method-detail.component';
 import {ReportsComponent} from './reports.component';
+import {VoteResultComponent} from './vote-result.component';
 
 const routes: Routes = [
     {
@@ -26,6 +27,9 @@ const routes: Routes = [
     }, {
         path: 'reports',
         component: ReportsComponent
+    }, {
+        path: 'vote-result/:feature/:vote',
+        component: VoteResultComponent
     }, {
         path: '**',
         redirectTo: 'home',

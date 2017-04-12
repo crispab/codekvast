@@ -17,6 +17,7 @@ import {StateService} from './state.service';
 import {StatusComponent} from './status.component';
 import {VoteComponent} from './vote.component';
 import {WarehouseService} from './warehouse.service';
+import {VoteResultComponent} from './vote-result.component';
 
 @NgModule({
     imports: [
@@ -31,7 +32,8 @@ import {WarehouseService} from './warehouse.service';
         MethodDetailComponent,
         ReportsComponent,
         StatusComponent,
-        VoteComponent
+        VoteComponent,
+        VoteResultComponent
     ],
     providers: [
         ConfigService,
