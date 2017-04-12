@@ -30,6 +30,8 @@ class VoteState {
 
     resetVote() {
         console.log(`Withdraw vote=${this.vote} for ${this.feature}`);
+        //noinspection JSIgnoredPromiseFromCall
+        this.router.navigate(['/vote-result', this.feature, 'withdraw-' + this.vote]);
         this.vote = undefined;
     }
 }

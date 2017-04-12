@@ -8,7 +8,7 @@ import {Location} from '@angular/common';
 })
 export class VoteResultComponent implements OnInit {
     featureName: string;
-    vote: boolean;
+    vote: string;
 
     constructor(private location: Location, private route: ActivatedRoute) {
     }
@@ -17,7 +17,7 @@ export class VoteResultComponent implements OnInit {
         this.route.params
             .subscribe((params: Params) => {
                 this.featureName = params['feature'];
-                this.vote = params['vote'] === 'true';
+                this.vote = params['vote'];
             });
     }
 
