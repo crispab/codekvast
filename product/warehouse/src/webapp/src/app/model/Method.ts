@@ -13,6 +13,7 @@ export class Method {
     occursInApplications: Application[];
     packageName: string;
     signature: string;
+    statuses: string[];
     tags: string[];
     trackedPercent: number;
     visibility: string;

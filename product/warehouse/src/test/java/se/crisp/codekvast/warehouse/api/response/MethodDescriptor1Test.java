@@ -7,9 +7,10 @@ import se.crisp.codekvast.warehouse.api.model.ApplicationDescriptor1;
 import se.crisp.codekvast.warehouse.api.model.EnvironmentDescriptor1;
 import se.crisp.codekvast.warehouse.api.model.MethodDescriptor1;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
+import static se.crisp.codekvast.agent.lib.model.v1.SignatureStatus.*;
+import static se.crisp.codekvast.agent.lib.model.v1.SignatureStatus.NOT_INVOKED;
 
 /**
  * @author olle.hallin@crisp.se
@@ -39,6 +40,7 @@ public class MethodDescriptor1Test {
         assertThat(toDaysAgo(md.getLastInvokedAtMillis()), is(toDaysAgo(twoDaysAgo)));
 
         assertThat(md.getTrackedPercent(), is(67));
+        assertThat(md.getStatuses(), containsInAnyOrder(EXACT_MATCH, NOT_INVOKED, EXCLUDED_BY_PACKAGE_NAME));
     }
 
     private int toDaysAgo(long timestamp) {
@@ -72,7 +74,7 @@ public class MethodDescriptor1Test {
                                     ApplicationDescriptor1.builder()
                                                           .name("app1")
                                                           .version("1.1")
-                                                          .status(SignatureStatus.EXCLUDED_BY_PACKAGE_NAME)
+                                                          .status(EXCLUDED_BY_PACKAGE_NAME)
                                                           .startedAtMillis(collectedSinceMillis)
                                                           .dumpedAtMillis(collectedToMillis)
                                                           .invokedAtMillis(invokedAtMillis1)
@@ -81,7 +83,7 @@ public class MethodDescriptor1Test {
                                     ApplicationDescriptor1.builder()
                                                           .name("app1")
                                                           .version("1.2")
-                                                          .status(SignatureStatus.NOT_INVOKED)
+                                                          .status(NOT_INVOKED)
                                                           .startedAtMillis(collectedSinceMillis + 10)
                                                           .dumpedAtMillis(collectedToMillis - 10)
                                                           .invokedAtMillis(invokedAtMillis1 - 10)
@@ -90,7 +92,7 @@ public class MethodDescriptor1Test {
                                     ApplicationDescriptor1.builder()
                                                           .name("app1")
                                                           .version("1.3")
-                                                          .status(SignatureStatus.EXACT_MATCH)
+                                                          .status(EXACT_MATCH)
                                                           .startedAtMillis(collectedSinceMillis)
                                                           .dumpedAtMillis(collectedToMillis)
                                                           .invokedAtMillis(invokedAtMillis2)

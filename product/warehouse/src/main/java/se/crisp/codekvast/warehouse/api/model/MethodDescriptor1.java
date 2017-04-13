@@ -31,6 +31,7 @@ import java.util.Comparator;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * @author olle.hallin@crisp.se
@@ -72,6 +73,13 @@ public class MethodDescriptor1 {
     public int getTrackedPercent() {
         long tracked = occursInApplications.stream().map(ApplicationDescriptor1::getStatus).filter(SignatureStatus::isTracked).count();
         return (int) Math.round (tracked * 100D / occursInApplications.size());
+    }
+
+    /**
+     * Collect all different statuses this method has in all collected apps.
+     */
+    public Set<SignatureStatus> getStatuses() {
+        return occursInApplications.stream().map(ApplicationDescriptor1::getStatus).collect(Collectors.toSet());
     }
 
     /**
