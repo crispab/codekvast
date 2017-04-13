@@ -157,3 +157,61 @@ Most important rules:
 
 The formatting of TypeScript is described and enforced by tslint.js files in the projects that use TypeScript.
 IDEA will automatically pick up and apply these settings when found.
+
+## How to do semi-manual end-to-end tests
+
+All of the non-trivial code is covered with unit tests.
+
+Some tricky integrations are covered by proper integration tests where the external part is executing in Docker containers managed by the tests. 
+
+There is also a smoke test that launches MariaDB and Codekvast Warehouse by means of Docker Compose, and executes some Web Driver tests.
+This is just a smoke test though.
+
+To assist manual e2e tests, there is a number of sample apps that are managed by Gradle. They are configured to start with the latest
+Codekvast collector attached.
+
+### How to set up for doing development with live data flowing
+
+1. Launch 5 terminal windows
+1. In terminal #1 do `./gradlew :sample:jenkins1:run`. This will download and start one version of Jenkins with Codekvast attached.
+1. In terminal #2 do `./gradlew :sample:jenkins2:run`. This will download and start another version of Jenkins with Codekvast attached.
+1. In terminal #3 do `./gradlew :sample:sample-ltw:run`. This will launch the short-lived sample.app.SampleApp.
+1. In terminal #4 do `./gradlew :product:agent:daemon:bootRun`. This will start Codekvast Daemon that will make an inventory of the sample applications.
+It will also periodically produce data files to be consumed by the warehouse.
+1. In terminal #5 do `./gradlew :product:warehouse:bootRun`. This will start Codekvast Warehouse that will consume the data files produced
+ by the daemon.
+1. Open a web browser at http://localhost:8080. It will show the warehouse web interface.
+
+### How to do rapid development of the web app
+
+In addition to the above do this:
+
+1. Launch a terminal window
+1. `cd product/warehouse/src/webapp`
+1. `npm start`. It will start an embedded web server on port 8088.
+It reloads changes to the webapp automatically.
+1. Open the web browser at http://localhost:8088
+
+### Canned REST responses for off-line webapp development
+
+When running the webapp from `npm start` there is a number of canned REST responses available.
+This makes it possible to develop the webapp with nothing else than `npm start` running.
+
+The canned responses are really handy when doing CSS & HTML development, where live data is not necessary.
+ 
+#### End-point /api/v1/methods
+
+In the Methods page, the canned response is delivered from disk by searching for the signature `-----` (five dashes).
+ 
+#### Updating the canned responses
+
+Canned responses has to be re-captured every time the warehouse REST API has been changed.
+
+The canned response for `/api/v1/methods` is captured by executing
+
+    curl -X GET --header 'Accept: application/json' 'http://localhost:8080/api/v1/methods?signature=%25&maxResults=100'|jq . > product/warehouse/src/webapp/src/app/test/canned/v1/MethodData.json
+    
+from the root directory while `./gradlew :product:warehouse:bootRun` is running.
+When doing the capture, make sure that data from the three above mentioned sample apps is stored in the warehouse.
+
+(The JSON response is piped through `jq .` to make it more pretty for the human eye.)
