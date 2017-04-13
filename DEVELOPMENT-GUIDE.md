@@ -170,7 +170,9 @@ This is just a smoke test though.
 To assist manual e2e tests, there is a number of sample apps that are managed by Gradle. They are configured to start with the latest
 Codekvast collector attached.
 
-### How to set up for doing development with live data flowing
+### How to demo
+
+The following procedure can be used for demo purposes and also when doing development with live data flowing.
 
 1. Launch 5 terminal windows
 1. In terminal #1 do `./gradlew :sample:jenkins1:run`. This will download and start one version of Jenkins with Codekvast attached.
