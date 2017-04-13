@@ -70,8 +70,10 @@ public class ScpFileUploaderImpl implements FileUploader {
         try {
             doValidateUploadConfig();
             log.info("Will upload to {}", formatUploadTo(config));
-        } catch (IOException e) {
-            throw new FileUploadException(String.format("Failed to validate %s", formatUploadTo(config)), e);
+        } catch (Exception e) {
+            String message = String.format("Failed to validate %s", formatUploadTo(config));
+            log.warn(message, e);
+            throw new FileUploadException(message, e);
         }
     }
 
@@ -80,14 +82,7 @@ public class ScpFileUploaderImpl implements FileUploader {
     }
 
     private String formatUploadTo(DaemonConfig config) {
-        StringBuilder sb = new StringBuilder()
-                .append(getUploadToUsername(config)).append("@").append(config.getUploadToHost());
-
-        if (config.getUploadToPort() != 22) {
-            sb.append(":").append(config.getUploadToPort());
-        }
-        sb.append(":").append(config.getUploadToPath());
-        return sb.toString();
+        return String.format("%s@%s:%s", getUploadToUsername(config), config.getUploadToHost(), config.getUploadToPath());
     }
 
     @Override
@@ -150,9 +145,8 @@ public class ScpFileUploaderImpl implements FileUploader {
 
     private void doValidateUploadConfig() throws IOException {
         String tmpFile = getUploadTargetFile(InetAddress.getLocalHost().getHostName() + "-" + UUID.randomUUID().toString() + ".tmp");
-        String remoteCommand = String.format("mkdir -p %1$s && touch %2$s && rm %2$s", config.getUploadToPath(), tmpFile);
-        log.debug("Validating upload config by attempting to execute '{}' on {}:{}...", remoteCommand, config.getUploadToHost(),
-                  config.getUploadToPort());
+        String remoteCommand = String.format("mkdir -p %1$s && touch %2$s && rm -f %2$s", config.getUploadToPath(), tmpFile);
+        log.debug("Validating upload config by attempting to execute '{}' on {}...", remoteCommand, config.getUploadToHost());
 
         SSHClient sshClient = createAuthenticatedSshClient();
 
@@ -167,7 +161,8 @@ public class ScpFileUploaderImpl implements FileUploader {
                 if (!errorMessage.isEmpty()) {
                     errorMessage = ": " + errorMessage;
                 }
-                throw new IOException(String.format("Failed to execute '%s': [exitCode=%d]%s", remoteCommand, exitStatus, errorMessage));
+                throw new IOException(String.format("Upload validation to %s failed: '%s' returned [%d]: %s", config.getUploadToHost(),
+                                                    remoteCommand, exitStatus, errorMessage));
             }
         } finally {
             sshClient.disconnect();
@@ -184,17 +179,17 @@ public class ScpFileUploaderImpl implements FileUploader {
         } else {
             // Just compare the hostnames...
             sshClient.addHostKeyVerifier((hostname, port, key) -> {
-                boolean trusted = config.getUploadToHost().equals(hostname);
+                boolean trusted = config.getUploadToHostOnly().equals(hostname) && port == config.getUploadToPort();
                 if (trusted) {
                     log.info("Trusting {}:{}", hostname, port);
                 } else {
-                    log.error("Not trusting {}:{}, the configured uploadToHost is {}:{}", hostname, port, config.getUploadToHost(),
+                    log.error("Not trusting {}:{}, the configured uploadToHost is {}:{}", hostname, port, config.getUploadToHostOnly(),
                               config.getUploadToPort());
                 }
                 return trusted;
             });
         }
-        sshClient.connect(config.getUploadToHost(), config.getUploadToPort());
+        sshClient.connect(config.getUploadToHostOnly(), config.getUploadToPort());
 
         String username = getUploadToUsername(config);
 

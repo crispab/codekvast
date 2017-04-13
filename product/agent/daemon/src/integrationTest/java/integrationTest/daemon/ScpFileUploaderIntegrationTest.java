@@ -30,20 +30,12 @@ public class ScpFileUploaderIntegrationTest {
     public void beforeTest() throws Exception {
         assumeTrue(sshd.isRunning());
 
-        DaemonConfig config = DaemonConfig.builder()
-                                          .uploadToHost("localhost")
-                                          .uploadToPort(sshd.getExternalPort(22))
+        DaemonConfig config = DaemonConfig.createSampleDaemonConfig().toBuilder()
+                                          .uploadToHost("localhost:" + sshd.getExternalPort(22))
                                           .uploadToUsername("root")
                                           .uploadToPassword("root")
                                           .uploadToPath("/tmp/codekvast")
                                           .verifyUploadToHostKey(false)
-
-                                          .dataPath(new File("dataPath"))
-                                          .dataProcessingIntervalSeconds(10)
-                                          .daemonVersion("version")
-                                          .daemonVcsId("vcsId")
-                                          .environment("integration-test")
-                                          .exportFile(new File("exportFile"))
                                           .build();
 
         scpUploader = new ScpFileUploaderImpl(config);

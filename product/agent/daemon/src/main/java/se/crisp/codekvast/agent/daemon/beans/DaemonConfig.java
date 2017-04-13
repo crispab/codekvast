@@ -54,8 +54,6 @@ public class DaemonConfig {
     @NonNull
     private String uploadToPath;
     private String uploadToHost;
-    @Builder.Default
-    private int uploadToPort = 22;
     private String uploadToUsername;
     private String uploadToPassword;
 
@@ -67,6 +65,28 @@ public class DaemonConfig {
 
     public String getDisplayVersion() {
         return daemonVersion + "-" + daemonVcsId;
+    }
+
+    public String getUploadToHostOnly() throws IllegalArgumentException {
+        if (uploadToHost == null) {
+            return null;
+        }
+        String[] parts = uploadToHost.split(":");
+        if (parts.length > 2) {
+            throw new IllegalArgumentException("Bad hostname format: " + uploadToHost);
+        }
+        return parts[0];
+    }
+
+    public int getUploadToPort() {
+        if (uploadToHost == null) {
+            return 0;
+        }
+        String[] parts = uploadToHost.split(":");
+        if (parts.length > 2) {
+            throw new IllegalArgumentException("Bad hostname format: " + uploadToHost);
+        }
+        return parts.length == 2 ? Integer.parseInt(parts[1]): 22;
     }
 
     public static DaemonConfig createSampleDaemonConfig() {
