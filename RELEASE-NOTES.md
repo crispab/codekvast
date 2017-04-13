@@ -1,6 +1,8 @@
 # Codekvast Release Notes
 
 ## 0.18.7
+1. Added invocation statuses to method summary and method details page.
+1. Implemented detection of inconsistent collector config.
 1. Added a landing page for feature voting, to make it simpler to use Google Analytics.
 
 ## 0.18.6
