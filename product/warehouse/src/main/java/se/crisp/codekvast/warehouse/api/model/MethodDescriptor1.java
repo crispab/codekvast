@@ -25,6 +25,7 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Singular;
 import lombok.Value;
+import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 
 import java.util.Comparator;
 import java.util.Set;
@@ -63,6 +64,15 @@ public class MethodDescriptor1 {
 
     @Singular
     private final SortedSet<EnvironmentDescriptor1> collectedInEnvironments;
+
+    /**
+     * Calculates in how many apps this method is tracked.
+     */
+
+    public int getTrackedPercent() {
+        long tracked = occursInApplications.stream().map(ApplicationDescriptor1::getStatus).filter(SignatureStatus::isTracked).count();
+        return (int) Math.round (tracked * 100D / occursInApplications.size());
+    }
 
     /**
      * Maximum value of occursInApplications.invokedAtMillis;

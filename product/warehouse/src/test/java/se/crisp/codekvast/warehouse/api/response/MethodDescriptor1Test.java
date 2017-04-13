@@ -19,10 +19,8 @@ public class MethodDescriptor1Test {
     private final long days = 24 * 60 * 60 * 1000L;
     private final long now = System.currentTimeMillis();
 
-    private final long oneDayAgo = now - days;
     private final long twoDaysAgo = now - 2 * days;
     private final long fourteenDaysAgo = now - 14 * days;
-    private final long fifteenDaysAgo = now - 15 * days;
     private final long never = 0L;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -30,7 +28,7 @@ public class MethodDescriptor1Test {
     @Test
     public void should_calculate_min_max_correctly() throws Exception {
         // given
-        MethodDescriptor1 md = buildMethodDescriptor(1L, "signature", fourteenDaysAgo, twoDaysAgo, never, twoDaysAgo);
+        MethodDescriptor1 md = buildMethodDescriptor(fourteenDaysAgo, twoDaysAgo, never, twoDaysAgo);
 
         // when
 
@@ -39,6 +37,8 @@ public class MethodDescriptor1Test {
         assertThat(toDaysAgo(md.getCollectedToMillis()), is(toDaysAgo(twoDaysAgo)));
         assertThat(md.getCollectedDays(), is(12));
         assertThat(toDaysAgo(md.getLastInvokedAtMillis()), is(toDaysAgo(twoDaysAgo)));
+
+        assertThat(md.getTrackedPercent(), is(67));
     }
 
     private int toDaysAgo(long timestamp) {
@@ -48,7 +48,7 @@ public class MethodDescriptor1Test {
     @Test
     public void should_serializable_to_JSON() throws Exception {
         // given
-        MethodDescriptor1 md = buildMethodDescriptor(1L, "signature", fourteenDaysAgo, twoDaysAgo, never, twoDaysAgo);
+        MethodDescriptor1 md = buildMethodDescriptor(fourteenDaysAgo, twoDaysAgo, never, twoDaysAgo);
         long lastInvokedAtMillis = md.getLastInvokedAtMillis();
 
         // when
@@ -62,54 +62,62 @@ public class MethodDescriptor1Test {
                                                    .writeValueAsString(md));
     }
 
-    private MethodDescriptor1 buildMethodDescriptor(long methodId, String signature, long collectedSinceMillis, long collectedToMillis,
+    private MethodDescriptor1 buildMethodDescriptor(long collectedSinceMillis, long collectedToMillis,
                                                     long invokedAtMillis1, long invokedAtMillis2) {
         return MethodDescriptor1.builder()
-                                .id(methodId)
+                                .id(1L)
                                 .declaringType("declaringType")
                                 .modifiers("")
                                 .occursInApplication(
-                                        ApplicationDescriptor1.builder()
-                                                              .name("app1")
-                                                              .version("1.2")
-                                                              .status(SignatureStatus
-                                                                              .EXCLUDED_BY_PACKAGE_NAME)
-                                                              .startedAtMillis(collectedSinceMillis)
-                                                              .dumpedAtMillis(collectedToMillis)
-                                                              .invokedAtMillis(invokedAtMillis1)
-                                                              .build())
+                                    ApplicationDescriptor1.builder()
+                                                          .name("app1")
+                                                          .version("1.1")
+                                                          .status(SignatureStatus.EXCLUDED_BY_PACKAGE_NAME)
+                                                          .startedAtMillis(collectedSinceMillis)
+                                                          .dumpedAtMillis(collectedToMillis)
+                                                          .invokedAtMillis(invokedAtMillis1)
+                                                          .build())
                                 .occursInApplication(
-                                        ApplicationDescriptor1.builder()
-                                                              .name("app1")
-                                                              .version("1.3")
-                                                              .status(SignatureStatus.EXACT_MATCH)
-                                                              .startedAtMillis(collectedSinceMillis)
-                                                              .dumpedAtMillis(collectedToMillis)
-                                                              .invokedAtMillis(invokedAtMillis2)
-                                                              .build())
+                                    ApplicationDescriptor1.builder()
+                                                          .name("app1")
+                                                          .version("1.2")
+                                                          .status(SignatureStatus.NOT_INVOKED)
+                                                          .startedAtMillis(collectedSinceMillis + 10)
+                                                          .dumpedAtMillis(collectedToMillis - 10)
+                                                          .invokedAtMillis(invokedAtMillis1 - 10)
+                                                          .build())
+                                .occursInApplication(
+                                    ApplicationDescriptor1.builder()
+                                                          .name("app1")
+                                                          .version("1.3")
+                                                          .status(SignatureStatus.EXACT_MATCH)
+                                                          .startedAtMillis(collectedSinceMillis)
+                                                          .dumpedAtMillis(collectedToMillis)
+                                                          .invokedAtMillis(invokedAtMillis2)
+                                                          .build())
                                 .collectedInEnvironment(
-                                        EnvironmentDescriptor1.builder()
-                                                              .name("test")
-                                                              .collectedSinceMillis(collectedSinceMillis)
-                                                              .collectedToMillis(collectedToMillis)
-                                                              .invokedAtMillis(invokedAtMillis2)
-                                                              .tag("tag2=2")
-                                                              .tag("tag1=1")
-                                                              .build())
+                                    EnvironmentDescriptor1.builder()
+                                                          .name("test")
+                                                          .collectedSinceMillis(collectedSinceMillis)
+                                                          .collectedToMillis(collectedToMillis)
+                                                          .invokedAtMillis(invokedAtMillis2)
+                                                          .tag("tag2=2")
+                                                          .tag("tag1=1")
+                                                          .build())
                                 .collectedInEnvironment(
-                                        EnvironmentDescriptor1.builder()
-                                                              .name("customer1")
-                                                              .collectedSinceMillis(collectedSinceMillis)
-                                                              .collectedToMillis(collectedToMillis)
-                                                              .invokedAtMillis(invokedAtMillis2)
-                                                              .hostName("server1.customer1.com")
-                                                              .hostName("server2.customer1.com")
-                                                              .tag("foo=1")
-                                                              .tag("bar=2")
-                                                              .tag("baz")
-                                                              .build())
+                                    EnvironmentDescriptor1.builder()
+                                                          .name("customer1")
+                                                          .collectedSinceMillis(collectedSinceMillis)
+                                                          .collectedToMillis(collectedToMillis)
+                                                          .invokedAtMillis(invokedAtMillis2)
+                                                          .hostName("server1.customer1.com")
+                                                          .hostName("server2.customer1.com")
+                                                          .tag("foo=1")
+                                                          .tag("bar=2")
+                                                          .tag("baz")
+                                                          .build())
                                 .packageName("packageName")
-                                .signature(signature)
+                                .signature("signature")
                                 .visibility("public")
                                 .build();
     }

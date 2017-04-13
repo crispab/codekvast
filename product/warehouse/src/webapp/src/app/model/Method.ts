@@ -14,5 +14,6 @@ export class Method {
     packageName: string;
     signature: string;
     tags: string[];
+    trackedPercent: number;
     visibility: string;
 }

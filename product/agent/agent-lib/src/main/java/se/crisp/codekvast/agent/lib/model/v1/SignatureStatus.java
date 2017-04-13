@@ -37,47 +37,52 @@ public enum SignatureStatus {
     /**
      * The signature has been detected in the codebase, but it has never been invoked.
      */
-    NOT_INVOKED(1),
+    NOT_INVOKED(1, true),
 
     /**
-     * The used signature was found as-is in the scanned code base.
+     * The invoked signature was found as-is in the scanned code base.
      */
-    EXACT_MATCH(2),
+    EXACT_MATCH(2, true),
 
     /**
-     * The used signature was <em>not</em> found as-is in the scanned code base. It was found however, when searching upwards in the class
+     * The invoked signature was <em>not</em> found as-is in the scanned code base. It was found however, when searching upwards in the class
      * hierarchy. The reason for not finding it in the first place could be that the method was synthesized at runtime by some byte code
-     * manipulating AOP framework (like Spring or Guice).
+     * manipulating AOP framework like Spring or Guice.
      */
-    FOUND_IN_PARENT_CLASS(3),
+    FOUND_IN_PARENT_CLASS(3, true),
 
     /**
-     * The used signature was <em>not</em> found at all in the scanned code base. This indicates a problem with the code base scanner.
+     * The invoked signature was <em>not</em> found at all in the scanned code base. This indicates a problem with the code base scanner.
      * Access to the scanned application's source code is required in order to resolve the problem.
      */
-    NOT_FOUND_IN_CODE_BASE(4),
+    NOT_FOUND_IN_CODE_BASE(4, true),
 
     /**
      * The signature was found in the code base but was excluded from being tracked since it belongs to an excluded package.
      */
-    EXCLUDED_BY_PACKAGE_NAME(5),
+    EXCLUDED_BY_PACKAGE_NAME(5, false),
 
     /**
      * The signature was found in the code base but was excluded from being tracked since it has wrong visibility.
      */
-    EXCLUDED_BY_VISIBILITY(6),
+    EXCLUDED_BY_VISIBILITY(6, false),
 
     /**
      * The signature was found in the code base but was excluded from being tracked since it is a trivial method (setter, getter, equals(),
      * hashCode(), toString() etc).
      */
-    EXCLUDED_SINCE_TRIVIAL(7);
+    EXCLUDED_SINCE_TRIVIAL(7, false);
 
     /*
      * The database representation of the value. It is 1-based to make it easy to use with MariaDB's ENUM column type.
      * MariaDB reserves 0 for the special value ''.
      */
     private final int dbNumber;
+
+    /**
+     * Is the method tracked by Codekvast?
+     */
+    private final boolean tracked;
 
     public static SignatureStatus fromOrdinal(int ordinal) {
         for (SignatureStatus status : values()) {
@@ -86,14 +91,5 @@ public enum SignatureStatus {
             }
         }
         throw new IllegalArgumentException("Illegal ordinal for a " + SignatureStatus.class.getSimpleName() + ": " + ordinal);
-    }
-
-    public static SignatureStatus fromDbNumber(int dbNumber) {
-        for (SignatureStatus status : values()) {
-            if (status.getDbNumber() == dbNumber) {
-                return status;
-            }
-        }
-        throw new IllegalArgumentException("Illegal dbNumber for a " + SignatureStatus.class.getSimpleName() + ": " + dbNumber);
     }
 }
