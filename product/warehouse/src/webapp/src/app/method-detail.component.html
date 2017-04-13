@@ -6,7 +6,7 @@
 
         <table class="table table-striped table-bordered table-sm">
             <thead>
-            <tr class="bg-info">
+            <tr class="bg-info text-white">
                 <th colspan="2">Identity</th>
             </tr>
             </thead>
@@ -29,7 +29,7 @@
 
         <table class="table table-striped table-bordered table-sm">
             <thead>
-            <tr class="bg-info">
+            <tr class="bg-info text-white">
                 <th colspan="3">Collection Summary</th>
             </tr>
             </thead>
@@ -41,12 +41,12 @@
                 <th>{{ method.lastInvokedAtMillis | ckAge:settings.ageFormat }}</th>
             </tr>
             <tr>
-                <th>Collected since:</th>
+                <th>First report:</th>
                 <td>{{ method.collectedSinceMillis | ckAge:settings.dateFormat }}</td>
                 <td>{{ method.collectedSinceMillis | ckAge:settings.ageFormat }}</td>
             </tr>
             <tr>
-                <th>Collected to:</th>
+                <th>Last report:</th>
                 <td>{{ method.collectedToMillis | ckAge:settings.dateFormat }}</td>
                 <td>{{ method.collectedToMillis | ckAge:settings.ageFormat }}</td>
             </tr>
@@ -60,24 +60,28 @@
 
         <table *ngFor="let env of method.collectedInEnvironments" class="table table-striped table-bordered table-sm">
             <thead>
-            <tr class="bg-info">
+            <tr class="bg-warning text-white">
                 <th colspan="3">Environment {{ env.name }}</th>
             </tr>
             </thead>
 
             <tbody>
             <tr>
+                <th>Hosts:</th>
+                <td colspan="2">{{ env.hostNames.join(', ') }}</td>
+            </tr>
+            <tr>
                 <th>Last Invoked:</th>
                 <th>{{ env.invokedAtMillis | ckAge:settings.dateFormat }}</th>
                 <th>{{ env.invokedAtMillis | ckAge:settings.ageFormat }}</th>
             </tr>
             <tr>
-                <th>Collected since:</th>
+                <th>First report:</th>
                 <td>{{ env.collectedSinceMillis | ckAge:settings.dateFormat }}</td>
                 <td>{{ env.collectedSinceMillis | ckAge:settings.ageFormat }}</td>
             </tr>
             <tr>
-                <th>Collected to:</th>
+                <th>Last report:</th>
                 <td>{{ env.collectedToMillis | ckAge:settings.dateFormat }}</td>
                 <td>{{ env.collectedToMillis | ckAge:settings.ageFormat }}</td>
             </tr>
@@ -91,7 +95,7 @@
 
         <table *ngFor="let app of method.occursInApplications" class="table table-striped table-bordered table-sm">
             <thead>
-            <tr class="bg-info">
+            <tr class="bg-warning text-white">
                 <th colspan="3">Application {{ app.name }} {{ app.version }}</th>
             </tr>
             </thead>
@@ -107,19 +111,14 @@
                 <th>{{ app.invokedAtMillis | ckAge:settings.ageFormat }}</th>
             </tr>
             <tr>
-                <th>Collected since:</th>
+                <th>First report:</th>
                 <td>{{ app.startedAtMillis | ckAge:settings.dateFormat }}</td>
                 <td>{{ app.startedAtMillis | ckAge:settings.ageFormat }}</td>
             </tr>
             <tr>
-                <th>Collected to:</th>
+                <th>Last report:</th>
                 <td>{{ app.dumpedAtMillis | ckAge:settings.dateFormat }}</td>
                 <td>{{ app.dumpedAtMillis | ckAge:settings.ageFormat }}</td>
-            </tr>
-            <tr>
-                <th>Collected days:</th>
-                <td></td>
-                <td>{{ app.collectedDays }}</td>
             </tr>
             </tbody>
         </table>
