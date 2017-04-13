@@ -24,6 +24,10 @@
                 <th>Signature:</th>
                 <td>{{ method.signature }}</td>
             </tr>
+            <tr>
+                <th>Status:</th>
+                <td>{{ method.statuses | ckInvocationStatus }}</td>
+            </tr>
             </tbody>
         </table>
 

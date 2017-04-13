@@ -63,22 +63,33 @@
                     (mouseenter)="state.selectMethod(method)"
                     (click)="gotoMethodDetail(method.id)"
                     [class.table-active]="state.isSelectedMethod(method)">
-                    <td class="signature-column wrap-word">{{ method.signature }}</td>
+                    <td class="signature-column wrap-word" [ngClass]="signatureClasses(method)">{{ method.signature }}</td>
                     <td class="age-column wrap-word" title="{{ method.lastInvokedAtMillis | ckAge:settings.dateFormat }}">
                         {{ method.lastInvokedAtMillis | ckAge:settings.ageFormat }}
                     </td>
-                    <td class="icon-column"><i [ngClass]="state.rowIconClasses(method.id)"></i></td>
+                    <td class="icon-column">
+                        <i [ngClass]="state.rowIconClasses(method.id)"></i>
+                    </td>
                 </tr>
                 </tbody>
             </table>
         </div>
         <div id="details-table">
-            <table *ngIf="state.selectedMethod" class="table table-bordered table-striped">
+            <table *ngIf="state.selectedMethod" class="table table-bordered table-striped table-sm">
                 <tr>
                     <th colspan="3">ID: {{ state.selectedMethod.id }}</th>
+                    <th colspan="2"></th>
                 </tr>
                 <tr class="table-active">
                     <td colspan="3" class="wrap-word">{{ state.selectedMethod.signature }}</td>
+                </tr>
+                <tr>
+                    <th>Status:</th>
+                    <td colspan="2">{{ state.selectedMethod.statuses | ckInvocationStatus }}</td>
+                </tr>
+                <tr>
+                    <th>Tracked:</th>
+                    <td colspan="2">{{ state.selectedMethod.trackedPercent }}%</td>
                 </tr>
                 <tr>
                     <td></td>
@@ -91,9 +102,14 @@
                     <td class="w-25">{{ state.selectedMethod.lastInvokedAtMillis | ckAge:settings.ageFormat }}</td>
                 </tr>
                 <tr>
-                    <th>Collected since:</th>
+                    <th>First report:</th>
                     <td>{{ state.selectedMethod.collectedSinceMillis|ckAge:settings.dateFormat}}</td>
                     <td>{{ state.selectedMethod.collectedSinceMillis|ckAge:settings.ageFormat}}</td>
+                </tr>
+                <tr>
+                    <th>Last report:</th>
+                    <td>{{ state.selectedMethod.collectedToMillis|ckAge:settings.dateFormat}}</td>
+                    <td>{{ state.selectedMethod.collectedToMillis|ckAge:settings.ageFormat}}</td>
                 </tr>
                 <tr>
                     <th colspan="3">Collected in environments:</th>

@@ -6,6 +6,7 @@ import {Router} from '@angular/router';
 import {StateService} from './state.service';
 import {MethodsComponentState} from './methods.component.state';
 import {Settings} from './settings';
+import {Method} from './model/Method';
 
 @Component({
     selector: 'ck-methods',
@@ -40,4 +41,12 @@ export class MethodsComponent implements OnInit {
         }
     }
 
+    signatureClasses(method: Method) {
+        let muted = method.trackedPercent < 100;
+        return {
+            'text-muted': muted,
+            'font-italic': muted,
+        };
+
+    }
 }
