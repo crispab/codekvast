@@ -60,7 +60,7 @@ public class DaemonConfig {
     private boolean verifyUploadToHostKey;
 
     public boolean isUploadEnabled() {
-        return uploadToHost != null && !uploadToHost.isEmpty() && !uploadToPath.isEmpty();
+        return uploadToHost != null && !uploadToHost.trim().isEmpty() && !uploadToPath.isEmpty();
     }
 
     public String getDisplayVersion() {
@@ -68,18 +68,18 @@ public class DaemonConfig {
     }
 
     public String getUploadToHostOnly() throws IllegalArgumentException {
-        if (uploadToHost == null) {
+        if (uploadToHost == null || uploadToHost.trim().isEmpty()) {
             return null;
         }
-        String[] parts = uploadToHost.split(":");
+        String[] parts = uploadToHost.trim().split(":");
         if (parts.length > 2) {
             throw new IllegalArgumentException("Bad hostname format: " + uploadToHost);
         }
-        return parts[0];
+        return parts[0].trim();
     }
 
     public int getUploadToPort() {
-        if (uploadToHost == null) {
+        if (uploadToHost == null || uploadToHost.trim().isEmpty()) {
             return 0;
         }
         String[] parts = uploadToHost.split(":");

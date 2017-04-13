@@ -11,14 +11,29 @@ import static org.junit.Assert.fail;
  */
 public class DaemonConfigTest {
     @Test
-    public void should_provide_no_ssh_port() throws Exception {
+    public void should_provide_zero_ssh_port() throws Exception {
         // given
 
         // when
         DaemonConfig config = DaemonConfig.createSampleDaemonConfig();
 
         // then
+        assertThat(config.isUploadEnabled(), is(false));
         assertThat(config.getUploadToHost(), is((String) null));
+        assertThat(config.getUploadToHostOnly(), is((String) null));
+        assertThat(config.getUploadToPort(), is(0));
+    }
+
+    @Test
+    public void should_handle_blank_uploadToHost() throws Exception {
+        // given
+
+        // when
+        DaemonConfig config = DaemonConfig.createSampleDaemonConfig().toBuilder().uploadToHost(" ").build();
+
+        // then
+        assertThat(config.isUploadEnabled(), is(false));
+        assertThat(config.getUploadToHost(), is(" "));
         assertThat(config.getUploadToHostOnly(), is((String) null));
         assertThat(config.getUploadToPort(), is(0));
     }
@@ -31,6 +46,7 @@ public class DaemonConfigTest {
         DaemonConfig config = DaemonConfig.createSampleDaemonConfig().toBuilder().uploadToHost("foobar").build();
 
         // then
+        assertThat(config.isUploadEnabled(), is(true));
         assertThat(config.getUploadToHost(), is("foobar"));
         assertThat(config.getUploadToHostOnly(), is("foobar"));
         assertThat(config.getUploadToPort(), is(22));
@@ -44,6 +60,7 @@ public class DaemonConfigTest {
         DaemonConfig config = DaemonConfig.createSampleDaemonConfig().toBuilder().uploadToHost("foobar:2222").build();
 
         // then
+        assertThat(config.isUploadEnabled(), is(true));
         assertThat(config.getUploadToHost(), is("foobar:2222"));
         assertThat(config.getUploadToHostOnly(), is("foobar"));
         assertThat(config.getUploadToPort(), is(2222));
