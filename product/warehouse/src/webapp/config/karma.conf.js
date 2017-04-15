@@ -4,7 +4,20 @@ module.exports = function (config) {
     var _config = {
         autoWatch: false,
         basePath: '',
-        browsers: ['PhantomJS'],
+        browsers: ['PhantomJS'], // 'ChromeHeadless'
+
+        customLaunchers: {
+            ChromeHeadless: {
+                base: 'Chrome',
+                flags: [
+                    '--headless',
+                    '--no-sandbox',
+                    '--disable-gpu',
+                    '--remote-debugging-port=9222'
+                ]
+            }
+        },
+
         colors: true,
         files: [{pattern: './config/karma-test-shim.js', watched: false}],
         frameworks: ['jasmine', 'source-map-support'],

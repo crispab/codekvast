@@ -114,6 +114,7 @@ systemTest {
         systemProperty "geb.driver", "org.openqa.selenium.phantomjs.PhantomJSDriver"
 
         // Chrome
+        // TODO: switch from PhantomJS to headless Chrome
         // systemProperty "geb.driver", "org.openqa.selenium.chrome.ChromeDriver"
         // systemProperty "webdriver.chrome.driver", configurations.chromeDriver.asPath
 
