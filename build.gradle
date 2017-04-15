@@ -7,7 +7,7 @@ import org.ajoberstar.grgit.Grgit
 import java.text.SimpleDateFormat
 
 wrapper {
-    gradleVersion = '3.5-rc-3'
+    gradleVersion = '3.5'
     distributionType = 'all'
 }
 
