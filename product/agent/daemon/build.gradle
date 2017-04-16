@@ -29,7 +29,7 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
     compile 'org.flywaydb:flyway-core'
     compile opencsv
-    compile 'com.hierynomus:sshj:0.20.0'
+    compile 'com.hierynomus:sshj:0.21.0'
 
     runtime aspectjWeaver
     runtime h2database
@@ -90,8 +90,8 @@ run {
             "--codekvast.databasePath=tcp://localhost/$buildDir/database",
             '--codekvast.environment=Gradle',
 
-            // '--codekvast.verifyUploadToHostKey=false',
-            // '--codekvast.uploadToHost=tnm-vm2',
+            // '--codekvast.verifyUploadToHostKey=true',
+            // '--codekvast.uploadToHost=fjottas.local',
     ]
 }
 run.dependsOn startDatabase
