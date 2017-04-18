@@ -1,9 +1,9 @@
 import {Component} from '@angular/core';
 @Component({
-    selector: 'ck-reports',
-    template: require('./reports.component.html'),
+    selector: 'ck-report-generator',
+    template: require('./report-generator.component.html'),
 })
-export class ReportsComponent {
+export class ReportGeneratorComponent {
 
     vote: boolean = undefined;
 

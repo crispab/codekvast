@@ -1,10 +1,10 @@
 /**
  * The state for MethodsComponent.
  */
-import {MethodData} from './model/MethodData';
+import {MethodData} from '../../model/MethodData';
 import {MethodsComponent} from './methods.component';
-import {Method} from './model/Method';
-import {WarehouseService} from './warehouse.service';
+import {Method} from '../../model/Method';
+import {WarehouseService} from '../../services/warehouse.service';
 
 export class MethodsComponentState {
     static KEY = 'methods';

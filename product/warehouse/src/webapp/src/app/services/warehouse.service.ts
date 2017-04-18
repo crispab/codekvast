@@ -1,10 +1,10 @@
 import {ConfigService} from './config.service';
 import {Headers, Http} from '@angular/http';
 import {Injectable} from '@angular/core';
-import {MethodData} from './model/MethodData';
-import {Method} from './model/Method';
+import {MethodData} from '../model/MethodData';
+import {Method} from '../model/Method';
 import {Observable} from 'rxjs/Observable';
-import '../rxjs-operators';
+import '../../rxjs-operators';
 import {isNumber} from 'util';
 
 @Injectable()
@@ -21,7 +21,7 @@ export class WarehouseService {
     getMethods(signature?: string, maxResults?: number): Observable<MethodData> {
         if (signature === '-----' && this.configService.getVersion() === 'dev') {
             console.log('Returning a canned response');
-            return new Observable<MethodData>(subscriber => subscriber.next(require('./test/canned/v1/MethodData.json')));
+            return new Observable<MethodData>(subscriber => subscriber.next(require('../test/canned/v1/MethodData.json')));
         }
 
         const url: string = this.constructGetMethodsUrl(signature, maxResults);

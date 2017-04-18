@@ -6,6 +6,6 @@ class ReportsPage extends Page {
     static url = '/reports'
 
     static content = {
-        header { $('ck-reports h1').text() }
+        header { $('ck-report-generator h1').text() }
     }
 }

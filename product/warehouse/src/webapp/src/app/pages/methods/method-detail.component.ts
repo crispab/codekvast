@@ -1,12 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Params} from '@angular/router';
 import {DatePipe, Location} from '@angular/common';
-import {WarehouseService} from './warehouse.service';
-import {Method} from './model/Method';
-import {AgePipe} from './age.pipe';
-import {StateService} from './state.service';
-import {Settings} from './settings';
-import {InvocationStatusPipe} from './invocation-status.pipe';
+import {WarehouseService} from '../../services/warehouse.service';
+import {Method} from '../../model/Method';
+import {AgePipe} from '../../pipes/age.pipe';
+import {StateService} from '../../services/state.service';
+import {Settings} from '../../components/settings.model';
+import {InvocationStatusPipe} from '../../pipes/invocation-status.pipe';
 
 @Component({
     selector: 'ck-method-detail',

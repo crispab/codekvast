@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {StateService} from './state.service';
+import {StateService} from '../services/state.service';
 import {Router} from '@angular/router';
 @Component({
     selector: 'ck-vote-for',

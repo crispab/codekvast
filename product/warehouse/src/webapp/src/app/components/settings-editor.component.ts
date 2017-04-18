@@ -1,9 +1,9 @@
 import {Component} from '@angular/core';
-import {Settings} from './settings';
-import {StateService} from './state.service';
+import {Settings} from './settings.model';
+import {StateService} from '../services/state.service';
 @Component({
-    selector: 'ck-settings',
-    template: require('./settings.component.html'),
+    selector: 'ck-settings-editor',
+    template: require('./settings-editor.component.html'),
 })
 export class SettingsComponent {
 

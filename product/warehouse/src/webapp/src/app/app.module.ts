@@ -1,24 +1,24 @@
-import {AgePipe} from './age.pipe';
+import {AgePipe} from './pipes/age.pipe';
 import {APP_BASE_HREF} from '@angular/common';
 import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
 import {BrowserModule, Title} from '@angular/platform-browser';
-import {ConfigService} from './config.service';
+import {ConfigService} from './services/config.service';
 import {FormsModule} from '@angular/forms';
-import {HomeComponent} from './home.component';
+import {HomeComponent} from './pages/home/home.component';
 import {HttpModule} from '@angular/http';
-import {InvocationStatusPipe} from './invocation-status.pipe';
+import {InvocationStatusPipe} from './pipes/invocation-status.pipe';
 import {LOCALE_ID, NgModule} from '@angular/core';
-import {MethodDetailComponent} from './method-detail.component';
-import {MethodsComponent} from './methods.component';
+import {MethodDetailComponent} from './pages/methods/method-detail.component';
+import {MethodsComponent} from './pages/methods/methods.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
-import {ReportsComponent} from './reports.component';
-import {SettingsComponent} from './settings.component';
-import {StateService} from './state.service';
-import {StatusComponent} from './status.component';
-import {VoteComponent} from './vote.component';
-import {WarehouseService} from './warehouse.service';
-import {VoteResultComponent} from './vote-result.component';
+import {ReportGeneratorComponent} from './pages/report-generator/report-generator.component';
+import {SettingsComponent} from './components/settings-editor.component';
+import {StateService} from './services/state.service';
+import {CollectionStatusComponent} from './pages/collection-status/collection-status.component';
+import {VoteComponent} from './components/vote.component';
+import {WarehouseService} from './services/warehouse.service';
+import {VoteResultComponent} from './pages/vote-result/vote-result.component';
 
 @NgModule({
     imports: [
@@ -27,15 +27,15 @@ import {VoteResultComponent} from './vote-result.component';
     declarations: [
         AgePipe,
         AppComponent,
+        CollectionStatusComponent,
         HomeComponent,
         InvocationStatusPipe,
-        MethodsComponent,
         MethodDetailComponent,
-        ReportsComponent,
+        MethodsComponent,
+        ReportGeneratorComponent,
         SettingsComponent,
-        StatusComponent,
         VoteComponent,
-        VoteResultComponent
+        VoteResultComponent,
     ],
     providers: [
         ConfigService,

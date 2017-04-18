@@ -1,12 +1,12 @@
 import {Component, OnInit} from '@angular/core';
-import {WarehouseService} from './warehouse.service';
-import {AgePipe} from './age.pipe';
+import {WarehouseService} from '../../services/warehouse.service';
+import {AgePipe} from '../../pipes/age.pipe';
 import {DatePipe} from '@angular/common';
 import {Router} from '@angular/router';
-import {StateService} from './state.service';
+import {StateService} from '../../services/state.service';
 import {MethodsComponentState} from './methods.component.state';
-import {Settings} from './settings';
-import {Method} from './model/Method';
+import {Settings} from '../../components/settings.model';
+import {Method} from '../../model/Method';
 
 @Component({
     selector: 'ck-methods',

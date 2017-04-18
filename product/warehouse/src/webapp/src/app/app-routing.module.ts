@@ -1,11 +1,11 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {HomeComponent} from './home.component';
-import {StatusComponent} from './status.component';
-import {MethodsComponent} from './methods.component';
-import {MethodDetailComponent} from './method-detail.component';
-import {ReportsComponent} from './reports.component';
-import {VoteResultComponent} from './vote-result.component';
+import {HomeComponent} from './pages/home/home.component';
+import {CollectionStatusComponent} from './pages/collection-status/collection-status.component';
+import {MethodsComponent} from './pages/methods/methods.component';
+import {MethodDetailComponent} from './pages/methods/method-detail.component';
+import {ReportGeneratorComponent} from './pages/report-generator/report-generator.component';
+import {VoteResultComponent} from './pages/vote-result/vote-result.component';
 
 const routes: Routes = [
     {
@@ -23,10 +23,10 @@ const routes: Routes = [
         component: MethodDetailComponent
     }, {
         path: 'status',
-        component: StatusComponent
+        component: CollectionStatusComponent
     }, {
         path: 'reports',
-        component: ReportsComponent
+        component: ReportGeneratorComponent
     }, {
         path: 'vote-result/:feature/:vote',
         component: VoteResultComponent

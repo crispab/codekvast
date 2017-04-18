@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
-import {ConfigService} from './config.service';
+import {ConfigService} from './services/config.service';
 import {NavigationEnd, Router} from '@angular/router';
 import {TitleCasePipe} from '@angular/common';
 import {Title} from '@angular/platform-browser';

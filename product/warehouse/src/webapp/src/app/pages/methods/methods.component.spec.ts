@@ -2,12 +2,12 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {DebugElement} from '@angular/core';
 import {MethodsComponent} from './methods.component';
-import {AppModule} from './app.module';
-import {WarehouseService} from './warehouse.service';
-import {ConfigService} from './config.service';
-import {MethodData} from './model/MethodData';
-import {Method} from './model/Method';
-import {StateService} from './state.service';
+import {AppModule} from '../../app.module';
+import {WarehouseService} from '../../services/warehouse.service';
+import {ConfigService} from '../../services/config.service';
+import {MethodData} from '../../model/MethodData';
+import {Method} from '../../model/Method';
+import {StateService} from '../../services/state.service';
 
 let component: MethodsComponent;
 let fixture: ComponentFixture<MethodsComponent>;
