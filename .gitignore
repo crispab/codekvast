@@ -33,3 +33,4 @@ product/warehouse/src/webapp/dist/
 .settings/
 .project
 .classpath
+!**.ts

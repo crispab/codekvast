@@ -15,11 +15,5 @@ export class Settings {
         console.log('Created Settings')
     }
 
-    dateFormatHeader() {
-        switch(this.dateFormat) {
-            case 'age': return 'Age';
-            default: return 'Date';
-        }
-    }
 }
 

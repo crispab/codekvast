@@ -1,0 +1,25 @@
+<form #settingsForm="ngForm">
+    <fieldset class="form-group row">
+        <legend class="col-form-legend col-3">Date&nbsp;format</legend>
+        <div class="col-9">
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input"
+                           type="radio"
+                           name="dateFormat"
+                           value="short"
+                           [(ngModel)]="settings.dateFormat">
+                    {{ settings.sampleTimestamp | ckAge:'short' }} </label>
+            </div>
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input"
+                           type="radio"
+                           name="dateFormat"
+                           value="age"
+                           [(ngModel)]="settings.dateFormat">
+                    {{ settings.sampleTimestamp | ckAge:'age' }} </label>
+            </div>
+        </div>
+    </fieldset>
+</form>

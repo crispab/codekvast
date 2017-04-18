@@ -13,6 +13,7 @@ import {MethodDetailComponent} from './method-detail.component';
 import {MethodsComponent} from './methods.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {ReportsComponent} from './reports.component';
+import {SettingsComponent} from './settings.component';
 import {StateService} from './state.service';
 import {StatusComponent} from './status.component';
 import {VoteComponent} from './vote.component';
@@ -31,6 +32,7 @@ import {VoteResultComponent} from './vote-result.component';
         MethodsComponent,
         MethodDetailComponent,
         ReportsComponent,
+        SettingsComponent,
         StatusComponent,
         VoteComponent,
         VoteResultComponent
