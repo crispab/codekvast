@@ -1,46 +1,79 @@
 <div class="wrapper d-flex flex-column h-100 mx-2">
     <div id="search-form" class="container mt-5">
-        <h4>Search Method</h4>
-        <form (ngSubmit)="state.search()" #searchForm="ngForm">
-            <div class="form-group row">
-                <label for="signature" class="col-2 col-form-label">Signature:</label>
-                <div class="col-6">
-                    <input class="form-control"
-                           id="signature"
-                           name="signature"
-                           [(ngModel)]="state.signature"
-                           type="text"
-                           placeholder="Search method signature">
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="maxResults" class="col-2 col-form-label">Max&nbsp;Results:</label>
-                <div class="col-2">
-                    <input class="form-control"
-                           id="maxResults"
-                           name="maxResults"
-                           [(ngModel)]="state.maxResults"
-                           type="number"
-                           min="1"
-                           max="10000">
-                </div>
-                <button type="submit" class="btn btn-primary btn-sm" [disabled]="!searchForm.form.valid">Search
-                </button>
+        <div class="d-flex flex-row">
+            <div class="w-75">
+                <h4>Search Method</h4>
+                <form (ngSubmit)="state.search()" #searchForm="ngForm">
+                    <div class="form-group row">
+                        <label for="signature" class="col-2 col-form-label">Signature:</label>
+                        <div class="col-6">
+                            <input class="form-control"
+                                   id="signature"
+                                   name="signature"
+                                   [(ngModel)]="state.signature"
+                                   type="text"
+                                   placeholder="Search method signature">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="maxResults" class="col-2 col-form-label">Max&nbsp;Results:</label>
+                        <div class="col-2">
+                            <input class="form-control"
+                                   id="maxResults"
+                                   name="maxResults"
+                                   [(ngModel)]="state.maxResults"
+                                   type="number"
+                                   min="1"
+                                   max="10000">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm" [disabled]="!searchForm.form.valid">Search
+                        </button>
 
-                <div *ngIf="state.data">
-                    <small class="ml-2 col-form-label form-text text-muted">{{ state.data.timestamp | date:settings.dateFormat }}: Found {{
-                                                                            state.data.numMethods }} methods in {{
-                                                                            state.data.queryTimeMillis }} ms
-                    </small>
-                </div>
+                        <div *ngIf="state.data">
+                            <small class="ml-2 col-form-label form-text text-muted">{{ state.data.timestamp | date:settings.dateFormat }}:
+                                                                                    Found {{ state.data.numMethods }} methods in {{
+                                                                                    state.data.queryTimeMillis }} ms
+                            </small>
+                        </div>
 
-                <div *ngIf="state.errorMessage">
-                    <small class="ml-2 col-form-label form-text text-muted" title="{{ state.errorMessage }}">{{ communicationFailure()
-                                                                                                             }}
-                    </small>
-                </div>
+                        <div *ngIf="state.errorMessage">
+                            <small class="ml-2 col-form-label form-text text-muted" title="{{ state.errorMessage }}">{{
+                                                                                                                     communicationFailure()
+                                                                                                                     }}
+                            </small>
+                        </div>
+                    </div>
+                </form>
             </div>
-        </form>
+            <div class="w-25">
+                <h4>Settings</h4>
+                <form #settingsForm="ngForm">
+                    <fieldset class="form-group row">
+                        <legend class="col-form-legend col-3">Date&nbsp;format</legend>
+                        <div class="col-9">
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input class="form-check-input"
+                                           type="radio"
+                                           name="dateFormat"
+                                           value="short"
+                                           [(ngModel)]="settings.dateFormat">
+                                    {{ settings.sampleTimestamp | ckAge:'short' }} </label>
+                            </div>
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input class="form-check-input"
+                                           type="radio"
+                                           name="dateFormat"
+                                           value="age"
+                                           [(ngModel)]="settings.dateFormat">
+                                    {{ settings.sampleTimestamp | ckAge:'age' }} </label>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
     </div>
 
     <div class="d-flex flex-row h-100 content mx-4" (mouseleave)="state.selectMethod(null)">
@@ -75,7 +108,8 @@
             </table>
         </div>
         <div id="details-table">
-            <table *ngIf="state.selectedMethod" class="table table-bordered table-striped table-sm"
+            <table *ngIf="state.selectedMethod"
+                   class="table table-bordered table-striped table-sm"
                    (click)="gotoMethodDetail(state.selectedMethod.id)">
                 <tr>
                     <th colspan="3">ID: {{ state.selectedMethod.id }}</th>
@@ -90,7 +124,9 @@
                 </tr>
                 <tr *ngIf="state.selectedMethod.trackedPercent < 100">
                     <th colspan="3" class="bg-danger text-white">
-                        WARNING: Inconsistent collector configuration, the method is only tracked in {{ state.selectedMethod.trackedPercent }}% of the apps!</th>
+                        WARNING: Inconsistent collector configuration, the method is only tracked in {{ state.selectedMethod.trackedPercent
+                        }}% of the apps!
+                    </th>
                 </tr>
                 <tr>
                     <td></td>

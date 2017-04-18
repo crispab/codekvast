@@ -21,7 +21,8 @@ export class MethodsComponent implements OnInit {
     settings: Settings;
     state: MethodsComponentState;
 
-    constructor(private router: Router, private stateService: StateService, private warehouse: WarehouseService, private agePipe: AgePipe) {
+    constructor(private router: Router, private stateService: StateService,
+                private warehouse: WarehouseService, private agePipe: AgePipe) {
     }
 
     ngOnInit(): void {
