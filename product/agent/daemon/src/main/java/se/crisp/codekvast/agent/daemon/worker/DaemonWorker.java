@@ -28,8 +28,8 @@ import org.springframework.stereotype.Component;
 import se.crisp.codekvast.agent.daemon.appversion.AppVersionResolver;
 import se.crisp.codekvast.agent.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.agent.daemon.beans.JvmState;
-import se.crisp.codekvast.agent.daemon.codebase.CodeBase;
 import se.crisp.codekvast.agent.daemon.util.LogUtil;
+import se.crisp.codekvast.agent.lib.codebase.CodeBase;
 import se.crisp.codekvast.agent.lib.config.CollectorConfig;
 import se.crisp.codekvast.agent.lib.model.Jvm;
 import se.crisp.codekvast.agent.lib.util.FileUtils;
@@ -57,7 +57,7 @@ public class DaemonWorker {
     private final AppVersionResolver appVersionResolver;
     private final CollectorDataProcessor collectorDataProcessor;
 
-    private final Map<String, JvmState> jvmStates = new HashMap<String, JvmState>();
+    private final Map<String, JvmState> jvmStates = new HashMap<>();
     private final DataExporter dataExporter;
     private final FileUploader fileUploader;
     private Instant exportedAt = Instant.MIN;

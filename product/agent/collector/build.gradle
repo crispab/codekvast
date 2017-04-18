@@ -20,11 +20,9 @@ check.dependsOn integrationTest
 
 dependencies {
     compile project(":product:agent:agent-lib")
-    compileOnly aspectjWeaver
 
-    // Absolutely NO other compile or runtime dependencies are allowed here!
-    // All (transitive) compile and runtime dependencies will end up in the instrumented app's system
-    // class path, which is unacceptable.
+    compileOnly aspectjWeaver
+    compileOnly lombok
 
     aspectjweaver aspectjWeaver
 

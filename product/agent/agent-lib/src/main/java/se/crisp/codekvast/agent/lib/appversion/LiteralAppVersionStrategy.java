@@ -19,34 +19,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package se.crisp.codekvast.agent.daemon.beans;
+package se.crisp.codekvast.agent.lib.appversion;
 
-import lombok.Data;
-import se.crisp.codekvast.agent.lib.codebase.CodeBase;
-import se.crisp.codekvast.agent.lib.model.Jvm;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
-import java.time.Instant;
+import java.util.Collection;
 
 /**
- * Mutable state for a {@link Jvm} object.
+ * A strategy for literal versions. Handles "literal v" and "constant v".
+ *
+ * @author olle.hallin@crisp.se
  */
-@Data
-public class JvmState {
-    private Jvm jvm;
-    private File invocationsFile;
-    private CodeBase codeBase;
-    private String appVersion;
-    private Instant jvmDataProcessedAt = Instant.MIN;
-    private boolean firstRun = true;
-    private long databaseAppId;
-    private long databaseJvmId;
+@Slf4j
+public class LiteralAppVersionStrategy extends AbstractAppVersionStrategy {
 
-    public Instant getJvmDumpedAt() {
-        return Instant.ofEpochMilli(jvm.getDumpedAtMillis());
+    public LiteralAppVersionStrategy() {
+        super("constant", "literal");
     }
 
-    public Instant getJvmStartedAt() {
-        return Instant.ofEpochMilli(jvm.getStartedAtMillis());
+    @Override
+    public boolean canHandle(String[] args) {
+        return args != null && args.length == 2 && recognizes(args[0]);
+    }
+
+    @Override
+    public String resolveAppVersion(Collection<File> codeBases, String[] args) {
+        return args[1].trim();
     }
 }

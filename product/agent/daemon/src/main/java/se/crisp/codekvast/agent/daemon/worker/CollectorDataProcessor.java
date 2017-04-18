@@ -22,7 +22,7 @@
 package se.crisp.codekvast.agent.daemon.worker;
 
 import se.crisp.codekvast.agent.daemon.beans.JvmState;
-import se.crisp.codekvast.agent.daemon.codebase.CodeBase;
+import se.crisp.codekvast.agent.lib.codebase.CodeBase;
 
 import java.time.Instant;
 

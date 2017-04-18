@@ -19,34 +19,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package se.crisp.codekvast.agent.daemon.beans;
+package se.crisp.codekvast.agent.lib.appversion;
 
-import lombok.Data;
-import se.crisp.codekvast.agent.lib.codebase.CodeBase;
-import se.crisp.codekvast.agent.lib.model.Jvm;
+import se.crisp.codekvast.agent.lib.config.CollectorConfig;
 
 import java.io.File;
-import java.time.Instant;
+import java.util.Collection;
 
 /**
- * Mutable state for a {@link Jvm} object.
+ * Strategy for how to obtain the version of an application.
+ *
+ * @author olle.hallin@crisp.se
  */
-@Data
-public class JvmState {
-    private Jvm jvm;
-    private File invocationsFile;
-    private CodeBase codeBase;
-    private String appVersion;
-    private Instant jvmDataProcessedAt = Instant.MIN;
-    private boolean firstRun = true;
-    private long databaseAppId;
-    private long databaseJvmId;
+public interface AppVersionStrategy {
 
-    public Instant getJvmDumpedAt() {
-        return Instant.ofEpochMilli(jvm.getDumpedAtMillis());
-    }
+    String UNKNOWN_VERSION = "<unknown>";
 
-    public Instant getJvmStartedAt() {
-        return Instant.ofEpochMilli(jvm.getStartedAtMillis());
-    }
+    /**
+     * Can this strategy handle these args?
+     * @param args The white-space separated value from {@link CollectorConfig#appVersion}
+     * @return true if-and-only-if the strategy recognizes the args.
+     */
+    boolean canHandle(String[] args);
+
+    /**
+     * Use args for resolving the app version
+     *
+     * @param codeBases The locations of the code base.
+     * @param args The value of CollectorConfig.getAppVersionStrategy()
+     * @return The resolved application version.
+     */
+    String resolveAppVersion(Collection<File> codeBases, String[] args);
 }

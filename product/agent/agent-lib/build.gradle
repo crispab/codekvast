@@ -10,14 +10,14 @@ dependencies {
     compileOnly aspectjWeaver
     compileOnly "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
 
-    // Absolutely NO other compile or runtime dependencies are allowed here!
-
-    // All transitive compile and runtime dependencies will end up in the collected app's system
-    // class path.
+    compile slf4jApi
+    compile 'org.reflections:reflections:0.9.11'
 
     testCompile aspectjWeaver
     testCompile lombok
     testCompile junit
     testCompile mockito
     testCompile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+
+    testRuntime logback
 }

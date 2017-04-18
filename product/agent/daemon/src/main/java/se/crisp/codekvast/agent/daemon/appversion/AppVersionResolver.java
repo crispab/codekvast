@@ -24,9 +24,12 @@ package se.crisp.codekvast.agent.daemon.appversion;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import se.crisp.codekvast.agent.daemon.beans.JvmState;
+import se.crisp.codekvast.agent.lib.appversion.AppVersionStrategy;
+import se.crisp.codekvast.agent.lib.appversion.FilenameAppVersionStrategy;
+import se.crisp.codekvast.agent.lib.appversion.LiteralAppVersionStrategy;
+import se.crisp.codekvast.agent.lib.appversion.ManifestAppVersionStrategy;
 import se.crisp.codekvast.agent.lib.model.Jvm;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,11 +38,12 @@ import java.util.Collection;
 @Slf4j
 public class AppVersionResolver {
 
-    private final Collection<AppVersionStrategy> appVersionStrategies = new ArrayList<AppVersionStrategy>();
+    private final Collection<AppVersionStrategy> appVersionStrategies = new ArrayList<>();
 
-    @Inject
-    public AppVersionResolver(Collection<AppVersionStrategy> appVersionStrategies) {
-        this.appVersionStrategies.addAll(appVersionStrategies);
+    public AppVersionResolver() {
+        this.appVersionStrategies.add(new LiteralAppVersionStrategy());
+        this.appVersionStrategies.add(new ManifestAppVersionStrategy());
+        this.appVersionStrategies.add(new FilenameAppVersionStrategy());
     }
 
     static String resolveAppVersion(Collection<? extends AppVersionStrategy> appVersionStrategies,

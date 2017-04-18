@@ -19,34 +19,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package se.crisp.codekvast.agent.daemon.beans;
+package se.crisp.codekvast.agent.lib.appversion;
 
-import lombok.Data;
-import se.crisp.codekvast.agent.lib.codebase.CodeBase;
-import se.crisp.codekvast.agent.lib.model.Jvm;
-
-import java.io.File;
-import java.time.Instant;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * Mutable state for a {@link Jvm} object.
+ * @author olle.hallin@crisp.se
  */
-@Data
-public class JvmState {
-    private Jvm jvm;
-    private File invocationsFile;
-    private CodeBase codeBase;
-    private String appVersion;
-    private Instant jvmDataProcessedAt = Instant.MIN;
-    private boolean firstRun = true;
-    private long databaseAppId;
-    private long databaseJvmId;
+abstract class AbstractAppVersionStrategy implements AppVersionStrategy {
+    private final Set<String> names = new HashSet<String>();
 
-    public Instant getJvmDumpedAt() {
-        return Instant.ofEpochMilli(jvm.getDumpedAtMillis());
+    protected AbstractAppVersionStrategy(String... names) {
+        Collections.addAll(this.names, names);
     }
 
-    public Instant getJvmStartedAt() {
-        return Instant.ofEpochMilli(jvm.getStartedAtMillis());
+    boolean recognizes(String name) {
+        return name != null && names.contains(name.toLowerCase().trim());
     }
 }

@@ -4,6 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.crisp.codekvast.agent.lib.appversion.AppVersionStrategy;
+import se.crisp.codekvast.agent.lib.appversion.LiteralAppVersionStrategy;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,7 +16,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(MockitoJUnitRunner.class)
 public class AppVersionResolverTest {
 
-    private final Collection<AppVersionStrategy> appVersionStrategies = new ArrayList<AppVersionStrategy>();
+    private final Collection<AppVersionStrategy> appVersionStrategies = new ArrayList<>();
 
     @Before
     public void before() throws Exception {
