@@ -88,9 +88,9 @@ task frontendBuild(type: Exec) {
     inputs.file file('src/webapp/package.json')
     inputs.file file('src/webapp/tsconfig.json')
     inputs.file file('src/webapp/webpack.config.json')
-    inputs.dir file('src/webapp/assets')
     inputs.dir file('src/webapp/config')
     inputs.dir file('src/webapp/src')
+    inputs.dir file('src/webapp/static')
     inputs.property "version", codekvastDisplayVersion
 
     outputs.dir file('src/webapp/dist')
@@ -123,9 +123,6 @@ jar {
             exclude '**/*.css.map'
             exclude '**/*.js.map'
             exclude '**/test/**'
-        }
-        from('src/webapp') {
-            include 'assets/**'
         }
     }
 }
