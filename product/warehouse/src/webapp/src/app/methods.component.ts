@@ -48,6 +48,9 @@ export class MethodsComponent implements OnInit {
             'text-muted': muted,
             'font-italic': muted,
         };
+    }
 
+    hasInconsistentTracking(m: Method) {
+        return Method.hasInconsistentTracking(m);
     }
 }

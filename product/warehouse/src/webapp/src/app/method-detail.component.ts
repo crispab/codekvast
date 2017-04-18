@@ -41,4 +41,7 @@ export class MethodDetailComponent implements OnInit {
         this.location.back();
     }
 
+    hasInconsistentTracking() {
+        return Method.hasInconsistentTracking(this.method);
+    }
 }

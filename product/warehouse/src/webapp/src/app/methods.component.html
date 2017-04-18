@@ -97,7 +97,7 @@
                     <th>Status:</th>
                     <td>{{ state.selectedMethod.statuses | ckInvocationStatus }}</td>
                 </tr>
-                <tr *ngIf="state.selectedMethod.trackedPercent < 100">
+                <tr *ngIf="hasInconsistentTracking(state.selectedMethod)">
                     <th colspan="2" class="bg-danger text-white">
                         WARNING: Inconsistent collector configuration, the method is only tracked in {{ state.selectedMethod.trackedPercent
                         }}% of the apps!

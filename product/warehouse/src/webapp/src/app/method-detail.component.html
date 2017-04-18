@@ -31,7 +31,7 @@
                 <th>Status:</th>
                 <td>{{ method.statuses | ckInvocationStatus }}</td>
             </tr>
-            <tr *ngIf="method.trackedPercent < 100">
+            <tr *ngIf="hasInconsistentTracking()">
                 <th colspan="2" class="bg-danger text-white">
                     WARNING: Inconsistent collector configuration, the method is only tracked in {{ method.trackedPercent }}% of the apps!
                 </th>

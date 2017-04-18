@@ -17,4 +17,8 @@ export class Method {
     tags: string[];
     trackedPercent: number;
     visibility: string;
+
+    static hasInconsistentTracking(m: Method) {
+        return m.trackedPercent > 0 && m.trackedPercent < 100;
+    }
 }
