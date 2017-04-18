@@ -9,11 +9,17 @@ export class Settings {
     static KEY = 'settings';
     readonly sampleTimestamp = new Date().getTime() - 37 * oneDayInMillis - 13 * oneHourInMillis;
 
-    ageFormat = 'age';
     dateFormat = 'short';
 
     constructor() {
         console.log('Created Settings')
+    }
+
+    dateFormatHeader() {
+        switch(this.dateFormat) {
+            case 'age': return 'Age';
+            default: return 'Date';
+        }
     }
 }
 

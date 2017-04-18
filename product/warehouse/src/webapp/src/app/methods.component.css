@@ -26,11 +26,15 @@ div.wrapper {
 }
 
 .signature-column {
-    width: 85%;
+    width: 83%;
 }
 
 .age-column {
-    width: 15%;
+    width: 17%;
+}
+
+.date-column {
+    width: 10em;
 }
 
 .row-icon-column {
@@ -39,4 +43,5 @@ div.wrapper {
 
 #details-table .table-active {
     height: 6em;
+    width: 100%;
 }

@@ -30,7 +30,7 @@
                         </button>
 
                         <div *ngIf="state.data">
-                            <small class="ml-2 col-form-label form-text text-muted">{{ state.data.timestamp | date:settings.dateFormat }}:
+                            <small class="ml-2 col-form-label form-text text-muted">{{ state.data.timestamp | date:'short' }}:
                                                                                     Found {{ state.data.numMethods }} methods in {{
                                                                                     state.data.queryTimeMillis }} ms
                             </small>
@@ -76,7 +76,7 @@
         </div>
     </div>
 
-    <div class="d-flex flex-row h-100 content mx-4" (mouseleave)="state.selectMethod(null)">
+    <div class="d-flex flex-row h-100 content mx-4">
         <div id="methods-table">
             <table class="table table-striped table-bordered table-hover table-sm">
                 <thead>
@@ -97,8 +97,8 @@
                     (click)="gotoMethodDetail(method.id)"
                     [class.table-active]="state.isSelectedMethod(method)">
                     <td class="signature-column wrap-word" [ngClass]="signatureClasses(method)">{{ method.signature }}</td>
-                    <td class="age-column wrap-word" title="{{ method.lastInvokedAtMillis | ckAge:settings.dateFormat }}">
-                        {{ method.lastInvokedAtMillis | ckAge:settings.ageFormat }}
+                    <td class="age-column wrap-word">
+                        {{ method.lastInvokedAtMillis | ckAge:settings.dateFormat }}
                     </td>
                     <td class="icon-column">
                         <i [ngClass]="state.rowIconClasses(method.id)"></i>
@@ -112,57 +112,46 @@
                    class="table table-bordered table-striped table-sm"
                    (click)="gotoMethodDetail(state.selectedMethod.id)">
                 <tr>
-                    <th colspan="3">ID: {{ state.selectedMethod.id }}</th>
-                    <th colspan="2"></th>
+                    <th colspan="2">ID: {{ state.selectedMethod.id }}</th>
                 </tr>
                 <tr class="table-active">
-                    <td colspan="3" class="wrap-word">{{ state.selectedMethod.signature }}</td>
+                    <td colspan="2" class="wrap-word">{{ state.selectedMethod.signature }}</td>
                 </tr>
                 <tr>
                     <th>Status:</th>
-                    <td colspan="2">{{ state.selectedMethod.statuses | ckInvocationStatus }}</td>
+                    <td>{{ state.selectedMethod.statuses | ckInvocationStatus }}</td>
                 </tr>
                 <tr *ngIf="state.selectedMethod.trackedPercent < 100">
-                    <th colspan="3" class="bg-danger text-white">
+                    <th colspan="2" class="bg-danger text-white">
                         WARNING: Inconsistent collector configuration, the method is only tracked in {{ state.selectedMethod.trackedPercent
                         }}% of the apps!
                     </th>
                 </tr>
                 <tr>
-                    <td></td>
-                    <th>Date</th>
-                    <th>Age</th>
-                </tr>
-                <tr>
                     <th>Last Invoked:</th>
-                    <td>{{ state.selectedMethod.lastInvokedAtMillis | ckAge:settings.dateFormat }}</td>
-                    <td class="w-25">{{ state.selectedMethod.lastInvokedAtMillis | ckAge:settings.ageFormat }}</td>
+                    <td class="date-column">{{ state.selectedMethod.lastInvokedAtMillis | ckAge:settings.dateFormat }}</td>
                 </tr>
                 <tr>
                     <th>First report:</th>
-                    <td>{{ state.selectedMethod.collectedSinceMillis|ckAge:settings.dateFormat}}</td>
-                    <td>{{ state.selectedMethod.collectedSinceMillis|ckAge:settings.ageFormat}}</td>
+                    <td class="date-column">{{ state.selectedMethod.collectedSinceMillis|ckAge:settings.dateFormat}}</td>
                 </tr>
                 <tr>
                     <th>Last report:</th>
-                    <td>{{ state.selectedMethod.collectedToMillis|ckAge:settings.dateFormat}}</td>
-                    <td>{{ state.selectedMethod.collectedToMillis|ckAge:settings.ageFormat}}</td>
+                    <td class="date-column">{{ state.selectedMethod.collectedToMillis|ckAge:settings.dateFormat}}</td>
                 </tr>
                 <tr>
-                    <th colspan="3">Collected in environments:</th>
+                    <th colspan="2">Collected in environments:</th>
                 </tr>
                 <tr *ngFor="let env of state.selectedMethod.collectedInEnvironments">
                     <td>{{ env.name }}</td>
-                    <td>{{ env.collectedSinceMillis | ckAge:settings.dateFormat }}</td>
-                    <td>{{ env.collectedSinceMillis | ckAge:settings.ageFormat }}</td>
+                    <td class="date-column">{{ env.collectedSinceMillis | ckAge:settings.dateFormat }}</td>
                 </tr>
                 <tr>
-                    <th colspan="3">Occurs in applications:</th>
+                    <th colspan="2">Occurs in applications:</th>
                 </tr>
                 <tr *ngFor="let app of state.selectedMethod.occursInApplications">
                     <td>{{ app.name }} {{app.version }}</td>
-                    <td>{{ app.startedAtMillis | ckAge:settings.dateFormat }}</td>
-                    <td>{{ app.startedAtMillis | ckAge:settings.ageFormat }}</td>
+                    <td class="date-column">{{ app.startedAtMillis | ckAge:settings.dateFormat }}</td>
                 </tr>
             </table>
         </div>
