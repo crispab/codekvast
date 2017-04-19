@@ -196,9 +196,7 @@ public class CodekvastCollector {
         StringBuilder sb = new StringBuilder();
 
         Set<String> prefixes = new HashSet<String>(packages);
-        for (String prefix : extraPrefixes) {
-            prefixes.add(prefix);
-        }
+        Collections.addAll(prefixes, extraPrefixes);
 
         for (String prefix : prefixes) {
             sb.append(String.format("    <%s within='%s..*' />\n", element, prefix));

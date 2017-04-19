@@ -47,9 +47,11 @@ class RecordingClassFileFilter implements Predicate<String> {
 
     @Override
     public boolean apply(String input) {
-        Matcher includeMatcher = includePattern.matcher(input);
-        if (includeMatcher.matches()) {
-            matches.add(includeMatcher.group(1));
+        if (includePattern != null) {
+            Matcher includeMatcher = includePattern.matcher(input);
+            if (includeMatcher.matches()) {
+                matches.add(includeMatcher.group(1));
+            }
         }
         return false;
     }
@@ -64,7 +66,7 @@ class RecordingClassFileFilter implements Predicate<String> {
         }
 
         StringBuilder sb = new StringBuilder("^(");
-        String delimiter = prefixes.isEmpty() ? "" : "(";
+        String delimiter = "(";
         for (String prefix : prefixes) {
             sb.append(delimiter).append(prefix);
             delimiter = "|";
