@@ -274,6 +274,7 @@ public class CodekvastCollector {
         public void run() {
             if (InvocationRegistry.instance.isNullRegistry()) {
                 // Someone has pulled the carpet...
+                log.info("{} has been disabled, stopping timer task", NAME);
                 timer.cancel();
             } else {
                 dumpCount += 1;

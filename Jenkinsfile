@@ -15,16 +15,16 @@ node {
                 }
 
                 stage('Compile Java') {
-                    sh "./gradlew classes testClasses integrationTestClasses systemTestClasses"
+                    sh "./gradlew --console=plain classes testClasses integrationTestClasses systemTestClasses"
                 }
 
                 stage('Java unit test') {
-                    sh "./gradlew test"
+                    sh "./gradlew --console=plain test"
                     junit '**/build/test-results/test/*.xml'
                 }
 
                 stage('TypeScript unit test') {
-                    sh "./gradlew :product:warehouse:frontendTest"
+                    sh "./gradlew --console=plain :product:warehouse:frontendTest"
 
                     junit '**/build/test-results/frontendTest/*.xml'
 
@@ -37,21 +37,21 @@ node {
                 }
 
                 stage('Integration test') {
-                    sh './gradlew integrationTest'
+                    sh './gradlew --console=plain integrationTest'
                     junit '**/build/test-results/integrationTest/*.xml'
                 }
 
                 stage('Build Docker image') {
-                    sh './gradlew :product:warehouse:buildDockerImage'
+                    sh './gradlew --console=plain :product:warehouse:buildDockerImage'
                 }
 
                 stage('System test') {
-                    sh './gradlew systemTest'
+                    sh './gradlew --console=plain systemTest'
                     junit '**/build/test-results/systemTest/*.xml'
                 }
 
                 stage('Documentation & reports') {
-                    sh './gradlew -Dorg.gradle.configureondemand=false :product:docs:build :product:aggregateJavadoc'
+                    sh './gradlew --console=plain -Dorg.gradle.configureondemand=false :product:docs:build :product:aggregateJavadoc'
 
                     publishHTML([allowMissing: true,
                         alwaysLinkToLastBuild: true,

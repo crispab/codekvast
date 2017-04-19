@@ -67,7 +67,7 @@ if [ "${answer}" != 'y' ]; then
     exit 4
 fi
 
-tools/build-it.sh --no-daemon --max-workers=1
+tools/build-it.sh --console=plain --no-daemon --max-workers=1
 
 echo "Creating Git tag ${CODEKVAST_VERSION}"
 git tag -m "Version ${CODEKVAST_VERSION}" ${CODEKVAST_VERSION}
@@ -77,10 +77,10 @@ git push --tags
 set +e
 
 echo "Uploading distributions to Bintray..."
-${GRADLEW} :product:dist:bintrayUpload
+${GRADLEW} --console=plain :product:dist:bintrayUpload
 
-echo "Uploading codekvast-collector to jcenter..."
-${GRADLEW} :product:agent:collector:bintrayUpload
+echo "Uploading codekvast-collector-${CODEKVAST_VERSION}-all.jar to jcenter..."
+${GRADLEW} --console=plain :product:agent:collector:bintrayUpload
 
 echo "Pushing $WAREHOUSE_IMAGE_NAME to Docker Hub..."
 tools/push-to-docker-hub.sh ${WAREHOUSE_IMAGE_NAME} ${CODEKVAST_VERSION} ${GIT_HASH}

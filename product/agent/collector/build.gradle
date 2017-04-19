@@ -32,6 +32,7 @@ dependencies {
     testCompile lombok
 
     integrationTestCompile project(":product:testsupport")
+    integrationTestRuntime logback
 
     jacocoagent 'org.jacoco:org.jacoco.agent:0.7.9:runtime@jar'
 }
@@ -45,10 +46,25 @@ shadowJar {
                 "Implementation-Version": codekvastDisplayVersion
         )
     }
+
+    relocate 'javassist', 'se.codekvast.shadow.javassist'
+    relocate 'com', 'se.codekvast.shadow.com'
+    relocate 'org', 'se.codekvast.shadow.org'
+
     dependencies {
         exclude(dependency('org.aspectj:aspectjweaver'))
     }
 }
+
+task verifyShadowJar(type: Exec) {
+    group "Verification"
+    description "Verifies that the shadow collector jar is correctly relocated to avoid class conflicts"
+    inputs.files shadowJar.outputs.files
+
+    executable "jar"
+    args "tvf", "$buildDir/libs/$archivesBaseName-$version-all.jar"
+}
+check.dependsOn verifyShadowJar
 
 integrationTest {
     inputs.files shadowJar.outputs.files
@@ -56,7 +72,7 @@ integrationTest {
     systemProperty 'integrationTest.codekvastCollector', shadowJar.outputs.files.asPath
     systemProperty 'integrationTest.aspectjweaver', configurations.aspectjweaver.asPath
     systemProperty 'integrationTest.jacocoagent', "${configurations.jacocoagent.asPath}=destfile=build/jacoco/integrationTest2.exec,output=file,dumponexit=true"
-    systemProperty 'integrationTest.classpath', file("build/classes/integrationTest/")
+    systemProperty 'integrationTest.classpath', "build/classes/integrationTest/:$configurations.integrationTestRuntime.asPath"
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {

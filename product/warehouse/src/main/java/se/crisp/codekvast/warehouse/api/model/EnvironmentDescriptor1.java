@@ -89,7 +89,7 @@ public class EnvironmentDescriptor1 implements Comparable<EnvironmentDescriptor1
      * @param that The environment descriptor to merge with.
      * @return A new object with extreme values of the numerical values and the union of host names and tags.
      */
-    public EnvironmentDescriptor1 mergeWith(@NonNull EnvironmentDescriptor1 that) {
+    public EnvironmentDescriptor1 mergeWith(EnvironmentDescriptor1 that) {
         return that == null ? this
             : EnvironmentDescriptor1.builder()
                                     .name(this.name)
