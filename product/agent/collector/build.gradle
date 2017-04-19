@@ -1,3 +1,8 @@
+import java.nio.charset.Charset
+import java.util.jar.JarFile
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
+
 apply from: "$rootDir/gradle/java-6.gradle"
 apply from: "$rootDir/gradle/license.gradle"
 apply plugin: 'com.github.johnrengelman.shadow'
@@ -41,30 +46,44 @@ shadowJar {
     classifier = 'all'
     manifest {
         attributes(
-                "Premain-Class": "se.crisp.codekvast.agent.collector.CodekvastCollector",
-                "Implementation-Title": archivesBaseName,
-                "Implementation-Version": codekvastDisplayVersion
+            "Premain-Class": "se.crisp.codekvast.agent.collector.CodekvastCollector",
+            "Implementation-Title": archivesBaseName,
+            "Implementation-Version": codekvastDisplayVersion
         )
     }
 
-    relocate 'javassist', 'se.codekvast.shadow.javassist'
-    relocate 'com', 'se.codekvast.shadow.com'
-    relocate 'org', 'se.codekvast.shadow.org'
+    relocate 'javassist', 'se.crisp.codekvast.shadow.javassist'
+    relocate 'com', 'se.crisp.codekvast.shadow.com'
+    relocate 'org', 'se.crisp.codekvast.shadow.org'
 
     dependencies {
         exclude(dependency('org.aspectj:aspectjweaver'))
     }
 }
 
-task verifyShadowJar(type: Exec) {
+task verifyShadowJarRelocations {
     group "Verification"
     description "Verifies that the shadow collector jar is correctly relocated to avoid class conflicts"
+
     inputs.files shadowJar.outputs.files
 
-    executable "jar"
-    args "tvf", "$buildDir/libs/$archivesBaseName-$version-all.jar"
+    doLast {
+        def shadowJarFile = file(shadowJar.outputs.files.asPath)
+        logger.info(" Verifying relocations in {}", shadowJarFile)
+
+        ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(shadowJarFile)))
+        InputStreamReader reader = new InputStreamReader(zipInputStream, Charset.forName("UTF-8"))
+
+        ZipEntry zipEntry
+        while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+            def name = zipEntry.getName()
+            if (name.endsWith(".class") && !name.startsWith("se/crisp/codekvast")) {
+                throw new IllegalStateException("Found not relocated entry in shadowJar: " + name)
+            }
+        }
+    }
 }
-check.dependsOn verifyShadowJar
+check.dependsOn verifyShadowJarRelocations
 
 integrationTest {
     inputs.files shadowJar.outputs.files
