@@ -20,6 +20,7 @@ The following stack is used when developing Codekvast (in alphabetical order):
 1. Spring Boot
 1. TypeScript
 1. Webpack
+1. Yarn
 
 ## Directory structure
 
@@ -46,11 +47,14 @@ Java 8 is required. OpenJDK is recommended.
 
 Node.js 6, NPM 3.10+ and PhantomJS are required.
 
-Use the following command to install OpenJDK 8, Node.js, npm and PhantomJS (Ubuntu, Debian):
+Use the following command to install OpenJDK 8, Node.js, npm, PhantomJS and Yarn (Ubuntu, Debian):
 
     curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
     sudo apt-get install openjdk-8-jdk openjdk-8-doc openjdk-8-source nodejs
     sudo npm install -g phantomjs-prebuilt
+    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+    sudo apt-get update && sudo apt-get install yarn
 
 You also must define the environment variable `PHANTOMJS_BIN` to point to the phantomjs executable.
 (This is due to a bug in the karma-phantomjs-launcher, which does not use PATH.)
@@ -63,7 +67,7 @@ Put this into your `/etc/profile.d/phantomjs.sh` or your `$HOME/.profile` or sim
 
 The Codekvast Warehouse web UI is developed with TypeScript and Angular 4. Twitter Bootstrap is used as CSS framework.
 
-npm is used for managing the frontend development environment. Webpack is used as frontend bundler.
+npm and yarn are used for managing the frontend development environment. Webpack is used as frontend bundler.
     
 ### Docker Engine & Docker Compose
 
@@ -81,7 +85,7 @@ Inkscape is an excellent, free and cross-platform SVG editor.
 
 Codekvast uses **Gradle** as build tool. It uses the Gradle Wrapper, `gradlew`, which is checked in at the root of the workspace.
 There is the convenience script `tools/src/script/gradle` which simplifies invocation of gradlew. Install that script in your PATH
-(e.g., /usr/local/bin) and use `gradle` instead of `path/to/gradlew`
+(e.g., `/usr/local/bin`) and simply use `gradle` instead of `path/to/gradlew`
 
 ## Continuous Integration
 

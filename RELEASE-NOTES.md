@@ -5,6 +5,7 @@
 1. Warehouse: Added settings editor.
 1. Warehouse: Implemented detection of inconsistent collector config.
 1. Warehouse: Added a landing page for feature voting, to make it simpler to use Google Analytics.
+1. Adopted Yarn instead of npm for installing Node dependencies.
 
 ## 0.18.6
 1. Restructured and cleaned up README.md

@@ -5,7 +5,7 @@ task frontendInstall(type: Exec) {
     group 'Frontend Development'
 
     workingDir file('src/webapp')
-    executable 'npm'
+    executable 'yarn'
     args 'install'
 
     inputs.file file('src/webapp/package.json')
