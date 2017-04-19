@@ -22,7 +22,7 @@ public class SampleApp {
     @SneakyThrows(InterruptedException.class)
     public void run() {
         System.out.printf("Hello, World! from %s%n%n", getClass().getName());
-        tryToLoadClass("se.crisp.codekvast.collector.CodekvastCollector", true);
+        tryToLoadClass("se.crisp.codekvast.agent.collector.CodekvastCollector", true);
         tryToLoadClass("org.aspectj.weaver.loadtime.Agent", true);
 
         measureMethodCallTrackingOverhead();

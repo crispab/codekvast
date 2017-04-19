@@ -37,7 +37,6 @@ dependencies {
     testCompile lombok
 
     integrationTestCompile project(":product:testsupport")
-    integrationTestRuntime logback
 
     jacocoagent 'org.jacoco:org.jacoco.agent:0.7.9:runtime@jar'
 }
@@ -52,16 +51,12 @@ shadowJar {
         )
     }
 
-    relocate 'javassist', 'se.crisp.codekvast.shadow.javassist'
-    relocate 'com', 'se.crisp.codekvast.shadow.com'
-    relocate 'org', 'se.crisp.codekvast.shadow.org'
-
-    dependencies {
-        exclude(dependency('org.aspectj:aspectjweaver'))
-    }
+    relocate 'javassist', 'shadow.javassist'
+    relocate 'com', 'shadow.com'
+    relocate 'org.reflections', 'shadow.org.reflections'
 }
 
-task verifyShadowJarRelocations {
+task verifyShadowJar {
     group "Verification"
     description "Verifies that the shadow collector jar is correctly relocated to avoid class conflicts"
 
@@ -69,7 +64,7 @@ task verifyShadowJarRelocations {
 
     doLast {
         def shadowJarFile = file(shadowJar.outputs.files.asPath)
-        logger.info(" Verifying relocations in {}", shadowJarFile)
+        logger.info("Verifying relocations in {}", shadowJarFile)
 
         ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(shadowJarFile)))
         InputStreamReader reader = new InputStreamReader(zipInputStream, Charset.forName("UTF-8"))
@@ -77,13 +72,19 @@ task verifyShadowJarRelocations {
         ZipEntry zipEntry
         while ((zipEntry = zipInputStream.getNextEntry()) != null) {
             def name = zipEntry.getName()
-            if (name.endsWith(".class") && !name.startsWith("se/crisp/codekvast")) {
-                throw new IllegalStateException("Found not relocated entry in shadowJar: " + name)
+            if (name.endsWith(".class")
+                && !name.startsWith("se/crisp/codekvast/")
+                && !name.startsWith("shadow/")
+                && !name.startsWith("org/aspectj/")
+                && !name.startsWith("org/slf4j/")) {
+                throw new IllegalStateException("Class not relocated in shadowJar: $name")
             }
         }
+
+        assert shadowJarFile.length() < 5_000_000 // bytes, it is currently approx. 3.5 MB
     }
 }
-check.dependsOn verifyShadowJarRelocations
+check.dependsOn verifyShadowJar
 
 integrationTest {
     inputs.files shadowJar.outputs.files

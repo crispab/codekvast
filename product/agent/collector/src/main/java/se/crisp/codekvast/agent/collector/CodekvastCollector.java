@@ -102,7 +102,7 @@ public class CodekvastCollector {
     /**
      * Initializes CodekvastCollector. Before this method has been invoked, no method invocations are recorded.
      *
-     * @param config         The configuration object. May be null, in which case Codekvast is disabled.
+     * @param config The configuration object. May be null, in which case Codekvast is disabled.
      */
     public static void initialize(CollectorConfig config) {
         if (config == null) {
@@ -121,10 +121,10 @@ public class CodekvastCollector {
         int codebaseDumpingIntervalSeconds = createCodebaseDumperTimerTask(config, getCodebaseDumper(config));
         int firstResultInSeconds = createInvocationDumperTimerTask(config.getCollectorResolutionSeconds());
 
-        log.info("{} is ready to detect used code within({}..*).", getNormalizedPackages(config));
-        log.info("An attempt to dump the codebase will be done every {} seconds until either rejected or successful.",
+        log.info("{} is ready to detect used code within({}..*).", NAME, getNormalizedPackages(config));
+        log.info("An attempt to upload the codebase will be done every {} seconds until either rejected or successful.",
                  codebaseDumpingIntervalSeconds);
-        log.info("First result will be dumped in {} seconds, thereafter every {} seconds.", firstResultInSeconds,
+        log.info("First result will be uploaded in {} seconds, thereafter every {} seconds.", firstResultInSeconds,
                  config.getCollectorResolutionSeconds());
     }
 
@@ -138,11 +138,11 @@ public class CodekvastCollector {
 
         CodebaseDumpingTimerTask timerTask = new CodebaseDumpingTimerTask(timer, config, codebaseDumper);
 
-        int initialDelaySeconds = 5;
+        int initialDelaySeconds = 10;
         int periodSeconds = 60;
         timer.scheduleAtFixedRate(timerTask, initialDelaySeconds * 1000L, periodSeconds * 1000L);
 
-        return initialDelaySeconds;
+        return periodSeconds;
     }
 
     private static int createInvocationDumperTimerTask(int dumpIntervalSeconds) {
@@ -199,7 +199,8 @@ public class CodekvastCollector {
             toMethodExecutionPointcut(config.getMethodAnalyzer()),
             config.getAspectjOptions(),
             getIncludeExcludeElements("include", config.getNormalizedPackages()),
-            getIncludeExcludeElements("exclude", config.getNormalizedExcludePackages(), "se.crisp.codekvast"));
+            getIncludeExcludeElements("exclude", config.getNormalizedExcludePackages(),
+                                      "se.crisp.codekvast.agent"));
 
         File file = config.getAspectFile();
         if (config.isClobberAopXml() || !file.canRead()) {
