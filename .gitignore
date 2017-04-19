@@ -34,3 +34,4 @@ product/warehouse/src/webapp/dist/
 .project
 .classpath
 !**.ts
+!**.java

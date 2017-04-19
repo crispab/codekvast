@@ -3,7 +3,7 @@ package sample.swing;
 import se.crisp.codekvast.agent.collector.CodekvastCollector;
 import se.crisp.codekvast.agent.lib.config.CollectorConfig;
 import se.crisp.codekvast.agent.lib.config.CollectorConfigFactory;
-import se.crisp.codekvast.agent.lib.io.FileSystemInvocationDataDumper;
+import se.crisp.codekvast.agent.lib.io.impl.FileSystemInvocationDataDumperImpl;
 import se.crisp.codekvast.agent.lib.util.ConfigUtils;
 
 import javax.swing.*;
@@ -26,7 +26,7 @@ public class SampleSwingApp extends JFrame {
                 .codeBase("$APP_HOME/lib")
                 .packages("sample")
                 .build();
-        CodekvastCollector.initialize(config, new FileSystemInvocationDataDumper(config, System.err));
+        CodekvastCollector.initialize(config);
     }
 
     private void createGUI() {

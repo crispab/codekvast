@@ -29,9 +29,9 @@ import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.transport.TransportException;
 import org.springframework.stereotype.Component;
 import se.crisp.codekvast.agent.daemon.beans.DaemonConfig;
-import se.crisp.codekvast.agent.daemon.util.LogUtil;
 import se.crisp.codekvast.agent.daemon.worker.FileUploadException;
 import se.crisp.codekvast.agent.daemon.worker.FileUploader;
+import se.crisp.codekvast.agent.lib.util.LogUtil;
 
 import javax.inject.Inject;
 import java.io.File;

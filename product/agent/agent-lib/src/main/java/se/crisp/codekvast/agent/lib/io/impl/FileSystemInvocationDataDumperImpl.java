@@ -19,15 +19,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package se.crisp.codekvast.agent.lib.io;
+package se.crisp.codekvast.agent.lib.io.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import se.crisp.codekvast.agent.lib.config.CollectorConfig;
+import se.crisp.codekvast.agent.lib.io.InvocationDataDumper;
 import se.crisp.codekvast.agent.lib.model.Jvm;
 import se.crisp.codekvast.agent.lib.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.Set;
 
 /**
@@ -35,16 +36,15 @@ import java.util.Set;
  *
  * @author olle.hallin@crisp.se
  */
-public class FileSystemInvocationDataDumper implements InvocationDataDumper {
+@Slf4j
+public class FileSystemInvocationDataDumperImpl implements InvocationDataDumper {
 
     private final CollectorConfig config;
-    private final PrintStream out;
     private final File jvmFile;
 
-    public FileSystemInvocationDataDumper(CollectorConfig config, PrintStream out) {
+    public FileSystemInvocationDataDumperImpl(CollectorConfig config) {
         this.config = config;
-        this.out = out;
-        this.jvmFile = config == null ? null : config.getJvmFile();
+        this.jvmFile = config.getJvmFile();
     }
 
     @Override
@@ -67,7 +67,7 @@ public class FileSystemInvocationDataDumper implements InvocationDataDumper {
             jvm.saveTo(tmpFile);
             FileUtils.renameFile(tmpFile, jvmFile);
         } catch (IOException e) {
-            out.println("Codekvast cannot save " + jvmFile + ": " + e);
+            log.debug("Codekvast cannot save {}: {}", jvmFile, e);
         } finally {
             FileUtils.safeDelete(tmpFile);
         }

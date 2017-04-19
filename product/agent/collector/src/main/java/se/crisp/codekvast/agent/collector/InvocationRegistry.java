@@ -21,9 +21,11 @@
  */
 package se.crisp.codekvast.agent.collector;
 
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.Signature;
 import se.crisp.codekvast.agent.lib.config.CollectorConfig;
 import se.crisp.codekvast.agent.lib.io.InvocationDataDumper;
+import se.crisp.codekvast.agent.lib.io.impl.FileSystemInvocationDataDumperImpl;
 import se.crisp.codekvast.agent.lib.model.Jvm;
 import se.crisp.codekvast.agent.lib.util.ComputerID;
 import se.crisp.codekvast.agent.lib.util.SignatureUtils;
@@ -45,6 +47,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @author olle.hallin@crisp.se
  */
 @SuppressWarnings("Singleton")
+@Slf4j
 public class InvocationRegistry {
 
     static InvocationRegistry instance = new NullInvocationRegistry();
@@ -83,8 +86,8 @@ public class InvocationRegistry {
      * @param config The collector configuration. May be null, in which case the registry is disabled.
      * @param invocationDataDumper The strategy for dumping invocation data to the outside world. Not used if config is null.
      */
-    public static void initialize(CollectorConfig config, InvocationDataDumper invocationDataDumper) {
-        if (config == null || invocationDataDumper == null) {
+    public static void initialize(CollectorConfig config) {
+        if (config == null) {
             instance = new NullInvocationRegistry();
             return;
         }
@@ -108,7 +111,11 @@ public class InvocationRegistry {
                    .jvmUuid(UUID.randomUUID().toString())
                    .startedAtMillis(System.currentTimeMillis())
                    .build(),
-                invocationDataDumper);
+                getInvocationDataDumper(config));
+    }
+
+    private static InvocationDataDumper getInvocationDataDumper(CollectorConfig config) {
+        return new FileSystemInvocationDataDumperImpl(config);
     }
 
     private static String getHostName() {
@@ -145,7 +152,7 @@ public class InvocationRegistry {
      */
     public void dumpData(int dumpCount) {
         if (!invocationDataDumper.prepareForDump()) {
-            CodekvastCollector.out.println("Cannot dump invocation data");
+            log.warn("Cannot dump invocation data");
         } else {
             long oldRecordingIntervalStartedAtMillis = recordingIntervalStartedAtMillis;
             int oldIndex = currentInvocationIndex;
@@ -172,7 +179,7 @@ public class InvocationRegistry {
                 try {
                     invocations[currentInvocationIndex].add(queue.take());
                 } catch (InterruptedException e) {
-                    e.printStackTrace(CodekvastCollector.out);
+                    log.debug("Interrupted");
                     return;
                 }
             }

@@ -72,8 +72,10 @@ public class CodeBase {
     @Getter
     private final Map<String, SignatureStatus> statuses = new HashMap<String, SignatureStatus>();
 
-    private static final Set<String> strangeSignatures = new TreeSet<String>();
+    @Getter
     private final CodeBaseFingerprint fingerprint;
+
+    private static final Set<String> strangeSignatures = new TreeSet<String>();
 
     private List<URL> urls;
     private boolean needsExploding = false;

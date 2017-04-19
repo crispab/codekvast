@@ -28,11 +28,11 @@ import org.springframework.stereotype.Component;
 import se.crisp.codekvast.agent.daemon.appversion.AppVersionResolver;
 import se.crisp.codekvast.agent.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.agent.daemon.beans.JvmState;
-import se.crisp.codekvast.agent.daemon.util.LogUtil;
 import se.crisp.codekvast.agent.lib.codebase.CodeBase;
 import se.crisp.codekvast.agent.lib.config.CollectorConfig;
 import se.crisp.codekvast.agent.lib.model.Jvm;
 import se.crisp.codekvast.agent.lib.util.FileUtils;
+import se.crisp.codekvast.agent.lib.util.LogUtil;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;

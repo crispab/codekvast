@@ -16,6 +16,8 @@ dependencies {
     compile 'com.google.inject:guice:4.0'
     compile project(":sample:sample-lib")
 
+    runtime logback
+
     javaagent project(path: ":product:agent:collector", configuration: 'shadow')
     javaagent "org.aspectj:aspectjweaver:1.8.7"
 }

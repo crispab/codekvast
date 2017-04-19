@@ -21,17 +21,22 @@
  */
 package se.crisp.codekvast.agent.collector;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.bridge.Constants;
+import se.crisp.codekvast.agent.lib.codebase.CodeBase;
+import se.crisp.codekvast.agent.lib.codebase.CodeBaseScanner;
 import se.crisp.codekvast.agent.lib.config.CollectorConfig;
 import se.crisp.codekvast.agent.lib.config.CollectorConfigFactory;
 import se.crisp.codekvast.agent.lib.config.CollectorConfigLocator;
 import se.crisp.codekvast.agent.lib.config.MethodAnalyzer;
-import se.crisp.codekvast.agent.lib.io.FileSystemInvocationDataDumper;
-import se.crisp.codekvast.agent.lib.io.InvocationDataDumper;
+import se.crisp.codekvast.agent.lib.io.CodebaseDumpException;
+import se.crisp.codekvast.agent.lib.io.CodebaseDumper;
+import se.crisp.codekvast.agent.lib.io.impl.NullCodebaseDumperImpl;
 import se.crisp.codekvast.agent.lib.util.FileUtils;
+import se.crisp.codekvast.agent.lib.util.LogUtil;
 
 import java.io.File;
-import java.io.PrintStream;
 import java.lang.instrument.Instrumentation;
 import java.util.*;
 
@@ -64,14 +69,13 @@ import java.util.*;
  *
  * @author olle.hallin@crisp.se
  */
+@Slf4j
 public class CodekvastCollector {
 
     private static final String NAME = "Codekvast";
 
     // AspectJ uses this system property for defining the list of names of load-time weaving config files to locate...
     private static final String ASPECTJ_WEAVER_CONFIGURATION = "org.aspectj.weaver.loadtime.configuration";
-
-    public static PrintStream out;
 
     private CodekvastCollector() {
         // Not possible to instantiate a javaagent
@@ -88,40 +92,40 @@ public class CodekvastCollector {
     public static void premain(String args, Instrumentation inst) {
         CollectorConfig config = CollectorConfigFactory.parseCollectorConfig(CollectorConfigLocator.locateConfig(System.out), args, true);
 
-        initialize(config, new FileSystemInvocationDataDumper(config, out));
+        initialize(config);
+    }
+
+    private static CodebaseDumper getCodebaseDumper(@SuppressWarnings("unused") CollectorConfig config) {
+        return new NullCodebaseDumperImpl();
     }
 
     /**
      * Initializes CodekvastCollector. Before this method has been invoked, no method invocations are recorded.
      *
-     * @param config     The configuration object. May be null, in which case Codekvast is disabled.
-     * @param dataDumper The strategy for how to dump data.
+     * @param config         The configuration object. May be null, in which case Codekvast is disabled.
      */
-    @SuppressWarnings("UseOfSystemOutOrSystemErr")
-    public static void initialize(CollectorConfig config, InvocationDataDumper dataDumper) {
-        if (!InvocationRegistry.instance.isNullRegistry() && config != null) {
-            // Already initialized from -javaagent. Let it be.
-            return;
-        }
-
-        InvocationRegistry.initialize(config, dataDumper);
-
+    public static void initialize(CollectorConfig config) {
         if (config == null) {
             return;
         }
 
-        CodekvastCollector.out = config.isVerbose() ? System.err : new PrintStream(new NullOutputStream());
+        if (!InvocationRegistry.instance.isNullRegistry()) {
+            // Already initialized from -javaagent. Let it be.
+            return;
+        }
+
+        InvocationRegistry.initialize(config);
 
         defineAspectjLoadTimeWeaverConfig(config);
 
-        int firstResultInSeconds = createTimerTask(config.getCollectorResolutionSeconds());
+        int codebaseDumpingIntervalSeconds = createCodebaseDumperTimerTask(config, getCodebaseDumper(config));
+        int firstResultInSeconds = createInvocationDumperTimerTask(config.getCollectorResolutionSeconds());
 
-        CodekvastCollector.out.printf("%s is ready to detect used code within(%s..*).%n" +
-                                              "First write to %s will be in %d seconds, thereafter every %d seconds.%n" +
-                                              "-------------------------------------------------------------------------------%n",
-                                      NAME, getNormalizedPackages(config), config.getInvocationsFile(),
-                                      firstResultInSeconds, config.getCollectorResolutionSeconds()
-        );
+        log.info("{} is ready to detect used code within({}..*).", getNormalizedPackages(config));
+        log.info("An attempt to dump the codebase will be done every {} seconds until either rejected or successful.",
+                 codebaseDumpingIntervalSeconds);
+        log.info("First result will be dumped in {} seconds, thereafter every {} seconds.", firstResultInSeconds,
+                 config.getCollectorResolutionSeconds());
     }
 
     private static String getNormalizedPackages(CollectorConfig config) {
@@ -129,8 +133,20 @@ public class CodekvastCollector {
         return prefixes.size() == 1 ? prefixes.get(0) : prefixes.toString();
     }
 
-    private static int createTimerTask(int dumpIntervalSeconds) {
-        Timer timer = new Timer(NAME, true);
+    private static int createCodebaseDumperTimerTask(CollectorConfig config, CodebaseDumper codebaseDumper) {
+        Timer timer = new Timer(NAME + " Codebase Dumper", true);
+
+        CodebaseDumpingTimerTask timerTask = new CodebaseDumpingTimerTask(timer, config, codebaseDumper);
+
+        int initialDelaySeconds = 5;
+        int periodSeconds = 60;
+        timer.scheduleAtFixedRate(timerTask, initialDelaySeconds * 1000L, periodSeconds * 1000L);
+
+        return initialDelaySeconds;
+    }
+
+    private static int createInvocationDumperTimerTask(int dumpIntervalSeconds) {
+        Timer timer = new Timer(NAME + " Invocation Dumper", true);
 
         InvocationDumpingTimerTask timerTask = new InvocationDumpingTimerTask(timer);
 
@@ -148,13 +164,13 @@ public class CodekvastCollector {
 
             System.setProperty(ASPECTJ_WEAVER_CONFIGURATION,
                                createAopXml(config) + ";" +
-                                       Constants.AOP_USER_XML + ";" +
-                                       Constants.AOP_AJC_XML + ";" +
-                                       Constants.AOP_OSGI_XML);
+                                   Constants.AOP_USER_XML + ";" +
+                                   Constants.AOP_AJC_XML + ";" +
+                                   Constants.AOP_OSGI_XML);
 
-            CodekvastCollector.out.printf("%s=%s%n", ASPECTJ_WEAVER_CONFIGURATION, System.getProperty(ASPECTJ_WEAVER_CONFIGURATION));
+            log.debug("{}={}", ASPECTJ_WEAVER_CONFIGURATION, System.getProperty(ASPECTJ_WEAVER_CONFIGURATION));
         } catch (ClassNotFoundException e) {
-            CodekvastCollector.out.printf("Not using AspectJ load-time weaving.%n");
+            log.warn("Not using AspectJ load-time weaving.");
         }
     }
 
@@ -167,23 +183,23 @@ public class CodekvastCollector {
     private static String createAopXml(CollectorConfig config) {
 
         String xml = String.format(
-                "<aspectj>\n"
-                        + "  <aspects>\n"
-                        + "    <concrete-aspect name='se.crisp.codekvast.agent.collector.MethodExecutionAspect'\n"
-                        + "                     extends='%1$s'>\n"
-                        + "      <pointcut name='methodExecution' expression='%2$s'/>\n"
-                        + "    </concrete-aspect>\n"
-                        + "  </aspects>\n"
-                        + "  <weaver options='%3$s'>\n"
-                        + "%4$s"
-                        + "%5$s"
-                        + "  </weaver>\n"
-                        + "</aspectj>\n",
-                AbstractMethodExecutionAspect.class.getName(),
-                toMethodExecutionPointcut(config.getMethodAnalyzer()),
-                config.getAspectjOptions(),
-                getIncludeExcludeElements("include", config.getNormalizedPackages()),
-                getIncludeExcludeElements("exclude", config.getNormalizedExcludePackages(), "se.crisp.codekvast"));
+            "<aspectj>\n"
+                + "  <aspects>\n"
+                + "    <concrete-aspect name='se.crisp.codekvast.agent.collector.MethodExecutionAspect'\n"
+                + "                     extends='%1$s'>\n"
+                + "      <pointcut name='methodExecution' expression='%2$s'/>\n"
+                + "    </concrete-aspect>\n"
+                + "  </aspects>\n"
+                + "  <weaver options='%3$s'>\n"
+                + "%4$s"
+                + "%5$s"
+                + "  </weaver>\n"
+                + "</aspectj>\n",
+            AbstractMethodExecutionAspect.class.getName(),
+            toMethodExecutionPointcut(config.getMethodAnalyzer()),
+            config.getAspectjOptions(),
+            getIncludeExcludeElements("include", config.getNormalizedPackages()),
+            getIncludeExcludeElements("exclude", config.getNormalizedExcludePackages(), "se.crisp.codekvast"));
 
         File file = config.getAspectFile();
         if (config.isClobberAopXml() || !file.canRead()) {
@@ -213,19 +229,46 @@ public class CodekvastCollector {
         }
         if (filter.selectsProtectedMethods()) {
             return "execution(public * *..*(..)) || execution(protected * *..*(..)) " +
-                    "|| execution(public *..new(..)) || execution(protected *..new(..))";
+                "|| execution(public *..new(..)) || execution(protected *..new(..))";
         }
         return "execution(public * *..*(..)) || execution(public *..new(..))";
     }
 
+    @RequiredArgsConstructor
+    private static class CodebaseDumpingTimerTask extends TimerTask {
+        private final Timer timer;
+        private final CollectorConfig config;
+        private final CodebaseDumper codebaseDumper;
+
+        private CodeBase codeBase;
+
+        @Override
+        public void run() {
+            if (codeBase == null) {
+                log.info("Building codebase");
+                codeBase = new CodeBase(config);
+            }
+            try {
+                if (codebaseDumper.needsToBeDumped(codeBase.getFingerprint())) {
+                    CodeBaseScanner scanner = new CodeBaseScanner();
+                    scanner.scanSignatures(codeBase);
+                    codebaseDumper.dumpCodebase(codeBase);
+                    log.info("Dumped codebase {}", codeBase.getFingerprint());
+                } else {
+                    log.info("Codebase {} already dumped", codeBase.getFingerprint());
+                }
+                timer.cancel();
+            } catch (CodebaseDumpException e) {
+                LogUtil.logException(log, "Cannot dump codebase", e);
+            }
+        }
+    }
+
+    @RequiredArgsConstructor
     private static class InvocationDumpingTimerTask extends TimerTask {
 
         private final Timer timer;
         private int dumpCount;
-
-        private InvocationDumpingTimerTask(Timer timer) {
-            this.timer = timer;
-        }
 
         @Override
         public void run() {

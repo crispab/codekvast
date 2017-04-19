@@ -38,7 +38,7 @@ import static java.lang.Math.max;
 @Value
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
-class CodeBaseFingerprint {
+public class CodeBaseFingerprint {
     private final int count;
     private final long size;
     private final long lastModified;

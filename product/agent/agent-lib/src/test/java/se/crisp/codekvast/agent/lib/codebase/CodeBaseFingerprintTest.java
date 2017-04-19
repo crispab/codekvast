@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import se.crisp.codekvast.agent.lib.codebase.CodeBaseFingerprint;
 
 import java.io.File;
 import java.io.IOException;

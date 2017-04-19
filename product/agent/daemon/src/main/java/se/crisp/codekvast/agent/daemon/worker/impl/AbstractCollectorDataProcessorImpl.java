@@ -29,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 import se.crisp.codekvast.agent.daemon.appversion.AppVersionResolver;
 import se.crisp.codekvast.agent.daemon.beans.DaemonConfig;
 import se.crisp.codekvast.agent.daemon.beans.JvmState;
-import se.crisp.codekvast.agent.daemon.util.LogUtil;
 import se.crisp.codekvast.agent.daemon.worker.CollectorDataProcessor;
 import se.crisp.codekvast.agent.daemon.worker.DataProcessingException;
 import se.crisp.codekvast.agent.lib.codebase.CodeBase;
@@ -40,6 +39,7 @@ import se.crisp.codekvast.agent.lib.model.v1.JvmData;
 import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 import se.crisp.codekvast.agent.lib.util.ComputerID;
 import se.crisp.codekvast.agent.lib.util.FileUtils;
+import se.crisp.codekvast.agent.lib.util.LogUtil;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

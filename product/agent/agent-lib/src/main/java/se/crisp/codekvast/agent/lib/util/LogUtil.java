@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package se.crisp.codekvast.agent.daemon.util;
+package se.crisp.codekvast.agent.lib.util;
 
 import lombok.experimental.UtilityClass;
 import org.slf4j.Logger;

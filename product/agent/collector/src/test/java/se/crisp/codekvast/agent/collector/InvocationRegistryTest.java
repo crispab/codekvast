@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import se.crisp.codekvast.agent.lib.config.CollectorConfig;
 import se.crisp.codekvast.agent.lib.config.CollectorConfigFactory;
-import se.crisp.codekvast.agent.lib.io.FileSystemInvocationDataDumper;
 import se.crisp.codekvast.agent.lib.model.Invocation;
 import se.crisp.codekvast.agent.lib.model.Jvm;
 import se.crisp.codekvast.agent.lib.util.FileUtils;
@@ -50,14 +49,14 @@ public class InvocationRegistryTest {
                                        .dataPath(dataPath)
                                        .build();
         //@formatter:on
-        InvocationRegistry.initialize(config, new FileSystemInvocationDataDumper(config, CodekvastCollector.out));
+        InvocationRegistry.initialize(config);
         signature1 = SignatureUtils.makeSignature(TestClass.class, TestClass.class.getMethod("m1"));
         signature2 = SignatureUtils.makeSignature(TestClass.class, TestClass.class.getMethod("m2"));
     }
 
     @After
     public void afterTest() throws Exception {
-        InvocationRegistry.initialize(null, null);
+        InvocationRegistry.initialize(null);
     }
 
     @Test
@@ -124,7 +123,7 @@ public class InvocationRegistryTest {
 
     @Test
     public void testRegisterBeforeInitialize() throws Exception {
-        InvocationRegistry.initialize(null, null);
+        InvocationRegistry.initialize(null);
         assertThat(InvocationRegistry.instance.isNullRegistry(), is(true));
         InvocationRegistry.instance.registerMethodInvocation(signature1);
     }
