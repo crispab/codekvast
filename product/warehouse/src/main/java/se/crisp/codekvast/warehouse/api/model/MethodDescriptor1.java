@@ -68,43 +68,43 @@ public class MethodDescriptor1 {
 
     /**
      * Calculates in how many apps this method is tracked.
+     * @return A number in the range [0..100]
      */
-
     public int getTrackedPercent() {
         long tracked = occursInApplications.stream().map(ApplicationDescriptor1::getStatus).filter(SignatureStatus::isTracked).count();
         return (int) Math.round (tracked * 100D / occursInApplications.size());
     }
 
     /**
-     * Collect all different statuses this method has in all collected apps.
+     * @return The set of signature statuses this method has across all applications.
      */
     public Set<SignatureStatus> getStatuses() {
         return occursInApplications.stream().map(ApplicationDescriptor1::getStatus).collect(Collectors.toSet());
     }
 
     /**
-     * Maximum value of occursInApplications.invokedAtMillis;
+     * @return The maximum value of occursInApplications.invokedAtMillis;
      */
     public Long getLastInvokedAtMillis() {
         return occursInApplications.stream().map(ApplicationDescriptor1::getInvokedAtMillis).reduce(Math::max).orElse(0L);
     }
 
     /**
-     * Minimum value of occursInApplications.startedAtMillis
+     * @return The minimum value of occursInApplications.startedAtMillis
      */
     public Long getCollectedSinceMillis() {
         return occursInApplications.stream().map(ApplicationDescriptor1::getStartedAtMillis).reduce(Math::min).orElse(0L);
     }
 
     /**
-     * Maximum value of occursInApplications.getDumpedAtMillis
+     * @return The maximum value of occursInApplications.getDumpedAtMillis
      */
     public Long getCollectedToMillis() {
         return occursInApplications.stream().map(ApplicationDescriptor1::getDumpedAtMillis).reduce(Math::max).orElse(0L);
     }
 
     /**
-     * Convenience: the difference between {@link #getCollectedToMillis()} and {@link #getCollectedSinceMillis()} expressed as days.
+     * @return The difference between {@link #getCollectedToMillis()} and {@link #getCollectedSinceMillis()} expressed as days.
      */
     @SuppressWarnings("unused")
     public int getCollectedDays() {
@@ -113,7 +113,7 @@ public class MethodDescriptor1 {
     }
 
     /**
-     * Convenience: collects tags from all environments
+     * @return The union of tags from all environments
      */
     @SuppressWarnings("unused")
     public Set<String> getTags() {

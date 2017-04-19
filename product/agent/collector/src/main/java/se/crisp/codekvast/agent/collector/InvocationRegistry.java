@@ -50,6 +50,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 @Slf4j
 public class InvocationRegistry {
 
+    @SuppressWarnings("StaticInitializerReferencesSubClass")
     static InvocationRegistry instance = new NullInvocationRegistry();
 
     private final Jvm jvm;
@@ -82,9 +83,8 @@ public class InvocationRegistry {
 
     /**
      * Should be called before handing over to the AspectJ load-time weaver, or else nothing will be registered.
-
+     *
      * @param config The collector configuration. May be null, in which case the registry is disabled.
-     * @param invocationDataDumper The strategy for dumping invocation data to the outside world. Not used if config is null.
      */
     public static void initialize(CollectorConfig config) {
         if (config == null) {

@@ -36,6 +36,9 @@ import java.util.Set;
 @EqualsAndHashCode(of = "name")
 public class EnvironmentDescriptor1 implements Comparable<EnvironmentDescriptor1> {
 
+    /**
+     * The name of the environment
+     */
     @NonNull
     private final String name;
 
@@ -72,7 +75,7 @@ public class EnvironmentDescriptor1 implements Comparable<EnvironmentDescriptor1
     private final Long invokedAtMillis;
 
     /**
-     * Convenience: the difference between collectedToMillis and collectedSinceMillis expressed as days.
+     * @return  difference between collectedToMillis and collectedSinceMillis expressed as days.
      */
     @SuppressWarnings("unused")
     public Integer getCollectedDays() {
@@ -80,16 +83,22 @@ public class EnvironmentDescriptor1 implements Comparable<EnvironmentDescriptor1
         return Math.toIntExact((collectedToMillis - collectedSinceMillis) / oneDayInMillis);
     }
 
-    public EnvironmentDescriptor1 mergeWith(EnvironmentDescriptor1 that) {
+    /**
+     * Merges this environment with another.
+     *
+     * @param that The environment descriptor to merge with.
+     * @return A new object with extreme values of the numerical values and the union of host names and tags.
+     */
+    public EnvironmentDescriptor1 mergeWith(@NonNull EnvironmentDescriptor1 that) {
         return that == null ? this
-                : EnvironmentDescriptor1.builder()
-                                        .name(this.name)
-                                        .invokedAtMillis(Math.max(this.invokedAtMillis, that.invokedAtMillis))
-                                        .collectedToMillis(Math.max(this.collectedToMillis, that.collectedToMillis))
-                                        .collectedSinceMillis(Math.min(this.collectedSinceMillis, that.collectedSinceMillis))
-                                        .hostNames(union(this.hostNames, that.hostNames))
-                                        .tags(union(this.tags, that.tags))
-                                        .build();
+            : EnvironmentDescriptor1.builder()
+                                    .name(this.name)
+                                    .invokedAtMillis(Math.max(this.invokedAtMillis, that.invokedAtMillis))
+                                    .collectedToMillis(Math.max(this.collectedToMillis, that.collectedToMillis))
+                                    .collectedSinceMillis(Math.min(this.collectedSinceMillis, that.collectedSinceMillis))
+                                    .hostNames(union(this.hostNames, that.hostNames))
+                                    .tags(union(this.tags, that.tags))
+                                    .build();
     }
 
     private Set<String> union(Set<String> left, Set<String> right) {
@@ -98,6 +107,11 @@ public class EnvironmentDescriptor1 implements Comparable<EnvironmentDescriptor1
         return result;
     }
 
+    /**
+     * Compares by name.
+     * @param that The other environment descriptor
+     * @return this.name.compareTo(that.name)
+     */
     @Override
     public int compareTo(EnvironmentDescriptor1 that) {
         return this.name.compareTo(that.name);
