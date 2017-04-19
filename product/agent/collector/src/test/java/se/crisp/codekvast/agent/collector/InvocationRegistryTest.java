@@ -60,12 +60,12 @@ public class InvocationRegistryTest {
     }
 
     @Test
-    public void testRegisterMethodInvocationAndDumpToDisk() throws IOException, InterruptedException {
+    public void testRegisterMethodInvocationAndPublishToDisk() throws IOException, InterruptedException {
         assertThat(InvocationRegistry.instance.isNullRegistry(), is(false));
 
         doExtremelyConcurrentRegistrationOf(10, 10, signature1, signature2);
 
-        InvocationRegistry.instance.dumpData(1);
+        InvocationRegistry.instance.publishData(1);
 
         File[] files = config.getDataPath().listFiles();
         assertThat(files.length, is(1));

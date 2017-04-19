@@ -26,26 +26,26 @@ import se.crisp.codekvast.agent.lib.model.Jvm;
 import java.util.Set;
 
 /**
- * Strategy for dumping collected invocation data.
+ * Strategy for publishing collected invocation data.
  *
  * @author olle.hallin@crisp.se
  */
-public interface InvocationDataDumper {
+public interface InvocationDataPublisher {
 
     /**
-     * Make preparations for dumping data, such as creating output directories.
+     * Make preparations for publishing data..
      *
      * @return true iff the preparation was successful.
      */
-    boolean prepareForDump();
+    boolean prepareForPublish();
 
     /**
-     * Dump the data.
+     * Publish the data.
      *
      * @param jvm                              The JVM data.
-     * @param dumpCount                        The dump counter.
-     * @param recordingIntervalStartedAtMillis When the recording of these invocations started.
-     * @param invocations                      The set of invocations to dump.
+     * @param publishCount                     The publishing counter.
+     * @param recordingIntervalStartedAtMillis When the recording of these invocations were started.
+     * @param invocations                      The set of invocations to publish.
      */
-    void dumpData(Jvm jvm, int dumpCount, long recordingIntervalStartedAtMillis, Set<String> invocations);
+    void publishData(Jvm jvm, int publishCount, long recordingIntervalStartedAtMillis, Set<String> invocations);
 }

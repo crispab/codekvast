@@ -22,6 +22,7 @@
 package se.crisp.codekvast.agent.lib.util;
 
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import se.crisp.codekvast.agent.lib.config.CodekvastConfig;
 import se.crisp.codekvast.agent.lib.model.Invocation;
 
@@ -37,11 +38,11 @@ import java.util.*;
  *
  * @author olle.hallin@crisp.se
  */
-@SuppressWarnings("UseOfSystemOutOrSystemErr")
 @UtilityClass
+@Slf4j
 public final class FileUtils {
 
-    public static final String UTF_8 = "UTF-8";
+    private static final String UTF_8 = "UTF-8";
 
     static final String CONSUMED_SUFFIX = ".consumed";
 
@@ -109,7 +110,7 @@ public final class FileUtils {
         return result;
     }
 
-    public static void writeInvocationDataTo(File file, int dumpCount, long recordingStartedAtMillis, Set<String> signatures) {
+    public static void writeInvocationDataTo(File file, int publishCount, long recordingStartedAtMillis, Set<String> signatures) {
         if (!signatures.isEmpty()) {
             long startedAt = System.currentTimeMillis();
 
@@ -120,9 +121,9 @@ public final class FileUtils {
                 tmpFile = File.createTempFile("codekvast", ".tmp", file.getParentFile());
                 out = new PrintStream(tmpFile, UTF_8);
 
-                Date dumpedAt = new Date();
+                Date publishedAt = new Date();
                 Date recordedAt = new Date(recordingStartedAtMillis);
-                out.printf(Locale.ENGLISH, "# Codekvast recording data #%d at %s, methods invoked since %s%n", dumpCount, dumpedAt,
+                out.printf(Locale.ENGLISH, "# Codekvast recording data #%d at %s, methods invoked since %s%n", publishCount, publishedAt,
                            recordedAt);
                 out.println(recordingStartedAtMillis);
                 int count = 0;
@@ -132,10 +133,11 @@ public final class FileUtils {
                 }
 
                 long elapsed = System.currentTimeMillis() - startedAt;
-                out.printf(Locale.ENGLISH, "# Dump #%d at %s took %d ms, number of methods: %d%n", dumpCount, dumpedAt, elapsed, count);
+                out.printf(Locale.ENGLISH, "# Publishing #%d at %s took %d ms, number of methods: %d%n", publishCount, publishedAt, elapsed,
+                           count);
                 out.flush();
             } catch (IOException e) {
-                System.err.println("Codekvast cannot dump invocation data to " + file + ": " + e);
+                log.error("Codekvast cannot publish invocation data to {}: {}", file, e);
             } finally {
                 safeClose(out);
             }
@@ -164,8 +166,8 @@ public final class FileUtils {
 
     public static void renameFile(File from, File to) {
         if (!from.renameTo(to)) {
-            System.err.printf(Locale.ENGLISH, "%s cannot rename %s to %s%n", "Codekvast", from.getAbsolutePath(),
-                              to.getAbsolutePath());
+            log.error("Cannot rename {} to {}", from.getAbsolutePath(),
+                      to.getAbsolutePath());
             from.delete();
         }
     }
@@ -188,9 +190,9 @@ public final class FileUtils {
             }
 
         } catch (IOException e) {
-            System.err.println("Cannot write " + file + ": " + e);
+            log.error("Cannot write {}: {}", file, e);
         } catch (IllegalAccessException e) {
-            System.err.println("Cannot write " + file + ": " + e);
+            log.error("Cannot write {}: {}", file, e);
         } finally {
             safeClose(out);
         }

@@ -22,11 +22,11 @@
 package se.crisp.codekvast.agent.lib.io;
 
 /**
- * An exception to signal codebase dumping problems.
+ * An exception to signal publishing problems.
  */
-public class CodebaseDumpException extends Exception {
+public class CodekvastPublishingException extends Exception {
 
-    public CodebaseDumpException(String message) {
+    public CodekvastPublishingException(String message) {
         super(message);
     }
 }

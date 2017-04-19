@@ -24,8 +24,8 @@ package se.crisp.codekvast.agent.collector;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.Signature;
 import se.crisp.codekvast.agent.lib.config.CollectorConfig;
-import se.crisp.codekvast.agent.lib.io.InvocationDataDumper;
-import se.crisp.codekvast.agent.lib.io.impl.FileSystemInvocationDataDumperImpl;
+import se.crisp.codekvast.agent.lib.io.InvocationDataPublisher;
+import se.crisp.codekvast.agent.lib.io.impl.FileSystemInvocationDataPublisherImpl;
 import se.crisp.codekvast.agent.lib.model.Jvm;
 import se.crisp.codekvast.agent.lib.util.ComputerID;
 import se.crisp.codekvast.agent.lib.util.SignatureUtils;
@@ -54,7 +54,7 @@ public class InvocationRegistry {
     static InvocationRegistry instance = new NullInvocationRegistry();
 
     private final Jvm jvm;
-    private final InvocationDataDumper invocationDataDumper;
+    private final InvocationDataPublisher invocationDataPublisher;
 
     // Toggle between two invocation sets to avoid synchronisation
     private final Set[] invocations;
@@ -65,9 +65,9 @@ public class InvocationRegistry {
 
     private long recordingIntervalStartedAtMillis = System.currentTimeMillis();
 
-    private InvocationRegistry(Jvm jvm, InvocationDataDumper invocationDataDumper) {
+    private InvocationRegistry(Jvm jvm, InvocationDataPublisher invocationDataPublisher) {
         this.jvm = jvm;
-        this.invocationDataDumper = invocationDataDumper;
+        this.invocationDataPublisher = invocationDataPublisher;
 
         this.invocations = new Set[]{new HashSet<String>(), new HashSet<String>()};
 
@@ -102,7 +102,7 @@ public class InvocationRegistry {
         String collectorVcsId = version.substring(dash + 1);
 
         InvocationRegistry.instance = new InvocationRegistry(
-                Jvm.builder()
+            Jvm.builder()
                    .collectorVersion(collectorVersion)
                    .collectorVcsId(collectorVcsId)
                    .collectorConfig(config)
@@ -111,11 +111,11 @@ public class InvocationRegistry {
                    .jvmUuid(UUID.randomUUID().toString())
                    .startedAtMillis(System.currentTimeMillis())
                    .build(),
-                getInvocationDataDumper(config));
+            getInvocationDataPublisher(config));
     }
 
-    private static InvocationDataDumper getInvocationDataDumper(CollectorConfig config) {
-        return new FileSystemInvocationDataDumperImpl(config);
+    private static InvocationDataPublisher getInvocationDataPublisher(CollectorConfig config) {
+        return new FileSystemInvocationDataPublisherImpl(config);
     }
 
     private static String getHostName() {
@@ -144,15 +144,15 @@ public class InvocationRegistry {
     }
 
     /**
-     * Dumps method invocations to a file on disk.
+     * Publishes method invocations.
      * <p>
      * Thread-safe.
      *
-     * @param dumpCount the ordinal number of this dump. Is used in a comment in the dump file.
+     * @param publishCount the ordinal number of this publishing.
      */
-    public void dumpData(int dumpCount) {
-        if (!invocationDataDumper.prepareForDump()) {
-            log.warn("Cannot dump invocation data");
+    public void publishData(int publishCount) {
+        if (!invocationDataPublisher.prepareForPublish()) {
+            log.warn("Cannot publish invocation data");
         } else {
             long oldRecordingIntervalStartedAtMillis = recordingIntervalStartedAtMillis;
             int oldIndex = currentInvocationIndex;
@@ -160,7 +160,7 @@ public class InvocationRegistry {
             toggleInvocationsIndex();
 
             Set<String> sortedSet = new TreeSet<String>(invocations[oldIndex]);
-            invocationDataDumper.dumpData(jvm, dumpCount, oldRecordingIntervalStartedAtMillis, sortedSet);
+            invocationDataPublisher.publishData(jvm, publishCount, oldRecordingIntervalStartedAtMillis, sortedSet);
 
             invocations[oldIndex].clear();
         }
@@ -197,7 +197,7 @@ public class InvocationRegistry {
         }
 
         @Override
-        public void dumpData(int dumpCount) {
+        public void publishData(int publishCount) {
             // No operation
         }
 

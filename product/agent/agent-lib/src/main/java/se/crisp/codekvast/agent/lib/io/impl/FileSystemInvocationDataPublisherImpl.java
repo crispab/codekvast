@@ -23,7 +23,7 @@ package se.crisp.codekvast.agent.lib.io.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import se.crisp.codekvast.agent.lib.config.CollectorConfig;
-import se.crisp.codekvast.agent.lib.io.InvocationDataDumper;
+import se.crisp.codekvast.agent.lib.io.InvocationDataPublisher;
 import se.crisp.codekvast.agent.lib.model.Jvm;
 import se.crisp.codekvast.agent.lib.util.FileUtils;
 
@@ -32,35 +32,35 @@ import java.io.IOException;
 import java.util.Set;
 
 /**
- * Implementation for dumping collected invocation data to the local file system.
+ * Implementation for publishing collected invocation data to files in the local file system.
  *
  * @author olle.hallin@crisp.se
  */
 @Slf4j
-public class FileSystemInvocationDataDumperImpl implements InvocationDataDumper {
+public class FileSystemInvocationDataPublisherImpl implements InvocationDataPublisher {
 
     private final CollectorConfig config;
     private final File jvmFile;
 
-    public FileSystemInvocationDataDumperImpl(CollectorConfig config) {
+    public FileSystemInvocationDataPublisherImpl(CollectorConfig config) {
         this.config = config;
         this.jvmFile = config.getJvmFile();
     }
 
     @Override
-    public boolean prepareForDump() {
+    public boolean prepareForPublish() {
         File outputPath = config.getInvocationsFile().getParentFile();
         outputPath.mkdirs();
         return outputPath.exists();
     }
 
     @Override
-    public void dumpData(Jvm jvm, int dumpCount, long recordingIntervalStartedAtMillis, Set<String> invocations) {
-        dumpJvmData(jvm);
-        dumpInvocationData(dumpCount, recordingIntervalStartedAtMillis, invocations);
+    public void publishData(Jvm jvm, int publishCount, long recordingIntervalStartedAtMillis, Set<String> invocations) {
+        publishJvmData(jvm);
+        publishInvocationData(publishCount, recordingIntervalStartedAtMillis, invocations);
     }
 
-    private void dumpJvmData(Jvm jvm) {
+    private void publishJvmData(Jvm jvm) {
         File tmpFile = null;
         try {
             tmpFile = File.createTempFile("codekvast", ".tmp", jvmFile.getParentFile());
@@ -74,8 +74,8 @@ public class FileSystemInvocationDataDumperImpl implements InvocationDataDumper 
 
     }
 
-    private void dumpInvocationData(int dumpCount, long recordingIntervalStartedAtMillis, Set<String> invocations) {
-        FileUtils.writeInvocationDataTo(config.getInvocationsFile(), dumpCount, recordingIntervalStartedAtMillis,
+    private void publishInvocationData(int publishCount, long recordingIntervalStartedAtMillis, Set<String> invocations) {
+        FileUtils.writeInvocationDataTo(config.getInvocationsFile(), publishCount, recordingIntervalStartedAtMillis,
                                         invocations);
 
     }

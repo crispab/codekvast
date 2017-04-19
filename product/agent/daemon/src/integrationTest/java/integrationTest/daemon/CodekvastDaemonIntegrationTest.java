@@ -152,9 +152,9 @@ public class CodekvastDaemonIntegrationTest {
     @Test
     public void testProcessData() throws DataProcessingException, DataExportException {
         // given (note that the invocation files are in reverse order!)
-        int dumpNumber = 0;
-        FileUtils.writeInvocationDataTo(jvmState1.getInvocationsFile(), ++dumpNumber, T2, singleton(SIGNATURES.get(1)));
-        FileUtils.writeInvocationDataTo(jvmState1.getInvocationsFile(), ++dumpNumber, T1, singleton(SIGNATURES.get(1)));
+        int publishNumber = 0;
+        FileUtils.writeInvocationDataTo(jvmState1.getInvocationsFile(), ++publishNumber, T2, singleton(SIGNATURES.get(1)));
+        FileUtils.writeInvocationDataTo(jvmState1.getInvocationsFile(), ++publishNumber, T1, singleton(SIGNATURES.get(1)));
 
         // when
         collectorDataProcessor.processCollectorData(jvmState1, codeBase1);
@@ -181,11 +181,11 @@ public class CodekvastDaemonIntegrationTest {
                                                Integer.class, T2, 1L),
                    is(1));
 
-        // Simulate that the collector dumps again...
+        // Simulate that the collector publishes again...
 
         // given
         jvmState1.setJvm(jvmState1.getJvm().withDumpedAtMillis(T3));
-        FileUtils.writeInvocationDataTo(jvmState1.getInvocationsFile(), ++dumpNumber, T3, singleton(SIGNATURES.get(1)));
+        FileUtils.writeInvocationDataTo(jvmState1.getInvocationsFile(), ++publishNumber, T3, singleton(SIGNATURES.get(1)));
 
         // when
         collectorDataProcessor.processCollectorData(jvmState1, codeBase1);

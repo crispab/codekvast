@@ -3,7 +3,6 @@ package sample.swing;
 import se.crisp.codekvast.agent.collector.CodekvastCollector;
 import se.crisp.codekvast.agent.lib.config.CollectorConfig;
 import se.crisp.codekvast.agent.lib.config.CollectorConfigFactory;
-import se.crisp.codekvast.agent.lib.io.impl.FileSystemInvocationDataDumperImpl;
 import se.crisp.codekvast.agent.lib.util.ConfigUtils;
 
 import javax.swing.*;

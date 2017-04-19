@@ -19,29 +19,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package se.crisp.codekvast.agent.lib.io.impl;
+package se.crisp.codekvast.agent.lib.io;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import se.crisp.codekvast.agent.lib.codebase.CodeBase;
 import se.crisp.codekvast.agent.lib.codebase.CodeBaseFingerprint;
-import se.crisp.codekvast.agent.lib.io.CodebaseDumper;
 
 /**
- * Dummy (no-op) implementation of CodebaseDumper.
+ * Strategy for publishing a {@link se.crisp.codekvast.agent.lib.codebase.CodeBase}
  */
-@RequiredArgsConstructor
-@Slf4j
-public class NullCodebaseDumperImpl implements CodebaseDumper {
+public interface CodebasePublisher {
 
-    @Override
-    public boolean needsToBeDumped(CodeBaseFingerprint fingerprint) {
-        log.debug("Checking if {} needs to be dumped", fingerprint);
-        return true;
-    }
+    /**
+     * Checks whether the codebase needs to be published or not.
+     *
+     * @param fingerprint The Codebase fingerprint.
+     * @return true iff the codebase needs to be published.
+     * @throws CodekvastPublishingException when no contact with the receiver. Try again.
+     */
+    boolean needsToBePublished(CodeBaseFingerprint fingerprint) throws CodekvastPublishingException;
 
-    @Override
-    public void dumpCodebase(CodeBase codeBase) {
-        log.debug("Dumping codebase {}", codeBase.getFingerprint());
-    }
+    /**
+     * Publishes a codebase.
+     *
+     * @param codeBase The codebase to publish.
+     * @throws CodekvastPublishingException when no contact with the consumer. Try again.
+     */
+    void publishCodebase(CodeBase codeBase) throws CodekvastPublishingException;
+
 }

@@ -30,9 +30,9 @@ import se.crisp.codekvast.agent.lib.config.CollectorConfig;
 import se.crisp.codekvast.agent.lib.config.CollectorConfigFactory;
 import se.crisp.codekvast.agent.lib.config.CollectorConfigLocator;
 import se.crisp.codekvast.agent.lib.config.MethodAnalyzer;
-import se.crisp.codekvast.agent.lib.io.CodebaseDumpException;
-import se.crisp.codekvast.agent.lib.io.CodebaseDumper;
-import se.crisp.codekvast.agent.lib.io.impl.NullCodebaseDumperImpl;
+import se.crisp.codekvast.agent.lib.io.CodekvastPublishingException;
+import se.crisp.codekvast.agent.lib.io.CodebasePublisher;
+import se.crisp.codekvast.agent.lib.io.impl.NoopCodebasePublisherImpl;
 import se.crisp.codekvast.agent.lib.util.FileUtils;
 import se.crisp.codekvast.agent.lib.util.LogUtil;
 
@@ -58,8 +58,7 @@ import java.util.*;
  *
  *         static {
  *             CollectorConfig config = ...
- *             DataDumper dataDumper = ...
- *             CodekvastCollector.initialize(config, dataDumper);
+ *             CodekvastCollector.initialize(config);
  *         }
  *
  *         public pointcut methodExecution: execution(public * *..*(..)) &amp;&amp; within(foo..*)
@@ -95,8 +94,8 @@ public class CodekvastCollector {
         initialize(config);
     }
 
-    private static CodebaseDumper getCodebaseDumper(@SuppressWarnings("unused") CollectorConfig config) {
-        return new NullCodebaseDumperImpl();
+    private static CodebasePublisher getCodebasePublisher(@SuppressWarnings("unused") CollectorConfig config) {
+        return new NoopCodebasePublisherImpl();
     }
 
     /**
@@ -118,12 +117,12 @@ public class CodekvastCollector {
 
         defineAspectjLoadTimeWeaverConfig(config);
 
-        int codebaseDumpingIntervalSeconds = createCodebaseDumperTimerTask(config, getCodebaseDumper(config));
-        int firstResultInSeconds = createInvocationDumperTimerTask(config.getCollectorResolutionSeconds());
+        int codebasePublishingRetryIntervalSeconds = createCodebasePublisherTimerTask(config, getCodebasePublisher(config));
+        int firstResultInSeconds = createInvocationPublisherTimerTask(config.getCollectorResolutionSeconds());
 
         log.info("{} is ready to detect used code within({}..*).", NAME, getNormalizedPackages(config));
         log.info("An attempt to upload the codebase will be done every {} seconds until either rejected or successful.",
-                 codebaseDumpingIntervalSeconds);
+                 codebasePublishingRetryIntervalSeconds);
         log.info("First result will be uploaded in {} seconds, thereafter every {} seconds.", firstResultInSeconds,
                  config.getCollectorResolutionSeconds());
     }
@@ -133,10 +132,10 @@ public class CodekvastCollector {
         return prefixes.size() == 1 ? prefixes.get(0) : prefixes.toString();
     }
 
-    private static int createCodebaseDumperTimerTask(CollectorConfig config, CodebaseDumper codebaseDumper) {
-        Timer timer = new Timer(NAME + " Codebase Dumper", true);
+    private static int createCodebasePublisherTimerTask(CollectorConfig config, CodebasePublisher codebasePublisher) {
+        Timer timer = new Timer(NAME + " Codebase Publisher", true);
 
-        CodebaseDumpingTimerTask timerTask = new CodebaseDumpingTimerTask(timer, config, codebaseDumper);
+        CodebasePublishingTimerTask timerTask = new CodebasePublishingTimerTask(timer, config, codebasePublisher);
 
         int initialDelaySeconds = 10;
         int periodSeconds = 60;
@@ -145,13 +144,13 @@ public class CodekvastCollector {
         return periodSeconds;
     }
 
-    private static int createInvocationDumperTimerTask(int dumpIntervalSeconds) {
-        Timer timer = new Timer(NAME + " Invocation Dumper", true);
+    private static int createInvocationPublisherTimerTask(int publishingIntervalSeconds) {
+        Timer timer = new Timer(NAME + " Invocation Publisher", true);
 
-        InvocationDumpingTimerTask timerTask = new InvocationDumpingTimerTask(timer);
+        InvocationPublisherTimerTask timerTask = new InvocationPublisherTimerTask(timer);
 
         int initialDelaySeconds = 5;
-        timer.scheduleAtFixedRate(timerTask, initialDelaySeconds * 1000L, dumpIntervalSeconds * 1000L);
+        timer.scheduleAtFixedRate(timerTask, initialDelaySeconds * 1000L, publishingIntervalSeconds * 1000L);
 
         Runtime.getRuntime().addShutdownHook(new Thread(timerTask, NAME + " shutdown hook"));
 
@@ -236,10 +235,10 @@ public class CodekvastCollector {
     }
 
     @RequiredArgsConstructor
-    private static class CodebaseDumpingTimerTask extends TimerTask {
+    private static class CodebasePublishingTimerTask extends TimerTask {
         private final Timer timer;
         private final CollectorConfig config;
-        private final CodebaseDumper codebaseDumper;
+        private final CodebasePublisher codebasePublisher;
 
         private CodeBase codeBase;
 
@@ -250,26 +249,26 @@ public class CodekvastCollector {
                 codeBase = new CodeBase(config);
             }
             try {
-                if (codebaseDumper.needsToBeDumped(codeBase.getFingerprint())) {
+                if (codebasePublisher.needsToBePublished(codeBase.getFingerprint())) {
                     CodeBaseScanner scanner = new CodeBaseScanner();
                     scanner.scanSignatures(codeBase);
-                    codebaseDumper.dumpCodebase(codeBase);
-                    log.info("Dumped codebase {}", codeBase.getFingerprint());
+                    codebasePublisher.publishCodebase(codeBase);
+                    log.info("Published codebase {}", codeBase.getFingerprint());
                 } else {
-                    log.info("Codebase {} already dumped", codeBase.getFingerprint());
+                    log.info("Codebase {} already published", codeBase.getFingerprint());
                 }
                 timer.cancel();
-            } catch (CodebaseDumpException e) {
-                LogUtil.logException(log, "Cannot dump codebase", e);
+            } catch (CodekvastPublishingException e) {
+                LogUtil.logException(log, "Cannot publish codebase", e);
             }
         }
     }
 
     @RequiredArgsConstructor
-    private static class InvocationDumpingTimerTask extends TimerTask {
+    private static class InvocationPublisherTimerTask extends TimerTask {
 
         private final Timer timer;
-        private int dumpCount;
+        private int publishCount;
 
         @Override
         public void run() {
@@ -278,8 +277,8 @@ public class CodekvastCollector {
                 log.info("{} has been disabled, stopping timer task", NAME);
                 timer.cancel();
             } else {
-                dumpCount += 1;
-                InvocationRegistry.instance.dumpData(dumpCount);
+                publishCount += 1;
+                InvocationRegistry.instance.publishData(publishCount);
             }
         }
     }
