@@ -35,3 +35,4 @@ product/warehouse/src/webapp/dist/
 .classpath
 !**.ts
 !**.java
+*.retry
