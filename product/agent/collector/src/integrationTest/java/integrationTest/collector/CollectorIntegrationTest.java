@@ -78,13 +78,14 @@ public class CollectorIntegrationTest {
         List<String> command = buildJavaCommand(writeCollectorConfigToFile());
 
         // when
-        String result = ProcessUtils.executeCommand(command);
+        String stdout = ProcessUtils.executeCommand(command);
 
         // then
-        assertThat(result, containsString("Found " + temporaryFolder.getRoot().getAbsolutePath() + "/codekvast.conf"));
-        assertThat(result, containsString("info AspectJ Weaver Version"));
-        assertThat(result, containsString("weaveinfo Join point 'method-execution(void sample.app.SampleApp.main(java.lang.String[]))"));
-        assertThat(result, containsString("[main] INFO sample.app.SampleApp - 2+2=4"));
+        assertThat(stdout, containsString("Found " + temporaryFolder.getRoot().getAbsolutePath() + "/codekvast.conf"));
+        assertThat(stdout, not(containsString("SLF4J: Defaulting to no-operation (NOP) logger implementation")));
+        assertThat(stdout, containsString("info AspectJ Weaver Version"));
+        assertThat(stdout, containsString("weaveinfo Join point 'method-execution(void sample.app.SampleApp.main(java.lang.String[]))"));
+        assertThat(stdout, containsString("[main] INFO sample.app.SampleApp - 2+2=4"));
 
         walkFileTree(collectorOutputFiles, collectorConfig.getDataPath());
 

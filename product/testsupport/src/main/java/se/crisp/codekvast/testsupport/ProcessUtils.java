@@ -38,7 +38,7 @@ import java.util.List;
 public class ProcessUtils {
 
     public static String executeCommand(List<String> command) throws RuntimeException, IOException, InterruptedException {
-        log.trace("Attempting to execute '{}' ...", command);
+        log.debug("Attempting to execute '{}' ...", command);
         Process process = new ProcessBuilder().command(command).redirectErrorStream(true).start();
         int exitCode = process.waitFor();
         String output = collectProcessOutput(process.getInputStream());

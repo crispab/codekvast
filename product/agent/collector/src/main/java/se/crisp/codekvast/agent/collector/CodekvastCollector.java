@@ -162,10 +162,10 @@ public class CodekvastCollector {
             Class.forName("org.aspectj.bridge.Constants");
 
             System.setProperty(ASPECTJ_WEAVER_CONFIGURATION,
-                               createAopXml(config) + ";" +
-                                   Constants.AOP_USER_XML + ";" +
-                                   Constants.AOP_AJC_XML + ";" +
-                                   Constants.AOP_OSGI_XML);
+                           createAopXml(config) + ";" +
+                               Constants.AOP_USER_XML + ";" +
+                               Constants.AOP_AJC_XML + ";" +
+                               Constants.AOP_OSGI_XML);
 
             log.debug("{}={}", ASPECTJ_WEAVER_CONFIGURATION, System.getProperty(ASPECTJ_WEAVER_CONFIGURATION));
         } catch (ClassNotFoundException e) {

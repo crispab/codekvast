@@ -16,6 +16,7 @@ version = codekvastVersion
 configurations {
     aspectjweaver
     jacocoagent
+    sampleappRuntime
 }
 
 testSets {
@@ -41,6 +42,8 @@ dependencies {
     integrationTestRuntime logback
 
     jacocoagent 'org.jacoco:org.jacoco.agent:0.7.9:runtime@jar'
+
+    sampleappRuntime logback
 }
 
 shadowJar {
@@ -58,11 +61,6 @@ shadowJar {
     relocate 'javassist', 'codekvast.javassist'
     relocate 'com', 'codekvast.com'
     relocate 'org.reflections', 'codekvast.org.reflections'
-
-//    relocate('org', 'codekvast.org') {
-//        exclude 'org.slf4j'
-//        exclude 'org.aspectj'
-//    }
 }
 
 task verifyShadowJar {
@@ -101,7 +99,7 @@ integrationTest {
     systemProperty 'integrationTest.codekvastCollector', shadowJar.outputs.files.asPath
     systemProperty 'integrationTest.aspectjweaver', configurations.aspectjweaver.asPath
     systemProperty 'integrationTest.jacocoagent', "${configurations.jacocoagent.asPath}=destfile=build/jacoco/integrationTest2.exec,output=file,dumponexit=true"
-    systemProperty 'integrationTest.classpath', "build/classes/integrationTest/:$configurations.integrationTestRuntime.asPath"
+    systemProperty 'integrationTest.classpath', "build/classes/integrationTest/:$configurations.sampleappRuntime.asPath"
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
