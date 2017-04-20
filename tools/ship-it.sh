@@ -67,7 +67,8 @@ if [ "${answer}" != 'y' ]; then
     exit 4
 fi
 
-tools/build-it.sh --console=plain --no-daemon --max-workers=1
+tools/real-clean-workspace.sh
+tools/build-it.sh --console=plain --no-daemon --no-build-cache --max-workers=1
 
 echo "Creating Git tag ${CODEKVAST_VERSION}"
 git tag -m "Version ${CODEKVAST_VERSION}" ${CODEKVAST_VERSION}

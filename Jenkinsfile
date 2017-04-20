@@ -6,12 +6,6 @@ node {
             withEnv(['PHANTOMJS_BIN=/usr/local/lib/node_modules/phantomjs-prebuilt/bin/phantomjs']) {
                 stage('Prepare') {
                     checkout scm
-
-                    sh """
-                    printenv | sort
-                    rm -fr ./.gradle
-                    find product -name build -type d | grep -v node_modules | xargs rm -fr
-                    """
                 }
 
                 stage('Compile Java') {
