@@ -9,17 +9,26 @@ node {
                 }
 
                 stage('Compile Java') {
-                    sh "./gradlew --console=plain classes testClasses integrationTestClasses systemTestClasses"
+                    sh "./gradlew classes testClasses integrationTestClasses systemTestClasses"
                 }
 
                 stage('Java unit test') {
-                    sh "./gradlew --console=plain test"
+                    sh """
+                    ./gradlew test
+
+                    # Prevent junit publisher to fail if Gradle has skipped the test
+                    find . -name '*.xml' | grep '/build/test-results/test/' | xargs touch
+                    """
                     junit '**/build/test-results/test/*.xml'
                 }
 
                 stage('TypeScript unit test') {
-                    sh "./gradlew --console=plain :product:warehouse:frontendTest"
+                    sh """
+                    ./gradlew :product:warehouse:frontendTest
 
+                    # Prevent junit publisher to fail if Gradle has skipped the test
+                    find . -name '*.xml' | grep '/build/test-results/frontendTest/' | xargs touch
+                    """
                     junit '**/build/test-results/frontendTest/*.xml'
 
                     publishHTML([allowMissing: true,
@@ -31,21 +40,31 @@ node {
                 }
 
                 stage('Integration test') {
-                    sh './gradlew --console=plain integrationTest'
+                    sh """
+                    ./gradlew integrationTest
+
+                    # Prevent junit publisher to fail if Gradle has skipped the test
+                    find . -name '*.xml' | grep '/build/test-results/integrationTest/' | xargs touch
+                    """
                     junit '**/build/test-results/integrationTest/*.xml'
                 }
 
                 stage('Build Docker image') {
-                    sh './gradlew --console=plain :product:warehouse:buildDockerImage'
+                    sh './gradlew :product:warehouse:buildDockerImage'
                 }
 
                 stage('System test') {
-                    sh './gradlew --console=plain systemTest'
+                    sh """
+                    ./gradlew systemTest
+
+                    # Prevent junit publisher to fail if Gradle has skipped the test
+                    find . -name '*.xml' | grep '/build/test-results/systemTest/' | xargs touch
+                    """
                     junit '**/build/test-results/systemTest/*.xml'
                 }
 
                 stage('Documentation & reports') {
-                    sh './gradlew --console=plain -Dorg.gradle.configureondemand=false :product:docs:build :product:aggregateJavadoc'
+                    sh './gradlew -Dorg.gradle.configureondemand=false :product:docs:build :product:aggregateJavadoc'
 
                     publishHTML([allowMissing: true,
                         alwaysLinkToLastBuild: true,
