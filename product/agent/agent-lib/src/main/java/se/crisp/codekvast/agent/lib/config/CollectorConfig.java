@@ -50,7 +50,6 @@ public class CollectorConfig implements CodekvastConfig {
     private String methodVisibility;
     private int collectorResolutionSeconds;
     private boolean clobberAopXml;
-    private boolean verbose;
     @NonNull
     private String appName;
     @NonNull
@@ -72,11 +71,6 @@ public class CollectorConfig implements CodekvastConfig {
     @JsonIgnore
     public File getJvmFile() {
         return new File(myDataPath(appName), JVM_BASENAME);
-    }
-
-    @JsonIgnore
-    public File getCollectorLogFile() {
-        return new File(myDataPath(appName), "codekvast-collector.log");
     }
 
     @JsonIgnore

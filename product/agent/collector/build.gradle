@@ -38,6 +38,8 @@ dependencies {
 
     integrationTestCompile project(":product:testsupport")
 
+    integrationTestRuntime logback
+
     jacocoagent 'org.jacoco:org.jacoco.agent:0.7.9:runtime@jar'
 }
 
@@ -51,9 +53,10 @@ shadowJar {
         )
     }
 
-    relocate 'javassist', 'shadow.javassist'
-    relocate 'com', 'shadow.com'
-    relocate 'org.reflections', 'shadow.org.reflections'
+    relocate 'javassist', 'codekvast.javassist'
+    relocate 'com', 'codekvast.com'
+    // relocate 'org', 'codekvast.org'
+    relocate 'org.reflections', 'codekvast.org.reflections'
 }
 
 task verifyShadowJar {
@@ -74,7 +77,7 @@ task verifyShadowJar {
             def name = zipEntry.getName()
             if (name.endsWith(".class")
                 && !name.startsWith("se/crisp/codekvast/")
-                && !name.startsWith("shadow/")
+                && !name.startsWith("codekvast/")
                 && !name.startsWith("org/aspectj/")
                 && !name.startsWith("org/slf4j/")) {
                 throw new IllegalStateException("Class not relocated in shadowJar: $name")

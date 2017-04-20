@@ -38,7 +38,6 @@ public class CollectorConfigFactory {
     private static final String DEFAULT_ASPECTJ_OPTIONS = "";
     private static final String DEFAULT_METHOD_VISIBILITY = SignatureUtils.PROTECTED;
     private static final int DEFAULT_COLLECTOR_RESOLUTION_SECONDS = 600;
-    private static final boolean DEFAULT_VERBOSE = false;
     private static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
     private static final String SAMPLE_CODEBASE_URI1 = "/path/to/codebase1/";
     private static final String SAMPLE_CODEBASE_URI2 = "/path/to/codebase2/";
@@ -112,7 +111,6 @@ public class CollectorConfigFactory {
                               .packages(packages)
                               .excludePackages(excludePackages)
                               .tags(ConfigUtils.getOptionalStringValue(props, TAGS_KEY, ""))
-                              .verbose(getVerboseValue(props))
                               .build();
     }
 
@@ -161,26 +159,6 @@ public class CollectorConfigFactory {
         FileUtils.writePropertiesTo(file, config, "Codekvast CollectorConfig");
     }
 
-    /**
-     * @return true if the system property {@code codekvast.options} contains "verbose=true" or the environment variable {@code
-     * CODEKVAST_VERBOSE} is defined,
-     */
-    public static boolean isSyspropVerbose() {
-        Properties props = new Properties();
-        String overrides = System.getProperty(CollectorConfigLocator.SYSPROP_OPTS);
-
-        String verbose = System.getenv(CollectorConfigLocator.ENVVAR_VERBOSE) != null ? "verbose=true" : null;
-        if (verbose != null) {
-            overrides = overrides == null ? verbose : overrides + ";" + verbose;
-        }
-        parseOverrides(props, overrides);
-        return getVerboseValue(props);
-    }
-
-    private static boolean getVerboseValue(Properties props) {
-        return ConfigUtils.getOptionalBooleanValue(props, "verbose", DEFAULT_VERBOSE);
-    }
-
     public static CollectorConfig createSampleCollectorConfig() {
         return CollectorConfigFactory.createTemplateConfig().toBuilder()
                                      .appName("Sample Application Name")
@@ -204,7 +182,6 @@ public class CollectorConfigFactory {
                               .packages(UNSPECIFIED)
                               .excludePackages("")
                               .tags(createSystemPropertiesTags() + ", " + SAMPLE_TAGS)
-                              .verbose(DEFAULT_VERBOSE)
                               .build();
     }
 

@@ -1,9 +1,11 @@
 package sample.app;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author olle.hallin@crisp.se
  */
-@SuppressWarnings("ALL")
+@Slf4j
 public class SampleApp {
     private final int dummy;
 
@@ -16,6 +18,6 @@ public class SampleApp {
     }
 
     public static void main(String[] args) {
-        System.out.println("2+2=" + new SampleApp().add(2, 2));
+        log.info("2+2={}", new SampleApp().add(2, 2));
     }
 }

@@ -86,14 +86,15 @@ public class CollectorIntegrationTest {
         // then
         System.out.println("result = " + result);
 
-        assertThat(result, containsString("Found " + temporaryFolder.getRoot().getAbsolutePath()));
+        assertThat(result, containsString("Found " + temporaryFolder.getRoot().getAbsolutePath() + "/codekvast.conf"));
+        assertThat(result, containsString("[main] INFO sample.app.SampleApp - 2+2=4"));
 
         walkFileTree(collectorOutputFiles, collectorConfig.getDataPath());
 
         assertThat(collectorOutputFiles.keySet(), hasItems("aop.xml", "invocations.dat.00000", "jvm.dat"));
 
         List<String> lines = readLinesFrom("invocations.dat.00000");
-        System.out.println(lines);
+        // System.out.println(lines);
         assertThat(lines, hasItem("public sample.app.SampleApp.main(java.lang.String[])"));
         assertThat(lines, hasItem("public sample.app.SampleApp.add(int, int)"));
         assertThat(lines, hasItem("public sample.app.SampleApp()"));

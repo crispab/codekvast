@@ -19,7 +19,7 @@ public class CollectorConfigTest {
 
     @Before
     public void beforeTest() throws Exception {
-        config1 = CollectorConfigFactory.createSampleCollectorConfig();
+        config1 = CollectorConfigFactory.createSampleCollectorConfig().toBuilder().appName("appName1").build();
         file1 = File.createTempFile("codekvast", ".conf");
         file1.deleteOnExit();
         CollectorConfigFactory.saveTo(config1, file1);
@@ -38,10 +38,10 @@ public class CollectorConfigTest {
 
     @Test
     public void testParseConfigFileWithOverride() throws IOException, URISyntaxException {
-        CollectorConfig config2 = CollectorConfigFactory.parseCollectorConfig(file1.toURI(), "verbose=true");
+        CollectorConfig config2 = CollectorConfigFactory.parseCollectorConfig(file1.toURI(), "appName=appName2");
         assertNotEquals(config1, config2);
-        assertThat(config1.isVerbose(), is(false));
-        assertThat(config2.isVerbose(), is(true));
+        assertThat(config1.getAppName(), is("appName1"));
+        assertThat(config2.getAppName(), is("appName2"));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -51,25 +51,13 @@ public class CollectorConfigTest {
 
     @Test
     public void testParseConfigFilePathWithSyspropAndCmdLineOverride() throws IOException, URISyntaxException {
-        System.setProperty(CollectorConfigLocator.SYSPROP_OPTS, "verbose=true;clobberAopXml=false;codeBase=/path/to/$appName");
+        System.setProperty(CollectorConfigLocator.SYSPROP_OPTS, "clobberAopXml=false;codeBase=/path/to/$appName");
         CollectorConfig config = CollectorConfigFactory.parseCollectorConfig(new URI("classpath:/incomplete-collector-config.conf"),
                                                                       "appName=kaka;appVersion=version;");
         assertThat(config.getAppName(), is("kaka"));
         assertThat(config.getAppVersion(), is("version"));
-        assertThat(config.isVerbose(), is(true));
         assertThat(config.isClobberAopXml(), is(false));
         assertThat(config.getCodeBase(), is("/path/to/kaka"));
-    }
-
-    @Test
-    public void testIsSyspropVerbose() {
-        assertThat(CollectorConfigFactory.isSyspropVerbose(), is(false));
-
-        System.setProperty(CollectorConfigLocator.SYSPROP_OPTS, "verbose=true;clobberAopXml=false;codeBase=/path/to/$appName");
-        assertThat(CollectorConfigFactory.isSyspropVerbose(), is(true));
-
-        System.setProperty(CollectorConfigLocator.SYSPROP_OPTS, "verbose=false;clobberAopXml=false;codeBase=/path/to/$appName");
-        assertThat(CollectorConfigFactory.isSyspropVerbose(), is(false));
     }
 
     @Test

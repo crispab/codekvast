@@ -38,7 +38,7 @@ dependencies {
     testCompile lombok
     testCompile junit
     testCompile mockito
-    testCompile "org.springframework.boot:spring-boot-starter-test"
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
 
     integrationTestCompile project(":product:testsupport")
 }

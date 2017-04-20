@@ -89,7 +89,7 @@ public class CodekvastCollector {
      */
     @SuppressWarnings("UseOfSystemOutOrSystemErr")
     public static void premain(String args, Instrumentation inst) {
-        CollectorConfig config = CollectorConfigFactory.parseCollectorConfig(CollectorConfigLocator.locateConfig(System.out), args, true);
+        CollectorConfig config = CollectorConfigFactory.parseCollectorConfig(CollectorConfigLocator.locateConfig(), args, true);
 
         initialize(config);
     }
