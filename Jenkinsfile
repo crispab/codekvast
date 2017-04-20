@@ -13,14 +13,23 @@ node {
                 }
 
                 stage('Java unit test') {
-                    sh "./gradlew test"
-                    junit allowEmptyResults: true, testResults: '**/build/test-results/test/*.xml'
+                    sh """
+                    ./gradlew test
+
+                    # Prevent junit publisher to fail if Gradle has skipped the test
+                    find . -name '*.xml' | grep '/build/test-results/test/' | xargs touch
+                    """
+                    junit '**/build/test-results/test/*.xml'
                 }
 
                 stage('TypeScript unit test') {
-                    sh "./gradlew :product:warehouse:frontendTest"
+                    sh """
+                    ./gradlew :product:warehouse:frontendTest
 
-                    junit allowEmptyResults: true, testResults: '**/build/test-results/frontendTest/*.xml'
+                    # Prevent junit publisher to fail if Gradle has skipped the test
+                    find . -name '*.xml' | grep '/build/test-results/frontendTest/' | xargs touch
+                    """
+                    junit '**/build/test-results/frontendTest/*.xml'
 
                     publishHTML([allowMissing: true,
                         alwaysLinkToLastBuild: true,
@@ -31,8 +40,13 @@ node {
                 }
 
                 stage('Integration test') {
-                    sh './gradlew integrationTest'
-                    junit allowEmptyResults: true, testResults: '**/build/test-results/integrationTest/*.xml'
+                    sh """
+                    ./gradlew integrationTest
+
+                    # Prevent junit publisher to fail if Gradle has skipped the test
+                    find . -name '*.xml' | grep '/build/test-results/integrationTest/' | xargs touch
+                    """
+                    junit '**/build/test-results/integrationTest/*.xml'
                 }
 
                 stage('Build Docker image') {
@@ -40,8 +54,13 @@ node {
                 }
 
                 stage('System test') {
-                    sh './gradlew systemTest'
-                    junit allowEmptyResults: true, testResults: '**/build/test-results/systemTest/*.xml'
+                    sh """
+                    ./gradlew systemTest
+
+                    # Prevent junit publisher to fail if Gradle has skipped the test
+                    find . -name '*.xml' | grep '/build/test-results/systemTest/' | xargs touch
+                    """
+                    junit '**/build/test-results/systemTest/*.xml'
                 }
 
                 stage('Documentation & reports') {
