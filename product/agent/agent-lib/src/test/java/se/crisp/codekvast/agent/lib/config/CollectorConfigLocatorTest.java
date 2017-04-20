@@ -20,7 +20,6 @@ public class CollectorConfigLocatorTest {
     public void beforeTest() throws Exception {
         System.clearProperty(CollectorConfigLocator.SYSPROP_CONFIG);
         System.clearProperty(CollectorConfigLocator.SYSPROP_HOME);
-        System.setProperty(CollectorConfigLocator.SYSPROP_OPTS, "verbose=true");
     }
 
     @After
@@ -62,14 +61,8 @@ public class CollectorConfigLocatorTest {
 
     @Test
     public void should_handle_no_hints_given() throws Exception {
-        outputCapture.expect(containsString("No configuration file found"));
-        assertThat(CollectorConfigLocator.locateConfig(), nullValue());
-    }
-
-    @Test
-    public void should_handle_not_verbose() throws Exception {
-        System.clearProperty(CollectorConfigLocator.SYSPROP_OPTS);
         outputCapture.expect(containsString("WARN " + CollectorConfigLocator.class.getName()));
+        outputCapture.expect(containsString("No configuration file found"));
         assertThat(CollectorConfigLocator.locateConfig(), nullValue());
     }
 }
