@@ -15,7 +15,8 @@
 :attribute-missing: warn
 :description: Codekvast is a tool that detects Truly Dead Code in your Java app.
 :aspectj-ltw-config: link:https://eclipse.org/aspectj/doc/next/devguide/ltw-configuration.html[AspectJ Load-Time Weaver configuration]
-:overhead-nanoseconds: 30
+:slf4j-manual: link:https://www.slf4j.org/manual.html[SLF4J user manual]
+:overhead-nanoseconds: 20
 
 
 Codekvast User Manual covers installation and usage of Codekvast, a tool for detecting Truly Dead Code in JVM-based applications.
@@ -300,7 +301,6 @@ If you get `LinkageError` on some aspectj-related type::
 . Add `-Djava.endorsed.dir=/path/to/endorsed/` to the `java` command.
 
 No data in /tmp/codekvast::
-. `export CODEKVAST_OPTIONS=verbose=true`
 . set `aspectjOptions=-verbose -showWeaveInfo` in codekvast-collector.conf
 . restart your application
 . Use the logging on standard output and standard error for determining the problem
@@ -372,6 +372,14 @@ sudo tail -f /var/log/codekvast-warehouse.log
 [[configuring-codekvast-collector]]
 === Codekvast Collector
 
+[[codekvast-collector-logging]]
+==== Logging
+
+The Codekvast Collector uses SLF4J as logging API. This is just a compile-time API, which needs to be connected to a logging backend at runtime.
+Failing to configure a backend will manifest as warnings printed on standard error upon application start.
+
+See alo {slf4j-manual}.
+
 [[codekvast-collector-config-file-location]]
 ==== Configuration File Name and Location
 
@@ -392,13 +400,6 @@ first found file will win)
 . It looks for codekvast-collector.conf and codekvast.conf in the `conf/` sibling directory to where codekvast-collector-{codekvastVersion}.jar is located.
 . It looks for codekvast-collector.conf and codekvast.conf in `/etc/codekvast`.
 . It looks for codekvast-collector.conf and codekvast.conf in `/etc`.
-
-[TIP]
-====
-To aid in troubleshooting configuration file location problems one can do `export CODEKVAST_VERBOSE=true` before starting the application.
-
-This is handy since it can be done without editing any start scripts.
-====
 
 ==== Config file override mechanism
 It is possible to override one or more parameters that were specified in the configuration file by defining the Java system property
@@ -489,12 +490,6 @@ A higher value also means less precision.
 |A file system path.
 |dataPath=/var/lib/codekvast/data
 |/tmp/codekvast/.collector
-
-|verbose
-|Should Codekvast Collector say something on standard output upon start? Useful for trouble shooting.
-|*true* or *false*.
-|verbose=true
-|false
 
 |aspectjOptions
 |Should Codekvast Collector configure logging for Aspectj Weaver?
