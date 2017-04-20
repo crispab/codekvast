@@ -14,13 +14,13 @@ node {
 
                 stage('Java unit test') {
                     sh "./gradlew test"
-                    junit allowEmptyResults: true, '**/build/test-results/test/*.xml'
+                    junit allowEmptyResults: true, testResults: '**/build/test-results/test/*.xml'
                 }
 
                 stage('TypeScript unit test') {
                     sh "./gradlew :product:warehouse:frontendTest"
 
-                    junit allowEmptyResults: true, '**/build/test-results/frontendTest/*.xml'
+                    junit allowEmptyResults: true, testResults: '**/build/test-results/frontendTest/*.xml'
 
                     publishHTML([allowMissing: true,
                         alwaysLinkToLastBuild: true,
@@ -32,7 +32,7 @@ node {
 
                 stage('Integration test') {
                     sh './gradlew integrationTest'
-                    junit allowEmptyResults: true, '**/build/test-results/integrationTest/*.xml'
+                    junit allowEmptyResults: true, testResults: '**/build/test-results/integrationTest/*.xml'
                 }
 
                 stage('Build Docker image') {
@@ -41,7 +41,7 @@ node {
 
                 stage('System test') {
                     sh './gradlew systemTest'
-                    junit allowEmptyResults: true, '**/build/test-results/systemTest/*.xml'
+                    junit allowEmptyResults: true, testResults: '**/build/test-results/systemTest/*.xml'
                 }
 
                 stage('Documentation & reports') {
