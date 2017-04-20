@@ -4,7 +4,7 @@ set -e
 
 cd $(dirname $0)/..
 declare GRADLEW=./gradlew
-declare GRADLE_OPTS="${GRADLE_OPTS:--Dorg.gradle.configureondemand=false --build-cache --parallel}"
+declare GRADLE_OPTS="${GRADLE_OPTS:--Dorg.gradle.configureondemand=false}"
 declare tasks=${@:-build}
 
 if [ -z "$PHANTOMJS_BIN" ]; then
