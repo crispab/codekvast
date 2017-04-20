@@ -1,5 +1,6 @@
 package integrationTest.warehouse;
 
+import integrationTest.warehouse.testdata.TestDataGenerator;
 import org.flywaydb.core.Flyway;
 import org.junit.*;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,16 +17,15 @@ import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 import se.crisp.codekvast.testsupport.docker.DockerContainer;
 import se.crisp.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
 import se.crisp.codekvast.warehouse.CodekvastWarehouse;
-import se.crisp.codekvast.warehouse.api.ApiService;
-import se.crisp.codekvast.warehouse.api.model.GetMethodsRequest1;
-import se.crisp.codekvast.warehouse.api.model.MethodDescriptor1;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO.Application;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO.ImportContext;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO.ImportStatistics;
 import se.crisp.codekvast.warehouse.file_import.ImportDAO.Invocation;
 import se.crisp.codekvast.warehouse.file_import.ZipFileImporter;
-import integrationTest.warehouse.testdata.TestDataGenerator;
+import se.crisp.codekvast.warehouse.webapp.WebappService;
+import se.crisp.codekvast.warehouse.webapp.model.GetMethodsRequest1;
+import se.crisp.codekvast.warehouse.webapp.model.MethodDescriptor1;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolationException;
@@ -39,13 +39,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static integrationTest.warehouse.testdata.ImportDescriptor.*;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeTrue;
 import static se.crisp.codekvast.warehouse.file_import.ImportDAO.Jvm;
 import static se.crisp.codekvast.warehouse.file_import.ImportDAO.Method;
-import static integrationTest.warehouse.testdata.ImportDescriptor.*;
 
 /**
  * @author olle.hallin@crisp.se
@@ -107,7 +107,7 @@ public class MariadbIntegrationTest {
     private ImportDAO importDAO;
 
     @Inject
-    private ApiService apiService;
+    private WebappService webappService;
 
     @Inject
     private TestDataGenerator testDataGenerator;
@@ -388,7 +388,7 @@ public class MariadbIntegrationTest {
         generateQueryTestData();
 
         // when
-        List<MethodDescriptor1> methods = apiService.getMethods(
+        List<MethodDescriptor1> methods = webappService.getMethods(
                 GetMethodsRequest1.defaults().toBuilder()
                                   .signature(testDataGenerator.getMethod(1).getSignature().replace(".method", "#method"))
                                   .build());
@@ -408,7 +408,7 @@ public class MariadbIntegrationTest {
         generateQueryTestData();
 
         // when find substring
-        List<MethodDescriptor1> methods = apiService.getMethods(
+        List<MethodDescriptor1> methods = webappService.getMethods(
                 GetMethodsRequest1.defaults().toBuilder()
                                   .signature(testDataGenerator.getMethod(1).getSignature().substring(3))
                                   .build());
@@ -423,7 +423,7 @@ public class MariadbIntegrationTest {
         generateQueryTestData();
 
         // when find by signature
-        List<MethodDescriptor1> methods = apiService.getMethods(
+        List<MethodDescriptor1> methods = webappService.getMethods(
                 GetMethodsRequest1.defaults().toBuilder()
                                   .signature(testDataGenerator.getMethod(1).getSignature().substring(1))
                                   .normalizeSignature(false)
@@ -445,7 +445,7 @@ public class MariadbIntegrationTest {
         assertThat(prefix, endsWith("TestClass1"));
 
         // when find many
-        List<MethodDescriptor1> methods = apiService.getMethods(
+        List<MethodDescriptor1> methods = webappService.getMethods(
                 GetMethodsRequest1.defaults().toBuilder()
                                   .signature(prefix)
                                   .build());
@@ -454,7 +454,7 @@ public class MariadbIntegrationTest {
         assertThat(methods, hasSize(3));
 
         // when find many with max results
-        methods = apiService.getMethods(
+        methods = webappService.getMethods(
                 GetMethodsRequest1.defaults().toBuilder()
                                   .signature(prefix)
                                   .maxResults(2)
@@ -470,7 +470,7 @@ public class MariadbIntegrationTest {
         generateQueryTestData();
 
         // when query with too short signature
-        apiService.getMethods(GetMethodsRequest1.defaults().toBuilder().signature("").build());
+        webappService.getMethods(GetMethodsRequest1.defaults().toBuilder().signature("").build());
     }
 
     @Test
@@ -479,7 +479,7 @@ public class MariadbIntegrationTest {
         generateQueryTestData();
 
         // when find exact signature
-        List<MethodDescriptor1> methods = apiService.getMethods(
+        List<MethodDescriptor1> methods = webappService.getMethods(
                 GetMethodsRequest1.defaults().toBuilder().signature("foobar").build());
 
         // then
@@ -494,7 +494,7 @@ public class MariadbIntegrationTest {
         List<Long> validIds = jdbcTemplate.query("SELECT id FROM methods", (rs, rowNum) -> rs.getLong(1));
 
         // when
-        Optional<MethodDescriptor1> result = apiService.getMethodById(validIds.get(0));
+        Optional<MethodDescriptor1> result = webappService.getMethodById(validIds.get(0));
 
         // then
         assertThat(result.isPresent(), is(true));
@@ -506,7 +506,7 @@ public class MariadbIntegrationTest {
         generateQueryTestData();
 
         // when
-        Optional<MethodDescriptor1> result = apiService.getMethodById(-1L);
+        Optional<MethodDescriptor1> result = webappService.getMethodById(-1L);
 
         // then
         assertThat(result.isPresent(), is(false));

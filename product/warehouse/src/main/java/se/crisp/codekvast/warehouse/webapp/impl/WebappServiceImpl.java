@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package se.crisp.codekvast.warehouse.api.impl;
+package se.crisp.codekvast.warehouse.webapp.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
@@ -30,11 +30,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
-import se.crisp.codekvast.warehouse.api.ApiService;
-import se.crisp.codekvast.warehouse.api.model.ApplicationDescriptor1;
-import se.crisp.codekvast.warehouse.api.model.EnvironmentDescriptor1;
-import se.crisp.codekvast.warehouse.api.model.GetMethodsRequest1;
-import se.crisp.codekvast.warehouse.api.model.MethodDescriptor1;
+import se.crisp.codekvast.warehouse.webapp.WebappService;
+import se.crisp.codekvast.warehouse.webapp.model.ApplicationDescriptor1;
+import se.crisp.codekvast.warehouse.webapp.model.EnvironmentDescriptor1;
+import se.crisp.codekvast.warehouse.webapp.model.GetMethodsRequest1;
+import se.crisp.codekvast.warehouse.webapp.model.MethodDescriptor1;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -49,12 +49,12 @@ import java.util.*;
 @Service
 @Slf4j
 @Validated
-public class ApiServiceImpl implements ApiService {
+public class WebappServiceImpl implements WebappService {
 
     private final JdbcTemplate jdbcTemplate;
 
     @Inject
-    public ApiServiceImpl(JdbcTemplate jdbcTemplate) {
+    public WebappServiceImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

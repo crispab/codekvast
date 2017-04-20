@@ -20,8 +20,8 @@
  * THE SOFTWARE.
  */
 /**
- * The API model objects.
+ * Implementation of the {@link se.crisp.codekvast.warehouse.webapp.WebappService}.
  *
  * @author olle.hallin@crisp.se
  */
-package se.crisp.codekvast.warehouse.api.model;
+package se.crisp.codekvast.warehouse.webapp.impl;

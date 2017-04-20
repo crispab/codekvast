@@ -1,16 +1,14 @@
-package se.crisp.codekvast.warehouse.api.response;
+package se.crisp.codekvast.warehouse.webapp.response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
-import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
-import se.crisp.codekvast.warehouse.api.model.ApplicationDescriptor1;
-import se.crisp.codekvast.warehouse.api.model.EnvironmentDescriptor1;
-import se.crisp.codekvast.warehouse.api.model.MethodDescriptor1;
+import se.crisp.codekvast.warehouse.webapp.model.ApplicationDescriptor1;
+import se.crisp.codekvast.warehouse.webapp.model.EnvironmentDescriptor1;
+import se.crisp.codekvast.warehouse.webapp.model.MethodDescriptor1;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static se.crisp.codekvast.agent.lib.model.v1.SignatureStatus.*;
-import static se.crisp.codekvast.agent.lib.model.v1.SignatureStatus.NOT_INVOKED;
 
 /**
  * @author olle.hallin@crisp.se

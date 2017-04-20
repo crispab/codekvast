@@ -19,9 +19,45 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package se.crisp.codekvast.warehouse.webapp.model;
+
+import lombok.Builder;
+import lombok.ToString;
+import lombok.Value;
+
+import java.util.List;
+
 /**
- * Implementation of the {@link se.crisp.codekvast.warehouse.api.ApiService}.
+ * Response to {@link GetMethodsRequest1}.
  *
  * @author olle.hallin@crisp.se
  */
-package se.crisp.codekvast.warehouse.api.impl;
+@Value
+@Builder
+@ToString(exclude = "methods")
+public class GetMethodsResponse1 {
+    /**
+     * When was the request received? Millis since epoch.
+     */
+    private final Long timestamp;
+
+    /**
+     * What was the original request?
+     */
+    private final GetMethodsRequest1 request;
+
+    /**
+     * How long did it take to execute the request?
+     */
+    private final Long queryTimeMillis;
+
+    /**
+     * How many methods were found?
+     */
+    private final int numMethods;
+
+    /**
+     * The resulting methods.
+     */
+    private final List<MethodDescriptor1> methods;
+}

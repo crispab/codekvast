@@ -19,17 +19,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package se.crisp.codekvast.warehouse.api.model;
+package se.crisp.codekvast.warehouse.webapp.model;
 
 import lombok.*;
-import se.crisp.codekvast.warehouse.api.ApiService;
+import se.crisp.codekvast.warehouse.webapp.WebappService;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
 /**
- * A validated parameters object for {@link ApiService#getMethods(GetMethodsRequest1)}
+ * A validated parameters object for {@link WebappService#getMethods(GetMethodsRequest1)}
  *
  * @author olle.hallin@crisp.se
  */
@@ -71,11 +71,11 @@ public class GetMethodsRequest1 {
 
     public static GetMethodsRequest1 defaults() {
         return builder()
-                .signature("")
-                .maxResults(ApiService.DEFAULT_MAX_RESULTS)
-                .normalizeSignature(ApiService.DEFAULT_NORMALIZE_SIGNATURE)
-                .onlyTrulyDeadMethods(ApiService.DEFAULT_ONLY_TRULY_DEAD_METHODS)
-                .build();
+            .signature("")
+            .maxResults(WebappService.DEFAULT_MAX_RESULTS)
+            .normalizeSignature(WebappService.DEFAULT_NORMALIZE_SIGNATURE)
+            .onlyTrulyDeadMethods(WebappService.DEFAULT_ONLY_TRULY_DEAD_METHODS)
+            .build();
     }
 
 }

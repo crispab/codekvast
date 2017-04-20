@@ -19,10 +19,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package se.crisp.codekvast.warehouse.api;
+package se.crisp.codekvast.warehouse.webapp;
 
-import se.crisp.codekvast.warehouse.api.model.GetMethodsRequest1;
-import se.crisp.codekvast.warehouse.api.model.MethodDescriptor1;
+import se.crisp.codekvast.warehouse.webapp.model.GetMethodsRequest1;
+import se.crisp.codekvast.warehouse.webapp.model.MethodDescriptor1;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -30,11 +30,11 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * The service used by the {@link ApiController}.
+ * The service used by the {@link WebappController}.
  *
  * @author olle.hallin@crisp.se
  */
-public interface ApiService {
+public interface WebappService {
 
     int DEFAULT_MAX_RESULTS = 100;
     String DEFAULT_MAX_RESULTS_STR = "" + DEFAULT_MAX_RESULTS;

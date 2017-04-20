@@ -19,16 +19,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package se.crisp.codekvast.warehouse.api;
+package se.crisp.codekvast.warehouse.webapp;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import se.crisp.codekvast.warehouse.api.model.GetMethodsRequest1;
-import se.crisp.codekvast.warehouse.api.model.GetMethodsResponse1;
-import se.crisp.codekvast.warehouse.api.model.MethodDescriptor1;
 import se.crisp.codekvast.warehouse.bootstrap.CodekvastSettings;
+import se.crisp.codekvast.warehouse.webapp.model.GetMethodsRequest1;
+import se.crisp.codekvast.warehouse.webapp.model.GetMethodsResponse1;
+import se.crisp.codekvast.warehouse.webapp.model.MethodDescriptor1;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
@@ -41,27 +41,27 @@ import java.util.Locale;
 import java.util.Optional;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static se.crisp.codekvast.warehouse.api.ApiService.DEFAULT_MAX_RESULTS_STR;
+import static se.crisp.codekvast.warehouse.webapp.WebappService.DEFAULT_MAX_RESULTS_STR;
 
 /**
- * The API REST controller.
+ * The Webapp REST controller.
  *
  * @author olle.hallin@crisp.se
  */
 @RestController
 @RequestMapping(produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 @Slf4j
-public class ApiController {
+public class WebappController {
 
-    private static final String API_V1_METHODS = "/api/v1/methods";
-    private static final String API_V1_METHOD = "/api/v1/method/detail/{id}";
+    private static final String API_V1_METHODS = "/webapp/v1/methods";
+    private static final String API_V1_METHOD = "/webapp/v1/method/detail/{id}";
 
-    private final ApiService apiService;
+    private final WebappService webappService;
     private final CodekvastSettings settings;
 
     @Inject
-    public ApiController(ApiService apiService, CodekvastSettings settings) {
-        this.apiService = apiService;
+    public WebappController(WebappService webappService, CodekvastSettings settings) {
+        this.webappService = webappService;
         this.settings = settings;
     }
 
@@ -87,7 +87,7 @@ public class ApiController {
     public ResponseEntity<MethodDescriptor1> getMethod1(@PathVariable(value = "id") Long methodId) {
         long startedAt = System.currentTimeMillis();
 
-        Optional<MethodDescriptor1> result = apiService.getMethodById(methodId);
+        Optional<MethodDescriptor1> result = webappService.getMethodById(methodId);
 
         log.debug("{} method with id={} in {} ms", result.isPresent() ? "Found" : "Could not find", methodId, System.currentTimeMillis() - startedAt);
 
@@ -100,7 +100,7 @@ public class ApiController {
 
         GetMethodsRequest1 request = GetMethodsRequest1.defaults().toBuilder().signature(signature).maxResults(maxResults).build();
 
-        List<MethodDescriptor1> methods = apiService.getMethods(request);
+        List<MethodDescriptor1> methods = webappService.getMethods(request);
 
         GetMethodsResponse1 response = GetMethodsResponse1.builder()
                                                           .timestamp(startedAt)
@@ -113,23 +113,23 @@ public class ApiController {
         return response;
     }
 
-    @RequestMapping(method = GET, value = "/api/instant")
+    @RequestMapping(method = GET, value = "/webapp/instant")
     public Instant getInstant() {
         return Instant.now();
     }
 
-    @RequestMapping(method = GET, value = "/api/localDateTime")
+    @RequestMapping(method = GET, value = "/webapp/localDateTime")
     public LocalDateTime getLocalDateTime() {
         return LocalDateTime.now();
     }
 
-    @RequestMapping(method = GET, value = "/api/localDateTime/iso")
+    @RequestMapping(method = GET, value = "/webapp/localDateTime/iso")
     public String getLocalDateTimeString(Locale locale) {
         DateTimeFormatter dtf = DateTimeFormatter.ISO_LOCAL_DATE_TIME.withLocale(locale);
         return LocalDateTime.now().format(dtf);
     }
 
-    @RequestMapping(method = GET, value = "/api/version")
+    @RequestMapping(method = GET, value = "/webapp/version")
     public CodekvastSettings getVersion() {
         return settings;
     }

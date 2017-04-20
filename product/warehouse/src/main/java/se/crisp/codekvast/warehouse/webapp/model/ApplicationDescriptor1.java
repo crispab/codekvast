@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package se.crisp.codekvast.warehouse.api.model;
+package se.crisp.codekvast.warehouse.webapp.model;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;

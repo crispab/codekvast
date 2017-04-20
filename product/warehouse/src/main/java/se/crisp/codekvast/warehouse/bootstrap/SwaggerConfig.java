@@ -59,21 +59,22 @@ public class SwaggerConfig {
     }
 
     @Bean
-    public Docket businessV1Docket(ApiInfo apiInfo) {
+    public Docket webappV1Docket(ApiInfo apiInfo) {
         return new Docket(DocumentationType.SWAGGER_2)
-                .apiInfo(apiInfo)
-                .groupName("business-endpoints-v1")
-                .select()
-                .paths(path -> path.startsWith("/api/v1"))
-                .build();
+            .apiInfo(apiInfo)
+            .groupName("webapp-endpoints-v1")
+            .select()
+            .paths(path -> path.startsWith("/webapp/v1"))
+            .build();
     }
 
     @Bean
-    public Docket managementDocket(@Value("${management.contextPath}") String managementPath) {
+    public Docket managementDocket(ApiInfo apiInfo, @Value("${management.contextPath}") String managementPath) {
         return new Docket(DocumentationType.SWAGGER_2)
-                .groupName("management-endpoints")
-                .select()
-                .paths(path -> path.startsWith(managementPath))
-                .build();
+            .apiInfo(apiInfo)
+            .groupName("management-endpoints")
+            .select()
+            .paths(path -> path.startsWith(managementPath))
+            .build();
     }
 }

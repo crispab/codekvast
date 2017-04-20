@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package se.crisp.codekvast.warehouse.api.model;
+package se.crisp.codekvast.warehouse.webapp.model;
 
 import lombok.Builder;
 import lombok.NonNull;
@@ -27,7 +27,6 @@ import lombok.Singular;
 import lombok.Value;
 import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
 
-import java.util.Comparator;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;

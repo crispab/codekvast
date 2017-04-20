@@ -10,8 +10,8 @@ import {isNumber} from 'util';
 @Injectable()
 export class WarehouseService {
 
-    readonly METHODS_URL = '/api/v1/methods';
-    readonly METHOD_BY_ID_URL = '/api/v1/method/detail/';
+    readonly METHODS_URL = '/webapp/v1/methods';
+    readonly METHOD_BY_ID_URL = '/webapp/v1/method/detail/';
     readonly headers = new Headers();
 
     constructor(private http: Http, private configService: ConfigService) {
