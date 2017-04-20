@@ -162,10 +162,10 @@ public class CodekvastCollector {
             Class.forName("org.aspectj.bridge.Constants");
 
             System.setProperty(ASPECTJ_WEAVER_CONFIGURATION,
-                           createAopXml(config) + ";" +
-                               Constants.AOP_USER_XML + ";" +
-                               Constants.AOP_AJC_XML + ";" +
-                               Constants.AOP_OSGI_XML);
+                               createAopXml(config) + ";" +
+                                   Constants.AOP_USER_XML + ";" +
+                                   Constants.AOP_AJC_XML + ";" +
+                                   Constants.AOP_OSGI_XML);
 
             log.debug("{}={}", ASPECTJ_WEAVER_CONFIGURATION, System.getProperty(ASPECTJ_WEAVER_CONFIGURATION));
         } catch (ClassNotFoundException e) {
@@ -180,23 +180,27 @@ public class CodekvastCollector {
      * @return A file URI to a temporary aop-ajc.xml file.
      */
     private static String createAopXml(CollectorConfig config) {
+        String messageHandlerClass = config.isBridgeAspectjMessagesToSLF4J()
+            ? String.format("-XmessageHandlerClass:%s ", AspectjMessageHandlerToSLF4JBridge.class.getName())
+            : "";
 
         String xml = String.format(
             "<aspectj>\n"
                 + "  <aspects>\n"
-                + "    <concrete-aspect name='se.crisp.codekvast.agent.collector.MethodExecutionAspect'\n"
-                + "                     extends='%1$s'>\n"
-                + "      <pointcut name='methodExecution' expression='%2$s'/>\n"
+                + "    <concrete-aspect name='%1$s.MethodExecutionAspect'\n"
+                + "                     extends='%2$s'>\n"
+                + "      <pointcut name='methodExecution' expression='%3$s'/>\n"
                 + "    </concrete-aspect>\n"
                 + "  </aspects>\n"
-                + "  <weaver options='%3$s'>\n"
-                + "%4$s"
+                + "  <weaver options='%4$s'>\n"
                 + "%5$s"
+                + "%6$s"
                 + "  </weaver>\n"
                 + "</aspectj>\n",
+            AbstractMethodExecutionAspect.class.getPackage().getName(),
             AbstractMethodExecutionAspect.class.getName(),
             toMethodExecutionPointcut(config.getMethodAnalyzer()),
-            config.getAspectjOptions(),
+            messageHandlerClass + config.getAspectjOptions(),
             getIncludeExcludeElements("include", config.getNormalizedPackages()),
             getIncludeExcludeElements("exclude", config.getNormalizedExcludePackages(),
                                       "se.crisp.codekvast.agent"));

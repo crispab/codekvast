@@ -303,7 +303,7 @@ If you get `LinkageError` on some aspectj-related type::
 No data in /tmp/codekvast::
 . set `aspectjOptions=-verbose -showWeaveInfo` in codekvast-collector.conf
 . restart your application
-. Use the logging on standard output and standard error for determining the problem
+. Use the logging for determining the problem. See <<codekvast-collector-logging, Codekvast Collector Logging>>.
 
 [[codekvast-warehouse-installation]]
 === Install Codekvast Warehouse
@@ -507,6 +507,13 @@ See <<about-clobberAopXml>>
 |
 |true
 
+|bridgeAspectjMessagesToSLF4J
+|Should aspectjweaver be configured with a bridge that sends AspectJ messages to SLF4J?
+See <<about-bridgeAspectjMessages>>
+|*true* or *false*.
+|
+|true
+
 |===
 
 [[about-specifying-code-base]]
@@ -595,6 +602,13 @@ If you have special needs, you can disable this behaviour:
 . Edit `codekvast.conf` and set `clobberAopXml = false`.
 . Edit `$dataPath/$appName/aop.xml` to suit your needs. See {aspectj-ltw-config}.
 . Start the application.
+
+[[about-bridgeAspectjMessages]]
+==== About Bridging AspectJ messages to SLF4J
+Normally, codekvast-collector installs an AspectJ `IMessageHandler` that acts as a bridge between aspectjweaver and SLF4J.
+If your application uses another implementation or if you want the default behaviour, this bridge can be disabled.
+
+See also {aspectj-ltw-config} and <<codekvast-collector-logging, Codekvast Collector Logging>>.
 
 [[configuring-codekvast-daemon]]
 === Codekvast Daemon

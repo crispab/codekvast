@@ -35,6 +35,7 @@ import java.util.Properties;
 public class CollectorConfigFactory {
 
     private static final boolean DEFAULT_CLOBBER_AOP_XML = true;
+    private static final boolean DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_SLF4J = true;
     private static final String DEFAULT_ASPECTJ_OPTIONS = "";
     private static final String DEFAULT_METHOD_VISIBILITY = SignatureUtils.PROTECTED;
     private static final int DEFAULT_COLLECTOR_RESOLUTION_SECONDS = 600;
@@ -101,6 +102,7 @@ public class CollectorConfigFactory {
                               .appName(validateAppName(ConfigUtils.getMandatoryStringValue(props, "appName")))
                               .appVersion(ConfigUtils.getOptionalStringValue(props, "appVersion", UNSPECIFIED))
                               .aspectjOptions(ConfigUtils.getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
+                              .bridgeAspectjMessagesToSLF4J(ConfigUtils.getOptionalBooleanValue(props, "bridgeAspectjMessagesToSLF4J", DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_SLF4J))
                               .clobberAopXml(ConfigUtils.getOptionalBooleanValue(props, "clobberAopXml", DEFAULT_CLOBBER_AOP_XML))
                               .codeBase(ConfigUtils.getMandatoryStringValue(props, "codeBase"))
                               .collectorResolutionSeconds(ConfigUtils.getOptionalIntValue(props, "collectorResolutionSeconds",
@@ -174,6 +176,7 @@ public class CollectorConfigFactory {
                               .appName(UNSPECIFIED)
                               .appVersion(UNSPECIFIED)
                               .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
+                              .bridgeAspectjMessagesToSLF4J(DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_SLF4J)
                               .clobberAopXml(DEFAULT_CLOBBER_AOP_XML)
                               .codeBase(UNSPECIFIED)
                               .collectorResolutionSeconds(DEFAULT_COLLECTOR_RESOLUTION_SECONDS)

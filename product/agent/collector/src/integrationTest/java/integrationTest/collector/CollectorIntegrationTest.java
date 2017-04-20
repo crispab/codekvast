@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-import sample.app.SampleApp;
+import se.crisp.codekvast.agent.collector.AspectjMessageHandlerToSLF4JBridge;
 import se.crisp.codekvast.agent.lib.config.CollectorConfig;
 import se.crisp.codekvast.agent.lib.config.CollectorConfigFactory;
 import se.crisp.codekvast.agent.lib.util.FileUtils;
@@ -83,8 +83,9 @@ public class CollectorIntegrationTest {
         // then
         assertThat(stdout, containsString("Found " + temporaryFolder.getRoot().getAbsolutePath() + "/codekvast.conf"));
         assertThat(stdout, not(containsString("SLF4J: Defaulting to no-operation (NOP) logger implementation")));
-        assertThat(stdout, containsString("info AspectJ Weaver Version"));
-        assertThat(stdout, containsString("weaveinfo Join point 'method-execution(void sample.app.SampleApp.main(java.lang.String[]))"));
+        assertThat(stdout, containsString("INFO " + AspectjMessageHandlerToSLF4JBridge.LOGGER_NAME));
+        assertThat(stdout, containsString("AspectJ Weaver Version"));
+        assertThat(stdout, containsString("Join point 'method-execution(void sample.app.SampleApp.main(java.lang.String[]))"));
         assertThat(stdout, containsString("[main] INFO sample.app.SampleApp - 2+2=4"));
 
         walkFileTree(collectorOutputFiles, collectorConfig.getDataPath());

@@ -46,6 +46,7 @@ public class CollectorConfig implements CodekvastConfig {
     private File dataPath;
     @NonNull
     private String aspectjOptions;
+    private boolean bridgeAspectjMessagesToSLF4J;
     @NonNull
     private String methodVisibility;
     private int collectorResolutionSeconds;
