@@ -4,18 +4,8 @@ set -e
 
 cd $(dirname $0)/..
 declare GRADLEW=./gradlew
-
-echo "Stopping the Gradle daemon..."
-${GRADLEW} --stop
-
-echo "Cleaning Gradle build state..."
-rm -fr ./.gradle
-
-echo "Cleaning /tmp/codekvast..."
-rm -fr /tmp/codekvast
-
-echo "Cleaning workspace..."
-find product -name build -type d | grep -v node_modules | xargs rm -fr
+declare GRADLE_OPTS="${GRADLE_OPTS:--Dorg.gradle.configureondemand=false --build-cache --parallel}"
+declare tasks=${@:-build}
 
 if [ -z "$PHANTOMJS_BIN" ]; then
     echo "Locating phantomjs ..."
@@ -28,7 +18,7 @@ if [ -z "$PHANTOMJS_BIN" ]; then
 fi
 
 echo "Building..."
-${GRADLEW} -Dorg.gradle.configureondemand=false build $@
+${GRADLEW} ${GRADLE_OPTS} ${tasks}
 
 echo "Generating coverage report..."
-${GRADLEW} coverageReport
+${GRADLEW} ${GRADLE_OPTS} coverageReport
