@@ -28,6 +28,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
 
 /**
  * @author olle.hallin@crisp.se
@@ -35,6 +36,18 @@ import java.io.InputStreamReader;
 @UtilityClass
 @Slf4j
 public class ProcessUtils {
+
+    public static String executeCommand(List<String> command) throws RuntimeException, IOException, InterruptedException {
+        log.trace("Attempting to execute '{}' ...", command);
+        Process process = new ProcessBuilder().command(command).redirectErrorStream(true).start();
+        int exitCode = process.waitFor();
+        String output = collectProcessOutput(process.getInputStream());
+        if (exitCode != 0) {
+            throw new RuntimeException(String.format("Could not execute '%s': %s%nExit code=%d", command, output, exitCode));
+        }
+
+        return output;
+    }
 
     public static String executeCommand(String command) throws RuntimeException, IOException, InterruptedException {
         log.debug("Attempting to execute '{}' ...", command);

@@ -58,6 +58,10 @@ public class SampleApp {
         System.out.printf("Invoked a trivial untracked logged method %,d times in %5d ms%n", count, untrackedLoggedElapsedMillis);
         System.out.printf("Invoked a trivial   tracked        method %,d times in %5d ms%n", count, trackedElapsedMillis);
         System.out.printf("Codekvast collector adds roughly %d ns to a method call%n", overheadNanos);
+
+        if (overheadNanos <= 5) {
+            throw new IllegalStateException("Unreasonable overhead: " + overheadNanos + ". Is Codekvast collector correctly wired?");
+        }
     }
 
     private long invokeUntracked(int count) {

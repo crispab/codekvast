@@ -16,10 +16,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -66,7 +63,7 @@ public class CollectorIntegrationTest {
     @Test
     public void should_not_start_collector_when_no_config() throws Exception {
         // given
-        String command = buildJavaCommand(null);
+        List<String> command = buildJavaCommand(null);
 
         // when
         String result = ProcessUtils.executeCommand(command);
@@ -78,15 +75,15 @@ public class CollectorIntegrationTest {
     @Test
     public void should_collect_data_when_valid_config_specified() throws Exception {
         // given
-        String command = buildJavaCommand(writeCollectorConfigToFile());
+        List<String> command = buildJavaCommand(writeCollectorConfigToFile());
 
         // when
         String result = ProcessUtils.executeCommand(command);
 
         // then
-        System.out.println("result = " + result);
-
         assertThat(result, containsString("Found " + temporaryFolder.getRoot().getAbsolutePath() + "/codekvast.conf"));
+        assertThat(result, containsString("info AspectJ Weaver Version"));
+        assertThat(result, containsString("weaveinfo Join point 'method-execution(void sample.app.SampleApp.main(java.lang.String[]))"));
         assertThat(result, containsString("[main] INFO sample.app.SampleApp - 2+2=4"));
 
         walkFileTree(collectorOutputFiles, collectorConfig.getDataPath());
@@ -94,7 +91,6 @@ public class CollectorIntegrationTest {
         assertThat(collectorOutputFiles.keySet(), hasItems("aop.xml", "invocations.dat.00000", "jvm.dat"));
 
         List<String> lines = readLinesFrom("invocations.dat.00000");
-        // System.out.println(lines);
         assertThat(lines, hasItem("public sample.app.SampleApp.main(java.lang.String[])"));
         assertThat(lines, hasItem("public sample.app.SampleApp.add(int, int)"));
         assertThat(lines, hasItem("public sample.app.SampleApp()"));
@@ -118,17 +114,17 @@ public class CollectorIntegrationTest {
         return file.getAbsolutePath();
     }
 
-    private String buildJavaCommand(String configPath) {
-        String sysProps = configPath == null ? "" : "-Dcodekvast.configuration=" + configPath;
-        return String.format(
-                "java -javaagent:%s -javaagent:%s -javaagent:%s -cp %s %s %s %s",
-                jacocoagent,
-                codekvastCollector,
-                aspectjweaver,
-                classpath,
-                "-Dcodekvast.options=verbose=true",
-                sysProps,
-                SampleApp.class.getName());
+    private List<String> buildJavaCommand(String configPath) {
+        List<String> command = new ArrayList<String>(Arrays.asList("java",
+                                                                   "-javaagent:" + jacocoagent,
+                                                                   "-javaagent:" + codekvastCollector,
+                                                                   "-javaagent:" + aspectjweaver,
+                                                                   "-cp", classpath));
+        if (configPath != null) {
+            command.add("-Dcodekvast.configuration=" + configPath);
+        }
+        command.add("sample.app.SampleApp");
+        return command;
     }
 
     private void walkFileTree(Map<String, File> result, File path) {
