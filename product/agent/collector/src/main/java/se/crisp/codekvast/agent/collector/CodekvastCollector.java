@@ -248,22 +248,24 @@ public class CodekvastCollector {
 
         @Override
         public void run() {
-            if (codeBase == null) {
-                log.info("Building codebase");
-                codeBase = new CodeBase(config);
-            }
-            try {
-                if (codeBasePublisher.needsToBePublished(codeBase.getFingerprint())) {
-                    CodeBaseScanner scanner = new CodeBaseScanner();
-                    scanner.scanSignatures(codeBase);
-                    codeBasePublisher.publishCodebase(codeBase);
-                    log.info("Published codebase {}", codeBase.getFingerprint());
-                } else {
-                    log.info("Codebase {} already published", codeBase.getFingerprint());
+            if (codeBasePublisher.isEnabled()) {
+                if (codeBase == null) {
+                    log.info("Building codebase");
+                    codeBase = new CodeBase(config);
                 }
-                timer.cancel();
-            } catch (CodekvastPublishingException e) {
-                LogUtil.logException(log, "Cannot publish codebase", e);
+                try {
+                    if (codeBasePublisher.needsToBePublished(codeBase.getFingerprint())) {
+                        CodeBaseScanner scanner = new CodeBaseScanner();
+                        scanner.scanSignatures(codeBase);
+                        codeBasePublisher.publishCodebase(codeBase);
+                        log.info("Published codebase {}", codeBase.getFingerprint());
+                    } else {
+                        log.info("Codebase {} already published", codeBase.getFingerprint());
+                    }
+                    timer.cancel();
+                } catch (CodekvastPublishingException e) {
+                    LogUtil.logException(log, "Cannot publish codebase", e);
+                }
             }
         }
     }

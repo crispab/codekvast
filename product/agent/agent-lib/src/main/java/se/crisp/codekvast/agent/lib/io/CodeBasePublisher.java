@@ -30,6 +30,13 @@ import se.crisp.codekvast.agent.lib.codebase.CodeBaseFingerprint;
 public interface CodeBasePublisher {
 
     /**
+     * Is code base publishing enabled?
+     *
+     * @return true iff the codebase shall be scanned and uploaded
+     */
+    boolean isEnabled();
+
+    /**
      * Checks whether the codebase needs to be published or not.
      *
      * @param fingerprint The Codebase fingerprint.
