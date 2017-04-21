@@ -30,9 +30,9 @@ import se.crisp.codekvast.agent.lib.config.CollectorConfig;
 import se.crisp.codekvast.agent.lib.config.CollectorConfigFactory;
 import se.crisp.codekvast.agent.lib.config.CollectorConfigLocator;
 import se.crisp.codekvast.agent.lib.config.MethodAnalyzer;
+import se.crisp.codekvast.agent.lib.io.CodeBasePublisher;
 import se.crisp.codekvast.agent.lib.io.CodekvastPublishingException;
-import se.crisp.codekvast.agent.lib.io.CodebasePublisher;
-import se.crisp.codekvast.agent.lib.io.impl.NoopCodebasePublisherImpl;
+import se.crisp.codekvast.agent.lib.io.impl.NoOpCodeBasePublisherImpl;
 import se.crisp.codekvast.agent.lib.util.FileUtils;
 import se.crisp.codekvast.agent.lib.util.LogUtil;
 
@@ -94,8 +94,8 @@ public class CodekvastCollector {
         initialize(config);
     }
 
-    private static CodebasePublisher getCodebasePublisher(@SuppressWarnings("unused") CollectorConfig config) {
-        return new NoopCodebasePublisherImpl();
+    private static CodeBasePublisher getCodebasePublisher(@SuppressWarnings("unused") CollectorConfig config) {
+        return new NoOpCodeBasePublisherImpl();
     }
 
     /**
@@ -132,10 +132,10 @@ public class CodekvastCollector {
         return prefixes.size() == 1 ? prefixes.get(0) : prefixes.toString();
     }
 
-    private static int createCodebasePublisherTimerTask(CollectorConfig config, CodebasePublisher codebasePublisher) {
+    private static int createCodebasePublisherTimerTask(CollectorConfig config, CodeBasePublisher codeBasePublisher) {
         Timer timer = new Timer(NAME + " Codebase Publisher", true);
 
-        CodebasePublishingTimerTask timerTask = new CodebasePublishingTimerTask(timer, config, codebasePublisher);
+        CodebasePublishingTimerTask timerTask = new CodebasePublishingTimerTask(timer, config, codeBasePublisher);
 
         int initialDelaySeconds = 10;
         int periodSeconds = 60;
@@ -242,7 +242,7 @@ public class CodekvastCollector {
     private static class CodebasePublishingTimerTask extends TimerTask {
         private final Timer timer;
         private final CollectorConfig config;
-        private final CodebasePublisher codebasePublisher;
+        private final CodeBasePublisher codeBasePublisher;
 
         private CodeBase codeBase;
 
@@ -253,10 +253,10 @@ public class CodekvastCollector {
                 codeBase = new CodeBase(config);
             }
             try {
-                if (codebasePublisher.needsToBePublished(codeBase.getFingerprint())) {
+                if (codeBasePublisher.needsToBePublished(codeBase.getFingerprint())) {
                     CodeBaseScanner scanner = new CodeBaseScanner();
                     scanner.scanSignatures(codeBase);
-                    codebasePublisher.publishCodebase(codeBase);
+                    codeBasePublisher.publishCodebase(codeBase);
                     log.info("Published codebase {}", codeBase.getFingerprint());
                 } else {
                     log.info("Codebase {} already published", codeBase.getFingerprint());

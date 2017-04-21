@@ -53,8 +53,8 @@ import static se.crisp.codekvast.warehouse.webapp.WebappService.DEFAULT_MAX_RESU
 @Slf4j
 public class WebappController {
 
-    private static final String API_V1_METHODS = "/webapp/v1/methods";
-    private static final String API_V1_METHOD = "/webapp/v1/method/detail/{id}";
+    private static final String WEBAPP_V1_METHODS = "/webapp/v1/methods";
+    private static final String WEBAPP_V1_METHOD = "/webapp/v1/method/detail/{id}";
 
     private final WebappService webappService;
     private final CodekvastSettings settings;
@@ -74,7 +74,7 @@ public class WebappController {
         return ResponseEntity.badRequest().body(violations.toString());
     }
 
-    @RequestMapping(method = GET, value = API_V1_METHODS)
+    @RequestMapping(method = GET, value = WEBAPP_V1_METHODS)
     @CrossOrigin(origins = "http://localhost:8088")
     public ResponseEntity<GetMethodsResponse1> getMethods1(@RequestParam(value = "signature", defaultValue = "%") String signature,
                                                            @RequestParam(name = "maxResults", defaultValue = DEFAULT_MAX_RESULTS_STR)
@@ -82,7 +82,7 @@ public class WebappController {
         return ResponseEntity.ok().body(doGetMethods(signature, maxResults));
     }
 
-    @RequestMapping(method = GET, value = API_V1_METHOD)
+    @RequestMapping(method = GET, value = WEBAPP_V1_METHOD)
     @CrossOrigin(origins = "http://localhost:8088")
     public ResponseEntity<MethodDescriptor1> getMethod1(@PathVariable(value = "id") Long methodId) {
         long startedAt = System.currentTimeMillis();
@@ -113,23 +113,25 @@ public class WebappController {
         return response;
     }
 
-    @RequestMapping(method = GET, value = "/webapp/instant")
+    // Experimental stuff below
+
+    @RequestMapping(method = GET, value = "/server/instant")
     public Instant getInstant() {
         return Instant.now();
     }
 
-    @RequestMapping(method = GET, value = "/webapp/localDateTime")
+    @RequestMapping(method = GET, value = "/server/localDateTime")
     public LocalDateTime getLocalDateTime() {
         return LocalDateTime.now();
     }
 
-    @RequestMapping(method = GET, value = "/webapp/localDateTime/iso")
+    @RequestMapping(method = GET, value = "/server/localDateTime/iso")
     public String getLocalDateTimeString(Locale locale) {
         DateTimeFormatter dtf = DateTimeFormatter.ISO_LOCAL_DATE_TIME.withLocale(locale);
         return LocalDateTime.now().format(dtf);
     }
 
-    @RequestMapping(method = GET, value = "/webapp/version")
+    @RequestMapping(method = GET, value = "/server/version")
     public CodekvastSettings getVersion() {
         return settings;
     }

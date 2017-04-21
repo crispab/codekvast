@@ -19,31 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package se.crisp.codekvast.agent.lib.io;
-
-import se.crisp.codekvast.agent.lib.codebase.CodeBase;
-import se.crisp.codekvast.agent.lib.codebase.CodeBaseFingerprint;
-
 /**
- * Strategy for publishing a {@link se.crisp.codekvast.agent.lib.codebase.CodeBase}
+ * REST API offered to the Codekvast Collectors.
  */
-public interface CodebasePublisher {
-
-    /**
-     * Checks whether the codebase needs to be published or not.
-     *
-     * @param fingerprint The Codebase fingerprint.
-     * @return true iff the codebase needs to be published.
-     * @throws CodekvastPublishingException when no contact with the receiver. Try again.
-     */
-    boolean needsToBePublished(CodeBaseFingerprint fingerprint) throws CodekvastPublishingException;
-
-    /**
-     * Publishes a codebase.
-     *
-     * @param codeBase The codebase to publish.
-     * @throws CodekvastPublishingException when no contact with the consumer. Try again.
-     */
-    void publishCodebase(CodeBase codeBase) throws CodekvastPublishingException;
-
-}
+package se.crisp.codekvast.warehouse.agent;

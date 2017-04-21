@@ -59,6 +59,7 @@ shadowJar {
     }
 
     relocate 'javassist', 'codekvast.javassist'
+    relocate 'javax.validation', 'codekvast.javax.validation'
     relocate 'com', 'codekvast.com'
     relocate 'org.reflections', 'codekvast.org.reflections'
 }

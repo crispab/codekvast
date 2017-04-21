@@ -19,29 +19,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package se.crisp.codekvast.agent.lib.io.impl;
+package se.crisp.codekvast.warehouse.agent.impl;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import se.crisp.codekvast.agent.lib.codebase.CodeBase;
-import se.crisp.codekvast.agent.lib.codebase.CodeBaseFingerprint;
-import se.crisp.codekvast.agent.lib.io.CodebasePublisher;
+import org.springframework.stereotype.Service;
+import se.crisp.codekvast.agent.lib.model.rest.GetConfigRequest1;
+import se.crisp.codekvast.agent.lib.model.rest.GetConfigResponse1;
+import se.crisp.codekvast.warehouse.agent.AgentService;
+import se.crisp.codekvast.warehouse.agent.LicenseViolationException;
 
 /**
- * Dummy (no-op) implementation of CodebasePublisher.
+ * Handler for agent REST requests.
+ *
+ * @author Olle Hallin <olle.hallin@crisp.se>
  */
-@RequiredArgsConstructor
-@Slf4j
-public class NoopCodebasePublisherImpl implements CodebasePublisher {
-
+@Service
+public class AgentServiceImpl implements AgentService {
     @Override
-    public boolean needsToBePublished(CodeBaseFingerprint fingerprint) {
-        log.debug("Checking if {} needs to be published", fingerprint);
-        return true;
+    public GetConfigResponse1 getConfig(GetConfigRequest1 request) throws LicenseViolationException {
+        checkLicense(request);
+        return GetConfigResponse1.builder()
+                                 .codeBasePublisherClass("no-op")
+                                 .codeBasePublisherConfig("foo=bar")
+                                 .build();
     }
 
-    @Override
-    public void publishCodebase(CodeBase codeBase) {
-        log.debug("Publishing codebase {}", codeBase.getFingerprint());
+    private void checkLicense(GetConfigRequest1 request) {
+        // TODO: implement proper license control
+        if (request.getLicenseKey().equals("-----")) {
+            throw new LicenseViolationException("Invalid license key: " + request.getLicenseKey());
+        }
     }
 }

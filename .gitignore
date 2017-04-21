@@ -36,3 +36,4 @@ product/warehouse/src/webapp/dist/
 !**.ts
 *.retry
 .build-cache/
+!**.java
