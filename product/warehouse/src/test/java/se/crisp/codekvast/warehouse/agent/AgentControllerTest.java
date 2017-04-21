@@ -45,14 +45,14 @@ public class AgentControllerTest {
     public void getConfig1_should_reject_invalid_method() throws Exception {
         mockMvc.perform(get("/agent/v1/getConfig")
                             .contentType(MediaType.APPLICATION_JSON_UTF8))
-               .andExpect(status().is4xxClientError());
+               .andExpect(status().isMethodNotAllowed());
     }
 
     @Test
     public void getConfig1_should_reject_invalid_media_type() throws Exception {
         mockMvc.perform(post("/agent/v1/getConfig")
                             .contentType(MediaType.TEXT_PLAIN))
-               .andExpect(status().is4xxClientError());
+               .andExpect(status().isUnsupportedMediaType());
     }
 
     @Test
@@ -60,7 +60,7 @@ public class AgentControllerTest {
         mockMvc.perform(post("/agent/v1/getConfig")
                             .content("invalid json")
                             .contentType(MediaType.APPLICATION_JSON_UTF8))
-               .andExpect(status().is4xxClientError());
+               .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -68,7 +68,17 @@ public class AgentControllerTest {
         mockMvc.perform(post("/agent/v1/getConfig")
                             .content(objectMapper.writeValueAsString(GetConfigRequest1.sample().toBuilder().licenseKey("").build()))
                             .contentType(MediaType.APPLICATION_JSON_UTF8))
-               .andExpect(status().is4xxClientError());
+               .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void getConfig1_should_reject_invalid_licenseKey() throws Exception {
+        when(agentService.getConfig(any(GetConfigRequest1.class))).thenThrow(new LicenseViolationException("foobar"));
+
+        mockMvc.perform(post("/agent/v1/getConfig")
+                            .content(objectMapper.writeValueAsString(GetConfigRequest1.sample()))
+                            .contentType(MediaType.APPLICATION_JSON_UTF8))
+               .andExpect(status().isForbidden());
     }
 
     @Test
