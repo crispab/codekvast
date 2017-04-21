@@ -24,15 +24,13 @@ package se.crisp.codekvast.agent.lib.io.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import se.crisp.codekvast.agent.lib.codebase.CodeBase;
-import se.crisp.codekvast.agent.lib.codebase.CodeBaseFingerprint;
-import se.crisp.codekvast.agent.lib.io.CodeBasePublisher;
 
 /**
  * Dummy (no-op) implementation of CodeBasePublisher.
  */
 @RequiredArgsConstructor
 @Slf4j
-public class NoOpCodeBasePublisherImpl implements CodeBasePublisher {
+public class NoOpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
 
     @Override
     public String nickName() {
@@ -40,20 +38,13 @@ public class NoOpCodeBasePublisherImpl implements CodeBasePublisher {
     }
 
     @Override
-    public void configure(String configuration) {
-        log.debug("Received configuration: {}", configuration);
+    void doSetValue(String key, String value) {
+        // No private parameters
+    }
+
+    @Override
+    void doPublishCodeBase(CodeBase codeBase) {
         // Nothing to do here
-    }
-
-    @Override
-    public boolean needsToBePublished(CodeBaseFingerprint fingerprint) {
-        log.debug("Checking if {} needs to be published", fingerprint);
-        return true;
-    }
-
-    @Override
-    public void publishCodebase(CodeBase codeBase) {
-        log.debug("Publishing codebase {}", codeBase.getFingerprint());
     }
 
 }

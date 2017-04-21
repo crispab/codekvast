@@ -39,7 +39,7 @@ public class AgentServiceImpl implements AgentService {
         checkLicense(request);
         return GetConfigResponse1.builder()
                                  .codeBasePublisherClass("no-op")
-                                 .codeBasePublisherConfig("foo=bar")
+                                 .codeBasePublisherConfig("enabled=true")
                                  .build();
     }
 

@@ -59,12 +59,22 @@ public class SwaggerConfig {
     }
 
     @Bean
-    public Docket webappV1Docket(ApiInfo apiInfo) {
+    public Docket agentDocket(ApiInfo apiInfo) {
         return new Docket(DocumentationType.SWAGGER_2)
             .apiInfo(apiInfo)
-            .groupName("webapp-endpoints-v1")
+            .groupName("agent-endpoints")
             .select()
-            .paths(path -> path.startsWith("/webapp/v1"))
+            .paths(path -> path.startsWith("/agent"))
+            .build();
+    }
+
+    @Bean
+    public Docket webappDocket(ApiInfo apiInfo) {
+        return new Docket(DocumentationType.SWAGGER_2)
+            .apiInfo(apiInfo)
+            .groupName("webapp-endpoints")
+            .select()
+            .paths(path -> path.startsWith("/webapp"))
             .build();
     }
 
