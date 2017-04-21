@@ -6,6 +6,7 @@ node {
             withEnv(['PHANTOMJS_BIN=/usr/local/lib/node_modules/phantomjs-prebuilt/bin/phantomjs']) {
                 stage('Prepare') {
                     checkout scm
+                    sh "printenv | sort"
                 }
 
                 stage('Compile Java') {

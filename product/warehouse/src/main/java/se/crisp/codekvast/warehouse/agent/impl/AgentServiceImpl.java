@@ -30,7 +30,7 @@ import se.crisp.codekvast.warehouse.agent.LicenseViolationException;
 /**
  * Handler for agent REST requests.
  *
- * @author Olle Hallin <olle.hallin@crisp.se>
+ * @author Olle Hallin &lt;olle.hallin@crisp.se&gt;
  */
 @Service
 public class AgentServiceImpl implements AgentService {
