@@ -23,12 +23,16 @@ package se.crisp.codekvast.agent.lib.codebase;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
+import java.security.MessageDigest;
+import java.util.Set;
+import java.util.TreeSet;
 
-import static java.lang.Math.max;
+import static javax.xml.bind.DatatypeConverter.printBase64Binary;
 
 /**
  * An immutable fingerprint of a code base. Used for comparing different code bases for equality.
@@ -39,10 +43,7 @@ import static java.lang.Math.max;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public class CodeBaseFingerprint {
-    private final int count;
-    private final long size;
-    private final long lastModified;
-    private final int cachedHashCode;
+    private String value;
 
     static Builder builder() {
         return new Builder();
@@ -52,22 +53,33 @@ public class CodeBaseFingerprint {
      * Builder for incrementally building a CodeBaseFingerprint
      */
     static class Builder {
-        private int count;
-        private long size;
-        private long lastModified;
-        private long hashCodeSum;
+        Set<File> files = new TreeSet<File>();
 
-        public Builder record(File file) {
-            count += 1;
-            size += file.length();
-            lastModified = max(lastModified, file.lastModified());
-            hashCodeSum += file.hashCode();
-            log.trace("Recorded {}, {}", file, this);
+        Builder record(File file) {
+            files.add(file);
+            log.trace("Recorded {}", file);
             return this;
         }
 
+        byte[] longToBytes(long l) {
+            byte[] result = new byte[Long.SIZE / Byte.SIZE];
+            for (int i = 7; i >= 0; i--) {
+                result[i] = (byte) (l & 0xFF);
+                l >>= Byte.SIZE;
+            }
+            return result;
+        }
+
+        @SneakyThrows
         CodeBaseFingerprint build() {
-            return new CodeBaseFingerprint(count, size, lastModified, Long.valueOf(hashCodeSum).hashCode());
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(longToBytes(files.size()));
+            for (File file : files) {
+                md.update(longToBytes(file.length()));
+                md.update(longToBytes(file.lastModified()));
+                md.update(file.getName().getBytes());
+            }
+            return new CodeBaseFingerprint(printBase64Binary(md.digest()));
         }
     }
 }
