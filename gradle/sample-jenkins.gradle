@@ -1,7 +1,14 @@
 apply plugin: 'java'
+apply from: "$rootDir/gradle/libs.gradle"
 
-sourceSets {
-    javaagent
+configurations {
+    tomcatEndorsed
+}
+
+dependencies {
+    tomcatEndorsed project(path: ":product:agent:collector", configuration: 'shadow')
+    tomcatEndorsed aspectjWeaver
+    tomcatEndorsed logback
 }
 
 defaultTasks 'run'
@@ -9,13 +16,14 @@ defaultTasks 'run'
 ext.tomcatDownloadUrl = "https://dl.bintray.com/crisp/codekvast/apache-tomcat-${tomcatVersion}.zip"
 ext.tomcatDir = file("$buildDir/tomcat")
 ext.catalinaBase = file("$tomcatDir/apache-tomcat-${tomcatVersion}")
+ext.catalinaEndorsed = new File(catalinaBase, "endorsed")
+ext.catalinaWebapps = new File(catalinaBase, "webapps")
 
 ext.jenkinsDownloadUrl = "https://dl.bintray.com/crisp/codekvast/jenkins-${jenkinsVersion}.war"
 
 task installJenkinsInTomcat7 {
     def downloadDir = file("$rootDir/.tmp/download")
-    def webappsDir = new File(catalinaBase, "webapps")
-    def jenkinsDir = new File(webappsDir, "jenkins")
+    def jenkinsDir = new File(catalinaWebapps, "jenkins")
 
     inputs.property "tomcatVersion", tomcatVersion
     inputs.property "tomcat", tomcatDownloadUrl
@@ -26,7 +34,8 @@ task installJenkinsInTomcat7 {
 
     doLast {
         downloadDir.mkdirs()
-        webappsDir.mkdirs()
+        catalinaEndorsed.mkdirs()
+        catalinaWebapps.mkdirs()
 
         logger.lifecycle "Downloading $tomcatDownloadUrl ..."
         ant.get(
@@ -43,6 +52,12 @@ task installJenkinsInTomcat7 {
         }
         exec { commandLine "chmod", "+x", "$catalinaBase/bin/catalina.sh" }
 
+        logger.lifecycle "Installing endorsed jars ..."
+        copy {
+            from configurations.tomcatEndorsed
+            into catalinaEndorsed
+        }
+
         logger.lifecycle "Setting HTTP port $tomcatPort..."
         def serverXml = file("$catalinaBase/conf/server.xml")
         serverXml.text = serverXml.text.replace("8080", tomcatPort).replace("8005", "0").replace("8009", "0")
@@ -55,10 +70,10 @@ task installJenkinsInTomcat7 {
                 verbose: true
         )
 
-        logger.lifecycle "Copying jenkins.war into $webappsDir ..."
+        logger.lifecycle "Copying jenkins.war into $catalinaWebapps ..."
         copy {
             from "$downloadDir/jenkins-${jenkinsVersion}.war"
-            into "$webappsDir"
+            into catalinaWebapps
             rename { "jenkins.war" }
         }
 
@@ -100,27 +115,18 @@ verbose = true
 
 processResources.dependsOn generateCodekvastConfig
 
-task installJavaagentsIntoEndorsedDir(type: Sync) {
-    description = 'Installs the Java agents into $catalinaBase/endorsed'
-    group = "build"
-    dependsOn = ["installJenkinsInTomcat7", ":product:agent:collector:javaagents"]
-
-    from tasks.getByPath(":product:agent:collector:javaagents").outputs
-    into "$catalinaBase/endorsed"
-}
-
 task generateTomcatRunHook {
     description = "Generates a setenv.sh in \$CATALINA_HOME/bin that hooks up Codekvast"
     group = "build"
-    dependsOn = ["installJavaagentsIntoEndorsedDir", "generateCodekvastConfig"]
+    dependsOn installJenkinsInTomcat7, generateCodekvastConfig
     def setenvFile = file("$catalinaBase/bin/setenv.sh")
 
     inputs.file file("build.gradle")
     outputs.file setenvFile
 
     doLast {
-        def codekvastCollector = file("$catalinaBase/endorsed").listFiles().find { it.name.contains("codekvast") }
-        def aspectjWeaver = file("$catalinaBase/endorsed").listFiles().find { it.name.contains("aspectj") }
+        def codekvastCollector = file(catalinaEndorsed).listFiles().find { it.name.contains("codekvast") }
+        def aspectjWeaver = file(catalinaEndorsed).listFiles().find { it.name.contains("aspectj") }
 
         println """---------------------------
 codekvastCollector = .${codekvastCollector.absolutePath - projectDir.absolutePath}
