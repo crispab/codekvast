@@ -8,6 +8,7 @@ node {
                     checkout scm
                     sh """
                     printenv | sort
+                    tools/real-clean-workspace.sh # TODO: remove after first push
                     """
                 }
 

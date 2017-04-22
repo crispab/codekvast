@@ -8,14 +8,14 @@ configurations {
 dependencies {
     tomcatEndorsed project(path: ":product:agent:collector", configuration: 'shadow')
     tomcatEndorsed aspectjWeaver
-    tomcatEndorsed logback
+    tomcatEndorsed "org.slf4j:slf4j-jdk14:1.7.7"
 }
 
 defaultTasks 'run'
 
 ext.tomcatDownloadUrl = "https://dl.bintray.com/crisp/codekvast/apache-tomcat-${tomcatVersion}.zip"
 ext.tomcatDir = file("$buildDir/tomcat")
-ext.catalinaBase = file("$tomcatDir/apache-tomcat-${tomcatVersion}")
+ext.catalinaBase = new File(tomcatDir, "apache-tomcat-${tomcatVersion}")
 ext.catalinaEndorsed = new File(catalinaBase, "endorsed")
 ext.catalinaWebapps = new File(catalinaBase, "webapps")
 
@@ -34,7 +34,6 @@ task installJenkinsInTomcat7 {
 
     doLast {
         downloadDir.mkdirs()
-        catalinaEndorsed.mkdirs()
         catalinaWebapps.mkdirs()
 
         logger.lifecycle "Downloading $tomcatDownloadUrl ..."
@@ -126,7 +125,7 @@ task generateTomcatRunHook {
 
     doLast {
         def codekvastCollector = file(catalinaEndorsed).listFiles().find { it.name.contains("codekvast") }
-        def aspectjWeaver = file(catalinaEndorsed).listFiles().find { it.name.contains("aspectj") }
+        def aspectjWeaver = file(catalinaEndorsed).listFiles().find { it.name.contains("aspectjweaver") }
 
         println """---------------------------
 codekvastCollector = .${codekvastCollector.absolutePath - projectDir.absolutePath}

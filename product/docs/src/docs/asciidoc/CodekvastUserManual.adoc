@@ -257,9 +257,13 @@ After 10-15 seconds there will be an INFO logging containing the words "Will upl
 cd path/to/tomcat # <1>
 cp /opt/codekvast-daemon-{codekvastVersion}/codekvast-collector.conf conf/ # <2>
 cp /opt/codekvast-daemon-{codekvastVersion}/tomcat/setenv.sh bin/
+mkdir endorsed
+# Copy your preferred SLF4J backend binding to endorsed/ # <3>
 ----
 <1> Substitute `path/to` with the actual path were Tomcat is installed.
 <2> Edit `conf/codekvast-collector.conf` to suit your needs. See <<configuring-codekvast-collector, Configuring Codekvast Collector>>.
+<3> Example for Java Util Logging: slf4j-jdk14-1.7.7.jar. Select the same binding as your app use.
+ See also {slf4j-manual}.
 
 ==== Tomcat (Windows)
 
@@ -271,11 +275,14 @@ mkdir endorsed
 copy %CODEKVAST_HOME%\javaagents\* endorsed
 copy %CODEKVAST_HOME%\tomcat\setenv.bat bin\ # <3>
 copy %CODEKVAST_HOME%\codekvast-collector.conf conf\ # <4>
+REM copy your preferred SLF4J backend binding to endorsed\ # <5>
 ----
 <1> Substitute `path\to` with the actual path were Codekvast is installed.
 <2> Substitute `path\to` with the actual path were Tomcat is installed.
 <3> Edit `bin\setenv.bat` so that CODEKVAST_HOME matches the path were codekvast-daemon-{codekvastVersion} is installed.
 <4> Edit `conf\codekvast-collector.conf` to suit your needs. See <<configuring-codekvast-collector, Configuring Codekvast Collector>>.
+<5> Example for Java Util Logging: slf4j-jdk14-1.7.7.jar. Select the same binding as your app use.
+ See also {slf4j-manual}.
 
 ==== Other applications
 
@@ -287,6 +294,8 @@ The goal is to make
 
 appear as the first arguments to the `java` command and `codekvast-collector.conf` or `codekvast.conf` appear in any of the locations that
 Codekvast Collector expects it. See <<codekvast-collector-config-file-location, Configuring Codekvast Collector>>.
+
+You must also make sure that the preferred SLF4J backend is available to the system class loader.
 
 [TIP]
 ====
@@ -300,6 +309,9 @@ If you get `LinkageError` on some aspectj-related type::
 . Move `aspectjweaver-{aspectjVersion}.jar` to a separate directory (called `/path/to/endorsed` below).
 . Add `-Djava.endorsed.dir=/path/to/endorsed/` to the `java` command.
 
+Warning from SLF4J about logging is disabled::
+. Make sure that SLF4J is properly configured with a backend. See also {slf4j-manual}.
+
 No data in /tmp/codekvast::
 . set `aspectjOptions=-verbose -showWeaveInfo` in codekvast-collector.conf
 . restart your application
@@ -307,6 +319,7 @@ No data in /tmp/codekvast::
 
 [[codekvast-warehouse-installation]]
 === Install Codekvast Warehouse
+
 [[codekvast-warehouse-docker-installation]]
 ==== The Docker way
 
@@ -376,9 +389,17 @@ sudo tail -f /var/log/codekvast-warehouse.log
 ==== Logging
 
 The Codekvast Collector uses SLF4J as logging API. This is just a compile-time API, which needs to be connected to a logging backend at runtime.
+
+See also {slf4j-manual}.
+
+The selected backend binding (e.g., slf4j-jdk14.x.x.jar) needs to be available in the system class loader,
+which loads the codekvast-collector javaagent.
+
+In many cases this means it shall be put in a directory pointed to by the JVM system property `jvm.endorsed.dir`.
+In the case of a webapp deployed to Tomcat, this is the directory `$CATALINA_BASE/endorsed`.
+
 Failing to configure a backend will manifest as warnings printed on standard error upon application start.
 
-See alo {slf4j-manual}.
 
 [[codekvast-collector-config-file-location]]
 ==== Configuration File Name and Location

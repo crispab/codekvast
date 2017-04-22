@@ -21,42 +21,41 @@
  */
 package se.crisp.codekvast.agent.collector;
 
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import static org.aspectj.bridge.IMessage.*;
+import static org.aspectj.bridge.IMessage.Kind;
+import static org.aspectj.bridge.IMessage.WEAVEINFO;
 
 /**
  * A bridge from AspectJ's IMessageHandler to SLF4J
  */
-public class AspectjMessageHandlerToSLF4JBridge implements IMessageHandler {
-    public static final String LOGGER_NAME = "se.crisp.codekvast.aspectjweaver";
-
-    private Logger logger = LoggerFactory.getLogger(LOGGER_NAME);
+@Slf4j(topic = "se.crisp.codekvast.aspectjweaver")
+public class AspectjMessageHandler implements IMessageHandler {
+    public static final String LOGGER_NAME = "";
 
     @Override
     public boolean handleMessage(IMessage message) throws AbortException {
         if (message.isDebug()) {
-            logger.debug("{}", message.getMessage());
+            log.debug("{}", message.getMessage());
             return true;
         }
         if (message.isInfo()) {
-            logger.info("{}", message.getMessage());
+            log.info("{}", message.getMessage());
             return true;
         }
         if (message.isWarning()) {
-            logger.warn("{}", message.getMessage());
+            log.warn("{}", message.getMessage());
             return true;
         }
         if (message.isError()) {
-            logger.error("{}", message.getMessage());
+            log.error("{}", message.getMessage());
             return true;
         }
         if (message.getKind() == WEAVEINFO) {
-            logger.debug("{}", message.getMessage());
+            log.debug("{}", message.getMessage());
             return true;
         }
         return false;

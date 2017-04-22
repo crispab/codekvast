@@ -21,12 +21,6 @@ include ':sample:webstart-swing-app'
 
 buildCache {
     local(DirectoryBuildCache) {
-        def jenkinsHome = System.getenv('JENKINS_HOME')
-        if (jenkinsHome) {
-            logger.lifecycle("Running in Jenkins")
-            directory = new File(jenkinsHome, '.gradle/caches/build-cache-1')
-        } else {
-            directory = new File(rootDir, '.build-cache')
-        }
+        directory = new File(rootDir, '.build-cache')
     }
 }

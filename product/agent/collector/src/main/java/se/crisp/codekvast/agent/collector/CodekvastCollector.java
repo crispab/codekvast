@@ -87,7 +87,6 @@ public class CodekvastCollector {
      *             configuration file.
      * @param inst The standard instrumentation hook.
      */
-    @SuppressWarnings("UseOfSystemOutOrSystemErr")
     public static void premain(String args, Instrumentation inst) {
         CollectorConfig config = CollectorConfigFactory.parseCollectorConfig(CollectorConfigLocator.locateConfig(), args, true);
 
@@ -181,7 +180,7 @@ public class CodekvastCollector {
      */
     private static String createAopXml(CollectorConfig config) {
         String messageHandlerClass = config.isBridgeAspectjMessagesToSLF4J()
-            ? String.format("-XmessageHandlerClass:%s ", AspectjMessageHandlerToSLF4JBridge.class.getName())
+            ? String.format("-XmessageHandlerClass:%s ", AspectjMessageHandler.class.getName())
             : "";
 
         String xml = String.format(
