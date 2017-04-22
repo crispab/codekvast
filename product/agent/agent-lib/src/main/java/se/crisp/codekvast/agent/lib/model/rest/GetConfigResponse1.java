@@ -36,18 +36,19 @@ import se.crisp.codekvast.agent.lib.io.CodeBasePublisher;
 public class GetConfigResponse1 {
 
     /**
-     * Either the nick-name or the fully qualified class name of the implementation of {@link CodeBasePublisher} to use.
-     * Each implementation defines it's own nick name.
+     * The name of the code base publisher to use.
+     *
+     * Each implementation defines it's own name.
      */
     @NonNull
-    private final String codeBasePublisherClass;
+    private final String codeBasePublisherName;
 
     /**
      * The configuration of the {@link CodeBasePublisher} to use, coded as
      * semicolon-separated list of key=value pairs.
      * Neither keys nor values may contains semicolons, space or tab characters.
      *
-     * It is up to the specified codeBasePublisherClass to parse the config.
+     * It is up to the specified codeBasePublisherName to parse the config.
      */
     @NonNull
     private final String codeBasePublisherConfig;
@@ -56,20 +57,26 @@ public class GetConfigResponse1 {
      * How often shall the codebase be re-scanned for changes?
      * Defaults to 600 seconds.
      */
-    @Builder.Default
-    private final int codeBasePublisherCheckIntervalSeconds = 600;
+    private final int codeBasePublisherCheckIntervalSeconds;
 
     /**
      * How often shall a failed codebase publishing be retried?
      * Defaults to 600 seconds.
      */
-    @Builder.Default
-    private final int codeBasePublisherRetryIntervalSeconds = 600;
+    private final int codeBasePublisherRetryIntervalSeconds;
+
+    /**
+     * Is an initial code base publishing needed?
+     */
+    private final boolean codeBasePublishingNeeded;
 
     public static GetConfigResponse1 sample() {
         return builder()
             .codeBasePublisherConfig("codeBasePublisherConfig")
-            .codeBasePublisherClass("codeBasePublisherClass")
+            .codeBasePublisherName("codeBasePublisherName")
+            .codeBasePublisherCheckIntervalSeconds(600)
+            .codeBasePublisherRetryIntervalSeconds(600)
+            .codeBasePublishingNeeded(false)
             .build();
     }
 }

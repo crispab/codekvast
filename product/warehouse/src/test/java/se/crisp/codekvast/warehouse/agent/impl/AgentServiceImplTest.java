@@ -10,9 +10,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-/**
- * Created by olle on 2017-04-21.
- */
 public class AgentServiceImplTest {
 
     private final AgentService service = new AgentServiceImpl();
@@ -27,9 +24,10 @@ public class AgentServiceImplTest {
     @Test
     public void should_return_sensible_defaults() throws Exception {
         GetConfigResponse1 response = service.getConfig(request);
-        assertThat(response.getCodeBasePublisherClass(), is("no-op"));
+        assertThat(response.getCodeBasePublisherName(), is("no-op"));
         assertThat(response.getCodeBasePublisherCheckIntervalSeconds(), is(600));
         assertThat(response.getCodeBasePublisherRetryIntervalSeconds(), is(600));
+        assertThat(response.isCodeBasePublishingNeeded(), is(false));
         assertThat(response.getCodeBasePublisherConfig(), notNullValue());
 
     }

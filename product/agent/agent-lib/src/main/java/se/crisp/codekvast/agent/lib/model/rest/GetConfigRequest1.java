@@ -71,11 +71,18 @@ public class GetConfigRequest1 {
     @Size(min = 1, message = "hostName must be at least 1 characters")
     private final String hostName;
 
+    /**
+     * What is my code base fingerprint?
+     */
+    @NonNull
+    @Size(min = 1, message = "codeBaseFingerprint must be at least 1 characters")
+    private final String codeBaseFingerprint;
 
     public static GetConfigRequest1 sample() {
         return GetConfigRequest1.builder()
                                 .appName("appName")
                                 .appVersion("appVersion")
+                                .codeBaseFingerprint("codeBaseFingerprint")
                                 .collectorVersion("collectorVersion")
                                 .hostName("hostName")
                                 .licenseKey("licenseKey")

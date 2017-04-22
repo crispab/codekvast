@@ -33,7 +33,7 @@ import se.crisp.codekvast.agent.lib.codebase.CodeBase;
 public class NoOpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
 
     @Override
-    public String nickName() {
+    public String getName() {
         return "no-op";
     }
 

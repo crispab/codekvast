@@ -58,7 +58,7 @@ public interface CodeBasePublisher {
      *
      * @return
      */
-    String nickName();
+    String getName();
 
     /**
      * Configure this publisher.

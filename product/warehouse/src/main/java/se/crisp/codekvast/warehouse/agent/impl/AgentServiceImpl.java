@@ -27,19 +27,30 @@ import se.crisp.codekvast.agent.lib.model.rest.GetConfigResponse1;
 import se.crisp.codekvast.warehouse.agent.AgentService;
 import se.crisp.codekvast.warehouse.agent.LicenseViolationException;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Handler for agent REST requests.
  *
- * @author Olle Hallin &lt;olle.hallin@crisp.se&gt;
+ * @author olle.hallin@crisp.se
  */
 @Service
 public class AgentServiceImpl implements AgentService {
+
+    private final Set<String> codeBaseFingerprints = new HashSet<>();
+
     @Override
     public GetConfigResponse1 getConfig(GetConfigRequest1 request) throws LicenseViolationException {
         checkLicense(request);
+
+        // TODO: store code base fingerprint in database
+        boolean codeBaseAdded = codeBaseFingerprints.add(request.getCodeBaseFingerprint());
+
         return GetConfigResponse1.builder()
-                                 .codeBasePublisherClass("no-op")
+                                 .codeBasePublisherName("no-op")
                                  .codeBasePublisherConfig("enabled=true")
+                                 .codeBasePublishingNeeded(codeBaseAdded)
                                  .build();
     }
 

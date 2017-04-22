@@ -84,13 +84,13 @@ public class AgentControllerTest {
     @Test
     public void getConfig1_should_accept_valid_request() throws Exception {
         when(agentService.getConfig(any(GetConfigRequest1.class))).thenReturn(
-            GetConfigResponse1.sample().toBuilder().codeBasePublisherClass("foobar").build());
+            GetConfigResponse1.sample().toBuilder().codeBasePublisherName("foobar").build());
 
         mockMvc.perform(post("/agent/v1/getConfig")
                             .content(objectMapper.writeValueAsString(GetConfigRequest1.sample()))
                             .contentType(MediaType.APPLICATION_JSON_UTF8))
                .andExpect(status().isOk())
                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-               .andExpect(jsonPath("$.codeBasePublisherClass").value("foobar"));
+               .andExpect(jsonPath("$.codeBasePublisherName").value("foobar"));
     }
 }
