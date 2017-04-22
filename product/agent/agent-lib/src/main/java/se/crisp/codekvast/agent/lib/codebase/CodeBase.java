@@ -97,7 +97,7 @@ public class CodeBase {
         log.debug("Reading byte code patterns from {}", resourceName);
         try {
             LineNumberReader reader = new LineNumberReader(
-                    new InputStreamReader(getClass().getResource(resourceName).openStream(), Charset.forName("UTF-8")));
+                new BufferedReader(new InputStreamReader(getClass().getResource(resourceName).openStream(), Charset.forName("UTF-8"))));
             String line;
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
@@ -160,7 +160,7 @@ public class CodeBase {
 
     boolean isStrangeSignature(String signature) {
         return signature.contains("..") || signature.contains("$$") || signature.contains("CGLIB")
-                || signature.contains("EnhancerByGuice") || signature.contains("FastClassByGuice");
+            || signature.contains("EnhancerByGuice") || signature.contains("FastClassByGuice");
     }
 
     private void logBadPattern(Pattern pattern) {

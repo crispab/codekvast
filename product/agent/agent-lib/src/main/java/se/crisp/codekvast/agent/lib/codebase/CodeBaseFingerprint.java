@@ -43,7 +43,8 @@ import static javax.xml.bind.DatatypeConverter.printBase64Binary;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public class CodeBaseFingerprint {
-    private String value;
+    private final int numFiles;
+    private String sha256;
 
     static Builder builder() {
         return new Builder();
@@ -56,8 +57,11 @@ public class CodeBaseFingerprint {
         Set<File> files = new TreeSet<File>();
 
         Builder record(File file) {
-            files.add(file);
-            log.trace("Recorded {}", file);
+            if (files.add(file)) {
+                log.trace("Recorded {}", file);
+            } else {
+                log.debug("Ignored duplicate file {}", file);
+            }
             return this;
         }
 
@@ -79,7 +83,7 @@ public class CodeBaseFingerprint {
                 md.update(longToBytes(file.lastModified()));
                 md.update(file.getName().getBytes());
             }
-            return new CodeBaseFingerprint(printBase64Binary(md.digest()));
+            return new CodeBaseFingerprint(files.size(), printBase64Binary(md.digest()));
         }
     }
 }

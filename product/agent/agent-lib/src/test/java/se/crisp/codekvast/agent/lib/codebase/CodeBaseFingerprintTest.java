@@ -35,13 +35,16 @@ public class CodeBaseFingerprintTest {
     @Test
     public void should_be_equal_when_empty() throws IOException {
         // given
-        CodeBaseFingerprint b1 = CodeBaseFingerprint.builder().build();
-        CodeBaseFingerprint b2 = CodeBaseFingerprint.builder().build();
+        CodeBaseFingerprint fp1 = CodeBaseFingerprint.builder().build();
+        CodeBaseFingerprint fp2 = CodeBaseFingerprint.builder().build();
 
         // when
 
         // then
-        assertThat(b1, equalTo(b2));
+        assertThat(fp1.getNumFiles(), is(0));
+        assertThat(fp2.getNumFiles(), is(0));
+
+        assertThat(fp1, equalTo(fp2));
     }
 
     @Test
@@ -52,10 +55,17 @@ public class CodeBaseFingerprintTest {
 
         // when
         b1.record(files[1]);
+        CodeBaseFingerprint fp1 = b1.build();
+
+        b2.record(files[1]);
         b2.record(files[2]);
+        CodeBaseFingerprint fp2 = b2.build();
 
         // then
-        assertThat(b1.build(), not(equalTo(b2.build())));
+        assertThat(fp1.getNumFiles(), is(1));
+        assertThat(fp2.getNumFiles(), is(2));
+
+        assertThat(fp1, not(equalTo(fp2)));
     }
 
     @Test
@@ -66,7 +76,8 @@ public class CodeBaseFingerprintTest {
         // when
 
         // then
-        assertThat(fp1.getValue(), is("r1Vw9aGBC3r3jK9LxwpmDw31HkK6+R1N5bIyjeDoPfw="));
+        assertThat(fp1.getNumFiles(), is(0));
+        assertThat(fp1.getSha256(), is("r1Vw9aGBC3r3jK9LxwpmDw31HkK6+R1N5bIyjeDoPfw="));
     }
 
     @Test
@@ -78,6 +89,21 @@ public class CodeBaseFingerprintTest {
         // when
 
         // then
+        assertThat(fp1, equalTo(fp2));
+        assertThat(fp2, equalTo(fp1));
+    }
+
+    @Test
+    public void should_ignore_duplicate_files() throws IOException {
+        // given
+        CodeBaseFingerprint fp1 = CodeBaseFingerprint.builder().record(files[1]).build();
+        CodeBaseFingerprint fp2 = CodeBaseFingerprint.builder().record(files[1]).record(files[1]).build();
+
+        // when
+
+        // then
+        assertThat(fp1.getNumFiles(), is(1));
+        assertThat(fp2.getNumFiles(), is(1));
         assertThat(fp1, equalTo(fp2));
         assertThat(fp2, equalTo(fp1));
     }
