@@ -3,10 +3,10 @@ package integrationTest.daemon;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import se.crisp.codekvast.agent.daemon.beans.DaemonConfig;
-import se.crisp.codekvast.agent.daemon.worker.FileUploadException;
-import se.crisp.codekvast.agent.daemon.worker.impl.ScpFileUploaderImpl;
-import se.crisp.codekvast.testsupport.docker.DockerContainer;
+import io.codekvast.agent.daemon.beans.DaemonConfig;
+import io.codekvast.agent.daemon.worker.FileUploadException;
+import io.codekvast.agent.daemon.worker.impl.ScpFileUploaderImpl;
+import io.codekvast.testsupport.docker.DockerContainer;
 
 import java.io.File;
 import java.net.URISyntaxException;

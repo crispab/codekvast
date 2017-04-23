@@ -52,7 +52,7 @@ shadowJar {
 
     manifest {
         attributes(
-            "Premain-Class": "se.crisp.codekvast.agent.collector.CodekvastCollector",
+            "Premain-Class": "io.codekvast.agent.collector.CodekvastCollector",
             "Implementation-Title": archivesBaseName,
             "Implementation-Version": codekvastDisplayVersion
         )
@@ -81,7 +81,7 @@ task verifyShadowJar {
         while ((zipEntry = zipInputStream.getNextEntry()) != null) {
             def name = zipEntry.getName()
             if (name.endsWith(".class")
-                && !name.startsWith("se/crisp/codekvast/")
+                && !name.startsWith("io/codekvast/")
                 && !name.startsWith("codekvast/")
                 && !name.startsWith("org/aspectj/")
                 && !name.startsWith("org/slf4j/")) {
@@ -128,7 +128,7 @@ apply plugin: 'maven-publish'
 publishing {
     publications {
         shadowJar(MavenPublication) {
-            groupId 'se.crisp.codekvast'
+            groupId 'io.codekvast'
             artifactId 'codekvast-collector'
             version codekvastVersion
             from components.shadow

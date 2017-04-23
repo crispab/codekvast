@@ -6,11 +6,11 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-import se.crisp.codekvast.agent.collector.AspectjMessageHandler;
-import se.crisp.codekvast.agent.lib.config.CollectorConfig;
-import se.crisp.codekvast.agent.lib.config.CollectorConfigFactory;
-import se.crisp.codekvast.agent.lib.util.FileUtils;
-import se.crisp.codekvast.testsupport.ProcessUtils;
+import io.codekvast.agent.collector.AspectjMessageHandler;
+import io.codekvast.agent.lib.config.CollectorConfig;
+import io.codekvast.agent.lib.config.CollectorConfigFactory;
+import io.codekvast.agent.lib.util.FileUtils;
+import io.codekvast.testsupport.ProcessUtils;
 
 import java.io.BufferedReader;
 import java.io.File;

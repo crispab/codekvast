@@ -28,4 +28,4 @@ CHANGE COLUMN confidence status ENUM ('NOT_INVOKED',
                                       'EXCLUDED_BY_PACKAGE_NAME',
                                       'EXCLUDED_BY_VISIBILITY',
                                       'EXCLUDED_SINCE_TRIVIAL') NOT NULL
-COMMENT 'Same values as se.crisp.codekvast.agent.lib.model.v1.SignatureStatus';
+COMMENT 'Same values as SignatureStatus';

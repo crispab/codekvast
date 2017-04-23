@@ -4,9 +4,9 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Singular;
 import lombok.Value;
-import se.crisp.codekvast.agent.lib.model.v1.JvmData;
-import se.crisp.codekvast.warehouse.file_import.ImportDAO;
-import se.crisp.codekvast.warehouse.file_import.ImportDAO.Invocation;
+import io.codekvast.agent.lib.model.v1.JvmData;
+import io.codekvast.warehouse.file_import.ImportDAO;
+import io.codekvast.warehouse.file_import.ImportDAO.Invocation;
 
 import java.lang.reflect.Method;
 import java.util.List;

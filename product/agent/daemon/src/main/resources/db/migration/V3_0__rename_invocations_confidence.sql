@@ -22,4 +22,4 @@
 
 ALTER TABLE invocations
 CHANGE COLUMN confidence status TINYINT NOT NULL
-COMMENT 'Same values as se.crisp.codekvast.agent.lib.model.v1.SignatureStatus.dbNumber()';
+COMMENT 'Same values as SignatureStatus.dbNumber()';

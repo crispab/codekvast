@@ -1,10 +1,10 @@
 package integrationTest.warehouse.testdata;
 
 import org.springframework.transaction.annotation.Transactional;
-import se.crisp.codekvast.warehouse.file_import.ImportDAO;
-import se.crisp.codekvast.warehouse.file_import.ImportDAO.Application;
-import se.crisp.codekvast.warehouse.file_import.ImportDAO.ImportContext;
-import se.crisp.codekvast.warehouse.file_import.ImportDAO.Invocation;
+import io.codekvast.warehouse.file_import.ImportDAO;
+import io.codekvast.warehouse.file_import.ImportDAO.Application;
+import io.codekvast.warehouse.file_import.ImportDAO.ImportContext;
+import io.codekvast.warehouse.file_import.ImportDAO.Invocation;
 
 import javax.inject.Inject;
 import java.lang.reflect.Method;

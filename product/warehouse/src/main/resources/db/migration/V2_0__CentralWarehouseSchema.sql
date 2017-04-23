@@ -95,7 +95,7 @@ CREATE TABLE invocations (
                        'EXACT_MATCH',
                        'FOUND_IN_PARENT_CLASS',
                        'NOT_FOUND_IN_CODE_BASE') NOT NULL
-  COMMENT 'Same values as se.crisp.codekvast.agent.lib.model.v1.SignatureStatus',
+  COMMENT 'Same values as SignatureStatus',
 
   CONSTRAINT ix_invocation_applicationId FOREIGN KEY (applicationId) REFERENCES applications (id),
   CONSTRAINT ix_invocation_methodId FOREIGN KEY (methodId) REFERENCES methods (id),

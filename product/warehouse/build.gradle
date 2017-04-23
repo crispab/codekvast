@@ -11,7 +11,7 @@ applicationName = 'codekvast-warehouse'
 archivesBaseName = 'codekvast-warehouse'
 version = codekvastVersion
 group = 'crisp'
-mainClassName = 'se.crisp.codekvast.warehouse.CodekvastWarehouse'
+mainClassName = 'io.codekvast.warehouse.CodekvastWarehouse'
 
 apply from: "$projectDir/src/main/build.gradle"
 apply from: "$projectDir/src/webapp/build.gradle"

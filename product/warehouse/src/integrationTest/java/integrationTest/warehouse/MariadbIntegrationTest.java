@@ -11,21 +11,21 @@ import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
-import se.crisp.codekvast.agent.lib.model.ExportFileMetaInfo;
-import se.crisp.codekvast.agent.lib.model.v1.JvmData;
-import se.crisp.codekvast.agent.lib.model.v1.SignatureStatus;
-import se.crisp.codekvast.testsupport.docker.DockerContainer;
-import se.crisp.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
-import se.crisp.codekvast.warehouse.CodekvastWarehouse;
-import se.crisp.codekvast.warehouse.file_import.ImportDAO;
-import se.crisp.codekvast.warehouse.file_import.ImportDAO.Application;
-import se.crisp.codekvast.warehouse.file_import.ImportDAO.ImportContext;
-import se.crisp.codekvast.warehouse.file_import.ImportDAO.ImportStatistics;
-import se.crisp.codekvast.warehouse.file_import.ImportDAO.Invocation;
-import se.crisp.codekvast.warehouse.file_import.ZipFileImporter;
-import se.crisp.codekvast.warehouse.webapp.WebappService;
-import se.crisp.codekvast.warehouse.webapp.model.GetMethodsRequest1;
-import se.crisp.codekvast.warehouse.webapp.model.MethodDescriptor1;
+import io.codekvast.agent.lib.model.ExportFileMetaInfo;
+import io.codekvast.agent.lib.model.v1.JvmData;
+import io.codekvast.agent.lib.model.v1.SignatureStatus;
+import io.codekvast.testsupport.docker.DockerContainer;
+import io.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
+import io.codekvast.warehouse.CodekvastWarehouse;
+import io.codekvast.warehouse.file_import.ImportDAO;
+import io.codekvast.warehouse.file_import.ImportDAO.Application;
+import io.codekvast.warehouse.file_import.ImportDAO.ImportContext;
+import io.codekvast.warehouse.file_import.ImportDAO.ImportStatistics;
+import io.codekvast.warehouse.file_import.ImportDAO.Invocation;
+import io.codekvast.warehouse.file_import.ZipFileImporter;
+import io.codekvast.warehouse.webapp.WebappService;
+import io.codekvast.warehouse.webapp.model.GetMethodsRequest1;
+import io.codekvast.warehouse.webapp.model.MethodDescriptor1;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolationException;
@@ -44,8 +44,8 @@ import static java.time.temporal.ChronoUnit.DAYS;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeTrue;
-import static se.crisp.codekvast.warehouse.file_import.ImportDAO.Jvm;
-import static se.crisp.codekvast.warehouse.file_import.ImportDAO.Method;
+import static io.codekvast.warehouse.file_import.ImportDAO.Jvm;
+import static io.codekvast.warehouse.file_import.ImportDAO.Method;
 
 /**
  * @author olle.hallin@crisp.se

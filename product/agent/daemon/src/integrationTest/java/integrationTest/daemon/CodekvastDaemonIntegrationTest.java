@@ -1,5 +1,6 @@
 package integrationTest.daemon;
 
+import io.codekvast.agent.daemon.worker.*;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -9,16 +10,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
-import se.crisp.codekvast.agent.daemon.CodekvastDaemon;
-import se.crisp.codekvast.agent.daemon.beans.DaemonConfig;
-import se.crisp.codekvast.agent.daemon.beans.JvmState;
-import se.crisp.codekvast.agent.daemon.worker.*;
-import se.crisp.codekvast.agent.lib.codebase.CodeBase;
-import se.crisp.codekvast.agent.lib.config.CollectorConfig;
-import se.crisp.codekvast.agent.lib.config.CollectorConfigFactory;
-import se.crisp.codekvast.agent.lib.model.Jvm;
-import se.crisp.codekvast.agent.lib.model.MethodSignature;
-import se.crisp.codekvast.agent.lib.util.FileUtils;
+import io.codekvast.agent.daemon.CodekvastDaemon;
+import io.codekvast.agent.daemon.beans.DaemonConfig;
+import io.codekvast.agent.daemon.beans.JvmState;
+import io.codekvast.agent.lib.codebase.CodeBase;
+import io.codekvast.agent.lib.config.CollectorConfig;
+import io.codekvast.agent.lib.config.CollectorConfigFactory;
+import io.codekvast.agent.lib.model.Jvm;
+import io.codekvast.agent.lib.model.MethodSignature;
+import io.codekvast.agent.lib.util.FileUtils;
 
 import javax.inject.Inject;
 import java.io.File;
