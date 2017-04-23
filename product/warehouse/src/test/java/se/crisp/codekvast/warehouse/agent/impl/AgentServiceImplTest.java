@@ -27,8 +27,7 @@ public class AgentServiceImplTest {
         assertThat(response.getCodeBasePublisherName(), is("no-op"));
         assertThat(response.getCodeBasePublisherCheckIntervalSeconds(), is(600));
         assertThat(response.getCodeBasePublisherRetryIntervalSeconds(), is(600));
-        assertThat(response.isCodeBasePublishingNeeded(), is(false));
+        assertThat(response.isCodeBasePublishingNeeded(), is(true));
         assertThat(response.getCodeBasePublisherConfig(), notNullValue());
-
     }
 }

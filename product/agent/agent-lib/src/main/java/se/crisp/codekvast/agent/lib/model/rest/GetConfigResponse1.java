@@ -30,7 +30,7 @@ import se.crisp.codekvast.agent.lib.io.CodeBasePublisher;
  * @author olle.hallin@crisp.se
  */
 @Builder(toBuilder = true)
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @ToString
 public class GetConfigResponse1 {
@@ -57,26 +57,26 @@ public class GetConfigResponse1 {
      * How often shall the codebase be re-scanned for changes?
      * Defaults to 600 seconds.
      */
-    private final int codeBasePublisherCheckIntervalSeconds;
+    @Builder.Default
+    private int codeBasePublisherCheckIntervalSeconds = 600;
 
     /**
      * How often shall a failed codebase publishing be retried?
      * Defaults to 600 seconds.
      */
-    private final int codeBasePublisherRetryIntervalSeconds;
+    @Builder.Default
+    private int codeBasePublisherRetryIntervalSeconds = 600;
 
     /**
      * Is an initial code base publishing needed?
      */
-    private final boolean codeBasePublishingNeeded;
+    @Builder.Default
+    private boolean codeBasePublishingNeeded = false;
 
     public static GetConfigResponse1 sample() {
         return builder()
             .codeBasePublisherConfig("codeBasePublisherConfig")
             .codeBasePublisherName("codeBasePublisherName")
-            .codeBasePublisherCheckIntervalSeconds(600)
-            .codeBasePublisherRetryIntervalSeconds(600)
-            .codeBasePublishingNeeded(false)
             .build();
     }
 }
