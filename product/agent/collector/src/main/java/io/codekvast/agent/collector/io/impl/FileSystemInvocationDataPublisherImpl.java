@@ -56,6 +56,8 @@ public class FileSystemInvocationDataPublisherImpl implements InvocationDataPubl
 
     @Override
     public void publishData(Jvm jvm, int publishCount, long recordingIntervalStartedAtMillis, Set<String> invocations) {
+        log.debug("Publishing invocation data #{}", publishCount);
+
         publishJvmData(jvm);
         publishInvocationData(publishCount, recordingIntervalStartedAtMillis, invocations);
     }

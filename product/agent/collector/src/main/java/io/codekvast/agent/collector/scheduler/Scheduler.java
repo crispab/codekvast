@@ -128,10 +128,6 @@ public class Scheduler implements Runnable {
         }
     }
 
-    private void scheduleNextPollAt(int delaySeconds) {
-        nextConfigPollAtMillis = scheduleDelay(delaySeconds);
-    }
-
     private void configureCodeBasePublisher(CodeBaseFingerprint codeBaseFingerprint) {
         String newName = dynamicConfig.getCodeBasePublisherName();
         if (codeBasePublisher == null || !codeBasePublisher.getName().equals(newName)) {
@@ -159,12 +155,19 @@ public class Scheduler implements Runnable {
         nextCodeBaseCheckAtMillis = scheduleDelay(delaySeconds);
     }
 
+    private void scheduleNextPollAt(int delaySeconds) {
+        nextConfigPollAtMillis = scheduleDelay(delaySeconds);
+    }
+
     private void doInvocationDataPublishing() {
         if (System.currentTimeMillis() > nextInvocationDataPublishingAtMillis) {
+            invocationDataPublishCount += 1;
 
             // TODO: refactor
-            invocationDataPublishCount += 1;
+            log.debug("Publishing invocation data #{}", invocationDataPublishCount);
             InvocationRegistry.instance.publishData(invocationDataPublishCount);
+
+            nextInvocationDataPublishingAtMillis = scheduleDelay(config.getCollectorResolutionSeconds());
         }
 
     }
@@ -173,47 +176,4 @@ public class Scheduler implements Runnable {
         return System.currentTimeMillis() + TimeUnit.MILLISECONDS.convert(delaySeconds, TimeUnit.SECONDS);
     }
 
-    /*
-    @RequiredArgsConstructor
-    private static class CodebasePublishingTask implements Runnable {
-        private final CollectorConfig config;
-        private final CodeBasePublisher codeBasePublisher;
-
-        private CodeBase codeBase;
-
-        @Override
-        public void run() {
-            if (codeBasePublisher.isEnabled()) {
-                if (codeBase == null) {
-                    log.info("Building codebase");
-                    codeBase = new CodeBase(config);
-                }
-                try {
-                    if (codeBasePublisher.needsToBePublished(codeBase.getFingerprint())) {
-                        CodeBaseScanner scanner = new CodeBaseScanner();
-                        scanner.scanSignatures(codeBase);
-                        codeBasePublisher.publishCodebase(codeBase);
-                        log.info("Published codebase {}", codeBase.getFingerprint());
-                    } else {
-                        log.info("Codebase {} already published", codeBase.getFingerprint());
-                    }
-                } catch (CodekvastPublishingException e) {
-                    LogUtil.logException(log, "Cannot publish codebase", e);
-                }
-            }
-        }
-    }
-
-    @RequiredArgsConstructor
-    private static class InvocationPublisherTimerTask extends TimerTask {
-
-        private int publishCount;
-
-        @Override
-        public void run() {
-            publishCount += 1;
-            InvocationRegistry.instance.publishData(publishCount);
-        }
-    }
-*/
 }

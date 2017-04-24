@@ -28,22 +28,23 @@ import io.codekvast.agent.lib.codebase.CodeBaseScanner;
 import io.codekvast.agent.lib.config.CollectorConfig;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 
 /**
  * Abstract base class for code base publishers.
  */
-@Slf4j
 @Getter
 abstract class AbstractCodeBasePublisher implements CodeBasePublisher {
 
+    private final Logger log;
     private final CollectorConfig config;
     private boolean enabled;
 
     @Setter
     private CodeBaseFingerprint codeBaseFingerprint;
 
-    AbstractCodeBasePublisher(CollectorConfig config) {
+    AbstractCodeBasePublisher(Logger log, CollectorConfig config) {
+        this.log = log;
         this.config = config;
     }
 

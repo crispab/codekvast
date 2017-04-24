@@ -118,15 +118,20 @@ public class CodekvastCollector {
 
         scheduler = new Scheduler(config, new ConfigPollerImpl(config)).start();
 
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+        Runtime.getRuntime().addShutdownHook(createShutdownHook());
+
+        log.info("{} is ready to detect used code within({}..*).", NAME, getNormalizedPackages(config));
+    }
+
+    private static Thread createShutdownHook() {
+        Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 scheduler.shutdown();
-                InvocationRegistry.instance.publishData(0);
             }
-        }));
-
-        log.info("{} is ready to detect used code within({}..*).", NAME, getNormalizedPackages(config));
+        });
+        thread.setName(NAME + " Shutdown Hook");
+        return thread;
     }
 
     private static String getNormalizedPackages(CollectorConfig config) {
