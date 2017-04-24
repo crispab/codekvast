@@ -21,6 +21,7 @@
  */
 package io.codekvast.warehouse.agent.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import io.codekvast.agent.lib.model.rest.GetConfigRequest1;
 import io.codekvast.agent.lib.model.rest.GetConfigResponse1;
@@ -36,6 +37,7 @@ import java.util.Set;
  * @author olle.hallin@crisp.se
  */
 @Service
+@Slf4j
 public class AgentServiceImpl implements AgentService {
 
     private final Set<String> codeBaseFingerprints = new HashSet<>();
@@ -60,6 +62,10 @@ public class AgentServiceImpl implements AgentService {
         // TODO: implement proper license control
         if (request.getLicenseKey().equals("-----")) {
             throw new LicenseViolationException("Invalid license key: " + request.getLicenseKey());
+        }
+
+        if (request.getLicenseKey().equals("")) {
+            log.debug("Running without license.");
         }
     }
 }
