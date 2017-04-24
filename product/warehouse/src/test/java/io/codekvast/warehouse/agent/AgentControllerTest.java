@@ -1,6 +1,8 @@
 package io.codekvast.warehouse.agent;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.codekvast.agent.lib.model.rest.GetConfigRequest1;
+import io.codekvast.agent.lib.model.rest.GetConfigResponse1;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -9,8 +11,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import io.codekvast.agent.lib.model.rest.GetConfigRequest1;
-import io.codekvast.agent.lib.model.rest.GetConfigResponse1;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
@@ -43,21 +43,21 @@ public class AgentControllerTest {
 
     @Test
     public void getConfig1_should_reject_invalid_method() throws Exception {
-        mockMvc.perform(get("/agent/v1/getConfig")
+        mockMvc.perform(get(GetConfigRequest1.ENDPOINT)
                             .contentType(MediaType.APPLICATION_JSON_UTF8))
                .andExpect(status().isMethodNotAllowed());
     }
 
     @Test
     public void getConfig1_should_reject_invalid_media_type() throws Exception {
-        mockMvc.perform(post("/agent/v1/getConfig")
+        mockMvc.perform(post(GetConfigRequest1.ENDPOINT)
                             .contentType(MediaType.TEXT_PLAIN))
                .andExpect(status().isUnsupportedMediaType());
     }
 
     @Test
     public void getConfig1_should_reject_invalid_json() throws Exception {
-        mockMvc.perform(post("/agent/v1/getConfig")
+        mockMvc.perform(post(GetConfigRequest1.ENDPOINT)
                             .content("invalid json")
                             .contentType(MediaType.APPLICATION_JSON_UTF8))
                .andExpect(status().isBadRequest());
@@ -65,7 +65,7 @@ public class AgentControllerTest {
 
     @Test
     public void getConfig1_should_reject_invalid_request() throws Exception {
-        mockMvc.perform(post("/agent/v1/getConfig")
+        mockMvc.perform(post(GetConfigRequest1.ENDPOINT)
                             .content(objectMapper.writeValueAsString(GetConfigRequest1.sample().toBuilder().licenseKey("").build()))
                             .contentType(MediaType.APPLICATION_JSON_UTF8))
                .andExpect(status().isBadRequest());
@@ -75,7 +75,7 @@ public class AgentControllerTest {
     public void getConfig1_should_reject_invalid_licenseKey() throws Exception {
         when(agentService.getConfig(any(GetConfigRequest1.class))).thenThrow(new LicenseViolationException("foobar"));
 
-        mockMvc.perform(post("/agent/v1/getConfig")
+        mockMvc.perform(post(GetConfigRequest1.ENDPOINT)
                             .content(objectMapper.writeValueAsString(GetConfigRequest1.sample()))
                             .contentType(MediaType.APPLICATION_JSON_UTF8))
                .andExpect(status().isForbidden());
@@ -86,7 +86,7 @@ public class AgentControllerTest {
         when(agentService.getConfig(any(GetConfigRequest1.class))).thenReturn(
             GetConfigResponse1.sample().toBuilder().codeBasePublisherName("foobar").build());
 
-        mockMvc.perform(post("/agent/v1/getConfig")
+        mockMvc.perform(post(GetConfigRequest1.ENDPOINT)
                             .content(objectMapper.writeValueAsString(GetConfigRequest1.sample()))
                             .contentType(MediaType.APPLICATION_JSON_UTF8))
                .andExpect(status().isOk())

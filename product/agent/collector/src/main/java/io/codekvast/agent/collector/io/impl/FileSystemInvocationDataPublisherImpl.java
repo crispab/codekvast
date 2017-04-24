@@ -19,12 +19,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.agent.lib.io.impl;
+package io.codekvast.agent.collector.io.impl;
 
+import io.codekvast.agent.collector.io.InvocationDataPublisher;
 import io.codekvast.agent.lib.config.CollectorConfig;
 import io.codekvast.agent.lib.util.FileUtils;
 import lombok.extern.slf4j.Slf4j;
-import io.codekvast.agent.lib.io.InvocationDataPublisher;
 import io.codekvast.agent.lib.model.Jvm;
 
 import java.io.File;

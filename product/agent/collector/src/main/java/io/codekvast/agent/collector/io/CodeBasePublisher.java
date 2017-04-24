@@ -19,33 +19,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.agent.lib.io;
+package io.codekvast.agent.collector.io;
 
-import io.codekvast.agent.lib.model.Jvm;
-
-import java.util.Set;
+import io.codekvast.agent.lib.codebase.CodeBase;
+import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
 
 /**
- * Strategy for publishing collected invocation data.
- *
- * @author olle.hallin@crisp.se
+ * Strategy for publishing a {@link CodeBase}
  */
-public interface InvocationDataPublisher {
+public interface CodeBasePublisher {
 
     /**
-     * Make preparations for publishing data..
+     * What is the nick-name of this publisher implementation.
      *
-     * @return true iff the preparation was successful.
+     * @return
      */
-    boolean prepareForPublish();
+    String getName();
 
     /**
-     * Publish the data.
+     * Sets an initial fingerprint
      *
-     * @param jvm                              The JVM data.
-     * @param publishCount                     The publishing counter.
-     * @param recordingIntervalStartedAtMillis When the recording of these invocations were started.
-     * @param invocations                      The set of invocations to publish.
+     * @param fingerprint
      */
-    void publishData(Jvm jvm, int publishCount, long recordingIntervalStartedAtMillis, Set<String> invocations);
+    void setCodeBaseFingerprint(CodeBaseFingerprint fingerprint);
+
+    /**
+     * Publishes a codebase.
+     *
+     * @throws CodekvastPublishingException when no contact with the consumer. Try again.
+     */
+    void publishCodebase() throws CodekvastPublishingException;
+
+    /**
+     * Configure this publisher.
+     *
+     * @param keyValuePairs The specialized config received from the server, a semi-colon separated list of key=value pairs.
+     */
+    void configure(String keyValuePairs);
+
 }

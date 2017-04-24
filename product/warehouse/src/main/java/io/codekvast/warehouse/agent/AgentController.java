@@ -75,7 +75,7 @@ public class AgentController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
 
-    @RequestMapping(value = "/agent/v1/getConfig")
+    @RequestMapping(value = GetConfigRequest1.ENDPOINT)
     public GetConfigResponse1 getConfig1(@Valid @RequestBody GetConfigRequest1 request) {
         log.debug("Received {}", request);
         return agentService.getConfig(request);

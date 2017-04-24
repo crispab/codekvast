@@ -19,14 +19,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.agent.lib.io;
+package io.codekvast.agent.collector;
+
+import java.util.concurrent.ThreadFactory;
 
 /**
- * An exception to signal publishing problems.
+ * Factory for threads with a certain name and priority.
+ * 
+ * @author olle.hallin@crisp.se
  */
-public class CodekvastPublishingException extends Exception {
-
-    public CodekvastPublishingException(String message) {
-        super(message);
+public class CodekvastThreadFactory implements ThreadFactory {
+    @Override
+    public Thread newThread(Runnable r) {
+        Thread thread = new Thread(r);
+        thread.setName("Codekvast");
+        thread.setDaemon(true);
+        thread.setPriority(thread.getPriority() - 1);
+        return thread;
     }
 }

@@ -19,13 +19,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.agent.lib.io.impl;
+package io.codekvast.agent.collector.io.impl;
 
+import io.codekvast.agent.collector.io.CodeBasePublisher;
 import io.codekvast.agent.lib.codebase.CodeBase;
 import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
+import io.codekvast.agent.lib.codebase.CodeBaseScanner;
+import io.codekvast.agent.lib.config.CollectorConfig;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import io.codekvast.agent.lib.io.CodeBasePublisher;
 
 /**
  * Abstract base class for code base publishers.
@@ -34,15 +37,21 @@ import io.codekvast.agent.lib.io.CodeBasePublisher;
 @Getter
 abstract class AbstractCodeBasePublisher implements CodeBasePublisher {
 
+    private final CollectorConfig config;
     private boolean enabled;
-    private CodeBaseFingerprint fingerprint;
+
+    @Setter
+    private CodeBaseFingerprint codeBaseFingerprint;
+
+    AbstractCodeBasePublisher(CollectorConfig config) {
+        this.config = config;
+    }
 
     @Override
-    public void configure(String configuration) {
-        log.debug("Received configuration: {}", configuration);
-        String[] keyValuePairs = configuration.split(";");
+    public void configure(String keyValuePairs) {
+        String[] pairs = keyValuePairs.split(";");
 
-        for (String pair : keyValuePairs) {
+        for (String pair : pairs) {
             log.debug("Analyzing {}", pair);
             String[] parts = pair.trim().split("=");
             if (parts.length == 2) {
@@ -64,18 +73,16 @@ abstract class AbstractCodeBasePublisher implements CodeBasePublisher {
     }
 
     @Override
-    public boolean needsToBePublished(CodeBaseFingerprint fingerprint) {
-        return enabled && !fingerprint.equals(this.fingerprint);
-    }
+    public void publishCodebase() {
+        if (enabled) {
+            CodeBase newCodeBase = new CodeBase(config);
+            if (!newCodeBase.getFingerprint().equals(codeBaseFingerprint)) {
+                new CodeBaseScanner().scanSignatures(newCodeBase);
 
-    @Override
-    public void publishCodebase(CodeBase codeBase) {
-        if (needsToBePublished(codeBase.getFingerprint())) {
-            log.debug("Publishing codebase {}", codeBase.getFingerprint());
+                doPublishCodeBase(newCodeBase);
 
-            doPublishCodeBase(codeBase);
-
-            this.fingerprint = codeBase.getFingerprint();
+                codeBaseFingerprint = newCodeBase.getFingerprint();
+            }
         }
     }
 

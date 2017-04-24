@@ -22,7 +22,6 @@
 package io.codekvast.agent.lib.model.rest;
 
 import lombok.*;
-import io.codekvast.agent.lib.io.CodeBasePublisher;
 
 /**
  * A response object for {@link GetConfigRequest1}
@@ -36,6 +35,18 @@ import io.codekvast.agent.lib.io.CodeBasePublisher;
 public class GetConfigResponse1 {
 
     /**
+     * How often shall the server be polled for dynamic config?
+     */
+    @Builder.Default
+    private int configPollIntervalSeconds = 600;
+
+    /**
+     * How fast shall a failed config poll be retried?
+     */
+    @Builder.Default
+    private int configPollRetryIntervalSeconds = 600;
+
+    /**
      * The name of the code base publisher to use.
      *
      * Each implementation defines it's own name.
@@ -44,11 +55,11 @@ public class GetConfigResponse1 {
     private final String codeBasePublisherName;
 
     /**
-     * The configuration of the {@link CodeBasePublisher} to use, coded as
+     * The configuration of the CodeBasePublisher to use, coded as
      * semicolon-separated list of key=value pairs.
      * Neither keys nor values may contains semicolons, space or tab characters.
      *
-     * It is up to the specified codeBasePublisherName to parse the config.
+     * It is up to the specified CodeBasePublisher to parse the config.
      */
     @NonNull
     private final String codeBasePublisherConfig;

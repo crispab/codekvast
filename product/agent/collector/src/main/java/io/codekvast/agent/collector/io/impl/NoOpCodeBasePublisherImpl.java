@@ -19,9 +19,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package io.codekvast.agent.collector.io.impl;
+
+import io.codekvast.agent.lib.codebase.CodeBase;
+import io.codekvast.agent.lib.config.CollectorConfig;
+import lombok.extern.slf4j.Slf4j;
+
 /**
- * I/O related stuff used by the collector.
- *
- * @author olle.hallin@crisp.se
+ * Dummy (no-op) implementation of CodeBasePublisher.
  */
-package io.codekvast.agent.lib.io;
+@Slf4j
+public class NoOpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
+
+    public static final String NAME = "no-op";
+
+    NoOpCodeBasePublisherImpl(CollectorConfig config) {
+        super(config);
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
+    void doSetValue(String key, String value) {
+        // No private parameters
+    }
+
+    @Override
+    void doPublishCodeBase(CodeBase codeBase) {
+        // Nothing to do here
+    }
+
+}

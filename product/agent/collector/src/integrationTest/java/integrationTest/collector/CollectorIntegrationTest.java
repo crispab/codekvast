@@ -35,7 +35,7 @@ public class CollectorIntegrationTest {
 
     private CollectorConfig collectorConfig;
 
-    private final Map<String, File> collectorOutputFiles = new TreeMap<String, File>();
+    private final Map<String, File> collectorOutputFiles = new TreeMap<>();
 
     @Before
     public void beforeTest() throws Exception {
@@ -44,6 +44,7 @@ public class CollectorIntegrationTest {
                                                 .aspectjOptions("-verbose -showWeaveInfo")
                                                 .packages("sample")
                                                 .dataPath(temporaryFolder.newFolder())
+                                                .licenseKey("licenseKey")
                                                 .build();
     }
 
@@ -101,7 +102,7 @@ public class CollectorIntegrationTest {
 
     private List<String> readLinesFrom(String basename) throws IOException {
         File file = collectorOutputFiles.get(basename);
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         BufferedReader reader = new BufferedReader(new FileReader(file));
         String line;
         while ((line = reader.readLine()) != null) {
@@ -117,11 +118,11 @@ public class CollectorIntegrationTest {
     }
 
     private List<String> buildJavaCommand(String configPath) {
-        List<String> command = new ArrayList<String>(Arrays.asList("java",
-                                                                   "-javaagent:" + jacocoagent,
-                                                                   "-javaagent:" + codekvastCollector,
-                                                                   "-javaagent:" + aspectjweaver,
-                                                                   "-cp", classpath));
+        List<String> command = new ArrayList<>(Arrays.asList("java",
+                                                             "-javaagent:" + jacocoagent,
+                                                             "-javaagent:" + codekvastCollector,
+                                                             "-javaagent:" + aspectjweaver,
+                                                             "-cp", classpath));
         if (configPath != null) {
             command.add("-Dcodekvast.configuration=" + configPath);
         }

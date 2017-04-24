@@ -39,6 +39,7 @@ public class CollectorConfigFactory {
     private static final String DEFAULT_ASPECTJ_OPTIONS = "";
     private static final String DEFAULT_METHOD_VISIBILITY = SignatureUtils.PROTECTED;
     private static final int DEFAULT_COLLECTOR_RESOLUTION_SECONDS = 600;
+    private static final String DEFAULT_SERVER_URL = "http://localhost:8080";
     private static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
     private static final String SAMPLE_CODEBASE_URI1 = "/path/to/codebase1/";
     private static final String SAMPLE_CODEBASE_URI2 = "/path/to/codebase2/";
@@ -47,6 +48,7 @@ public class CollectorConfigFactory {
     private static final String OVERRIDE_SEPARATOR = ";";
     private static final String UNSPECIFIED = "unspecified";
     private static final String TAGS_KEY = "tags";
+    private static final String EMPTY_LICENSE_KEY = "";
 
     private CollectorConfigFactory() {
     }
@@ -112,6 +114,8 @@ public class CollectorConfigFactory {
                                                                                    DEFAULT_METHOD_VISIBILITY))
                               .packages(packages)
                               .excludePackages(excludePackages)
+                              .licenseKey(ConfigUtils.getOptionalStringValue(props, "licenseKey", EMPTY_LICENSE_KEY))
+                              .serverUrl(ConfigUtils.getOptionalStringValue(props, "serverUrl", DEFAULT_SERVER_URL))
                               .tags(ConfigUtils.getOptionalStringValue(props, TAGS_KEY, ""))
                               .build();
     }
@@ -184,6 +188,8 @@ public class CollectorConfigFactory {
                               .methodVisibility(DEFAULT_METHOD_VISIBILITY)
                               .packages(UNSPECIFIED)
                               .excludePackages("")
+                              .licenseKey(EMPTY_LICENSE_KEY)
+                              .serverUrl(DEFAULT_SERVER_URL)
                               .tags(createSystemPropertiesTags() + ", " + SAMPLE_TAGS)
                               .build();
     }

@@ -21,24 +21,22 @@
  */
 package io.codekvast.agent.collector;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.aspectj.bridge.Constants;
-import io.codekvast.agent.lib.codebase.CodeBase;
-import io.codekvast.agent.lib.codebase.CodeBaseScanner;
+import io.codekvast.agent.collector.scheduler.impl.ConfigPollerImpl;
+import io.codekvast.agent.collector.scheduler.Scheduler;
 import io.codekvast.agent.lib.config.CollectorConfig;
 import io.codekvast.agent.lib.config.CollectorConfigFactory;
 import io.codekvast.agent.lib.config.CollectorConfigLocator;
 import io.codekvast.agent.lib.config.MethodAnalyzer;
-import io.codekvast.agent.lib.io.CodeBasePublisher;
-import io.codekvast.agent.lib.io.CodekvastPublishingException;
-import io.codekvast.agent.lib.io.impl.NoOpCodeBasePublisherImpl;
 import io.codekvast.agent.lib.util.FileUtils;
-import io.codekvast.agent.lib.util.LogUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.aspectj.bridge.Constants;
 
 import java.io.File;
 import java.lang.instrument.Instrumentation;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * This is the Java agent that hooks up Codekvast to the app.
@@ -76,6 +74,8 @@ public class CodekvastCollector {
     // AspectJ uses this system property for defining the list of names of load-time weaving config files to locate...
     private static final String ASPECTJ_WEAVER_CONFIGURATION = "org.aspectj.weaver.loadtime.configuration";
 
+    private static Scheduler scheduler;
+
     private CodekvastCollector() {
         // Not possible to instantiate a javaagent
     }
@@ -93,10 +93,6 @@ public class CodekvastCollector {
         initialize(config);
     }
 
-    private static CodeBasePublisher getCodebasePublisher(@SuppressWarnings("unused") CollectorConfig config) {
-        return new NoOpCodeBasePublisherImpl();
-    }
-
     /**
      * Initializes CodekvastCollector. Before this method has been invoked, no method invocations are recorded.
      *
@@ -104,10 +100,14 @@ public class CodekvastCollector {
      */
     public static void initialize(CollectorConfig config) {
         if (config == null) {
+            if (scheduler != null) {
+                scheduler.shutdown();
+                scheduler = null;
+            }
             return;
         }
 
-        if (!InvocationRegistry.instance.isNullRegistry()) {
+        if (scheduler != null) {
             // Already initialized from -javaagent. Let it be.
             return;
         }
@@ -116,44 +116,22 @@ public class CodekvastCollector {
 
         defineAspectjLoadTimeWeaverConfig(config);
 
-        int codebasePublishingRetryIntervalSeconds = createCodebasePublisherTimerTask(config, getCodebasePublisher(config));
-        int firstResultInSeconds = createInvocationPublisherTimerTask(config.getCollectorResolutionSeconds());
+        scheduler = new Scheduler(config, new ConfigPollerImpl(config)).start();
+
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            @Override
+            public void run() {
+                scheduler.shutdown();
+                InvocationRegistry.instance.publishData(0);
+            }
+        }));
 
         log.info("{} is ready to detect used code within({}..*).", NAME, getNormalizedPackages(config));
-        log.info("An attempt to upload the codebase will be done every {} seconds until either rejected or successful.",
-                 codebasePublishingRetryIntervalSeconds);
-        log.info("First result will be uploaded in {} seconds, thereafter every {} seconds.", firstResultInSeconds,
-                 config.getCollectorResolutionSeconds());
     }
 
     private static String getNormalizedPackages(CollectorConfig config) {
         List<String> prefixes = config.getNormalizedPackages();
         return prefixes.size() == 1 ? prefixes.get(0) : prefixes.toString();
-    }
-
-    private static int createCodebasePublisherTimerTask(CollectorConfig config, CodeBasePublisher codeBasePublisher) {
-        Timer timer = new Timer(NAME + " Codebase Publisher", true);
-
-        CodebasePublishingTimerTask timerTask = new CodebasePublishingTimerTask(timer, config, codeBasePublisher);
-
-        int initialDelaySeconds = 10;
-        int periodSeconds = 60;
-        timer.scheduleAtFixedRate(timerTask, initialDelaySeconds * 1000L, periodSeconds * 1000L);
-
-        return periodSeconds;
-    }
-
-    private static int createInvocationPublisherTimerTask(int publishingIntervalSeconds) {
-        Timer timer = new Timer(NAME + " Invocation Publisher", true);
-
-        InvocationPublisherTimerTask timerTask = new InvocationPublisherTimerTask(timer);
-
-        int initialDelaySeconds = 5;
-        timer.scheduleAtFixedRate(timerTask, initialDelaySeconds * 1000L, publishingIntervalSeconds * 1000L);
-
-        Runtime.getRuntime().addShutdownHook(new Thread(timerTask, NAME + " shutdown hook"));
-
-        return initialDelaySeconds;
     }
 
     private static void defineAspectjLoadTimeWeaverConfig(CollectorConfig config) {
@@ -235,56 +213,5 @@ public class CodekvastCollector {
                 "|| execution(public *..new(..)) || execution(protected *..new(..))";
         }
         return "execution(public * *..*(..)) || execution(public *..new(..))";
-    }
-
-    @RequiredArgsConstructor
-    private static class CodebasePublishingTimerTask extends TimerTask {
-        private final Timer timer;
-        private final CollectorConfig config;
-        private final CodeBasePublisher codeBasePublisher;
-
-        private CodeBase codeBase;
-
-        @Override
-        public void run() {
-            if (codeBasePublisher.isEnabled()) {
-                if (codeBase == null) {
-                    log.info("Building codebase");
-                    codeBase = new CodeBase(config);
-                }
-                try {
-                    if (codeBasePublisher.needsToBePublished(codeBase.getFingerprint())) {
-                        CodeBaseScanner scanner = new CodeBaseScanner();
-                        scanner.scanSignatures(codeBase);
-                        codeBasePublisher.publishCodebase(codeBase);
-                        log.info("Published codebase {}", codeBase.getFingerprint());
-                    } else {
-                        log.info("Codebase {} already published", codeBase.getFingerprint());
-                    }
-                    timer.cancel();
-                } catch (CodekvastPublishingException e) {
-                    LogUtil.logException(log, "Cannot publish codebase", e);
-                }
-            }
-        }
-    }
-
-    @RequiredArgsConstructor
-    private static class InvocationPublisherTimerTask extends TimerTask {
-
-        private final Timer timer;
-        private int publishCount;
-
-        @Override
-        public void run() {
-            if (InvocationRegistry.instance.isNullRegistry()) {
-                // Someone has pulled the carpet...
-                log.info("{} has been disabled, stopping timer task", NAME);
-                timer.cancel();
-            } else {
-                publishCount += 1;
-                InvocationRegistry.instance.publishData(publishCount);
-            }
-        }
     }
 }

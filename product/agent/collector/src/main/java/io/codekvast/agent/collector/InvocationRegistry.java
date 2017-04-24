@@ -21,11 +21,11 @@
  */
 package io.codekvast.agent.collector;
 
+import io.codekvast.agent.collector.io.InvocationDataPublisher;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.Signature;
 import io.codekvast.agent.lib.config.CollectorConfig;
-import io.codekvast.agent.lib.io.InvocationDataPublisher;
-import io.codekvast.agent.lib.io.impl.FileSystemInvocationDataPublisherImpl;
+import io.codekvast.agent.collector.io.impl.FileSystemInvocationDataPublisherImpl;
 import io.codekvast.agent.lib.model.Jvm;
 import io.codekvast.agent.lib.util.ComputerID;
 import io.codekvast.agent.lib.util.SignatureUtils;
@@ -51,7 +51,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class InvocationRegistry {
 
     @SuppressWarnings("StaticInitializerReferencesSubClass")
-    static InvocationRegistry instance = new NullInvocationRegistry();
+    public static InvocationRegistry instance = new NullInvocationRegistry();
 
     private final Jvm jvm;
     private final InvocationDataPublisher invocationDataPublisher;
@@ -61,7 +61,7 @@ public class InvocationRegistry {
     private volatile int currentInvocationIndex = 0;
 
     // Do all updates to the current set from a single worker thread
-    private final BlockingQueue<String> queue = new LinkedBlockingQueue<String>();
+    private final BlockingQueue<String> queue = new LinkedBlockingQueue<>();
 
     private long recordingIntervalStartedAtMillis = System.currentTimeMillis();
 
@@ -86,7 +86,7 @@ public class InvocationRegistry {
      *
      * @param config The collector configuration. May be null, in which case the registry is disabled.
      */
-    public static void initialize(CollectorConfig config) {
+    static void initialize(CollectorConfig config) {
         if (config == null) {
             instance = new NullInvocationRegistry();
             return;
@@ -159,7 +159,7 @@ public class InvocationRegistry {
 
             toggleInvocationsIndex();
 
-            Set<String> sortedSet = new TreeSet<String>(invocations[oldIndex]);
+            Set<String> sortedSet = new TreeSet<>(invocations[oldIndex]);
             invocationDataPublisher.publishData(jvm, publishCount, oldRecordingIntervalStartedAtMillis, sortedSet);
 
             invocations[oldIndex].clear();

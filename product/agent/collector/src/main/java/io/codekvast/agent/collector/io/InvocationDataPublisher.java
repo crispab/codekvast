@@ -19,32 +19,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.agent.lib.io.impl;
+package io.codekvast.agent.collector.io;
 
-import io.codekvast.agent.lib.codebase.CodeBase;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import io.codekvast.agent.lib.model.Jvm;
+
+import java.util.Set;
 
 /**
- * Dummy (no-op) implementation of CodeBasePublisher.
+ * Strategy for publishing collected invocation data.
+ *
+ * @author olle.hallin@crisp.se
  */
-@RequiredArgsConstructor
-@Slf4j
-public class NoOpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
+public interface InvocationDataPublisher {
 
-    @Override
-    public String getName() {
-        return "no-op";
-    }
+    /**
+     * Make preparations for publishing data..
+     *
+     * @return true iff the preparation was successful.
+     */
+    boolean prepareForPublish();
 
-    @Override
-    void doSetValue(String key, String value) {
-        // No private parameters
-    }
-
-    @Override
-    void doPublishCodeBase(CodeBase codeBase) {
-        // Nothing to do here
-    }
-
+    /**
+     * Publish the data.
+     *
+     * @param jvm                              The JVM data.
+     * @param publishCount                     The publishing counter.
+     * @param recordingIntervalStartedAtMillis When the recording of these invocations were started.
+     * @param invocations                      The set of invocations to publish.
+     */
+    void publishData(Jvm jvm, int publishCount, long recordingIntervalStartedAtMillis, Set<String> invocations);
 }

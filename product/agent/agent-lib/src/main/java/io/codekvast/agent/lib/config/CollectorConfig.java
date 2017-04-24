@@ -22,6 +22,7 @@
 package io.codekvast.agent.lib.config;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.codekvast.agent.lib.model.rest.GetConfigRequest1;
 import lombok.*;
 import io.codekvast.agent.lib.util.ConfigUtils;
 
@@ -43,24 +44,41 @@ public class CollectorConfig implements CodekvastConfig {
     public static final String JVM_BASENAME = "jvm.dat";
 
     @NonNull
+    private String licenseKey;
+
+    @NonNull
+    private String serverUrl;
+
+    @NonNull
     private File dataPath;
+
     @NonNull
     private String aspectjOptions;
+
     private boolean bridgeAspectjMessagesToSLF4J;
+
     @NonNull
     private String methodVisibility;
+
     private int collectorResolutionSeconds;
+
     private boolean clobberAopXml;
+
     @NonNull
     private String appName;
+
     @NonNull
     private String appVersion;
+
     @NonNull
     private String codeBase;
+
     @NonNull
     private String packages;
+
     @NonNull
     private String excludePackages;
+
     @NonNull
     private String tags;
 
@@ -109,4 +127,8 @@ public class CollectorConfig implements CodekvastConfig {
         return new MethodAnalyzer(this.methodVisibility);
     }
 
+    @JsonIgnore
+    public String getConfigRequestEndpoint() {
+        return String.format("%s%s", serverUrl, GetConfigRequest1.ENDPOINT);
+    }
 }

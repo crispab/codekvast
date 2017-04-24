@@ -23,6 +23,7 @@ package io.codekvast.agent.lib.model.rest;
 
 import lombok.*;
 
+import javax.validation.constraints.Null;
 import javax.validation.constraints.Size;
 
 /**
@@ -36,6 +37,7 @@ import javax.validation.constraints.Size;
 @ToString
 public class GetConfigRequest1 {
 
+    public static final String ENDPOINT = "/agent/v1/getConfig";
     /**
      * What is my license key?
      */
@@ -72,9 +74,28 @@ public class GetConfigRequest1 {
     private final String hostName;
 
     /**
-     * What is my code base fingerprint?
+     * What is the random UUID of the JVM in which the collector executes?
      */
     @NonNull
+    @Size(min = 1, message = "jvmUuid must be at least 1 characters")
+    private final String jvmUuid;
+
+    /**
+     * When was the JVM in which the collector executes started?
+     */
+    private final long startedAtMillis;
+
+    /**
+     * What is the ID of the computer in which the collector executes?
+     */
+    @NonNull
+    @Size(min = 1, message = "computerId must be at least 1 characters")
+    private final String computerId;
+
+    /**
+     * What is my code base fingerprint?
+     * May be null, in which case no check whether the current code base needs to be uploaded or not is made.
+     */
     @Size(min = 1, message = "codeBaseFingerprint must be at least 1 characters")
     private final String codeBaseFingerprint;
 
@@ -82,7 +103,7 @@ public class GetConfigRequest1 {
         return GetConfigRequest1.builder()
                                 .appName("appName")
                                 .appVersion("appVersion")
-                                .codeBaseFingerprint("codeBaseFingerprint")
+                                .codeBaseFingerprint(null)
                                 .collectorVersion("collectorVersion")
                                 .hostName("hostName")
                                 .licenseKey("licenseKey")
