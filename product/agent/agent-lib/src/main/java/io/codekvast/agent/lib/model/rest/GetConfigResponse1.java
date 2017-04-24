@@ -84,10 +84,44 @@ public class GetConfigResponse1 {
     @Builder.Default
     private boolean codeBasePublishingNeeded = false;
 
+    /**
+     * The name of the invocation data publisher to use.
+     *
+     * Each implementation defines it's own name.
+     */
+    @NonNull
+    private final String invocationDataPublisherName;
+
+    /**
+     * The configuration of the InvocationDataPublisher to use, coded as
+     * semicolon-separated list of key=value pairs.
+     * Neither keys nor values may contains semicolons, space or tab characters.
+     *
+     * It is up to the specified InvocationDataPublisher to parse the config.
+     */
+    @NonNull
+    private final String invocationDataPublisherConfig;
+
+    /**
+     * How often shall the invocation data be published?
+     * Defaults to 3600 seconds.
+     */
+    @Builder.Default
+    private int invocationDataPublisherIntervalSeconds = 3600;
+
+    /**
+     * How often shall a failed invocation data publishing be retried?
+     * Defaults to 600 seconds.
+     */
+    @Builder.Default
+    private int invocationDataPublisherRetryIntervalSeconds = 600;
+
     public static GetConfigResponse1 sample() {
         return builder()
             .codeBasePublisherConfig("codeBasePublisherConfig")
             .codeBasePublisherName("codeBasePublisherName")
+            .invocationDataPublisherConfig("invocationDataPublisherConfig")
+            .invocationDataPublisherName("invocationDataPublisherName")
             .build();
     }
 }

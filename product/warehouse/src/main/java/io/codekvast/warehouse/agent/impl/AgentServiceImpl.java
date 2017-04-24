@@ -51,6 +51,8 @@ public class AgentServiceImpl implements AgentService {
                                  .codeBasePublisherName("no-op")
                                  .codeBasePublisherConfig("enabled=true")
                                  .codeBasePublishingNeeded(codeBaseAdded)
+                                 .invocationDataPublisherName("file-system")
+                                 .invocationDataPublisherConfig("enabled=true")
                                  .build();
     }
 

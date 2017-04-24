@@ -21,6 +21,7 @@
  */
 package io.codekvast.agent.collector.scheduler.impl;
 
+import io.codekvast.agent.collector.io.impl.FileSystemInvocationDataPublisherImpl;
 import io.codekvast.agent.collector.scheduler.ConfigPoller;
 import io.codekvast.agent.collector.io.impl.NoOpCodeBasePublisherImpl;
 import io.codekvast.agent.lib.codebase.CodeBase;
@@ -76,6 +77,10 @@ public class ConfigPollerImpl implements ConfigPoller {
                                  .codeBasePublisherRetryIntervalSeconds(10)
                                  .codeBasePublisherConfig("enabled=true")
                                  .codeBasePublishingNeeded(true)
+                                 .invocationDataPublisherName(FileSystemInvocationDataPublisherImpl.NAME)
+                                 .invocationDataPublisherConfig("enabled=true")
+                                 .invocationDataPublisherIntervalSeconds(10)
+                                 .invocationDataPublisherRetryIntervalSeconds(10)
                                  .build();
     }
 

@@ -21,11 +21,11 @@
  */
 package io.codekvast.agent.collector.io.impl;
 
-import io.codekvast.agent.collector.io.InvocationDataPublisher;
+import io.codekvast.agent.collector.io.CodekvastPublishingException;
 import io.codekvast.agent.lib.config.CollectorConfig;
+import io.codekvast.agent.lib.model.Jvm;
 import io.codekvast.agent.lib.util.FileUtils;
 import lombok.extern.slf4j.Slf4j;
-import io.codekvast.agent.lib.model.Jvm;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,29 +37,40 @@ import java.util.Set;
  * @author olle.hallin@crisp.se
  */
 @Slf4j
-public class FileSystemInvocationDataPublisherImpl implements InvocationDataPublisher {
+public class FileSystemInvocationDataPublisherImpl extends AbstractInvocationDataPublisher {
 
-    private final CollectorConfig config;
+    public static final String NAME = "file-system";
+
     private final File jvmFile;
 
     public FileSystemInvocationDataPublisherImpl(CollectorConfig config) {
-        this.config = config;
+        super(log, config);
         this.jvmFile = config.getJvmFile();
+        super.setEnabled(true);
     }
 
     @Override
-    public boolean prepareForPublish() {
-        File outputPath = config.getInvocationsFile().getParentFile();
-        outputPath.mkdirs();
-        return outputPath.exists();
+    public String getName() {
+        return NAME;
     }
 
     @Override
-    public void publishData(Jvm jvm, int publishCount, long recordingIntervalStartedAtMillis, Set<String> invocations) {
-        log.debug("Publishing invocation data #{}", publishCount);
-
+    void doPublishInvocationData(Jvm jvm, int publishCount, long recordingIntervalStartedAtMillis, Set<String> invocations)
+        throws CodekvastPublishingException {
+        prepareForPublish();
         publishJvmData(jvm);
         publishInvocationData(publishCount, recordingIntervalStartedAtMillis, invocations);
+    }
+
+    @Override
+    void doSetValue(String key, String value) {
+        // Nothing here
+    }
+
+    private void prepareForPublish() {
+        File outputPath = getConfig().getInvocationsFile().getParentFile();
+        outputPath.mkdirs();
+        outputPath.exists();
     }
 
     private void publishJvmData(Jvm jvm) {
@@ -69,17 +80,15 @@ public class FileSystemInvocationDataPublisherImpl implements InvocationDataPubl
             jvm.saveTo(tmpFile);
             FileUtils.renameFile(tmpFile, jvmFile);
         } catch (IOException e) {
-            log.debug("Codekvast cannot save {}: {}", jvmFile, e);
+            log.debug("Cannot save {}: {}", jvmFile, e);
         } finally {
             FileUtils.safeDelete(tmpFile);
         }
-
     }
 
     private void publishInvocationData(int publishCount, long recordingIntervalStartedAtMillis, Set<String> invocations) {
-        FileUtils.writeInvocationDataTo(config.getInvocationsFile(), publishCount, recordingIntervalStartedAtMillis,
+        FileUtils.writeInvocationDataTo(getConfig().getInvocationsFile(), publishCount, recordingIntervalStartedAtMillis,
                                         invocations);
-
     }
 
 }

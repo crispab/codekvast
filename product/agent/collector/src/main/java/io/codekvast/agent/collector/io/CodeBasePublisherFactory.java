@@ -19,10 +19,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.agent.collector.io.impl;
+package io.codekvast.agent.collector.io;
 
-import io.codekvast.agent.collector.io.CodeBasePublisher;
+import io.codekvast.agent.collector.io.impl.NoOpCodeBasePublisherImpl;
 import io.codekvast.agent.lib.config.CollectorConfig;
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -31,9 +32,17 @@ import lombok.extern.slf4j.Slf4j;
  * @author olle.hallin@crisp.se
  */
 @Slf4j
+@UtilityClass
 public class CodeBasePublisherFactory {
 
-    public static CodeBasePublisher create(CollectorConfig config, String name) {
+    /**
+     * Creates an instance of the CodeBasePublisher strategy.
+     *
+     * @param name   The name of the strategy to create.
+     * @param config Is passed to the created strategy.
+     * @return A configured implementation of CodeBasePublisher
+     */
+    public static CodeBasePublisher create(String name, CollectorConfig config) {
         if (name.equals(NoOpCodeBasePublisherImpl.NAME)) {
             return new NoOpCodeBasePublisherImpl(config);
         }

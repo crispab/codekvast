@@ -24,7 +24,10 @@ package io.codekvast.agent.collector.scheduler;
 import io.codekvast.agent.collector.CodekvastThreadFactory;
 import io.codekvast.agent.collector.InvocationRegistry;
 import io.codekvast.agent.collector.io.CodeBasePublisher;
-import io.codekvast.agent.collector.io.impl.CodeBasePublisherFactory;
+import io.codekvast.agent.collector.io.InvocationDataPublisher;
+import io.codekvast.agent.collector.io.InvocationDataPublisherFactory;
+import io.codekvast.agent.collector.io.CodeBasePublisherFactory;
+import io.codekvast.agent.collector.io.impl.FileSystemInvocationDataPublisherImpl;
 import io.codekvast.agent.collector.scheduler.impl.ConfigPollerImpl;
 import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
 import io.codekvast.agent.lib.config.CollectorConfig;
@@ -52,13 +55,13 @@ public class Scheduler implements Runnable {
     private GetConfigResponse1 dynamicConfig;
 
     private long nextConfigPollAtMillis = 0L;
-    private boolean firstConfigPoll = true;
+    private boolean firstTime = true;
 
     private long nextCodeBaseCheckAtMillis = 0L;
     private CodeBasePublisher codeBasePublisher;
 
     private long nextInvocationDataPublishingAtMillis = 0L;
-    private int invocationDataPublishCount;
+    private InvocationDataPublisher invocationDataPublisher;
 
     public Scheduler(CollectorConfig config, ConfigPollerImpl configPoller) {
         this.config = config;
@@ -77,6 +80,9 @@ public class Scheduler implements Runnable {
         return this;
     }
 
+    /**
+     * Shuts down the scheduler. Performs a last invocation data publishing before returning.
+     */
     public void shutdown() {
         log.info("Stopping scheduler");
         executor.shutdown();
@@ -86,8 +92,18 @@ public class Scheduler implements Runnable {
             log.debug("Stop interrupted");
         }
 
+        // Shutting down before first config poll...
+        if (dynamicConfig == null) {
+            dynamicConfig = GetConfigResponse1
+                .sample()
+                .toBuilder()
+                .invocationDataPublisherName(FileSystemInvocationDataPublisherImpl.NAME)
+                .invocationDataPublisherConfig("")
+                .build();
+            configureInvocationDataPublisher(true);
+        }
         nextInvocationDataPublishingAtMillis = 0L;
-        doInvocationDataPublishing();
+        publishInvocationDataIfNeeded();
     }
 
     @Override
@@ -96,22 +112,22 @@ public class Scheduler implements Runnable {
             return;
         }
 
-        doConfigPoll();
-        checkIfCodeBaseNeedsPublishing();
-        doInvocationDataPublishing();
+        pollDynamicConfigIfNeeded();
+        publishCodeBaseIfNeeded();
+        publishInvocationDataIfNeeded();
     }
 
-    private void doConfigPoll() {
+    private void pollDynamicConfigIfNeeded() {
         if (System.currentTimeMillis() >= nextConfigPollAtMillis) {
-            log.trace("Doing config poll");
+            log.trace("Polling dynamic config");
             try {
-                dynamicConfig = configPoller.doPoll(firstConfigPoll);
+                dynamicConfig = configPoller.doPoll(firstTime);
 
                 configureCodeBasePublisher(configPoller.getCodeBaseFingerprint());
-                configureInvocationDataPublisher(firstConfigPoll);
+                configureInvocationDataPublisher(firstTime);
 
                 scheduleNextPollAt(dynamicConfig.getConfigPollIntervalSeconds());
-                firstConfigPoll = false;
+                firstTime = false;
             } catch (Exception e) {
                 LogUtil.logException(log, "Failed to poll " + config.getConfigRequestEndpoint(), e);
 
@@ -121,23 +137,27 @@ public class Scheduler implements Runnable {
         }
     }
 
-    private void configureInvocationDataPublisher(boolean firstTime) {
-        // TODO: make configurable from server
-        if (firstTime) {
-            nextInvocationDataPublishingAtMillis = scheduleDelay(5);
-        }
-    }
-
     private void configureCodeBasePublisher(CodeBaseFingerprint codeBaseFingerprint) {
         String newName = dynamicConfig.getCodeBasePublisherName();
         if (codeBasePublisher == null || !codeBasePublisher.getName().equals(newName)) {
-            codeBasePublisher = CodeBasePublisherFactory.create(config, newName);
+            codeBasePublisher = CodeBasePublisherFactory.create(newName, config);
             codeBasePublisher.setCodeBaseFingerprint(codeBaseFingerprint);
         }
         codeBasePublisher.configure(dynamicConfig.getCodeBasePublisherConfig());
     }
 
-    private void checkIfCodeBaseNeedsPublishing() {
+    private void configureInvocationDataPublisher(boolean firstTime) {
+        String newName = dynamicConfig.getInvocationDataPublisherName();
+        if (invocationDataPublisher == null || !invocationDataPublisher.getName().equals(newName)) {
+            invocationDataPublisher = InvocationDataPublisherFactory.create(newName, config);
+        }
+        invocationDataPublisher.configure(dynamicConfig.getInvocationDataPublisherConfig());
+        if (firstTime) {
+            nextInvocationDataPublishingAtMillis = scheduleFromNow(5);
+        }
+    }
+
+    private void publishCodeBaseIfNeeded() {
         if (System.currentTimeMillis() >= nextCodeBaseCheckAtMillis) {
             try {
                 codeBasePublisher.publishCodebase();
@@ -152,27 +172,31 @@ public class Scheduler implements Runnable {
     }
 
     private void scheduleNextCodeBaseCheck(int delaySeconds) {
-        nextCodeBaseCheckAtMillis = scheduleDelay(delaySeconds);
+        nextCodeBaseCheckAtMillis = scheduleFromNow(delaySeconds);
     }
 
     private void scheduleNextPollAt(int delaySeconds) {
-        nextConfigPollAtMillis = scheduleDelay(delaySeconds);
+        nextConfigPollAtMillis = scheduleFromNow(delaySeconds);
     }
 
-    private void doInvocationDataPublishing() {
+    private void publishInvocationDataIfNeeded() {
         if (System.currentTimeMillis() > nextInvocationDataPublishingAtMillis) {
-            invocationDataPublishCount += 1;
+            try {
+                InvocationRegistry.instance.publishInvocationData(invocationDataPublisher);
 
-            // TODO: refactor
-            log.debug("Publishing invocation data #{}", invocationDataPublishCount);
-            InvocationRegistry.instance.publishData(invocationDataPublishCount);
+                nextInvocationDataPublishingAtMillis = scheduleFromNow(dynamicConfig.getInvocationDataPublisherIntervalSeconds());
+            } catch (Exception e) {
+                LogUtil.logException(log, "Failed to publish invocation data", e);
 
-            nextInvocationDataPublishingAtMillis = scheduleDelay(config.getCollectorResolutionSeconds());
+                // TODO: implement some back-off algorithm to prevent spamming server
+                scheduleNextCodeBaseCheck(dynamicConfig.getInvocationDataPublisherRetryIntervalSeconds());
+
+            }
         }
 
     }
 
-    private long scheduleDelay(int delaySeconds) {
+    private long scheduleFromNow(int delaySeconds) {
         return System.currentTimeMillis() + TimeUnit.MILLISECONDS.convert(delaySeconds, TimeUnit.SECONDS);
     }
 

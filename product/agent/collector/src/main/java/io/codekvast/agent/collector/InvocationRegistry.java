@@ -21,14 +21,15 @@
  */
 package io.codekvast.agent.collector;
 
+import io.codekvast.agent.collector.io.CodekvastPublishingException;
 import io.codekvast.agent.collector.io.InvocationDataPublisher;
-import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.Signature;
 import io.codekvast.agent.lib.config.CollectorConfig;
-import io.codekvast.agent.collector.io.impl.FileSystemInvocationDataPublisherImpl;
 import io.codekvast.agent.lib.model.Jvm;
 import io.codekvast.agent.lib.util.ComputerID;
 import io.codekvast.agent.lib.util.SignatureUtils;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+import org.aspectj.lang.Signature;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -42,7 +43,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * This is the target of the method execution recording aspects.
  * <p>
- * It holds data about method invocations, and methods for outputting the invocation data to disk.
+ * It holds data about method invocations and methods for publishing the data.
  *
  * @author olle.hallin@crisp.se
  */
@@ -54,7 +55,6 @@ public class InvocationRegistry {
     public static InvocationRegistry instance = new NullInvocationRegistry();
 
     private final Jvm jvm;
-    private final InvocationDataPublisher invocationDataPublisher;
 
     // Toggle between two invocation sets to avoid synchronisation
     private final Set[] invocations;
@@ -65,9 +65,8 @@ public class InvocationRegistry {
 
     private long recordingIntervalStartedAtMillis = System.currentTimeMillis();
 
-    private InvocationRegistry(Jvm jvm, InvocationDataPublisher invocationDataPublisher) {
+    private InvocationRegistry(Jvm jvm) {
         this.jvm = jvm;
-        this.invocationDataPublisher = invocationDataPublisher;
 
         this.invocations = new Set[]{new HashSet<String>(), new HashSet<String>()};
 
@@ -110,12 +109,7 @@ public class InvocationRegistry {
                    .hostName(getHostName())
                    .jvmUuid(UUID.randomUUID().toString())
                    .startedAtMillis(System.currentTimeMillis())
-                   .build(),
-            getInvocationDataPublisher(config));
-    }
-
-    private static InvocationDataPublisher getInvocationDataPublisher(CollectorConfig config) {
-        return new FileSystemInvocationDataPublisherImpl(config);
+                   .build());
     }
 
     private static String getHostName() {
@@ -143,25 +137,16 @@ public class InvocationRegistry {
         }
     }
 
-    /**
-     * Publishes method invocations.
-     * <p>
-     * Thread-safe.
-     *
-     * @param publishCount the ordinal number of this publishing.
-     */
-    public void publishData(int publishCount) {
-        if (!invocationDataPublisher.prepareForPublish()) {
-            log.warn("Cannot publish invocation data");
-        } else {
-            long oldRecordingIntervalStartedAtMillis = recordingIntervalStartedAtMillis;
-            int oldIndex = currentInvocationIndex;
+    public void publishInvocationData(@NonNull InvocationDataPublisher publisher) throws CodekvastPublishingException {
+        long oldRecordingIntervalStartedAtMillis = recordingIntervalStartedAtMillis;
+        int oldIndex = currentInvocationIndex;
 
-            toggleInvocationsIndex();
+        toggleInvocationsIndex();
 
-            Set<String> sortedSet = new TreeSet<>(invocations[oldIndex]);
-            invocationDataPublisher.publishData(jvm, publishCount, oldRecordingIntervalStartedAtMillis, sortedSet);
-
+        Set sortedSet = new TreeSet<>(invocations[oldIndex]);
+        try {
+            publisher.publishInvocationData(jvm, oldRecordingIntervalStartedAtMillis, sortedSet);
+        } finally {
             invocations[oldIndex].clear();
         }
     }
@@ -188,7 +173,7 @@ public class InvocationRegistry {
 
     private static class NullInvocationRegistry extends InvocationRegistry {
         private NullInvocationRegistry() {
-            super(null, null);
+            super(null);
         }
 
         @Override
@@ -197,7 +182,7 @@ public class InvocationRegistry {
         }
 
         @Override
-        public void publishData(int publishCount) {
+        public void publishInvocationData(InvocationDataPublisher publisher) throws CodekvastPublishingException {
             // No operation
         }
 

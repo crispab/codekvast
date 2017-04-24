@@ -36,9 +36,9 @@ dependencies {
     testCompile junit
     testCompile mockito
     testCompile lombok
+    testRuntime logback
 
     integrationTestCompile project(":product:testsupport")
-
     integrationTestRuntime logback
 
     jacocoagent 'org.jacoco:org.jacoco.agent:0.7.9:runtime@jar'

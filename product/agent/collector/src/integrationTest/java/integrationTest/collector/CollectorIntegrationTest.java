@@ -88,6 +88,7 @@ public class CollectorIntegrationTest {
         assertThat(stdout, containsString("AspectJ Weaver Version"));
         assertThat(stdout, containsString("Join point 'method-execution(void sample.app.SampleApp.main(java.lang.String[]))"));
         assertThat(stdout, containsString("[main] INFO sample.app.SampleApp - 2+2=4"));
+        assertThat(stdout, containsString("[Codekvast Shutdown Hook]"));
 
         walkFileTree(collectorOutputFiles, collectorConfig.getDataPath());
 

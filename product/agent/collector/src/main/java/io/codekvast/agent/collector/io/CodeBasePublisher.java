@@ -27,14 +27,7 @@ import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
 /**
  * Strategy for publishing a {@link CodeBase}
  */
-public interface CodeBasePublisher {
-
-    /**
-     * What is the nick-name of this publisher implementation.
-     *
-     * @return
-     */
-    String getName();
+public interface CodeBasePublisher extends Publisher {
 
     /**
      * Sets an initial fingerprint
@@ -49,12 +42,5 @@ public interface CodeBasePublisher {
      * @throws CodekvastPublishingException when no contact with the consumer. Try again.
      */
     void publishCodebase() throws CodekvastPublishingException;
-
-    /**
-     * Configure this publisher.
-     *
-     * @param keyValuePairs The specialized config received from the server, a semi-colon separated list of key=value pairs.
-     */
-    void configure(String keyValuePairs);
 
 }

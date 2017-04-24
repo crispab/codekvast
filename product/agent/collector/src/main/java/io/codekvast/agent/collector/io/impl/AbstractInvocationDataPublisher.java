@@ -19,42 +19,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.agent.collector.io;
+package io.codekvast.agent.collector.io.impl;
 
+import io.codekvast.agent.collector.io.CodekvastPublishingException;
+import io.codekvast.agent.collector.io.InvocationDataPublisher;
+import io.codekvast.agent.lib.config.CollectorConfig;
 import io.codekvast.agent.lib.model.Jvm;
+import lombok.Getter;
+import org.slf4j.Logger;
 
 import java.util.Set;
 
 /**
- * Strategy for publishing collected invocation data.
- *
  * @author olle.hallin@crisp.se
  */
-public interface InvocationDataPublisher {
+@Getter
+public abstract class AbstractInvocationDataPublisher extends AbstractPublisher implements InvocationDataPublisher {
 
-    /**
-     * What is the name of the publishing strategy?
-     *
-     * @return The name of the strategy.
-     */
-    String getName();
+    private int publishCount;
 
-    /**
-     * Configure this publisher.
-     *
-     * @param keyValuePairs The specialized config received from the server, a semi-colon separated list of key=value pairs.
-     */
-    void configure(String keyValuePairs);
+    AbstractInvocationDataPublisher(Logger log, CollectorConfig config) {
+        super(log, config);
+    }
 
-    /**
-     * Publish the invocation data.
-     *
-     * @param jvm                              The JVM data at the time of the publishing.
-     * @param recordingIntervalStartedAtMillis When the recording of these invocations were started.
-     * @param invocations                      The set of invocations to publish.
-     * @throws CodekvastPublishingException when publishing fails.
-     */
-    void publishInvocationData(Jvm jvm, long recordingIntervalStartedAtMillis, Set<String> invocations)
-        throws CodekvastPublishingException;
+    @Override
+    public void publishInvocationData(Jvm jvm, long recordingIntervalStartedAtMillis, Set<String> invocations)
+        throws CodekvastPublishingException {
+        if (isEnabled()) {
+            publishCount += 1;
+            log.debug("Publishing invocation data #{}", publishCount);
 
+            doPublishInvocationData(jvm, publishCount, recordingIntervalStartedAtMillis, invocations);
+        }
+    }
+
+    abstract void doPublishInvocationData(Jvm jvm, int publishCount, long recordingIntervalStartedAtMillis,
+                                          Set<String> invocations) throws CodekvastPublishingException;
 }

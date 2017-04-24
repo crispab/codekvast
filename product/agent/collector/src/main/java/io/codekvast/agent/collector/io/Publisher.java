@@ -21,21 +21,14 @@
  */
 package io.codekvast.agent.collector.io;
 
-import io.codekvast.agent.lib.model.Jvm;
-
-import java.util.Set;
-
 /**
- * Strategy for publishing collected invocation data.
- *
  * @author olle.hallin@crisp.se
  */
-public interface InvocationDataPublisher {
-
+public interface Publisher {
     /**
-     * What is the name of the publishing strategy?
+     * What is the nick-name of this publisher implementation.
      *
-     * @return The name of the strategy.
+     * @return
      */
     String getName();
 
@@ -45,16 +38,4 @@ public interface InvocationDataPublisher {
      * @param keyValuePairs The specialized config received from the server, a semi-colon separated list of key=value pairs.
      */
     void configure(String keyValuePairs);
-
-    /**
-     * Publish the invocation data.
-     *
-     * @param jvm                              The JVM data at the time of the publishing.
-     * @param recordingIntervalStartedAtMillis When the recording of these invocations were started.
-     * @param invocations                      The set of invocations to publish.
-     * @throws CodekvastPublishingException when publishing fails.
-     */
-    void publishInvocationData(Jvm jvm, long recordingIntervalStartedAtMillis, Set<String> invocations)
-        throws CodekvastPublishingException;
-
 }

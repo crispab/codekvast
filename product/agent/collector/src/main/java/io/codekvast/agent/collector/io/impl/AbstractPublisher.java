@@ -21,41 +21,53 @@
  */
 package io.codekvast.agent.collector.io.impl;
 
-import io.codekvast.agent.collector.io.CodeBasePublisher;
-import io.codekvast.agent.lib.codebase.CodeBase;
-import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
-import io.codekvast.agent.lib.codebase.CodeBaseScanner;
+import io.codekvast.agent.collector.io.Publisher;
 import io.codekvast.agent.lib.config.CollectorConfig;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
 
 /**
- * Abstract base class for code base publishers.
+ * @author olle.hallin@crisp.se
  */
-abstract class AbstractCodeBasePublisher extends AbstractPublisher implements CodeBasePublisher {
+@Getter
+public abstract class AbstractPublisher implements Publisher {
 
-    @Getter
+    private final CollectorConfig config;
+    protected final Logger log;
+
     @Setter
-    private CodeBaseFingerprint codeBaseFingerprint;
+    private boolean enabled;
 
-    AbstractCodeBasePublisher(Logger log, CollectorConfig config) {
-        super(log, config);
+    AbstractPublisher(Logger log, CollectorConfig config) {
+        this.log = log;
+        this.config = config;
     }
 
     @Override
-    public void publishCodebase() {
-        if (isEnabled()) {
-            CodeBase newCodeBase = new CodeBase(getConfig());
-            if (!newCodeBase.getFingerprint().equals(codeBaseFingerprint)) {
-                new CodeBaseScanner().scanSignatures(newCodeBase);
+    public void configure(String keyValuePairs) {
+        String[] pairs = keyValuePairs.split(";");
 
-                doPublishCodeBase(newCodeBase);
-
-                codeBaseFingerprint = newCodeBase.getFingerprint();
+        for (String pair : pairs) {
+            log.debug("Analyzing {}", pair);
+            String[] parts = pair.trim().split("=");
+            if (parts.length == 2) {
+                setValue(parts[0].trim(), parts[1].trim());
+            } else {
+                log.warn("Illegal key-value pair: {}", pair);
             }
         }
     }
 
-    abstract void doPublishCodeBase(CodeBase codeBase);
+    private void setValue(String key, String value) {
+        if (key.equals("enabled")) {
+            boolean newValue = Boolean.valueOf(value);
+            log.debug("Setting enabled={}, was={}", newValue, this.enabled);
+            this.enabled = newValue;
+        } else {
+            doSetValue(key, value);
+        }
+    }
+
+    abstract void doSetValue(String key, String value);
 }

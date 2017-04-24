@@ -33,7 +33,7 @@ public class NoOpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
 
     public static final String NAME = "no-op";
 
-    NoOpCodeBasePublisherImpl(CollectorConfig config) {
+    public NoOpCodeBasePublisherImpl(CollectorConfig config) {
         super(log, config);
     }
 

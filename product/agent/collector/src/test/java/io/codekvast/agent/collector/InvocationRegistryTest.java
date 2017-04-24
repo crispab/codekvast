@@ -1,5 +1,9 @@
 package io.codekvast.agent.collector;
 
+import io.codekvast.agent.collector.io.CodekvastPublishingException;
+import io.codekvast.agent.collector.io.InvocationDataPublisher;
+import io.codekvast.agent.collector.io.InvocationDataPublisherFactory;
+import io.codekvast.agent.collector.io.impl.FileSystemInvocationDataPublisherImpl;
 import org.aspectj.lang.Signature;
 import org.junit.After;
 import org.junit.Before;
@@ -61,12 +65,14 @@ public class InvocationRegistryTest {
     }
 
     @Test
-    public void testRegisterMethodInvocationAndPublishToDisk() throws IOException, InterruptedException {
+    public void testRegisterMethodInvocationAndPublishToDisk() throws IOException, InterruptedException, CodekvastPublishingException {
         assertThat(InvocationRegistry.instance.isNullRegistry(), is(false));
 
         doExtremelyConcurrentRegistrationOf(10, 10, signature1, signature2);
 
-        InvocationRegistry.instance.publishData(1);
+        InvocationDataPublisher publisher = InvocationDataPublisherFactory.create(FileSystemInvocationDataPublisherImpl.NAME, config);
+
+        InvocationRegistry.instance.publishInvocationData(publisher);
 
         File[] files = config.getDataPath().listFiles();
         assertThat(files.length, is(1));
