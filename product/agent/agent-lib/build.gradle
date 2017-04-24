@@ -1,4 +1,4 @@
-apply from: "$rootDir/gradle/java-6.gradle"
+apply from: "$rootDir/gradle/java-7.gradle"
 apply from: "$rootDir/gradle/license.gradle"
 
 // We only want the dependency management provided by the Spring Boot plugin.

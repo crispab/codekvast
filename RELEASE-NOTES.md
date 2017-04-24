@@ -7,6 +7,8 @@
 1. Warehouse: Added a landing page for feature voting, to make it simpler to use Google Analytics.
 1. Adopted Yarn instead of npm for installing Node dependencies.
 1. Started eliminating Codekvast Daemon.
+1. Renamed all packages from `se.crisp.codekvast` to `io.codekvast`.
+1. Bumped minimum Java version for the agent to Java 7.
 
 ## 0.18.6
 1. Restructured and cleaned up README.md

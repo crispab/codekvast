@@ -1,6 +1,6 @@
 description 'Illustrates how to use Codekvast Collector together with AspectJ load-time weaver (LTW)'
 
-apply from: "$rootDir/gradle/java-6.gradle"
+apply from: "$rootDir/gradle/java-7.gradle"
 apply plugin: 'application'
 
 mainClassName = "sample.app.SampleApp"

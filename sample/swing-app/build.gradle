@@ -1,6 +1,6 @@
 description = "Just an ordinary Swing app. It tries to initialize Codekvast in the main method."
 
-apply from: "$rootDir/gradle/java-6.gradle"
+apply from: "$rootDir/gradle/java-7.gradle"
 apply plugin: 'application'
 
 mainClassName = "sample.swing.SampleSwingApp"

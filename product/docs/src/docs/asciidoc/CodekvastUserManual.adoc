@@ -37,7 +37,7 @@ Codekvast Collector:: The collector is attached to the JVM that runs your applic
 interest. At the end of each recording interval, the <<invocation-data, invocation data>> is written to a text file, and a new recording
 interval is started.
 There is exactly one collector per JVM. The collector uses http://en.wikipedia.org/wiki/AspectJ[AspectJ, role="external", window="_new"]
-for hooking into your application. *The collector requires Java 6 or higher.*
+for hooking into your application. *The collector requires Java 7 or higher.*
 
 Codekvast Daemon:: The daemon analyses the application's <<application-binaries, binaries>> to produce an <<method-inventory, inventory>> of the
 application. It also consumes the invocation data produced by the collector(s). The inventory consists of all the method signatures that the collector potentially can record. The daemon combines the method inventory with the invocation data
