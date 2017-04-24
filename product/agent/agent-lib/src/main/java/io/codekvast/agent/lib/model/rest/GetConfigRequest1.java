@@ -105,7 +105,9 @@ public class GetConfigRequest1 {
                                 .appVersion("appVersion")
                                 .codeBaseFingerprint(null)
                                 .collectorVersion("collectorVersion")
+                                .computerId("computerId")
                                 .hostName("hostName")
+                                .jvmUuid("jvmUuid")
                                 .licenseKey("licenseKey")
                                 .build();
     }
