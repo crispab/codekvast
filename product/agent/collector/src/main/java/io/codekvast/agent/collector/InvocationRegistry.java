@@ -24,7 +24,7 @@ package io.codekvast.agent.collector;
 import io.codekvast.agent.collector.io.CodekvastPublishingException;
 import io.codekvast.agent.collector.io.InvocationDataPublisher;
 import io.codekvast.agent.lib.config.CollectorConfig;
-import io.codekvast.agent.lib.model.Jvm;
+import io.codekvast.agent.lib.model.v1.legacy.Jvm;
 import io.codekvast.agent.lib.util.ComputerID;
 import io.codekvast.agent.lib.util.SignatureUtils;
 import lombok.NonNull;

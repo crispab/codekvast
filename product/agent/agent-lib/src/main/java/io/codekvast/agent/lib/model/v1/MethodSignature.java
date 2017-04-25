@@ -21,18 +21,46 @@
  */
 package io.codekvast.agent.lib.model.v1;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 /**
- * The supported export file formats.
+ * Immutable representation of a method signature.
  *
  * @author olle.hallin@crisp.se
  */
-@RequiredArgsConstructor
-@Getter
-public enum ExportFileFormat {
-    ZIP(".zip");
+@Value
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder(toBuilder = true)
+@ToString(of = "aspectjString")
+@EqualsAndHashCode(of = "aspectjString")
+public class MethodSignature {
+    @NonNull
+    private final String aspectjString;
+    @NonNull
+    private final String declaringType;
+    @NonNull
+    private final String exceptionTypes;
+    @NonNull
+    private final String methodName;
+    @NonNull
+    private final String modifiers;
+    @NonNull
+    private final String packageName;
+    @NonNull
+    private final String parameterTypes;
+    @NonNull
+    private final String returnType;
 
-    private final String suffix;
+    public static MethodSignature createSampleMethodSignature() {
+        return builder()
+                .aspectjString("aspectjString")
+                .declaringType("declaringType")
+                .exceptionTypes("exceptionTypes")
+                .methodName("methodName")
+                .modifiers("modifiers")
+                .packageName("packageName")
+                .parameterTypes("parameterTypes")
+                .returnType("returnType")
+                .build();
+    }
 }

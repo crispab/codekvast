@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import io.codekvast.agent.lib.config.MethodAnalyzer;
-import io.codekvast.agent.lib.model.MethodSignature;
+import io.codekvast.agent.lib.model.v1.MethodSignature;
 import io.codekvast.agent.lib.model.v1.SignatureStatus;
 
 import java.lang.reflect.Constructor;

@@ -36,6 +36,16 @@ public class CodeBasePublisherFactoryImplTest {
     }
 
     @Test
+    public void should_handle_filesystem_name() throws Exception {
+        // given
+        CodeBasePublisher publisher = factory.create(FileSystemCodeBasePublisherImpl.NAME, config);
+
+        // then
+        assertThat(publisher, instanceOf(FileSystemCodeBasePublisherImpl.class));
+        output.expect(is(""));
+    }
+
+    @Test
     public void should_warn_when_unrecognized_name() throws Exception {
         // given
         CodeBasePublisher publisher = factory.create("foobar", config);

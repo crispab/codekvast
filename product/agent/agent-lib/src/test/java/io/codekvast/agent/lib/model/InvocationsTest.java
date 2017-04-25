@@ -1,5 +1,6 @@
 package io.codekvast.agent.lib.model;
 
+import io.codekvast.agent.lib.model.v1.legacy.Invocation;
 import io.codekvast.agent.lib.util.FileUtils;
 import org.junit.Rule;
 import org.junit.Test;

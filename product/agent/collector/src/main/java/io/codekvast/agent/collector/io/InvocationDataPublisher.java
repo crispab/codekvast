@@ -21,7 +21,7 @@
  */
 package io.codekvast.agent.collector.io;
 
-import io.codekvast.agent.lib.model.Jvm;
+import io.codekvast.agent.lib.model.v1.legacy.Jvm;
 
 import java.util.Set;
 

@@ -24,8 +24,8 @@ package io.codekvast.warehouse.file_import;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
-import io.codekvast.agent.lib.model.ExportFileMetaInfo;
-import io.codekvast.agent.lib.model.v1.JvmData;
+import io.codekvast.agent.lib.model.v1.legacy.ExportFileMetaInfo;
+import io.codekvast.agent.lib.model.v1.legacy.JvmData;
 import io.codekvast.agent.lib.model.v1.SignatureStatus;
 
 import java.io.File;

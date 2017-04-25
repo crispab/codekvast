@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.agent.lib.model;
+package io.codekvast.agent.lib.model.v1.legacy;
 
 import lombok.Builder;
 import lombok.NonNull;

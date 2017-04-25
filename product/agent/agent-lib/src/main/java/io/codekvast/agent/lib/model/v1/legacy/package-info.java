@@ -19,17 +19,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.agent.lib.model;
-
-import lombok.Value;
-
 /**
- * Holds data about the invocation of one method.
+ * Model objects used in the legacy daemon mode.
  *
  * @author olle.hallin@crisp.se
  */
-@Value
-public class Invocation {
-    private final String signature;
-    private final long invokedAtMillis;
-}
+package io.codekvast.agent.lib.model.v1.legacy;

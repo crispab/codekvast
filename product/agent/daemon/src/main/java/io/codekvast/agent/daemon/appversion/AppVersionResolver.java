@@ -28,7 +28,7 @@ import io.codekvast.agent.lib.appversion.AppVersionStrategy;
 import io.codekvast.agent.lib.appversion.FilenameAppVersionStrategy;
 import io.codekvast.agent.lib.appversion.LiteralAppVersionStrategy;
 import io.codekvast.agent.lib.appversion.ManifestAppVersionStrategy;
-import io.codekvast.agent.lib.model.Jvm;
+import io.codekvast.agent.lib.model.v1.legacy.Jvm;
 
 import java.io.File;
 import java.util.ArrayList;

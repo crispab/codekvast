@@ -22,7 +22,7 @@
 package io.codekvast.agent.lib.config;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.codekvast.agent.lib.model.rest.GetConfigRequest1;
+import io.codekvast.agent.lib.model.v1.rest.GetConfigRequest1;
 import lombok.*;
 import io.codekvast.agent.lib.util.ConfigUtils;
 

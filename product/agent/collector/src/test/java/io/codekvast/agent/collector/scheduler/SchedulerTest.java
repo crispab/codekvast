@@ -10,7 +10,7 @@ import io.codekvast.agent.lib.codebase.CodeBase;
 import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
 import io.codekvast.agent.lib.config.CollectorConfig;
 import io.codekvast.agent.lib.config.CollectorConfigFactory;
-import io.codekvast.agent.lib.model.rest.GetConfigResponse1;
+import io.codekvast.agent.lib.model.v1.rest.GetConfigResponse1;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

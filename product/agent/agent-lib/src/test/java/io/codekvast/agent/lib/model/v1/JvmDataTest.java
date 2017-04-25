@@ -1,5 +1,6 @@
 package io.codekvast.agent.lib.model.v1;
 
+import io.codekvast.agent.lib.model.v1.legacy.JvmData;
 import org.junit.Test;
 
 /**

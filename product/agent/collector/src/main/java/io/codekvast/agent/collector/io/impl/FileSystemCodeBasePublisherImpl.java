@@ -19,34 +19,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.agent.daemon.beans;
+package io.codekvast.agent.collector.io.impl;
 
-import lombok.Data;
 import io.codekvast.agent.lib.codebase.CodeBase;
-import io.codekvast.agent.lib.model.v1.legacy.Jvm;
-
-import java.io.File;
-import java.time.Instant;
+import io.codekvast.agent.lib.config.CollectorConfig;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * Mutable state for a {@link Jvm} object.
+ * Dummy (no-op) implementation of CodeBasePublisher.
  */
-@Data
-public class JvmState {
-    private Jvm jvm;
-    private File invocationsFile;
-    private CodeBase codeBase;
-    private String appVersion;
-    private Instant jvmDataProcessedAt = Instant.MIN;
-    private boolean firstRun = true;
-    private long databaseAppId;
-    private long databaseJvmId;
+@Slf4j
+public class FileSystemCodeBasePublisherImpl extends AbstractCodeBasePublisher {
 
-    public Instant getJvmDumpedAt() {
-        return Instant.ofEpochMilli(jvm.getDumpedAtMillis());
+    public static final String NAME = "file-system";
+
+    FileSystemCodeBasePublisherImpl(CollectorConfig config) {
+        super(log, config);
     }
 
-    public Instant getJvmStartedAt() {
-        return Instant.ofEpochMilli(jvm.getStartedAtMillis());
+    @Override
+    public String getName() {
+        return NAME;
     }
+
+    @Override
+    void doSetValue(String key, String value) {
+        // No private parameters
+    }
+
+    @Override
+    public void doPublishCodeBase(CodeBase codeBase) {
+        // Nothing to do here
+    }
+
 }

@@ -2,7 +2,6 @@ package io.codekvast.agent.collector;
 
 import io.codekvast.agent.collector.io.CodekvastPublishingException;
 import io.codekvast.agent.collector.io.InvocationDataPublisher;
-import io.codekvast.agent.collector.io.InvocationDataPublisherFactory;
 import io.codekvast.agent.collector.io.impl.FileSystemInvocationDataPublisherImpl;
 import io.codekvast.agent.collector.io.impl.InvocationDataPublisherFactoryImpl;
 import org.aspectj.lang.Signature;
@@ -13,8 +12,8 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import io.codekvast.agent.lib.config.CollectorConfig;
 import io.codekvast.agent.lib.config.CollectorConfigFactory;
-import io.codekvast.agent.lib.model.Invocation;
-import io.codekvast.agent.lib.model.Jvm;
+import io.codekvast.agent.lib.model.v1.legacy.Invocation;
+import io.codekvast.agent.lib.model.v1.legacy.Jvm;
 import io.codekvast.agent.lib.util.FileUtils;
 import io.codekvast.agent.lib.util.SignatureUtils;
 

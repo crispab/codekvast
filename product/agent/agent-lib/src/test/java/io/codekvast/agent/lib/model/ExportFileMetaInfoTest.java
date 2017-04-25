@@ -1,5 +1,6 @@
 package io.codekvast.agent.lib.model;
 
+import io.codekvast.agent.lib.model.v1.legacy.ExportFileMetaInfo;
 import io.codekvast.agent.lib.util.FileUtils;
 import org.junit.Test;
 
@@ -20,11 +21,11 @@ public class ExportFileMetaInfoTest {
         Set<String> lines = new HashSet<String>();
 
         FileUtils.extractFieldValuesFrom(
-                ExportFileMetaInfo.createSampleExportFileMetaInfo()
-                                  .toBuilder()
-                                  .uuid("uuid-value")
-                                  .daemonVcsId("daemon Vcs:Id")
-                                  .build(), lines);
+            ExportFileMetaInfo.createSampleExportFileMetaInfo()
+                              .toBuilder()
+                              .uuid("uuid-value")
+                              .daemonVcsId("daemon Vcs:Id")
+                              .build(), lines);
 
         assertThat(lines, hasItems(
                 "daemonHostname = daemonHostname",

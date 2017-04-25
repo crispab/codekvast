@@ -24,7 +24,7 @@ package io.codekvast.agent.lib.util;
 import io.codekvast.agent.lib.config.CodekvastConfig;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import io.codekvast.agent.lib.model.Invocation;
+import io.codekvast.agent.lib.model.v1.legacy.Invocation;
 
 import java.io.*;
 import java.lang.reflect.Field;

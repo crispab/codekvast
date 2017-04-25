@@ -27,7 +27,7 @@ import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import io.codekvast.agent.lib.config.CollectorConfig;
-import io.codekvast.agent.lib.model.MethodSignature;
+import io.codekvast.agent.lib.model.v1.MethodSignature;
 import io.codekvast.agent.lib.model.v1.SignatureStatus;
 
 import java.io.*;
@@ -64,25 +64,25 @@ public class CodeBase {
     private final CollectorConfig config;
 
     @Getter
-    private final Map<String, MethodSignature> signatures = new TreeMap<String, MethodSignature>();
+    private final Map<String, MethodSignature> signatures = new TreeMap<>();
 
     @Getter
-    private final Map<String, String> overriddenSignatures = new HashMap<String, String>();
+    private final Map<String, String> overriddenSignatures = new HashMap<>();
 
     @Getter
-    private final Map<String, SignatureStatus> statuses = new HashMap<String, SignatureStatus>();
+    private final Map<String, SignatureStatus> statuses = new HashMap<>();
 
     @Getter
     private final CodeBaseFingerprint fingerprint;
 
-    private static final Set<String> strangeSignatures = new TreeSet<String>();
+    private static final Set<String> strangeSignatures = new TreeSet<>();
 
     private List<URL> urls;
     private boolean needsExploding = false;
 
     private final List<Pattern> bytecodeAddedPatterns;
     private final List<Pattern> bytecodeEnhancedPatterns;
-    private final Set<Pattern> loggedBadPatterns = new HashSet<Pattern>();
+    private final Set<Pattern> loggedBadPatterns = new HashSet<>();
 
     public CodeBase(CollectorConfig config) {
         this.config = config;
@@ -93,7 +93,7 @@ public class CodeBase {
     }
 
     private List<Pattern> readByteCodePatternsFrom(String resourceName) {
-        List<Pattern> result = new ArrayList<Pattern>();
+        List<Pattern> result = new ArrayList<>();
         log.debug("Reading byte code patterns from {}", resourceName);
         try {
             LineNumberReader reader = new LineNumberReader(
@@ -181,7 +181,7 @@ public class CodeBase {
     private CodeBaseFingerprint initUrls() {
         long startedAt = System.currentTimeMillis();
 
-        urls = new ArrayList<URL>();
+        urls = new ArrayList<>();
         CodeBaseFingerprint.Builder builder = CodeBaseFingerprint.builder();
         for (File codeBaseFile : codeBaseFiles) {
             if (codeBaseFile.isDirectory()) {
@@ -312,7 +312,7 @@ public class CodeBase {
     }
 
     public Collection<CodeBaseEntry> getEntries() {
-        List<CodeBaseEntry> result = new ArrayList<CodeBaseEntry>();
+        List<CodeBaseEntry> result = new ArrayList<>();
 
         for (Map.Entry<String, MethodSignature> entry : signatures.entrySet()) {
             String name = entry.getKey();

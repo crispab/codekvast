@@ -1,5 +1,6 @@
 package io.codekvast.agent.lib.model;
 
+import io.codekvast.agent.lib.model.v1.MethodSignature;
 import org.junit.Test;
 
 /**

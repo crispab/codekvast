@@ -24,7 +24,7 @@ package io.codekvast.warehouse.file_import;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import io.codekvast.agent.lib.model.v1.ExportFileFormat;
+import io.codekvast.agent.lib.model.v1.legacy.ExportFileFormat;
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
 
 import javax.inject.Inject;

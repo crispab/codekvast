@@ -19,34 +19,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.agent.daemon.beans;
-
-import lombok.Data;
-import io.codekvast.agent.lib.codebase.CodeBase;
-import io.codekvast.agent.lib.model.v1.legacy.Jvm;
-
-import java.io.File;
-import java.time.Instant;
-
 /**
- * Mutable state for a {@link Jvm} object.
+ * Version 1 of the model objects.
+ *
+ * Once published model objects may never be modified.
+ *
+ * Instead, a new version of the class should be created.
+ *
+ * @author olle.hallin@crisp.se
  */
-@Data
-public class JvmState {
-    private Jvm jvm;
-    private File invocationsFile;
-    private CodeBase codeBase;
-    private String appVersion;
-    private Instant jvmDataProcessedAt = Instant.MIN;
-    private boolean firstRun = true;
-    private long databaseAppId;
-    private long databaseJvmId;
-
-    public Instant getJvmDumpedAt() {
-        return Instant.ofEpochMilli(jvm.getDumpedAtMillis());
-    }
-
-    public Instant getJvmStartedAt() {
-        return Instant.ofEpochMilli(jvm.getStartedAtMillis());
-    }
-}
+package io.codekvast.agent.lib.model.v1;

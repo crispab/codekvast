@@ -49,6 +49,10 @@ public class CodeBasePublisherFactoryImpl implements CodeBasePublisherFactory {
             return new NoOpCodeBasePublisherImpl(config);
         }
 
+        if (name.equals(FileSystemCodeBasePublisherImpl.NAME)) {
+            return new FileSystemCodeBasePublisherImpl(config);
+        }
+
         log.warn("Unrecognized code base publisher name: '{}', will use {}", name, NoOpCodeBasePublisherImpl.NAME);
         return new NoOpCodeBasePublisherImpl(config);
     }

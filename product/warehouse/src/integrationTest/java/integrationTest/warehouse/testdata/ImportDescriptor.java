@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Singular;
 import lombok.Value;
-import io.codekvast.agent.lib.model.v1.JvmData;
+import io.codekvast.agent.lib.model.v1.legacy.JvmData;
 import io.codekvast.warehouse.file_import.ImportDAO;
 import io.codekvast.warehouse.file_import.ImportDAO.Invocation;
 

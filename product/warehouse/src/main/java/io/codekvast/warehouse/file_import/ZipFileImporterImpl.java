@@ -28,9 +28,9 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import io.codekvast.agent.lib.model.ExportFileMetaInfo;
-import io.codekvast.agent.lib.model.v1.ExportFileEntry;
-import io.codekvast.agent.lib.model.v1.JvmData;
+import io.codekvast.agent.lib.model.v1.legacy.ExportFileMetaInfo;
+import io.codekvast.agent.lib.model.v1.legacy.ExportFileEntry;
+import io.codekvast.agent.lib.model.v1.legacy.JvmData;
 import io.codekvast.agent.lib.model.v1.SignatureStatus;
 import io.codekvast.warehouse.file_import.ImportDAO.Jvm;
 

@@ -23,8 +23,8 @@ package io.codekvast.warehouse.agent.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import io.codekvast.agent.lib.model.rest.GetConfigRequest1;
-import io.codekvast.agent.lib.model.rest.GetConfigResponse1;
+import io.codekvast.agent.lib.model.v1.rest.GetConfigRequest1;
+import io.codekvast.agent.lib.model.v1.rest.GetConfigResponse1;
 import io.codekvast.warehouse.agent.AgentService;
 import io.codekvast.warehouse.agent.LicenseViolationException;
 

@@ -22,7 +22,7 @@
 package io.codekvast.agent.collector.io.impl;
 
 import io.codekvast.agent.lib.config.CollectorConfig;
-import io.codekvast.agent.lib.model.Jvm;
+import io.codekvast.agent.lib.model.v1.legacy.Jvm;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Set;

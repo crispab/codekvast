@@ -19,39 +19,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.agent.lib.model.v1;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.zip.ZipEntry;
-
 /**
- * The names of the different entries in the daemon export file.
- *
+ * Model objects used in the REST interface offered by the Codekvast Server.
+ * 
  * @author olle.hallin@crisp.se
  */
-@RequiredArgsConstructor
-@Getter
-public enum ExportFileEntry {
-    META_INFO("meta-info.properties"),
-    APPLICATIONS("applications.csv"),
-    METHODS("methods.csv"),
-    JVMS("jvms.csv"),
-    INVOCATIONS("invocations.csv");
-
-    private final String entryName;
-
-    public ZipEntry toZipEntry() {
-        return new ZipEntry(entryName);
-    }
-
-    public static ExportFileEntry fromString(String s) {
-        for (ExportFileEntry entry : values()) {
-            if (entry.entryName.equals(s)) {
-                return entry;
-            }
-        }
-        throw new IllegalArgumentException("Unrecognized export file entry: " + s);
-    }
-}
+package io.codekvast.agent.lib.model.v1.rest;

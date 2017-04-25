@@ -22,7 +22,7 @@
 package io.codekvast.agent.collector.scheduler;
 
 import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
-import io.codekvast.agent.lib.model.rest.GetConfigResponse1;
+import io.codekvast.agent.lib.model.v1.rest.GetConfigResponse1;
 
 /**
  * @author olle.hallin@crisp.se

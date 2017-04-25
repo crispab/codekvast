@@ -1,6 +1,6 @@
 package io.codekvast.agent.lib.util;
 
-import io.codekvast.agent.lib.model.Invocation;
+import io.codekvast.agent.lib.model.v1.legacy.Invocation;
 import org.hamcrest.CoreMatchers;
 import org.junit.Rule;
 import org.junit.Test;

@@ -29,8 +29,8 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import io.codekvast.agent.lib.model.ExportFileMetaInfo;
-import io.codekvast.agent.lib.model.v1.JvmData;
+import io.codekvast.agent.lib.model.v1.legacy.ExportFileMetaInfo;
+import io.codekvast.agent.lib.model.v1.legacy.JvmData;
 
 import javax.inject.Inject;
 import java.sql.*;

@@ -29,8 +29,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import io.codekvast.agent.lib.model.rest.GetConfigRequest1;
-import io.codekvast.agent.lib.model.rest.GetConfigResponse1;
+import io.codekvast.agent.lib.model.v1.rest.GetConfigRequest1;
+import io.codekvast.agent.lib.model.v1.rest.GetConfigResponse1;
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
 
 import javax.inject.Inject;

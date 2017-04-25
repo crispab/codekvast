@@ -22,7 +22,7 @@
 package io.codekvast.agent.lib.codebase;
 
 import lombok.Value;
-import io.codekvast.agent.lib.model.MethodSignature;
+import io.codekvast.agent.lib.model.v1.MethodSignature;
 import io.codekvast.agent.lib.model.v1.SignatureStatus;
 
 /**

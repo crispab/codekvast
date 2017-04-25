@@ -19,34 +19,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.agent.daemon.beans;
+package io.codekvast.agent.lib.model.v1.legacy;
 
-import lombok.Data;
-import io.codekvast.agent.lib.codebase.CodeBase;
-import io.codekvast.agent.lib.model.v1.legacy.Jvm;
-
-import java.io.File;
-import java.time.Instant;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Mutable state for a {@link Jvm} object.
+ * The supported export file formats.
+ *
+ * @author olle.hallin@crisp.se
  */
-@Data
-public class JvmState {
-    private Jvm jvm;
-    private File invocationsFile;
-    private CodeBase codeBase;
-    private String appVersion;
-    private Instant jvmDataProcessedAt = Instant.MIN;
-    private boolean firstRun = true;
-    private long databaseAppId;
-    private long databaseJvmId;
+@RequiredArgsConstructor
+@Getter
+public enum ExportFileFormat {
+    ZIP(".zip");
 
-    public Instant getJvmDumpedAt() {
-        return Instant.ofEpochMilli(jvm.getDumpedAtMillis());
-    }
-
-    public Instant getJvmStartedAt() {
-        return Instant.ofEpochMilli(jvm.getStartedAtMillis());
-    }
+    private final String suffix;
 }

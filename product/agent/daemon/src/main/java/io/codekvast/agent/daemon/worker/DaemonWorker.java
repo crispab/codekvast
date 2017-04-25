@@ -30,7 +30,7 @@ import io.codekvast.agent.daemon.beans.DaemonConfig;
 import io.codekvast.agent.daemon.beans.JvmState;
 import io.codekvast.agent.lib.codebase.CodeBase;
 import io.codekvast.agent.lib.config.CollectorConfig;
-import io.codekvast.agent.lib.model.Jvm;
+import io.codekvast.agent.lib.model.v1.legacy.Jvm;
 import io.codekvast.agent.lib.util.FileUtils;
 import io.codekvast.agent.lib.util.LogUtil;
 

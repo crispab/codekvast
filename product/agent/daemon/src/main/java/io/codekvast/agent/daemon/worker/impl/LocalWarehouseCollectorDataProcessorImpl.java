@@ -38,8 +38,8 @@ import io.codekvast.agent.daemon.worker.DataProcessingException;
 import io.codekvast.agent.lib.codebase.CodeBase;
 import io.codekvast.agent.lib.codebase.CodeBaseEntry;
 import io.codekvast.agent.lib.codebase.CodeBaseScanner;
-import io.codekvast.agent.lib.model.Jvm;
-import io.codekvast.agent.lib.model.MethodSignature;
+import io.codekvast.agent.lib.model.v1.legacy.Jvm;
+import io.codekvast.agent.lib.model.v1.MethodSignature;
 import io.codekvast.agent.lib.model.v1.SignatureStatus;
 
 import javax.inject.Inject;

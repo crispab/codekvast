@@ -28,9 +28,9 @@ import io.codekvast.agent.daemon.worker.DataExporter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import io.codekvast.agent.lib.model.ExportFileMetaInfo;
-import io.codekvast.agent.lib.model.v1.ExportFileEntry;
-import io.codekvast.agent.lib.model.v1.ExportFileFormat;
+import io.codekvast.agent.lib.model.v1.legacy.ExportFileMetaInfo;
+import io.codekvast.agent.lib.model.v1.legacy.ExportFileEntry;
+import io.codekvast.agent.lib.model.v1.legacy.ExportFileFormat;
 import io.codekvast.agent.lib.util.FileUtils;
 import io.codekvast.agent.lib.util.LogUtil;
 

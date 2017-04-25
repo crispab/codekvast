@@ -1,7 +1,7 @@
 package io.codekvast.agent.lib.util;
 
 import io.codekvast.agent.lib.config.MethodAnalyzer;
-import io.codekvast.agent.lib.model.MethodSignature;
+import io.codekvast.agent.lib.model.v1.MethodSignature;
 import org.junit.Test;
 
 import java.io.IOException;

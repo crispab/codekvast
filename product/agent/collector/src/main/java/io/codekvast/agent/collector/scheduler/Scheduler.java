@@ -27,7 +27,7 @@ import io.codekvast.agent.collector.io.*;
 import io.codekvast.agent.collector.io.impl.FileSystemInvocationDataPublisherImpl;
 import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
 import io.codekvast.agent.lib.config.CollectorConfig;
-import io.codekvast.agent.lib.model.rest.GetConfigResponse1;
+import io.codekvast.agent.lib.model.v1.rest.GetConfigResponse1;
 import io.codekvast.agent.lib.util.LogUtil;
 import lombok.extern.slf4j.Slf4j;
 
