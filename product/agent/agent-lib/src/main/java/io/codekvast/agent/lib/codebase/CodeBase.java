@@ -333,6 +333,7 @@ public class CodeBase {
             .appVersion(config.getResolvedAppVersion())
             .collectorVersion(Constants.COLLECTOR_VERSION)
             .computerId(ComputerID.compute().toString())
+            .codeBaseFingerprint(getFingerprint().getSha256())
             .entries(getEntries())
             .hostName(Constants.HOST_NAME)
             .jvmUuid(Constants.JVM_UUID)

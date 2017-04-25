@@ -37,22 +37,21 @@ import java.util.Collection;
 @Setter(AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
 public class CodeBasePublication implements Serializable {
-
+    @NonNull
+    private Collection<CodeBaseEntry> entries;
     @NonNull
     private String appName;
     @NonNull
     private String appVersion;
     @NonNull
-    private String collectorVersion;
+    private String codeBaseFingerprint;
     @NonNull
-    private String jvmUuid;
+    private String collectorVersion;
     @NonNull
     private String computerId;
     @NonNull
     private String hostName;
-
-    private long publishedAtMillis;
-
     @NonNull
-    Collection<CodeBaseEntry> entries;
+    private String jvmUuid;
+    private long publishedAtMillis;
 }

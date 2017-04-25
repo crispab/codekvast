@@ -110,6 +110,7 @@ public class FileSystemCodeBasePublisherImplTest {
                                   .collectorVersion(Constants.COLLECTOR_VERSION)
                                   .jvmUuid(Constants.JVM_UUID)
                                   .computerId(Constants.COMPUTER_ID)
+                                  .codeBaseFingerprint("codeBaseFingerprint")
                                   .publishedAtMillis(System.currentTimeMillis())
                                   .hostName(Constants.HOST_NAME)
                                   .entries(entries)
