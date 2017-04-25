@@ -39,6 +39,9 @@ public abstract class AbstractPublisher implements Publisher {
     @Setter
     private boolean enabled;
 
+    @Getter
+    private int publicationCount;
+
     AbstractPublisher(Logger log, CollectorConfig config) {
         this.log = log;
         this.config = config;
@@ -69,6 +72,10 @@ public abstract class AbstractPublisher implements Publisher {
         } else {
             doSetValue(key, value);
         }
+    }
+
+    void incrementPublicationCount() {
+        publicationCount += 1;
     }
 
     abstract void doSetValue(String key, String value);

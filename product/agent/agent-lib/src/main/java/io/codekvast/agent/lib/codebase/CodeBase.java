@@ -106,7 +106,7 @@ public class CodeBase {
                 }
             }
         } catch (Exception e) {
-            log.error("Cannot read " + resourceName, e);
+            log.error("Cannot read " + resourceName);
         }
         return result;
     }

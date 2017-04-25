@@ -21,37 +21,41 @@
  */
 package io.codekvast.agent.collector.io.impl;
 
-import io.codekvast.agent.collector.io.CodekvastPublishingException;
 import io.codekvast.agent.collector.io.InvocationDataPublisher;
+import io.codekvast.agent.collector.io.InvocationDataPublisherFactory;
+import io.codekvast.agent.collector.io.impl.FileSystemInvocationDataPublisherImpl;
+import io.codekvast.agent.collector.io.impl.NoOpInvocationDataPublisherImpl;
 import io.codekvast.agent.lib.config.CollectorConfig;
-import io.codekvast.agent.lib.model.Jvm;
-import lombok.Getter;
-import org.slf4j.Logger;
-
-import java.util.Set;
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 /**
+ * A factory for InvocationDataPublisher instances.
+ *
  * @author olle.hallin@crisp.se
  */
-@Getter
-public abstract class AbstractInvocationDataPublisher extends AbstractPublisher implements InvocationDataPublisher {
-
-    AbstractInvocationDataPublisher(Logger log, CollectorConfig config) {
-        super(log, config);
-    }
+@Slf4j
+public class InvocationDataPublisherFactoryImpl implements InvocationDataPublisherFactory {
+    /**
+     * Creates an instance of the InvocationDataPublisher strategy.
+     *
+     * @param name   The name of the strategy to create.
+     * @param config Is passed to the created strategy.
+     * @return A configured implementation of InvocationDataPublisher
+     */
 
     @Override
-    public void publishInvocationData(Jvm jvm, long recordingIntervalStartedAtMillis, Set<String> invocations)
-        throws CodekvastPublishingException {
-        if (isEnabled()) {
-            incrementPublicationCount();
-
-            log.debug("Publishing invocation data #{}", getPublicationCount());
-
-            doPublishInvocationData(jvm, getPublicationCount(), recordingIntervalStartedAtMillis, invocations);
+    public InvocationDataPublisher create(String name, CollectorConfig config) {
+        if (name.equals(NoOpInvocationDataPublisherImpl.NAME)) {
+            return new NoOpInvocationDataPublisherImpl(config);
         }
+
+        if (name.equals(FileSystemInvocationDataPublisherImpl.NAME)) {
+            return new FileSystemInvocationDataPublisherImpl(config);
+        }
+
+        log.warn("Unrecognized invocation data publisher name: '{}', will use {}", name, NoOpInvocationDataPublisherImpl.NAME);
+        return new NoOpInvocationDataPublisherImpl(config);
     }
 
-    abstract void doPublishInvocationData(Jvm jvm, int publishCount, long recordingIntervalStartedAtMillis,
-                                          Set<String> invocations) throws CodekvastPublishingException;
 }

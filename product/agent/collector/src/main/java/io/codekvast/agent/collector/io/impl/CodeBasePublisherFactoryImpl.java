@@ -19,41 +19,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.agent.collector.io;
+package io.codekvast.agent.collector.io.impl;
 
-import io.codekvast.agent.lib.model.Jvm;
-
-import java.util.Set;
+import io.codekvast.agent.collector.io.CodeBasePublisher;
+import io.codekvast.agent.collector.io.CodeBasePublisherFactory;
+import io.codekvast.agent.collector.io.impl.NoOpCodeBasePublisherImpl;
+import io.codekvast.agent.lib.config.CollectorConfig;
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * Strategy for publishing collected invocation data.
+ * Factory for CodeBasePublisher implementations.
  *
  * @author olle.hallin@crisp.se
  */
-public interface InvocationDataPublisher {
+@Slf4j
+public class CodeBasePublisherFactoryImpl implements CodeBasePublisherFactory {
 
     /**
-     * What is the name of the publishing strategy?
+     * Creates an instance of the CodeBasePublisher strategy.
      *
-     * @return The name of the strategy.
+     * @param name   The name of the strategy to create.
+     * @param config Is passed to the created strategy.
+     * @return A configured implementation of CodeBasePublisher
      */
-    String getName();
+    @Override
+    public CodeBasePublisher create(String name, CollectorConfig config) {
+        if (name.equals(NoOpCodeBasePublisherImpl.NAME)) {
+            return new NoOpCodeBasePublisherImpl(config);
+        }
 
-    /**
-     * Configure this publisher.
-     *
-     * @param keyValuePairs The specialized config received from the server, a semi-colon separated list of key=value pairs.
-     */
-    void configure(String keyValuePairs);
+        log.warn("Unrecognized code base publisher name: '{}', will use {}", name, NoOpCodeBasePublisherImpl.NAME);
+        return new NoOpCodeBasePublisherImpl(config);
+    }
 
-    /**
-     * Publish the invocation data.
-     *
-     * @param jvm                              The JVM data at the time of the publishing.
-     * @param recordingIntervalStartedAtMillis When the recording of these invocations were started.
-     * @param invocations                      The set of invocations to publish.
-     * @throws CodekvastPublishingException when publishing fails.
-     */
-    void publishInvocationData(Jvm jvm, long recordingIntervalStartedAtMillis, Set<String> invocations)
-        throws CodekvastPublishingException;
 }

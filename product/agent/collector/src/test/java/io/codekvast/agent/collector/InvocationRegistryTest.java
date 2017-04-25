@@ -4,6 +4,7 @@ import io.codekvast.agent.collector.io.CodekvastPublishingException;
 import io.codekvast.agent.collector.io.InvocationDataPublisher;
 import io.codekvast.agent.collector.io.InvocationDataPublisherFactory;
 import io.codekvast.agent.collector.io.impl.FileSystemInvocationDataPublisherImpl;
+import io.codekvast.agent.collector.io.impl.InvocationDataPublisherFactoryImpl;
 import org.aspectj.lang.Signature;
 import org.junit.After;
 import org.junit.Before;
@@ -70,7 +71,8 @@ public class InvocationRegistryTest {
 
         doExtremelyConcurrentRegistrationOf(10, 10, signature1, signature2);
 
-        InvocationDataPublisher publisher = InvocationDataPublisherFactory.create(FileSystemInvocationDataPublisherImpl.NAME, config);
+        InvocationDataPublisher publisher =
+            new InvocationDataPublisherFactoryImpl().create(FileSystemInvocationDataPublisherImpl.NAME, config);
 
         InvocationRegistry.instance.publishInvocationData(publisher);
 

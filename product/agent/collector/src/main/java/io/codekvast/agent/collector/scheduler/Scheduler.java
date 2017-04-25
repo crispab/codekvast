@@ -23,12 +23,8 @@ package io.codekvast.agent.collector.scheduler;
 
 import io.codekvast.agent.collector.CodekvastThreadFactory;
 import io.codekvast.agent.collector.InvocationRegistry;
-import io.codekvast.agent.collector.io.CodeBasePublisher;
-import io.codekvast.agent.collector.io.InvocationDataPublisher;
-import io.codekvast.agent.collector.io.InvocationDataPublisherFactory;
-import io.codekvast.agent.collector.io.CodeBasePublisherFactory;
+import io.codekvast.agent.collector.io.*;
 import io.codekvast.agent.collector.io.impl.FileSystemInvocationDataPublisherImpl;
-import io.codekvast.agent.collector.scheduler.impl.ConfigPollerImpl;
 import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
 import io.codekvast.agent.lib.config.CollectorConfig;
 import io.codekvast.agent.lib.model.rest.GetConfigResponse1;
@@ -49,6 +45,8 @@ public class Scheduler implements Runnable {
     // Collaborators
     private final CollectorConfig config;
     private final ConfigPoller configPoller;
+    private final CodeBasePublisherFactory codeBasePublisherFactory;
+    private final InvocationDataPublisherFactory invocationDataPublisherFactory;
     private final ScheduledExecutorService executor;
 
     // Mutable state
@@ -63,9 +61,14 @@ public class Scheduler implements Runnable {
     private long nextInvocationDataPublishingAtMillis = 0L;
     private InvocationDataPublisher invocationDataPublisher;
 
-    public Scheduler(CollectorConfig config, ConfigPoller configPoller) {
+    public Scheduler(CollectorConfig config,
+                     ConfigPoller configPoller,
+                     CodeBasePublisherFactory codeBasePublisherFactory,
+                     InvocationDataPublisherFactory invocationDataPublisherFactory) {
         this.config = config;
         this.configPoller = configPoller;
+        this.codeBasePublisherFactory = codeBasePublisherFactory;
+        this.invocationDataPublisherFactory = invocationDataPublisherFactory;
         this.executor = Executors.newScheduledThreadPool(1, new CodekvastThreadFactory());
     }
 
@@ -94,12 +97,11 @@ public class Scheduler implements Runnable {
 
         // Shutting down before first config poll...
         if (dynamicConfig == null) {
-            dynamicConfig = GetConfigResponse1
-                .sample()
-                .toBuilder()
-                .invocationDataPublisherName(FileSystemInvocationDataPublisherImpl.NAME)
-                .invocationDataPublisherConfig("")
-                .build();
+            dynamicConfig = GetConfigResponse1.sample()
+                                              .toBuilder()
+                                              .invocationDataPublisherName(FileSystemInvocationDataPublisherImpl.NAME)
+                                              .invocationDataPublisherConfig("")
+                                              .build();
             configureInvocationDataPublisher(true);
         }
         nextInvocationDataPublishingAtMillis = 0L;
@@ -109,6 +111,7 @@ public class Scheduler implements Runnable {
     @Override
     public void run() {
         if (executor.isShutdown()) {
+            log.debug("Shutting down");
             return;
         }
 
@@ -123,7 +126,9 @@ public class Scheduler implements Runnable {
             try {
                 dynamicConfig = configPoller.doPoll(firstTime);
 
-                configureCodeBasePublisher(configPoller.getCodeBaseFingerprint());
+                configureCodeBasePublisher(
+                    dynamicConfig.isCodeBasePublishingNeeded() ? null : configPoller.getCodeBaseFingerprint());
+
                 configureInvocationDataPublisher(firstTime);
 
                 scheduleNextPollAt(dynamicConfig.getConfigPollIntervalSeconds());
@@ -139,17 +144,17 @@ public class Scheduler implements Runnable {
 
     private void configureCodeBasePublisher(CodeBaseFingerprint codeBaseFingerprint) {
         String newName = dynamicConfig.getCodeBasePublisherName();
-        if (codeBasePublisher == null || !codeBasePublisher.getName().equals(newName)) {
-            codeBasePublisher = CodeBasePublisherFactory.create(newName, config);
-            codeBasePublisher.setCodeBaseFingerprint(codeBaseFingerprint);
+        if (codeBasePublisher == null || !newName.equals(codeBasePublisher.getName())) {
+            codeBasePublisher = codeBasePublisherFactory.create(newName, config);
+            codeBasePublisher.initialize(codeBaseFingerprint);
         }
         codeBasePublisher.configure(dynamicConfig.getCodeBasePublisherConfig());
     }
 
     private void configureInvocationDataPublisher(boolean firstTime) {
         String newName = dynamicConfig.getInvocationDataPublisherName();
-        if (invocationDataPublisher == null || !invocationDataPublisher.getName().equals(newName)) {
-            invocationDataPublisher = InvocationDataPublisherFactory.create(newName, config);
+        if (invocationDataPublisher == null || !newName.equals(invocationDataPublisher.getName())) {
+            invocationDataPublisher = invocationDataPublisherFactory.create(newName, config);
         }
         invocationDataPublisher.configure(dynamicConfig.getInvocationDataPublisherConfig());
         if (firstTime) {

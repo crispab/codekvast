@@ -30,11 +30,11 @@ import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
 public interface CodeBasePublisher extends Publisher {
 
     /**
-     * Sets an initial fingerprint
+     * Initializes the publisher
      *
-     * @param fingerprint
+     * @param fingerprint The fingerprint to consider already published
      */
-    void setCodeBaseFingerprint(CodeBaseFingerprint fingerprint);
+    void initialize(CodeBaseFingerprint fingerprint);
 
     /**
      * Publishes a codebase.
@@ -42,5 +42,4 @@ public interface CodeBasePublisher extends Publisher {
      * @throws CodekvastPublishingException when no contact with the consumer. Try again.
      */
     void publishCodebase() throws CodekvastPublishingException;
-
 }

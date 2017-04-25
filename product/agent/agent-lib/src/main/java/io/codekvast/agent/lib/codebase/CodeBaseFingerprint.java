@@ -40,7 +40,7 @@ import static javax.xml.bind.DatatypeConverter.printBase64Binary;
  * @author olle.hallin@crisp.se
  */
 @Value
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 @Slf4j
 public class CodeBaseFingerprint {
     private final int numFiles;

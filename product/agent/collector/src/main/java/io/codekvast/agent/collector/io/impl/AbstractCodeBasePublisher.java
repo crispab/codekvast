@@ -27,7 +27,6 @@ import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
 import io.codekvast.agent.lib.codebase.CodeBaseScanner;
 import io.codekvast.agent.lib.config.CollectorConfig;
 import lombok.Getter;
-import lombok.Setter;
 import org.slf4j.Logger;
 
 /**
@@ -36,7 +35,6 @@ import org.slf4j.Logger;
 abstract class AbstractCodeBasePublisher extends AbstractPublisher implements CodeBasePublisher {
 
     @Getter
-    @Setter
     private CodeBaseFingerprint codeBaseFingerprint;
 
     AbstractCodeBasePublisher(Logger log, CollectorConfig config) {
@@ -44,10 +42,17 @@ abstract class AbstractCodeBasePublisher extends AbstractPublisher implements Co
     }
 
     @Override
+    public void initialize(CodeBaseFingerprint fingerprint) {
+        this.codeBaseFingerprint = fingerprint;
+    }
+
+    @Override
     public void publishCodebase() {
         if (isEnabled()) {
             CodeBase newCodeBase = new CodeBase(getConfig());
             if (!newCodeBase.getFingerprint().equals(codeBaseFingerprint)) {
+                incrementPublicationCount();
+
                 new CodeBaseScanner().scanSignatures(newCodeBase);
 
                 doPublishCodeBase(newCodeBase);

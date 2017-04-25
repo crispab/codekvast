@@ -48,7 +48,7 @@ public class NoOpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
     }
 
     @Override
-    void doPublishCodeBase(CodeBase codeBase) {
+    public void doPublishCodeBase(CodeBase codeBase) {
         // Nothing to do here
     }
 

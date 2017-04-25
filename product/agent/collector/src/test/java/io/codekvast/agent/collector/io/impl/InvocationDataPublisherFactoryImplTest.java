@@ -1,7 +1,7 @@
-package io.codekvast.agent.collector.io;
+package io.codekvast.agent.collector.io.impl;
 
-import io.codekvast.agent.collector.io.impl.FileSystemInvocationDataPublisherImpl;
-import io.codekvast.agent.collector.io.impl.NoOpInvocationDataPublisherImpl;
+import io.codekvast.agent.collector.io.InvocationDataPublisher;
+import io.codekvast.agent.collector.io.InvocationDataPublisherFactory;
 import io.codekvast.agent.lib.config.CollectorConfig;
 import io.codekvast.agent.lib.config.CollectorConfigFactory;
 import org.junit.Rule;
@@ -14,17 +14,19 @@ import static org.junit.Assert.assertThat;
 /**
  * @author olle.hallin@crisp.se
  */
-public class InvocationDataPublisherFactoryTest {
+public class InvocationDataPublisherFactoryImplTest {
 
     private final CollectorConfig config = CollectorConfigFactory.createSampleCollectorConfig();
 
     @Rule
     public OutputCapture output = new OutputCapture();
 
+    private final InvocationDataPublisherFactory factory = new InvocationDataPublisherFactoryImpl();
+
     @Test
     public void should_handle_noop_name() throws Exception {
         // given
-        InvocationDataPublisher publisher = InvocationDataPublisherFactory.create(NoOpInvocationDataPublisherImpl.NAME, config);
+        InvocationDataPublisher publisher = factory.create(NoOpInvocationDataPublisherImpl.NAME, config);
 
         // then
         assertThat(publisher, instanceOf(NoOpInvocationDataPublisherImpl.class));
@@ -34,7 +36,7 @@ public class InvocationDataPublisherFactoryTest {
     @Test
     public void should_handle_fileSystem_name() throws Exception {
         // given
-        InvocationDataPublisher publisher = InvocationDataPublisherFactory.create(FileSystemInvocationDataPublisherImpl.NAME, config);
+        InvocationDataPublisher publisher = factory.create(FileSystemInvocationDataPublisherImpl.NAME, config);
 
         // then
         assertThat(publisher, instanceOf(FileSystemInvocationDataPublisherImpl.class));
@@ -44,7 +46,7 @@ public class InvocationDataPublisherFactoryTest {
     @Test
     public void should_warn_when_unrecognized_name() throws Exception {
         // given
-        InvocationDataPublisher publisher = InvocationDataPublisherFactory.create("foobar", config);
+        InvocationDataPublisher publisher = factory.create("foobar", config);
 
         // then
         assertThat(publisher, instanceOf(NoOpInvocationDataPublisherImpl.class));

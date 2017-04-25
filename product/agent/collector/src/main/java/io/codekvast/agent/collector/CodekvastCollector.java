@@ -21,6 +21,8 @@
  */
 package io.codekvast.agent.collector;
 
+import io.codekvast.agent.collector.io.impl.CodeBasePublisherFactoryImpl;
+import io.codekvast.agent.collector.io.impl.InvocationDataPublisherFactoryImpl;
 import io.codekvast.agent.collector.scheduler.impl.ConfigPollerImpl;
 import io.codekvast.agent.collector.scheduler.Scheduler;
 import io.codekvast.agent.lib.config.CollectorConfig;
@@ -117,7 +119,11 @@ public class CodekvastCollector {
 
         defineAspectjLoadTimeWeaverConfig(config);
 
-        scheduler = new Scheduler(config, new ConfigPollerImpl(config));
+        scheduler = new Scheduler(config,
+                                  new ConfigPollerImpl(config),
+                                  new CodeBasePublisherFactoryImpl(),
+                                  new InvocationDataPublisherFactoryImpl());
+
         scheduler.start(10, TimeUnit.SECONDS);
 
         Runtime.getRuntime().addShutdownHook(createShutdownHook());

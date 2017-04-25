@@ -28,7 +28,7 @@ public interface Publisher {
     /**
      * What is the nick-name of this publisher implementation.
      *
-     * @return
+     * @return The name of the publisher.
      */
     String getName();
 
@@ -38,4 +38,12 @@ public interface Publisher {
      * @param keyValuePairs The specialized config received from the server, a semi-colon separated list of key=value pairs.
      */
     void configure(String keyValuePairs);
+
+    /**
+     * How many times has a publication actually been executed?
+     *
+     * @return The number of performed publications.
+     */
+    int getPublicationCount();
+
 }
