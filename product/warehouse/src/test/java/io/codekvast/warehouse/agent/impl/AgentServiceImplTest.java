@@ -24,10 +24,12 @@ public class AgentServiceImplTest {
     @Test
     public void should_return_sensible_defaults() throws Exception {
         GetConfigResponse1 response = service.getConfig(request);
+
         assertThat(response.getCodeBasePublisherName(), is("no-op"));
-        assertThat(response.getCodeBasePublisherCheckIntervalSeconds(), is(600));
-        assertThat(response.getCodeBasePublisherRetryIntervalSeconds(), is(600));
-        assertThat(response.isCodeBasePublishingNeeded(), is(true));
-        assertThat(response.getCodeBasePublisherConfig(), notNullValue());
+        assertThat(response.isCodeBasePublishingNeeded(), is(false));
+        assertThat(response.getCodeBasePublisherConfig(), is("enabled=true"));
+
+        assertThat(response.getInvocationDataPublisherName(), is("file-system"));
+        assertThat(response.getInvocationDataPublisherConfig(), is("enabled=true"));
     }
 }
