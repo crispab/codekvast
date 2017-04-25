@@ -193,7 +193,7 @@ public class CodekvastCollector {
             messageHandlerClass + config.getAspectjOptions(),
             getIncludeExcludeElements("include", config.getNormalizedPackages()),
             getIncludeExcludeElements("exclude", config.getNormalizedExcludePackages(),
-                                      "io.codekvast.agent"));
+                                      "io.codekvast.agent", "codekvast"));
 
         File file = config.getAspectFile();
         if (config.isClobberAopXml() || !file.canRead()) {

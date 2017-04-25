@@ -39,7 +39,11 @@ public class AspectjMessageHandler implements IMessageHandler {
     @Override
     public boolean handleMessage(IMessage message) throws AbortException {
         if (message.isDebug()) {
-            log.debug("{}", message.getMessage());
+
+            String m = message.getMessage();
+            if (!m.contains("not weaving") || !m.contains("codekvast")) {
+                log.debug("{}", m);
+            }
             return true;
         }
         if (message.isInfo()) {

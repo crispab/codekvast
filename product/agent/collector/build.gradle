@@ -26,6 +26,8 @@ check.dependsOn integrationTest
 
 dependencies {
     compile project(":product:agent:agent-lib")
+    compile 'com.squareup.okhttp3:okhttp:3.7.0'
+    compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
 
     compileOnly aspectjWeaver
     compileOnly lombok
@@ -64,6 +66,8 @@ shadowJar {
     relocate 'javax.validation', 'codekvast.javax.validation'
     relocate 'com', 'codekvast.com'
     relocate 'org.reflections', 'codekvast.org.reflections'
+    relocate 'okhttp3', 'codekvast.okhttp3'
+    relocate 'okio', 'codekvast.okio'
 }
 
 task verifyShadowJar {
@@ -91,7 +95,7 @@ task verifyShadowJar {
             }
         }
 
-        assert shadowJarFile.length() < 5_000_000 // bytes, it is currently approx. 3.5 MB
+        assert shadowJarFile.length() < 7_000_000 // bytes, it is currently approx. 5.7 MB
     }
 }
 check.dependsOn verifyShadowJar

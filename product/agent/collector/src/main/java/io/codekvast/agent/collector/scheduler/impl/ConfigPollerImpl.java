@@ -21,9 +21,8 @@
  */
 package io.codekvast.agent.collector.scheduler.impl;
 
-import io.codekvast.agent.collector.io.impl.FileSystemInvocationDataPublisherImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.codekvast.agent.collector.scheduler.ConfigPoller;
-import io.codekvast.agent.collector.io.impl.NoOpCodeBasePublisherImpl;
 import io.codekvast.agent.lib.codebase.CodeBase;
 import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
 import io.codekvast.agent.lib.config.CollectorConfig;
@@ -32,10 +31,13 @@ import io.codekvast.agent.lib.model.rest.GetConfigResponse1;
 import io.codekvast.agent.lib.util.ComputerID;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.*;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author olle.hallin@crisp.se
@@ -44,6 +46,12 @@ import java.util.UUID;
 public class ConfigPollerImpl implements ConfigPoller {
     private final CollectorConfig config;
     private final GetConfigRequest1 requestTemplate;
+
+    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+    private final OkHttpClient httpClient;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Getter
     private CodeBaseFingerprint codeBaseFingerprint;
@@ -60,6 +68,19 @@ public class ConfigPollerImpl implements ConfigPoller {
                                                 .licenseKey(config.getLicenseKey())
                                                 .startedAtMillis(System.currentTimeMillis())
                                                 .build();
+
+        this.httpClient = buildHttpClient(config);
+    }
+
+    private OkHttpClient buildHttpClient(CollectorConfig config) {
+        // TODO: pick values from config
+
+        return new OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(10, TimeUnit.SECONDS)
+            // TODO: .proxy()
+            .build();
     }
 
     @Override
@@ -69,19 +90,10 @@ public class ConfigPollerImpl implements ConfigPoller {
         GetConfigRequest1 request = requestTemplate.toBuilder().codeBaseFingerprint(codeBaseFingerprint.getSha256()).build();
         log.debug("Posting {} to {}", request, config.getConfigRequestEndpoint());
 
-        // TODO: implement proper config polling
+        GetConfigResponse1 response = objectMapper.readValue(doHttpPost(objectMapper.writeValueAsString(request)), GetConfigResponse1.class);
 
-        return GetConfigResponse1.builder()
-                                 .codeBasePublisherName(NoOpCodeBasePublisherImpl.NAME)
-                                 .codeBasePublisherCheckIntervalSeconds(10)
-                                 .codeBasePublisherRetryIntervalSeconds(10)
-                                 .codeBasePublisherConfig("enabled=true")
-                                 .codeBasePublishingNeeded(true)
-                                 .invocationDataPublisherName(FileSystemInvocationDataPublisherImpl.NAME)
-                                 .invocationDataPublisherConfig("enabled=true")
-                                 .invocationDataPublisherIntervalSeconds(10)
-                                 .invocationDataPublisherRetryIntervalSeconds(10)
-                                 .build();
+        log.debug("Received {} in response", response);
+        return response;
     }
 
     private CodeBaseFingerprint calculateCodeBaseFingerprint(boolean firstTime) {
@@ -100,4 +112,20 @@ public class ConfigPollerImpl implements ConfigPoller {
         return ConfigPollerImpl.class.getPackage().getImplementationVersion();
     }
 
+    private String doHttpPost(String bodyJson) throws IOException {
+
+        Request request = new Request.Builder()
+            .url(config.getConfigRequestEndpoint())
+            .post(RequestBody.create(JSON, bodyJson))
+            .build();
+
+        Response response = httpClient.newCall(request).execute();
+
+        if (!response.isSuccessful()) {
+            throw new IOException(response.body().string());
+        }
+
+        String responseJson = response.body().string();
+        return responseJson;
+    }
 }
