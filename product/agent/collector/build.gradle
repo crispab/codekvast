@@ -33,9 +33,11 @@ dependencies {
     aspectjweaver aspectjWeaver
 
     testCompile aspectjWeaver
+    testCompile lombok
     testCompile junit
     testCompile mockito
-    testCompile lombok
+    testCompile "org.springframework.boot:spring-boot-test:$springBootVersion"
+
     testRuntime logback
 
     integrationTestCompile project(":product:testsupport")

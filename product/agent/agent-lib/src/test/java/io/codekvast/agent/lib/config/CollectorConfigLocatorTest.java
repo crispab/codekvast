@@ -27,16 +27,16 @@ public class CollectorConfigLocatorTest {
 
     @Test
     public void should_handle_valid_file() throws Exception {
-        outputCapture.expect(containsString("Found src/test/resources/codekvast1.conf"));
         System.setProperty(CollectorConfigLocator.SYSPROP_CONFIG, "src/test/resources/codekvast1.conf");
         assertThat(CollectorConfigLocator.locateConfig(), not(nullValue()));
+        outputCapture.expect(containsString("Found src/test/resources/codekvast1.conf"));
     }
 
     @Test
     public void should_handle_invalid_file() throws Exception {
-        outputCapture.expect(containsString("No configuration file found"));
         System.setProperty(CollectorConfigLocator.SYSPROP_CONFIG, "src/test/resources/codekvast1.conf-FOOBAR");
         assertThat(CollectorConfigLocator.locateConfig(), nullValue());
+        outputCapture.expect(containsString("No configuration file found"));
     }
 
     @Test
@@ -59,8 +59,8 @@ public class CollectorConfigLocatorTest {
 
     @Test
     public void should_handle_no_hints_given() throws Exception {
+        assertThat(CollectorConfigLocator.locateConfig(), nullValue());
         outputCapture.expect(containsString("WARN " + CollectorConfigLocator.class.getName()));
         outputCapture.expect(containsString("No configuration file found"));
-        assertThat(CollectorConfigLocator.locateConfig(), nullValue());
     }
 }

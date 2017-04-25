@@ -1,10 +1,6 @@
 apply from: "$rootDir/gradle/java-7.gradle"
 apply from: "$rootDir/gradle/license.gradle"
 
-// We only want the dependency management provided by the Spring Boot plugin.
-apply plugin: 'org.springframework.boot'
-bootRepackage.enabled = false
-
 description = "Code that is shared between the Codekvast daemon and collector"
 archivesBaseName = "codekvast-agent-lib"
 version = codekvastVersion
@@ -23,7 +19,7 @@ dependencies {
     testCompile junit
     testCompile mockito
     testCompile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
-    testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testCompile "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
 
     testRuntime logback
 }

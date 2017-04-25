@@ -48,7 +48,7 @@ import java.util.concurrent.TimeUnit;
 public class Scheduler implements Runnable {
     // Collaborators
     private final CollectorConfig config;
-    private final ConfigPollerImpl configPoller;
+    private final ConfigPoller configPoller;
     private final ScheduledExecutorService executor;
 
     // Mutable state
@@ -63,7 +63,7 @@ public class Scheduler implements Runnable {
     private long nextInvocationDataPublishingAtMillis = 0L;
     private InvocationDataPublisher invocationDataPublisher;
 
-    public Scheduler(CollectorConfig config, ConfigPollerImpl configPoller) {
+    public Scheduler(CollectorConfig config, ConfigPoller configPoller) {
         this.config = config;
         this.configPoller = configPoller;
         this.executor = Executors.newScheduledThreadPool(1, new CodekvastThreadFactory());
@@ -74,8 +74,8 @@ public class Scheduler implements Runnable {
      *
      * @return this
      */
-    public Scheduler start() {
-        executor.scheduleAtFixedRate(this, 10L, 10L, TimeUnit.SECONDS);
+    public Scheduler start(long period, TimeUnit timeUnit) {
+        executor.scheduleAtFixedRate(this, period, period, timeUnit);
         log.info("Scheduler started; pulling dynamic config from {}", config.getServerUrl());
         return this;
     }

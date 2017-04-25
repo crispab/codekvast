@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This is the Java agent that hooks up Codekvast to the app.
@@ -116,7 +117,8 @@ public class CodekvastCollector {
 
         defineAspectjLoadTimeWeaverConfig(config);
 
-        scheduler = new Scheduler(config, new ConfigPollerImpl(config)).start();
+        scheduler = new Scheduler(config, new ConfigPollerImpl(config));
+        scheduler.start(10, TimeUnit.SECONDS);
 
         Runtime.getRuntime().addShutdownHook(createShutdownHook());
 

@@ -49,12 +49,14 @@ public abstract class AbstractPublisher implements Publisher {
         String[] pairs = keyValuePairs.split(";");
 
         for (String pair : pairs) {
-            log.debug("Analyzing {}", pair);
-            String[] parts = pair.trim().split("=");
-            if (parts.length == 2) {
-                setValue(parts[0].trim(), parts[1].trim());
-            } else {
-                log.warn("Illegal key-value pair: {}", pair);
+            if (!pair.trim().isEmpty()) {
+                log.debug("Analyzing {}", pair);
+                String[] parts = pair.trim().split("=");
+                if (parts.length == 2) {
+                    setValue(parts[0].trim(), parts[1].trim());
+                } else {
+                    log.warn("Illegal key-value pair: {}", pair);
+                }
             }
         }
     }
