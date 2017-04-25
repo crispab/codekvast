@@ -48,7 +48,7 @@ public class CollectorConfigFactory {
     private static final String OVERRIDE_SEPARATOR = ";";
     private static final String UNSPECIFIED = "unspecified";
     private static final String TAGS_KEY = "tags";
-    private static final String EMPTY_LICENSE_KEY = "";
+    private static final String TRIAL_LICENSE_KEY = "";
 
     private CollectorConfigFactory() {
     }
@@ -114,7 +114,7 @@ public class CollectorConfigFactory {
                                                                                    DEFAULT_METHOD_VISIBILITY))
                               .packages(packages)
                               .excludePackages(excludePackages)
-                              .licenseKey(ConfigUtils.getOptionalStringValue(props, "licenseKey", EMPTY_LICENSE_KEY))
+                              .licenseKey(ConfigUtils.getOptionalStringValue(props, "licenseKey", TRIAL_LICENSE_KEY))
                               .serverUrl(ConfigUtils.getOptionalStringValue(props, "serverUrl", DEFAULT_SERVER_URL))
                               .tags(ConfigUtils.getOptionalStringValue(props, TAGS_KEY, ""))
                               .build();
@@ -188,7 +188,7 @@ public class CollectorConfigFactory {
                               .methodVisibility(DEFAULT_METHOD_VISIBILITY)
                               .packages(UNSPECIFIED)
                               .excludePackages("")
-                              .licenseKey(EMPTY_LICENSE_KEY)
+                              .licenseKey(TRIAL_LICENSE_KEY)
                               .serverUrl(DEFAULT_SERVER_URL)
                               .tags(createSystemPropertiesTags() + ", " + SAMPLE_TAGS)
                               .build();

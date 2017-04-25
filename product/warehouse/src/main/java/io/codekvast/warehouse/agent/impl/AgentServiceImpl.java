@@ -60,12 +60,12 @@ public class AgentServiceImpl implements AgentService {
 
     private void checkLicense(GetConfigRequest1 request) {
         // TODO: implement proper license control
-        if (request.getLicenseKey().equals("-----")) {
+        if ("-----".equals(request.getLicenseKey())) {
             throw new LicenseViolationException("Invalid license key: " + request.getLicenseKey());
         }
 
-        if (request.getLicenseKey().equals("")) {
-            log.debug("Running without license.");
+        if (request.getLicenseKey() == null || request.getLicenseKey().trim().isEmpty()) {
+            log.debug("Running without a license.");
         }
     }
 }

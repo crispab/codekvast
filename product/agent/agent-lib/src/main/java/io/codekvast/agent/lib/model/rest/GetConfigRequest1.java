@@ -38,11 +38,10 @@ import javax.validation.constraints.Size;
 public class GetConfigRequest1 {
 
     public static final String ENDPOINT = "/agent/v1/getConfig";
+
     /**
-     * What is my license key?
+     * What is my license key? Null or blank is acceptable and means run with a trial license.
      */
-    @NonNull
-    @Size(min = 1, message = "licenseKey must be at least 1 characters")
     private final String licenseKey;
 
     /**

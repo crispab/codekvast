@@ -66,7 +66,11 @@ public class AgentControllerTest {
     @Test
     public void getConfig1_should_reject_invalid_request() throws Exception {
         mockMvc.perform(post(GetConfigRequest1.ENDPOINT)
-                            .content(objectMapper.writeValueAsString(GetConfigRequest1.sample().toBuilder().licenseKey("").build()))
+                            .content(objectMapper.writeValueAsString(
+                                GetConfigRequest1.sample()
+                                                 .toBuilder()
+                                                 .appName("")
+                                                 .build()))
                             .contentType(MediaType.APPLICATION_JSON_UTF8))
                .andExpect(status().isBadRequest());
     }
