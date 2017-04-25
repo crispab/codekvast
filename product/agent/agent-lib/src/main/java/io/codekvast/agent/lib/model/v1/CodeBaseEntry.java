@@ -19,18 +19,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.agent.lib.codebase;
+package io.codekvast.agent.lib.model.v1;
 
+import lombok.NonNull;
 import lombok.Value;
-import io.codekvast.agent.lib.model.v1.MethodSignature;
-import io.codekvast.agent.lib.model.v1.SignatureStatus;
 
 /**
+ * Representation of a code base entry.
+ *
  * @author olle.hallin@crisp.se
  */
 @Value
 public class CodeBaseEntry {
+
+    /**
+     * The normalized signature in String form.
+     */
+    @NonNull
     String normalizedSignature;
+
+    /**
+     * The low-level description of the signature.
+     */
     MethodSignature methodSignature;
+
+    /**
+     * The status of the signature. How it was found, if it has been excluded and so on.
+     */
+    @NonNull
     SignatureStatus signatureStatus;
 }

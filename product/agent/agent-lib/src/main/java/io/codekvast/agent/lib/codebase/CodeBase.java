@@ -21,6 +21,7 @@
  */
 package io.codekvast.agent.lib.codebase;
 
+import io.codekvast.agent.lib.model.v1.CodeBaseEntry;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -311,7 +312,12 @@ public class CodeBase {
         return signatures.size();
     }
 
-    public Collection<CodeBaseEntry> getEntries() {
+    /**
+     * Export the codebase in a stable, published format.
+     *
+     * @return A sorted list of {@link CodeBaseEntry} objects.
+     */
+    public Collection<CodeBaseEntry> exportEntries() {
         List<CodeBaseEntry> result = new ArrayList<>();
 
         for (Map.Entry<String, MethodSignature> entry : signatures.entrySet()) {

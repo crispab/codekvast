@@ -36,7 +36,7 @@ import io.codekvast.agent.daemon.beans.DaemonConfig;
 import io.codekvast.agent.daemon.beans.JvmState;
 import io.codekvast.agent.daemon.worker.DataProcessingException;
 import io.codekvast.agent.lib.codebase.CodeBase;
-import io.codekvast.agent.lib.codebase.CodeBaseEntry;
+import io.codekvast.agent.lib.model.v1.CodeBaseEntry;
 import io.codekvast.agent.lib.codebase.CodeBaseScanner;
 import io.codekvast.agent.lib.model.v1.legacy.Jvm;
 import io.codekvast.agent.lib.model.v1.MethodSignature;
@@ -86,7 +86,7 @@ public class LocalWarehouseCollectorDataProcessorImpl extends AbstractCollectorD
 
     @Override
     protected void doProcessCodebase(JvmState jvmState, CodeBase codeBase) {
-        for (CodeBaseEntry entry : codeBase.getEntries()) {
+        for (CodeBaseEntry entry : codeBase.exportEntries()) {
             doStoreInvocation(jvmState, 0L, entry.getNormalizedSignature(), entry.getSignatureStatus(), entry.getMethodSignature());
         }
     }

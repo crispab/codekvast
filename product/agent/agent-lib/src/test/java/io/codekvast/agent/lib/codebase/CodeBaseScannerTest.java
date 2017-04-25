@@ -7,6 +7,7 @@ import io.codekvast.agent.lib.codebase.scannertest.ScannerTest3;
 import io.codekvast.agent.lib.codebase.scannertest.ScannerTest4;
 import io.codekvast.agent.lib.codebase.scannertest.excluded.ExcludedScannerTest5;
 import io.codekvast.agent.lib.config.CollectorConfigFactory;
+import io.codekvast.agent.lib.model.v1.CodeBaseEntry;
 import io.codekvast.agent.lib.model.v1.SignatureStatus;
 import org.junit.Before;
 import org.junit.Rule;
@@ -50,7 +51,7 @@ public class CodeBaseScannerTest {
         int numClasses = scanner.scanSignatures(codeBase);
         assertThat(numClasses, is(9));
 
-        Collection<CodeBaseEntry> entries = codeBase.getEntries();
+        Collection<CodeBaseEntry> entries = codeBase.exportEntries();
         assertThat(entries, notNullValue());
         assertThat(entries.size(), is(25));
         assertThat(countBySignatureStatus(entries, SignatureStatus.EXCLUDED_BY_PACKAGE_NAME), is(1));
