@@ -78,6 +78,10 @@ public class AgentController {
     @RequestMapping(value = GetConfigRequest1.ENDPOINT)
     public GetConfigResponse1 getConfig1(@Valid @RequestBody GetConfigRequest1 request) {
         log.debug("Received {}", request);
-        return agentService.getConfig(request);
+
+        GetConfigResponse1 response = agentService.getConfig(request);
+
+        log.debug("Responds with {}", response);
+        return response;
     }
 }

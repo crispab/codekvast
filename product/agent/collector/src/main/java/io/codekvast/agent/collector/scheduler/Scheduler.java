@@ -126,15 +126,14 @@ public class Scheduler implements Runnable {
             try {
                 dynamicConfig = configPoller.doPoll(firstTime);
 
-                configureCodeBasePublisher(
-                    dynamicConfig.isCodeBasePublishingNeeded() ? null : configPoller.getCodeBaseFingerprint());
+                configureCodeBasePublisher(dynamicConfig.isCodeBasePublishingNeeded() ? null : configPoller.getCodeBaseFingerprint());
 
                 configureInvocationDataPublisher(firstTime);
 
                 scheduleNextPollAt(dynamicConfig.getConfigPollIntervalSeconds());
                 firstTime = false;
             } catch (Exception e) {
-                LogUtil.logException(log, "Failed to poll " + config.getConfigRequestEndpoint(), e);
+                log.error("Failed to poll " + config.getConfigRequestEndpoint(), e);
 
                 // TODO: implement some back-off algorithm to prevent spamming server
                 scheduleNextPollAt(dynamicConfig.getConfigPollRetryIntervalSeconds());

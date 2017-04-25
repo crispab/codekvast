@@ -22,32 +22,36 @@
 package io.codekvast.agent.lib.appversion;
 
 import io.codekvast.agent.lib.config.CollectorConfig;
+import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 
-/**
- * Strategy for how to obtain the version of an application.
- *
- * @author olle.hallin@crisp.se
- */
-public interface AppVersionStrategy {
+@Slf4j
+public class AppVersionResolver {
 
-    String UNKNOWN_VERSION = "<unknown>";
+    private final Collection<AppVersionStrategy> appVersionStrategies = new ArrayList<>();
 
-    /**
-     * Can this strategy handle these args?
-     * @param args The white-space separated value from {@link CollectorConfig#appVersion}
-     * @return true if-and-only-if the strategy recognizes the args.
-     */
-    boolean canHandle(String[] args);
+    {
+        this.appVersionStrategies.add(new LiteralAppVersionStrategy());
+        this.appVersionStrategies.add(new ManifestAppVersionStrategy());
+        this.appVersionStrategies.add(new FilenameAppVersionStrategy());
+    }
 
-    /**
-     * Use args for resolving the app version
-     *
-     * @param codeBases The locations of the code base.
-     * @param args The value of {@link CollectorConfig#appVersion}
-     * @return The resolved application version.
-     */
-    String resolveAppVersion(Collection<File> codeBases, String[] args);
+    public String resolveAppVersion(CollectorConfig config) {
+        String version = config.getAppVersion().trim();
+        String args[] = version.split("\\s+");
+
+        for (AppVersionStrategy strategy : appVersionStrategies) {
+            if (strategy.canHandle(args)) {
+                String resolvedVersion = strategy.resolveAppVersion(config.getCodeBaseFiles(), args);
+                log.info("Resolved appVersion '{}' to '{}'", version, resolvedVersion);
+                return resolvedVersion;
+            }
+        }
+
+        log.debug("Cannot resolve appVersion '{}', using it verbatim", version);
+        return version;
+    }
+
 }

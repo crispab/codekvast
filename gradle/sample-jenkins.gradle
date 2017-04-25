@@ -25,6 +25,8 @@ task installJenkinsInTomcat7 {
     def downloadDir = file("$rootDir/.tmp/download")
     def jenkinsDir = new File(catalinaWebapps, "jenkins")
 
+    dependsOn ':product:agent:collector:shadowJar'
+
     inputs.property "tomcatVersion", tomcatVersion
     inputs.property "tomcat", tomcatDownloadUrl
     inputs.property "jenkinsVersion", jenkinsVersion

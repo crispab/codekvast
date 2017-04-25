@@ -23,6 +23,7 @@ package io.codekvast.agent.collector.scheduler.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.codekvast.agent.collector.scheduler.ConfigPoller;
+import io.codekvast.agent.lib.appversion.AppVersionResolver;
 import io.codekvast.agent.lib.codebase.CodeBase;
 import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
 import io.codekvast.agent.lib.config.CollectorConfig;
@@ -53,6 +54,8 @@ public class ConfigPollerImpl implements ConfigPoller {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    private final AppVersionResolver appVersionResolver = new AppVersionResolver();
+
     @Getter
     private CodeBaseFingerprint codeBaseFingerprint;
 
@@ -60,7 +63,7 @@ public class ConfigPollerImpl implements ConfigPoller {
         this.config = config;
         this.requestTemplate = GetConfigRequest1.builder()
                                                 .appName(config.getAppName())
-                                                .appVersion(config.getAppVersion())
+                                                .appVersion(appVersionResolver.resolveAppVersion(config))
                                                 .collectorVersion(getCollectorVersion())
                                                 .computerId(ComputerID.compute().toString())
                                                 .hostName(getHostName())
@@ -87,13 +90,20 @@ public class ConfigPollerImpl implements ConfigPoller {
     public GetConfigResponse1 doPoll(boolean firstTime) throws Exception {
         this.codeBaseFingerprint = calculateCodeBaseFingerprint(firstTime);
 
-        GetConfigRequest1 request = requestTemplate.toBuilder().codeBaseFingerprint(codeBaseFingerprint.getSha256()).build();
+        GetConfigRequest1 request = expandRequestTemplate();
+
         log.debug("Posting {} to {}", request, config.getConfigRequestEndpoint());
 
-        GetConfigResponse1 response = objectMapper.readValue(doHttpPost(objectMapper.writeValueAsString(request)), GetConfigResponse1.class);
+        GetConfigResponse1 response =
+            objectMapper.readValue(doHttpPost(objectMapper.writeValueAsString(request)), GetConfigResponse1.class);
 
         log.debug("Received {} in response", response);
         return response;
+    }
+
+    private GetConfigRequest1 expandRequestTemplate() {
+        return codeBaseFingerprint == null ? requestTemplate :
+            requestTemplate.toBuilder().codeBaseFingerprint(codeBaseFingerprint.getSha256()).build();
     }
 
     private CodeBaseFingerprint calculateCodeBaseFingerprint(boolean firstTime) {
@@ -125,7 +135,6 @@ public class ConfigPollerImpl implements ConfigPoller {
             throw new IOException(response.body().string());
         }
 
-        String responseJson = response.body().string();
-        return responseJson;
+        return response.body().string();
     }
 }

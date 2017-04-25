@@ -46,16 +46,28 @@ public class AgentServiceImpl implements AgentService {
     public GetConfigResponse1 getConfig(GetConfigRequest1 request) throws LicenseViolationException {
         checkLicense(request);
 
-        // TODO: store code base fingerprint in database
-        boolean codeBaseAdded = codeBaseFingerprints.add(request.getCodeBaseFingerprint());
+        boolean codeBasePublishingNeeded = checkIfCodeBaseIsNeeded(request);
 
+        // TODO: build a smarter response
         return GetConfigResponse1.builder()
                                  .codeBasePublisherName("no-op")
                                  .codeBasePublisherConfig("enabled=true")
-                                 .codeBasePublishingNeeded(codeBaseAdded)
+                                 .codeBasePublishingNeeded(codeBasePublishingNeeded)
                                  .invocationDataPublisherName("file-system")
                                  .invocationDataPublisherConfig("enabled=true")
+                                 .configPollIntervalSeconds(5)
+                                 .configPollRetryIntervalSeconds(5)
+                                 .codeBasePublisherCheckIntervalSeconds(5)
+                                 .codeBasePublisherRetryIntervalSeconds(5)
+                                 .invocationDataPublisherIntervalSeconds(5)
+                                 .invocationDataPublisherRetryIntervalSeconds(5)
                                  .build();
+    }
+
+    private boolean checkIfCodeBaseIsNeeded(GetConfigRequest1 request) {
+        // TODO: store code base fingerprint in database
+        String fingerprint = request.getCodeBaseFingerprint();
+        return fingerprint != null && codeBaseFingerprints.add(fingerprint);
     }
 
     private void checkLicense(GetConfigRequest1 request) {

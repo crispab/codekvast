@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
 public final class ConfigUtils {
 
     public static List<String> getNormalizedPackages(String packages) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         if (packages != null) {
             String[] prefixes = packages.split("[:;,]");
             for (String prefix : prefixes) {
@@ -126,7 +126,7 @@ public final class ConfigUtils {
     }
 
     public static List<File> getCommaSeparatedFileValues(String uriValues, boolean removeTrailingSlashes) {
-        List<File> result = new ArrayList<File>();
+        List<File> result = new ArrayList<>();
         String[] parts = uriValues.split("[;,]");
         for (String value : parts) {
             value = value.trim();
