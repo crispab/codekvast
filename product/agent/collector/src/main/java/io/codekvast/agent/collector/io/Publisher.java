@@ -46,4 +46,11 @@ public interface Publisher {
      */
     int getPublicationCount();
 
+    /**
+     * Is the publisher enabled?
+     *
+     * @return true iff the publisher is enabled.
+     */
+    boolean isEnabled();
+
 }

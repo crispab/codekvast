@@ -28,6 +28,8 @@ import lombok.Setter;
 import org.slf4j.Logger;
 
 /**
+ * Abstract base class for publishers.
+ *
  * @author olle.hallin@crisp.se
  */
 @Getter
@@ -53,7 +55,7 @@ public abstract class AbstractPublisher implements Publisher {
 
         for (String pair : pairs) {
             if (!pair.trim().isEmpty()) {
-                log.debug("Analyzing {}", pair);
+                log.trace("Analyzing {}", pair);
                 String[] parts = pair.trim().split("=");
                 if (parts.length == 2) {
                     setValue(parts[0].trim(), parts[1].trim());
@@ -67,8 +69,11 @@ public abstract class AbstractPublisher implements Publisher {
     private void setValue(String key, String value) {
         if (key.equals("enabled")) {
             boolean newValue = Boolean.valueOf(value);
-            log.debug("Setting enabled={}, was={}", newValue, this.enabled);
-            this.enabled = newValue;
+            boolean oldValue = this.enabled;
+            if (oldValue != newValue) {
+                log.debug("Setting enabled={}, was={}", newValue, this.enabled);
+                this.enabled = newValue;
+            }
         } else {
             doSetValue(key, value);
         }
