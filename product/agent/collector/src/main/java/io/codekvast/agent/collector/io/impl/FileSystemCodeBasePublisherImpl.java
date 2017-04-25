@@ -24,13 +24,13 @@ package io.codekvast.agent.collector.io.impl;
 import io.codekvast.agent.collector.io.CodekvastPublishingException;
 import io.codekvast.agent.lib.codebase.CodeBase;
 import io.codekvast.agent.lib.config.CollectorConfig;
+import io.codekvast.agent.lib.model.v1.CodeBasePublication;
+import io.codekvast.agent.lib.util.Constants;
 import io.codekvast.agent.lib.util.FileUtils;
 import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -65,14 +65,30 @@ public class FileSystemCodeBasePublisherImpl extends AbstractCodeBasePublisher {
     @Override
     public void doPublishCodeBase(CodeBase codeBase) throws CodekvastPublishingException {
         try {
+            long startedAt = System.currentTimeMillis();
             File tempFile = File.createTempFile("codekvast", ".dat");
             @Cleanup ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(tempFile)));
-            oos.writeObject(codeBase.exportEntries());
+            CodeBasePublication publication = codeBase.getCodeBasePublication();
 
-            FileUtils.renameFile(tempFile, expandPlaceholders(new File(targetFile)));
+            oos.writeObject(publication);
 
+            File expandedTargetFile = expandPlaceholders(new File(targetFile));
+            mkdirs(expandedTargetFile);
+
+            FileUtils.renameFile(tempFile, expandedTargetFile);
+            log.debug("Published code base to {} in {} ms", expandedTargetFile, System.currentTimeMillis() - startedAt);
         } catch (IOException e) {
             throw new CodekvastPublishingException("Cannot publish code base", e);
+        }
+    }
+
+    private void mkdirs(File expandedTargetFile) {
+        File parentDir = expandedTargetFile.getParentFile();
+        if (parentDir != null) {
+            parentDir.mkdirs();
+            if (!parentDir.isDirectory()) {
+                log.warn("Cannot create {}", parentDir);
+            }
         }
     }
 
@@ -81,18 +97,10 @@ public class FileSystemCodeBasePublisherImpl extends AbstractCodeBasePublisher {
             return null;
         }
 
-        String name = file.getName().replace("#hostname#", getHostname()).replace("#timestamp#", getTimestamp());
+        String name = file.getName().replace("#hostname#", Constants.HOST_NAME).replace("#timestamp#", getTimestamp());
 
         File parentFile = file.getParentFile();
         return parentFile == null ? new File(name) : new File(parentFile, name);
-    }
-
-    private String getHostname() {
-        try {
-            return InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-            return "-unknown-";
-        }
     }
 
     private String getTimestamp() {

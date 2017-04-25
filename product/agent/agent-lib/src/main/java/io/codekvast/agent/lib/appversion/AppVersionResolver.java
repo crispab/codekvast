@@ -31,14 +31,17 @@ import java.util.Collection;
 public class AppVersionResolver {
 
     private final Collection<AppVersionStrategy> appVersionStrategies = new ArrayList<>();
+    private final CollectorConfig config;
 
-    {
+    public AppVersionResolver(CollectorConfig config) {
+        this.config = config;
+
         this.appVersionStrategies.add(new LiteralAppVersionStrategy());
         this.appVersionStrategies.add(new ManifestAppVersionStrategy());
         this.appVersionStrategies.add(new FilenameAppVersionStrategy());
     }
 
-    public String resolveAppVersion(CollectorConfig config) {
+    public String resolveAppVersion() {
         String version = config.getAppVersion().trim();
         String args[] = version.split("\\s+");
 
@@ -50,7 +53,7 @@ public class AppVersionResolver {
             }
         }
 
-        log.debug("Cannot resolve appVersion '{}', using it verbatim", version);
+        log.debug("Cannot resolve appVersion '{}', using it as-is", version);
         return version;
     }
 

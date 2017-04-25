@@ -86,7 +86,7 @@ public class LocalWarehouseCollectorDataProcessorImpl extends AbstractCollectorD
 
     @Override
     protected void doProcessCodebase(JvmState jvmState, CodeBase codeBase) {
-        for (CodeBaseEntry entry : codeBase.exportEntries()) {
+        for (CodeBaseEntry entry : codeBase.getEntries()) {
             doStoreInvocation(jvmState, 0L, entry.getNormalizedSignature(), entry.getSignatureStatus(), entry.getMethodSignature());
         }
     }

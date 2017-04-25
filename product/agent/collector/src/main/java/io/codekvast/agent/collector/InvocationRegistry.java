@@ -25,18 +25,15 @@ import io.codekvast.agent.collector.io.CodekvastPublishingException;
 import io.codekvast.agent.collector.io.InvocationDataPublisher;
 import io.codekvast.agent.lib.config.CollectorConfig;
 import io.codekvast.agent.lib.model.v1.legacy.Jvm;
-import io.codekvast.agent.lib.util.ComputerID;
+import io.codekvast.agent.lib.util.Constants;
 import io.codekvast.agent.lib.util.SignatureUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.Signature;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -105,19 +102,11 @@ public class InvocationRegistry {
                    .collectorVersion(collectorVersion)
                    .collectorVcsId(collectorVcsId)
                    .collectorConfig(config)
-                   .computerId(ComputerID.compute().toString())
-                   .hostName(getHostName())
-                   .jvmUuid(UUID.randomUUID().toString())
+                   .computerId(Constants.COMPUTER_ID)
+                   .hostName(Constants.HOST_NAME)
+                   .jvmUuid(Constants.JVM_UUID)
                    .startedAtMillis(System.currentTimeMillis())
                    .build());
-    }
-
-    private static String getHostName() {
-        try {
-            return InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-            return "localhost";
-        }
     }
 
     /**

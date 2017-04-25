@@ -22,6 +22,9 @@
 package io.codekvast.agent.lib.codebase;
 
 import io.codekvast.agent.lib.model.v1.CodeBaseEntry;
+import io.codekvast.agent.lib.model.v1.CodeBasePublication;
+import io.codekvast.agent.lib.util.ComputerID;
+import io.codekvast.agent.lib.util.Constants;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -312,12 +315,7 @@ public class CodeBase {
         return signatures.size();
     }
 
-    /**
-     * Export the codebase in a stable, published format.
-     *
-     * @return A sorted list of {@link CodeBaseEntry} objects.
-     */
-    public Collection<CodeBaseEntry> exportEntries() {
+    public Collection<CodeBaseEntry> getEntries() {
         List<CodeBaseEntry> result = new ArrayList<>();
 
         for (Map.Entry<String, MethodSignature> entry : signatures.entrySet()) {
@@ -326,5 +324,19 @@ public class CodeBase {
         }
 
         return result;
+    }
+
+    public CodeBasePublication getCodeBasePublication() {
+        return CodeBasePublication
+            .builder()
+            .appName(config.getAppName())
+            .appVersion(config.getResolvedAppVersion())
+            .collectorVersion(Constants.COLLECTOR_VERSION)
+            .computerId(ComputerID.compute().toString())
+            .entries(getEntries())
+            .hostName(Constants.HOST_NAME)
+            .jvmUuid(Constants.JVM_UUID)
+            .publishedAtMillis(System.currentTimeMillis())
+            .build();
     }
 }

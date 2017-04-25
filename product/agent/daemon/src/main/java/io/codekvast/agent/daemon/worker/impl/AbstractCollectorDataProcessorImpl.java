@@ -195,7 +195,7 @@ public abstract class AbstractCollectorDataProcessorImpl implements CollectorDat
             return InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException e) {
             log.error("Cannot get name of localhost");
-            return "-- unknown --";
+            return "-unknown-";
         }
     }
 

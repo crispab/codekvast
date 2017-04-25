@@ -22,22 +22,18 @@
 package io.codekvast.agent.collector.scheduler.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.codekvast.agent.lib.util.Constants;
 import io.codekvast.agent.collector.scheduler.ConfigPoller;
-import io.codekvast.agent.lib.appversion.AppVersionResolver;
 import io.codekvast.agent.lib.codebase.CodeBase;
 import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
 import io.codekvast.agent.lib.config.CollectorConfig;
 import io.codekvast.agent.lib.model.v1.rest.GetConfigRequest1;
 import io.codekvast.agent.lib.model.v1.rest.GetConfigResponse1;
-import io.codekvast.agent.lib.util.ComputerID;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -54,8 +50,6 @@ public class ConfigPollerImpl implements ConfigPoller {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private final AppVersionResolver appVersionResolver = new AppVersionResolver();
-
     @Getter
     private CodeBaseFingerprint codeBaseFingerprint;
 
@@ -63,11 +57,11 @@ public class ConfigPollerImpl implements ConfigPoller {
         this.config = config;
         this.requestTemplate = GetConfigRequest1.builder()
                                                 .appName(config.getAppName())
-                                                .appVersion("to-be-expanded")
-                                                .collectorVersion(getCollectorVersion())
-                                                .computerId(ComputerID.compute().toString())
-                                                .hostName(getHostName())
-                                                .jvmUuid(UUID.randomUUID().toString())
+                                                .appVersion("to-be-resolved")
+                                                .collectorVersion(Constants.COLLECTOR_VERSION)
+                                                .computerId(Constants.COMPUTER_ID)
+                                                .hostName(Constants.HOST_NAME)
+                                                .jvmUuid(Constants.JVM_UUID)
                                                 .licenseKey(config.getLicenseKey())
                                                 .startedAtMillis(System.currentTimeMillis())
                                                 .build();
@@ -104,7 +98,7 @@ public class ConfigPollerImpl implements ConfigPoller {
     private GetConfigRequest1 expandRequestTemplate() {
         GetConfigRequest1.GetConfigRequest1Builder builder = requestTemplate
             .toBuilder()
-            .appVersion(appVersionResolver.resolveAppVersion(config));
+            .appVersion(config.getResolvedAppVersion());
 
         if (codeBaseFingerprint != null) {
             builder.codeBaseFingerprint(codeBaseFingerprint.getSha256());
@@ -114,18 +108,6 @@ public class ConfigPollerImpl implements ConfigPoller {
 
     private CodeBaseFingerprint calculateCodeBaseFingerprint(boolean firstTime) {
         return firstTime ? new CodeBase(config).getFingerprint() : null;
-    }
-
-    private String getHostName() {
-        try {
-            return InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-            return "localhost";
-        }
-    }
-
-    private String getCollectorVersion() {
-        return ConfigPollerImpl.class.getPackage().getImplementationVersion();
     }
 
     private String doHttpPost(String bodyJson) throws IOException {

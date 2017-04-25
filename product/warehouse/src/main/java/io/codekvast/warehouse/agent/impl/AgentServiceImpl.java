@@ -21,6 +21,7 @@
  */
 package io.codekvast.warehouse.agent.impl;
 
+import io.codekvast.warehouse.bootstrap.CodekvastSettings;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import io.codekvast.agent.lib.model.v1.rest.GetConfigRequest1;
@@ -28,6 +29,7 @@ import io.codekvast.agent.lib.model.v1.rest.GetConfigResponse1;
 import io.codekvast.warehouse.agent.AgentService;
 import io.codekvast.warehouse.agent.LicenseViolationException;
 
+import javax.inject.Inject;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,6 +43,12 @@ import java.util.Set;
 public class AgentServiceImpl implements AgentService {
 
     private final Set<String> codeBaseFingerprints = new HashSet<>();
+    private final CodekvastSettings settings;
+
+    @Inject
+    public AgentServiceImpl(CodekvastSettings settings) {
+        this.settings = settings;
+    }
 
     @Override
     public GetConfigResponse1 getConfig(GetConfigRequest1 request) throws LicenseViolationException {
@@ -50,8 +58,8 @@ public class AgentServiceImpl implements AgentService {
 
         // TODO: build a smarter response
         return GetConfigResponse1.builder()
-                                 .codeBasePublisherName("no-op")
-                                 .codeBasePublisherConfig("enabled=true")
+                                 .codeBasePublisherName("file-system")
+                                 .codeBasePublisherConfig(getCodeBasePublisherConfig(settings))
                                  .codeBasePublishingNeeded(codeBasePublishingNeeded)
                                  .invocationDataPublisherName("file-system")
                                  .invocationDataPublisherConfig("enabled=true")
@@ -62,6 +70,11 @@ public class AgentServiceImpl implements AgentService {
                                  .invocationDataPublisherIntervalSeconds(5)
                                  .invocationDataPublisherRetryIntervalSeconds(5)
                                  .build();
+    }
+
+    private String getCodeBasePublisherConfig(CodekvastSettings settings) {
+        return String.format("enabled=true; targetFile=%s/codebase-#timestamp#.ser",
+                             settings.getImportPath().getAbsolutePath());
     }
 
     private boolean checkIfCodeBaseIsNeeded(GetConfigRequest1 request) {

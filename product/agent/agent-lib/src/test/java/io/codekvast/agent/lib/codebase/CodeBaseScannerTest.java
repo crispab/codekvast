@@ -51,7 +51,7 @@ public class CodeBaseScannerTest {
         int numClasses = scanner.scanSignatures(codeBase);
         assertThat(numClasses, is(9));
 
-        Collection<CodeBaseEntry> entries = codeBase.exportEntries();
+        Collection<CodeBaseEntry> entries = codeBase.getEntries();
         assertThat(entries, notNullValue());
         assertThat(entries.size(), is(25));
         assertThat(countBySignatureStatus(entries, SignatureStatus.EXCLUDED_BY_PACKAGE_NAME), is(1));

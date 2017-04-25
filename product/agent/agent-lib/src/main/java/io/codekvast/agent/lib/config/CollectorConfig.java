@@ -22,6 +22,7 @@
 package io.codekvast.agent.lib.config;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.codekvast.agent.lib.appversion.AppVersionResolver;
 import io.codekvast.agent.lib.model.v1.rest.GetConfigRequest1;
 import lombok.*;
 import io.codekvast.agent.lib.util.ConfigUtils;
@@ -83,6 +84,9 @@ public class CollectorConfig implements CodekvastConfig {
     private String tags;
 
     @JsonIgnore
+    private String resolvedAppVersion;
+
+    @JsonIgnore
     public File getAspectFile() {
         return new File(myDataPath(appName), "aop.xml");
     }
@@ -130,5 +134,12 @@ public class CollectorConfig implements CodekvastConfig {
     @JsonIgnore
     public String getConfigRequestEndpoint() {
         return String.format("%s%s", serverUrl, GetConfigRequest1.ENDPOINT);
+    }
+
+    public String getResolvedAppVersion() {
+        if (resolvedAppVersion == null) {
+            resolvedAppVersion = new AppVersionResolver(this).resolveAppVersion();
+        }
+        return resolvedAppVersion;
     }
 }
