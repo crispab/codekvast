@@ -21,9 +21,18 @@
  */
 package io.codekvast.agent.collector.io.impl;
 
+import io.codekvast.agent.collector.io.CodekvastPublishingException;
 import io.codekvast.agent.lib.codebase.CodeBase;
 import io.codekvast.agent.lib.config.CollectorConfig;
+import io.codekvast.agent.lib.util.FileUtils;
+import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
+
+import java.io.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Dummy (no-op) implementation of CodeBasePublisher.
@@ -33,7 +42,7 @@ public class FileSystemCodeBasePublisherImpl extends AbstractCodeBasePublisher {
 
     public static final String NAME = "file-system";
 
-    private String format;
+    private String targetFile = "/tmp/codekvast/codebase-#date#.ser";
 
     FileSystemCodeBasePublisherImpl(CollectorConfig config) {
         super(log, config);
@@ -46,13 +55,47 @@ public class FileSystemCodeBasePublisherImpl extends AbstractCodeBasePublisher {
 
     @Override
     boolean doSetValue(String key, String value) {
-        // No private parameters
+        if (key.equals("targetFile")) {
+            this.targetFile = value;
+            return true;
+        }
         return false;
     }
 
     @Override
-    public void doPublishCodeBase(CodeBase codeBase) {
-        // Nothing to do here
+    public void doPublishCodeBase(CodeBase codeBase) throws CodekvastPublishingException {
+        try {
+            File tempFile = File.createTempFile("codekvast", ".dat");
+            @Cleanup ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(tempFile)));
+            oos.writeObject(codeBase.exportEntries());
+
+            FileUtils.renameFile(tempFile, expandPlaceholders(new File(targetFile)));
+
+        } catch (IOException e) {
+            throw new CodekvastPublishingException("Cannot publish code base", e);
+        }
     }
 
+    File expandPlaceholders(File file) {
+        if (file == null) {
+            return null;
+        }
+
+        String name = file.getName().replace("#hostname#", getHostname()).replace("#timestamp#", getTimestamp());
+
+        File parentFile = file.getParentFile();
+        return parentFile == null ? new File(name) : new File(parentFile, name);
+    }
+
+    private String getHostname() {
+        try {
+            return InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            return "-unknown-";
+        }
+    }
+
+    private String getTimestamp() {
+        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date());
+    }
 }

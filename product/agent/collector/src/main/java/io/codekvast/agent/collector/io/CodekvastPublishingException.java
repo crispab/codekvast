@@ -29,4 +29,8 @@ public class CodekvastPublishingException extends Exception {
     public CodekvastPublishingException(String message) {
         super(message);
     }
+
+    public CodekvastPublishingException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

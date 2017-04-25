@@ -22,6 +22,7 @@
 package io.codekvast.agent.collector.io.impl;
 
 import io.codekvast.agent.collector.io.CodeBasePublisher;
+import io.codekvast.agent.collector.io.CodekvastPublishingException;
 import io.codekvast.agent.lib.codebase.CodeBase;
 import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
 import io.codekvast.agent.lib.codebase.CodeBaseScanner;
@@ -47,7 +48,7 @@ abstract class AbstractCodeBasePublisher extends AbstractPublisher implements Co
     }
 
     @Override
-    public void publishCodebase() {
+    public void publishCodebase() throws CodekvastPublishingException {
         if (isEnabled()) {
             CodeBase newCodeBase = new CodeBase(getConfig());
             if (!newCodeBase.getFingerprint().equals(codeBaseFingerprint)) {
@@ -62,5 +63,5 @@ abstract class AbstractCodeBasePublisher extends AbstractPublisher implements Co
         }
     }
 
-    abstract void doPublishCodeBase(CodeBase codeBase);
+    abstract void doPublishCodeBase(CodeBase codeBase) throws CodekvastPublishingException;
 }
