@@ -21,7 +21,7 @@ public class CodeBasePublisherFactoryTest {
     public OutputCapture output = new OutputCapture();
 
     @Test
-    public void should_handle_recognized_name() throws Exception {
+    public void should_handle_noop_name() throws Exception {
         // given
         CodeBasePublisher publisher = CodeBasePublisherFactory.create(NoOpCodeBasePublisherImpl.NAME, config);
 
