@@ -63,7 +63,7 @@ public class ConfigPollerImpl implements ConfigPoller {
         this.config = config;
         this.requestTemplate = GetConfigRequest1.builder()
                                                 .appName(config.getAppName())
-                                                .appVersion(appVersionResolver.resolveAppVersion(config))
+                                                .appVersion("to-be-expanded")
                                                 .collectorVersion(getCollectorVersion())
                                                 .computerId(ComputerID.compute().toString())
                                                 .hostName(getHostName())
@@ -102,8 +102,14 @@ public class ConfigPollerImpl implements ConfigPoller {
     }
 
     private GetConfigRequest1 expandRequestTemplate() {
-        return codeBaseFingerprint == null ? requestTemplate :
-            requestTemplate.toBuilder().codeBaseFingerprint(codeBaseFingerprint.getSha256()).build();
+        GetConfigRequest1.GetConfigRequest1Builder builder = requestTemplate
+            .toBuilder()
+            .appVersion(appVersionResolver.resolveAppVersion(config));
+
+        if (codeBaseFingerprint != null) {
+            builder.codeBaseFingerprint(codeBaseFingerprint.getSha256());
+        }
+        return builder.build();
     }
 
     private CodeBaseFingerprint calculateCodeBaseFingerprint(boolean firstTime) {

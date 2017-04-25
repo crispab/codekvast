@@ -45,7 +45,7 @@ public class AppVersionResolver {
         for (AppVersionStrategy strategy : appVersionStrategies) {
             if (strategy.canHandle(args)) {
                 String resolvedVersion = strategy.resolveAppVersion(config.getCodeBaseFiles(), args);
-                log.info("Resolved appVersion '{}' to '{}'", version, resolvedVersion);
+                log.debug("Resolved appVersion '{}' to '{}'", version, resolvedVersion);
                 return resolvedVersion;
             }
         }
