@@ -24,13 +24,15 @@ package io.codekvast.agent.lib.model.v1;
 import lombok.NonNull;
 import lombok.Value;
 
+import java.io.Serializable;
+
 /**
  * Representation of a code base entry.
  *
  * @author olle.hallin@crisp.se
  */
 @Value
-public class CodeBaseEntry {
+public class CodeBaseEntry implements Serializable {
 
     /**
      * The normalized signature in String form.

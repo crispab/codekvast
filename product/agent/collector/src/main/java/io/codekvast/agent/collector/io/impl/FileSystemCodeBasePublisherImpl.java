@@ -33,6 +33,8 @@ public class FileSystemCodeBasePublisherImpl extends AbstractCodeBasePublisher {
 
     public static final String NAME = "file-system";
 
+    private String format;
+
     FileSystemCodeBasePublisherImpl(CollectorConfig config) {
         super(log, config);
     }
@@ -43,8 +45,9 @@ public class FileSystemCodeBasePublisherImpl extends AbstractCodeBasePublisher {
     }
 
     @Override
-    void doSetValue(String key, String value) {
+    boolean doSetValue(String key, String value) {
         // No private parameters
+        return false;
     }
 
     @Override

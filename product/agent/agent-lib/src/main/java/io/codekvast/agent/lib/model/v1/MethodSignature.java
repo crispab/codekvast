@@ -23,6 +23,8 @@ package io.codekvast.agent.lib.model.v1;
 
 import lombok.*;
 
+import java.io.Serializable;
+
 /**
  * Immutable representation of a method signature.
  *
@@ -33,7 +35,7 @@ import lombok.*;
 @Builder(toBuilder = true)
 @ToString(of = "aspectjString")
 @EqualsAndHashCode(of = "aspectjString")
-public class MethodSignature {
+public class MethodSignature implements Serializable {
     @NonNull
     private final String aspectjString;
     @NonNull
@@ -53,14 +55,14 @@ public class MethodSignature {
 
     public static MethodSignature createSampleMethodSignature() {
         return builder()
-                .aspectjString("aspectjString")
-                .declaringType("declaringType")
-                .exceptionTypes("exceptionTypes")
-                .methodName("methodName")
-                .modifiers("modifiers")
-                .packageName("packageName")
-                .parameterTypes("parameterTypes")
-                .returnType("returnType")
-                .build();
+            .aspectjString("aspectjString")
+            .declaringType("declaringType")
+            .exceptionTypes("exceptionTypes")
+            .methodName("methodName")
+            .modifiers("modifiers")
+            .packageName("packageName")
+            .parameterTypes("parameterTypes")
+            .returnType("returnType")
+            .build();
     }
 }

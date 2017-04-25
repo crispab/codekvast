@@ -24,6 +24,8 @@ package io.codekvast.agent.lib.model.v1;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * The status of a method signature.
  *
@@ -33,7 +35,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Getter
 @RequiredArgsConstructor
-public enum SignatureStatus {
+public enum SignatureStatus implements Serializable {
     /**
      * The signature has been detected in the codebase, but it has never been invoked.
      */
@@ -45,9 +47,9 @@ public enum SignatureStatus {
     EXACT_MATCH(2, true),
 
     /**
-     * The invoked signature was <em>not</em> found as-is in the scanned code base. It was found however, when searching upwards in the class
-     * hierarchy. The reason for not finding it in the first place could be that the method was synthesized at runtime by some byte code
-     * manipulating AOP framework like Spring or Guice.
+     * The invoked signature was <em>not</em> found as-is in the scanned code base. It was found however, when searching upwards in the
+     * class hierarchy. The reason for not finding it in the first place could be that the method was synthesized at runtime by some byte
+     * code manipulating AOP framework like Spring or Guice.
      */
     FOUND_IN_PARENT_CLASS(3, true),
 

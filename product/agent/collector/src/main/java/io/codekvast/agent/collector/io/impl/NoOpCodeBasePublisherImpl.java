@@ -43,8 +43,9 @@ public class NoOpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
     }
 
     @Override
-    void doSetValue(String key, String value) {
+    boolean doSetValue(String key, String value) {
         // No private parameters
+        return false;
     }
 
     @Override

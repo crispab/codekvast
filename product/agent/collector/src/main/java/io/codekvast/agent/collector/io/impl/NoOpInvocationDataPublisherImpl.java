@@ -45,8 +45,9 @@ public class NoOpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
     }
 
     @Override
-    void doSetValue(String key, String value) {
+    boolean doSetValue(String key, String value) {
         // Nothing here
+        return false;
     }
 
     @Override

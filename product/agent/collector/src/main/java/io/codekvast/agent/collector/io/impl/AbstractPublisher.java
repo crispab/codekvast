@@ -71,11 +71,16 @@ public abstract class AbstractPublisher implements Publisher {
             boolean newValue = Boolean.valueOf(value);
             boolean oldValue = this.enabled;
             if (oldValue != newValue) {
-                log.debug("Setting enabled={}, was={}", newValue, this.enabled);
+                log.debug("Setting {}={}, was={}", key, newValue, this.enabled);
                 this.enabled = newValue;
             }
         } else {
-            doSetValue(key, value);
+            boolean recognized = doSetValue(key, value);
+            if (recognized) {
+                log.debug("Setting {}={}", key, value);
+            } else {
+                log.warn("Unrecognized key-value pair: {}={}", key, value);
+            }
         }
     }
 
@@ -83,5 +88,12 @@ public abstract class AbstractPublisher implements Publisher {
         publicationCount += 1;
     }
 
-    abstract void doSetValue(String key, String value);
+    /**
+     * Implement in concrete subclasses to handle private configuration settings.
+     *
+     * @param key The name of the parameter.
+     * @param value The value of the parameter.
+     * @return true iff the key was recognized.
+     */
+    abstract boolean doSetValue(String key, String value);
 }

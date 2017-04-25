@@ -63,8 +63,9 @@ public class FileSystemInvocationDataPublisherImpl extends AbstractInvocationDat
     }
 
     @Override
-    void doSetValue(String key, String value) {
+    boolean doSetValue(String key, String value) {
         // Nothing here
+        return false;
     }
 
     private void prepareForPublish() {
