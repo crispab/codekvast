@@ -12,7 +12,7 @@ configurations {
     // geckoDriver
 }
 
-def seleniumVersion = '3.3.1'
+def seleniumVersion = '3.4.0'
 
 dependencies {
     systemTestCompileOnly lombok
