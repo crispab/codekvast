@@ -24,15 +24,14 @@ package io.codekvast.agent.lib.model.v1;
 import lombok.*;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 /**
- * Output of the CodeBasePublisher implementations.
+ * Output of the InvocationDataPublisher implementations.
  *
  * @author olle.hallin@crisp.se
  */
+@SuppressWarnings({"ClassWithTooManyFields", "ClassWithTooManyMethods"})
 @Data
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -53,11 +52,10 @@ public class InvocationDataPublication implements Serializable {
     private String hostName;
     @NonNull
     private String jvmUuid;
+    @NonNull
+    Set<String> invocations;
 
     private long recordingIntervalStartedAtMillis;
     private long publishedAtMillis;
     private int publicationCount;
-
-    @NonNull
-    Set<String> invocations;
 }

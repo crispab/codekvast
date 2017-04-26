@@ -22,6 +22,7 @@
 package io.codekvast.warehouse.agent;
 
 import io.codekvast.agent.lib.model.v1.CodeBasePublication;
+import io.codekvast.agent.lib.model.v1.InvocationDataPublication;
 import io.codekvast.agent.lib.model.v1.rest.GetConfigRequest1;
 import io.codekvast.agent.lib.model.v1.rest.GetConfigResponse1;
 
@@ -52,5 +53,16 @@ public interface AgentService {
      * @throws LicenseViolationException If invalid license or license violations
      */
     File saveCodeBasePublication(String licenseKey, InputStream inputStream)
+        throws LicenseViolationException, IOException;
+
+    /**
+     * Save an uploaded {@link InvocationDataPublication} into the import area where it will be processed by another thread.
+     *
+     * @param licenseKey       The agent's licenseKey
+     * @param inputStream      The data input stream.
+     * @return The resulting file
+     * @throws LicenseViolationException If invalid license or license violations
+     */
+    File saveInvocationDataPublication(String licenseKey, InputStream inputStream)
         throws LicenseViolationException, IOException;
 }

@@ -89,12 +89,25 @@ public class AgentController {
     @RequestMapping(value = Endpoints.AGENT_V1_UPLOAD_CODEBASE, method = POST,
         consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     public String uploadCodeBase1(
-        @RequestParam(Endpoints.AGENT_V1_UPLOAD_CODEBASE_LICENSE_KEY_PARAM) String licenseKey,
-        @RequestParam(Endpoints.AGENT_V1_UPLOAD_CODEBASE_FILE_PARAM) MultipartFile file) throws IOException {
+        @RequestParam(Endpoints.AGENT_V1_LICENSE_KEY_PARAM) String licenseKey,
+        @RequestParam(Endpoints.AGENT_V1_PUBLICATION_FILE_PARAM) MultipartFile file) throws IOException {
 
         log.debug("Received {} ({} bytes) with licenseKey={}", file.getOriginalFilename(), file.getSize(), licenseKey);
 
         agentService.saveCodeBasePublication(licenseKey, file.getInputStream());
+
+        return "OK";
+    }
+
+    @RequestMapping(value = Endpoints.AGENT_V1_UPLOAD_INVOCATION_DATA, method = POST,
+        consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    public String uploadInvocationData1(
+        @RequestParam(Endpoints.AGENT_V1_LICENSE_KEY_PARAM) String licenseKey,
+        @RequestParam(Endpoints.AGENT_V1_PUBLICATION_FILE_PARAM) MultipartFile file) throws IOException {
+
+        log.debug("Received {} ({} bytes) with licenseKey={}", file.getOriginalFilename(), file.getSize(), licenseKey);
+
+        agentService.saveInvocationDataPublication(licenseKey, file.getInputStream());
 
         return "OK";
     }

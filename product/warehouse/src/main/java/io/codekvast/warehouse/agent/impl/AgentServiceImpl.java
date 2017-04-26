@@ -61,9 +61,9 @@ public class AgentServiceImpl implements AgentService {
         // TODO: build a smarter response
         return GetConfigResponse1.builder()
                                  .codeBasePublisherName("http")
-                                 .codeBasePublisherConfig(getCodeBasePublisherConfig(settings))
+                                 .codeBasePublisherConfig("enabled=true")
                                  .codeBasePublishingNeeded(codeBasePublishingNeeded)
-                                 .invocationDataPublisherName("file-system")
+                                 .invocationDataPublisherName("http")
                                  .invocationDataPublisherConfig("enabled=true")
                                  .configPollIntervalSeconds(5)
                                  .configPollRetryIntervalSeconds(5)
@@ -76,15 +76,24 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     public File saveCodeBasePublication(String licenseKey, InputStream inputStream) throws LicenseViolationException, IOException {
+        return doSaveInputStream(licenseKey, inputStream, "codebase-");
+    }
+
+    @Override
+    public File saveInvocationDataPublication(String licenseKey, InputStream inputStream) throws LicenseViolationException, IOException {
+        return doSaveInputStream(licenseKey, inputStream, "invocations-");
+    }
+
+    private File doSaveInputStream(String licenseKey, InputStream inputStream, String prefix) throws IOException {
         checkLicense(licenseKey);
 
         createDirectory(settings.getImportPath());
 
-        File result = File.createTempFile("codebase-", ".ser", settings.getImportPath());
+        File result = File.createTempFile(prefix, ".ser", settings.getImportPath());
         result.delete();
         Files.copy(inputStream, result.toPath());
 
-        log.debug("Saved CodeBasePublication to {}", result);
+        log.debug("Saved uploaded file to {}", result);
         return result;
     }
 
@@ -97,11 +106,6 @@ public class AgentServiceImpl implements AgentService {
             }
             log.info("Created {}", importPath);
         }
-    }
-
-    private String getCodeBasePublisherConfig(CodekvastSettings settings) {
-        return String.format("enabled=true; targetFile=%s/codebase-#timestamp#.ser",
-                             settings.getImportPath().getAbsolutePath());
     }
 
     private boolean checkIfCodeBaseIsNeeded(GetConfigRequest1 request) {

@@ -41,11 +41,9 @@ public class AgentServiceImplTest {
 
         assertThat(response.getCodeBasePublisherName(), is("http"));
         assertThat(response.isCodeBasePublishingNeeded(), is(false));
-        assertThat(response.getCodeBasePublisherConfig(), containsString("enabled=true"));
-        assertThat(response.getCodeBasePublisherConfig(), containsString("targetFile="));
-        assertThat(response.getCodeBasePublisherConfig(), containsString(settings.getImportPath().getAbsolutePath()));
+        assertThat(response.getCodeBasePublisherConfig(), is("enabled=true"));
 
-        assertThat(response.getInvocationDataPublisherName(), is("file-system"));
+        assertThat(response.getInvocationDataPublisherName(), is("http"));
         assertThat(response.getInvocationDataPublisherConfig(), is("enabled=true"));
     }
 

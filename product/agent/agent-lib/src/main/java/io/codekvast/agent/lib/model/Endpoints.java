@@ -29,9 +29,8 @@ package io.codekvast.agent.lib.model;
 public interface Endpoints {
     String AGENT_V1_POLL_CONFIG = "/agent/v1/pollConfig";
     String AGENT_V1_UPLOAD_CODEBASE = "/agent/v1/uploadCodeBase";
-    String AGENT_V1_UPLOAD_CODEBASE_FILE_PARAM = "codeBasePublicationFile";
-    String AGENT_V1_UPLOAD_CODEBASE_LICENSE_KEY_PARAM = "licenseKey";
     String AGENT_V1_UPLOAD_INVOCATION_DATA = "/agent/v1/uploadInvocationData";
-    String AGENT_V1_UPLOAD_INVOCATION_DATA_FILE_PARAM = "invocationDataPublicationFile";
-    String AGENT_V1_UPLOAD_INVOCATION_DATA_LICENSE_KEY_PARAM = "licenseKey";
+
+    String AGENT_V1_PUBLICATION_FILE_PARAM = "publicationFile";
+    String AGENT_V1_LICENSE_KEY_PARAM = "licenseKey";
 }
