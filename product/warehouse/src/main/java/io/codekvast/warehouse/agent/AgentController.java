@@ -22,17 +22,15 @@
 package io.codekvast.warehouse.agent;
 
 import io.codekvast.agent.lib.model.Endpoints;
+import io.codekvast.agent.lib.model.v1.rest.GetConfigRequest1;
+import io.codekvast.agent.lib.model.v1.rest.GetConfigResponse1;
+import io.codekvast.warehouse.bootstrap.CodekvastSettings;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import io.codekvast.agent.lib.model.v1.rest.GetConfigRequest1;
-import io.codekvast.agent.lib.model.v1.rest.GetConfigResponse1;
-import io.codekvast.warehouse.bootstrap.CodekvastSettings;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
@@ -85,4 +83,15 @@ public class AgentController {
         log.debug("Responds with {}", response);
         return response;
     }
+
+    @RequestMapping(value = Endpoints.AGENT_V1_UPLOAD_CODEBASE, method = POST,
+        consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    public String uploadCodeBase1(@RequestParam(Endpoints.AGENT_V1_UPLOAD_CODEBASE_FILE_PARAM) MultipartFile file) {
+        log.debug("Received {} ({} bytes)", file.getOriginalFilename(), file.getSize());
+
+        // TODO save the file in the import area
+
+        return "OK";
+    }
 }
+

@@ -10,11 +10,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -97,5 +99,18 @@ public class AgentControllerTest {
                .andExpect(status().isOk())
                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                .andExpect(jsonPath("$.codeBasePublisherName").value("foobar"));
+    }
+
+    @Test
+    public void should_accept_upload_codebase_publication() throws Exception {
+        MockMultipartFile multipartFile =
+            new MockMultipartFile(Endpoints.AGENT_V1_UPLOAD_CODEBASE_FILE_PARAM,
+                                  "codekvast-codebase9128371293719273.ser",
+                                  MediaType.APPLICATION_OCTET_STREAM_VALUE,
+                                  "CodeBasePublication".getBytes());
+
+        mockMvc.perform(fileUpload(Endpoints.AGENT_V1_UPLOAD_CODEBASE).file(multipartFile))
+               .andExpect(status().isOk())
+               .andExpect(content().string("OK"));
     }
 }

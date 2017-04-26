@@ -21,7 +21,7 @@ public class HttpCodeBasePublisherImplTest {
 
     private final HttpCodeBasePublisherImpl publisher = new HttpCodeBasePublisherImpl(config) {
         @Override
-        void doPut(File file) {
+        void doPost(File file) {
             uploadedFile = file;
         }
     };

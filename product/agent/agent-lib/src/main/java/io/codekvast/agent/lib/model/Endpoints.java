@@ -29,4 +29,5 @@ package io.codekvast.agent.lib.model;
 public interface Endpoints {
     String AGENT_V1_POLL_CONFIG = "/agent/v1/pollConfig";
     String AGENT_V1_UPLOAD_CODEBASE = "/agent/v1/uploadCodeBase";
+    String AGENT_V1_UPLOAD_CODEBASE_FILE_PARAM = "codeBasePublicationFile";
 }

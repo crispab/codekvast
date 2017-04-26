@@ -36,7 +36,7 @@ public class AgentServiceImplTest {
     public void should_return_sensible_defaults() throws Exception {
         GetConfigResponse1 response = service.getConfig(request);
 
-        assertThat(response.getCodeBasePublisherName(), is("file-system"));
+        assertThat(response.getCodeBasePublisherName(), is("http"));
         assertThat(response.isCodeBasePublishingNeeded(), is(false));
         assertThat(response.getCodeBasePublisherConfig(), containsString("enabled=true"));
         assertThat(response.getCodeBasePublisherConfig(), containsString("targetFile="));

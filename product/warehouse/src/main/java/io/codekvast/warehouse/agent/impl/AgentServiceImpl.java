@@ -58,7 +58,7 @@ public class AgentServiceImpl implements AgentService {
 
         // TODO: build a smarter response
         return GetConfigResponse1.builder()
-                                 .codeBasePublisherName("file-system")
+                                 .codeBasePublisherName("http")
                                  .codeBasePublisherConfig(getCodeBasePublisherConfig(settings))
                                  .codeBasePublishingNeeded(codeBasePublishingNeeded)
                                  .invocationDataPublisherName("file-system")

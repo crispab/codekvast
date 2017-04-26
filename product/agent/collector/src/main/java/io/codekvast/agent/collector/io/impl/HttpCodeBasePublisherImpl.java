@@ -24,12 +24,10 @@ package io.codekvast.agent.collector.io.impl;
 import io.codekvast.agent.collector.io.CodekvastPublishingException;
 import io.codekvast.agent.lib.codebase.CodeBase;
 import io.codekvast.agent.lib.config.CollectorConfig;
+import io.codekvast.agent.lib.model.Endpoints;
 import io.codekvast.agent.lib.util.FileUtils;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.MediaType;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import okhttp3.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -70,7 +68,7 @@ public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
             fileSystemPublisher.setTargetFile(tmpFile.getAbsolutePath());
             fileSystemPublisher.doPublishCodeBase(codeBase);
 
-            doPut(tmpFile);
+            doPost(tmpFile);
 
         } catch (Exception e) {
             throw new CodekvastPublishingException("Cannot upload code base to " + url, e);
@@ -79,11 +77,17 @@ public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
         }
     }
 
-    void doPut(File file) throws IOException {
+    void doPost(File file) throws IOException {
+
+        RequestBody requestBody = new MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart(Endpoints.AGENT_V1_UPLOAD_CODEBASE_FILE_PARAM, file.getName(),
+                             RequestBody.create(APPLICATION_OCTET_STREAM, file))
+            .build();
 
         Request request = new Request.Builder()
             .url(getConfig().getCodeBaseUploadEndpoint())
-            .put(RequestBody.create(APPLICATION_OCTET_STREAM, file))
+            .post(requestBody)
             .build();
 
         Response response = getConfig().getHttpClient().newCall(request).execute();
