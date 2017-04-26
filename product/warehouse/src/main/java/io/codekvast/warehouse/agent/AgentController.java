@@ -21,6 +21,7 @@
  */
 package io.codekvast.warehouse.agent;
 
+import io.codekvast.agent.lib.model.Endpoints;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -75,7 +76,7 @@ public class AgentController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
 
-    @RequestMapping(value = GetConfigRequest1.ENDPOINT)
+    @RequestMapping(value = Endpoints.AGENT_V1_POLL_CONFIG)
     public GetConfigResponse1 getConfig1(@Valid @RequestBody GetConfigRequest1 request) {
         log.debug("Received {}", request);
 

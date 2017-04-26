@@ -1,6 +1,7 @@
 package io.codekvast.warehouse.agent;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.codekvast.agent.lib.model.Endpoints;
 import io.codekvast.agent.lib.model.v1.rest.GetConfigRequest1;
 import io.codekvast.agent.lib.model.v1.rest.GetConfigResponse1;
 import org.junit.Before;
@@ -43,21 +44,21 @@ public class AgentControllerTest {
 
     @Test
     public void getConfig1_should_reject_invalid_method() throws Exception {
-        mockMvc.perform(get(GetConfigRequest1.ENDPOINT)
+        mockMvc.perform(get(Endpoints.AGENT_V1_POLL_CONFIG)
                             .contentType(MediaType.APPLICATION_JSON_UTF8))
                .andExpect(status().isMethodNotAllowed());
     }
 
     @Test
     public void getConfig1_should_reject_invalid_media_type() throws Exception {
-        mockMvc.perform(post(GetConfigRequest1.ENDPOINT)
+        mockMvc.perform(post(Endpoints.AGENT_V1_POLL_CONFIG)
                             .contentType(MediaType.TEXT_PLAIN))
                .andExpect(status().isUnsupportedMediaType());
     }
 
     @Test
     public void getConfig1_should_reject_invalid_json() throws Exception {
-        mockMvc.perform(post(GetConfigRequest1.ENDPOINT)
+        mockMvc.perform(post(Endpoints.AGENT_V1_POLL_CONFIG)
                             .content("invalid json")
                             .contentType(MediaType.APPLICATION_JSON_UTF8))
                .andExpect(status().isBadRequest());
@@ -65,7 +66,7 @@ public class AgentControllerTest {
 
     @Test
     public void getConfig1_should_reject_invalid_request() throws Exception {
-        mockMvc.perform(post(GetConfigRequest1.ENDPOINT)
+        mockMvc.perform(post(Endpoints.AGENT_V1_POLL_CONFIG)
                             .content(objectMapper.writeValueAsString(
                                 GetConfigRequest1.sample()
                                                  .toBuilder()
@@ -79,7 +80,7 @@ public class AgentControllerTest {
     public void getConfig1_should_reject_invalid_licenseKey() throws Exception {
         when(agentService.getConfig(any(GetConfigRequest1.class))).thenThrow(new LicenseViolationException("foobar"));
 
-        mockMvc.perform(post(GetConfigRequest1.ENDPOINT)
+        mockMvc.perform(post(Endpoints.AGENT_V1_POLL_CONFIG)
                             .content(objectMapper.writeValueAsString(GetConfigRequest1.sample()))
                             .contentType(MediaType.APPLICATION_JSON_UTF8))
                .andExpect(status().isForbidden());
@@ -90,7 +91,7 @@ public class AgentControllerTest {
         when(agentService.getConfig(any(GetConfigRequest1.class))).thenReturn(
             GetConfigResponse1.sample().toBuilder().codeBasePublisherName("foobar").build());
 
-        mockMvc.perform(post(GetConfigRequest1.ENDPOINT)
+        mockMvc.perform(post(Endpoints.AGENT_V1_POLL_CONFIG)
                             .content(objectMapper.writeValueAsString(GetConfigRequest1.sample()))
                             .contentType(MediaType.APPLICATION_JSON_UTF8))
                .andExpect(status().isOk())

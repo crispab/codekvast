@@ -13,13 +13,12 @@ dependencies {
     compile slf4jApi
     compile 'org.reflections:reflections:0.9.11'
     compile 'javax.validation:validation-api:1.1.0.Final'
+    compile 'com.squareup.okhttp3:okhttp:3.7.0'
 
     testCompile aspectjWeaver
     testCompile lombok
-    testCompile junit
-    testCompile mockito
+    testCompile testFrameworks
     testCompile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
-    testCompile "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
 
     testRuntime logback
 }

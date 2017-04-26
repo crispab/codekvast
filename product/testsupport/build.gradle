@@ -15,7 +15,7 @@ check.dependsOn integrationTest
 dependencies {
     compileOnly lombok
     compile slf4jApi
-    compile junit
+    compile testFrameworks
     compile mariadbDriver, {
         exclude group: 'net.java.dev.jna'
     }

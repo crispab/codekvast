@@ -22,19 +22,18 @@
 package io.codekvast.agent.collector.scheduler.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.codekvast.agent.lib.util.Constants;
 import io.codekvast.agent.collector.scheduler.ConfigPoller;
 import io.codekvast.agent.lib.codebase.CodeBase;
 import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
 import io.codekvast.agent.lib.config.CollectorConfig;
 import io.codekvast.agent.lib.model.v1.rest.GetConfigRequest1;
 import io.codekvast.agent.lib.model.v1.rest.GetConfigResponse1;
+import io.codekvast.agent.lib.util.Constants;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author olle.hallin@crisp.se
@@ -45,8 +44,6 @@ public class ConfigPollerImpl implements ConfigPoller {
     private final GetConfigRequest1 requestTemplate;
 
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-
-    private final OkHttpClient httpClient;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -65,19 +62,6 @@ public class ConfigPollerImpl implements ConfigPoller {
                                                 .licenseKey(config.getLicenseKey())
                                                 .startedAtMillis(System.currentTimeMillis())
                                                 .build();
-
-        this.httpClient = buildHttpClient(config);
-    }
-
-    private OkHttpClient buildHttpClient(CollectorConfig config) {
-        // TODO: pick values from config
-
-        return new OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .writeTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
-            // TODO: .proxy()
-            .build();
     }
 
     @Override
@@ -86,7 +70,7 @@ public class ConfigPollerImpl implements ConfigPoller {
 
         GetConfigRequest1 request = expandRequestTemplate();
 
-        log.debug("Posting {} to {}", request, config.getConfigRequestEndpoint());
+        log.debug("Posting {} to {}", request, config.getPollConfigRequestEndpoint());
 
         GetConfigResponse1 response =
             objectMapper.readValue(doHttpPost(objectMapper.writeValueAsString(request)), GetConfigResponse1.class);
@@ -113,11 +97,11 @@ public class ConfigPollerImpl implements ConfigPoller {
     private String doHttpPost(String bodyJson) throws IOException {
 
         Request request = new Request.Builder()
-            .url(config.getConfigRequestEndpoint())
+            .url(config.getPollConfigRequestEndpoint())
             .post(RequestBody.create(JSON, bodyJson))
             .build();
 
-        Response response = httpClient.newCall(request).execute();
+        Response response = config.getHttpClient().newCall(request).execute();
 
         if (!response.isSuccessful()) {
             throw new IOException(response.body().string());

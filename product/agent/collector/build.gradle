@@ -26,7 +26,6 @@ check.dependsOn integrationTest
 
 dependencies {
     compile project(":product:agent:agent-lib")
-    compile 'com.squareup.okhttp3:okhttp:3.7.0'
     compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
 
     compileOnly aspectjWeaver
@@ -36,9 +35,7 @@ dependencies {
 
     testCompile aspectjWeaver
     testCompile lombok
-    testCompile junit
-    testCompile mockito
-    testCompile "org.springframework.boot:spring-boot-test:$springBootVersion"
+    testCompile testFrameworks
 
     testRuntime logback
 

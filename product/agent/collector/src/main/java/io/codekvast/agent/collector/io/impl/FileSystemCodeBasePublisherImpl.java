@@ -28,6 +28,7 @@ import io.codekvast.agent.lib.model.v1.CodeBasePublication;
 import io.codekvast.agent.lib.util.Constants;
 import io.codekvast.agent.lib.util.FileUtils;
 import lombok.Cleanup;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
@@ -42,6 +43,7 @@ public class FileSystemCodeBasePublisherImpl extends AbstractCodeBasePublisher {
 
     public static final String NAME = "file-system";
 
+    @Setter
     private String targetFile = "/tmp/codekvast/codebase-#date#.ser";
 
     FileSystemCodeBasePublisherImpl(CollectorConfig config) {
@@ -56,7 +58,7 @@ public class FileSystemCodeBasePublisherImpl extends AbstractCodeBasePublisher {
     @Override
     boolean doSetValue(String key, String value) {
         if (key.equals("targetFile")) {
-            this.targetFile = value;
+            setTargetFile(value);
             return true;
         }
         return false;

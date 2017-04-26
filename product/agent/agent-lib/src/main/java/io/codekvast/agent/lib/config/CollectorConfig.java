@@ -23,12 +23,14 @@ package io.codekvast.agent.lib.config;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.codekvast.agent.lib.appversion.AppVersionResolver;
-import io.codekvast.agent.lib.model.v1.rest.GetConfigRequest1;
+import io.codekvast.agent.lib.model.Endpoints;
 import lombok.*;
 import io.codekvast.agent.lib.util.ConfigUtils;
+import okhttp3.OkHttpClient;
 
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Encapsulates the configuration that is used by codekvast-collector.
@@ -84,7 +86,10 @@ public class CollectorConfig implements CodekvastConfig {
     private String tags;
 
     @JsonIgnore
-    private String resolvedAppVersion;
+    private transient String resolvedAppVersion;
+
+    @JsonIgnore
+    private transient OkHttpClient httpClient;
 
     @JsonIgnore
     public File getAspectFile() {
@@ -132,14 +137,33 @@ public class CollectorConfig implements CodekvastConfig {
     }
 
     @JsonIgnore
-    public String getConfigRequestEndpoint() {
-        return String.format("%s%s", serverUrl, GetConfigRequest1.ENDPOINT);
+    public String getPollConfigRequestEndpoint() {
+        return String.format("%s%s", serverUrl, Endpoints.AGENT_V1_POLL_CONFIG);
     }
 
+    @JsonIgnore
+    public String getCodeBaseUploadEndpoint() {
+        return String.format("%s%s", serverUrl, Endpoints.AGENT_V1_UPLOAD_CODEBASE);
+    }
+
+    @JsonIgnore
     public String getResolvedAppVersion() {
         if (resolvedAppVersion == null) {
             resolvedAppVersion = new AppVersionResolver(this).resolveAppVersion();
         }
         return resolvedAppVersion;
+    }
+
+    @JsonIgnore
+    public OkHttpClient getHttpClient() {
+        if (httpClient == null) {
+            httpClient = new OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .writeTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                // TODO: .proxy()
+                .build();
+        }
+        return httpClient;
     }
 }

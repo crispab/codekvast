@@ -138,7 +138,7 @@ public class Scheduler implements Runnable {
                 pollState.updateIntervals(dynamicConfig.getConfigPollIntervalSeconds(), dynamicConfig.getConfigPollRetryIntervalSeconds());
                 pollState.scheduleNext();
             } catch (Exception e) {
-                log.error("Failed to poll " + config.getConfigRequestEndpoint(), e);
+                log.error("Failed to poll " + config.getPollConfigRequestEndpoint(), e);
 
                 pollState.scheduleRetry();
             }

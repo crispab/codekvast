@@ -36,8 +36,6 @@ import javax.validation.constraints.Size;
 @ToString
 public class GetConfigRequest1 {
 
-    public static final String ENDPOINT = "/agent/v1/getConfig";
-
     /**
      * What is my license key? Null or blank is acceptable and means run with a trial license.
      */

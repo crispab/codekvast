@@ -37,9 +37,7 @@ dependencies {
     runtime 'org.hibernate:hibernate-validator:5.3.4.Final'
 
     testCompile lombok
-    testCompile junit
-    testCompile mockito
-    testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testCompile testFrameworks
 
     integrationTestCompile project(":product:testsupport")
 }
