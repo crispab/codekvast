@@ -87,6 +87,7 @@ public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
         RequestBody requestBody = new MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart(Endpoints.AGENT_V1_LICENSE_KEY_PARAM, getConfig().getLicenseKey())
+            .addFormDataPart(Endpoints.AGENT_V1_FINGERPRINT_PARAM, getCodeBaseFingerprint().getSha256())
             .addFormDataPart(Endpoints.AGENT_V1_PUBLICATION_FILE_PARAM, file.getName(),
                              RequestBody.create(APPLICATION_OCTET_STREAM, file))
             .build();

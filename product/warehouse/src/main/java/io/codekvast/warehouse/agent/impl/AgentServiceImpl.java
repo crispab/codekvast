@@ -83,7 +83,7 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
-    public File saveInvocationDataPublication(String licenseKey, InputStream inputStream) throws LicenseViolationException, IOException {
+    public File saveInvocationDataPublication(String licenseKey, String codeBaseFingerprint, InputStream inputStream) throws LicenseViolationException, IOException {
         return doSaveInputStream(licenseKey, inputStream, "invocations-");
     }
 
