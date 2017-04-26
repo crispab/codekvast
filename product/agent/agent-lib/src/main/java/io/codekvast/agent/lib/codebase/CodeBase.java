@@ -54,8 +54,8 @@ import java.util.regex.PatternSyntaxException;
 @Slf4j
 public class CodeBase {
 
-    private static final String ADDED_PATTERNS_FILENAME = "/codekvast/byte-code-added-methods.txt";
-    private static final String ENHANCED_PATTERNS_FILENAME = "/codekvast/byte-code-enhanced-methods.txt";
+    private static final String ADDED_PATTERNS_FILENAME = "/io/codekvast/byte-code-added-methods.txt";
+    private static final String ENHANCED_PATTERNS_FILENAME = "/io/codekvast/byte-code-enhanced-methods.txt";
 
     private static final String SIGNATURES_SECTION = "# Signatures:";
     private static final String OVERRIDDEN_SIGNATURES_SECTION = "# Overridden signatures:";
