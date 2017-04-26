@@ -144,6 +144,18 @@ public class SchedulerTest {
         assertThat(state.getRetryIntervalFactor(), is(1));
 
         state.scheduleRetry();
+        assertThat(state.getRetryIntervalFactor(), is(1));
+
+        state.scheduleRetry();
+        assertThat(state.getRetryIntervalFactor(), is(1));
+
+        state.scheduleRetry();
+        assertThat(state.getRetryIntervalFactor(), is(1));
+
+        state.scheduleRetry();
+        assertThat(state.getRetryIntervalFactor(), is(1));
+
+        state.scheduleRetry();
         assertThat(state.getRetryIntervalFactor(), is(2));
 
         state.scheduleRetry();
@@ -153,10 +165,10 @@ public class SchedulerTest {
         assertThat(state.getRetryIntervalFactor(), is(8));
 
         state.scheduleRetry();
-        assertThat(state.getRetryIntervalFactor(), is(8));
+        assertThat(state.getRetryIntervalFactor(), is(16));
 
         state.scheduleRetry();
-        assertThat(state.getRetryIntervalFactor(), is(8));
+        assertThat(state.getRetryIntervalFactor(), is(16));
 
         state.scheduleNext();
         assertThat(state.getRetryIntervalFactor(), is(1));

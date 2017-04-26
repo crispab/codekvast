@@ -239,7 +239,13 @@ public class Scheduler implements Runnable {
         }
 
         void scheduleRetry() {
-            retryIntervalFactor = (int) Math.pow(2, Math.min(numFailures, 3));
+            int backOffLimit = 5;
+
+            if (numFailures < backOffLimit) {
+                retryIntervalFactor = 1;
+            } else {
+                retryIntervalFactor = (int) Math.pow(2, Math.min(numFailures - backOffLimit + 1, 4));
+            }
             nextEventAtMillis = System.currentTimeMillis() + retryIntervalSeconds * retryIntervalFactor * 1000L;
             numFailures += 1;
         }
