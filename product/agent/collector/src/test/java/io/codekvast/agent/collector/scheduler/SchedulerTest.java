@@ -18,6 +18,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.rule.OutputCapture;
 
+import java.io.IOException;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
@@ -124,5 +126,40 @@ public class SchedulerTest {
         scheduler.run();
 
         assertThat(codeBasePublisher.getPublicationCount(), is(0));
+    }
+
+    @Test
+    public void should_handle_initial_poll_exceptions() throws Exception {
+        when(configPollerMock.doPoll(anyBoolean())).thenThrow(new IOException("Mock: No contact with server"));
+        scheduler.run();
+    }
+
+    @Test
+    public void should_retry_with_exponential_back_off() throws Exception {
+        // given
+        Scheduler.SchedulerState state = new Scheduler.SchedulerState().initialize(10, 10);
+        assertThat(state.getRetryIntervalFactor(), is(1));
+
+        state.scheduleRetry();
+        assertThat(state.getRetryIntervalFactor(), is(1));
+
+        state.scheduleRetry();
+        assertThat(state.getRetryIntervalFactor(), is(2));
+
+        state.scheduleRetry();
+        assertThat(state.getRetryIntervalFactor(), is(4));
+
+        state.scheduleRetry();
+        assertThat(state.getRetryIntervalFactor(), is(8));
+
+        state.scheduleRetry();
+        assertThat(state.getRetryIntervalFactor(), is(8));
+
+        state.scheduleRetry();
+        assertThat(state.getRetryIntervalFactor(), is(8));
+
+        state.scheduleNext();
+        assertThat(state.getRetryIntervalFactor(), is(1));
+
     }
 }
