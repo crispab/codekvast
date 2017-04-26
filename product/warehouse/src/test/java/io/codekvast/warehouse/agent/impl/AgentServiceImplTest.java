@@ -4,9 +4,11 @@ import io.codekvast.warehouse.agent.AgentService;
 import io.codekvast.warehouse.agent.LicenseViolationException;
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import io.codekvast.agent.lib.model.v1.rest.GetConfigRequest1;
 import io.codekvast.agent.lib.model.v1.rest.GetConfigResponse1;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -16,19 +18,21 @@ import static org.junit.Assert.assertThat;
 
 public class AgentServiceImplTest {
 
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
     private final CodekvastSettings settings = new CodekvastSettings();
     private final AgentService service = new AgentServiceImpl(settings);
     private final GetConfigRequest1 request = GetConfigRequest1.sample();
 
     @Before
-    public void setUp() throws Exception {
-        settings.setImportPath(new File("/tmp/codekvast/.import"));
+    public void setUp() {
+        settings.setImportPath(temporaryFolder.getRoot());
     }
 
     @Test(expected = LicenseViolationException.class)
     public void should_throw_for_invalid_license_key() throws Exception {
         service.getConfig(request.toBuilder().licenseKey("-----").build());
-
     }
 
     @Test
@@ -52,8 +56,7 @@ public class AgentServiceImplTest {
 
     @Test
     public void should_save_uploaded_codebase_no_license() throws Exception {
-
-        String contents = "CodeBasePublication";
+        String contents = "Dummy Code Base Publication";
 
         File resultingFile = service.saveCodeBasePublication(null,
                                                              new ByteArrayInputStream(contents.getBytes()));
