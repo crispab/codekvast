@@ -204,13 +204,11 @@ public class Scheduler implements Runnable {
         private int retryIntervalSeconds;
         private int retryIntervalFactor;
         private int numFailures;
-        private boolean firstTime;
 
         SchedulerState initialize(int intervalSeconds, int retryIntervalSeconds) {
             this.intervalSeconds = intervalSeconds;
             this.retryIntervalSeconds = retryIntervalSeconds;
             this.nextEventAtMillis = 0L;
-            this.firstTime = true;
             resetRetryCounter();
             return this;
         }
@@ -228,7 +226,6 @@ public class Scheduler implements Runnable {
 
         void scheduleNext() {
             nextEventAtMillis = System.currentTimeMillis() + intervalSeconds * 1000L;
-            firstTime = false;
             if (numFailures > 0) {
                 log.debug("{} is exiting failure state after {} failures", name, numFailures);
             }
