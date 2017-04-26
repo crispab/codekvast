@@ -120,6 +120,6 @@ public class AgentControllerTest {
                .andExpect(status().isOk())
                .andExpect(content().string("OK"));
 
-        verify(agentService).saveCodeBasePublication(eq(licenseKey), eq(originalFilename), any(InputStream.class));
+        verify(agentService).saveCodeBasePublication(eq(licenseKey), any(InputStream.class));
     }
 }

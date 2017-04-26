@@ -30,7 +30,8 @@ import io.codekvast.warehouse.agent.AgentService;
 import io.codekvast.warehouse.agent.LicenseViolationException;
 
 import javax.inject.Inject;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.file.Files;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -74,11 +75,28 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
-    public void saveCodeBasePublication(String licenseKey, String originalFilename, InputStream inputStream)
-        throws LicenseViolationException {
+    public File saveCodeBasePublication(String licenseKey, InputStream inputStream) throws LicenseViolationException, IOException {
         checkLicense(licenseKey);
 
-        throw new UnsupportedOperationException("Not Yet Implemented");
+        createDirectory(settings.getImportPath());
+
+        File result = File.createTempFile("codebase-", ".ser", settings.getImportPath());
+        result.delete();
+        Files.copy(inputStream, result.toPath());
+
+        log.debug("Saved CodeBasePublication to {}", result);
+        return result;
+    }
+
+    private void createDirectory(File importPath) throws IOException {
+        if (!importPath.isDirectory()) {
+            log.debug("Creating {}", settings.getImportPath());
+            settings.getImportPath().mkdirs();
+            if (!settings.getImportPath().isDirectory()) {
+                throw new IOException("Could not create import directory");
+            }
+            log.info("Created {}", importPath);
+        }
     }
 
     private String getCodeBasePublisherConfig(CodekvastSettings settings) {

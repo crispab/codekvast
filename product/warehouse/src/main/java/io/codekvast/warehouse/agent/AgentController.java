@@ -94,7 +94,7 @@ public class AgentController {
 
         log.debug("Received {} ({} bytes) with licenseKey={}", file.getOriginalFilename(), file.getSize(), licenseKey);
 
-        agentService.saveCodeBasePublication(licenseKey, file.getOriginalFilename(), file.getInputStream());
+        agentService.saveCodeBasePublication(licenseKey, file.getInputStream());
 
         return "OK";
     }

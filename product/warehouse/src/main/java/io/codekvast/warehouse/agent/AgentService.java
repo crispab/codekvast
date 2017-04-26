@@ -25,6 +25,8 @@ import io.codekvast.agent.lib.model.v1.CodeBasePublication;
 import io.codekvast.agent.lib.model.v1.rest.GetConfigRequest1;
 import io.codekvast.agent.lib.model.v1.rest.GetConfigResponse1;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -45,8 +47,10 @@ public interface AgentService {
      * Save an uploaded {@link CodeBasePublication} into the import area where it will be processed by another thread.
      *
      * @param licenseKey       The agent's licenseKey
-     * @param originalFilename The original name of the file.
      * @param inputStream      The data input stream.
+     * @return The resulting file
+     * @throws LicenseViolationException If invalid license or license violations
      */
-    void saveCodeBasePublication(String licenseKey, String originalFilename, InputStream inputStream) throws LicenseViolationException;
+    File saveCodeBasePublication(String licenseKey, InputStream inputStream)
+        throws LicenseViolationException, IOException;
 }

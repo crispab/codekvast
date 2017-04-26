@@ -8,11 +8,10 @@ import org.junit.Test;
 import io.codekvast.agent.lib.model.v1.rest.GetConfigRequest1;
 import io.codekvast.agent.lib.model.v1.rest.GetConfigResponse1;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 public class AgentServiceImplTest {
@@ -45,4 +44,25 @@ public class AgentServiceImplTest {
         assertThat(response.getInvocationDataPublisherName(), is("file-system"));
         assertThat(response.getInvocationDataPublisherConfig(), is("enabled=true"));
     }
+
+    @Test(expected = LicenseViolationException.class)
+    public void should_reject_uploaded_codebase_when_invalid_license() throws Exception {
+        service.saveCodeBasePublication("-----", null);
+    }
+
+    @Test
+    public void should_save_uploaded_codebase_no_license() throws Exception {
+
+        String contents = "CodeBasePublication";
+
+        File resultingFile = service.saveCodeBasePublication(null,
+                                                             new ByteArrayInputStream(contents.getBytes()));
+
+        assertThat(resultingFile, notNullValue());
+        assertThat(resultingFile.getName(), startsWith("codebase-"));
+        assertThat(resultingFile.getName(), endsWith(".ser"));
+        assertThat(resultingFile.exists(), is(true));
+        assertThat(resultingFile.length(), is((long) contents.length()));
+    }
+
 }
