@@ -316,4 +316,14 @@ public final class FileUtils {
         return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date());
     }
 
+    public static File serializeToFile(Object object, String prefix, String suffix) throws IOException {
+        long startedAt = System.currentTimeMillis();
+        File file = File.createTempFile(prefix, suffix);
+        try (ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(file)))) {
+            oos.writeObject(object);
+        }
+        log.debug("Serialized {} in {} ms", object.getClass().getSimpleName(), System.currentTimeMillis() - startedAt);
+        return file;
+    }
+
 }

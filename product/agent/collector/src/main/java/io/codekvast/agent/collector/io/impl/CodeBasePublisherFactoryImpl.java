@@ -23,9 +23,7 @@ package io.codekvast.agent.collector.io.impl;
 
 import io.codekvast.agent.collector.io.CodeBasePublisher;
 import io.codekvast.agent.collector.io.CodeBasePublisherFactory;
-import io.codekvast.agent.collector.io.impl.NoOpCodeBasePublisherImpl;
 import io.codekvast.agent.lib.config.CollectorConfig;
-import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -47,10 +45,6 @@ public class CodeBasePublisherFactoryImpl implements CodeBasePublisherFactory {
     public CodeBasePublisher create(String name, CollectorConfig config) {
         if (name.equals(NoOpCodeBasePublisherImpl.NAME)) {
             return new NoOpCodeBasePublisherImpl(config);
-        }
-
-        if (name.equals(FileSystemCodeBasePublisherImpl.NAME)) {
-            return new FileSystemCodeBasePublisherImpl(config);
         }
 
         if (name.equals(HttpCodeBasePublisherImpl.NAME)) {

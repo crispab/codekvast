@@ -47,10 +47,6 @@ public class InvocationDataPublisherFactoryImpl implements InvocationDataPublish
             return new NoOpInvocationDataPublisherImpl(config);
         }
 
-        if (name.equals(FileSystemInvocationDataPublisherImpl.NAME)) {
-            return new FileSystemInvocationDataPublisherImpl(config);
-        }
-
         if (name.equals(HttpInvocationDataPublisherImpl.NAME)) {
             return new HttpInvocationDataPublisherImpl(config);
         }

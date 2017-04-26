@@ -29,8 +29,7 @@ import io.codekvast.agent.lib.util.FileUtils;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * A HTTP implementation of CodeBasePublisher.
@@ -46,11 +45,8 @@ public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
 
     private static final MediaType APPLICATION_OCTET_STREAM = MediaType.parse("application/octet-stream");
 
-    private FileSystemCodeBasePublisherImpl fileSystemPublisher;
-
     HttpCodeBasePublisherImpl(CollectorConfig config) {
         super(log, config);
-        this.fileSystemPublisher = new FileSystemCodeBasePublisherImpl(config);
     }
 
     @Override
@@ -67,36 +63,40 @@ public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
     public void doPublishCodeBase(CodeBase codeBase) throws CodekvastPublishingException {
         String url = getConfig().getCodeBaseUploadEndpoint();
 
-        File tmpFile = null;
+        File file = null;
         try {
-            tmpFile = File.createTempFile("codekvast-codebase-", ".ser");
-            fileSystemPublisher.setTargetFile(tmpFile.getAbsolutePath());
-            fileSystemPublisher.doPublishCodeBase(codeBase);
+            file = FileUtils.serializeToFile(codeBase.getCodeBasePublication(), "codekvast-codebase-", ".ser");
 
-            doPost(tmpFile, url);
+            doPost(file, url, codeBase.getFingerprint().getSha256());
 
-            log.debug("Uploaded {} to {}", tmpFile, url);
-        } catch (Exception e) {
+            log.debug("Uploaded {} to {}", file, url);
+        } catch (IOException e) {
             throw new CodekvastPublishingException("Cannot upload code base to " + url, e);
         } finally {
-            FileUtils.safeDelete(tmpFile);
+            FileUtils.safeDelete(file);
         }
     }
 
-    void doPost(File file, String url) throws IOException {
+    void doPost(File file, String url, String fingerprint) throws IOException {
         RequestBody requestBody = new MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart(Endpoints.AGENT_V1_LICENSE_KEY_PARAM, getConfig().getLicenseKey())
-            .addFormDataPart(Endpoints.AGENT_V1_FINGERPRINT_PARAM, getCodeBaseFingerprint().getSha256())
+            .addFormDataPart(Endpoints.AGENT_V1_FINGERPRINT_PARAM, fingerprint)
             .addFormDataPart(Endpoints.AGENT_V1_PUBLICATION_FILE_PARAM, file.getName(),
                              RequestBody.create(APPLICATION_OCTET_STREAM, file))
             .build();
 
         Request request = new Request.Builder().url(url).post(requestBody).build();
-        Response response = getConfig().getHttpClient().newCall(request).execute();
+        Response response = executeRequest(request);
 
         if (!response.isSuccessful()) {
             throw new IOException(response.body().string());
         }
     }
+
+    // Make it simple to subclass and override in tests...
+    Response executeRequest(Request request) throws IOException {
+        return getConfig().getHttpClient().newCall(request).execute();
+    }
+
 }

@@ -24,6 +24,8 @@ package io.codekvast.agent.collector.io.impl;
 import io.codekvast.agent.collector.io.CodekvastPublishingException;
 import io.codekvast.agent.lib.config.CollectorConfig;
 import io.codekvast.agent.lib.model.Endpoints;
+import io.codekvast.agent.lib.model.v1.InvocationDataPublication;
+import io.codekvast.agent.lib.util.Constants;
 import io.codekvast.agent.lib.util.FileUtils;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
@@ -46,11 +48,8 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
 
     private static final MediaType APPLICATION_OCTET_STREAM = MediaType.parse("application/octet-stream");
 
-    private FileSystemInvocationDataPublisherImpl fileSystemPublisher;
-
     HttpInvocationDataPublisherImpl(CollectorConfig config) {
         super(log, config);
-        this.fileSystemPublisher = new FileSystemInvocationDataPublisherImpl(config);
     }
 
     @Override
@@ -70,12 +69,11 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
         String url = getConfig().getInvocationDataUploadEndpoint();
         File tmpFile = null;
         try {
-            tmpFile = File.createTempFile("codekvast-invocations-", ".ser");
-            fileSystemPublisher.setTargetFile(tmpFile.getAbsolutePath());
-            fileSystemPublisher.setCodeBaseFingerprint(getCodeBaseFingerprint());
-            fileSystemPublisher.doPublishInvocationData(recordingIntervalStartedAtMillis, invocations);
+            tmpFile = FileUtils.serializeToFile(createPublication(recordingIntervalStartedAtMillis, invocations),
+                                                "codekvast-invocations-",
+                                                ".ser");
 
-            doPost(tmpFile, url);
+            doPost(tmpFile, url, getCodeBaseFingerprint().getSha256());
 
             log.debug("Uploaded {} to {}", tmpFile, url);
         } catch (Exception e) {
@@ -86,21 +84,43 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
 
     }
 
-    void doPost(File file, String url) throws IOException {
+    void doPost(File file, String url, String fingerprint) throws IOException {
         RequestBody requestBody = new MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart(Endpoints.AGENT_V1_LICENSE_KEY_PARAM, getConfig().getLicenseKey())
-            .addFormDataPart(Endpoints.AGENT_V1_FINGERPRINT_PARAM, getCodeBaseFingerprint().getSha256())
+            .addFormDataPart(Endpoints.AGENT_V1_FINGERPRINT_PARAM, fingerprint)
             .addFormDataPart(Endpoints.AGENT_V1_PUBLICATION_FILE_PARAM, file.getName(),
                              RequestBody.create(APPLICATION_OCTET_STREAM, file))
             .build();
 
         Request request = new Request.Builder().url(url).post(requestBody).build();
-        Response response = getConfig().getHttpClient().newCall(request).execute();
+        Response response = executeRequest(request);
 
         if (!response.isSuccessful()) {
             throw new IOException(response.body().string());
         }
+    }
+
+    // Make it possible to subclass in tests
+    Response executeRequest(Request request) throws IOException {
+        return getConfig().getHttpClient().newCall(request).execute();
+    }
+
+    private InvocationDataPublication createPublication(long recordingIntervalStartedAtMillis, Set<String> invocations) {
+
+        return InvocationDataPublication.builder()
+                                        .appName(getConfig().getAppName())
+                                        .appVersion(getConfig().getResolvedAppVersion())
+                                        .codeBaseFingerprint(getCodeBaseFingerprint().getSha256())
+                                        .collectorVersion(Constants.COLLECTOR_VERSION)
+                                        .computerId(Constants.COMPUTER_ID)
+                                        .hostName(Constants.HOST_NAME)
+                                        .invocations(invocations)
+                                        .jvmUuid(Constants.JVM_UUID)
+                                        .publicationCount(getPublicationCount())
+                                        .publishedAtMillis(System.currentTimeMillis())
+                                        .recordingIntervalStartedAtMillis(recordingIntervalStartedAtMillis)
+                                        .build();
     }
 
 }

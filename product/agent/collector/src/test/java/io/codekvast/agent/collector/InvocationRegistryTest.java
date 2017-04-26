@@ -1,27 +1,17 @@
 package io.codekvast.agent.collector;
 
-import io.codekvast.agent.collector.io.CodekvastPublishingException;
-import io.codekvast.agent.collector.io.InvocationDataPublisher;
-import io.codekvast.agent.collector.io.impl.FileSystemInvocationDataPublisherImpl;
-import io.codekvast.agent.collector.io.impl.InvocationDataPublisherFactoryImpl;
-import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
+import io.codekvast.agent.lib.config.CollectorConfig;
+import io.codekvast.agent.lib.config.CollectorConfigFactory;
+import io.codekvast.agent.lib.util.SignatureUtils;
 import org.aspectj.lang.Signature;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import io.codekvast.agent.lib.config.CollectorConfig;
-import io.codekvast.agent.lib.config.CollectorConfigFactory;
-import io.codekvast.agent.lib.model.v1.legacy.Invocation;
-import io.codekvast.agent.lib.model.v1.legacy.Jvm;
-import io.codekvast.agent.lib.util.FileUtils;
-import io.codekvast.agent.lib.util.SignatureUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -36,15 +26,13 @@ public class InvocationRegistryTest {
     public final TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     private CollectorConfig config;
-    private String codeBase;
     private Signature signature1;
     private Signature signature2;
 
     @Before
     public void beforeTest() throws IOException, NoSuchMethodException {
-        codeBase =
-            temporaryFolder.newFolder("codebase1").getAbsolutePath() + ", "
-                + temporaryFolder.newFolder("codebase2").getAbsolutePath();
+        String codeBase = temporaryFolder.newFolder("codebase1").getAbsolutePath() + ", "
+            + temporaryFolder.newFolder("codebase2").getAbsolutePath();
         File dataPath = temporaryFolder.newFolder(".collector");
 
         //@formatter:off
@@ -66,21 +54,15 @@ public class InvocationRegistryTest {
     }
 
     @Test
-    public void testRegisterMethodInvocationAndPublishToDisk() throws IOException, InterruptedException, CodekvastPublishingException {
-        assertThat(InvocationRegistry.instance.isNullRegistry(), is(false));
+    public void should_handle_registrations_when_disabled() throws Exception {
+        InvocationRegistry.initialize(null);
+        assertThat(InvocationRegistry.instance.isNullRegistry(), is(true));
+        InvocationRegistry.instance.registerMethodInvocation(signature1);
+    }
 
-        doExtremelyConcurrentRegistrationOf(10, 10, signature1, signature2);
-
-        File targetFile = new File(temporaryFolder.getRoot(), "invocations.ser");
-
-        FileSystemInvocationDataPublisherImpl publisher = new FileSystemInvocationDataPublisherImpl(config);
-        publisher.setCodeBaseFingerprint(new CodeBaseFingerprint(1, "sha256"));
-        publisher.setTargetFile(targetFile.getAbsolutePath());
-
-        InvocationRegistry.instance.publishInvocationData(publisher);
-
-        assertThat(targetFile.exists(), is(true));
-
+    @Test
+    public void should_handle_concurrent_registrations() throws Exception {
+        doExtremelyConcurrentRegistrationOf(25, 1000, signature1, signature2, signature1, signature2);
     }
 
     private void doExtremelyConcurrentRegistrationOf(int numThreads, final int numRegistrations, final Signature... signatures)
@@ -114,14 +96,7 @@ public class InvocationRegistryTest {
         finishLine.await();
     }
 
-    @Test
-    public void testRegisterBeforeInitialize() throws Exception {
-        InvocationRegistry.initialize(null);
-        assertThat(InvocationRegistry.instance.isNullRegistry(), is(true));
-        InvocationRegistry.instance.registerMethodInvocation(signature1);
-    }
-
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "WeakerAccess"})
     public static class TestClass {
         public void m1() {
 
