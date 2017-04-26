@@ -106,6 +106,7 @@ public class AgentControllerTest {
     @Test
     public void should_accept_upload_codebase_publication_when_valid_license() throws Exception {
         String licenseKey = "licenseKey";
+        String fingerprint = "fingerprint";
         String originalFilename = "codekvast-codebase-9128371293719273.ser";
 
         MockMultipartFile multipartFile =
@@ -116,11 +117,12 @@ public class AgentControllerTest {
 
         mockMvc.perform(fileUpload(Endpoints.AGENT_V1_UPLOAD_CODEBASE)
                             .file(multipartFile)
-                            .param(Endpoints.AGENT_V1_LICENSE_KEY_PARAM, licenseKey))
+                            .param(Endpoints.AGENT_V1_LICENSE_KEY_PARAM, licenseKey)
+                            .param(Endpoints.AGENT_V1_FINGERPRINT_PARAM, fingerprint))
                .andExpect(status().isOk())
                .andExpect(content().string("OK"));
 
-        verify(agentService).saveCodeBasePublication(eq(licenseKey), any(InputStream.class));
+        verify(agentService).saveCodeBasePublication(eq(licenseKey), eq(fingerprint), any(InputStream.class));
     }
 
     @Test

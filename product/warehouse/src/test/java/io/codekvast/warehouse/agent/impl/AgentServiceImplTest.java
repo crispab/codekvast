@@ -49,7 +49,7 @@ public class AgentServiceImplTest {
 
     @Test(expected = LicenseViolationException.class)
     public void should_reject_uploaded_codebase_when_invalid_license() throws Exception {
-        service.saveCodeBasePublication("-----", null);
+        service.saveCodeBasePublication("-----", "fingerprint", null);
     }
 
     @Test
@@ -57,6 +57,7 @@ public class AgentServiceImplTest {
         String contents = "Dummy Code Base Publication";
 
         File resultingFile = service.saveCodeBasePublication(null,
+                                                             "fingerprint",
                                                              new ByteArrayInputStream(contents.getBytes()));
 
         assertThat(resultingFile, notNullValue());

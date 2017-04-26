@@ -66,14 +66,16 @@ public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
     @Override
     public void doPublishCodeBase(CodeBase codeBase) throws CodekvastPublishingException {
         String url = getConfig().getCodeBaseUploadEndpoint();
+
         File tmpFile = null;
         try {
             tmpFile = File.createTempFile("codekvast-codebase-", ".ser");
             fileSystemPublisher.setTargetFile(tmpFile.getAbsolutePath());
             fileSystemPublisher.doPublishCodeBase(codeBase);
 
-            doPost(tmpFile);
+            doPost(tmpFile, url);
 
+            log.debug("Uploaded {} to {}", tmpFile, url);
         } catch (Exception e) {
             throw new CodekvastPublishingException("Cannot upload code base to " + url, e);
         } finally {
@@ -81,7 +83,7 @@ public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
         }
     }
 
-    void doPost(File file) throws IOException {
+    void doPost(File file, String url) throws IOException {
         RequestBody requestBody = new MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart(Endpoints.AGENT_V1_LICENSE_KEY_PARAM, getConfig().getLicenseKey())
@@ -89,11 +91,7 @@ public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
                              RequestBody.create(APPLICATION_OCTET_STREAM, file))
             .build();
 
-        Request request = new Request.Builder()
-            .url(getConfig().getCodeBaseUploadEndpoint())
-            .post(requestBody)
-            .build();
-
+        Request request = new Request.Builder().url(url).post(requestBody).build();
         Response response = getConfig().getHttpClient().newCall(request).execute();
 
         if (!response.isSuccessful()) {

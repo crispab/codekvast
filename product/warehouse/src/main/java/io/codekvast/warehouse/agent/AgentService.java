@@ -21,6 +21,7 @@
  */
 package io.codekvast.warehouse.agent;
 
+import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
 import io.codekvast.agent.lib.model.v1.CodeBasePublication;
 import io.codekvast.agent.lib.model.v1.InvocationDataPublication;
 import io.codekvast.agent.lib.model.v1.rest.GetConfigRequest1;
@@ -47,19 +48,20 @@ public interface AgentService {
     /**
      * Save an uploaded {@link CodeBasePublication} into the import area where it will be processed by another thread.
      *
-     * @param licenseKey       The agent's licenseKey
-     * @param inputStream      The data input stream.
+     * @param licenseKey          The agent's licenseKey
+     * @param codeBaseFingerprint Is the {@link CodeBaseFingerprint#getSha256()} value for the code base
+     * @param inputStream         The data input stream.
      * @return The resulting file
      * @throws LicenseViolationException If invalid license or license violations
      */
-    File saveCodeBasePublication(String licenseKey, InputStream inputStream)
+    File saveCodeBasePublication(String licenseKey, String codeBaseFingerprint, InputStream inputStream)
         throws LicenseViolationException, IOException;
 
     /**
      * Save an uploaded {@link InvocationDataPublication} into the import area where it will be processed by another thread.
      *
-     * @param licenseKey       The agent's licenseKey
-     * @param inputStream      The data input stream.
+     * @param licenseKey  The agent's licenseKey
+     * @param inputStream The data input stream.
      * @return The resulting file
      * @throws LicenseViolationException If invalid license or license violations
      */

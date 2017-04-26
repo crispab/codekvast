@@ -97,16 +97,6 @@ public class CollectorConfig implements CodekvastConfig {
     }
 
     @JsonIgnore
-    public File getJvmFile() {
-        return new File(myDataPath(appName), JVM_BASENAME);
-    }
-
-    @JsonIgnore
-    public File getInvocationsFile() {
-        return new File(myDataPath(appName), INVOCATIONS_BASENAME);
-    }
-
-    @JsonIgnore
     public File getSignatureFile(String appName) {
         return new File(myDataPath(appName), "signatures.dat");
     }
@@ -163,10 +153,11 @@ public class CollectorConfig implements CodekvastConfig {
     public OkHttpClient getHttpClient() {
         if (httpClient == null) {
             httpClient = new OkHttpClient.Builder()
+                // TODO: make OkHttpClient timeouts configurable
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .writeTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
-                // TODO: .proxy()
+                // TODO: OkHttpClient.proxy()
                 .build();
         }
         return httpClient;

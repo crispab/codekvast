@@ -24,7 +24,7 @@ public class HttpInvocationDataPublisherImplTest {
 
     private final HttpInvocationDataPublisherImpl publisher = new HttpInvocationDataPublisherImpl(config) {
         @Override
-        void doPost(File file) {
+        void doPost(File file, String url) {
             uploadedFile = file;
         }
     };

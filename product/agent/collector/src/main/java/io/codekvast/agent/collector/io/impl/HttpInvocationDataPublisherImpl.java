@@ -75,7 +75,9 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
             fileSystemPublisher.setCodeBaseFingerprint(getCodeBaseFingerprint());
             fileSystemPublisher.doPublishInvocationData(recordingIntervalStartedAtMillis, invocations);
 
-            doPost(tmpFile);
+            doPost(tmpFile, url);
+
+            log.debug("Uploaded {} to {}", tmpFile, url);
         } catch (Exception e) {
             throw new CodekvastPublishingException("Cannot upload invocation data to " + url, e);
         } finally {
@@ -84,19 +86,16 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
 
     }
 
-    void doPost(File file) throws IOException {
+    void doPost(File file, String url) throws IOException {
         RequestBody requestBody = new MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart(Endpoints.AGENT_V1_LICENSE_KEY_PARAM, getConfig().getLicenseKey())
+            .addFormDataPart(Endpoints.AGENT_V1_FINGERPRINT_PARAM, getCodeBaseFingerprint().getSha256())
             .addFormDataPart(Endpoints.AGENT_V1_PUBLICATION_FILE_PARAM, file.getName(),
                              RequestBody.create(APPLICATION_OCTET_STREAM, file))
             .build();
 
-        Request request = new Request.Builder()
-            .url(getConfig().getInvocationDataUploadEndpoint())
-            .post(requestBody)
-            .build();
-
+        Request request = new Request.Builder().url(url).post(requestBody).build();
         Response response = getConfig().getHttpClient().newCall(request).execute();
 
         if (!response.isSuccessful()) {

@@ -32,8 +32,10 @@ import io.codekvast.agent.lib.config.CollectorConfig;
 import io.codekvast.agent.lib.model.v1.rest.GetConfigResponse1;
 import io.codekvast.agent.lib.util.LogUtil;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -55,13 +57,13 @@ public class Scheduler implements Runnable {
 
     // Mutable state
     private GetConfigResponse1 dynamicConfig;
-    private final SchedulerState pollState = new SchedulerState().initialize(10, 10);
+    private final SchedulerState pollState = new SchedulerState("configPoll").initialize(10, 10);
 
-    private final SchedulerState codeBasePublisherState = new SchedulerState().initialize(10, 10);
+    private final SchedulerState codeBasePublisherState = new SchedulerState("codeBase").initialize(10, 10);
     private CodeBasePublisher codeBasePublisher;
     private CodeBaseFingerprint codeBaseFingerprint;
 
-    private final SchedulerState invocationDataPublisherState = new SchedulerState().initialize(10, 10);
+    private final SchedulerState invocationDataPublisherState = new SchedulerState("invocationData").initialize(10, 10);
     private InvocationDataPublisher invocationDataPublisher;
 
     public Scheduler(CollectorConfig config,
@@ -137,8 +139,7 @@ public class Scheduler implements Runnable {
                 pollState.updateIntervals(dynamicConfig.getConfigPollIntervalSeconds(), dynamicConfig.getConfigPollRetryIntervalSeconds());
                 pollState.scheduleNext();
             } catch (Exception e) {
-                log.error("Failed to poll " + config.getPollConfigRequestEndpoint(), e);
-
+                LogUtil.logException(log, "Failed to poll " + config.getPollConfigRequestEndpoint(), e);
                 pollState.scheduleRetry();
             }
         }
@@ -205,7 +206,11 @@ public class Scheduler implements Runnable {
     }
 
     @Getter
+    @RequiredArgsConstructor
+    @Slf4j
     static class SchedulerState {
+        private final String name;
+
         private long nextEventAtMillis;
         private int intervalSeconds;
         private int retryIntervalSeconds;
@@ -236,7 +241,11 @@ public class Scheduler implements Runnable {
         void scheduleNext() {
             nextEventAtMillis = System.currentTimeMillis() + intervalSeconds * 1000L;
             firstTime = false;
+            if (numFailures > 0) {
+                log.debug("{} is exiting failure state after {} failures", name, numFailures);
+            }
             resetRetryCounter();
+            log.debug("{} will execute at {}", name, new Date(nextEventAtMillis));
         }
 
         void scheduleNow() {
@@ -253,6 +262,8 @@ public class Scheduler implements Runnable {
             }
             nextEventAtMillis = System.currentTimeMillis() + retryIntervalSeconds * retryIntervalFactor * 1000L;
             numFailures += 1;
+
+            log.debug("{} has failed {} times, will retry at {}", name, numFailures, new Date(nextEventAtMillis));
         }
 
         boolean isDueTime() {

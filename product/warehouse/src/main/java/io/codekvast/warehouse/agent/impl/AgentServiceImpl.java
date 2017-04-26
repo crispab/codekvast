@@ -56,9 +56,9 @@ public class AgentServiceImpl implements AgentService {
     public GetConfigResponse1 getConfig(GetConfigRequest1 request) throws LicenseViolationException {
         checkLicense(request.getLicenseKey());
 
-        boolean codeBasePublishingNeeded = checkIfCodeBaseIsNeeded(request);
+        boolean codeBasePublishingNeeded = checkIfCodeBaseIsNeeded(request.getCodeBaseFingerprint());
 
-        // TODO: build a smarter response
+        // TODO: pick values from database
         return GetConfigResponse1.builder()
                                  .codeBasePublisherName("http")
                                  .codeBasePublisherConfig("enabled=true")
@@ -75,8 +75,11 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
-    public File saveCodeBasePublication(String licenseKey, InputStream inputStream) throws LicenseViolationException, IOException {
-        return doSaveInputStream(licenseKey, inputStream, "codebase-");
+    public File saveCodeBasePublication(String licenseKey, String codeBaseFingerprint, InputStream inputStream) throws LicenseViolationException, IOException {
+
+        File result = doSaveInputStream(licenseKey, inputStream, "codebase-");
+        codeBaseFingerprints.add(codeBaseFingerprint);
+        return result;
     }
 
     @Override
@@ -108,10 +111,9 @@ public class AgentServiceImpl implements AgentService {
         }
     }
 
-    private boolean checkIfCodeBaseIsNeeded(GetConfigRequest1 request) {
+    private boolean checkIfCodeBaseIsNeeded(String fingerprint) {
         // TODO: store code base fingerprint in database
-        String fingerprint = request.getCodeBaseFingerprint();
-        return fingerprint != null && codeBaseFingerprints.add(fingerprint);
+        return fingerprint != null && !codeBaseFingerprints.contains(fingerprint);
     }
 
     private void checkLicense(String licenseKey) {

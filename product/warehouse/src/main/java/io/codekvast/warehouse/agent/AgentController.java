@@ -90,11 +90,12 @@ public class AgentController {
         consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     public String uploadCodeBase1(
         @RequestParam(Endpoints.AGENT_V1_LICENSE_KEY_PARAM) String licenseKey,
+        @RequestParam(Endpoints.AGENT_V1_FINGERPRINT_PARAM) String fingerprint,
         @RequestParam(Endpoints.AGENT_V1_PUBLICATION_FILE_PARAM) MultipartFile file) throws IOException {
 
-        log.debug("Received {} ({} bytes) with licenseKey={}", file.getOriginalFilename(), file.getSize(), licenseKey);
+        log.debug("Received {} ({} bytes) with licenseKey={}, fingerprint={}", file.getOriginalFilename(), file.getSize(), licenseKey, fingerprint);
 
-        agentService.saveCodeBasePublication(licenseKey, file.getInputStream());
+        agentService.saveCodeBasePublication(licenseKey, fingerprint, file.getInputStream());
 
         return "OK";
     }

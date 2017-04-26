@@ -33,4 +33,5 @@ public interface Endpoints {
 
     String AGENT_V1_PUBLICATION_FILE_PARAM = "publicationFile";
     String AGENT_V1_LICENSE_KEY_PARAM = "licenseKey";
+    String AGENT_V1_FINGERPRINT_PARAM = "fingerprint";
 }

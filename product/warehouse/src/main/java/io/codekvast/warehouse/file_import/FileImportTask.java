@@ -31,7 +31,7 @@ import javax.inject.Inject;
 import java.io.File;
 
 /**
- * Scans a certain directory for files produced by the Codekvast daemon, and attempts to import them to the database.
+ * Scans a certain directory for files produced by the Codekvast collector, and attempts to import them to the database.
  *
  * @author olle.hallin@crisp.se
  */
@@ -71,14 +71,17 @@ public class FileImportTask {
                 for (File file : files) {
                     if (file.isDirectory()) {
                         walkDirectory(file);
-                    } else if (!file.getName().endsWith(ExportFileFormat.ZIP.getSuffix())) {
-                        log.debug("Ignoring {}", file);
-                    } else {
+                    } else if (file.getName().endsWith(ExportFileFormat.ZIP.getSuffix())) {
                         zipFileImporter.importZipFile(file);
 
                         if (codekvastSettings.isDeleteImportedFiles()) {
                             deleteFile(file);
                         }
+                    } else if (file.getName().endsWith(".ser")) {
+                        // TODO: grok *.ser files
+                        log.trace("Will eat {}", file);
+                    } else {
+                        log.debug("Ignoring {}", file);
                     }
                 }
             }

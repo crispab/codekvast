@@ -141,7 +141,7 @@ public class SchedulerTest {
     @Test
     public void should_retry_with_exponential_back_off() throws Exception {
         // given
-        Scheduler.SchedulerState state = new Scheduler.SchedulerState().initialize(10, 10);
+        Scheduler.SchedulerState state = new Scheduler.SchedulerState("poller").initialize(10, 10);
         assertThat(state.getRetryIntervalFactor(), is(1));
 
         state.scheduleRetry();
