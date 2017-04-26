@@ -79,12 +79,6 @@ public class GetConfigResponse1 {
     private int codeBasePublisherRetryIntervalSeconds = 600;
 
     /**
-     * Is an initial code base publishing needed?
-     */
-    @Builder.Default
-    private boolean codeBasePublishingNeeded = false;
-
-    /**
      * The name of the invocation data publisher to use.
      *
      * Each implementation defines it's own name.

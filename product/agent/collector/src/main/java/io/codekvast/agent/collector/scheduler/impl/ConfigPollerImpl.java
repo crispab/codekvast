@@ -23,13 +23,10 @@ package io.codekvast.agent.collector.scheduler.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.codekvast.agent.collector.scheduler.ConfigPoller;
-import io.codekvast.agent.lib.codebase.CodeBase;
-import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
 import io.codekvast.agent.lib.config.CollectorConfig;
 import io.codekvast.agent.lib.model.v1.rest.GetConfigRequest1;
 import io.codekvast.agent.lib.model.v1.rest.GetConfigResponse1;
 import io.codekvast.agent.lib.util.Constants;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 
@@ -47,9 +44,6 @@ public class ConfigPollerImpl implements ConfigPoller {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Getter
-    private CodeBaseFingerprint codeBaseFingerprint;
-
     public ConfigPollerImpl(CollectorConfig config) {
         this.config = config;
         this.requestTemplate = GetConfigRequest1.builder()
@@ -65,11 +59,7 @@ public class ConfigPollerImpl implements ConfigPoller {
     }
 
     @Override
-    public GetConfigResponse1 doPoll(boolean firstTime) throws Exception {
-        if (firstTime) {
-            this.codeBaseFingerprint = new CodeBase(config).getFingerprint();
-        }
-
+    public GetConfigResponse1 doPoll() throws Exception {
         GetConfigRequest1 request = expandRequestTemplate();
 
         log.debug("Posting {} to {}", request, config.getPollConfigRequestEndpoint());
@@ -82,14 +72,9 @@ public class ConfigPollerImpl implements ConfigPoller {
     }
 
     private GetConfigRequest1 expandRequestTemplate() {
-        GetConfigRequest1.GetConfigRequest1Builder builder = requestTemplate
-            .toBuilder()
-            .appVersion(config.getResolvedAppVersion());
-
-        if (codeBaseFingerprint != null) {
-            builder.codeBaseFingerprint(codeBaseFingerprint.getSha256());
-        }
-        return builder.build();
+        return requestTemplate.toBuilder()
+                              .appVersion(config.getResolvedAppVersion())
+                              .build();
     }
 
     private String doHttpPost(String bodyJson) throws IOException {

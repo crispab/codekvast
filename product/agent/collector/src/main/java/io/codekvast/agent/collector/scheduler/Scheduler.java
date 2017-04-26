@@ -27,7 +27,6 @@ import io.codekvast.agent.collector.io.CodeBasePublisher;
 import io.codekvast.agent.collector.io.CodeBasePublisherFactory;
 import io.codekvast.agent.collector.io.InvocationDataPublisher;
 import io.codekvast.agent.collector.io.InvocationDataPublisherFactory;
-import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
 import io.codekvast.agent.lib.config.CollectorConfig;
 import io.codekvast.agent.lib.model.v1.rest.GetConfigResponse1;
 import io.codekvast.agent.lib.util.LogUtil;
@@ -61,7 +60,6 @@ public class Scheduler implements Runnable {
 
     private final SchedulerState codeBasePublisherState = new SchedulerState("codeBase").initialize(10, 10);
     private CodeBasePublisher codeBasePublisher;
-    private CodeBaseFingerprint codeBaseFingerprint;
 
     private final SchedulerState invocationDataPublisherState = new SchedulerState("invocationData").initialize(10, 10);
     private InvocationDataPublisher invocationDataPublisher;
@@ -128,12 +126,9 @@ public class Scheduler implements Runnable {
         if (pollState.isDueTime()) {
             log.trace("Polling dynamic config");
             try {
-                dynamicConfig = configPoller.doPoll(pollState.isFirstTime());
-                if (pollState.isFirstTime()) {
-                    codeBaseFingerprint = configPoller.getCodeBaseFingerprint();
-                }
+                dynamicConfig = configPoller.doPoll();
 
-                configureCodeBasePublisher(dynamicConfig.isCodeBasePublishingNeeded());
+                configureCodeBasePublisher();
                 configureInvocationDataPublisher();
 
                 pollState.updateIntervals(dynamicConfig.getConfigPollIntervalSeconds(), dynamicConfig.getConfigPollRetryIntervalSeconds());
@@ -145,20 +140,14 @@ public class Scheduler implements Runnable {
         }
     }
 
-    private void configureCodeBasePublisher(boolean isCodeBasePublishingNeeded) {
+    private void configureCodeBasePublisher() {
         codeBasePublisherState.updateIntervals(dynamicConfig.getCodeBasePublisherCheckIntervalSeconds(),
                                                dynamicConfig.getCodeBasePublisherRetryIntervalSeconds());
 
         String newName = dynamicConfig.getCodeBasePublisherName();
         if (codeBasePublisher == null || !newName.equals(codeBasePublisher.getName())) {
             codeBasePublisher = codeBasePublisherFactory.create(newName, config);
-            if (isCodeBasePublishingNeeded) {
-                codeBasePublisher.initialize(null);
-                codeBasePublisherState.scheduleNow();
-            } else {
-                codeBasePublisher.initialize(codeBaseFingerprint);
-                codeBasePublisherState.scheduleNext();
-            }
+            codeBasePublisherState.scheduleNext();
         }
         codeBasePublisher.configure(dynamicConfig.getCodeBasePublisherConfig());
     }
@@ -184,7 +173,6 @@ public class Scheduler implements Runnable {
         if (codeBasePublisherState.isDueTime() && dynamicConfig != null) {
             try {
                 codeBasePublisher.publishCodeBase();
-                codeBaseFingerprint = codeBasePublisher.getCodeBaseFingerprint();
                 codeBasePublisherState.scheduleNext();
             } catch (Exception e) {
                 LogUtil.logException(log, "Failed to publish code base", e);

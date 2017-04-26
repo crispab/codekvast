@@ -6,8 +6,6 @@ import io.codekvast.agent.collector.io.InvocationDataPublisher;
 import io.codekvast.agent.collector.io.InvocationDataPublisherFactory;
 import io.codekvast.agent.collector.io.impl.NoOpCodeBasePublisherImpl;
 import io.codekvast.agent.collector.io.impl.NoOpInvocationDataPublisherImpl;
-import io.codekvast.agent.lib.codebase.CodeBase;
-import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
 import io.codekvast.agent.lib.config.CollectorConfig;
 import io.codekvast.agent.lib.config.CollectorConfigFactory;
 import io.codekvast.agent.lib.model.v1.rest.GetConfigResponse1;
@@ -23,7 +21,6 @@ import java.io.IOException;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.*;
 
 /**
@@ -57,8 +54,10 @@ public class SchedulerTest {
         .configPollRetryIntervalSeconds(0)
         .codeBasePublisherName("no-op")
         .codeBasePublisherConfig("enabled=true")
+        .codeBasePublisherCheckIntervalSeconds(0)
         .invocationDataPublisherName("no-op")
         .invocationDataPublisherConfig("enabled=true")
+        .invocationDataPublisherIntervalSeconds(0)
         .build();
 
     @Before
@@ -85,8 +84,7 @@ public class SchedulerTest {
     @Test
     public void should_handle_shutdown_after_being_started() throws Exception {
         // given
-        when(configPollerMock.doPoll(anyBoolean())).thenReturn(configResponse);
-        when(configPollerMock.getCodeBaseFingerprint()).thenReturn(new CodeBaseFingerprint(1, "sha256"));
+        when(configPollerMock.doPoll()).thenReturn(configResponse);
 
         // when
         scheduler.run();
@@ -94,9 +92,7 @@ public class SchedulerTest {
         scheduler.shutdown();
 
         // then
-        verify(configPollerMock, times(1)).doPoll(true);
-        verify(configPollerMock, times(1)).doPoll(false);
-        verify(configPollerMock, times(1)).getCodeBaseFingerprint();
+        verify(configPollerMock, times(2)).doPoll();
         verifyNoMoreInteractions(configPollerMock);
 
         assertThat(codeBasePublisher.getPublicationCount(), is(1));
@@ -104,37 +100,8 @@ public class SchedulerTest {
     }
 
     @Test
-    public void should_publish_code_base_if_first_poll_says_it_is_needed() throws Exception {
-        // given
-        CodeBaseFingerprint fingerprint = new CodeBase(config).getFingerprint();
-
-        when(configPollerMock.doPoll(true))
-            .thenReturn(configResponse.toBuilder().codeBasePublishingNeeded(true).build());
-        when(configPollerMock.getCodeBaseFingerprint()).thenReturn(fingerprint);
-
-        scheduler.run();
-
-        assertThat(codeBasePublisher.getPublicationCount(), is(1));
-    }
-
-    @Test
-    public void should_not_publish_code_base_if_first_poll_says_it_is_not_needed() throws Exception {
-        // given
-        CodeBaseFingerprint fingerprint = new CodeBase(config).getFingerprint();
-
-        when(configPollerMock.doPoll(true))
-            .thenReturn(configResponse.toBuilder().codeBasePublishingNeeded(false).build());
-
-        when(configPollerMock.getCodeBaseFingerprint()).thenReturn(fingerprint);
-
-        scheduler.run();
-
-        assertThat(codeBasePublisher.getPublicationCount(), is(0));
-    }
-
-    @Test
     public void should_handle_initial_poll_exceptions() throws Exception {
-        when(configPollerMock.doPoll(anyBoolean())).thenThrow(new IOException("Mock: No contact with server"));
+        when(configPollerMock.doPoll()).thenThrow(new IOException("Mock: No contact with server"));
         scheduler.run();
     }
 

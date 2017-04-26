@@ -40,7 +40,6 @@ public class AgentServiceImplTest {
         GetConfigResponse1 response = service.getConfig(request);
 
         assertThat(response.getCodeBasePublisherName(), is("http"));
-        assertThat(response.isCodeBasePublishingNeeded(), is(false));
         assertThat(response.getCodeBasePublisherConfig(), is("enabled=true"));
 
         assertThat(response.getInvocationDataPublisherName(), is("http"));

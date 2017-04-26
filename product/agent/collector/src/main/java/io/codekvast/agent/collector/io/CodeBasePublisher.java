@@ -30,13 +30,6 @@ import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
 public interface CodeBasePublisher extends Publisher {
 
     /**
-     * Initializes the publisher
-     *
-     * @param fingerprint The fingerprint to consider already published
-     */
-    void initialize(CodeBaseFingerprint fingerprint);
-
-    /**
      * Publishes a codebase.
      *
      * @throws CodekvastPublishingException when no contact with the consumer. Try again.

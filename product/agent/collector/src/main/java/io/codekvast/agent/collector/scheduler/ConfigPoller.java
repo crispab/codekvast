@@ -21,7 +21,6 @@
  */
 package io.codekvast.agent.collector.scheduler;
 
-import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
 import io.codekvast.agent.lib.model.v1.rest.GetConfigResponse1;
 
 /**
@@ -29,7 +28,5 @@ import io.codekvast.agent.lib.model.v1.rest.GetConfigResponse1;
  */
 public interface ConfigPoller {
 
-    CodeBaseFingerprint getCodeBaseFingerprint();
-
-    GetConfigResponse1 doPoll(boolean firstTime) throws Exception;
+    GetConfigResponse1 doPoll() throws Exception;
 }

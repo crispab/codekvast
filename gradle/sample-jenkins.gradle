@@ -86,6 +86,12 @@ task installJenkinsInTomcat7 {
     }
 }
 
+task cleanCatalinaEndorsed {
+    doLast {
+        delete catalinaEndorsed
+    }
+}
+
 task generateCodekvastConfig {
     group "Build"
     description "Generates a codekvast.conf for test"

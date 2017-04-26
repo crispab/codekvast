@@ -56,13 +56,10 @@ public class AgentServiceImpl implements AgentService {
     public GetConfigResponse1 getConfig(GetConfigRequest1 request) throws LicenseViolationException {
         checkLicense(request.getLicenseKey());
 
-        boolean codeBasePublishingNeeded = checkIfCodeBaseIsNeeded(request.getCodeBaseFingerprint());
-
         // TODO: pick values from database
         return GetConfigResponse1.builder()
                                  .codeBasePublisherName("http")
                                  .codeBasePublisherConfig("enabled=true")
-                                 .codeBasePublishingNeeded(codeBasePublishingNeeded)
                                  .invocationDataPublisherName("http")
                                  .invocationDataPublisherConfig("enabled=true")
                                  .configPollIntervalSeconds(5)
@@ -76,6 +73,12 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     public File saveCodeBasePublication(String licenseKey, String codeBaseFingerprint, InputStream inputStream) throws LicenseViolationException, IOException {
+        checkLicense(licenseKey);
+
+        if (codeBaseFingerprints.contains(codeBaseFingerprint)) {
+            log.warn("Codebase with fingerprint {} already uploaded", codeBaseFingerprint);
+            return null;
+        }
 
         File result = doSaveInputStream(licenseKey, inputStream, "codebase-");
         codeBaseFingerprints.add(codeBaseFingerprint);
@@ -84,6 +87,8 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     public File saveInvocationDataPublication(String licenseKey, String codeBaseFingerprint, InputStream inputStream) throws LicenseViolationException, IOException {
+        checkLicense(licenseKey);
+
         return doSaveInputStream(licenseKey, inputStream, "invocations-");
     }
 
@@ -109,11 +114,6 @@ public class AgentServiceImpl implements AgentService {
             }
             log.info("Created {}", importPath);
         }
-    }
-
-    private boolean checkIfCodeBaseIsNeeded(String fingerprint) {
-        // TODO: store code base fingerprint in database
-        return fingerprint != null && !codeBaseFingerprints.contains(fingerprint);
     }
 
     private void checkLicense(String licenseKey) {

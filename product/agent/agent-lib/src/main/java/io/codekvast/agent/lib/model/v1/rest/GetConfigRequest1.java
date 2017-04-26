@@ -88,18 +88,10 @@ public class GetConfigRequest1 {
     @Size(min = 1, message = "computerId must be at least 1 characters")
     private final String computerId;
 
-    /**
-     * What is my code base fingerprint?
-     * May be null, in which case no check whether the current code base needs to be uploaded or not is made.
-     */
-    @Size(min = 1, message = "codeBaseFingerprint must be at least 1 characters")
-    private final String codeBaseFingerprint;
-
     public static GetConfigRequest1 sample() {
         return GetConfigRequest1.builder()
                                 .appName("appName")
                                 .appVersion("appVersion")
-                                .codeBaseFingerprint(null)
                                 .collectorVersion("collectorVersion")
                                 .computerId("computerId")
                                 .hostName("hostName")
