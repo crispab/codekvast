@@ -37,6 +37,8 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 
+import java.io.IOException;
+
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
@@ -86,10 +88,13 @@ public class AgentController {
 
     @RequestMapping(value = Endpoints.AGENT_V1_UPLOAD_CODEBASE, method = POST,
         consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
-    public String uploadCodeBase1(@RequestParam(Endpoints.AGENT_V1_UPLOAD_CODEBASE_FILE_PARAM) MultipartFile file) {
-        log.debug("Received {} ({} bytes)", file.getOriginalFilename(), file.getSize());
+    public String uploadCodeBase1(
+        @RequestParam(Endpoints.AGENT_V1_UPLOAD_CODEBASE_LICENSE_KEY_PARAM) String licenseKey,
+        @RequestParam(Endpoints.AGENT_V1_UPLOAD_CODEBASE_FILE_PARAM) MultipartFile file) throws IOException {
 
-        // TODO save the file in the import area
+        log.debug("Received {} ({} bytes) with licenseKey={}", file.getOriginalFilename(), file.getSize(), licenseKey);
+
+        agentService.saveCodeBasePublication(licenseKey, file.getOriginalFilename(), file.getInputStream());
 
         return "OK";
     }

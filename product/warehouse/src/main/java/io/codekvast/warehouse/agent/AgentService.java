@@ -21,8 +21,11 @@
  */
 package io.codekvast.warehouse.agent;
 
+import io.codekvast.agent.lib.model.v1.CodeBasePublication;
 import io.codekvast.agent.lib.model.v1.rest.GetConfigRequest1;
 import io.codekvast.agent.lib.model.v1.rest.GetConfigResponse1;
+
+import java.io.InputStream;
 
 /**
  * Handles requests from the {@link AgentController}.
@@ -37,4 +40,13 @@ public interface AgentService {
      * @throws LicenseViolationException when license is violated
      */
     GetConfigResponse1 getConfig(GetConfigRequest1 request) throws LicenseViolationException;
+
+    /**
+     * Save an uploaded {@link CodeBasePublication} into the import area where it will be processed by another thread.
+     *
+     * @param licenseKey       The agent's licenseKey
+     * @param originalFilename The original name of the file.
+     * @param inputStream      The data input stream.
+     */
+    void saveCodeBasePublication(String licenseKey, String originalFilename, InputStream inputStream) throws LicenseViolationException;
 }

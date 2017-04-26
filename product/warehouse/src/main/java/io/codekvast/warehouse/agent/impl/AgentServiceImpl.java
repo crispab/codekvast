@@ -30,6 +30,7 @@ import io.codekvast.warehouse.agent.AgentService;
 import io.codekvast.warehouse.agent.LicenseViolationException;
 
 import javax.inject.Inject;
+import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -52,7 +53,7 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     public GetConfigResponse1 getConfig(GetConfigRequest1 request) throws LicenseViolationException {
-        checkLicense(request);
+        checkLicense(request.getLicenseKey());
 
         boolean codeBasePublishingNeeded = checkIfCodeBaseIsNeeded(request);
 
@@ -72,6 +73,14 @@ public class AgentServiceImpl implements AgentService {
                                  .build();
     }
 
+    @Override
+    public void saveCodeBasePublication(String licenseKey, String originalFilename, InputStream inputStream)
+        throws LicenseViolationException {
+        checkLicense(licenseKey);
+
+        throw new UnsupportedOperationException("Not Yet Implemented");
+    }
+
     private String getCodeBasePublisherConfig(CodekvastSettings settings) {
         return String.format("enabled=true; targetFile=%s/codebase-#timestamp#.ser",
                              settings.getImportPath().getAbsolutePath());
@@ -83,13 +92,13 @@ public class AgentServiceImpl implements AgentService {
         return fingerprint != null && codeBaseFingerprints.add(fingerprint);
     }
 
-    private void checkLicense(GetConfigRequest1 request) {
+    private void checkLicense(String licenseKey) {
         // TODO: implement proper license control
-        if ("-----".equals(request.getLicenseKey())) {
-            throw new LicenseViolationException("Invalid license key: " + request.getLicenseKey());
+        if ("-----".equals(licenseKey)) {
+            throw new LicenseViolationException("Invalid license key: " + licenseKey);
         }
 
-        if (request.getLicenseKey() == null || request.getLicenseKey().trim().isEmpty()) {
+        if (licenseKey == null || licenseKey.trim().isEmpty()) {
             log.debug("Running without a license.");
         }
     }

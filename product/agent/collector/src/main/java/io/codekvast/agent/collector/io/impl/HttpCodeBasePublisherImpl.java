@@ -78,9 +78,9 @@ public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
     }
 
     void doPost(File file) throws IOException {
-
         RequestBody requestBody = new MultipartBody.Builder()
             .setType(MultipartBody.FORM)
+            .addFormDataPart(Endpoints.AGENT_V1_UPLOAD_CODEBASE_LICENSE_KEY_PARAM, getConfig().getLicenseKey())
             .addFormDataPart(Endpoints.AGENT_V1_UPLOAD_CODEBASE_FILE_PARAM, file.getName(),
                              RequestBody.create(APPLICATION_OCTET_STREAM, file))
             .build();
