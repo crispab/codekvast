@@ -107,6 +107,7 @@ public class CodekvastCollector {
                 scheduler.shutdown();
                 scheduler = null;
             }
+            InvocationRegistry.initialize(null);
             return;
         }
 
@@ -122,9 +123,8 @@ public class CodekvastCollector {
         scheduler = new Scheduler(config,
                                   new ConfigPollerImpl(config),
                                   new CodeBasePublisherFactoryImpl(),
-                                  new InvocationDataPublisherFactoryImpl());
-
-        scheduler.start(10, TimeUnit.SECONDS);
+                                  new InvocationDataPublisherFactoryImpl())
+            .start(5, 10, TimeUnit.SECONDS);
 
         Runtime.getRuntime().addShutdownHook(createShutdownHook());
 

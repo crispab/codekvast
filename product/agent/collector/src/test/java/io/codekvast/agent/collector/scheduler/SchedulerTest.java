@@ -74,16 +74,17 @@ public class SchedulerTest {
     }
 
     @Test
-    public void should_not_poll_if_not_started() throws Exception {
+    public void should_handle_shutdown_before_first_poll() throws Exception {
         scheduler.shutdown();
         verifyNoMoreInteractions(configPollerMock);
         output.expect(containsString("Stopping scheduler"));
+        assertThat(codeBasePublisher.getPublicationCount(), is(0));
+        assertThat(invocationDataPublisher.getPublicationCount(), is(0));
     }
 
     @Test
     public void should_handle_shutdown_after_being_started() throws Exception {
         // given
-
         when(configPollerMock.doPoll(anyBoolean())).thenReturn(configResponse);
         when(configPollerMock.getCodeBaseFingerprint()).thenReturn(new CodeBaseFingerprint(1, "sha256"));
 
@@ -95,8 +96,11 @@ public class SchedulerTest {
         // then
         verify(configPollerMock, times(1)).doPoll(true);
         verify(configPollerMock, times(1)).doPoll(false);
-        verify(configPollerMock, times(2)).getCodeBaseFingerprint();
+        verify(configPollerMock, times(1)).getCodeBaseFingerprint();
         verifyNoMoreInteractions(configPollerMock);
+
+        assertThat(codeBasePublisher.getPublicationCount(), is(1));
+        assertThat(invocationDataPublisher.getPublicationCount(), is(1));
     }
 
     @Test
@@ -172,6 +176,5 @@ public class SchedulerTest {
 
         state.scheduleNext();
         assertThat(state.getRetryIntervalFactor(), is(1));
-
     }
 }

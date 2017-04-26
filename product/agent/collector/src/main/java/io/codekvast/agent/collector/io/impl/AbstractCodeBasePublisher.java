@@ -48,7 +48,7 @@ abstract class AbstractCodeBasePublisher extends AbstractPublisher implements Co
     }
 
     @Override
-    public void publishCodebase() throws CodekvastPublishingException {
+    public void publishCodeBase() throws CodekvastPublishingException {
         if (isEnabled()) {
             CodeBase newCodeBase = new CodeBase(getConfig());
             if (!newCodeBase.getFingerprint().equals(codeBaseFingerprint)) {

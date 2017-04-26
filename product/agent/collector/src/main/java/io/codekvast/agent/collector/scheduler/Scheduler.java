@@ -27,7 +27,6 @@ import io.codekvast.agent.collector.io.CodeBasePublisher;
 import io.codekvast.agent.collector.io.CodeBasePublisherFactory;
 import io.codekvast.agent.collector.io.InvocationDataPublisher;
 import io.codekvast.agent.collector.io.InvocationDataPublisherFactory;
-import io.codekvast.agent.collector.io.impl.FileSystemInvocationDataPublisherImpl;
 import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
 import io.codekvast.agent.lib.config.CollectorConfig;
 import io.codekvast.agent.lib.model.v1.rest.GetConfigResponse1;
@@ -60,6 +59,7 @@ public class Scheduler implements Runnable {
 
     private final SchedulerState codeBasePublisherState = new SchedulerState().initialize(10, 10);
     private CodeBasePublisher codeBasePublisher;
+    private CodeBaseFingerprint codeBaseFingerprint;
 
     private final SchedulerState invocationDataPublisherState = new SchedulerState().initialize(10, 10);
     private InvocationDataPublisher invocationDataPublisher;
@@ -80,8 +80,8 @@ public class Scheduler implements Runnable {
      *
      * @return this
      */
-    public Scheduler start(long period, TimeUnit timeUnit) {
-        executor.scheduleAtFixedRate(this, period, period, timeUnit);
+    public Scheduler start(long delay, long period, TimeUnit timeUnit) {
+        executor.scheduleAtFixedRate(this, delay, period, timeUnit);
         log.info("Scheduler started; pulling dynamic config from {}", config.getServerUrl());
         return this;
     }
@@ -98,19 +98,16 @@ public class Scheduler implements Runnable {
             log.debug("Stop interrupted");
         }
 
-        // Shutting down before first successful config poll...
-        if (dynamicConfig == null) {
-            dynamicConfig = GetConfigResponse1.sample()
-                                              .toBuilder()
-                                              .invocationDataPublisherName(FileSystemInvocationDataPublisherImpl.NAME)
-                                              .invocationDataPublisherConfig("") // TODO: configure
-                                              .build();
-            configureInvocationDataPublisher();
-        }
+        if (dynamicConfig != null) {
+            // We have done at least one successful poll
 
-        // Make sure the last invocation data is published...
-        invocationDataPublisherState.scheduleNow();
-        publishInvocationDataIfNeeded();
+            // Make sure the last data is published...
+            codeBasePublisherState.scheduleNow();
+            publishCodeBaseIfNeeded();
+
+            invocationDataPublisherState.scheduleNow();
+            publishInvocationDataIfNeeded();
+        }
     }
 
     @Override
@@ -130,9 +127,11 @@ public class Scheduler implements Runnable {
             log.trace("Polling dynamic config");
             try {
                 dynamicConfig = configPoller.doPoll(pollState.isFirstTime());
+                if (pollState.isFirstTime()) {
+                    codeBaseFingerprint = configPoller.getCodeBaseFingerprint();
+                }
 
-                configureCodeBasePublisher(dynamicConfig.isCodeBasePublishingNeeded() ? null : configPoller.getCodeBaseFingerprint());
-
+                configureCodeBasePublisher(dynamicConfig.isCodeBasePublishingNeeded());
                 configureInvocationDataPublisher();
 
                 pollState.updateIntervals(dynamicConfig.getConfigPollIntervalSeconds(), dynamicConfig.getConfigPollRetryIntervalSeconds());
@@ -145,18 +144,18 @@ public class Scheduler implements Runnable {
         }
     }
 
-    private void configureCodeBasePublisher(CodeBaseFingerprint codeBaseFingerprint) {
+    private void configureCodeBasePublisher(boolean isCodeBasePublishingNeeded) {
         codeBasePublisherState.updateIntervals(dynamicConfig.getCodeBasePublisherCheckIntervalSeconds(),
                                                dynamicConfig.getCodeBasePublisherRetryIntervalSeconds());
 
         String newName = dynamicConfig.getCodeBasePublisherName();
         if (codeBasePublisher == null || !newName.equals(codeBasePublisher.getName())) {
             codeBasePublisher = codeBasePublisherFactory.create(newName, config);
-            codeBasePublisher.initialize(codeBaseFingerprint);
-
-            if (codeBaseFingerprint == null) {
+            if (isCodeBasePublishingNeeded) {
+                codeBasePublisher.initialize(null);
                 codeBasePublisherState.scheduleNow();
             } else {
+                codeBasePublisher.initialize(codeBaseFingerprint);
                 codeBasePublisherState.scheduleNext();
             }
         }
@@ -183,7 +182,8 @@ public class Scheduler implements Runnable {
     private void publishCodeBaseIfNeeded() {
         if (codeBasePublisherState.isDueTime() && dynamicConfig != null) {
             try {
-                codeBasePublisher.publishCodebase();
+                codeBasePublisher.publishCodeBase();
+                codeBaseFingerprint = codeBasePublisher.getCodeBaseFingerprint();
                 codeBasePublisherState.scheduleNext();
             } catch (Exception e) {
                 LogUtil.logException(log, "Failed to publish code base", e);

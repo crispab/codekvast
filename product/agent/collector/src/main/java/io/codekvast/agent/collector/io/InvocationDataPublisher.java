@@ -22,7 +22,6 @@
 package io.codekvast.agent.collector.io;
 
 import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
-import io.codekvast.agent.lib.model.v1.legacy.Jvm;
 
 import java.util.Set;
 
@@ -31,21 +30,7 @@ import java.util.Set;
  *
  * @author olle.hallin@crisp.se
  */
-public interface InvocationDataPublisher {
-
-    /**
-     * What is the name of the publishing strategy?
-     *
-     * @return The name of the strategy.
-     */
-    String getName();
-
-    /**
-     * Configure this publisher.
-     *
-     * @param keyValuePairs The specialized config received from the server, a semi-colon separated list of key=value pairs.
-     */
-    void configure(String keyValuePairs);
+public interface InvocationDataPublisher extends Publisher {
 
     /**
      * Associate this published with a certain code base.

@@ -77,7 +77,7 @@ public class InvocationRegistry {
      *
      * @param config The collector configuration. May be null, in which case the registry is disabled.
      */
-    static void initialize(CollectorConfig config) {
+    public static void initialize(CollectorConfig config) {
         if (config == null) {
             instance = new NullInvocationRegistry();
             return;
@@ -144,11 +144,6 @@ public class InvocationRegistry {
 
         @Override
         public void registerMethodInvocation(Signature signature) {
-            // No operation
-        }
-
-        @Override
-        public void publishInvocationData(InvocationDataPublisher publisher) throws CodekvastPublishingException {
             // No operation
         }
 

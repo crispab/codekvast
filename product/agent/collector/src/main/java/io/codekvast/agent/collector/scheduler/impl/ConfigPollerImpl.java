@@ -66,7 +66,9 @@ public class ConfigPollerImpl implements ConfigPoller {
 
     @Override
     public GetConfigResponse1 doPoll(boolean firstTime) throws Exception {
-        this.codeBaseFingerprint = calculateCodeBaseFingerprint(firstTime);
+        if (firstTime) {
+            this.codeBaseFingerprint = new CodeBase(config).getFingerprint();
+        }
 
         GetConfigRequest1 request = expandRequestTemplate();
 
@@ -88,10 +90,6 @@ public class ConfigPollerImpl implements ConfigPoller {
             builder.codeBaseFingerprint(codeBaseFingerprint.getSha256());
         }
         return builder.build();
-    }
-
-    private CodeBaseFingerprint calculateCodeBaseFingerprint(boolean firstTime) {
-        return firstTime ? new CodeBase(config).getFingerprint() : null;
     }
 
     private String doHttpPost(String bodyJson) throws IOException {
