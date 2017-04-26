@@ -23,6 +23,7 @@ package io.codekvast.agent.collector.io.impl;
 
 import io.codekvast.agent.collector.io.CodekvastPublishingException;
 import io.codekvast.agent.collector.io.InvocationDataPublisher;
+import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
 import io.codekvast.agent.lib.config.CollectorConfig;
 import io.codekvast.agent.lib.model.v1.legacy.Jvm;
 import lombok.Getter;
@@ -36,22 +37,30 @@ import java.util.Set;
 @Getter
 public abstract class AbstractInvocationDataPublisher extends AbstractPublisher implements InvocationDataPublisher {
 
+    private CodeBaseFingerprint codeBaseFingerprint;
+
     AbstractInvocationDataPublisher(Logger log, CollectorConfig config) {
         super(log, config);
     }
 
     @Override
-    public void publishInvocationData(Jvm jvm, long recordingIntervalStartedAtMillis, Set<String> invocations)
+    public void setCodeBaseFingerprint(CodeBaseFingerprint fingerprint) {
+        codeBaseFingerprint = fingerprint;
+    }
+
+    @Override
+    public void publishInvocationData(long recordingIntervalStartedAtMillis, Set<String> invocations)
         throws CodekvastPublishingException {
-        if (isEnabled()) {
+        if (isEnabled() && getCodeBaseFingerprint() != null) {
             incrementPublicationCount();
 
             log.debug("Publishing invocation data #{}", getPublicationCount());
 
-            doPublishInvocationData(jvm, getPublicationCount(), recordingIntervalStartedAtMillis, invocations);
+            doPublishInvocationData(recordingIntervalStartedAtMillis, invocations);
         }
     }
 
-    abstract void doPublishInvocationData(Jvm jvm, int publishCount, long recordingIntervalStartedAtMillis,
-                                          Set<String> invocations) throws CodekvastPublishingException;
+    abstract void doPublishInvocationData(long recordingIntervalStartedAtMillis, Set<String> invocations)
+        throws CodekvastPublishingException;
+
 }

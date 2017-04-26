@@ -150,7 +150,7 @@ public class CodekvastDaemonIntegrationTest {
 
     @SuppressWarnings("ValueOfIncrementOrDecrementUsed")
     @Test
-    public void testProcessData() throws DataProcessingException, DataExportException {
+    public void testProcessData() throws DataProcessingException, DataExportException, IOException {
         // given (note that the invocation files are in reverse order!)
         int publishNumber = 0;
         FileUtils.writeInvocationDataTo(jvmState1.getInvocationsFile(), ++publishNumber, T2, singleton(SIGNATURES.get(1)));

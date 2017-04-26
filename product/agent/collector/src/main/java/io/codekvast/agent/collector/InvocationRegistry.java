@@ -24,8 +24,6 @@ package io.codekvast.agent.collector;
 import io.codekvast.agent.collector.io.CodekvastPublishingException;
 import io.codekvast.agent.collector.io.InvocationDataPublisher;
 import io.codekvast.agent.lib.config.CollectorConfig;
-import io.codekvast.agent.lib.model.v1.legacy.Jvm;
-import io.codekvast.agent.lib.util.Constants;
 import io.codekvast.agent.lib.util.SignatureUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -51,8 +49,6 @@ public class InvocationRegistry {
     @SuppressWarnings("StaticInitializerReferencesSubClass")
     public static InvocationRegistry instance = new NullInvocationRegistry();
 
-    private final Jvm jvm;
-
     // Toggle between two invocation sets to avoid synchronisation
     private final Set[] invocations;
     private volatile int currentInvocationIndex = 0;
@@ -62,8 +58,7 @@ public class InvocationRegistry {
 
     private long recordingIntervalStartedAtMillis = System.currentTimeMillis();
 
-    private InvocationRegistry(Jvm jvm) {
-        this.jvm = jvm;
+    private InvocationRegistry() {
 
         this.invocations = new Set[]{new HashSet<String>(), new HashSet<String>()};
 
@@ -88,25 +83,7 @@ public class InvocationRegistry {
             return;
         }
 
-        String version = InvocationRegistry.class.getPackage().getImplementationVersion();
-        if (version == null || version.trim().isEmpty()) {
-            version = "dev-vcsId";
-        }
-
-        int dash = version.lastIndexOf("-");
-        String collectorVersion = version.substring(0, dash);
-        String collectorVcsId = version.substring(dash + 1);
-
-        InvocationRegistry.instance = new InvocationRegistry(
-            Jvm.builder()
-                   .collectorVersion(collectorVersion)
-                   .collectorVcsId(collectorVcsId)
-                   .collectorConfig(config)
-                   .computerId(Constants.COMPUTER_ID)
-                   .hostName(Constants.HOST_NAME)
-                   .jvmUuid(Constants.JVM_UUID)
-                   .startedAtMillis(System.currentTimeMillis())
-                   .build());
+        InvocationRegistry.instance = new InvocationRegistry();
     }
 
     /**
@@ -132,9 +109,9 @@ public class InvocationRegistry {
 
         toggleInvocationsIndex();
 
-        Set sortedSet = new TreeSet<>(invocations[oldIndex]);
+        Set<String> sortedSet = new TreeSet<>(invocations[oldIndex]);
         try {
-            publisher.publishInvocationData(jvm, oldRecordingIntervalStartedAtMillis, sortedSet);
+            publisher.publishInvocationData(oldRecordingIntervalStartedAtMillis, sortedSet);
         } finally {
             invocations[oldIndex].clear();
         }
@@ -162,7 +139,7 @@ public class InvocationRegistry {
 
     private static class NullInvocationRegistry extends InvocationRegistry {
         private NullInvocationRegistry() {
-            super(null);
+            super();
         }
 
         @Override

@@ -23,12 +23,14 @@ package io.codekvast.agent.collector.io.impl;
 
 import io.codekvast.agent.collector.io.CodekvastPublishingException;
 import io.codekvast.agent.lib.config.CollectorConfig;
-import io.codekvast.agent.lib.model.v1.legacy.Jvm;
+import io.codekvast.agent.lib.model.v1.InvocationDataPublication;
+import io.codekvast.agent.lib.util.Constants;
 import io.codekvast.agent.lib.util.FileUtils;
+import lombok.Cleanup;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.Set;
 
 /**
@@ -41,11 +43,11 @@ public class FileSystemInvocationDataPublisherImpl extends AbstractInvocationDat
 
     public static final String NAME = "file-system";
 
-    private final File jvmFile;
+    @Setter
+    private String targetFile = "/tmp/codekvast/invocations-#timestamp#.ser";
 
     public FileSystemInvocationDataPublisherImpl(CollectorConfig config) {
         super(log, config);
-        this.jvmFile = config.getJvmFile();
         super.setEnabled(true);
     }
 
@@ -55,41 +57,52 @@ public class FileSystemInvocationDataPublisherImpl extends AbstractInvocationDat
     }
 
     @Override
-    void doPublishInvocationData(Jvm jvm, int publishCount, long recordingIntervalStartedAtMillis, Set<String> invocations)
-        throws CodekvastPublishingException {
-        prepareForPublish();
-        publishJvmData(jvm);
-        publishInvocationData(publishCount, recordingIntervalStartedAtMillis, invocations);
-    }
-
-    @Override
     boolean doSetValue(String key, String value) {
-        // Nothing here
+        if (key.equals("targetFile")) {
+            setTargetFile(value);
+            return true;
+        }
         return false;
     }
 
-    private void prepareForPublish() {
-        File outputPath = getConfig().getInvocationsFile().getParentFile();
-        outputPath.mkdirs();
-        outputPath.exists();
-    }
+    @Override
+    void doPublishInvocationData(long recordingIntervalStartedAtMillis,
+                                 Set<String> invocations)
+        throws CodekvastPublishingException {
 
-    private void publishJvmData(Jvm jvm) {
-        File tmpFile = null;
         try {
-            tmpFile = File.createTempFile("codekvast", ".tmp", jvmFile.getParentFile());
-            jvm.saveTo(tmpFile);
-            FileUtils.renameFile(tmpFile, jvmFile);
+            long startedAt = System.currentTimeMillis();
+            File tempFile = File.createTempFile("codekvast-invocations-", ".tmp");
+            @Cleanup ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(tempFile)));
+
+            InvocationDataPublication publication = createPublication(recordingIntervalStartedAtMillis, invocations);
+
+            oos.writeObject(publication);
+
+            File expandedTargetFile = FileUtils.expandPlaceholders(new File(targetFile));
+            FileUtils.mkdirsFor(expandedTargetFile);
+            FileUtils.renameFile(tempFile, expandedTargetFile);
+            log.debug("Published invocation data to {} in {} ms", expandedTargetFile, System.currentTimeMillis() - startedAt);
         } catch (IOException e) {
-            log.debug("Cannot save {}: {}", jvmFile, e);
-        } finally {
-            FileUtils.safeDelete(tmpFile);
+            throw new CodekvastPublishingException("Cannot publish invocation data", e);
         }
     }
 
-    private void publishInvocationData(int publishCount, long recordingIntervalStartedAtMillis, Set<String> invocations) {
-        FileUtils.writeInvocationDataTo(getConfig().getInvocationsFile(), publishCount, recordingIntervalStartedAtMillis,
-                                        invocations);
+    private InvocationDataPublication createPublication(long recordingIntervalStartedAtMillis, Set<String> invocations) {
+
+        return InvocationDataPublication.builder()
+                                        .appName(getConfig().getAppName())
+                                        .appVersion(getConfig().getResolvedAppVersion())
+                                        .codeBaseFingerprint(getCodeBaseFingerprint().getSha256())
+                                        .collectorVersion(Constants.COLLECTOR_VERSION)
+                                        .computerId(Constants.COMPUTER_ID)
+                                        .hostName(Constants.HOST_NAME)
+                                        .invocations(invocations)
+                                        .jvmUuid(Constants.JVM_UUID)
+                                        .publicationCount(getPublicationCount())
+                                        .publishedAtMillis(System.currentTimeMillis())
+                                        .recordingIntervalStartedAtMillis(recordingIntervalStartedAtMillis)
+                                        .build();
     }
 
 }

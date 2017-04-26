@@ -21,6 +21,7 @@
  */
 package io.codekvast.agent.collector.io;
 
+import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
 import io.codekvast.agent.lib.model.v1.legacy.Jvm;
 
 import java.util.Set;
@@ -47,13 +48,19 @@ public interface InvocationDataPublisher {
     void configure(String keyValuePairs);
 
     /**
+     * Associate this published with a certain code base.
+     *
+     * @param fingerprint The fingerprint of the executing code base.
+     */
+    void setCodeBaseFingerprint(CodeBaseFingerprint fingerprint);
+
+    /**
      * Publish the invocation data.
      *
-     * @param jvm                              The JVM data at the time of the publishing.
      * @param recordingIntervalStartedAtMillis When the recording of these invocations were started.
      * @param invocations                      The set of invocations to publish.
      * @throws CodekvastPublishingException when publishing fails.
      */
-    void publishInvocationData(Jvm jvm, long recordingIntervalStartedAtMillis, Set<String> invocations)
+    void publishInvocationData(long recordingIntervalStartedAtMillis, Set<String> invocations)
         throws CodekvastPublishingException;
 }

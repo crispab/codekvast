@@ -25,15 +25,12 @@ import io.codekvast.agent.collector.io.CodekvastPublishingException;
 import io.codekvast.agent.lib.codebase.CodeBase;
 import io.codekvast.agent.lib.config.CollectorConfig;
 import io.codekvast.agent.lib.model.v1.CodeBasePublication;
-import io.codekvast.agent.lib.util.Constants;
 import io.codekvast.agent.lib.util.FileUtils;
 import lombok.Cleanup;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Dummy (no-op) implementation of CodeBasePublisher.
@@ -44,7 +41,7 @@ public class FileSystemCodeBasePublisherImpl extends AbstractCodeBasePublisher {
     public static final String NAME = "file-system";
 
     @Setter
-    private String targetFile = "/tmp/codekvast/codebase-#date#.ser";
+    private String targetFile = "/tmp/codekvast/codebase-#timestamp#.ser";
 
     FileSystemCodeBasePublisherImpl(CollectorConfig config) {
         super(log, config);
@@ -68,44 +65,19 @@ public class FileSystemCodeBasePublisherImpl extends AbstractCodeBasePublisher {
     public void doPublishCodeBase(CodeBase codeBase) throws CodekvastPublishingException {
         try {
             long startedAt = System.currentTimeMillis();
-            File tempFile = File.createTempFile("codekvast", ".dat");
+            File tempFile = File.createTempFile("codekvast-codebase-", ".tmp");
             @Cleanup ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(tempFile)));
             CodeBasePublication publication = codeBase.getCodeBasePublication();
 
             oos.writeObject(publication);
 
-            File expandedTargetFile = expandPlaceholders(new File(targetFile));
-            mkdirs(expandedTargetFile);
-
+            File expandedTargetFile = FileUtils.expandPlaceholders(new File(targetFile));
             FileUtils.renameFile(tempFile, expandedTargetFile);
+
             log.debug("Published code base to {} in {} ms", expandedTargetFile, System.currentTimeMillis() - startedAt);
         } catch (IOException e) {
             throw new CodekvastPublishingException("Cannot publish code base", e);
         }
     }
 
-    private void mkdirs(File expandedTargetFile) {
-        File parentDir = expandedTargetFile.getParentFile();
-        if (parentDir != null) {
-            parentDir.mkdirs();
-            if (!parentDir.isDirectory()) {
-                log.warn("Cannot create {}", parentDir);
-            }
-        }
-    }
-
-    File expandPlaceholders(File file) {
-        if (file == null) {
-            return null;
-        }
-
-        String name = file.getName().replace("#hostname#", Constants.HOST_NAME).replace("#timestamp#", getTimestamp());
-
-        File parentFile = file.getParentFile();
-        return parentFile == null ? new File(name) : new File(parentFile, name);
-    }
-
-    private String getTimestamp() {
-        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date());
-    }
 }

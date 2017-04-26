@@ -8,6 +8,7 @@ import io.codekvast.agent.lib.model.v1.CodeBasePublication;
 import io.codekvast.agent.lib.model.v1.MethodSignature;
 import io.codekvast.agent.lib.model.v1.SignatureStatus;
 import io.codekvast.agent.lib.util.Constants;
+import io.codekvast.agent.lib.util.FileUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,13 +18,10 @@ import org.mockito.MockitoAnnotations;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 /**
@@ -44,22 +42,6 @@ public class FileSystemCodeBasePublisherImplTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-    }
-
-    @Test
-    public void should_expand_hostname_placeholder() throws Exception {
-        File file = new File("/tmp/foo-#hostname#.ser");
-        File expanded = publisher.expandPlaceholders(file);
-
-        assertThat(expanded.getName(), not(is(file.getName())));
-    }
-
-    @Test
-    public void should_expand_timestamp_placeholder() throws Exception {
-        File file = new File("/tmp/foo-#timestamp#.ser");
-        File expanded = publisher.expandPlaceholders(file);
-
-        assertThat(expanded.getName(), not(is(file.getName())));
     }
 
     @Test

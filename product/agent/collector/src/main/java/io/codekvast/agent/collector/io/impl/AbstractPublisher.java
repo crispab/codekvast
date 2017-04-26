@@ -23,9 +23,15 @@ package io.codekvast.agent.collector.io.impl;
 
 import io.codekvast.agent.collector.io.Publisher;
 import io.codekvast.agent.lib.config.CollectorConfig;
+import io.codekvast.agent.lib.util.Constants;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Abstract base class for publishers.
@@ -96,4 +102,5 @@ public abstract class AbstractPublisher implements Publisher {
      * @return true iff the key was recognized.
      */
     abstract boolean doSetValue(String key, String value);
+
 }

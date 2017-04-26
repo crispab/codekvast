@@ -19,39 +19,45 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.agent.collector.io.impl;
+package io.codekvast.agent.lib.model.v1;
 
-import io.codekvast.agent.lib.config.CollectorConfig;
-import io.codekvast.agent.lib.model.v1.legacy.Jvm;
-import lombok.extern.slf4j.Slf4j;
+import lombok.*;
 
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 /**
+ * Output of the CodeBasePublisher implementations.
+ *
  * @author olle.hallin@crisp.se
  */
-@Slf4j
-public class NoOpInvocationDataPublisherImpl extends AbstractInvocationDataPublisher {
+@Data
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Setter(AccessLevel.PRIVATE)
+@Builder(toBuilder = true)
+public class InvocationDataPublication implements Serializable {
+    @NonNull
+    private String appName;
+    @NonNull
+    private String appVersion;
+    @NonNull
+    private String codeBaseFingerprint;
+    @NonNull
+    private String collectorVersion;
+    @NonNull
+    private String computerId;
+    @NonNull
+    private String hostName;
+    @NonNull
+    private String jvmUuid;
 
-    public static final String NAME = "no-op";
+    private long recordingIntervalStartedAtMillis;
+    private long publishedAtMillis;
+    private int publicationCount;
 
-    public NoOpInvocationDataPublisherImpl(CollectorConfig config) {
-        super(log, config);
-    }
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
-    @Override
-    boolean doSetValue(String key, String value) {
-        // Nothing here
-        return false;
-    }
-
-    @Override
-    public void doPublishInvocationData(long recordingIntervalStartedAtMillis, Set<String> invocations) {
-        // Nothing here
-    }
+    @NonNull
+    Set<String> invocations;
 }

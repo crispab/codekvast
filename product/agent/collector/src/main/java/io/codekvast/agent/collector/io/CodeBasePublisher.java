@@ -42,4 +42,11 @@ public interface CodeBasePublisher extends Publisher {
      * @throws CodekvastPublishingException when no contact with the consumer. Try again.
      */
     void publishCodebase() throws CodekvastPublishingException;
+
+    /**
+     * Retrieve the latest CodeBaseFingerprint
+     *
+     * @return The latest CodeBaseFingerprint
+     */
+    CodeBaseFingerprint getCodeBaseFingerprint();
 }

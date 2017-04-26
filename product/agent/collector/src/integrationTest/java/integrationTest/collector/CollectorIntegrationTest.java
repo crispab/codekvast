@@ -1,6 +1,7 @@
 package integrationTest.collector;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -74,6 +75,7 @@ public class CollectorIntegrationTest {
     }
 
     @Test
+    @Ignore("TODO: rewrite test")
     public void should_collect_data_when_valid_config_specified() throws Exception {
         // given
         List<String> command = buildJavaCommand(writeCollectorConfigToFile());

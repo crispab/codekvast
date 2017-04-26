@@ -172,6 +172,11 @@ public class Scheduler implements Runnable {
             invocationDataPublisher = invocationDataPublisherFactory.create(newName, config);
             invocationDataPublisherState.scheduleNext();
         }
+
+        if (codeBasePublisher != null) {
+            invocationDataPublisher.setCodeBaseFingerprint(codeBasePublisher.getCodeBaseFingerprint());
+        }
+
         invocationDataPublisher.configure(dynamicConfig.getInvocationDataPublisherConfig());
     }
 

@@ -22,15 +22,16 @@
 package io.codekvast.agent.lib.util;
 
 import io.codekvast.agent.lib.config.CodekvastConfig;
+import io.codekvast.agent.lib.model.v1.legacy.Invocation;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import io.codekvast.agent.lib.model.v1.legacy.Invocation;
 
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -71,7 +72,7 @@ public final class FileUtils {
     }
 
     public static List<Invocation> consumeAllInvocationDataFiles(File file) {
-        List<Invocation> result = new ArrayList<Invocation>();
+        List<Invocation> result = new ArrayList<>();
         File[] files = file.getParentFile().listFiles();
         if (files != null) {
             Arrays.sort(files);
@@ -86,7 +87,7 @@ public final class FileUtils {
     }
 
     public static List<Invocation> readInvocationDataFrom(File file) {
-        List<Invocation> result = new ArrayList<Invocation>();
+        List<Invocation> result = new ArrayList<>();
         BufferedReader in = null;
         try {
             in = new BufferedReader(new InputStreamReader(new FileInputStream(file), UTF_8));
@@ -110,7 +111,8 @@ public final class FileUtils {
         return result;
     }
 
-    public static void writeInvocationDataTo(File file, int publishCount, long recordingStartedAtMillis, Set<String> signatures) {
+    public static void writeInvocationDataTo(File file, int publishCount, long recordingStartedAtMillis, Set<String> signatures)
+        throws IOException {
         if (!signatures.isEmpty()) {
             long startedAt = System.currentTimeMillis();
 
@@ -158,13 +160,15 @@ public final class FileUtils {
         return result;
     }
 
-    private static void safeRename(File from, File to) {
+    private static void safeRename(File from, File to) throws IOException {
         if (from != null && to != null) {
             renameFile(from, to);
         }
     }
 
-    public static void renameFile(File from, File to) {
+    public static void renameFile(File from, File to) throws IOException {
+        mkdirsFor(to);
+
         if (!from.renameTo(to)) {
             log.error("Cannot rename {} to {}", from.getAbsolutePath(),
                       to.getAbsolutePath());
@@ -178,7 +182,7 @@ public final class FileUtils {
             file.getParentFile().mkdirs();
 
             // Write the properties alphabetically
-            Set<String> lines = new TreeSet<String>();
+            Set<String> lines = new TreeSet<>();
 
             extractFieldValuesFrom(object, lines);
 
@@ -189,9 +193,7 @@ public final class FileUtils {
                 out.write(String.format("%s%n", line));
             }
 
-        } catch (IOException e) {
-            log.error("Cannot write {}: {}", file, e);
-        } catch (IllegalAccessException e) {
+        } catch (IOException | IllegalAccessException e) {
             log.error("Cannot write {}: {}", file, e);
         } finally {
             safeClose(out);
@@ -287,5 +289,31 @@ public final class FileUtils {
         }
     }
 
+    public static void mkdirsFor(File file) throws IOException {
+        File parentDir = file.getParentFile();
+        if (parentDir != null) {
+            if (!parentDir.isDirectory()) {
+                parentDir.mkdirs();
+                if (!parentDir.isDirectory()) {
+                    throw new IOException("Cannot create " + parentDir);
+                }
+            }
+        }
+    }
+
+    public static File expandPlaceholders(File file) {
+        if (file == null) {
+            return null;
+        }
+
+        String name = file.getName().replace("#hostname#", Constants.HOST_NAME).replace("#timestamp#", getTimestamp());
+
+        File parentFile = file.getParentFile();
+        return parentFile == null ? new File(name) : new File(parentFile, name);
+    }
+
+    static String getTimestamp() {
+        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date());
+    }
 
 }

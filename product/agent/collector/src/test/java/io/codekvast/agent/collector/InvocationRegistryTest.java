@@ -4,6 +4,7 @@ import io.codekvast.agent.collector.io.CodekvastPublishingException;
 import io.codekvast.agent.collector.io.InvocationDataPublisher;
 import io.codekvast.agent.collector.io.impl.FileSystemInvocationDataPublisherImpl;
 import io.codekvast.agent.collector.io.impl.InvocationDataPublisherFactoryImpl;
+import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
 import org.aspectj.lang.Signature;
 import org.junit.After;
 import org.junit.Before;
@@ -70,32 +71,16 @@ public class InvocationRegistryTest {
 
         doExtremelyConcurrentRegistrationOf(10, 10, signature1, signature2);
 
-        InvocationDataPublisher publisher =
-            new InvocationDataPublisherFactoryImpl().create(FileSystemInvocationDataPublisherImpl.NAME, config);
+        File targetFile = new File(temporaryFolder.getRoot(), "invocations.ser");
+
+        FileSystemInvocationDataPublisherImpl publisher = new FileSystemInvocationDataPublisherImpl(config);
+        publisher.setCodeBaseFingerprint(new CodeBaseFingerprint(1, "sha256"));
+        publisher.setTargetFile(targetFile.getAbsolutePath());
 
         InvocationRegistry.instance.publishInvocationData(publisher);
 
-        File[] files = config.getDataPath().listFiles();
-        assertThat(files.length, is(1));
-        assertThat(files[0].getName(), is(APP_NAME.toLowerCase().replace(" ", "")));
+        assertThat(targetFile.exists(), is(true));
 
-        files = files[0].listFiles();
-        assertThat(files.length, is(2));
-        Arrays.sort(files);
-        assertThat(files[0].getName(), is(CollectorConfig.INVOCATIONS_BASENAME + ".00000"));
-        assertThat(files[1].getName(), is(CollectorConfig.JVM_BASENAME));
-
-        List<Invocation> invocations = FileUtils.readInvocationDataFrom(files[0]);
-        assertThat(invocations.size(), is(2));
-        assertThat(invocations.get(0).getSignature(),
-                   is("public io.codekvast.agent.collector.InvocationRegistryTest.TestClass.m1()"));
-        assertThat(invocations.get(1).getSignature(),
-                   is("public io.codekvast.agent.collector.InvocationRegistryTest.TestClass.m2()"));
-
-        Jvm jvm = Jvm.readFrom(files[1]);
-        assertThat(jvm.getCollectorConfig().getAppName(), is(APP_NAME));
-        assertThat(jvm.getCollectorConfig().getAppVersion(), is(APP_VERSION));
-        assertThat(jvm.getCollectorConfig().getCodeBase(), is(codeBase));
     }
 
     private void doExtremelyConcurrentRegistrationOf(int numThreads, final int numRegistrations, final Signature... signatures)

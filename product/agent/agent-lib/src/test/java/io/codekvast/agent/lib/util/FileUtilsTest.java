@@ -129,6 +129,22 @@ public class FileUtilsTest {
         assertThat(fileLine, equalTo("someFile = " + someObject.someFile.toString().replace("\\", "\\\\")));
     }
 
+    @Test
+    public void should_expand_hostname_placeholder() throws Exception {
+        File file = new File("/tmp/foo-#hostname#.ser");
+        File expanded = FileUtils.expandPlaceholders(file);
+
+        assertThat(expanded.getName(), not(is(file.getName())));
+    }
+
+    @Test
+    public void should_expand_timestamp_placeholder() throws Exception {
+        File file = new File("/tmp/foo-#timestamp#.ser");
+        File expanded = FileUtils.expandPlaceholders(file);
+
+        assertThat(expanded.getName(), not(is(file.getName())));
+    }
+
     private String getLineNo(File someFile, int lineNo) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(someFile));
         for (int n = 0; n < lineNo; n++) {
