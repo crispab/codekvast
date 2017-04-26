@@ -22,7 +22,6 @@
 package io.codekvast.agent.collector.io.impl;
 
 import io.codekvast.agent.collector.io.CodekvastPublishingException;
-import io.codekvast.agent.lib.codebase.CodeBase;
 import io.codekvast.agent.lib.config.CollectorConfig;
 import io.codekvast.agent.lib.model.Endpoints;
 import io.codekvast.agent.lib.util.FileUtils;
@@ -31,26 +30,27 @@ import okhttp3.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Set;
 
 /**
- * A HTTP implementation of CodeBasePublisher.
+ * A HTTP implementation of InvocationDataPublisher.
  *
- * It uses the FileSystemCodeBasePublisherImpl for creating a file, which then is POSTed to the server.
+ * It uses the FileSystemInvocationDataPublisherImpl for creating a file, which then is POSTed to the server.
  *
  * @author olle.hallin@crisp.se
  */
 @Slf4j
-public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
+public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPublisher {
 
     public static final String NAME = "http";
 
     private static final MediaType APPLICATION_OCTET_STREAM = MediaType.parse("application/octet-stream");
 
-    private FileSystemCodeBasePublisherImpl fileSystemPublisher;
+    private FileSystemInvocationDataPublisherImpl fileSystemPublisher;
 
-    HttpCodeBasePublisherImpl(CollectorConfig config) {
+    HttpInvocationDataPublisherImpl(CollectorConfig config) {
         super(log, config);
-        this.fileSystemPublisher = new FileSystemCodeBasePublisherImpl(config);
+        this.fileSystemPublisher = new FileSystemInvocationDataPublisherImpl(config);
     }
 
     @Override
@@ -64,33 +64,36 @@ public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
     }
 
     @Override
-    public void doPublishCodeBase(CodeBase codeBase) throws CodekvastPublishingException {
-        String url = getConfig().getCodeBaseUploadEndpoint();
+    void doPublishInvocationData(long recordingIntervalStartedAtMillis, Set<String> invocations)
+        throws CodekvastPublishingException {
+
+        String url = getConfig().getInvocationDataUploadEndpoint();
         File tmpFile = null;
         try {
-            tmpFile = File.createTempFile("codekvast-codebase-", ".ser");
+            tmpFile = File.createTempFile("codekvast-invocations-", ".ser");
             fileSystemPublisher.setTargetFile(tmpFile.getAbsolutePath());
-            fileSystemPublisher.doPublishCodeBase(codeBase);
+            fileSystemPublisher.setCodeBaseFingerprint(getCodeBaseFingerprint());
+            fileSystemPublisher.doPublishInvocationData(recordingIntervalStartedAtMillis, invocations);
 
             doPost(tmpFile);
-
         } catch (Exception e) {
-            throw new CodekvastPublishingException("Cannot upload code base to " + url, e);
+            throw new CodekvastPublishingException("Cannot upload invocation data to " + url, e);
         } finally {
             FileUtils.safeDelete(tmpFile);
         }
+
     }
 
     void doPost(File file) throws IOException {
         RequestBody requestBody = new MultipartBody.Builder()
             .setType(MultipartBody.FORM)
-            .addFormDataPart(Endpoints.AGENT_V1_UPLOAD_CODEBASE_LICENSE_KEY_PARAM, getConfig().getLicenseKey())
-            .addFormDataPart(Endpoints.AGENT_V1_UPLOAD_CODEBASE_FILE_PARAM, file.getName(),
+            .addFormDataPart(Endpoints.AGENT_V1_UPLOAD_INVOCATION_DATA_LICENSE_KEY_PARAM, getConfig().getLicenseKey())
+            .addFormDataPart(Endpoints.AGENT_V1_UPLOAD_INVOCATION_DATA_FILE_PARAM, file.getName(),
                              RequestBody.create(APPLICATION_OCTET_STREAM, file))
             .build();
 
         Request request = new Request.Builder()
-            .url(getConfig().getCodeBaseUploadEndpoint())
+            .url(getConfig().getInvocationDataUploadEndpoint())
             .post(requestBody)
             .build();
 
@@ -100,4 +103,5 @@ public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
             throw new IOException(response.body().string());
         }
     }
+
 }

@@ -147,6 +147,11 @@ public class CollectorConfig implements CodekvastConfig {
     }
 
     @JsonIgnore
+    public String getInvocationDataUploadEndpoint() {
+        return String.format("%s%s", serverUrl, Endpoints.AGENT_V1_UPLOAD_INVOCATION_DATA);
+    }
+
+    @JsonIgnore
     public String getResolvedAppVersion() {
         if (resolvedAppVersion == null) {
             resolvedAppVersion = new AppVersionResolver(this).resolveAppVersion();
@@ -166,4 +171,5 @@ public class CollectorConfig implements CodekvastConfig {
         }
         return httpClient;
     }
+
 }

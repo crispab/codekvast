@@ -34,12 +34,22 @@ public class InvocationDataPublisherFactoryImplTest {
     }
 
     @Test
-    public void should_handle_fileSystem_name() throws Exception {
+    public void should_handle_file_system_name() throws Exception {
         // given
         InvocationDataPublisher publisher = factory.create(FileSystemInvocationDataPublisherImpl.NAME, config);
 
         // then
         assertThat(publisher, instanceOf(FileSystemInvocationDataPublisherImpl.class));
+        output.expect(is(""));
+    }
+
+    @Test
+    public void should_handle_http_name() throws Exception {
+        // given
+        InvocationDataPublisher publisher = factory.create(HttpInvocationDataPublisherImpl.NAME, config);
+
+        // then
+        assertThat(publisher, instanceOf(HttpInvocationDataPublisherImpl.class));
         output.expect(is(""));
     }
 

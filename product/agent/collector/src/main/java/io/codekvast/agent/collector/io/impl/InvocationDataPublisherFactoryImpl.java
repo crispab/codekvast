@@ -23,10 +23,7 @@ package io.codekvast.agent.collector.io.impl;
 
 import io.codekvast.agent.collector.io.InvocationDataPublisher;
 import io.codekvast.agent.collector.io.InvocationDataPublisherFactory;
-import io.codekvast.agent.collector.io.impl.FileSystemInvocationDataPublisherImpl;
-import io.codekvast.agent.collector.io.impl.NoOpInvocationDataPublisherImpl;
 import io.codekvast.agent.lib.config.CollectorConfig;
-import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -52,6 +49,10 @@ public class InvocationDataPublisherFactoryImpl implements InvocationDataPublish
 
         if (name.equals(FileSystemInvocationDataPublisherImpl.NAME)) {
             return new FileSystemInvocationDataPublisherImpl(config);
+        }
+
+        if (name.equals(HttpInvocationDataPublisherImpl.NAME)) {
+            return new HttpInvocationDataPublisherImpl(config);
         }
 
         log.warn("Unrecognized invocation data publisher name: '{}', will use {}", name, NoOpInvocationDataPublisherImpl.NAME);
