@@ -68,7 +68,13 @@ public class CollectorConfigTest {
     }
 
     @Test
-    public void testCreateTemplateConfig() throws Exception {
-        CollectorConfig config = CollectorConfigFactory.createTemplateConfig();
+    public void testGetFilenamePrefix() throws Exception {
+        CollectorConfig config = CollectorConfigFactory
+            .createTemplateConfig()
+            .toBuilder()
+            .appName("   Some funky App name#'**  ")
+            .appVersion("literal =)(%1.2./()¤%&3-Beta4+.RELEASE")
+            .build();
+        assertThat(config.getFilenamePrefix("prefix---"), is("prefix-somefunkyappname-1.2.3-beta4+.release-"));
     }
 }

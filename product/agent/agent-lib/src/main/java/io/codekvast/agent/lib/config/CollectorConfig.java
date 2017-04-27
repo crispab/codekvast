@@ -163,4 +163,8 @@ public class CollectorConfig implements CodekvastConfig {
         return httpClient;
     }
 
+    public String getFilenamePrefix(@NonNull String prefix) {
+        String result = String.format("%s-%s-%s-", prefix.replaceAll("-+$", ""), appName, getResolvedAppVersion());
+        return result.toLowerCase().replaceAll("[^a-z0-9._+-]", "");
+    }
 }

@@ -71,8 +71,7 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
         File file = null;
         try {
             file = FileUtils.serializeToFile(createPublication(recordingIntervalStartedAtMillis, invocations),
-                                                "codekvast-invocations-",
-                                                ".ser");
+                                             getConfig().getFilenamePrefix("invocations-"), ".ser");
 
             doPost(file, url, getCodeBaseFingerprint().getSha256());
 

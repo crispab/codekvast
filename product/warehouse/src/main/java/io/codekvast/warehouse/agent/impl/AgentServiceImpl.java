@@ -72,7 +72,8 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
-    public File saveCodeBasePublication(String licenseKey, String codeBaseFingerprint, InputStream inputStream) throws LicenseViolationException, IOException {
+    public File saveCodeBasePublication(String licenseKey, String codeBaseFingerprint, InputStream inputStream)
+        throws LicenseViolationException, IOException {
         checkLicense(licenseKey);
 
         if (codeBaseFingerprints.contains(codeBaseFingerprint)) {

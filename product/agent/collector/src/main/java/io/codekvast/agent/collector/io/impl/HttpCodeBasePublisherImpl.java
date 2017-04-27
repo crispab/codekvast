@@ -67,7 +67,8 @@ public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
 
         File file = null;
         try {
-            file = FileUtils.serializeToFile(codeBase.getCodeBasePublication(), "codekvast-codebase-", ".ser");
+
+            file = FileUtils.serializeToFile(codeBase.getCodeBasePublication(), getConfig().getFilenamePrefix("codebase-"), ".ser");
 
             doPost(file, url, codeBase.getFingerprint().getSha256());
 

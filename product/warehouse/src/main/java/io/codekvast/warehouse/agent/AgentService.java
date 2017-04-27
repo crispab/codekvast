@@ -48,10 +48,9 @@ public interface AgentService {
     /**
      * Save an uploaded {@link CodeBasePublication} into the import area where it will be processed by another thread.
      *
-     * @param licenseKey             The agent's licenseKey.
-     * @param codeBaseFingerprint    Is the {@link CodeBaseFingerprint}'s SHA-256 value for the code base.
-     * @param inputStream         The data input stream.
-     * @return The resulting file or null of the code base was already uploaded.
+     * @param licenseKey          The agent's licenseKey.
+     * @param codeBaseFingerprint Is the {@link CodeBaseFingerprint}'s SHA-256 value for the code base.
+     * @param inputStream         The data input stream.  @return The resulting file or null of the code base was already uploaded.
      * @throws LicenseViolationException If invalid license or license violations
      */
     File saveCodeBasePublication(String licenseKey, String codeBaseFingerprint, InputStream inputStream)
@@ -62,10 +61,10 @@ public interface AgentService {
      *
      * @param licenseKey          The agent's licenseKey.
      * @param codeBaseFingerprint Is the associated code base's {@link CodeBaseFingerprint}'s SHA-256 value.
-     * @param inputStream         The data input stream.
-     * @return The resulting file or null if the invocation data was already uploaded.
+     * @param inputStream         The data input stream.  @return The resulting file or null if the invocation data was already uploaded.
      * @throws LicenseViolationException If invalid license or license violations
      */
-    File saveInvocationDataPublication(String licenseKey, String codeBaseFingerprint, InputStream inputStream)
+    File saveInvocationDataPublication(String licenseKey, String codeBaseFingerprint,
+                                       InputStream inputStream)
         throws LicenseViolationException, IOException;
 }
