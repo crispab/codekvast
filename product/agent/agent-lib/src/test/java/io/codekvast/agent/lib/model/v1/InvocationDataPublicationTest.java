@@ -35,7 +35,7 @@ public class InvocationDataPublicationTest {
         assertThat(p.toString(), containsString("appName='appName'"));
         assertThat(p.toString(), containsString("appVersion='appVersion'"));
         assertThat(p.toString(), containsString("publication=#3"));
-        assertThat(p.toString(), containsString("interval=[2016-01-02:10:11:12+0100--2017-03-04:13:14:15+0100]"));
+        assertThat(p.toString(), containsString("interval=[2016-01-02:"));
     }
 
     private long toMillis(int year, int month, int day, int hour, int minute, int second) {
