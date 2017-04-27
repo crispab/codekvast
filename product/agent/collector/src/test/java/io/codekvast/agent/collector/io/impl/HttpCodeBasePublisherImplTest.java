@@ -17,7 +17,9 @@ import static org.junit.Assert.assertThat;
  */
 public class HttpCodeBasePublisherImplTest {
 
-    private final CollectorConfig config = CollectorConfigFactory.createSampleCollectorConfig();
+    private final CollectorConfig config = CollectorConfigFactory
+        .createSampleCollectorConfig().toBuilder()
+        .appName("appName").appVersion("appVersion").build();
     private final CodeBase codeBase = new CodeBase(config);
     private final HttpCodeBasePublisherImpl publisher = new TestableHttpCodeBasePublisherImpl();
 
@@ -33,7 +35,7 @@ public class HttpCodeBasePublisherImplTest {
 
         // then
         assertThat(uploadedFile, notNullValue());
-        assertThat(uploadedFile.getName(), startsWith("codekvast-codebase-"));
+        assertThat(uploadedFile.getName(), startsWith("codebase-appname-appversion-"));
         assertThat(uploadedFile.getName(), endsWith(".ser"));
         assertThat(uploadedFile.exists(), is(false));
     }

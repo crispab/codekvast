@@ -270,23 +270,29 @@ public class CodeBase {
             .builder()
             .appName(config.getAppName())
             .appVersion(config.getResolvedAppVersion())
+            .codeBaseFingerprint(getFingerprint().getSha256())
             .collectorVersion(Constants.COLLECTOR_VERSION)
             .computerId(ComputerID.compute().toString())
-            .codeBaseFingerprint(getFingerprint().getSha256())
             .entries(getEntries())
+            .environment(config.getEnvironment())
             .hostName(Constants.HOST_NAME)
+            .jvmStartedAtMillis(Constants.JVM_STARTED_AT_MILLIS)
             .jvmUuid(Constants.JVM_UUID)
-            .publishedAtMillis(System.currentTimeMillis())
-            .strangeSignatures(new TreeSet<>(strangeSignatures))
             .normalizedStrangeSignatures(getNormalizedStrangeSignatures())
             .overriddenSignatures(new HashMap<>(overriddenSignatures))
+            .publishedAtMillis(System.currentTimeMillis())
+            .strangeSignatures(new TreeSet<>(strangeSignatures))
+            .tags(config.getTags())
             .build();
     }
 
     private Collection<String> getNormalizedStrangeSignatures() {
         Set<String> result = new TreeSet<>();
         for (String s : strangeSignatures) {
-            result.add(normalizeSignature(s));
+            String normalizeSignature = normalizeSignature(s);
+            if (normalizeSignature != null) {
+                result.add(normalizeSignature);
+            }
         }
         return result;
     }

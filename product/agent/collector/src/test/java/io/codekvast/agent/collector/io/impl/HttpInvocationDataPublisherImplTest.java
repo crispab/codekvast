@@ -20,7 +20,8 @@ import static org.junit.Assert.assertThat;
  */
 public class HttpInvocationDataPublisherImplTest {
 
-    private final CollectorConfig config = CollectorConfigFactory.createSampleCollectorConfig();
+    private final CollectorConfig config = CollectorConfigFactory
+        .createSampleCollectorConfig().toBuilder().appName("appName").appVersion("appVersion").build();
 
     private File uploadedFile;
 
@@ -33,7 +34,7 @@ public class HttpInvocationDataPublisherImplTest {
         publisher.doPublishInvocationData(System.currentTimeMillis(), invocations);
 
         assertThat(uploadedFile, notNullValue());
-        assertThat(uploadedFile.getName(), startsWith("codekvast-invocations-"));
+        assertThat(uploadedFile.getName(), startsWith("invocations-appname-appversion-"));
         assertThat(uploadedFile.getName(), endsWith(".ser"));
         assertThat(uploadedFile.exists(), is(false));
     }

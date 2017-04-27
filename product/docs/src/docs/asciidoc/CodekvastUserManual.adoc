@@ -390,6 +390,8 @@ sudo tail -f /var/log/codekvast-warehouse.log
 
 The Codekvast Collector uses SLF4J as logging API. This is just a compile-time API, which needs to be connected to a logging backend at runtime.
 
+Codekvast's loggers are prefixed with `io.codekvast.`.
+
 See also {slf4j-manual}.
 
 The selected backend binding (e.g., slf4j-jdk14.x.x.jar) needs to be available in the system class loader,
@@ -489,6 +491,12 @@ See <<about-app-version-strategy>>
 See <<about-exclude-package-prefixes>>.
 |A comma-separated list of strings.
 |excludePackages = com.acme.timecritical, foo.bar.even.more.time.critical
+|
+
+|environment
+|In which environment is the application deployed?
+|An arbitrary string, useful when analysing the collected data.
+|environment = production
 |
 
 |methodVisibility

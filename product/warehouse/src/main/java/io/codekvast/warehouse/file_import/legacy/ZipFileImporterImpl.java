@@ -26,6 +26,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import io.codekvast.agent.lib.model.v1.legacy.ExportFileMetaInfo;
 import io.codekvast.agent.lib.model.v1.legacy.ExportFileEntry;
@@ -48,6 +49,7 @@ import static java.time.Instant.now;
  * @author olle.hallin@crisp.se
  */
 @Slf4j
+@Service
 public class ZipFileImporterImpl implements ZipFileImporter {
 
     private final ImportDAO importDAO;

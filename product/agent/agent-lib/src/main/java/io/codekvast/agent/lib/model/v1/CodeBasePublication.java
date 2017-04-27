@@ -32,18 +32,13 @@ import java.util.Map;
  *
  * @author olle.hallin@crisp.se
  */
+@SuppressWarnings({"ClassWithTooManyFields", "ClassWithTooManyMethods", "OverlyComplexClass"})
 @Data
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Setter(AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
 public class CodeBasePublication implements Serializable {
-    @NonNull
-    private Collection<CodeBaseEntry> entries;
-    @NonNull
-    private Collection<String> normalizedStrangeSignatures;
-    @NonNull
-    private Collection<String> strangeSignatures;
     @NonNull
     private String appName;
     @NonNull
@@ -55,12 +50,23 @@ public class CodeBasePublication implements Serializable {
     @NonNull
     private String computerId;
     @NonNull
+    private Collection<CodeBaseEntry> entries;
+    @NonNull
+    private String environment;
+    @NonNull
     private String hostName;
+    private long jvmStartedAtMillis;
     @NonNull
     private String jvmUuid;
     @NonNull
+    private Collection<String> normalizedStrangeSignatures;
+    @NonNull
     private Map<String, String> overriddenSignatures;
     private long publishedAtMillis;
+    @NonNull
+    private Collection<String> strangeSignatures;
+    @NonNull
+    private String tags;
 
     @Override
     public String toString() {

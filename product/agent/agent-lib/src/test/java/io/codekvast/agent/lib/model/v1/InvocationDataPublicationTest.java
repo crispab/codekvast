@@ -1,15 +1,12 @@
 package io.codekvast.agent.lib.model.v1;
 
-import org.hamcrest.Matcher;
 import org.junit.Test;
 
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.TimeZone;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author olle.hallin@crisp.se
@@ -25,12 +22,14 @@ public class InvocationDataPublicationTest {
             .codeBaseFingerprint("codeBaseFingerprint")
             .collectorVersion("collectorVersion")
             .computerId("computerId")
+            .environment("environment")
             .hostName("hostName")
+            .invocations(Collections.<String>emptySet())
             .jvmUuid("jvmUuid")
             .publicationCount(3)
-            .invocations(Collections.<String>emptySet())
-            .recordingIntervalStartedAtMillis(toMillis(2016, 1, 2, 10, 11, 12))
             .publishedAtMillis(toMillis(2017, 3, 4, 13, 14, 15))
+            .recordingIntervalStartedAtMillis(toMillis(2016, 1, 2, 10, 11, 12))
+            .tags("tags")
             .build();
 
         assertThat(p.toString(), containsString("appName='appName'"));

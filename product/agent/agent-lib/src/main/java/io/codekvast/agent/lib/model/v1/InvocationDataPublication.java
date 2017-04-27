@@ -49,15 +49,19 @@ public class InvocationDataPublication implements Serializable {
     @NonNull
     private String computerId;
     @NonNull
+    private String environment;
+    @NonNull
     private String hostName;
     @NonNull
-    private String jvmUuid;
-    @NonNull
     Set<String> invocations;
-
-    private long recordingIntervalStartedAtMillis;
-    private long publishedAtMillis;
+    private long jvmStartedAtMillis;
+    @NonNull
+    private String jvmUuid;
     private int publicationCount;
+    private long publishedAtMillis;
+    private long recordingIntervalStartedAtMillis;
+    @NonNull
+    private String tags;
 
     @Override
     public String toString() {

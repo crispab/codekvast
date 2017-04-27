@@ -37,6 +37,7 @@ public class CollectorConfigFactory {
     private static final boolean DEFAULT_CLOBBER_AOP_XML = true;
     private static final boolean DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_SLF4J = true;
     private static final String DEFAULT_ASPECTJ_OPTIONS = "";
+    private static final String DEFAULT_ENVIRONMENT = "";
     private static final String DEFAULT_METHOD_VISIBILITY = SignatureUtils.PROTECTED;
     private static final int DEFAULT_COLLECTOR_RESOLUTION_SECONDS = 600;
     private static final String DEFAULT_SERVER_URL = "http://localhost:8080";
@@ -104,14 +105,15 @@ public class CollectorConfigFactory {
                               .appName(validateAppName(ConfigUtils.getMandatoryStringValue(props, "appName")))
                               .appVersion(ConfigUtils.getOptionalStringValue(props, "appVersion", UNSPECIFIED))
                               .aspectjOptions(ConfigUtils.getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
-                              .bridgeAspectjMessagesToSLF4J(ConfigUtils.getOptionalBooleanValue(props, "bridgeAspectjMessagesToSLF4J", DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_SLF4J))
+                              .bridgeAspectjMessagesToSLF4J(ConfigUtils.getOptionalBooleanValue(props, "bridgeAspectjMessagesToSLF4J",
+                                                                                                DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_SLF4J))
                               .clobberAopXml(ConfigUtils.getOptionalBooleanValue(props, "clobberAopXml", DEFAULT_CLOBBER_AOP_XML))
                               .codeBase(ConfigUtils.getMandatoryStringValue(props, "codeBase"))
                               .collectorResolutionSeconds(ConfigUtils.getOptionalIntValue(props, "collectorResolutionSeconds",
                                                                                           DEFAULT_COLLECTOR_RESOLUTION_SECONDS))
                               .dataPath(ConfigUtils.getDataPath(props, DEFAULT_DATA_PATH))
-                              .methodVisibility(ConfigUtils.getOptionalStringValue(props, "methodVisibility",
-                                                                                   DEFAULT_METHOD_VISIBILITY))
+                              .environment(ConfigUtils.getOptionalStringValue(props, "environment", DEFAULT_ENVIRONMENT))
+                              .methodVisibility(ConfigUtils.getOptionalStringValue(props, "methodVisibility", DEFAULT_METHOD_VISIBILITY))
                               .packages(packages)
                               .excludePackages(excludePackages)
                               .licenseKey(ConfigUtils.getOptionalStringValue(props, "licenseKey", TRIAL_LICENSE_KEY))
@@ -133,12 +135,12 @@ public class CollectorConfigFactory {
 
     private static String createSystemPropertiesTags() {
         String[] sysProps = {
-                "java.runtime.name",
-                "java.runtime.version",
-                "os.arch",
-                "os.name",
-                "os.version",
-        };
+            "java.runtime.name",
+            "java.runtime.version",
+            "os.arch",
+            "os.name",
+            "os.version",
+            };
 
         StringBuilder sb = new StringBuilder();
         String delimiter = "";
@@ -185,6 +187,7 @@ public class CollectorConfigFactory {
                               .codeBase(UNSPECIFIED)
                               .collectorResolutionSeconds(DEFAULT_COLLECTOR_RESOLUTION_SECONDS)
                               .dataPath(ConfigUtils.getDataPath(new Properties(), DEFAULT_DATA_PATH))
+                              .environment(DEFAULT_ENVIRONMENT)
                               .methodVisibility(DEFAULT_METHOD_VISIBILITY)
                               .packages(UNSPECIFIED)
                               .excludePackages("")

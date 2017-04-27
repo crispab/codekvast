@@ -1,6 +1,6 @@
 package io.codekvast.warehouse.file_import;
 
-import io.codekvast.warehouse.file_import.legacy.ZipFileImporter;
+import io.codekvast.warehouse.bootstrap.CodekvastSettings;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -8,15 +8,16 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import io.codekvast.warehouse.bootstrap.CodekvastSettings;
 
 import java.io.File;
 import java.io.IOException;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 /**
  * @author olle.hallin@crisp.se
@@ -28,7 +29,7 @@ public class FileImportTaskTest {
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Mock
-    private ZipFileImporter importer;
+    private PublicationFileImporter importer;
 
     private CodekvastSettings settings;
 
@@ -39,7 +40,7 @@ public class FileImportTaskTest {
         settings = new CodekvastSettings();
         settings.setImportPath(temporaryFolder.getRoot());
 
-        task = new FileImportTask(settings, importer, publicationFileImporter);
+        task = new FileImportTask(settings, importer);
     }
 
     @Test
@@ -68,30 +69,46 @@ public class FileImportTaskTest {
     }
 
     @Test
-    public void should_delete_file_after_import() throws Exception {
+    public void should_delete_file_after_successful_import() throws Exception {
         // given
         settings.setDeleteImportedFiles(true);
-        File file = createImportFile(".zip");
+        File file = createImportFile(".ser");
+        when(importer.importPublicationFile(any(File.class))).thenReturn(true);
 
         // when
         task.importDaemonFiles();
 
         // then
-        verify(importer).importZipFile(file);
+        verify(importer).importPublicationFile(file);
         assertThat(file.exists(), is(false));
+    }
+
+    @Test
+    public void should_not_delete_file_after_failed_import() throws Exception {
+        // given
+        settings.setDeleteImportedFiles(true);
+        File file = createImportFile(".ser");
+        when(importer.importPublicationFile(any(File.class))).thenReturn(false);
+
+        // when
+        task.importDaemonFiles();
+
+        // then
+        verify(importer).importPublicationFile(file);
+        assertThat(file.exists(), is(true));
     }
 
     @Test
     public void should_not_delete_file_after_import() throws Exception {
         // given
         settings.setDeleteImportedFiles(false);
-        File file = createImportFile(".zip");
+        File file = createImportFile(".ser");
 
         // when
         task.importDaemonFiles();
 
         // then
-        verify(importer).importZipFile(file);
+        verify(importer).importPublicationFile(file);
         assertThat(file.exists(), is(true));
     }
 

@@ -77,6 +77,9 @@ public class CollectorConfig implements CodekvastConfig {
     private String codeBase;
 
     @NonNull
+    private String environment;
+
+    @NonNull
     private String packages;
 
     @NonNull
@@ -94,11 +97,6 @@ public class CollectorConfig implements CodekvastConfig {
     @JsonIgnore
     public File getAspectFile() {
         return new File(myDataPath(appName), "aop.xml");
-    }
-
-    @JsonIgnore
-    public File getSignatureFile(String appName) {
-        return new File(myDataPath(appName), "signatures.dat");
     }
 
     @JsonIgnore

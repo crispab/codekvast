@@ -114,12 +114,15 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
                                         .codeBaseFingerprint(getCodeBaseFingerprint().getSha256())
                                         .collectorVersion(Constants.COLLECTOR_VERSION)
                                         .computerId(Constants.COMPUTER_ID)
+                                        .environment(getConfig().getEnvironment())
                                         .hostName(Constants.HOST_NAME)
                                         .invocations(invocations)
+                                        .jvmStartedAtMillis(Constants.JVM_STARTED_AT_MILLIS)
                                         .jvmUuid(Constants.JVM_UUID)
                                         .publicationCount(getPublicationCount())
                                         .publishedAtMillis(System.currentTimeMillis())
                                         .recordingIntervalStartedAtMillis(recordingIntervalStartedAtMillis)
+                                        .tags(getConfig().getTags())
                                         .build();
     }
 
