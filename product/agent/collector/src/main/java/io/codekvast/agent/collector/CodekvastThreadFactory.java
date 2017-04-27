@@ -21,20 +21,29 @@
  */
 package io.codekvast.agent.collector;
 
+import lombok.Builder;
+import lombok.RequiredArgsConstructor;
+
 import java.util.concurrent.ThreadFactory;
 
 /**
- * Factory for threads with a certain name and priority.
+ * Factory for daemon threads with a certain name and priority.
  * 
  * @author olle.hallin@crisp.se
  */
+@RequiredArgsConstructor
+@Builder
 public class CodekvastThreadFactory implements ThreadFactory {
+
+    private final String name;
+    private final int relativePriority;
+
     @Override
     public Thread newThread(Runnable r) {
         Thread thread = new Thread(r);
-        thread.setName("Codekvast");
+        thread.setName("Codekvast " + name);
+        thread.setPriority(thread.getPriority() + relativePriority);
         thread.setDaemon(true);
-        thread.setPriority(thread.getPriority() - 1);
         return thread;
     }
 }

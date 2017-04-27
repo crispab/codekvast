@@ -72,7 +72,11 @@ public class Scheduler implements Runnable {
         this.configPoller = configPoller;
         this.codeBasePublisherFactory = codeBasePublisherFactory;
         this.invocationDataPublisherFactory = invocationDataPublisherFactory;
-        this.executor = Executors.newScheduledThreadPool(1, new CodekvastThreadFactory());
+        this.executor = Executors.newScheduledThreadPool(1,
+                                                         CodekvastThreadFactory.builder()
+                                                                               .name("scheduler")
+                                                                               .relativePriority(-1)
+                                                                               .build());
     }
 
     /**
@@ -80,8 +84,8 @@ public class Scheduler implements Runnable {
      *
      * @return this
      */
-    public Scheduler start(long delay, long period, TimeUnit timeUnit) {
-        executor.scheduleAtFixedRate(this, delay, period, timeUnit);
+    public Scheduler start() {
+        executor.scheduleAtFixedRate(this, 10L, 10L, TimeUnit.SECONDS);
         log.info("Scheduler started; pulling dynamic config from {}", config.getServerUrl());
         return this;
     }
@@ -90,10 +94,12 @@ public class Scheduler implements Runnable {
      * Shuts down the scheduler. Performs a last invocation data publishing before returning.
      */
     public void shutdown() {
-        log.info("Stopping scheduler");
+        long startedAt = System.currentTimeMillis();
+
+        log.debug("Stopping scheduler");
         executor.shutdown();
         try {
-            executor.awaitTermination(30, TimeUnit.SECONDS);
+            executor.awaitTermination(60, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             log.debug("Stop interrupted");
         }
@@ -105,14 +111,14 @@ public class Scheduler implements Runnable {
             invocationDataPublisherState.scheduleNow();
             publishInvocationDataIfNeeded();
         }
+
+        log.info("Scheduler stopped in {} ms", System.currentTimeMillis() - startedAt);
     }
 
     @Override
     public void run() {
-        log.debug("Scheduler invoked");
-
         if (executor.isShutdown()) {
-            log.info("Scheduler is shutting down");
+            log.debug("Scheduler is shutting down");
             return;
         }
 
@@ -223,7 +229,6 @@ public class Scheduler implements Runnable {
         void updateIntervals(int intervalSeconds, int retryIntervalSeconds) {
             this.intervalSeconds = intervalSeconds;
             this.retryIntervalSeconds = retryIntervalSeconds;
-            scheduleNext();
         }
 
         void scheduleNext() {
@@ -254,10 +259,7 @@ public class Scheduler implements Runnable {
         }
 
         boolean isDueTime() {
-            boolean result = System.currentTimeMillis() >= nextEventAtMillis;
-            log.trace("{} is due: {}", name, result);
-            return result;
+            return System.currentTimeMillis() >= nextEventAtMillis;
         }
-
     }
 }

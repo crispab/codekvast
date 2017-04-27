@@ -59,13 +59,15 @@ public class InvocationRegistry {
     private long recordingIntervalStartedAtMillis = System.currentTimeMillis();
 
     private InvocationRegistry() {
-
         this.invocations = new Set[]{new HashSet<String>(), new HashSet<String>()};
+        startWorker();
+    }
 
-        Thread worker = new Thread(new InvocationsAdder());
-        worker.setDaemon(true);
-        worker.setName("Codekvast registry");
-        worker.start();
+    void startWorker() {
+        if (!isNullRegistry()) {
+            Thread worker = CodekvastThreadFactory.builder().name("registry").build().newThread(new InvocationsAdder());
+            worker.start();
+        }
     }
 
     public boolean isNullRegistry() {
@@ -151,6 +153,7 @@ public class InvocationRegistry {
         public boolean isNullRegistry() {
             return true;
         }
+
     }
 
 }

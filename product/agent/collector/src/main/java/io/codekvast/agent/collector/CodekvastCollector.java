@@ -39,7 +39,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 /**
  * This is the Java agent that hooks up Codekvast to the app.
@@ -124,7 +123,7 @@ public class CodekvastCollector {
                                   new ConfigPollerImpl(config),
                                   new CodeBasePublisherFactoryImpl(),
                                   new InvocationDataPublisherFactoryImpl())
-            .start(5, 10, TimeUnit.SECONDS);
+            .start();
 
         Runtime.getRuntime().addShutdownHook(createShutdownHook());
 
