@@ -58,4 +58,22 @@ public class InvocationDataPublication implements Serializable {
     private long recordingIntervalStartedAtMillis;
     private long publishedAtMillis;
     private int publicationCount;
+
+    @Override
+    public String toString() {
+        return String.format("InvocationDataPublication{appName='%1$s'" +
+                                 ", appVersion='%2$s'" +
+                                 ", hostName='%3$s'" +
+                                 ", publication=#%4$d" +
+                                 ", interval=[%5$tF:%5$tT--%6$tF:%6$tT]" +
+                                 ", invocations.size()=%7$d}",
+                             appName,
+                             appVersion,
+                             hostName,
+                             publicationCount,
+                             recordingIntervalStartedAtMillis,
+                             publishedAtMillis,
+                             invocations.size()
+        );
+    }
 }

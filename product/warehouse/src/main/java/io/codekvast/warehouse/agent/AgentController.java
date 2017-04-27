@@ -39,6 +39,7 @@ import javax.validation.Valid;
 
 import java.io.IOException;
 
+import static java.lang.String.format;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
@@ -93,7 +94,8 @@ public class AgentController {
         @RequestParam(Endpoints.AGENT_V1_FINGERPRINT_PARAM) String fingerprint,
         @RequestParam(Endpoints.AGENT_V1_PUBLICATION_FILE_PARAM) MultipartFile file) throws IOException {
 
-        log.debug("Received {} ({} bytes) with licenseKey={}, fingerprint={}", file.getOriginalFilename(), file.getSize(), licenseKey,
+        log.debug("Received {} ({}) with licenseKey={}, fingerprint={}", file.getOriginalFilename(), humanReadableByteCount(file.getSize()),
+                  licenseKey,
                   fingerprint);
 
         agentService.saveCodeBasePublication(licenseKey, fingerprint, file.getInputStream());
@@ -108,11 +110,21 @@ public class AgentController {
         @RequestParam(Endpoints.AGENT_V1_FINGERPRINT_PARAM) String fingerprint,
         @RequestParam(Endpoints.AGENT_V1_PUBLICATION_FILE_PARAM) MultipartFile file) throws IOException {
 
-        log.debug("Received {} ({} bytes) with licenseKey={}", file.getOriginalFilename(), file.getSize(), licenseKey);
+        log.debug("Received {} ({}) with licenseKey={}", file.getOriginalFilename(), humanReadableByteCount(file.getSize()), licenseKey);
 
         agentService.saveInvocationDataPublication(licenseKey, fingerprint, file.getInputStream());
 
         return "OK";
     }
+
+    private String humanReadableByteCount(long bytes) {
+        if (bytes < 1000) {
+            return bytes + " B";
+        }
+        int exponent = (int) (Math.log(bytes) / Math.log(1000));
+        String unit = " kMGTPE".charAt(exponent) + "B";
+        return format("%.1f %s", bytes / Math.pow(1000, exponent), unit);
+    }
+
 }
 

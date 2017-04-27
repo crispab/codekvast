@@ -49,7 +49,6 @@ import static java.time.Instant.now;
 /**
  * @author olle.hallin@crisp.se
  */
-@Service
 @Slf4j
 public class ZipFileImporterImpl implements ZipFileImporter {
 

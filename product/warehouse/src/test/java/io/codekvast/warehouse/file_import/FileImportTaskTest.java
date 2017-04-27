@@ -38,7 +38,7 @@ public class FileImportTaskTest {
         settings = new CodekvastSettings();
         settings.setImportPath(temporaryFolder.getRoot());
 
-        task = new FileImportTask(settings, importer);
+        task = new FileImportTask(settings, importer, publicationFileImporter);
     }
 
     @Test

@@ -35,6 +35,8 @@ import java.nio.file.Files;
 import java.util.HashSet;
 import java.util.Set;
 
+import static java.lang.String.format;
+
 /**
  * Handler for agent REST requests.
  *
@@ -126,4 +128,5 @@ public class AgentServiceImpl implements AgentService {
             log.debug("Running without a license.");
         }
     }
+
 }

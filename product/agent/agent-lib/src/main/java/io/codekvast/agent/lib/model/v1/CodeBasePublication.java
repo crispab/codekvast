@@ -61,4 +61,20 @@ public class CodeBasePublication implements Serializable {
     @NonNull
     private Map<String, String> overriddenSignatures;
     private long publishedAtMillis;
+
+    @Override
+    public String toString() {
+        return String.format("CodeBasePublication{" +
+                                 "appName='%1$s'" +
+                                 ", appVersion='%2$s'" +
+                                 ", hostName='%3$s'" +
+                                 ", publishedAt=%4$tF:%4$tT" +
+                                 ", entries.size()=%5$d" +
+                                 "}",
+                             appName,
+                             appVersion,
+                             hostName,
+                             publishedAtMillis,
+                             entries.size());
+    }
 }

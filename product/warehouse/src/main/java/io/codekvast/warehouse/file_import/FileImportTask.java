@@ -21,11 +21,10 @@
  */
 package io.codekvast.warehouse.file_import;
 
+import io.codekvast.warehouse.bootstrap.CodekvastSettings;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import io.codekvast.agent.lib.model.v1.legacy.ExportFileFormat;
-import io.codekvast.warehouse.bootstrap.CodekvastSettings;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -40,12 +39,13 @@ import java.io.File;
 public class FileImportTask {
 
     private final CodekvastSettings codekvastSettings;
-    private final ZipFileImporter zipFileImporter;
+    private final PublicationFileImporter publicationFileImporter;
 
     @Inject
-    public FileImportTask(CodekvastSettings codekvastSettings, ZipFileImporter zipFileImporter) {
+    public FileImportTask(CodekvastSettings codekvastSettings, PublicationFileImporter publicationFileImporter) {
+
         this.codekvastSettings = codekvastSettings;
-        this.zipFileImporter = zipFileImporter;
+        this.publicationFileImporter = publicationFileImporter;
 
         log.info("Looking for files in {} every {} seconds", codekvastSettings.getImportPath(),
                  codekvastSettings.getImportPathPollIntervalSeconds());
@@ -71,15 +71,11 @@ public class FileImportTask {
                 for (File file : files) {
                     if (file.isDirectory()) {
                         walkDirectory(file);
-                    } else if (file.getName().endsWith(ExportFileFormat.ZIP.getSuffix())) {
-                        zipFileImporter.importZipFile(file);
-
-                        if (codekvastSettings.isDeleteImportedFiles()) {
+                    } else if (file.getName().endsWith(".ser")) {
+                        boolean imported = publicationFileImporter.importPublicationFile(file);
+                        if (imported && codekvastSettings.isDeleteImportedFiles()) {
                             deleteFile(file);
                         }
-                    } else if (file.getName().endsWith(".ser")) {
-                        // TODO: grok *.ser files
-                        log.trace("Will eat {}", file);
                     } else {
                         log.debug("Ignoring {}", file);
                     }
