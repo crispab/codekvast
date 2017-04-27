@@ -65,7 +65,7 @@ public class InvocationDataPublication implements Serializable {
                                  ", appVersion='%2$s'" +
                                  ", hostName='%3$s'" +
                                  ", publication=#%4$d" +
-                                 ", interval=[%5$tF:%5$tT--%6$tF:%6$tT]" +
+                                 ", interval=[%5$tF:%5$tT%5$tz--%6$tF:%6$tT%6$tz]" +
                                  ", invocations.size()=%7$d}",
                              appName,
                              appVersion,

@@ -68,7 +68,7 @@ public class CodeBasePublication implements Serializable {
                                  "appName='%1$s'" +
                                  ", appVersion='%2$s'" +
                                  ", hostName='%3$s'" +
-                                 ", publishedAt=%4$tF:%4$tT" +
+                                 ", publishedAt=%4$tF:%4$tT%4$tz" +
                                  ", entries.size()=%5$d" +
                                  "}",
                              appName,
