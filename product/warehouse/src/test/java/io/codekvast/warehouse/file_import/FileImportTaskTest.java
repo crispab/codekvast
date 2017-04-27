@@ -1,5 +1,6 @@
 package io.codekvast.warehouse.file_import;
 
+import io.codekvast.warehouse.file_import.legacy.ZipFileImporter;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

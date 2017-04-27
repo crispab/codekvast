@@ -19,22 +19,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.warehouse.file_import;
-
-import io.codekvast.agent.lib.model.v1.InvocationDataPublication;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-
 /**
+ * Legacy stuff that is related to the soon-to-be-deleted daemon.
+ *
  * @author olle.hallin@crisp.se
  */
-@Component
-@Slf4j
-public class InvocationDataImporterImpl implements InvocationDataImporter {
-
-    @Override
-    public void importPublication(InvocationDataPublication publication) {
-        log.debug("Importing {}", publication);
-        // TODO: implement
-    }
-}
+package io.codekvast.warehouse.file_import.legacy;

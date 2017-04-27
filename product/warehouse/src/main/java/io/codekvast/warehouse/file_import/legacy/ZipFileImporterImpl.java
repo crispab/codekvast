@@ -19,20 +19,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.warehouse.file_import;
+package io.codekvast.warehouse.file_import.legacy;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import io.codekvast.agent.lib.model.v1.legacy.ExportFileMetaInfo;
 import io.codekvast.agent.lib.model.v1.legacy.ExportFileEntry;
 import io.codekvast.agent.lib.model.v1.legacy.JvmData;
 import io.codekvast.agent.lib.model.v1.SignatureStatus;
-import io.codekvast.warehouse.file_import.ImportDAO.Jvm;
 
 import javax.inject.Inject;
 import java.io.*;
@@ -178,13 +176,13 @@ public class ZipFileImporterImpl implements ZipFileImporter {
 
     @SneakyThrows(IOException.class)
     private boolean doProcessJvm(ImportDAO.ImportContext context, String[] columns) {
-        Jvm jvm = Jvm.builder()
-                     .localId(Long.valueOf(columns[0]))
-                     .uuid(columns[1])
-                     .startedAtMillis(Long.valueOf(columns[2]))
-                     .dumpedAtMillis(Long.valueOf(columns[3]))
-                     .jvmDataJson(columns[4])
-                     .build();
+        ImportDAO.Jvm jvm = ImportDAO.Jvm.builder()
+                                         .localId(Long.valueOf(columns[0]))
+                                         .uuid(columns[1])
+                                         .startedAtMillis(Long.valueOf(columns[2]))
+                                         .dumpedAtMillis(Long.valueOf(columns[3]))
+                                         .jvmDataJson(columns[4])
+                                         .build();
         JvmData jvmData = objectMapper.readValue(jvm.getJvmDataJson(), JvmData.class);
         return importDAO.saveJvm(jvm, jvmData, context);
     }

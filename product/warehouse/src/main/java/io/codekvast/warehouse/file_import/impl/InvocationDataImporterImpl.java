@@ -19,13 +19,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.warehouse.file_import;
+package io.codekvast.warehouse.file_import.impl;
 
-import java.io.File;
+import io.codekvast.agent.lib.model.v1.InvocationDataPublication;
+import io.codekvast.warehouse.file_import.InvocationDataImporter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 /**
  * @author olle.hallin@crisp.se
  */
-public interface ZipFileImporter {
-    void importZipFile(File file);
+@Component
+@Slf4j
+public class InvocationDataImporterImpl implements InvocationDataImporter {
+
+    @Override
+    public void importPublication(InvocationDataPublication publication) {
+        log.debug("Importing {}", publication);
+        // TODO: implement
+    }
 }

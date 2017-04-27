@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.warehouse.file_import;
+package io.codekvast.warehouse.file_import.legacy;
 
 import lombok.Builder;
 import lombok.NonNull;

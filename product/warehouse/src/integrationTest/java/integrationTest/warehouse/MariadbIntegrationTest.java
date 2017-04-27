@@ -17,12 +17,12 @@ import io.codekvast.agent.lib.model.v1.SignatureStatus;
 import io.codekvast.testsupport.docker.DockerContainer;
 import io.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
 import io.codekvast.warehouse.CodekvastWarehouse;
-import io.codekvast.warehouse.file_import.ImportDAO;
-import io.codekvast.warehouse.file_import.ImportDAO.Application;
-import io.codekvast.warehouse.file_import.ImportDAO.ImportContext;
-import io.codekvast.warehouse.file_import.ImportDAO.ImportStatistics;
-import io.codekvast.warehouse.file_import.ImportDAO.Invocation;
-import io.codekvast.warehouse.file_import.ZipFileImporter;
+import io.codekvast.warehouse.file_import.legacy.ImportDAO;
+import io.codekvast.warehouse.file_import.legacy.ImportDAO.Application;
+import io.codekvast.warehouse.file_import.legacy.ImportDAO.ImportContext;
+import io.codekvast.warehouse.file_import.legacy.ImportDAO.ImportStatistics;
+import io.codekvast.warehouse.file_import.legacy.ImportDAO.Invocation;
+import io.codekvast.warehouse.file_import.legacy.ZipFileImporter;
 import io.codekvast.warehouse.webapp.WebappService;
 import io.codekvast.warehouse.webapp.model.GetMethodsRequest1;
 import io.codekvast.warehouse.webapp.model.MethodDescriptor1;
@@ -44,8 +44,8 @@ import static java.time.temporal.ChronoUnit.DAYS;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeTrue;
-import static io.codekvast.warehouse.file_import.ImportDAO.Jvm;
-import static io.codekvast.warehouse.file_import.ImportDAO.Method;
+import static io.codekvast.warehouse.file_import.legacy.ImportDAO.Jvm;
+import static io.codekvast.warehouse.file_import.legacy.ImportDAO.Method;
 
 /**
  * @author olle.hallin@crisp.se

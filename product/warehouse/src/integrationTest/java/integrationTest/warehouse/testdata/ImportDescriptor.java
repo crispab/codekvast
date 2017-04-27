@@ -5,8 +5,8 @@ import lombok.NonNull;
 import lombok.Singular;
 import lombok.Value;
 import io.codekvast.agent.lib.model.v1.legacy.JvmData;
-import io.codekvast.warehouse.file_import.ImportDAO;
-import io.codekvast.warehouse.file_import.ImportDAO.Invocation;
+import io.codekvast.warehouse.file_import.legacy.ImportDAO;
+import io.codekvast.warehouse.file_import.legacy.ImportDAO.Invocation;
 
 import java.lang.reflect.Method;
 import java.util.List;
