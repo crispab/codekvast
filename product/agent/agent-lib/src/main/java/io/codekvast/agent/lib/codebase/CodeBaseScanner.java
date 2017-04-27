@@ -58,8 +58,8 @@ public class CodeBaseScanner {
         int result = 0;
 
         URLClassLoader appClassLoader = new URLClassLoader(codeBase.getUrls(), System.class.getClassLoader());
-        Set<String> packages = new TreeSet<String>(codeBase.getConfig().getNormalizedPackages());
-        Set<String> excludePackages = new TreeSet<String>(codeBase.getConfig().getNormalizedExcludePackages());
+        Set<String> packages = new TreeSet<>(codeBase.getConfig().getNormalizedPackages());
+        Set<String> excludePackages = new TreeSet<>(codeBase.getConfig().getNormalizedExcludePackages());
 
         Set<String> recognizedTypes = getRecognizedTypes(packages, appClassLoader);
 
@@ -69,9 +69,7 @@ public class CodeBaseScanner {
                 findTrackedConstructors(codeBase, clazz);
                 findTrackedMethods(codeBase, packages, excludePackages, clazz);
                 result += 1;
-            } catch (ClassNotFoundException e) {
-                log.warn("Cannot analyze " + type + ": " + e);
-            } catch (NoClassDefFoundError e) {
+            } catch (ClassNotFoundException | NoClassDefFoundError e) {
                 log.warn("Cannot analyze " + type + ": " + e);
             }
         }
@@ -81,11 +79,12 @@ public class CodeBaseScanner {
                      codeBase.getConfig().getNormalizedPackages());
         }
 
-        codeBase.writeSignaturesToDisk();
-
         log.info("Scanned {} with package prefix {} in {} ms, found {} methods in {} classes.",
-                 codeBase, codeBase.getConfig().getNormalizedPackages(), System.currentTimeMillis() - startedAt,
-                 codeBase.size(), result);
+                 codeBase.getFingerprint(),
+                 codeBase.getConfig().getNormalizedPackages(),
+                 System.currentTimeMillis() - startedAt,
+                 codeBase.size(),
+                 result);
 
         return result;
     }
@@ -106,11 +105,11 @@ public class CodeBaseScanner {
 
     void findTrackedConstructors(CodeBase codeBase, Class<?> clazz) {
         if (clazz.isInterface()) {
-            log.debug("Ignoring interface {}", clazz);
+            log.trace("Ignoring interface {}", clazz);
             return;
         }
 
-        log.debug("Analyzing {}", clazz);
+        log.trace("Analyzing {}", clazz);
         MethodAnalyzer methodAnalyzer = codeBase.getConfig().getMethodAnalyzer();
         try {
             Constructor[] declaredConstructors = clazz.getDeclaredConstructors();
@@ -131,11 +130,11 @@ public class CodeBaseScanner {
 
     void findTrackedMethods(CodeBase codeBase, Set<String> packages, Set<String> excludePackages, Class<?> clazz) {
         if (clazz.isInterface()) {
-            log.debug("Ignoring interface {}", clazz);
+            log.trace("Ignoring interface {}", clazz);
             return;
         }
 
-        log.debug("Analyzing {}", clazz);
+        log.trace("Analyzing {}", clazz);
         MethodAnalyzer methodAnalyzer = codeBase.getConfig().getMethodAnalyzer();
         try {
             Method[] declaredMethods = clazz.getDeclaredMethods();
@@ -153,8 +152,8 @@ public class CodeBaseScanner {
                 MethodSignature thisSignature = SignatureUtils.makeMethodSignature(clazz, method);
 
                 MethodSignature declaringSignature = SignatureUtils
-                        .makeMethodSignature(findDeclaringClass(method.getDeclaringClass(), method, packages),
-                                             method);
+                    .makeMethodSignature(findDeclaringClass(method.getDeclaringClass(), method, packages),
+                                         method);
 
                 if (shouldExcludeSignature(declaringSignature, excludePackages)) {
                     status = SignatureStatus.EXCLUDED_BY_PACKAGE_NAME;

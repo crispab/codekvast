@@ -109,14 +109,14 @@ public class AgentControllerTest {
         String fingerprint = "fingerprint";
         String originalFilename = "codekvast-codebase-9128371293719273.ser";
 
-        MockMultipartFile multipartFile =
+        MockMultipartFile publicationFile =
             new MockMultipartFile(Endpoints.AGENT_V1_PUBLICATION_FILE_PARAM,
                                   originalFilename,
                                   MediaType.APPLICATION_OCTET_STREAM_VALUE,
                                   "CodeBasePublication".getBytes());
 
         mockMvc.perform(fileUpload(Endpoints.AGENT_V1_UPLOAD_CODEBASE)
-                            .file(multipartFile)
+                            .file(publicationFile)
                             .param(Endpoints.AGENT_V1_LICENSE_KEY_PARAM, licenseKey)
                             .param(Endpoints.AGENT_V1_FINGERPRINT_PARAM, fingerprint))
                .andExpect(status().isOk())

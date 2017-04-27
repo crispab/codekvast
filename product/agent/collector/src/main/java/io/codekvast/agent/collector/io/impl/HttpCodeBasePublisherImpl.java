@@ -26,10 +26,12 @@ import io.codekvast.agent.lib.codebase.CodeBase;
 import io.codekvast.agent.lib.config.CollectorConfig;
 import io.codekvast.agent.lib.model.Endpoints;
 import io.codekvast.agent.lib.util.FileUtils;
+import io.codekvast.agent.lib.util.LogUtil;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * A HTTP implementation of CodeBasePublisher.
@@ -41,7 +43,7 @@ import java.io.*;
 @Slf4j
 public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
 
-    public static final String NAME = "http";
+    static final String NAME = "http";
 
     private static final MediaType APPLICATION_OCTET_STREAM = MediaType.parse("application/octet-stream");
 
@@ -69,7 +71,7 @@ public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
 
             doPost(file, url, codeBase.getFingerprint().getSha256());
 
-            log.debug("Uploaded {} to {}", file, url);
+            log.debug("Uploaded {} of code base data to {}", LogUtil.humanReadableByteCount(file.length()), url);
         } catch (IOException e) {
             throw new CodekvastPublishingException("Cannot upload code base to " + url, e);
         } finally {

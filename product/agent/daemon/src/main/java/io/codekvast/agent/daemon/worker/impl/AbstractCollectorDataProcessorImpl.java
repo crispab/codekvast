@@ -180,8 +180,6 @@ public abstract class AbstractCollectorDataProcessorImpl implements CollectorDat
         FileUtils.deleteAllConsumedInvocationDataFiles(jvmState.getInvocationsFile());
 
         // For debugging...
-        codeBase.writeSignaturesToDisk();
-
         if (unrecognized > 0) {
             log.warn("{} recognized, {} overridden, {} unrecognized and {} ignored method invocations applied", recognized, overridden,
                      unrecognized, ignored);

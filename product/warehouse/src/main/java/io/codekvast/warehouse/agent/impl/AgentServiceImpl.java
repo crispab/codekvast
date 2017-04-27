@@ -80,28 +80,27 @@ public class AgentServiceImpl implements AgentService {
             return null;
         }
 
-        File result = doSaveInputStream(licenseKey, inputStream, "codebase-");
+        File result = doSaveInputStream(inputStream, "codebase-");
         codeBaseFingerprints.add(codeBaseFingerprint);
         return result;
     }
 
     @Override
-    public File saveInvocationDataPublication(String licenseKey, String codeBaseFingerprint, InputStream inputStream) throws LicenseViolationException, IOException {
+    public File saveInvocationDataPublication(String licenseKey, String codeBaseFingerprint, InputStream inputStream)
+        throws LicenseViolationException, IOException {
         checkLicense(licenseKey);
 
-        return doSaveInputStream(licenseKey, inputStream, "invocations-");
+        return doSaveInputStream(inputStream, "invocations-");
     }
 
-    private File doSaveInputStream(String licenseKey, InputStream inputStream, String prefix) throws IOException {
-        checkLicense(licenseKey);
-
+    private File doSaveInputStream(InputStream inputStream, String prefix) throws IOException {
         createDirectory(settings.getImportPath());
 
         File result = File.createTempFile(prefix, ".ser", settings.getImportPath());
         result.delete();
         Files.copy(inputStream, result.toPath());
 
-        log.debug("Saved uploaded file to {}", result);
+        log.debug("Saved uploaded publication to {}", result);
         return result;
     }
 

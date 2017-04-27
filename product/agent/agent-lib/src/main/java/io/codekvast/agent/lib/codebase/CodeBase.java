@@ -25,10 +25,7 @@ import io.codekvast.agent.lib.model.v1.CodeBaseEntry;
 import io.codekvast.agent.lib.model.v1.CodeBasePublication;
 import io.codekvast.agent.lib.util.ComputerID;
 import io.codekvast.agent.lib.util.Constants;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.SneakyThrows;
-import lombok.ToString;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import io.codekvast.agent.lib.config.CollectorConfig;
 import io.codekvast.agent.lib.model.v1.MethodSignature;
@@ -48,7 +45,7 @@ import java.util.regex.PatternSyntaxException;
  *
  * @author olle.hallin@crisp.se
  */
-@SuppressWarnings("ClassWithTooManyFields")
+@SuppressWarnings({"ClassWithTooManyFields", "ClassWithTooManyMethods"})
 @ToString(of = "codeBaseFiles", includeFieldNames = false)
 @EqualsAndHashCode(of = "fingerprint")
 @Slf4j
@@ -56,11 +53,6 @@ public class CodeBase {
 
     private static final String ADDED_PATTERNS_FILENAME = "/io/codekvast/byte-code-added-methods.txt";
     private static final String ENHANCED_PATTERNS_FILENAME = "/io/codekvast/byte-code-enhanced-methods.txt";
-
-    private static final String SIGNATURES_SECTION = "# Signatures:";
-    private static final String OVERRIDDEN_SIGNATURES_SECTION = "# Overridden signatures:";
-    static final String RAW_STRANGE_SIGNATURES_SECTION = "# Raw strange signatures:";
-    private static final String NORMALIZED_STRANGE_SIGNATURES_SECTION = "# Normalized strange signatures:";
 
     private final List<File> codeBaseFiles;
 
@@ -98,7 +90,7 @@ public class CodeBase {
 
     private List<Pattern> readByteCodePatternsFrom(String resourceName) {
         List<Pattern> result = new ArrayList<>();
-        log.debug("Reading byte code patterns from {}", resourceName);
+        log.trace("Reading byte code patterns from {}", resourceName);
         try {
             LineNumberReader reader = new LineNumberReader(
                 new BufferedReader(new InputStreamReader(getClass().getResource(resourceName).openStream(), Charset.forName("UTF-8"))));
@@ -246,59 +238,6 @@ public class CodeBase {
         }
     }
 
-    public void writeSignaturesToDisk() {
-        File file = config.getSignatureFile(config.getAppName());
-        PrintWriter out = null;
-        try {
-            File directory = file.getAbsoluteFile().getParentFile();
-            directory.mkdirs();
-
-            File tmpFile = File.createTempFile("codekvast", ".tmp", directory);
-            out = new PrintWriter(tmpFile, "UTF-8");
-
-            out.println(SIGNATURES_SECTION);
-            for (String signature : signatures.keySet()) {
-                out.printf("%s %s%n", statuses.get(signature), signature);
-            }
-
-            out.println();
-            out.println("------------------------------------------------------------------------------------------------");
-            out.println(OVERRIDDEN_SIGNATURES_SECTION);
-            out.println("# child() -> base()");
-            for (Map.Entry<String, String> entry : overriddenSignatures.entrySet()) {
-                out.printf("%s -> %s%n", entry.getKey(), entry.getValue());
-            }
-
-            out.println();
-            out.println("------------------------------------------------------------------------------------------------");
-            out.println(RAW_STRANGE_SIGNATURES_SECTION);
-            for (String signature : strangeSignatures) {
-                out.println(signature);
-            }
-
-            out.println();
-            out.println("------------------------------------------------------------------------------------------------");
-            out.println(NORMALIZED_STRANGE_SIGNATURES_SECTION);
-            for (String signature : strangeSignatures) {
-                String normalized = normalizeSignature(signature);
-                if (normalized != null) {
-                    out.println(normalized);
-                }
-            }
-
-            if (!tmpFile.renameTo(file)) {
-                log.error("Cannot rename {} to {}", tmpFile.getAbsolutePath(), file.getAbsolutePath());
-                tmpFile.delete();
-            }
-        } catch (IOException e) {
-            log.error("Cannot create " + file, e);
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-        }
-    }
-
     public boolean hasSignature(String signature) {
         return signatures.containsKey(signature);
     }
@@ -338,6 +277,18 @@ public class CodeBase {
             .hostName(Constants.HOST_NAME)
             .jvmUuid(Constants.JVM_UUID)
             .publishedAtMillis(System.currentTimeMillis())
+            .strangeSignatures(new TreeSet<>(strangeSignatures))
+            .normalizedStrangeSignatures(getNormalizedStrangeSignatures())
+            .overriddenSignatures(new HashMap<>(overriddenSignatures))
             .build();
     }
+
+    private Collection<String> getNormalizedStrangeSignatures() {
+        Set<String> result = new TreeSet<>();
+        for (String s : strangeSignatures) {
+            result.add(normalizeSignature(s));
+        }
+        return result;
+    }
+
 }

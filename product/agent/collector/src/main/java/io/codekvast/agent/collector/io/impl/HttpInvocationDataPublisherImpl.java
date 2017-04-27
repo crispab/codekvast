@@ -27,6 +27,7 @@ import io.codekvast.agent.lib.model.Endpoints;
 import io.codekvast.agent.lib.model.v1.InvocationDataPublication;
 import io.codekvast.agent.lib.util.Constants;
 import io.codekvast.agent.lib.util.FileUtils;
+import io.codekvast.agent.lib.util.LogUtil;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 
@@ -67,19 +68,19 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
         throws CodekvastPublishingException {
 
         String url = getConfig().getInvocationDataUploadEndpoint();
-        File tmpFile = null;
+        File file = null;
         try {
-            tmpFile = FileUtils.serializeToFile(createPublication(recordingIntervalStartedAtMillis, invocations),
+            file = FileUtils.serializeToFile(createPublication(recordingIntervalStartedAtMillis, invocations),
                                                 "codekvast-invocations-",
                                                 ".ser");
 
-            doPost(tmpFile, url, getCodeBaseFingerprint().getSha256());
+            doPost(file, url, getCodeBaseFingerprint().getSha256());
 
-            log.debug("Uploaded {} to {}", tmpFile, url);
+            log.debug("Uploaded {} of invocation data to {}", LogUtil.humanReadableByteCount(file.length()), url);
         } catch (Exception e) {
             throw new CodekvastPublishingException("Cannot upload invocation data to " + url, e);
         } finally {
-            FileUtils.safeDelete(tmpFile);
+            FileUtils.safeDelete(file);
         }
 
     }

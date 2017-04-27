@@ -52,7 +52,7 @@ public class CodeBaseTest {
 
         boolean inStrangeSignaturesSection = false;
         for (String signature : signatures) {
-            if (signature.equals(CodeBase.RAW_STRANGE_SIGNATURES_SECTION)) {
+            if (signature.equals("# Raw strange signatures:")) {
                 inStrangeSignaturesSection = true;
             } else if (inStrangeSignaturesSection) {
                 String normalized = codeBase.normalizeSignature(signature);

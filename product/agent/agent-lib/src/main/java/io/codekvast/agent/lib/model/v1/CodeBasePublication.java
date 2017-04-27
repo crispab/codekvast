@@ -25,6 +25,7 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Output of the CodeBasePublisher implementations.
@@ -40,6 +41,10 @@ public class CodeBasePublication implements Serializable {
     @NonNull
     private Collection<CodeBaseEntry> entries;
     @NonNull
+    private Collection<String> normalizedStrangeSignatures;
+    @NonNull
+    private Collection<String> strangeSignatures;
+    @NonNull
     private String appName;
     @NonNull
     private String appVersion;
@@ -53,5 +58,7 @@ public class CodeBasePublication implements Serializable {
     private String hostName;
     @NonNull
     private String jvmUuid;
+    @NonNull
+    private Map<String, String> overriddenSignatures;
     private long publishedAtMillis;
 }
