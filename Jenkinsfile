@@ -17,40 +17,40 @@ node {
                 }
 
                 stage('Java unit test') {
-                    sh """
-                    ./gradlew test
-
-                    # Prevent junit publisher to fail if Gradle has skipped the test
-                    find . -name '*.xml' | grep '/build/test-results/test/' | xargs touch
-                    """
-                    junit '**/build/test-results/test/*.xml'
+                    try {
+                        sh './gradlew test'
+                    } finally {
+                        // Prevent junit publisher to fail if Gradle has skipped the test
+                        sh "find . -name '*.xml' | grep '/build/test-results/test/' | xargs touch"
+                        junit '**/build/test-results/test/*.xml'
+                    }
                 }
 
                 stage('TypeScript unit test') {
-                    sh """
-                    ./gradlew :product:warehouse:frontendTest
+                    try {
+                        sh './gradlew frontendTest'
+                    } finally {
+                        // Prevent junit publisher to fail if Gradle has skipped the test
+                        sh "find . -name '*.xml' | grep '/build/test-results/frontendTest/' | xargs touch"
+                        junit '**/build/test-results/frontendTest/*.xml'
 
-                    # Prevent junit publisher to fail if Gradle has skipped the test
-                    find . -name '*.xml' | grep '/build/test-results/frontendTest/' | xargs touch
-                    """
-                    junit '**/build/test-results/frontendTest/*.xml'
-
-                    publishHTML([allowMissing: true,
-                        alwaysLinkToLastBuild: true,
-                        keepAll: true,
-                        reportDir: 'product/warehouse/build/reports/frontend-coverage',
-                        reportFiles: 'index.html',
-                        reportName: 'Frontend Coverage Report'])
+                        publishHTML([allowMissing: true,
+                            alwaysLinkToLastBuild: true,
+                            keepAll: true,
+                            reportDir: 'product/warehouse/build/reports/frontend-coverage',
+                            reportFiles: 'index.html',
+                            reportName: 'Frontend Coverage Report'])
+                    }
                 }
 
                 stage('Integration test') {
-                    sh """
-                    ./gradlew integrationTest
-
-                    # Prevent junit publisher to fail if Gradle has skipped the test
-                    find . -name '*.xml' | grep '/build/test-results/integrationTest/' | xargs touch
-                    """
-                    junit '**/build/test-results/integrationTest/*.xml'
+                    try {
+                        sh './gradlew integrationTest'
+                    } finally {
+                        // Prevent junit publisher to fail if Gradle has skipped the test
+                        sh "find . -name '*.xml' | grep '/build/test-results/integrationTest/' | xargs touch"
+                        junit '**/build/test-results/integrationTest/*.xml'
+                    }
                 }
 
                 stage('Build Docker image') {
@@ -58,13 +58,13 @@ node {
                 }
 
                 stage('System test') {
-                    sh """
-                    ./gradlew systemTest
-
-                    # Prevent junit publisher to fail if Gradle has skipped the test
-                    find . -name '*.xml' | grep '/build/test-results/systemTest/' | xargs touch
-                    """
-                    junit '**/build/test-results/systemTest/*.xml'
+                    try {
+                        sh './gradlew systemTest'
+                    } finally {
+                        // Prevent junit publisher to fail if Gradle has skipped the test
+                        sh "find . -name '*.xml' | grep '/build/test-results/systemTest/' | xargs touch"
+                        junit '**/build/test-results/systemTest/*.xml'
+                    }
                 }
 
                 stage('Documentation & reports') {
