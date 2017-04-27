@@ -23,6 +23,8 @@ package io.codekvast.agent.lib.model.v1;
 
 import lombok.*;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Set;
 
@@ -38,28 +40,54 @@ import java.util.Set;
 @Setter(AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
 public class InvocationDataPublication implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     @NonNull
+    @Size(min = 1)
     private String appName;
+
     @NonNull
+    @Size(min = 1)
     private String appVersion;
+
     @NonNull
+    @Size(min = 1)
     private String codeBaseFingerprint;
+
     @NonNull
+    @Size(min = 1)
     private String collectorVersion;
+
     @NonNull
+    @Size(min = 1)
     private String computerId;
+
     @NonNull
     private String environment;
+
     @NonNull
+    @Size(min = 1)
     private String hostName;
+
     @NonNull
     Set<String> invocations;
+
+    @Min(1_490_000_000_000L)
     private long jvmStartedAtMillis;
+
     @NonNull
+    @Size(min = 1)
     private String jvmUuid;
+
+    @Min(1)
     private int publicationCount;
+
+    @Min(1_490_000_000_000L)
     private long publishedAtMillis;
+
+    @Min(1_490_000_000_000L)
     private long recordingIntervalStartedAtMillis;
+
     @NonNull
     private String tags;
 

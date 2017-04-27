@@ -23,6 +23,8 @@ package io.codekvast.agent.lib.model.v1;
 
 import lombok.*;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
@@ -39,32 +41,57 @@ import java.util.Map;
 @Setter(AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
 public class CodeBasePublication implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     @NonNull
+    @Size(min = 1)
     private String appName;
+
     @NonNull
+    @Size(min = 1)
     private String appVersion;
+
     @NonNull
+    @Size(min = 1)
     private String codeBaseFingerprint;
+
     @NonNull
+    @Size(min = 1)
     private String collectorVersion;
+
     @NonNull
+    @Size(min = 1)
     private String computerId;
+
     @NonNull
     private Collection<CodeBaseEntry> entries;
+
     @NonNull
     private String environment;
+
     @NonNull
+    @Size(min = 1)
     private String hostName;
+
+    @Min(1_490_000_000_000L)
     private long jvmStartedAtMillis;
+
     @NonNull
+    @Size(min = 1)
     private String jvmUuid;
+
     @NonNull
     private Collection<String> normalizedStrangeSignatures;
+
     @NonNull
     private Map<String, String> overriddenSignatures;
+
+    @Min(1_490_000_000_000L)
     private long publishedAtMillis;
+
     @NonNull
     private Collection<String> strangeSignatures;
+
     @NonNull
     private String tags;
 

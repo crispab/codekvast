@@ -21,21 +21,23 @@
  */
 package io.codekvast.warehouse.agent.impl;
 
-import io.codekvast.warehouse.bootstrap.CodekvastSettings;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import io.codekvast.agent.lib.model.v1.rest.GetConfigRequest1;
 import io.codekvast.agent.lib.model.v1.rest.GetConfigResponse1;
 import io.codekvast.warehouse.agent.AgentService;
 import io.codekvast.warehouse.agent.LicenseViolationException;
+import io.codekvast.warehouse.bootstrap.CodekvastSettings;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.HashSet;
 import java.util.Set;
 
-import static java.lang.String.format;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 /**
  * Handler for agent REST requests.
@@ -100,8 +102,7 @@ public class AgentServiceImpl implements AgentService {
         createDirectory(settings.getImportPath());
 
         File result = File.createTempFile(prefix, ".ser", settings.getImportPath());
-        result.delete();
-        Files.copy(inputStream, result.toPath());
+        Files.copy(inputStream, result.toPath(), REPLACE_EXISTING);
 
         log.debug("Saved uploaded publication to {}", result);
         return result;

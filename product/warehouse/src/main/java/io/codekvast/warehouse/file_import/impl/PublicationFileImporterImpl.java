@@ -30,7 +30,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import java.io.*;
+import java.util.Set;
 
 /**
  * Importer for serialized publications.
@@ -45,12 +48,15 @@ public class PublicationFileImporterImpl implements PublicationFileImporter {
 
     private final CodeBaseImporter codeBaseImporter;
     private final InvocationDataImporter invocationDataImporter;
+    private final Validator validator;
 
     @Inject
     public PublicationFileImporterImpl(CodeBaseImporter codeBaseImporter,
-                                       InvocationDataImporter invocationDataImporter) {
+                                       InvocationDataImporter invocationDataImporter,
+                                       Validator validator) {
         this.codeBaseImporter = codeBaseImporter;
         this.invocationDataImporter = invocationDataImporter;
+        this.validator = validator;
     }
 
     @Override
@@ -61,7 +67,8 @@ public class PublicationFileImporterImpl implements PublicationFileImporter {
             Object object = ois.readObject();
             log.debug("Deserialized a {} in {} ms", object.getClass().getSimpleName(), System.currentTimeMillis() - startedAt);
 
-            return handlePublication(object);
+            return !isValidObject(object) || handlePublication(object);
+
         } catch (ClassNotFoundException | IOException e) {
             log.error("Cannot import " + file, e);
         }
@@ -70,7 +77,6 @@ public class PublicationFileImporterImpl implements PublicationFileImporter {
 
     @SuppressWarnings({"InstanceofConcreteClass", "CastToConcreteClass", "ChainOfInstanceofChecks"})
     private boolean handlePublication(Object object) {
-
         if (object instanceof CodeBasePublication) {
             codeBaseImporter.importPublication((CodeBasePublication) object);
             return true;
@@ -83,6 +89,15 @@ public class PublicationFileImporterImpl implements PublicationFileImporter {
 
         log.warn("Don't know how to handle {}", object.getClass().getSimpleName());
         return false;
+    }
+
+    private boolean isValidObject(Object object) {
+        Set<ConstraintViolation<Object>> violations = validator.validate(object);
+        for (ConstraintViolation<Object> v : violations) {
+            log.error("Invalid {}: {}={}: {}", object.getClass().getSimpleName(), v.getPropertyPath(),
+                      v.getInvalidValue(), v.getMessage());
+        }
+        return violations.isEmpty();
     }
 
 }
