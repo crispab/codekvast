@@ -59,7 +59,7 @@ public class PublicationFileImporterImpl implements PublicationFileImporter {
 
             long startedAt = System.currentTimeMillis();
             Object object = ois.readObject();
-            log.debug("Deserialized {} in {} ms", object.getClass().getSimpleName(), System.currentTimeMillis() - startedAt);
+            log.debug("Deserialized a {} in {} ms", object.getClass().getSimpleName(), System.currentTimeMillis() - startedAt);
 
             return handlePublication(object);
         } catch (ClassNotFoundException | IOException e) {
@@ -80,6 +80,7 @@ public class PublicationFileImporterImpl implements PublicationFileImporter {
             invocationDataImporter.importPublication((InvocationDataPublication) object);
             return true;
         }
+
         log.warn("Don't know how to handle {}", object.getClass().getSimpleName());
         return false;
     }
