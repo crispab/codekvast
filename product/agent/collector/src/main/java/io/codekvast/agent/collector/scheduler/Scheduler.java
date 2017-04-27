@@ -109,12 +109,12 @@ public class Scheduler implements Runnable {
 
     @Override
     public void run() {
+        log.debug("Scheduler invoked");
+
         if (executor.isShutdown()) {
-            log.debug("Shutting down");
+            log.info("Scheduler is shutting down");
             return;
         }
-
-        log.debug("Scheduler invoked");
 
         pollDynamicConfigIfNeeded();
         publishCodeBaseIfNeeded();
@@ -123,7 +123,6 @@ public class Scheduler implements Runnable {
 
     private void pollDynamicConfigIfNeeded() {
         if (pollState.isDueTime()) {
-            log.trace("Polling dynamic config");
             try {
                 dynamicConfig = configPoller.doPoll();
 
