@@ -91,7 +91,7 @@ public class CodeBase {
     public CodeBase(CollectorConfig config) {
         this.config = config;
         this.codeBaseFiles = config.getCodeBaseFiles();
-        this.fingerprint = initUrls();
+        this.fingerprint = calculateFingerprint();
         this.bytecodeAddedPatterns = readByteCodePatternsFrom(ADDED_PATTERNS_FILENAME);
         this.bytecodeEnhancedPatterns = readByteCodePatternsFrom(ENHANCED_PATTERNS_FILENAME);
     }
@@ -182,7 +182,7 @@ public class CodeBase {
         return urls.toArray(new URL[urls.size()]);
     }
 
-    private CodeBaseFingerprint initUrls() {
+    private CodeBaseFingerprint calculateFingerprint() {
         long startedAt = System.currentTimeMillis();
 
         urls = new ArrayList<>();
@@ -205,7 +205,7 @@ public class CodeBase {
 
         CodeBaseFingerprint result = builder.build();
 
-        log.debug("Made fingerprint of code bases at {} in {} ms, fingerprint={}", codeBaseFiles, System.currentTimeMillis() - startedAt,
+        log.debug("Made fingerprint of {} files at {} in {} ms, fingerprint={}", result.getNumFiles(), codeBaseFiles, System.currentTimeMillis() - startedAt,
                   result);
         return result;
     }

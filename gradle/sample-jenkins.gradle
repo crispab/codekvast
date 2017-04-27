@@ -132,8 +132,28 @@ task generateTomcatRunHook {
     outputs.file setenvFile
 
     doLast {
-        def codekvastCollector = file(catalinaEndorsed).listFiles().find { it.name.contains("codekvast") }
-        def aspectjWeaver = file(catalinaEndorsed).listFiles().find { it.name.contains("aspectjweaver") }
+        def codekvastCollector = file(catalinaEndorsed).listFiles().find { it.name.contains('codekvast') }
+        def aspectjWeaver = file(catalinaEndorsed).listFiles().find { it.name.contains('aspectjweaver') }
+        def loggingProperties = file("$buildDir/logging.properties")
+        def logFile = file("$buildDir/log/tomcat.log")
+        logFile.parentFile.mkdirs()
+
+        if (!loggingProperties.exists()) {
+            logger.lifecycle "Creating $loggingProperties ..."
+            loggingProperties.text = """
+handlers = java.util.logging.FileHandler, java.util.logging.ConsoleHandler
+
+java.util.logging.FileHandler.pattern = $logFile
+java.util.logging.FileHandler.formatter = java.util.logging.SimpleFormatter
+java.util.logging.FileHandler.limit = 10000000
+java.util.logging.FileHandler.level = ALL
+
+java.util.logging.ConsoleHandler.level = FINE
+java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter
+
+java.util.logging.SimpleFormatter.format = %1\$tF %1\$tT [%4\$s] %3\$s - %5\$s%6\$s%n
+"""
+        }
 
         println """---------------------------
 codekvastCollector = .${codekvastCollector.absolutePath - projectDir.absolutePath}
@@ -141,6 +161,8 @@ aspectjWeaver = .${aspectjWeaver.absolutePath - projectDir.absolutePath}
 -------------------------"""
         setenvFile.text = """
 CATALINA_OPTS=\"-Dcodekvast.configuration=$generateCodekvastConfig.configFile -javaagent:$codekvastCollector -javaagent:$aspectjWeaver\"
+LOGGING_CONFIG=\"-Djava.util.logging.config.file=$loggingProperties\"
+LOGGING_MANAGER=\"-Djava.util.logging.manager=java.util.logging.LogManager\"
 """
     }
 }

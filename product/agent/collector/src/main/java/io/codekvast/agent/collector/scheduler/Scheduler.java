@@ -101,10 +101,7 @@ public class Scheduler implements Runnable {
         if (dynamicConfig != null) {
             // We have done at least one successful poll
 
-            // Make sure the last data is published...
-            codeBasePublisherState.scheduleNow();
-            publishCodeBaseIfNeeded();
-
+            // Make sure the last invocation data is published...
             invocationDataPublisherState.scheduleNow();
             publishInvocationDataIfNeeded();
         }
@@ -116,6 +113,8 @@ public class Scheduler implements Runnable {
             log.debug("Shutting down");
             return;
         }
+
+        log.debug("Scheduler invoked");
 
         pollDynamicConfigIfNeeded();
         publishCodeBaseIfNeeded();
@@ -171,6 +170,8 @@ public class Scheduler implements Runnable {
 
     private void publishCodeBaseIfNeeded() {
         if (codeBasePublisherState.isDueTime() && dynamicConfig != null) {
+            log.debug("Checking if code base needs to be published...");
+
             try {
                 codeBasePublisher.publishCodeBase();
                 codeBasePublisherState.scheduleNext();
@@ -183,6 +184,8 @@ public class Scheduler implements Runnable {
 
     private void publishInvocationDataIfNeeded() {
         if (invocationDataPublisherState.isDueTime() && dynamicConfig != null) {
+            log.debug("Checking if invocation data needs to be published...");
+
             try {
                 InvocationRegistry.instance.publishInvocationData(invocationDataPublisher);
                 invocationDataPublisherState.scheduleNext();
@@ -252,7 +255,9 @@ public class Scheduler implements Runnable {
         }
 
         boolean isDueTime() {
-            return System.currentTimeMillis() >= nextEventAtMillis;
+            boolean result = System.currentTimeMillis() >= nextEventAtMillis;
+            log.trace("{} is due: {}", name, result);
+            return result;
         }
 
     }
