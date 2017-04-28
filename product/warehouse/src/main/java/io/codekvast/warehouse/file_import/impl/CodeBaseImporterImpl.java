@@ -26,6 +26,7 @@ import io.codekvast.agent.lib.model.v1.CommonPublicationData;
 import io.codekvast.warehouse.file_import.CodeBaseImporter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 
@@ -36,14 +37,15 @@ import javax.inject.Inject;
 @Slf4j
 public class CodeBaseImporterImpl implements CodeBaseImporter {
 
-    private final NewImportDAO importDAO;
+    private final ImportDAO importDAO;
 
     @Inject
-    public CodeBaseImporterImpl(NewImportDAO importDAO) {
+    public CodeBaseImporterImpl(ImportDAO importDAO) {
         this.importDAO = importDAO;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void importPublication(CodeBasePublication publication) {
         log.debug("Importing {}", publication);
 

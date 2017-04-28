@@ -26,7 +26,7 @@ package io.codekvast.warehouse.file_import.impl;
  *
  * @author olle.hallin@crisp.se
  */
-public interface NewImportDAO {
+public interface ImportDAO {
 
     /**
      * Inserts or updates a row in the applications table.

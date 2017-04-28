@@ -22,17 +22,42 @@
 package io.codekvast.warehouse.file_import.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
+import java.sql.Timestamp;
 
 /**
  * @author olle.hallin@crisp.se
  */
 @Component
 @Slf4j
-public class NewImportDAOImpl implements NewImportDAO {
+public class ImportDAOImpl implements ImportDAO {
+
+    private final JdbcTemplate jdbcTemplate;
+
+    @Inject
+    public ImportDAOImpl(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
     @Override
     public long importApplication(String name, String version, long startedAtMillis) {
-        // TODO: implement
-        return 0;
+        Timestamp createAt = new Timestamp(startedAtMillis);
+
+        int updated = jdbcTemplate.update("UPDATE applications SET createdAt = LEAST(createdAt, ?) " +
+                                              "WHERE name = ? AND version = ?", createAt, name, version);
+        if (updated != 0) {
+            log.debug("Updated application {} {}", name, version);
+        } else {
+            jdbcTemplate.update("INSERT INTO applications(name, version, createdAt) VALUES (?, ?, ?)",
+                                name, version, createAt);
+            log.debug("Inserted application {} {} {}", name, version, createAt);
+        }
+
+        Long result = jdbcTemplate.queryForObject("SELECT id FROM applications WHERE name = ? AND version = ?", Long.class, name, version);
+        log.debug("application.id={}", result);
+        return result;
     }
 }
