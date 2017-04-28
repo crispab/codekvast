@@ -24,6 +24,7 @@ package io.codekvast.warehouse.file_import.impl;
 import io.codekvast.agent.lib.model.v1.CodeBaseEntry;
 import io.codekvast.agent.lib.model.v1.CommonPublicationData;
 import io.codekvast.agent.lib.model.v1.MethodSignature;
+import io.codekvast.agent.lib.model.v1.SignatureStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -35,9 +36,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.sql.*;
 import java.time.Instant;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author olle.hallin@crisp.se
@@ -105,13 +104,24 @@ public class ImportDAOImpl implements ImportDAO {
     @Override
     public void importMethods(long appId, long jvmId, long publishedAtMillis, Collection<CodeBaseEntry> entries) {
         Map<String, Long> existingMethods = getExistingMethods();
+        Set<Long> existingInvocations = getExistingInvocations(appId, jvmId);
 
         importNewMethods(publishedAtMillis, entries, existingMethods);
-        importMissingInvocations(appId, jvmId, entries, existingMethods);
+        importMissingInvocations(appId, jvmId, entries, existingMethods, existingInvocations);
     }
 
-    private void importMissingInvocations(long appId, long jvmId, Collection<CodeBaseEntry> entries, Map<String, Long> existingMethods) {
-        // TODO implement
+    private void importMissingInvocations(long appId, long jvmId, Collection<CodeBaseEntry> entries, Map<String, Long> existingMethods,
+                                          Set<Long> existingInvocations) {
+        long startedAtMillis = System.currentTimeMillis();
+        int importCount = 0;
+        for (CodeBaseEntry entry : entries) {
+            long methodId = existingMethods.get(entry.getSignature());
+            if (!existingInvocations.contains(methodId)) {
+                jdbcTemplate.update(new InsertInvocationStatement(appId, jvmId, methodId, entry.getSignatureStatus()));
+                importCount += 1;
+            }
+        }
+        log.debug("Imported {} invocations in {} ms", importCount, System.currentTimeMillis() - startedAtMillis);
     }
 
     private void importNewMethods(long publishedAtMillis, Collection<CodeBaseEntry> entries,
@@ -133,6 +143,20 @@ public class ImportDAOImpl implements ImportDAO {
         jdbcTemplate.query("SELECT id, signature FROM methods",
                            rs -> { result.put(rs.getString(2), rs.getLong(1)); });
         return result;
+    }
+
+    private Set<Long> getExistingInvocations(long appId, long jvmId) {
+        Set<Long> result = new HashSet<>();
+        jdbcTemplate.query("SELECT methodId FROM invocations WHERE applicationId = ? AND jvmId = ?",
+                           rs -> { result.add(rs.getLong(1)); },
+                           appId, jvmId);
+        return result;
+    }
+
+    private Long doInsertRow(PreparedStatementCreator psc) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(psc, keyHolder);
+        return keyHolder.getKey().longValue();
     }
 
     @RequiredArgsConstructor
@@ -165,10 +189,26 @@ public class ImportDAOImpl implements ImportDAO {
     }
 
 
-    private Long doInsertRow(PreparedStatementCreator psc) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(psc, keyHolder);
-        return keyHolder.getKey().longValue();
-    }
+    @RequiredArgsConstructor
+    private class InsertInvocationStatement implements PreparedStatementCreator {
+        private final long appId;
+        private final long jvmId;
+        private final long methodId;
+        private final SignatureStatus status;
 
+        @Override
+        public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+            PreparedStatement ps = con.prepareStatement("INSERT INTO invocations(applicationId, jvmId, methodId, status, invokedAtMillis, invocationCount) " +
+                                                            "VALUES(?, ?, ?, ?, ?, ?)",
+                                                        Statement.RETURN_GENERATED_KEYS);
+            int column = 0;
+            ps.setLong(++column, appId);
+            ps.setLong(++column, jvmId);
+            ps.setLong(++column, methodId);
+            ps.setString(++column, status.name());
+            ps.setLong(++column, 0L);
+            ps.setLong(++column, 0L);
+            return ps;
+        }
+    }
 }
