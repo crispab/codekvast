@@ -53,9 +53,10 @@ public interface ImportDAO {
      * Inserts missing rows into the database's methods and invocations tables.
      * Does never update existing rows.
      *
-     * @param appId   The application ID returned by {@link #importApplication(CommonPublicationData)}
-     * @param jvmId   The JVM ID returned by {@link #importJvm(CommonPublicationData)}
-     * @param entries The collection of code base entries to store.
+     * @param appId             The application ID returned by {@link #importApplication(CommonPublicationData)}
+     * @param jvmId             The JVM ID returned by {@link #importJvm(CommonPublicationData)}
+     * @param publishedAtMillis The timestamp the publication was published.
+     * @param entries           The collection of code base entries to store.
      */
-    void importMethods(long appId, long jvmId, Collection<CodeBaseEntry> entries);
+    void importMethods(long appId, long jvmId, long publishedAtMillis, Collection<CodeBaseEntry> entries);
 }
