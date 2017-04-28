@@ -21,12 +21,14 @@
  */
 package io.codekvast.warehouse.file_import.impl;
 
+import io.codekvast.agent.lib.model.v1.CommonPublicationData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.sql.Timestamp;
+import java.time.Instant;
 
 /**
  * @author olle.hallin@crisp.se
@@ -58,6 +60,34 @@ public class ImportDAOImpl implements ImportDAO {
 
         Long result = jdbcTemplate.queryForObject("SELECT id FROM applications WHERE name = ? AND version = ?", Long.class, name, version);
         log.debug("application.id={}", result);
+        return result;
+    }
+
+    @Override
+    public long importJvm(CommonPublicationData data) {
+
+        Timestamp dumpedAt = new Timestamp(data.getPublishedAtMillis());
+
+        int updated = jdbcTemplate.update("UPDATE jvms SET dumpedAt = ? " +
+                                              "WHERE uuid = ?",
+                                          dumpedAt, data.getJvmUuid());
+        if (updated != 0) {
+            log.debug("Updated JVM {}", data.getJvmUuid());
+        } else {
+            jdbcTemplate.update(
+                "INSERT INTO jvms(uuid, startedAt, dumpedAt, collectorResolutionSeconds, methodVisibility, packages, excludePackages, " +
+                    "environment, collectorComputerId, collectorHostname, collectorVersion, collectorVcsId, tags) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                data.getJvmUuid(), new Timestamp(data.getJvmStartedAtMillis()), dumpedAt, 0, data.getMethodVisibility(),
+                data.getPackages(), data.getExcludePackages(), data.getEnvironment(), data.getComputerId(),
+                data.getHostName(), data.getCollectorVersion(), "vcsId", data.getTags());
+
+            log.debug("Inserted jvm {} started at {}", data.getJvmUuid(), Instant.ofEpochMilli(data.getJvmStartedAtMillis()));
+        }
+
+        Long result = jdbcTemplate.queryForObject("SELECT id FROM jvms WHERE uuid = ?", Long.class, data.getJvmUuid());
+
+        log.debug("jvm.id={}", result);
         return result;
     }
 }
