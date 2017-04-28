@@ -21,6 +21,7 @@
  */
 package io.codekvast.warehouse.file_import.impl;
 
+import io.codekvast.agent.lib.model.v1.CodeBaseEntry;
 import io.codekvast.agent.lib.model.v1.CommonPublicationData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Collection;
 
 /**
  * @author olle.hallin@crisp.se
@@ -45,8 +47,10 @@ public class ImportDAOImpl implements ImportDAO {
     }
 
     @Override
-    public long importApplication(String name, String version, long startedAtMillis) {
-        Timestamp createAt = new Timestamp(startedAtMillis);
+    public long importApplication(CommonPublicationData commonData) {
+        String name = commonData.getAppName();
+        String version = commonData.getAppVersion();
+        Timestamp createAt = new Timestamp(commonData.getJvmStartedAtMillis());
 
         int updated = jdbcTemplate.update("UPDATE applications SET createdAt = LEAST(createdAt, ?) " +
                                               "WHERE name = ? AND version = ?", createAt, name, version);
@@ -89,5 +93,10 @@ public class ImportDAOImpl implements ImportDAO {
 
         log.debug("jvm.id={}", result);
         return result;
+    }
+
+    @Override
+    public void importMethods(long appId, long jvmId, Collection<CodeBaseEntry> entries) {
+        // TODO: implement
     }
 }

@@ -21,7 +21,10 @@
  */
 package io.codekvast.warehouse.file_import.impl;
 
+import io.codekvast.agent.lib.model.v1.CodeBaseEntry;
 import io.codekvast.agent.lib.model.v1.CommonPublicationData;
+
+import java.util.Collection;
 
 /**
  * Interface for importing stuff to the database.
@@ -33,18 +36,26 @@ public interface ImportDAO {
     /**
      * Inserts or updates a row in the applications table.
      *
-     * @param name            The name of the application.
-     * @param version         The version of the application.
-     * @param startedAtMillis The instant this application was started.
-     * @return The primary key of the inserted or updated row.
+     * @param commonData The application data
+     * @return The primary key of the inserted or updated applications row.
      */
-    long importApplication(String name, String version, long startedAtMillis);
+    long importApplication(CommonPublicationData commonData);
 
     /**
      * Inserts or updates a row in the jvms table.
      *
-     * @param commonData      The JVM data
-     * @return The primary key of the inserted or updated row.
+     * @param commonData The JVM data
+     * @return The primary key of the inserted or updated jvms row.
      */
     long importJvm(CommonPublicationData commonData);
+
+    /**
+     * Inserts missing rows into the database's methods and invocations tables.
+     * Does never update existing rows.
+     *
+     * @param appId   The application ID returned by {@link #importApplication(CommonPublicationData)}
+     * @param jvmId   The JVM ID returned by {@link #importJvm(CommonPublicationData)}
+     * @param entries The collection of code base entries to store.
+     */
+    void importMethods(long appId, long jvmId, Collection<CodeBaseEntry> entries);
 }
