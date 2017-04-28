@@ -33,21 +33,46 @@ import java.io.Serializable;
  */
 @Value
 public class CodeBaseEntry implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     /**
      * The normalized signature in String form.
      */
     @NonNull
-    String normalizedSignature;
+    private final String normalizedSignature; // TODO Remove when daemon is dead.
 
     /**
      * The low-level description of the signature.
      */
-    MethodSignature methodSignature;
+    private final MethodSignature methodSignature;
 
     /**
      * The status of the signature. How it was found, if it has been excluded and so on.
      */
     @NonNull
-    SignatureStatus signatureStatus;
+    private final SignatureStatus signatureStatus;
+
+    /**
+     * The visibility of the signature. Package private is coded as 'package-private'.
+     */
+    @NonNull
+    private final String visibility;
+
+    /**
+     * The signature.
+     */
+    @NonNull
+    private final String signature;
+
+    public CodeBaseEntry(String normalizedSignature, MethodSignature methodSignature, SignatureStatus signatureStatus) {
+        this.normalizedSignature = normalizedSignature;
+        this.methodSignature = methodSignature;
+        this.signatureStatus = signatureStatus;
+
+        int pos = normalizedSignature.indexOf(" ");
+        assert pos > 0;
+
+        this.visibility = normalizedSignature.substring(0, pos);
+        this.signature = normalizedSignature.substring(pos + 1);
+    }
 }

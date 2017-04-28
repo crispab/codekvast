@@ -26,11 +26,8 @@ import io.codekvast.agent.lib.model.v1.CommonPublicationData;
 import io.codekvast.agent.lib.model.v1.MethodSignature;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
@@ -107,32 +104,40 @@ public class ImportDAOImpl implements ImportDAO {
 
     @Override
     public void importMethods(long appId, long jvmId, long publishedAtMillis, Collection<CodeBaseEntry> entries) {
-        long startedAt = System.currentTimeMillis();
+        Map<String, Long> existingMethods = getExistingMethods();
+
+        importNewMethods(publishedAtMillis, entries, existingMethods);
+        importMissingInvocations(appId, jvmId, entries, existingMethods);
+    }
+
+    private void importMissingInvocations(long appId, long jvmId, Collection<CodeBaseEntry> entries, Map<String, Long> existingMethods) {
+        // TODO implement
+    }
+
+    private void importNewMethods(long publishedAtMillis, Collection<CodeBaseEntry> entries,
+                                  Map<String, Long> existingMethods) {
+        long startedAtMillis = System.currentTimeMillis();
         int importCount = 0;
-
-        Map<String, Long> existingMethods = new HashMap<>();
-
-        jdbcTemplate.query("SELECT id, signature FROM methods",
-                           rs -> { existingMethods.put(rs.getString(2), rs.getLong(1)); });
-
         for (CodeBaseEntry entry : entries) {
-            int spacePos = entry.getNormalizedSignature().indexOf(' ');
-            String visibility = entry.getNormalizedSignature().substring(0, spacePos);
-            String signature = entry.getNormalizedSignature().substring(spacePos + 1);
-
+            String signature = entry.getSignature();
             if (!existingMethods.containsKey(signature)) {
-                existingMethods.put(signature, doInsertRow(new InsertMethodStatement(publishedAtMillis, visibility, signature, entry)));
+                existingMethods.put(signature, doInsertRow(new InsertMethodStatement(publishedAtMillis, entry)));
                 importCount += 1;
             }
         }
-        log.debug("Imported {} methods in [} ms", importCount, System.currentTimeMillis() - startedAt);
+        log.debug("Imported {} methods in {} ms", importCount, System.currentTimeMillis() - startedAtMillis);
+    }
+
+    private Map<String, Long> getExistingMethods() {
+        Map<String, Long> result = new HashMap<>();
+        jdbcTemplate.query("SELECT id, signature FROM methods",
+                           rs -> { result.put(rs.getString(2), rs.getLong(1)); });
+        return result;
     }
 
     @RequiredArgsConstructor
     private static class InsertMethodStatement implements PreparedStatementCreator {
         private final long publishedAtMillis;
-        private final String visibility;
-        private final String signature;
         private final CodeBaseEntry entry;
 
         @Override
@@ -145,8 +150,8 @@ public class ImportDAOImpl implements ImportDAO {
                                                         Statement.RETURN_GENERATED_KEYS);
             int column = 0;
             MethodSignature method = entry.getMethodSignature();
-            ps.setString(++column, visibility);
-            ps.setString(++column, signature);
+            ps.setString(++column, entry.getVisibility());
+            ps.setString(++column, entry.getSignature());
             ps.setTimestamp(++column, new Timestamp(publishedAtMillis));
             ps.setString(++column, method.getDeclaringType());
             ps.setString(++column, method.getExceptionTypes());
