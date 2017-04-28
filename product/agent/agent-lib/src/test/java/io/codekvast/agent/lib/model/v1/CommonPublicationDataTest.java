@@ -1,5 +1,7 @@
 package io.codekvast.agent.lib.model.v1;
 
+import io.codekvast.agent.lib.config.CollectorConfig;
+import io.codekvast.agent.lib.config.CollectorConfigFactory;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -10,21 +12,14 @@ import static org.junit.Assert.assertThat;
  */
 public class CommonPublicationDataTest {
 
+    private final CollectorConfig config = CollectorConfigFactory.createSampleCollectorConfig();
+
     @Test
     public void should_have_decent_toString() throws Exception {
-        CommonPublicationData data = CommonPublicationData.builder()
-                                                           .appName("appName")
-                                                           .appVersion("appVersion")
-                                                           .codeBaseFingerprint("codeBaseFingerprint")
-                                                           .collectorVersion("collectorVersion")
-                                                           .computerId("computerId")
-                                                           .environment("environment")
-                                                           .hostName("hostName")
-                                                           .jvmUuid("jvmUuid")
-                                                           .sequenceNumber(3)
-                                                           .publishedAtMillis(System.currentTimeMillis())
-                                                           .tags("tags")
-                                                           .build();
+        CommonPublicationData data = CommonPublicationData.getBuilder(config)
+                                                          .codeBaseFingerprint("codeBaseFingerprint")
+                                                          .sequenceNumber(3)
+                                                          .build();
         assertThat(data.toString(), containsString("publishedAt=2"));
     }
 }

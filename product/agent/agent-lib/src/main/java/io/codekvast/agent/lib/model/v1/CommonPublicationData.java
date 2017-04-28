@@ -21,6 +21,8 @@
  */
 package io.codekvast.agent.lib.model.v1;
 
+import io.codekvast.agent.lib.config.CollectorConfig;
+import io.codekvast.agent.lib.util.Constants;
 import lombok.*;
 
 import javax.validation.constraints.Min;
@@ -30,7 +32,7 @@ import java.io.Serializable;
 /**
  * @author olle.hallin@crisp.se
  */
-@SuppressWarnings({"ClassWithTooManyFields", "ClassWithTooManyMethods"})
+@SuppressWarnings({"ClassWithTooManyFields", "ClassWithTooManyMethods", "OverlyComplexClass"})
 @Data
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -64,6 +66,10 @@ public class CommonPublicationData implements Serializable {
 
     @NonNull
     @Size(min = 1)
+    private String excludePackages;
+
+    @NonNull
+    @Size(min = 1)
     private String hostName;
 
     @Min(1_490_000_000_000L)
@@ -72,6 +78,14 @@ public class CommonPublicationData implements Serializable {
     @NonNull
     @Size(min = 1)
     private String jvmUuid;
+
+    @NonNull
+    @Size(min = 1)
+    private String methodVisibility;
+
+    @NonNull
+    @Size(min = 1)
+    private String packages;
 
     @Min(1_490_000_000_000L)
     private long publishedAtMillis;
@@ -92,4 +106,20 @@ public class CommonPublicationData implements Serializable {
             publishedAtMillis);
     }
 
+    public static CommonPublicationDataBuilder getBuilder(CollectorConfig config) {
+        return builder()
+            .appName(config.getAppName())
+            .appVersion(config.getResolvedAppVersion())
+            .collectorVersion(Constants.COLLECTOR_VERSION)
+            .computerId(Constants.COMPUTER_ID)
+            .environment(config.getEnvironment())
+            .excludePackages(config.getExcludePackages())
+            .hostName(Constants.HOST_NAME)
+            .jvmStartedAtMillis(Constants.JVM_STARTED_AT_MILLIS)
+            .jvmUuid(Constants.JVM_UUID)
+            .methodVisibility(config.getMethodVisibility())
+            .packages(config.getPackages())
+            .publishedAtMillis(System.currentTimeMillis())
+            .tags(config.getTags());
+    }
 }

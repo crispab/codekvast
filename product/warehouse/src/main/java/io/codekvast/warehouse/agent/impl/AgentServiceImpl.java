@@ -34,8 +34,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.HashSet;
-import java.util.Set;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
@@ -48,7 +46,6 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 @Slf4j
 public class AgentServiceImpl implements AgentService {
 
-    private final Set<String> codeBaseFingerprints = new HashSet<>();
     private final CodekvastSettings settings;
 
     @Inject
@@ -80,14 +77,7 @@ public class AgentServiceImpl implements AgentService {
         throws LicenseViolationException, IOException {
         checkLicense(licenseKey);
 
-        if (codeBaseFingerprints.contains(codeBaseFingerprint)) {
-            log.warn("Codebase with fingerprint {} already uploaded", codeBaseFingerprint);
-            return null;
-        }
-
-        File result = doSaveInputStream(inputStream, "codebase-");
-        codeBaseFingerprints.add(codeBaseFingerprint);
-        return result;
+        return doSaveInputStream(inputStream, "codebase-");
     }
 
     @Override

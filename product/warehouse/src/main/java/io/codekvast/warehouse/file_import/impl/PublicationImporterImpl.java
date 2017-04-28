@@ -25,7 +25,7 @@ import io.codekvast.agent.lib.model.v1.CodeBasePublication;
 import io.codekvast.agent.lib.model.v1.InvocationDataPublication;
 import io.codekvast.warehouse.file_import.CodeBaseImporter;
 import io.codekvast.warehouse.file_import.InvocationDataImporter;
-import io.codekvast.warehouse.file_import.PublicationFileImporter;
+import io.codekvast.warehouse.file_import.PublicationImporter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -38,22 +38,24 @@ import java.util.Set;
 /**
  * Importer for serialized publications.
  *
+ * It deserializes the object and dispatches to the specialized importer.
+ *
  * @author olle.hallin@crisp.se
  * @see io.codekvast.agent.lib.model.v1.CodeBasePublication
  * @see io.codekvast.agent.lib.model.v1.InvocationDataPublication
  */
 @Service
 @Slf4j
-public class PublicationFileImporterImpl implements PublicationFileImporter {
+public class PublicationImporterImpl implements PublicationImporter {
 
     private final CodeBaseImporter codeBaseImporter;
     private final InvocationDataImporter invocationDataImporter;
     private final Validator validator;
 
     @Inject
-    public PublicationFileImporterImpl(CodeBaseImporter codeBaseImporter,
-                                       InvocationDataImporter invocationDataImporter,
-                                       Validator validator) {
+    public PublicationImporterImpl(CodeBaseImporter codeBaseImporter,
+                                   InvocationDataImporter invocationDataImporter,
+                                   Validator validator) {
         this.codeBaseImporter = codeBaseImporter;
         this.invocationDataImporter = invocationDataImporter;
         this.validator = validator;

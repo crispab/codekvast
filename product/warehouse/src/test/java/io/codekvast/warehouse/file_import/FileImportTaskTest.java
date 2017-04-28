@@ -29,7 +29,7 @@ public class FileImportTaskTest {
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Mock
-    private PublicationFileImporter importer;
+    private PublicationImporter importer;
 
     private CodekvastSettings settings;
 

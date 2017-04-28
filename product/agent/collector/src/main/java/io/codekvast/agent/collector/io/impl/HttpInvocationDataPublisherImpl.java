@@ -110,20 +110,11 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
     private InvocationDataPublication createPublication(long recordingIntervalStartedAtMillis, Set<String> invocations) {
 
         return InvocationDataPublication.builder()
-                                        .commonData(CommonPublicationData.builder()
-                                                                         .appName(getConfig().getAppName())
-                                                                         .appVersion(getConfig().getResolvedAppVersion())
-                                                                         .codeBaseFingerprint(getCodeBaseFingerprint().getSha256())
-                                                                         .collectorVersion(Constants.COLLECTOR_VERSION)
-                                                                         .computerId(Constants.COMPUTER_ID)
-                                                                         .environment(getConfig().getEnvironment())
-                                                                         .hostName(Constants.HOST_NAME)
-                                                                         .jvmStartedAtMillis(Constants.JVM_STARTED_AT_MILLIS)
-                                                                         .jvmUuid(Constants.JVM_UUID)
-                                                                         .sequenceNumber(this.getSequenceNumber())
-                                                                         .publishedAtMillis(System.currentTimeMillis())
-                                                                         .tags(getConfig().getTags())
-                                                                         .build())
+                                        .commonData(CommonPublicationData
+                                                        .getBuilder(getConfig())
+                                                        .codeBaseFingerprint(getCodeBaseFingerprint().getSha256())
+                                                        .sequenceNumber(this.getSequenceNumber())
+                                                        .build())
                                         .recordingIntervalStartedAtMillis(recordingIntervalStartedAtMillis)
                                         .invocations(invocations)
                                         .build();

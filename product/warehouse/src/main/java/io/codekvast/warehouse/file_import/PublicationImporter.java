@@ -26,7 +26,7 @@ import java.io.File;
 /**
  * @author olle.hallin@crisp.se
  */
-public interface PublicationFileImporter {
+public interface PublicationImporter {
 
     /**
      * De-serializes and handles a publication.

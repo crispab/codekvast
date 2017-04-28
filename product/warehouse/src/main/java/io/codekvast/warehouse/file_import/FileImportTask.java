@@ -39,13 +39,13 @@ import java.io.File;
 public class FileImportTask {
 
     private final CodekvastSettings codekvastSettings;
-    private final PublicationFileImporter publicationFileImporter;
+    private final PublicationImporter publicationImporter;
 
     @Inject
-    public FileImportTask(CodekvastSettings codekvastSettings, PublicationFileImporter publicationFileImporter) {
+    public FileImportTask(CodekvastSettings codekvastSettings, PublicationImporter publicationImporter) {
 
         this.codekvastSettings = codekvastSettings;
-        this.publicationFileImporter = publicationFileImporter;
+        this.publicationImporter = publicationImporter;
 
         log.info("Looking for files in {} every {} seconds", codekvastSettings.getImportPath(),
                  codekvastSettings.getImportPathPollIntervalSeconds());
@@ -72,7 +72,7 @@ public class FileImportTask {
                     if (file.isDirectory()) {
                         walkDirectory(file);
                     } else if (file.getName().endsWith(".ser")) {
-                        boolean imported = publicationFileImporter.importPublicationFile(file);
+                        boolean imported = publicationImporter.importPublicationFile(file);
                         if (imported && codekvastSettings.isDeleteImportedFiles()) {
                             deleteFile(file);
                         }
