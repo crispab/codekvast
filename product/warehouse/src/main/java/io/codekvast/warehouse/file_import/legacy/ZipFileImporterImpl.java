@@ -52,12 +52,12 @@ import static java.time.Instant.now;
 @Service
 public class ZipFileImporterImpl implements ZipFileImporter {
 
-    private final ImportDAO importDAO;
+    private final LegacyImportDAO importDAO;
     private final Charset charset = Charset.forName("UTF-8");
     private final ObjectMapper objectMapper;
 
     @Inject
-    public ZipFileImporterImpl(ImportDAO importDAO, ObjectMapper objectMapper) {
+    public ZipFileImporterImpl(LegacyImportDAO importDAO, ObjectMapper objectMapper) {
         this.importDAO = importDAO;
         this.objectMapper = objectMapper;
     }
@@ -69,7 +69,7 @@ public class ZipFileImporterImpl implements ZipFileImporter {
         Instant startedAt = now();
 
         ExportFileMetaInfo metaInfo = null;
-        ImportDAO.ImportContext context = new ImportDAO.ImportContext();
+        LegacyImportDAO.ImportContext context = new LegacyImportDAO.ImportContext();
 
         try (ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)));
              InputStreamReader reader = new InputStreamReader(zipInputStream, charset)) {
@@ -103,11 +103,11 @@ public class ZipFileImporterImpl implements ZipFileImporter {
             }
             if (metaInfo != null) {
                 importDAO.recordFileAsImported(metaInfo,
-                                               ImportDAO.ImportStatistics.builder()
-                                                                         .importFile(file)
-                                                                         .fileSize(humanReadableByteCount(file.length()))
-                                                                         .processingTime(Duration.between(startedAt, now()))
-                                                                         .build());
+                                               LegacyImportDAO.ImportStatistics.builder()
+                                                                               .importFile(file)
+                                                                               .fileSize(humanReadableByteCount(file.length()))
+                                                                               .processingTime(Duration.between(startedAt, now()))
+                                                                               .build());
             }
         } catch (IllegalArgumentException | IOException e) {
             log.error("Cannot import " + file, e);
@@ -140,65 +140,65 @@ public class ZipFileImporterImpl implements ZipFileImporter {
         log.debug("Imported {} {} in {} ms", count, what, Duration.between(startedAt, now()).toMillis());
     }
 
-    private void readApplications(InputStreamReader reader, ImportDAO.ImportContext context) {
+    private void readApplications(InputStreamReader reader, LegacyImportDAO.ImportContext context) {
         doReadCsv(reader, "applications", (String[] columns) -> {
-            ImportDAO.Application app = ImportDAO.Application.builder()
-                                                             .localId(Long.valueOf(columns[0]))
-                                                             .name(columns[1])
-                                                             .version(columns[2])
-                                                             .createdAtMillis(Long.valueOf(columns[3]))
-                                                             .build();
+            LegacyImportDAO.Application app = LegacyImportDAO.Application.builder()
+                                                                         .localId(Long.valueOf(columns[0]))
+                                                                         .name(columns[1])
+                                                                         .version(columns[2])
+                                                                         .createdAtMillis(Long.valueOf(columns[3]))
+                                                                         .build();
 
             return importDAO.saveApplication(app, context);
         });
     }
 
-    private void readMethods(InputStreamReader reader, ImportDAO.ImportContext context) {
+    private void readMethods(InputStreamReader reader, LegacyImportDAO.ImportContext context) {
         doReadCsv(reader, "methods", (String[] columns) -> {
-            ImportDAO.Method method = ImportDAO.Method.builder()
-                                                      .localId(Long.valueOf(columns[0]))
-                                                      .visibility(columns[1])
-                                                      .signature(columns[2])
-                                                      .createdAtMillis(Long.valueOf(columns[3]))
-                                                      .declaringType(columns[4])
-                                                      .exceptionTypes(columns[5])
-                                                      .methodName(columns[6])
-                                                      .modifiers(columns[7])
-                                                      .packageName(columns[8])
-                                                      .parameterTypes(columns[9])
-                                                      .returnType(columns[10])
-                                                      .build();
+            LegacyImportDAO.Method method = LegacyImportDAO.Method.builder()
+                                                                  .localId(Long.valueOf(columns[0]))
+                                                                  .visibility(columns[1])
+                                                                  .signature(columns[2])
+                                                                  .createdAtMillis(Long.valueOf(columns[3]))
+                                                                  .declaringType(columns[4])
+                                                                  .exceptionTypes(columns[5])
+                                                                  .methodName(columns[6])
+                                                                  .modifiers(columns[7])
+                                                                  .packageName(columns[8])
+                                                                  .parameterTypes(columns[9])
+                                                                  .returnType(columns[10])
+                                                                  .build();
             return importDAO.saveMethod(method, context);
         });
     }
 
-    private void readJvms(InputStreamReader reader, ImportDAO.ImportContext context) {
+    private void readJvms(InputStreamReader reader, LegacyImportDAO.ImportContext context) {
         doReadCsv(reader, "JVMs", (String[] columns) -> doProcessJvm(context, columns));
     }
 
     @SneakyThrows(IOException.class)
-    private boolean doProcessJvm(ImportDAO.ImportContext context, String[] columns) {
-        ImportDAO.Jvm jvm = ImportDAO.Jvm.builder()
-                                         .localId(Long.valueOf(columns[0]))
-                                         .uuid(columns[1])
-                                         .startedAtMillis(Long.valueOf(columns[2]))
-                                         .dumpedAtMillis(Long.valueOf(columns[3]))
-                                         .jvmDataJson(columns[4])
-                                         .build();
+    private boolean doProcessJvm(LegacyImportDAO.ImportContext context, String[] columns) {
+        LegacyImportDAO.Jvm jvm = LegacyImportDAO.Jvm.builder()
+                                                     .localId(Long.valueOf(columns[0]))
+                                                     .uuid(columns[1])
+                                                     .startedAtMillis(Long.valueOf(columns[2]))
+                                                     .dumpedAtMillis(Long.valueOf(columns[3]))
+                                                     .jvmDataJson(columns[4])
+                                                     .build();
         JvmData jvmData = objectMapper.readValue(jvm.getJvmDataJson(), JvmData.class);
         return importDAO.saveJvm(jvm, jvmData, context);
     }
 
-    private void readInvocations(InputStreamReader reader, ImportDAO.ImportContext context) {
+    private void readInvocations(InputStreamReader reader, LegacyImportDAO.ImportContext context) {
         doReadCsv(reader, "invocations", (String[] columns) -> {
-            ImportDAO.Invocation invocation = ImportDAO.Invocation.builder()
-                                                                  .localApplicationId(Long.valueOf(columns[0]))
-                                                                  .localMethodId(Long.valueOf(columns[1]))
-                                                                  .localJvmId(Long.valueOf(columns[2]))
-                                                                  .invokedAtMillis(Long.valueOf(columns[3]))
-                                                                  .invocationCount(Long.valueOf(columns[4]))
-                                                                  .status(SignatureStatus.fromOrdinal(Integer.valueOf(columns[5])))
-                                                                  .build();
+            LegacyImportDAO.Invocation invocation = LegacyImportDAO.Invocation.builder()
+                                                                              .localApplicationId(Long.valueOf(columns[0]))
+                                                                              .localMethodId(Long.valueOf(columns[1]))
+                                                                              .localJvmId(Long.valueOf(columns[2]))
+                                                                              .invokedAtMillis(Long.valueOf(columns[3]))
+                                                                              .invocationCount(Long.valueOf(columns[4]))
+                                                                              .status(SignatureStatus.fromOrdinal(Integer.valueOf(columns[5])))
+                                                                              .build();
             return importDAO.saveInvocation(invocation, context);
         });
     }

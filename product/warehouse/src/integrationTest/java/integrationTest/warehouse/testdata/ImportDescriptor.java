@@ -5,8 +5,8 @@ import lombok.NonNull;
 import lombok.Singular;
 import lombok.Value;
 import io.codekvast.agent.lib.model.v1.legacy.JvmData;
-import io.codekvast.warehouse.file_import.legacy.ImportDAO;
-import io.codekvast.warehouse.file_import.legacy.ImportDAO.Invocation;
+import io.codekvast.warehouse.file_import.legacy.LegacyImportDAO;
+import io.codekvast.warehouse.file_import.legacy.LegacyImportDAO.Invocation;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -34,7 +34,7 @@ public class ImportDescriptor {
 
     @Value
     public static class JvmDataPair {
-        private final ImportDAO.Jvm jvm;
+        private final LegacyImportDAO.Jvm jvm;
         private final JvmData jvmData;
     }
 

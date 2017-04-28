@@ -1,10 +1,10 @@
 package integrationTest.warehouse.testdata;
 
 import org.springframework.transaction.annotation.Transactional;
-import io.codekvast.warehouse.file_import.legacy.ImportDAO;
-import io.codekvast.warehouse.file_import.legacy.ImportDAO.Application;
-import io.codekvast.warehouse.file_import.legacy.ImportDAO.ImportContext;
-import io.codekvast.warehouse.file_import.legacy.ImportDAO.Invocation;
+import io.codekvast.warehouse.file_import.legacy.LegacyImportDAO;
+import io.codekvast.warehouse.file_import.legacy.LegacyImportDAO.Application;
+import io.codekvast.warehouse.file_import.legacy.LegacyImportDAO.ImportContext;
+import io.codekvast.warehouse.file_import.legacy.LegacyImportDAO.Invocation;
 
 import javax.inject.Inject;
 import java.lang.reflect.Method;
@@ -20,12 +20,12 @@ import java.util.List;
  */
 public class TestDataGenerator {
 
-    private final ImportDAO importDao;
+    private final LegacyImportDAO importDao;
 
     private final List<ImportDescriptor.MethodDescriptor> methods = new ArrayList<>();
 
     @Inject
-    public TestDataGenerator(ImportDAO importDao) {
+    public TestDataGenerator(LegacyImportDAO importDao) {
         this.importDao = importDao;
 
         Class[] testClasses = {TestClass1.class, TestClass2.class};
@@ -86,19 +86,19 @@ public class TestDataGenerator {
             String exceptionTypes = prettyPrint(method.getExceptionTypes());
             String returnType = method.getReturnType().toString();
 
-            importDao.saveMethod(ImportDAO.Method.builder()
-                                                 .createdAtMillis(descriptor.getNow())
-                                                 .declaringType(method.getDeclaringClass().getCanonicalName())
-                                                 .exceptionTypes(exceptionTypes)
-                                                 .localId(methodDescriptor.getLocalId())
-                                                 .methodName(method.getName())
-                                                 .modifiers(method.getModifiers() + "")
-                                                 .packageName(packageName)
-                                                 .parameterTypes(parameterTypes)
-                                                 .returnType(returnType)
-                                                 .signature(signature)
-                                                 .visibility("public")
-                                                 .build(),
+            importDao.saveMethod(LegacyImportDAO.Method.builder()
+                                                       .createdAtMillis(descriptor.getNow())
+                                                       .declaringType(method.getDeclaringClass().getCanonicalName())
+                                                       .exceptionTypes(exceptionTypes)
+                                                       .localId(methodDescriptor.getLocalId())
+                                                       .methodName(method.getName())
+                                                       .modifiers(method.getModifiers() + "")
+                                                       .packageName(packageName)
+                                                       .parameterTypes(parameterTypes)
+                                                       .returnType(returnType)
+                                                       .signature(signature)
+                                                       .visibility("public")
+                                                       .build(),
                                  context);
         }
     }

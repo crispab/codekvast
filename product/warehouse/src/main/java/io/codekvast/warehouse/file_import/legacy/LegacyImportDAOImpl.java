@@ -41,7 +41,7 @@ import java.util.List;
  */
 @Repository
 @Slf4j
-public class ImportDAOImpl implements ImportDAO {
+public class LegacyImportDAOImpl implements LegacyImportDAO {
 
     @Value
     private static class InsertResult {
@@ -52,7 +52,7 @@ public class ImportDAOImpl implements ImportDAO {
     private final JdbcTemplate jdbcTemplate;
 
     @Inject
-    public ImportDAOImpl(JdbcTemplate jdbcTemplate) {
+    public LegacyImportDAOImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
