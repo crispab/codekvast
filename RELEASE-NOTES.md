@@ -9,6 +9,7 @@
 1. Started eliminating Codekvast Daemon.
 1. Renamed all packages from `se.crisp.codekvast` to `io.codekvast`.
 1. Bumped minimum Java version for the agent to Java 7.
+1. Renamed /api/v1/... endpoints to /webapp/v1/...
 
 ## 0.18.6
 1. Restructured and cleaned up README.md

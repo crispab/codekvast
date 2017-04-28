@@ -178,20 +178,14 @@ Codekvast collector attached.
 
 The following procedure can be used for demo purposes and also when doing development with live data flowing.
 
-1. Launch 5 terminal windows
-1. In terminal #1 do `./gradlew :sample:jenkins1:run`. This will download and start one version of Jenkins with Codekvast attached.
-1. In terminal #2 do `./gradlew :sample:jenkins2:run`. This will download and start another version of Jenkins with Codekvast attached.
-1. In terminal #3 do `./gradlew :sample:sample-ltw:run`. This will launch the short-lived `sample.app.SampleApp` with Codekvast attached. The SampleApp is handy when
+1. Launch 4 terminal windows
+1. In terminal #1 do `./gradlew :product:warehouse:bootRun`.
+This will start Codekvast Warehouse that will consume the data files uploaded by the instrumented apps.
+1. In terminal #2 do `./gradlew :sample:jenkins1:run`. This will download and start one version of Jenkins with Codekvast attached.
+1. In terminal #3 do `./gradlew :sample:jenkins2:run`. This will download and start another version of Jenkins with Codekvast attached.
+1. In terminal #4 do `./gradlew :sample:sample-ltw:run`. This will launch the short-lived `sample.app.SampleApp` with Codekvast attached. The SampleApp is handy when
 you want to correlate source code to the data that is collected by Codekvast.
-1. In terminal #4 do `./gradlew :product:agent:daemon:bootRun`.
-This will start Codekvast Daemon.
- Codekvast Daemon will make an inventory of each of the sample applications.
-It combines that with the live data from the instrumented sample apps, and periodically produces a
-data file to be consumed by the warehouse.
-1. In terminal #5 do `./gradlew :product:warehouse:bootRun`.
-This will start Codekvast Warehouse that will consume the data files produced
- by the daemon.
-1. Open a web browser at http://localhost:8080. It will show the warehouse web interface.
+1. Open a web browser at http://localhost:8080. It will show the warehouse web interface wher e you can inspect the collected data.
 
 ### How to do rapid development of the warehouse web app
 
@@ -210,7 +204,7 @@ This makes it possible to develop the webapp with nothing else than `npm start` 
 
 The canned responses are really handy when doing frontend development, where live data is strictly not necessary.
  
-#### End-point /api/v1/methods
+#### End-point /webapp/v1/methods
 
 In the Methods page, the canned response is delivered from disk by searching for the signature `-----` (five dashes).
  
@@ -218,9 +212,9 @@ In the Methods page, the canned response is delivered from disk by searching for
 
 Canned responses has to be re-captured every time the warehouse REST API has been changed.
 
-The canned response for `/api/v1/methods` is captured by executing
+The canned response for `/webapp/v1/methods` is captured by executing
 
-    curl -X GET --header 'Accept: application/json' 'http://localhost:8080/api/v1/methods?signature=%25&maxResults=100'|jq . > product/warehouse/src/webapp/src/app/test/canned/v1/MethodData.json
+    curl -X GET --header 'Accept: application/json' 'http://localhost:8080/webapp/v1/methods?signature=%25&maxResults=100'|jq . > product/warehouse/src/webapp/src/app/test/canned/v1/MethodData.json
     git add product/warehouse/src/webapp/src/app/test/canned/v1/MethodData.json
     
 from the root directory while `./gradlew :product:warehouse:bootRun` is running.
