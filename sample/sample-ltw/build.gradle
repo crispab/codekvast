@@ -50,13 +50,13 @@ tags = development, sample
 }
 
 processResources.dependsOn generateCodekvastConfig
-
 run {
     dependsOn installDist, generateCodekvastConfig, ':product:agent:collector:shadowJar'
 
     jvmArgs = [
             "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath",
             "-javaagent:$configurations.collector.asPath",
-            "-javaagent:$configurations.aspectjweaver.asPath"
+            "-javaagent:$configurations.aspectjweaver.asPath",
+            "-Djava.ext.dirs=$configurations.collector.asPath"
     ]
 }

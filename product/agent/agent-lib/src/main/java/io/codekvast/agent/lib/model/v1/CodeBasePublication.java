@@ -44,41 +44,10 @@ public class CodeBasePublication implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @NonNull
-    @Size(min = 1)
-    private String appName;
-
-    @NonNull
-    @Size(min = 1)
-    private String appVersion;
-
-    @NonNull
-    @Size(min = 1)
-    private String codeBaseFingerprint;
-
-    @NonNull
-    @Size(min = 1)
-    private String collectorVersion;
-
-    @NonNull
-    @Size(min = 1)
-    private String computerId;
+    private CommonPublicationData commonData;
 
     @NonNull
     private Collection<CodeBaseEntry> entries;
-
-    @NonNull
-    private String environment;
-
-    @NonNull
-    @Size(min = 1)
-    private String hostName;
-
-    @Min(1_490_000_000_000L)
-    private long jvmStartedAtMillis;
-
-    @NonNull
-    @Size(min = 1)
-    private String jvmUuid;
 
     @NonNull
     private Collection<String> normalizedStrangeSignatures;
@@ -86,28 +55,11 @@ public class CodeBasePublication implements Serializable {
     @NonNull
     private Map<String, String> overriddenSignatures;
 
-    @Min(1_490_000_000_000L)
-    private long publishedAtMillis;
-
     @NonNull
     private Collection<String> strangeSignatures;
 
-    @NonNull
-    private String tags;
-
     @Override
     public String toString() {
-        return String.format("CodeBasePublication{" +
-                                 "appName='%1$s'" +
-                                 ", appVersion='%2$s'" +
-                                 ", hostName='%3$s'" +
-                                 ", publishedAt=%4$tF:%4$tT%4$tz" +
-                                 ", entries.size()=%5$d" +
-                                 "}",
-                             appName,
-                             appVersion,
-                             hostName,
-                             publishedAtMillis,
-                             entries.size());
+        return String.format("CodeBasePublication{commonData=%s, entries.size()=%d}", commonData, entries.size());
     }
 }

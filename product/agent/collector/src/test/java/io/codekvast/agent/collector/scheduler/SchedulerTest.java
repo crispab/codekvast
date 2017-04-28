@@ -77,8 +77,8 @@ public class SchedulerTest {
         scheduler.shutdown();
         verifyNoMoreInteractions(configPollerMock);
         output.expect(containsString("Stopping scheduler"));
-        assertThat(codeBasePublisher.getPublicationCount(), is(0));
-        assertThat(invocationDataPublisher.getPublicationCount(), is(0));
+        assertThat(codeBasePublisher.getSequenceNumber(), is(0));
+        assertThat(invocationDataPublisher.getSequenceNumber(), is(0));
     }
 
     @Test
@@ -95,8 +95,8 @@ public class SchedulerTest {
         verify(configPollerMock, times(2)).doPoll();
         verifyNoMoreInteractions(configPollerMock);
 
-        assertThat(codeBasePublisher.getPublicationCount(), is(1));
-        assertThat(invocationDataPublisher.getPublicationCount(), is(1));
+        assertThat(codeBasePublisher.getSequenceNumber(), is(1));
+        assertThat(invocationDataPublisher.getSequenceNumber(), is(1));
     }
 
     @Test

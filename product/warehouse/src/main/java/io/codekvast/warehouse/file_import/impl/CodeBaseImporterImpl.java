@@ -22,9 +22,12 @@
 package io.codekvast.warehouse.file_import.impl;
 
 import io.codekvast.agent.lib.model.v1.CodeBasePublication;
+import io.codekvast.agent.lib.model.v1.CommonPublicationData;
 import io.codekvast.warehouse.file_import.CodeBaseImporter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
 
 /**
  * @author olle.hallin@crisp.se
@@ -33,9 +36,27 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class CodeBaseImporterImpl implements CodeBaseImporter {
 
+    private final NewImportDAO importDAO;
+
+    @Inject
+    public CodeBaseImporterImpl(NewImportDAO importDAO) {
+        this.importDAO = importDAO;
+    }
+
     @Override
     public void importPublication(CodeBasePublication publication) {
         log.debug("Importing {}", publication);
-        // TODO: implement
+
+        CommonPublicationData commonData = publication.getCommonData();
+
+        long appId =
+            importDAO.importApplication(commonData.getAppName(), commonData.getAppVersion(), commonData.getJvmStartedAtMillis());
+
+//        long jvmId = importDAO.importJvm(
+//            commonData.getJvmUuid(),
+//            commonData.getJvmStartedAtMillis(),
+//            commonData.getPublishedAtMillis());
+//
+//        )
     }
 }

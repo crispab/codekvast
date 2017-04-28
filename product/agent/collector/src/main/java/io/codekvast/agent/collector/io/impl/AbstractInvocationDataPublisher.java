@@ -25,7 +25,6 @@ import io.codekvast.agent.collector.io.CodekvastPublishingException;
 import io.codekvast.agent.collector.io.InvocationDataPublisher;
 import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
 import io.codekvast.agent.lib.config.CollectorConfig;
-import io.codekvast.agent.lib.model.v1.legacy.Jvm;
 import lombok.Getter;
 import org.slf4j.Logger;
 
@@ -52,9 +51,9 @@ public abstract class AbstractInvocationDataPublisher extends AbstractPublisher 
     public void publishInvocationData(long recordingIntervalStartedAtMillis, Set<String> invocations)
         throws CodekvastPublishingException {
         if (isEnabled() && getCodeBaseFingerprint() != null) {
-            incrementPublicationCount();
+            incrementSequenceNumber();
 
-            log.debug("Publishing invocation data #{}", getPublicationCount());
+            log.debug("Publishing invocation data #{}", this.getSequenceNumber());
 
             doPublishInvocationData(recordingIntervalStartedAtMillis, invocations);
         }

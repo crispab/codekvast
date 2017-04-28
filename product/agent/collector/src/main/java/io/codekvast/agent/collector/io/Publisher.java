@@ -44,7 +44,7 @@ public interface Publisher {
      *
      * @return The number of performed publications.
      */
-    int getPublicationCount();
+    int getSequenceNumber();
 
     /**
      * Is the publisher enabled?

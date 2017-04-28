@@ -47,7 +47,7 @@ abstract class AbstractCodeBasePublisher extends AbstractPublisher implements Co
         if (isEnabled()) {
             CodeBase newCodeBase = new CodeBase(getConfig());
             if (!newCodeBase.getFingerprint().equals(codeBaseFingerprint)) {
-                incrementPublicationCount();
+                incrementSequenceNumber();
 
                 new CodeBaseScanner().scanSignatures(newCodeBase);
 

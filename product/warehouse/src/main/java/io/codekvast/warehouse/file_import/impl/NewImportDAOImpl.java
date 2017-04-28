@@ -19,42 +19,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.agent.lib.model.v1;
+package io.codekvast.warehouse.file_import.impl;
 
-import lombok.*;
-
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Size;
-import java.io.Serializable;
-import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 /**
- * Output of the InvocationDataPublisher implementations.
- *
  * @author olle.hallin@crisp.se
  */
-@SuppressWarnings({"ClassWithTooManyFields", "ClassWithTooManyMethods"})
-@Data
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Setter(AccessLevel.PRIVATE)
-@Builder(toBuilder = true)
-public class InvocationDataPublication implements Serializable {
-    private static final long serialVersionUID = 1L;
-
-    @NonNull
-    private CommonPublicationData commonData;
-
-    @NonNull
-    private Set<String> invocations;
-
-    @Min(1_490_000_000_000L)
-    private long recordingIntervalStartedAtMillis;
-
+@Component
+@Slf4j
+public class NewImportDAOImpl implements NewImportDAO {
     @Override
-    public String toString() {
-        return String.format(
-            "InvocationDataPublication{commonData=%s, , recordingIntervalStartedAt=%2$tF:%2$tT%2$tz, invocations.size()=%d}",
-            commonData, recordingIntervalStartedAtMillis, invocations.size());
+    public long importApplication(String name, String version, long startedAtMillis) {
+        // TODO: implement
+        return 0;
     }
 }

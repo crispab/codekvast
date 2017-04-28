@@ -40,6 +40,11 @@ public interface InvocationDataPublisher extends Publisher {
     void setCodeBaseFingerprint(CodeBaseFingerprint fingerprint);
 
     /**
+     * @return The fingerprint associated with the publisher
+     */
+    CodeBaseFingerprint getCodeBaseFingerprint();
+
+    /**
      * Publish the invocation data.
      *
      * @param recordingIntervalStartedAtMillis When the recording of these invocations were started.

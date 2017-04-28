@@ -134,7 +134,8 @@ public class CodekvastCollector {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                scheduler.shutdown();
+                log.info("Shutting down...");
+                initialize(null);
             }
         });
         thread.setName(NAME + " Shutdown Hook");

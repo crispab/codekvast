@@ -108,6 +108,12 @@ public class Scheduler implements Runnable {
             // We have done at least one successful poll
 
             // Make sure the last invocation data is published...
+            if (invocationDataPublisher.getCodeBaseFingerprint() == null) {
+                // CodeBasePublisher has not executed yet
+
+                codeBasePublisherState.scheduleNow();
+                publishCodeBaseIfNeeded();
+            }
             invocationDataPublisherState.scheduleNow();
             publishInvocationDataIfNeeded();
         }
@@ -237,11 +243,12 @@ public class Scheduler implements Runnable {
                 log.debug("{} is exiting failure state after {} failures", name, numFailures);
             }
             resetRetryCounter();
-            log.debug("{} will execute at {}", name, new Date(nextEventAtMillis));
+            log.debug("{} will execute next at {}", name, new Date(nextEventAtMillis));
         }
 
         void scheduleNow() {
             nextEventAtMillis = 0L;
+            log.debug("{} will execute now at {}", name, new Date(nextEventAtMillis));
         }
 
         void scheduleRetry() {

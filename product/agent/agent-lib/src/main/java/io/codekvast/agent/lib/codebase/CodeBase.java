@@ -21,15 +21,11 @@
  */
 package io.codekvast.agent.lib.codebase;
 
-import io.codekvast.agent.lib.model.v1.CodeBaseEntry;
-import io.codekvast.agent.lib.model.v1.CodeBasePublication;
-import io.codekvast.agent.lib.util.ComputerID;
+import io.codekvast.agent.lib.model.v1.*;
 import io.codekvast.agent.lib.util.Constants;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import io.codekvast.agent.lib.config.CollectorConfig;
-import io.codekvast.agent.lib.model.v1.MethodSignature;
-import io.codekvast.agent.lib.model.v1.SignatureStatus;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -265,24 +261,27 @@ public class CodeBase {
         return result;
     }
 
-    public CodeBasePublication getCodeBasePublication() {
+    public CodeBasePublication getCodeBasePublication(int sequenceNumber) {
         return CodeBasePublication
             .builder()
-            .appName(config.getAppName())
-            .appVersion(config.getResolvedAppVersion())
-            .codeBaseFingerprint(getFingerprint().getSha256())
-            .collectorVersion(Constants.COLLECTOR_VERSION)
-            .computerId(ComputerID.compute().toString())
+            .commonData(CommonPublicationData.builder()
+                                             .appName(config.getAppName())
+                                             .appVersion(config.getResolvedAppVersion())
+                                             .codeBaseFingerprint(getFingerprint().getSha256())
+                                             .collectorVersion(Constants.COLLECTOR_VERSION)
+                                             .computerId(Constants.COMPUTER_ID)
+                                             .environment(config.getEnvironment())
+                                             .hostName(Constants.HOST_NAME)
+                                             .jvmStartedAtMillis(Constants.JVM_STARTED_AT_MILLIS)
+                                             .jvmUuid(Constants.JVM_UUID)
+                                             .publishedAtMillis(System.currentTimeMillis())
+                                             .sequenceNumber(sequenceNumber)
+                                             .tags(config.getTags())
+                                             .build())
             .entries(getEntries())
-            .environment(config.getEnvironment())
-            .hostName(Constants.HOST_NAME)
-            .jvmStartedAtMillis(Constants.JVM_STARTED_AT_MILLIS)
-            .jvmUuid(Constants.JVM_UUID)
             .normalizedStrangeSignatures(getNormalizedStrangeSignatures())
             .overriddenSignatures(new HashMap<>(overriddenSignatures))
-            .publishedAtMillis(System.currentTimeMillis())
             .strangeSignatures(new TreeSet<>(strangeSignatures))
-            .tags(config.getTags())
             .build();
     }
 

@@ -23,15 +23,9 @@ package io.codekvast.agent.collector.io.impl;
 
 import io.codekvast.agent.collector.io.Publisher;
 import io.codekvast.agent.lib.config.CollectorConfig;
-import io.codekvast.agent.lib.util.Constants;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
-
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Abstract base class for publishers.
@@ -48,7 +42,7 @@ public abstract class AbstractPublisher implements Publisher {
     private boolean enabled;
 
     @Getter
-    private int publicationCount;
+    private int sequenceNumber;
 
     AbstractPublisher(Logger log, CollectorConfig config) {
         this.log = log;
@@ -90,8 +84,8 @@ public abstract class AbstractPublisher implements Publisher {
         }
     }
 
-    void incrementPublicationCount() {
-        publicationCount += 1;
+    void incrementSequenceNumber() {
+        sequenceNumber += 1;
     }
 
     /**

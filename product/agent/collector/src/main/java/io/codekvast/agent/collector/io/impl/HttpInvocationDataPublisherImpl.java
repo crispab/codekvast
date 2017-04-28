@@ -24,6 +24,7 @@ package io.codekvast.agent.collector.io.impl;
 import io.codekvast.agent.collector.io.CodekvastPublishingException;
 import io.codekvast.agent.lib.config.CollectorConfig;
 import io.codekvast.agent.lib.model.Endpoints;
+import io.codekvast.agent.lib.model.v1.CommonPublicationData;
 import io.codekvast.agent.lib.model.v1.InvocationDataPublication;
 import io.codekvast.agent.lib.util.Constants;
 import io.codekvast.agent.lib.util.FileUtils;
@@ -109,20 +110,22 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
     private InvocationDataPublication createPublication(long recordingIntervalStartedAtMillis, Set<String> invocations) {
 
         return InvocationDataPublication.builder()
-                                        .appName(getConfig().getAppName())
-                                        .appVersion(getConfig().getResolvedAppVersion())
-                                        .codeBaseFingerprint(getCodeBaseFingerprint().getSha256())
-                                        .collectorVersion(Constants.COLLECTOR_VERSION)
-                                        .computerId(Constants.COMPUTER_ID)
-                                        .environment(getConfig().getEnvironment())
-                                        .hostName(Constants.HOST_NAME)
-                                        .invocations(invocations)
-                                        .jvmStartedAtMillis(Constants.JVM_STARTED_AT_MILLIS)
-                                        .jvmUuid(Constants.JVM_UUID)
-                                        .publicationCount(getPublicationCount())
-                                        .publishedAtMillis(System.currentTimeMillis())
+                                        .commonData(CommonPublicationData.builder()
+                                                                         .appName(getConfig().getAppName())
+                                                                         .appVersion(getConfig().getResolvedAppVersion())
+                                                                         .codeBaseFingerprint(getCodeBaseFingerprint().getSha256())
+                                                                         .collectorVersion(Constants.COLLECTOR_VERSION)
+                                                                         .computerId(Constants.COMPUTER_ID)
+                                                                         .environment(getConfig().getEnvironment())
+                                                                         .hostName(Constants.HOST_NAME)
+                                                                         .jvmStartedAtMillis(Constants.JVM_STARTED_AT_MILLIS)
+                                                                         .jvmUuid(Constants.JVM_UUID)
+                                                                         .sequenceNumber(this.getSequenceNumber())
+                                                                         .publishedAtMillis(System.currentTimeMillis())
+                                                                         .tags(getConfig().getTags())
+                                                                         .build())
                                         .recordingIntervalStartedAtMillis(recordingIntervalStartedAtMillis)
-                                        .tags(getConfig().getTags())
+                                        .invocations(invocations)
                                         .build();
     }
 

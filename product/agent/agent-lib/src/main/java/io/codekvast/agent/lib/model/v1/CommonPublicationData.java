@@ -26,11 +26,8 @@ import lombok.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.Set;
 
 /**
- * Output of the InvocationDataPublisher implementations.
- *
  * @author olle.hallin@crisp.se
  */
 @SuppressWarnings({"ClassWithTooManyFields", "ClassWithTooManyMethods"})
@@ -39,22 +36,60 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Setter(AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
-public class InvocationDataPublication implements Serializable {
+public class CommonPublicationData implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @NonNull
-    private CommonPublicationData commonData;
+    @Size(min = 1)
+    private String appName;
 
     @NonNull
-    private Set<String> invocations;
+    @Size(min = 1)
+    private String appVersion;
+
+    @NonNull
+    @Size(min = 1)
+    private String codeBaseFingerprint;
+
+    @NonNull
+    @Size(min = 1)
+    private String collectorVersion;
+
+    @NonNull
+    @Size(min = 1)
+    private String computerId;
+
+    @NonNull
+    private String environment;
+
+    @NonNull
+    @Size(min = 1)
+    private String hostName;
 
     @Min(1_490_000_000_000L)
-    private long recordingIntervalStartedAtMillis;
+    private long jvmStartedAtMillis;
+
+    @NonNull
+    @Size(min = 1)
+    private String jvmUuid;
+
+    @Min(1_490_000_000_000L)
+    private long publishedAtMillis;
+
+    @Min(1)
+    private int sequenceNumber;
+
+    @NonNull
+    private String tags;
 
     @Override
     public String toString() {
         return String.format(
-            "InvocationDataPublication{commonData=%s, , recordingIntervalStartedAt=%2$tF:%2$tT%2$tz, invocations.size()=%d}",
-            commonData, recordingIntervalStartedAtMillis, invocations.size());
+            "CommonPublicationData{appName='%1$s', appVersion='%2$s', hostName='%3$s', publishedAt=%4$tF:%4$tT%4$tz}",
+            appName,
+            appVersion,
+            hostName,
+            publishedAtMillis);
     }
+
 }

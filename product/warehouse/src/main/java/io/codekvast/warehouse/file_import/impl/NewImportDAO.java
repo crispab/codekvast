@@ -19,42 +19,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.agent.lib.model.v1;
-
-import lombok.*;
-
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Size;
-import java.io.Serializable;
-import java.util.Set;
+package io.codekvast.warehouse.file_import.impl;
 
 /**
- * Output of the InvocationDataPublisher implementations.
+ * Interface for importing stuff to the database.
  *
  * @author olle.hallin@crisp.se
  */
-@SuppressWarnings({"ClassWithTooManyFields", "ClassWithTooManyMethods"})
-@Data
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Setter(AccessLevel.PRIVATE)
-@Builder(toBuilder = true)
-public class InvocationDataPublication implements Serializable {
-    private static final long serialVersionUID = 1L;
+public interface NewImportDAO {
 
-    @NonNull
-    private CommonPublicationData commonData;
-
-    @NonNull
-    private Set<String> invocations;
-
-    @Min(1_490_000_000_000L)
-    private long recordingIntervalStartedAtMillis;
-
-    @Override
-    public String toString() {
-        return String.format(
-            "InvocationDataPublication{commonData=%s, , recordingIntervalStartedAt=%2$tF:%2$tT%2$tz, invocations.size()=%d}",
-            commonData, recordingIntervalStartedAtMillis, invocations.size());
-    }
+    /**
+     * Inserts or updates a row in the applications table.
+     *
+     * @param name            The name of the applicaation.
+     * @param version         The version of the application.
+     * @param startedAtMillis The instant this application was started.
+     * @return The primary key of the inserted or updated row.
+     */
+    long importApplication(String name, String version, long startedAtMillis);
 }

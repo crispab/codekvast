@@ -307,7 +307,7 @@ into your application's start script.
 
 If you get `LinkageError` on some aspectj-related type::
 . Move `aspectjweaver-{aspectjVersion}.jar` to a separate directory (called `/path/to/endorsed` below).
-. Add `-Djava.endorsed.dir=/path/to/endorsed/` to the `java` command.
+. Add `-Djava.ext.dirs=/path/to/endorsed/` to the `java` command.
 
 Warning from SLF4J about logging is disabled::
 . Make sure that SLF4J is properly configured with a backend. See also {slf4j-manual}.
