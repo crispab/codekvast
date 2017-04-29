@@ -50,11 +50,8 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
         log.debug("Importing {}", publication);
 
         CommonPublicationData commonData = publication.getCommonData();
-
         long appId = importDAO.importApplication(commonData);
-
         long jvmId = importDAO.importJvm(commonData);
-
         importDAO.importMethods(appId, jvmId, publication.getCommonData().getPublishedAtMillis(), publication.getEntries());
     }
 }

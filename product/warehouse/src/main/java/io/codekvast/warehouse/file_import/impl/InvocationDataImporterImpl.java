@@ -21,10 +21,14 @@
  */
 package io.codekvast.warehouse.file_import.impl;
 
+import io.codekvast.agent.lib.model.v1.CommonPublicationData;
 import io.codekvast.agent.lib.model.v1.InvocationDataPublication;
 import io.codekvast.warehouse.file_import.InvocationDataImporter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.inject.Inject;
 
 /**
  * @author olle.hallin@crisp.se
@@ -32,10 +36,21 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class InvocationDataImporterImpl implements InvocationDataImporter {
+    private final ImportDAO importDAO;
+
+    @Inject
+    public InvocationDataImporterImpl(ImportDAO importDAO) {
+        this.importDAO = importDAO;
+    }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void importPublication(InvocationDataPublication publication) {
         log.debug("Importing {}", publication);
-        // TODO: implement
+
+        CommonPublicationData commonData = publication.getCommonData();
+        long appId = importDAO.importApplication(commonData);
+        long jvmId = importDAO.importJvm(commonData);
+        importDAO.importInvocations(appId, jvmId, publication.getCommonData().getPublishedAtMillis(), publication.getInvocations());
     }
 }

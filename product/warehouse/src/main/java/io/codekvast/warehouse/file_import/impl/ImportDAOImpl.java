@@ -104,53 +104,111 @@ public class ImportDAOImpl implements ImportDAO {
     @Override
     public void importMethods(long appId, long jvmId, long publishedAtMillis, Collection<CodeBaseEntry> entries) {
         Map<String, Long> existingMethods = getExistingMethods();
+        Set<String> incompleteMethods = getIncompleteMethods();
+        Set<Long> incompleteInvocations = getIncompleteInvocations();
         Set<Long> existingInvocations = getExistingInvocations(appId, jvmId);
 
         importNewMethods(publishedAtMillis, entries, existingMethods);
-        importMissingInvocations(appId, jvmId, entries, existingMethods, existingInvocations);
+        updateIncompleteMethods(publishedAtMillis, entries, incompleteMethods, existingMethods, incompleteInvocations);
+        importMissingInvocations(appId, jvmId, publishedAtMillis, entries, existingMethods, existingInvocations);
     }
 
-    private void importMissingInvocations(long appId, long jvmId, Collection<CodeBaseEntry> entries, Map<String, Long> existingMethods,
+    @Override
+    public void importInvocations(long appId, long jvmId, long invokedAtMillis, Set<String> invocations) {
+        Map<String, Long> existingMethods = getExistingMethods();
+        Set<Long> existingInvocations = getExistingInvocations(appId, jvmId);
+
+        doImportInvocations(appId, jvmId, invokedAtMillis, invocations, existingMethods, existingInvocations);
+    }
+
+    private void doImportInvocations(long appId, long jvmId, long invokedAtMillis, Set<String> invokedSignatures,
+                                     Map<String, Long> existingMethods, Set<Long> existingInvocations) {
+        for (String signature : invokedSignatures) {
+            Long methodId = existingMethods.get(signature);
+            if (methodId == null) {
+                log.trace("Inserting incomplete method {}:{}", methodId, signature);
+                existingMethods.put(signature, doInsertRow(new InsertIncompleteMethodStatement(signature, invokedAtMillis)));
+                methodId = existingMethods.get(signature);
+            }
+            if (existingInvocations.contains(methodId)) {
+                log.trace("Updating invocation {}", signature);
+                jdbcTemplate.update(new UpdateInvocationStatement(appId, jvmId, methodId, invokedAtMillis));
+            } else {
+                log.trace("Inserting invocation {}", signature);
+                jdbcTemplate
+                    .update(new InsertInvocationStatement(appId, jvmId, methodId, invokedAtMillis, SignatureStatus.NOT_FOUND_IN_CODE_BASE));
+            }
+        }
+    }
+
+    private Map<String, Long> getExistingMethods() {
+        Map<String, Long> result = new HashMap<>();
+        jdbcTemplate.query("SELECT id, signature FROM methods",
+                           rs -> {
+                               result.put(rs.getString(2), rs.getLong(1));
+                           });
+        return result;
+    }
+
+    private Set<String> getIncompleteMethods() {
+        return new HashSet<>(
+            jdbcTemplate.queryForList("SELECT signature FROM methods WHERE methodName IS NULL ", String.class));
+    }
+
+    private Set<Long> getIncompleteInvocations() {
+        return new HashSet<>(
+            jdbcTemplate
+                .queryForList("SELECT methodId FROM invocations WHERE status = ?", Long.class, SignatureStatus.NOT_FOUND_IN_CODE_BASE)
+        );
+    }
+
+
+    private Set<Long> getExistingInvocations(long appId, long jvmId) {
+        return new HashSet<>(
+            jdbcTemplate.queryForList("SELECT methodId FROM invocations WHERE applicationId = ? AND jvmId = ?", Long.class, appId, jvmId));
+    }
+
+    private void importNewMethods(long publishedAtMillis, Collection<CodeBaseEntry> entries, Map<String, Long> existingMethods) {
+        long startedAtMillis = System.currentTimeMillis();
+        int count = 0;
+        for (CodeBaseEntry entry : entries) {
+            String signature = entry.getSignature();
+            if (!existingMethods.containsKey(signature)) {
+                existingMethods.put(signature, doInsertRow(new InsertCompleteMethodStatement(publishedAtMillis, entry)));
+                count += 1;
+            }
+        }
+        log.debug("Imported {} methods in {} ms", count, System.currentTimeMillis() - startedAtMillis);
+    }
+
+    private void updateIncompleteMethods(long publishedAtMillis, Collection<CodeBaseEntry> entries, Set<String> incompleteMethods,
+                                         Map<String, Long> existingMethods, Set<Long> incompleteInvocations) {
+        long startedAtMillis = System.currentTimeMillis();
+        int count = 0;
+        for (CodeBaseEntry entry : entries) {
+            long methodId = existingMethods.get(entry.getSignature());
+            if (incompleteMethods.contains(entry.getSignature()) || incompleteInvocations.contains(methodId)) {
+                log.debug("Updating {}", entry.getSignature());
+                jdbcTemplate.update(new UpdateIncompleteMethodStatement(publishedAtMillis, entry));
+                count += 1;
+            }
+        }
+        log.debug("Updated {} incomplete methods in {} ms", count, System.currentTimeMillis() - startedAtMillis);
+    }
+
+    private void importMissingInvocations(long appId, long jvmId, long publishedAtMillis, Collection<CodeBaseEntry> entries,
+                                          Map<String, Long> existingMethods,
                                           Set<Long> existingInvocations) {
         long startedAtMillis = System.currentTimeMillis();
         int importCount = 0;
         for (CodeBaseEntry entry : entries) {
             long methodId = existingMethods.get(entry.getSignature());
             if (!existingInvocations.contains(methodId)) {
-                jdbcTemplate.update(new InsertInvocationStatement(appId, jvmId, methodId, entry.getSignatureStatus()));
+                jdbcTemplate.update(new InsertInvocationStatement(appId, jvmId, methodId, publishedAtMillis, entry.getSignatureStatus()));
                 importCount += 1;
             }
         }
         log.debug("Imported {} invocations in {} ms", importCount, System.currentTimeMillis() - startedAtMillis);
-    }
-
-    private void importNewMethods(long publishedAtMillis, Collection<CodeBaseEntry> entries,
-                                  Map<String, Long> existingMethods) {
-        long startedAtMillis = System.currentTimeMillis();
-        int importCount = 0;
-        for (CodeBaseEntry entry : entries) {
-            String signature = entry.getSignature();
-            if (!existingMethods.containsKey(signature)) {
-                existingMethods.put(signature, doInsertRow(new InsertMethodStatement(publishedAtMillis, entry)));
-                importCount += 1;
-            }
-        }
-        log.debug("Imported {} methods in {} ms", importCount, System.currentTimeMillis() - startedAtMillis);
-    }
-
-    private Map<String, Long> getExistingMethods() {
-        Map<String, Long> result = new HashMap<>();
-        jdbcTemplate.query("SELECT id, signature FROM methods",
-                           rs -> { result.put(rs.getString(2), rs.getLong(1)); });
-        return result;
-    }
-
-    private Set<Long> getExistingInvocations(long appId, long jvmId) {
-        Set<Long> result = new HashSet<>();
-        jdbcTemplate.query("SELECT methodId FROM invocations WHERE applicationId = ? AND jvmId = ?",
-                           rs -> { result.add(rs.getLong(1)); },
-                           appId, jvmId);
-        return result;
     }
 
     private Long doInsertRow(PreparedStatementCreator psc) {
@@ -160,7 +218,7 @@ public class ImportDAOImpl implements ImportDAO {
     }
 
     @RequiredArgsConstructor
-    private static class InsertMethodStatement implements PreparedStatementCreator {
+    private static class InsertCompleteMethodStatement implements PreparedStatementCreator {
         private final long publishedAtMillis;
         private final CodeBaseEntry entry;
 
@@ -188,26 +246,95 @@ public class ImportDAOImpl implements ImportDAO {
         }
     }
 
+    @RequiredArgsConstructor
+    private static class UpdateIncompleteMethodStatement implements PreparedStatementCreator {
+        private final long publishedAtMillis;
+        private final CodeBaseEntry entry;
+
+        @Override
+        public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+
+            PreparedStatement ps = con.prepareStatement(
+                "UPDATE methods SET " +
+                    "visibility = ?, createdAt = LEAST(createdAt, ?), declaringType = ?, exceptionTypes = ?, methodName = ?, modifiers = " +
+                    "?" +
+                    ", packageName = ?, parameterTypes = ?,returnType = ? WHERE signature = ?");
+            int column = 0;
+            MethodSignature method = entry.getMethodSignature();
+            ps.setString(++column, entry.getVisibility());
+            ps.setTimestamp(++column, new Timestamp(publishedAtMillis));
+            ps.setString(++column, method.getDeclaringType());
+            ps.setString(++column, method.getExceptionTypes());
+            ps.setString(++column, method.getMethodName());
+            ps.setString(++column, method.getModifiers());
+            ps.setString(++column, method.getPackageName());
+            ps.setString(++column, method.getParameterTypes());
+            ps.setString(++column, method.getReturnType());
+            ps.setString(++column, entry.getSignature());
+            return ps;
+        }
+    }
 
     @RequiredArgsConstructor
     private class InsertInvocationStatement implements PreparedStatementCreator {
         private final long appId;
         private final long jvmId;
         private final long methodId;
+        private final long invokedAtMillis;
         private final SignatureStatus status;
 
         @Override
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-            PreparedStatement ps = con.prepareStatement("INSERT INTO invocations(applicationId, jvmId, methodId, status, invokedAtMillis, invocationCount) " +
-                                                            "VALUES(?, ?, ?, ?, ?, ?)",
-                                                        Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps =
+                con.prepareStatement("INSERT INTO invocations(applicationId, jvmId, methodId, status, invokedAtMillis, invocationCount) " +
+                                         "VALUES(?, ?, ?, ?, ?, ?)",
+                                     Statement.RETURN_GENERATED_KEYS);
             int column = 0;
             ps.setLong(++column, appId);
             ps.setLong(++column, jvmId);
             ps.setLong(++column, methodId);
             ps.setString(++column, status.name());
-            ps.setLong(++column, 0L);
-            ps.setLong(++column, 0L);
+            ps.setLong(++column, invokedAtMillis);
+            ps.setLong(++column, 1L);
+            return ps;
+        }
+    }
+
+    @RequiredArgsConstructor
+    private class UpdateInvocationStatement implements PreparedStatementCreator {
+        private final long appId;
+        private final long jvmId;
+        private final long methodId;
+        private final long invokedAtMillis;
+
+        @Override
+        public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+            PreparedStatement ps =
+                con.prepareStatement(
+                    "UPDATE invocations SET invokedAtMillis = GREATEST(invokedAtMillis, ?), invocationCount = invocationCount + 1 " +
+                        "WHERE applicationId = ? AND jvmId = ? AND methodId = ?",
+                    Statement.RETURN_GENERATED_KEYS);
+            int column = 0;
+            ps.setLong(++column, invokedAtMillis);
+            ps.setLong(++column, appId);
+            ps.setLong(++column, jvmId);
+            ps.setLong(++column, methodId);
+            return ps;
+        }
+    }
+
+    @RequiredArgsConstructor
+    private class InsertIncompleteMethodStatement implements PreparedStatementCreator {
+        private final String signature;
+        private final long invokedAtMillis;
+
+        @Override
+        public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+            PreparedStatement ps =
+                con.prepareStatement("INSERT INTO methods(signature, createdAt) VALUES (?, ?)");
+            int column = 0;
+            ps.setString(++column, signature);
+            ps.setTimestamp(++column, new Timestamp(invokedAtMillis));
             return ps;
         }
     }
