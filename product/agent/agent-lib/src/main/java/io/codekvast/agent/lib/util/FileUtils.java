@@ -278,7 +278,14 @@ public final class FileUtils {
     public static void writeToFile(String text, File file) {
         Writer writer = null;
         try {
-            file.getParentFile().mkdirs();
+            File parentDir = file.getParentFile();
+            if (parentDir != null && !parentDir.isDirectory()) {
+                log.debug("Creating {}", parentDir);
+                parentDir.mkdirs();
+                if (!parentDir.isDirectory()) {
+                    log.warn("Failed to create {}", parentDir);
+                }
+            }
             writer = new OutputStreamWriter(new FileOutputStream(file), UTF_8);
             writer.write(text);
             writer.flush();

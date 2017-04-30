@@ -61,15 +61,15 @@ public class ImportDAOImpl implements ImportDAO {
         int updated = jdbcTemplate.update("UPDATE applications SET createdAt = LEAST(createdAt, ?) " +
                                               "WHERE name = ? AND version = ?", createAt, name, version);
         if (updated != 0) {
-            log.debug("Updated application {} {}", name, version);
+            log.trace("Updated application {} {}", name, version);
         } else {
             jdbcTemplate.update("INSERT INTO applications(name, version, createdAt) VALUES (?, ?, ?)",
                                 name, version, createAt);
-            log.debug("Inserted application {} {} {}", name, version, createAt);
+            log.trace("Inserted application {} {} {}", name, version, createAt);
         }
 
         Long result = jdbcTemplate.queryForObject("SELECT id FROM applications WHERE name = ? AND version = ?", Long.class, name, version);
-        log.debug("application.id={}", result);
+        log.debug("application {} {} has id {}", name, version, result);
         return result;
     }
 
@@ -78,11 +78,10 @@ public class ImportDAOImpl implements ImportDAO {
 
         Timestamp dumpedAt = new Timestamp(data.getPublishedAtMillis());
 
-        int updated = jdbcTemplate.update("UPDATE jvms SET dumpedAt = ? " +
-                                              "WHERE uuid = ?",
+        int updated = jdbcTemplate.update("UPDATE jvms SET dumpedAt = ? WHERE uuid = ?",
                                           dumpedAt, data.getJvmUuid());
         if (updated != 0) {
-            log.debug("Updated JVM {}", data.getJvmUuid());
+            log.trace("Updated JVM {}", data.getJvmUuid());
         } else {
             jdbcTemplate.update(
                 "INSERT INTO jvms(uuid, startedAt, dumpedAt, collectorResolutionSeconds, methodVisibility, packages, excludePackages, " +
@@ -92,12 +91,12 @@ public class ImportDAOImpl implements ImportDAO {
                 data.getPackages(), data.getExcludePackages(), data.getEnvironment(), data.getComputerId(),
                 data.getHostName(), data.getCollectorVersion(), "vcsId", data.getTags());
 
-            log.debug("Inserted jvm {} started at {}", data.getJvmUuid(), Instant.ofEpochMilli(data.getJvmStartedAtMillis()));
+            log.trace("Inserted jvm {} started at {}", data.getJvmUuid(), Instant.ofEpochMilli(data.getJvmStartedAtMillis()));
         }
 
         Long result = jdbcTemplate.queryForObject("SELECT id FROM jvms WHERE uuid = ?", Long.class, data.getJvmUuid());
 
-        log.debug("jvm.id={}", result);
+        log.debug("JVM with uuid {} has id {}", data.getJvmUuid(), result);
         return result;
     }
 
@@ -105,11 +104,11 @@ public class ImportDAOImpl implements ImportDAO {
     public void importMethods(long appId, long jvmId, long publishedAtMillis, Collection<CodeBaseEntry> entries) {
         Map<String, Long> existingMethods = getExistingMethods();
         Set<String> incompleteMethods = getIncompleteMethods();
-        Set<Long> incompleteInvocations = getIncompleteInvocations();
+        Set<Long> invocationsNotFoundInCodeBase = getInvocationsNotFoundInCodeBase();
         Set<Long> existingInvocations = getExistingInvocations(appId, jvmId);
 
         importNewMethods(publishedAtMillis, entries, existingMethods);
-        updateIncompleteMethods(publishedAtMillis, entries, incompleteMethods, existingMethods, incompleteInvocations);
+        updateIncompleteMethods(publishedAtMillis, entries, incompleteMethods, existingMethods, invocationsNotFoundInCodeBase);
         importMissingInvocations(appId, jvmId, publishedAtMillis, entries, existingMethods, existingInvocations);
     }
 
@@ -123,7 +122,9 @@ public class ImportDAOImpl implements ImportDAO {
 
     private void doImportInvocations(long appId, long jvmId, long invokedAtMillis, Set<String> invokedSignatures,
                                      Map<String, Long> existingMethods, Set<Long> existingInvocations) {
-        for (String signature : invokedSignatures) {
+        for (String fullyQualifiedSignature : invokedSignatures) {
+            String signature = extractSignature(fullyQualifiedSignature);
+
             Long methodId = existingMethods.get(signature);
             if (methodId == null) {
                 log.trace("Inserting incomplete method {}:{}", methodId, signature);
@@ -135,10 +136,27 @@ public class ImportDAOImpl implements ImportDAO {
                 jdbcTemplate.update(new UpdateInvocationStatement(appId, jvmId, methodId, invokedAtMillis));
             } else {
                 log.trace("Inserting invocation {}", signature);
-                jdbcTemplate
-                    .update(new InsertInvocationStatement(appId, jvmId, methodId, invokedAtMillis, SignatureStatus.NOT_FOUND_IN_CODE_BASE));
+                jdbcTemplate.update(new InsertInvocationStatement(appId, jvmId, methodId, invokedAtMillis,
+                                                                  SignatureStatus.NOT_FOUND_IN_CODE_BASE));
             }
         }
+    }
+
+    private String extractSignature(String fullyQualifiedSignature) {
+        int pos2 = fullyQualifiedSignature.indexOf("(");
+        int pos1 = fullyQualifiedSignature.lastIndexOf(" ");
+        if (pos1 > pos2) {
+            pos1 = pos2;
+            while (fullyQualifiedSignature.charAt(pos1) != ' ' && pos1 > 0) {
+                pos1 -= 1;
+            }
+        }
+        if (pos1 >= 0 && fullyQualifiedSignature.charAt(pos1) != ' ') {
+            // A package-private constructor
+            pos1 = -1;
+        }
+        String result = fullyQualifiedSignature.substring(pos1 + 1);
+        return result;
     }
 
     private Map<String, Long> getExistingMethods() {
@@ -155,10 +173,11 @@ public class ImportDAOImpl implements ImportDAO {
             jdbcTemplate.queryForList("SELECT signature FROM methods WHERE methodName IS NULL ", String.class));
     }
 
-    private Set<Long> getIncompleteInvocations() {
+    private Set<Long> getInvocationsNotFoundInCodeBase() {
         return new HashSet<>(
             jdbcTemplate
-                .queryForList("SELECT methodId FROM invocations WHERE status = ?", Long.class, SignatureStatus.NOT_FOUND_IN_CODE_BASE)
+                .queryForList("SELECT methodId FROM invocations WHERE status = ?", Long.class,
+                              SignatureStatus.NOT_FOUND_IN_CODE_BASE.name())
         );
     }
 
@@ -197,8 +216,7 @@ public class ImportDAOImpl implements ImportDAO {
     }
 
     private void importMissingInvocations(long appId, long jvmId, long publishedAtMillis, Collection<CodeBaseEntry> entries,
-                                          Map<String, Long> existingMethods,
-                                          Set<Long> existingInvocations) {
+                                          Map<String, Long> existingMethods, Set<Long> existingInvocations) {
         long startedAtMillis = System.currentTimeMillis();
         int importCount = 0;
         for (CodeBaseEntry entry : entries) {
@@ -331,8 +349,9 @@ public class ImportDAOImpl implements ImportDAO {
         @Override
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
             PreparedStatement ps =
-                con.prepareStatement("INSERT INTO methods(signature, createdAt) VALUES (?, ?)");
+                con.prepareStatement("INSERT INTO methods(visibility, signature, createdAt) VALUES (?, ?, ?)");
             int column = 0;
+            ps.setString(++column, "");
             ps.setString(++column, signature);
             ps.setTimestamp(++column, new Timestamp(invokedAtMillis));
             return ps;

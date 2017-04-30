@@ -69,10 +69,11 @@ public class CodeBaseEntry implements Serializable {
         this.methodSignature = methodSignature;
         this.signatureStatus = signatureStatus;
 
-        int pos = normalizedSignature.indexOf(" ");
-        assert pos > 0;
-
-        this.visibility = normalizedSignature.substring(0, pos);
+        int pos = normalizedSignature.lastIndexOf(" ");
         this.signature = normalizedSignature.substring(pos + 1);
+        String visibility = normalizedSignature.substring(0, pos >= 0 ? pos : 0);
+        pos = visibility.indexOf(" ");
+        visibility = visibility.substring(0, pos + 1).trim();
+        this.visibility = visibility.isEmpty() ? "package-private" : visibility;
     }
 }
