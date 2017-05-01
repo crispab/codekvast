@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import java.util.TreeSet;
 
 /**
  * @author olle.hallin@crisp.se
@@ -51,6 +52,7 @@ public class InvocationDataImporterImpl implements InvocationDataImporter {
         CommonPublicationData commonData = publication.getCommonData();
         long appId = importDAO.importApplication(commonData);
         long jvmId = importDAO.importJvm(commonData);
-        importDAO.importInvocations(appId, jvmId, publication.getCommonData().getPublishedAtMillis(), publication.getInvocations());
+        importDAO.importInvocations(appId, jvmId, publication.getCommonData().getPublishedAtMillis(),
+                                    new TreeSet<>(publication.getInvocations()));
     }
 }

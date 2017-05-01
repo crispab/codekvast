@@ -111,9 +111,8 @@ public class InvocationRegistry {
 
         toggleInvocationsIndex();
 
-        Set<String> sortedSet = new TreeSet<>(invocations[oldIndex]);
         try {
-            publisher.publishInvocationData(oldRecordingIntervalStartedAtMillis, sortedSet);
+            publisher.publishInvocationData(oldRecordingIntervalStartedAtMillis, invocations[oldIndex]);
         } finally {
             invocations[oldIndex].clear();
         }

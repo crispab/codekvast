@@ -28,6 +28,7 @@ import io.codekvast.agent.lib.config.CollectorConfig;
 import lombok.Getter;
 import org.slf4j.Logger;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -55,8 +56,16 @@ public abstract class AbstractInvocationDataPublisher extends AbstractPublisher 
 
             log.debug("Publishing invocation data #{}", this.getSequenceNumber());
 
-            doPublishInvocationData(recordingIntervalStartedAtMillis, invocations);
+            doPublishInvocationData(recordingIntervalStartedAtMillis, normalize(invocations));
         }
+    }
+
+    private Set<String> normalize(Set<String> invocations) {
+        Set<String> result = new HashSet<>();
+        for (String s : invocations) {
+            result.add(s.replaceFirst(".* ", ""));
+        }
+        return result;
     }
 
     abstract void doPublishInvocationData(long recordingIntervalStartedAtMillis, Set<String> invocations)

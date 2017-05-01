@@ -122,9 +122,7 @@ public class ImportDAOImpl implements ImportDAO {
 
     private void doImportInvocations(long appId, long jvmId, long invokedAtMillis, Set<String> invokedSignatures,
                                      Map<String, Long> existingMethods, Set<Long> existingInvocations) {
-        for (String fullyQualifiedSignature : invokedSignatures) {
-            String signature = extractSignature(fullyQualifiedSignature);
-
+        for (String signature : invokedSignatures) {
             Long methodId = existingMethods.get(signature);
             if (methodId == null) {
                 log.trace("Inserting incomplete method {}:{}", methodId, signature);
@@ -140,23 +138,6 @@ public class ImportDAOImpl implements ImportDAO {
                                                                   SignatureStatus.NOT_FOUND_IN_CODE_BASE));
             }
         }
-    }
-
-    private String extractSignature(String fullyQualifiedSignature) {
-        int pos2 = fullyQualifiedSignature.indexOf("(");
-        int pos1 = fullyQualifiedSignature.lastIndexOf(" ");
-        if (pos1 > pos2) {
-            pos1 = pos2;
-            while (fullyQualifiedSignature.charAt(pos1) != ' ' && pos1 > 0) {
-                pos1 -= 1;
-            }
-        }
-        if (pos1 >= 0 && fullyQualifiedSignature.charAt(pos1) != ' ') {
-            // A package-private constructor
-            pos1 = -1;
-        }
-        String result = fullyQualifiedSignature.substring(pos1 + 1);
-        return result;
     }
 
     private Map<String, Long> getExistingMethods() {
@@ -313,7 +294,7 @@ public class ImportDAOImpl implements ImportDAO {
             ps.setLong(++column, methodId);
             ps.setString(++column, status.name());
             ps.setLong(++column, invokedAtMillis);
-            ps.setLong(++column, 1L);
+            ps.setLong(++column, 0L);
             return ps;
         }
     }
