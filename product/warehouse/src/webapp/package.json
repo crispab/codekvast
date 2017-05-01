@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack --config config/webpack.prod.js",
     "build:q": "webpack --config config/webpack.dev.js --progress",
-    "clean": "rimraf dist",
+    "clean": "rimraf dist; find src -name '*.js' -delete; find src -name '*.js.map' -delete",
     "lint": "tslint ./src/**/*.ts -t verbose",
     "postinstall": "typings install",
     "prebuild": "rimraf dist",
