@@ -269,19 +269,15 @@ public class CodeBase {
                                              .sequenceNumber(sequenceNumber)
                                              .build())
             .entries(getEntries())
-            .normalizedStrangeSignatures(getNormalizedStrangeSignatures())
             .overriddenSignatures(new HashMap<>(overriddenSignatures))
-            .strangeSignatures(new TreeSet<>(strangeSignatures))
+            .strangeSignatures(getStrangeSignatureMap())
             .build();
     }
 
-    private Collection<String> getNormalizedStrangeSignatures() {
-        Set<String> result = new TreeSet<>();
+    private Map<String, String> getStrangeSignatureMap() {
+        Map<String, String> result = new TreeMap<>();
         for (String s : strangeSignatures) {
-            String normalizeSignature = normalizeSignature(s);
-            if (normalizeSignature != null) {
-                result.add(normalizeSignature);
-            }
+            result.put(s, normalizeSignature(s));
         }
         return result;
     }

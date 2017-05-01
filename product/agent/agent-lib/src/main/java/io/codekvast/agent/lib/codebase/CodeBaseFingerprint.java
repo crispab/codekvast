@@ -21,7 +21,6 @@
  */
 package io.codekvast.agent.lib.codebase;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.Value;

@@ -23,8 +23,6 @@ package io.codekvast.agent.lib.model.v1;
 
 import lombok.*;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
@@ -50,13 +48,16 @@ public class CodeBasePublication implements Serializable {
     private Collection<CodeBaseEntry> entries;
 
     @NonNull
-    private Collection<String> normalizedStrangeSignatures;
-
-    @NonNull
     private Map<String, String> overriddenSignatures;
 
+    /**
+     * "strange" signatures, i.e., signatures with unnatural names that indicate that they are synthesized at runtime by some
+     * byte-code library.
+     * key: strangeSignature
+     * value: normalized strange signature
+     */
     @NonNull
-    private Collection<String> strangeSignatures;
+    private Map<String, String> strangeSignatures;
 
     @Override
     public String toString() {

@@ -14,17 +14,16 @@ public class CodeBaseEntryTest {
     @Test
     public void should_extract_public_method_signature() throws Exception {
         CodeBaseEntry entry =
-            new CodeBaseEntry("public void foo.bar.Someclass.foo()", MethodSignature.createSampleMethodSignature(), SignatureStatus.NOT_INVOKED);
+            new CodeBaseEntry("public final strictfp void foo.bar.Someclass.foo()", MethodSignature.createSampleMethodSignature(), SignatureStatus.NOT_INVOKED);
 
         assertThat(entry.getVisibility(), is("public"));
         assertThat(entry.getSignature(), is("foo.bar.Someclass.foo()"));
     }
 
     @Test
-    @Ignore("TODO fix broken test")
     public void should_extract_public_constructor_signature() throws Exception {
         CodeBaseEntry entry =
-            new CodeBaseEntry("public foo.bar.Someclass()", MethodSignature.createSampleMethodSignature(), SignatureStatus.NOT_INVOKED);
+            new CodeBaseEntry("static public foo.bar.Someclass()", MethodSignature.createSampleMethodSignature(), SignatureStatus.NOT_INVOKED);
 
         assertThat(entry.getVisibility(), is("public"));
         assertThat(entry.getSignature(), is("foo.bar.Someclass()"));

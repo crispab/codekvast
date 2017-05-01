@@ -25,6 +25,8 @@ import lombok.NonNull;
 import lombok.Value;
 
 import java.io.Serializable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Representation of a code base entry.
@@ -34,6 +36,8 @@ import java.io.Serializable;
 @Value
 public class CodeBaseEntry implements Serializable {
     private static final long serialVersionUID = 1L;
+    private static final Pattern MODIFIERS_PATTERN = Pattern.compile(".* ");
+    private static final Pattern VISIBILITY_PATTERN = Pattern.compile("(.*)?(public|protected|private) .*");
 
     /**
      * The normalized signature in String form.
@@ -69,11 +73,11 @@ public class CodeBaseEntry implements Serializable {
         this.methodSignature = methodSignature;
         this.signatureStatus = signatureStatus;
 
-        int pos = normalizedSignature.lastIndexOf(" ");
-        this.signature = normalizedSignature.substring(pos + 1);
-        String visibility = normalizedSignature.substring(0, pos >= 0 ? pos : 0);
-        pos = visibility.indexOf(" ");
-        visibility = visibility.substring(0, pos + 1).trim();
-        this.visibility = visibility.isEmpty() ? "package-private" : visibility;
+        Matcher matcher = MODIFIERS_PATTERN.matcher(normalizedSignature);
+        this.signature = matcher.replaceFirst("");
+
+        matcher = VISIBILITY_PATTERN.matcher(normalizedSignature);
+        this.visibility = matcher.matches() ? matcher.group(2) : "package-private";
+
     }
 }

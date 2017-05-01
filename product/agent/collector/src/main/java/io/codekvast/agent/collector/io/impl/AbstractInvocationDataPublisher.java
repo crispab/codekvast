@@ -30,12 +30,15 @@ import org.slf4j.Logger;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * @author olle.hallin@crisp.se
  */
 @Getter
 public abstract class AbstractInvocationDataPublisher extends AbstractPublisher implements InvocationDataPublisher {
+
+    private static final Pattern MODIFIERS_PATTERN = Pattern.compile(".* ");
 
     private CodeBaseFingerprint codeBaseFingerprint;
 
@@ -60,12 +63,16 @@ public abstract class AbstractInvocationDataPublisher extends AbstractPublisher 
         }
     }
 
-    private Set<String> normalize(Set<String> invocations) {
+    Set<String> normalize(Set<String> invocations) {
         Set<String> result = new HashSet<>();
         for (String s : invocations) {
-            result.add(s.replaceFirst(".* ", ""));
+            result.add(normalize(s));
         }
         return result;
+    }
+
+    static String normalize(String invocation) {
+        return MODIFIERS_PATTERN.matcher(invocation).replaceFirst("");
     }
 
     abstract void doPublishInvocationData(long recordingIntervalStartedAtMillis, Set<String> invocations)
