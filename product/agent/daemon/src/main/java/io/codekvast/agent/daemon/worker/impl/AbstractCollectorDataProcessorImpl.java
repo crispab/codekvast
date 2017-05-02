@@ -47,7 +47,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static io.codekvast.agent.lib.model.v1.SignatureStatus.EXACT_MATCH;
+import static io.codekvast.agent.lib.model.v1.SignatureStatus.INVOKED;
 import static io.codekvast.agent.lib.model.v1.SignatureStatus.FOUND_IN_PARENT_CLASS;
 import static io.codekvast.agent.lib.model.v1.SignatureStatus.NOT_FOUND_IN_CODE_BASE;
 import static java.time.Instant.now;
@@ -156,7 +156,7 @@ public abstract class AbstractCollectorDataProcessorImpl implements CollectorDat
                 ignored += 1;
             } else if (codeBase.hasSignature(normalizedSignature)) {
                 recognized += 1;
-                status = EXACT_MATCH;
+                status = INVOKED;
             } else if (baseSignature != null) {
                 overridden += 1;
                 status = FOUND_IN_PARENT_CLASS;

@@ -6,7 +6,7 @@ import io.codekvast.warehouse.webapp.model.EnvironmentDescriptor1;
 import org.junit.Test;
 import io.codekvast.warehouse.webapp.model.MethodDescriptor1;
 
-import static io.codekvast.agent.lib.model.v1.SignatureStatus.EXACT_MATCH;
+import static io.codekvast.agent.lib.model.v1.SignatureStatus.INVOKED;
 import static io.codekvast.agent.lib.model.v1.SignatureStatus.EXCLUDED_BY_PACKAGE_NAME;
 import static io.codekvast.agent.lib.model.v1.SignatureStatus.NOT_INVOKED;
 import static org.hamcrest.Matchers.*;
@@ -40,7 +40,7 @@ public class MethodDescriptor1Test {
         assertThat(toDaysAgo(md.getLastInvokedAtMillis()), is(toDaysAgo(twoDaysAgo)));
 
         assertThat(md.getTrackedPercent(), is(67));
-        assertThat(md.getStatuses(), containsInAnyOrder(EXACT_MATCH, NOT_INVOKED, EXCLUDED_BY_PACKAGE_NAME));
+        assertThat(md.getStatuses(), containsInAnyOrder(INVOKED, NOT_INVOKED, EXCLUDED_BY_PACKAGE_NAME));
     }
 
     private int toDaysAgo(long timestamp) {
@@ -92,7 +92,7 @@ public class MethodDescriptor1Test {
                                     ApplicationDescriptor1.builder()
                                                           .name("app1")
                                                           .version("1.3")
-                                                          .status(EXACT_MATCH)
+                                                          .status(INVOKED)
                                                           .startedAtMillis(collectedSinceMillis)
                                                           .dumpedAtMillis(collectedToMillis)
                                                           .invokedAtMillis(invokedAtMillis2)

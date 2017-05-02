@@ -44,7 +44,7 @@ public enum SignatureStatus implements Serializable {
     /**
      * The invoked signature was found as-is in the scanned code base.
      */
-    EXACT_MATCH(2, true),
+    INVOKED(2, true),
 
     /**
      * The invoked signature was <em>not</em> found as-is in the scanned code base. It was found however, when searching upwards in the

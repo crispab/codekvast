@@ -320,7 +320,7 @@ public class ImportDAOImpl implements ImportDAO {
                     Statement.RETURN_GENERATED_KEYS);
             int column = 0;
             ps.setLong(++column, invokedAtMillis);
-            ps.setString(++column, SignatureStatus.EXACT_MATCH.name());
+            ps.setString(++column, SignatureStatus.INVOKED.name());
             ps.setLong(++column, appId);
             ps.setLong(++column, jvmId);
             ps.setLong(++column, methodId);

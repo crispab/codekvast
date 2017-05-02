@@ -343,7 +343,7 @@ public class MariadbIntegrationTest {
                                     .localMethodId(20L)
                                     .invocationCount(1L)
                                     .invokedAtMillis(10000L)
-                                    .status(SignatureStatus.EXACT_MATCH)
+                                    .status(SignatureStatus.INVOKED)
                                     .build();
 
         // when
@@ -538,7 +538,7 @@ public class MariadbIntegrationTest {
                                                  .localApplicationId(appId)
                                                  .localMethodId(methodId)
                                                  .localJvmId(jvmId)
-                                                 .status(SignatureStatus.EXACT_MATCH)
+                                                 .status(SignatureStatus.INVOKED)
                                                  .invocationCount(hash)
                                                  .invokedAtMillis(hash)
                                                  .build());
