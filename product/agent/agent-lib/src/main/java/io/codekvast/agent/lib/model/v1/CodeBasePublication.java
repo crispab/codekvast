@@ -22,7 +22,9 @@
 package io.codekvast.agent.lib.model.v1;
 
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
+import javax.validation.constraints.AssertTrue;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
@@ -38,6 +40,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Setter(AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
+@Slf4j
 public class CodeBasePublication implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -58,6 +61,28 @@ public class CodeBasePublication implements Serializable {
      */
     @NonNull
     private Map<String, String> strangeSignatures;
+
+    /**
+     * Trap for strange signatures. It checks that left and right parenthesis are either both present or missing and if present in correct
+     * order.
+     *
+     * @return false if some bad signature is found in entries.
+     */
+    @SuppressWarnings("unused")
+    @AssertTrue
+    public boolean isValid() {
+        boolean result = true;
+        for (CodeBaseEntry entry : entries) {
+            int lparen = entry.getSignature().indexOf('(');
+            int rparen = entry.getSignature().indexOf(')');
+            if (((lparen < 0) && (rparen >= 0)) || ((lparen >= 0) && (rparen < 0)) || (lparen > rparen)) {
+                log.error("Invalid signature in '{}'", entry);
+                result = false;
+            }
+        }
+
+        return result;
+    }
 
     @Override
     public String toString() {

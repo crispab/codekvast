@@ -23,6 +23,7 @@ package io.codekvast.agent.lib.codebase;
 
 import io.codekvast.agent.lib.model.v1.*;
 import io.codekvast.agent.lib.util.Constants;
+import io.codekvast.agent.lib.util.PublishingUtils;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import io.codekvast.agent.lib.config.CollectorConfig;
@@ -255,7 +256,7 @@ public class CodeBase {
 
         for (Map.Entry<String, MethodSignature> entry : signatures.entrySet()) {
             String name = entry.getKey();
-            result.add(new CodeBaseEntry(name, entry.getValue(), statuses.get(name)));
+            result.add(new CodeBaseEntry(PublishingUtils.stripModifiers(name), entry.getValue(), statuses.get(name)));
         }
 
         return result;

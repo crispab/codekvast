@@ -21,6 +21,7 @@
  */
 package io.codekvast.agent.collector.io.impl;
 
+import io.codekvast.agent.lib.util.PublishingUtils;
 import io.codekvast.agent.collector.io.CodekvastPublishingException;
 import io.codekvast.agent.collector.io.InvocationDataPublisher;
 import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
@@ -30,15 +31,12 @@ import org.slf4j.Logger;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * @author olle.hallin@crisp.se
  */
 @Getter
 public abstract class AbstractInvocationDataPublisher extends AbstractPublisher implements InvocationDataPublisher {
-
-    private static final Pattern MODIFIERS_PATTERN = Pattern.compile(".* ");
 
     private CodeBaseFingerprint codeBaseFingerprint;
 
@@ -59,20 +57,16 @@ public abstract class AbstractInvocationDataPublisher extends AbstractPublisher 
 
             log.debug("Publishing invocation data #{}", this.getSequenceNumber());
 
-            doPublishInvocationData(recordingIntervalStartedAtMillis, normalize(invocations));
+            doPublishInvocationData(recordingIntervalStartedAtMillis, stripModifiers(invocations));
         }
     }
 
-    Set<String> normalize(Set<String> invocations) {
+    Set<String> stripModifiers(Set<String> invocations) {
         Set<String> result = new HashSet<>();
         for (String s : invocations) {
-            result.add(normalize(s));
+            result.add(PublishingUtils.stripModifiers(s));
         }
         return result;
-    }
-
-    static String normalize(String invocation) {
-        return MODIFIERS_PATTERN.matcher(invocation).replaceFirst("");
     }
 
     abstract void doPublishInvocationData(long recordingIntervalStartedAtMillis, Set<String> invocations)

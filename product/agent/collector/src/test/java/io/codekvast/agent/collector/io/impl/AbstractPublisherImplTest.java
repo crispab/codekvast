@@ -57,4 +57,5 @@ public class AbstractPublisherImplTest {
         output.expect(containsString("WARN"));
         output.expect(containsString("Illegal key-value pair: enabled=foo=bar"));
     }
+
 }

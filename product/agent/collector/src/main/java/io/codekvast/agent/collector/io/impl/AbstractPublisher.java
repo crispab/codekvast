@@ -91,7 +91,7 @@ public abstract class AbstractPublisher implements Publisher {
     /**
      * Implement in concrete subclasses to handle private configuration settings.
      *
-     * @param key The name of the parameter.
+     * @param key   The name of the parameter.
      * @param value The value of the parameter.
      * @return true iff the key was recognized.
      */
