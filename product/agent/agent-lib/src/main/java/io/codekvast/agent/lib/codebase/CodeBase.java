@@ -256,7 +256,7 @@ public class CodeBase {
 
         for (Map.Entry<String, MethodSignature> entry : signatures.entrySet()) {
             String name = entry.getKey();
-            result.add(new CodeBaseEntry(PublishingUtils.stripModifiers(name), entry.getValue(), statuses.get(name)));
+            result.add(new CodeBaseEntry(name, entry.getValue(), statuses.get(name)));
         }
 
         return result;

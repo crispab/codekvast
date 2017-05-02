@@ -21,6 +21,7 @@
  */
 package io.codekvast.agent.lib.model.v1;
 
+import io.codekvast.agent.lib.util.PublishingUtils;
 import lombok.NonNull;
 import lombok.Value;
 
@@ -36,7 +37,6 @@ import java.util.regex.Pattern;
 @Value
 public class CodeBaseEntry implements Serializable {
     private static final long serialVersionUID = 1L;
-    private static final Pattern MODIFIERS_PATTERN = Pattern.compile(".* ");
     private static final Pattern VISIBILITY_PATTERN = Pattern.compile("(.*)?(public|protected|private) .*");
 
     /**
@@ -72,11 +72,9 @@ public class CodeBaseEntry implements Serializable {
         this.normalizedSignature = normalizedSignature;
         this.methodSignature = methodSignature;
         this.signatureStatus = signatureStatus;
+        this.signature = PublishingUtils.stripModifiers(normalizedSignature);
 
-        Matcher matcher = MODIFIERS_PATTERN.matcher(normalizedSignature);
-        this.signature = matcher.replaceFirst("");
-
-        matcher = VISIBILITY_PATTERN.matcher(normalizedSignature);
+        Matcher matcher = VISIBILITY_PATTERN.matcher(normalizedSignature);
         this.visibility = matcher.matches() ? matcher.group(2) : "package-private";
 
     }

@@ -314,11 +314,13 @@ public class ImportDAOImpl implements ImportDAO {
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
             PreparedStatement ps =
                 con.prepareStatement(
-                    "UPDATE invocations SET invokedAtMillis = GREATEST(invokedAtMillis, ?), invocationCount = invocationCount + 1 " +
+                    "UPDATE invocations SET invokedAtMillis = GREATEST(invokedAtMillis, ?), " +
+                        "status = ?, invocationCount = invocationCount + 1 " +
                         "WHERE applicationId = ? AND jvmId = ? AND methodId = ?",
                     Statement.RETURN_GENERATED_KEYS);
             int column = 0;
             ps.setLong(++column, invokedAtMillis);
+            ps.setString(++column, SignatureStatus.EXACT_MATCH.name());
             ps.setLong(++column, appId);
             ps.setLong(++column, jvmId);
             ps.setLong(++column, methodId);
