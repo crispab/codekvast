@@ -31,7 +31,7 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-import io.codekvast.agent.api.model.v1.SignatureStatus;
+import io.codekvast.agent.model.v1.SignatureStatus;
 import io.codekvast.warehouse.webapp.model.EnvironmentDescriptor1;
 import io.codekvast.warehouse.webapp.model.GetMethodsRequest1;
 import io.codekvast.warehouse.webapp.model.MethodDescriptor1;

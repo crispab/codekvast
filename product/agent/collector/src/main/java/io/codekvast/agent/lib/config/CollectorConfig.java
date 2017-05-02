@@ -22,9 +22,9 @@
 package io.codekvast.agent.lib.config;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.codekvast.agent.api.model.v1.CommonPublicationData;
+import io.codekvast.agent.model.v1.CommonPublicationData;
 import io.codekvast.agent.lib.appversion.AppVersionResolver;
-import io.codekvast.agent.api.model.Endpoints;
+import io.codekvast.agent.model.Endpoints;
 import io.codekvast.agent.lib.util.Constants;
 import lombok.*;
 import io.codekvast.agent.lib.util.ConfigUtils;

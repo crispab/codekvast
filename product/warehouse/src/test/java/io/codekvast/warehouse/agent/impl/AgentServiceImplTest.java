@@ -6,8 +6,8 @@ import io.codekvast.warehouse.bootstrap.CodekvastSettings;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import io.codekvast.agent.api.model.v1.rest.GetConfigRequest1;
-import io.codekvast.agent.api.model.v1.rest.GetConfigResponse1;
+import io.codekvast.agent.model.v1.rest.GetConfigRequest1;
+import io.codekvast.agent.model.v1.rest.GetConfigResponse1;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.ByteArrayInputStream;

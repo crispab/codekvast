@@ -21,7 +21,7 @@
  */
 package io.codekvast.agent.collector.io.impl;
 
-import io.codekvast.agent.api.util.PublishingUtils;
+import io.codekvast.agent.model.PublishingUtils;
 import io.codekvast.agent.collector.io.CodekvastPublishingException;
 import io.codekvast.agent.collector.io.InvocationDataPublisher;
 import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;

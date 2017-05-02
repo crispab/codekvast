@@ -21,10 +21,10 @@
  */
 package io.codekvast.agent.lib.codebase;
 
-import io.codekvast.agent.api.model.v1.CodeBaseEntry;
-import io.codekvast.agent.api.model.v1.CodeBasePublication;
-import io.codekvast.agent.api.model.v1.MethodSignature;
-import io.codekvast.agent.api.model.v1.SignatureStatus;
+import io.codekvast.agent.model.v1.CodeBaseEntry;
+import io.codekvast.agent.model.v1.CodeBasePublication;
+import io.codekvast.agent.model.v1.MethodSignature;
+import io.codekvast.agent.model.v1.SignatureStatus;
 import io.codekvast.agent.lib.config.CollectorConfig;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

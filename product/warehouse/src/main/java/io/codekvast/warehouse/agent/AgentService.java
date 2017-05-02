@@ -21,10 +21,10 @@
  */
 package io.codekvast.warehouse.agent;
 
-import io.codekvast.agent.api.model.v1.CodeBasePublication;
-import io.codekvast.agent.api.model.v1.InvocationDataPublication;
-import io.codekvast.agent.api.model.v1.rest.GetConfigRequest1;
-import io.codekvast.agent.api.model.v1.rest.GetConfigResponse1;
+import io.codekvast.agent.model.v1.CodeBasePublication;
+import io.codekvast.agent.model.v1.InvocationDataPublication;
+import io.codekvast.agent.model.v1.rest.GetConfigRequest1;
+import io.codekvast.agent.model.v1.rest.GetConfigResponse1;
 
 import java.io.File;
 import java.io.IOException;

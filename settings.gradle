@@ -1,7 +1,7 @@
 rootProject.name = 'codekvast'
 
 include ':product'
-include ':product:agent:agent-api'
+include ':product:agent:agent-model'
 include ':product:agent:collector'
 include ':product:dist'
 include ':product:docs'

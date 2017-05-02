@@ -23,7 +23,7 @@ package io.codekvast.agent.lib.config;
 
 import io.codekvast.agent.lib.util.SignatureUtils;
 import lombok.EqualsAndHashCode;
-import io.codekvast.agent.api.model.v1.SignatureStatus;
+import io.codekvast.agent.model.v1.SignatureStatus;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;

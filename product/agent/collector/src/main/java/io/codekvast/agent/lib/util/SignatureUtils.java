@@ -24,7 +24,7 @@ package io.codekvast.agent.lib.util;
 import lombok.experimental.UtilityClass;
 import org.aspectj.lang.Signature;
 import org.aspectj.runtime.reflect.Factory;
-import io.codekvast.agent.api.model.v1.MethodSignature;
+import io.codekvast.agent.model.v1.MethodSignature;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;

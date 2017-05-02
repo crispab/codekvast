@@ -1,7 +1,7 @@
 package integrationTest.warehouse;
 
 import integrationTest.warehouse.testdata.TestDataGenerator;
-import io.codekvast.agent.api.model.v1.SignatureStatus;
+import io.codekvast.agent.model.v1.SignatureStatus;
 import io.codekvast.testsupport.docker.DockerContainer;
 import io.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
 import io.codekvast.warehouse.CodekvastWarehouse;

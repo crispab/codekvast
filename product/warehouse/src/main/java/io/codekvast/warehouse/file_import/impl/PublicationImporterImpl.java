@@ -21,8 +21,8 @@
  */
 package io.codekvast.warehouse.file_import.impl;
 
-import io.codekvast.agent.api.model.v1.CodeBasePublication;
-import io.codekvast.agent.api.model.v1.InvocationDataPublication;
+import io.codekvast.agent.model.v1.CodeBasePublication;
+import io.codekvast.agent.model.v1.InvocationDataPublication;
 import io.codekvast.warehouse.file_import.CodeBaseImporter;
 import io.codekvast.warehouse.file_import.InvocationDataImporter;
 import io.codekvast.warehouse.file_import.PublicationImporter;

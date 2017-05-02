@@ -25,7 +25,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.Value;
-import io.codekvast.agent.api.model.v1.SignatureStatus;
+import io.codekvast.agent.model.v1.SignatureStatus;
 
 /**
  * Data about the application versions a particular method appears in.
