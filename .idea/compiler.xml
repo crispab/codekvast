@@ -18,12 +18,17 @@
       <module name="daemon_integrationTest" target="1.8" />
       <module name="daemon_main" target="1.8" />
       <module name="daemon_test" target="1.8" />
+      <module name="java-agent_integrationTest" target="1.7" />
+      <module name="java-agent_main" target="1.7" />
+      <module name="java-agent_test" target="1.7" />
       <module name="jenkins1_javaagent" target="1.8" />
       <module name="jenkins1_main" target="1.8" />
       <module name="jenkins1_test" target="1.8" />
       <module name="jenkins2_javaagent" target="1.8" />
       <module name="jenkins2_main" target="1.8" />
       <module name="jenkins2_test" target="1.8" />
+      <module name="product-agent-model_main" target="1.7" />
+      <module name="product-agent-model_test" target="1.7" />
       <module name="rest_daemon_main" target="1.8" />
       <module name="rest_daemon_test" target="1.8" />
       <module name="sample-concrete-aspect_main" target="1.8" />

@@ -10,7 +10,7 @@ apply plugin: 'com.jfrog.bintray'
 apply plugin: 'org.unbroken-dome.test-sets'
 
 description = "The agent part of Codekvast, the code that runs inside the instrumented app's JVM"
-archivesBaseName = "codekvast-collector"
+archivesBaseName = "codekvast-agent"
 version = codekvastVersion
 
 configurations {
@@ -25,9 +25,10 @@ testSets {
 check.dependsOn integrationTest
 
 dependencies {
-    compile project(":product:agent:agent-model")
+    compile project(":product:agent-model")
     compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
     compile 'org.reflections:reflections:0.9.11'
+    compile 'com.squareup.okhttp3:okhttp:3.7.0'
 
     compileOnly aspectjWeaver
     compileOnly lombok

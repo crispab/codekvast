@@ -81,7 +81,7 @@ echo "Uploading distributions to Bintray..."
 ${GRADLEW} --console=plain :product:dist:bintrayUpload
 
 echo "Uploading codekvast-collector-${CODEKVAST_VERSION}-all.jar to jcenter..."
-${GRADLEW} --console=plain :product:agent:collector:bintrayUpload
+${GRADLEW} --console=plain :product:java-agent:bintrayUpload
 
 echo "Pushing $WAREHOUSE_IMAGE_NAME to Docker Hub..."
 tools/push-to-docker-hub.sh ${WAREHOUSE_IMAGE_NAME} ${CODEKVAST_VERSION} ${GIT_HASH}

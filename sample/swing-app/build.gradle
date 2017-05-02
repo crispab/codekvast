@@ -6,6 +6,6 @@ apply plugin: 'application'
 mainClassName = "sample.swing.SampleSwingApp"
 
 dependencies {
-    compile project(":product:agent:collector")
+    compile project(":product:java-agent")
     compile project(":sample:sample-lib")
 }

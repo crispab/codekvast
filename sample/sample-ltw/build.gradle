@@ -20,7 +20,7 @@ dependencies {
     runtime logback
 
     aspectjweaver "org.aspectj:aspectjweaver:1.8.7"
-    collector project(path: ":product:agent:collector", configuration: 'shadow')
+    collector project(path: ":product:java-agent", configuration: 'shadow')
 }
 
 task generateCodekvastConfig {
@@ -51,7 +51,7 @@ tags = development, sample
 
 processResources.dependsOn generateCodekvastConfig
 run {
-    dependsOn installDist, generateCodekvastConfig, ':product:agent:collector:shadowJar'
+    dependsOn installDist, generateCodekvastConfig, ':product:java-agent:shadowJar'
 
     jvmArgs = [
             "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath",

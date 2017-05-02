@@ -21,8 +21,12 @@
  */
 package io.codekvast.warehouse.webapp.impl;
 
+import io.codekvast.agent.model.v1.SignatureStatus;
 import io.codekvast.warehouse.webapp.WebappService;
 import io.codekvast.warehouse.webapp.model.ApplicationDescriptor1;
+import io.codekvast.warehouse.webapp.model.EnvironmentDescriptor1;
+import io.codekvast.warehouse.webapp.model.GetMethodsRequest1;
+import io.codekvast.warehouse.webapp.model.MethodDescriptor1;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -31,10 +35,6 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-import io.codekvast.agent.model.v1.SignatureStatus;
-import io.codekvast.warehouse.webapp.model.EnvironmentDescriptor1;
-import io.codekvast.warehouse.webapp.model.GetMethodsRequest1;
-import io.codekvast.warehouse.webapp.model.MethodDescriptor1;
 
 import javax.inject.Inject;
 import javax.validation.Valid;

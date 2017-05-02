@@ -11,7 +11,7 @@ apply plugin: 'aspectj'
 ext.aspectjVersion = '1.8.6'
 
 dependencies {
-    compile project(":product:agent:collector")
+    compile project(":product:java-agent")
 }
 
 compileAspect {
