@@ -1,5 +1,4 @@
 import java.nio.charset.Charset
-import java.util.jar.JarFile
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
@@ -9,8 +8,8 @@ apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'org.unbroken-dome.test-sets'
 
-description = "The agent part of Codekvast, the code that runs inside the instrumented app's JVM"
-archivesBaseName = "codekvast-agent"
+description = "The javaagent part of Codekvast, the code that runs inside the instrumented app's JVM"
+archivesBaseName = "codekvast-javaagent"
 version = codekvastVersion
 
 configurations {
@@ -55,7 +54,7 @@ shadowJar {
 
     manifest {
         attributes(
-            "Premain-Class": "io.codekvast.agent.collector.CodekvastCollector",
+            "Premain-Class": "io.codekvast.javaagent.CodekvastJavaAgent",
             "Implementation-Title": archivesBaseName,
             "Implementation-Version": codekvastDisplayVersion
         )
@@ -102,7 +101,7 @@ check.dependsOn verifyShadowJar
 integrationTest {
     inputs.files shadowJar.outputs.files
 
-    systemProperty 'integrationTest.codekvastCollector', shadowJar.outputs.files.asPath
+    systemProperty 'integrationTest.codekvastagent', shadowJar.outputs.files.asPath
     systemProperty 'integrationTest.aspectjweaver', configurations.aspectjweaver.asPath
     systemProperty 'integrationTest.jacocoagent', "${configurations.jacocoagent.asPath}=destfile=build/jacoco/integrationTest2.exec,output=file,dumponexit=true"
     systemProperty 'integrationTest.classpath', "build/classes/integrationTest/:$configurations.sampleappRuntime.asPath"

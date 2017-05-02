@@ -22,7 +22,7 @@
 package io.codekvast.warehouse.agent;
 
 /**
- * Thrown when an agent is denied to connect.
+ * Thrown when an javaagent is denied to connect.
  */
 public class LicenseViolationException extends RuntimeException {
 

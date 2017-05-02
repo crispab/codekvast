@@ -21,7 +21,7 @@
  */
 package io.codekvast.warehouse.webapp.impl;
 
-import io.codekvast.agent.model.v1.SignatureStatus;
+import io.codekvast.javaagent.model.v1.SignatureStatus;
 import io.codekvast.warehouse.webapp.WebappService;
 import io.codekvast.warehouse.webapp.model.ApplicationDescriptor1;
 import io.codekvast.warehouse.webapp.model.EnvironmentDescriptor1;

@@ -2,7 +2,7 @@ apply from: "$rootDir/gradle/java-7.gradle"
 apply from: "$rootDir/gradle/license.gradle"
 
 description = "Model objects shared between Codekvast Agent and Server"
-archivesBaseName = "codekvast-agent-model"
+archivesBaseName = "codekvast-javaagent-model"
 version = codekvastVersion
 
 dependencies {

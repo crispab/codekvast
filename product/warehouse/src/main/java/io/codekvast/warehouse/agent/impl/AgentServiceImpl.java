@@ -21,8 +21,8 @@
  */
 package io.codekvast.warehouse.agent.impl;
 
-import io.codekvast.agent.model.v1.rest.GetConfigRequest1;
-import io.codekvast.agent.model.v1.rest.GetConfigResponse1;
+import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
+import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.warehouse.agent.AgentService;
 import io.codekvast.warehouse.agent.LicenseViolationException;
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
@@ -38,7 +38,7 @@ import java.nio.file.Files;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 /**
- * Handler for agent REST requests.
+ * Handler for javaagent REST requests.
  *
  * @author olle.hallin@crisp.se
  */

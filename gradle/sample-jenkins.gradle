@@ -154,7 +154,7 @@ java.util.logging.ConsoleHandler.level = ALL
 java.util.logging.SimpleFormatter.format = %1\$tF %1\$tT [%4\$s] %3\$s - %5\$s%6\$s%n
 
 io.codekvast.aspectjweaver.level = INFO
-io.codekvast.agent.level = FINE
+io.codekvast.javaagent.level = FINE
 """
         }
 

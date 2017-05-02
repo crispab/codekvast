@@ -2,7 +2,7 @@ package sample.aspect;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import io.codekvast.agent.collector.AbstractMethodExecutionAspect;
+import io.codekvast.javaagent.AbstractMethodExecutionAspect;
 
 /**
  * Example that shows how to make methodExecution() concrete

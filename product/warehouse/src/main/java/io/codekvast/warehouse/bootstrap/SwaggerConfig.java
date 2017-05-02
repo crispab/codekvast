@@ -62,9 +62,9 @@ public class SwaggerConfig {
     public Docket agentDocket(ApiInfo apiInfo) {
         return new Docket(DocumentationType.SWAGGER_2)
             .apiInfo(apiInfo)
-            .groupName("agent-endpoints")
+            .groupName("javaagent-endpoints")
             .select()
-            .paths(path -> path.startsWith("/agent"))
+            .paths(path -> path.startsWith("/javaagent"))
             .build();
     }
 

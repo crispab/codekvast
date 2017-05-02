@@ -21,8 +21,8 @@
  */
 package io.codekvast.warehouse.file_import.impl;
 
-import io.codekvast.agent.model.v1.CodeBasePublication;
-import io.codekvast.agent.model.v1.CommonPublicationData;
+import io.codekvast.javaagent.model.v1.CodeBasePublication;
+import io.codekvast.javaagent.model.v1.CommonPublicationData;
 import io.codekvast.warehouse.file_import.CodeBaseImporter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

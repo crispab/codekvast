@@ -1,9 +1,9 @@
 package sample.swing;
 
-import io.codekvast.agent.collector.CodekvastCollector;
-import io.codekvast.agent.lib.config.CollectorConfig;
-import io.codekvast.agent.lib.config.CollectorConfigFactory;
-import io.codekvast.agent.lib.util.ConfigUtils;
+import io.codekvast.javaagent.CodekvastJavaAgent;
+import io.codekvast.javaagent.config.CollectorConfig;
+import io.codekvast.javaagent.config.CollectorConfigFactory;
+import io.codekvast.javaagent.util.ConfigUtils;
 
 import javax.swing.*;
 
@@ -25,7 +25,7 @@ public class SampleSwingApp extends JFrame {
                 .codeBase("$APP_HOME/lib")
                 .packages("sample")
                 .build();
-        CodekvastCollector.initialize(config);
+        CodekvastJavaAgent.initialize(config);
     }
 
     private void createGUI() {

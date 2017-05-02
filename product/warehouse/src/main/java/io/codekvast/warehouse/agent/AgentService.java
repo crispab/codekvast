@@ -21,10 +21,10 @@
  */
 package io.codekvast.warehouse.agent;
 
-import io.codekvast.agent.model.v1.CodeBasePublication;
-import io.codekvast.agent.model.v1.InvocationDataPublication;
-import io.codekvast.agent.model.v1.rest.GetConfigRequest1;
-import io.codekvast.agent.model.v1.rest.GetConfigResponse1;
+import io.codekvast.javaagent.model.v1.CodeBasePublication;
+import io.codekvast.javaagent.model.v1.InvocationDataPublication;
+import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
+import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,7 +36,7 @@ import java.io.InputStream;
 public interface AgentService {
 
     /**
-     * What config parameters should this agent use?
+     * What config parameters should this javaagent use?
      *
      * @param request The request object
      * @return Does never return null
@@ -47,7 +47,7 @@ public interface AgentService {
     /**
      * Save an uploaded {@link CodeBasePublication} into the import area where it will be processed by another thread.
      *
-     * @param licenseKey          The agent's licenseKey.
+     * @param licenseKey          The javaagent's licenseKey.
      * @param codeBaseFingerprint Is the CodeBaseFingerprint's SHA-256 value for the code base.
      * @param inputStream         The data input stream.  @return The resulting file or null of the code base was already uploaded.
      * @throws LicenseViolationException If invalid license or license violations
@@ -58,7 +58,7 @@ public interface AgentService {
     /**
      * Save an uploaded {@link InvocationDataPublication} into the import area where it will be processed by another thread.
      *
-     * @param licenseKey          The agent's licenseKey.
+     * @param licenseKey          The javaagent's licenseKey.
      * @param codeBaseFingerprint Is the associated code base's CodeBaseFingerprint's SHA-256 value.
      * @param inputStream         The data input stream.  @return The resulting file or null if the invocation data was already uploaded.
      * @throws LicenseViolationException If invalid license or license violations
