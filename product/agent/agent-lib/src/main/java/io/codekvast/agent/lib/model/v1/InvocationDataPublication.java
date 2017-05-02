@@ -21,10 +21,11 @@
  */
 package io.codekvast.agent.lib.model.v1;
 
+import io.codekvast.agent.lib.util.PublishingUtils;
 import lombok.*;
 
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Set;
 
@@ -56,5 +57,17 @@ public class InvocationDataPublication implements Serializable {
         return String.format(
             "InvocationDataPublication{commonData=%s, , recordingIntervalStartedAt=%2$tF:%2$tT%2$tz, invocations.size()=%d}",
             commonData, recordingIntervalStartedAtMillis, invocations.size());
+    }
+
+    @SuppressWarnings("unused")
+    @AssertTrue
+    public boolean isValid() {
+        boolean result = true;
+        for (String signature : invocations) {
+            if (!PublishingUtils.isValid(signature)) {
+                result = false;
+            }
+        }
+        return result;
     }
 }

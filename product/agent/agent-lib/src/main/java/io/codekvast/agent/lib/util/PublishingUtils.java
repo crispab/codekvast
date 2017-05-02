@@ -22,12 +22,15 @@
 package io.codekvast.agent.lib.util;
 
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author olle.hallin@crisp.se
  */
 @UtilityClass
+@Slf4j
 public class PublishingUtils {
+
     /**
      * Removes all modifiers from a signature.
      *
@@ -50,6 +53,21 @@ public class PublishingUtils {
             throw new IllegalStateException(String.format("Unbalanced parenthesis in '%s': '%s'", signature, result));
 
         }
+        if (!isValid(result)) {
+            throw new IllegalStateException(String.format("Failed to strip modifiers in '%s': result='%s", signature, result));
+        }
         return result;
     }
+
+    public static boolean isValid(String signature) {
+        int lparen = signature.indexOf('(');
+        int rparen = signature.indexOf(')');
+        if (((lparen < 0) && (rparen >= 0)) || ((lparen >= 0) && (rparen < 0)) || (lparen > rparen)) {
+            log.error("Invalid signature in '{}'", signature);
+            return false;
+        }
+        return true;
+    }
+
+
 }

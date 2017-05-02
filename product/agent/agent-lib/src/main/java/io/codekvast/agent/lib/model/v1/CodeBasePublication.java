@@ -21,6 +21,7 @@
  */
 package io.codekvast.agent.lib.model.v1;
 
+import io.codekvast.agent.lib.util.PublishingUtils;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -73,14 +74,10 @@ public class CodeBasePublication implements Serializable {
     public boolean isValid() {
         boolean result = true;
         for (CodeBaseEntry entry : entries) {
-            int lparen = entry.getSignature().indexOf('(');
-            int rparen = entry.getSignature().indexOf(')');
-            if (((lparen < 0) && (rparen >= 0)) || ((lparen >= 0) && (rparen < 0)) || (lparen > rparen)) {
-                log.error("Invalid signature in '{}'", entry);
+            if (!PublishingUtils.isValid(entry.getSignature())) {
                 result = false;
             }
         }
-
         return result;
     }
 
