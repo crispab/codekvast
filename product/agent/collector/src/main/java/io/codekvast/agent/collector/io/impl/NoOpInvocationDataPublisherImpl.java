@@ -22,7 +22,6 @@
 package io.codekvast.agent.collector.io.impl;
 
 import io.codekvast.agent.lib.config.CollectorConfig;
-import io.codekvast.agent.lib.model.v1.legacy.Jvm;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Set;
@@ -33,7 +32,7 @@ import java.util.Set;
 @Slf4j
 public class NoOpInvocationDataPublisherImpl extends AbstractInvocationDataPublisher {
 
-    public static final String NAME = "no-op";
+    static final String NAME = "no-op";
 
     public NoOpInvocationDataPublisherImpl(CollectorConfig config) {
         super(log, config);

@@ -21,7 +21,7 @@
  */
 package io.codekvast.warehouse.file_import;
 
-import io.codekvast.agent.lib.model.v1.CodeBasePublication;
+import io.codekvast.agent.api.model.v1.CodeBasePublication;
 
 /**
  * @author olle.hallin@crisp.se

@@ -23,9 +23,9 @@ package io.codekvast.agent.collector.io.impl;
 
 import io.codekvast.agent.collector.io.CodekvastPublishingException;
 import io.codekvast.agent.lib.config.CollectorConfig;
-import io.codekvast.agent.lib.model.Endpoints;
-import io.codekvast.agent.lib.model.v1.CommonPublicationData;
-import io.codekvast.agent.lib.model.v1.InvocationDataPublication;
+import io.codekvast.agent.api.model.Endpoints;
+import io.codekvast.agent.api.model.v1.CommonPublicationData;
+import io.codekvast.agent.api.model.v1.InvocationDataPublication;
 import io.codekvast.agent.lib.util.Constants;
 import io.codekvast.agent.lib.util.FileUtils;
 import io.codekvast.agent.lib.util.LogUtil;
@@ -110,11 +110,10 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
     private InvocationDataPublication createPublication(long recordingIntervalStartedAtMillis, Set<String> invocations) {
 
         return InvocationDataPublication.builder()
-                                        .commonData(CommonPublicationData
-                                                        .getBuilder(getConfig())
-                                                        .codeBaseFingerprint(getCodeBaseFingerprint().getSha256())
-                                                        .sequenceNumber(this.getSequenceNumber())
-                                                        .build())
+                                        .commonData(getConfig().commonPublicationDataBuilder()
+                                                               .codeBaseFingerprint(getCodeBaseFingerprint().getSha256())
+                                                               .sequenceNumber(this.getSequenceNumber())
+                                                               .build())
                                         .recordingIntervalStartedAtMillis(recordingIntervalStartedAtMillis)
                                         .invocations(invocations)
                                         .build();

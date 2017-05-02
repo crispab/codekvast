@@ -21,7 +21,7 @@
  */
 package io.codekvast.agent.collector.scheduler;
 
-import io.codekvast.agent.lib.model.v1.rest.GetConfigResponse1;
+import io.codekvast.agent.api.model.v1.rest.GetConfigResponse1;
 
 /**
  * @author olle.hallin@crisp.se

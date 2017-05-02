@@ -28,7 +28,7 @@ import io.codekvast.agent.collector.io.CodeBasePublisherFactory;
 import io.codekvast.agent.collector.io.InvocationDataPublisher;
 import io.codekvast.agent.collector.io.InvocationDataPublisherFactory;
 import io.codekvast.agent.lib.config.CollectorConfig;
-import io.codekvast.agent.lib.model.v1.rest.GetConfigResponse1;
+import io.codekvast.agent.api.model.v1.rest.GetConfigResponse1;
 import io.codekvast.agent.lib.util.LogUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

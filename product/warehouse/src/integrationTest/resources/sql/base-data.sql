@@ -1,3 +1,5 @@
+DELETE FROM invocations;
+
 DELETE FROM applications;
 INSERT INTO applications (id, name, version) VALUES
   (11, 'app1', 'v1'),

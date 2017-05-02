@@ -21,13 +21,13 @@
  */
 package io.codekvast.agent.lib.codebase;
 
+import io.codekvast.agent.api.model.v1.MethodSignature;
+import io.codekvast.agent.api.model.v1.SignatureStatus;
+import io.codekvast.agent.lib.config.MethodAnalyzer;
 import io.codekvast.agent.lib.util.SignatureUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
-import io.codekvast.agent.lib.config.MethodAnalyzer;
-import io.codekvast.agent.lib.model.v1.MethodSignature;
-import io.codekvast.agent.lib.model.v1.SignatureStatus;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;

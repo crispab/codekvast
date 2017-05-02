@@ -1,0 +1,23 @@
+apply from: "$rootDir/gradle/java-7.gradle"
+apply from: "$rootDir/gradle/license.gradle"
+
+description = "Code that is shared between Codekvast Agent and Server"
+archivesBaseName = "codekvast-agent-api"
+version = codekvastVersion
+
+dependencies {
+    compileOnly lombok
+    compileOnly aspectjWeaver
+    compileOnly "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
+    compile 'com.squareup.okhttp3:okhttp:3.7.0'
+
+    compile slf4jApi
+    compile 'javax.validation:validation-api:1.1.0.Final'
+
+    testCompile aspectjWeaver
+    testCompile lombok
+    testCompile testFrameworks
+    testCompile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+
+    testRuntime logback
+}

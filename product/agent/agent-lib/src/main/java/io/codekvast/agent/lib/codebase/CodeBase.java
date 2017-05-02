@@ -21,14 +21,21 @@
  */
 package io.codekvast.agent.lib.codebase;
 
-import io.codekvast.agent.lib.model.v1.*;
-import io.codekvast.agent.lib.util.Constants;
-import io.codekvast.agent.lib.util.PublishingUtils;
-import lombok.*;
-import lombok.extern.slf4j.Slf4j;
+import io.codekvast.agent.api.model.v1.CodeBaseEntry;
+import io.codekvast.agent.api.model.v1.CodeBasePublication;
+import io.codekvast.agent.api.model.v1.MethodSignature;
+import io.codekvast.agent.api.model.v1.SignatureStatus;
 import io.codekvast.agent.lib.config.CollectorConfig;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.SneakyThrows;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -116,7 +123,7 @@ public class CodeBase {
         return methodSignature == null ? null : normalizeSignature(methodSignature.getAspectjString());
     }
 
-    public String normalizeSignature(String signature) {
+    String normalizeSignature(String signature) {
         if (signature == null) {
             return null;
         }
@@ -163,7 +170,7 @@ public class CodeBase {
     }
 
 
-    public URL[] getUrls() {
+    URL[] getUrls() {
         if (needsExploding) {
             // TODO: implement WAR and EAR exploding
             throw new UnsupportedOperationException("Exploding WAR or EAR not yet implemented");
@@ -235,14 +242,6 @@ public class CodeBase {
         }
     }
 
-    public boolean hasSignature(String signature) {
-        return signatures.containsKey(signature);
-    }
-
-    public String getBaseSignature(String signature) {
-        return signature == null ? null : overriddenSignatures.get(signature);
-    }
-
     boolean isEmpty() {
         return signatures.isEmpty();
     }
@@ -251,7 +250,7 @@ public class CodeBase {
         return signatures.size();
     }
 
-    public Collection<CodeBaseEntry> getEntries() {
+    Collection<CodeBaseEntry> getEntries() {
         List<CodeBaseEntry> result = new ArrayList<>();
 
         for (Map.Entry<String, MethodSignature> entry : signatures.entrySet()) {
@@ -265,10 +264,10 @@ public class CodeBase {
     public CodeBasePublication getCodeBasePublication(int sequenceNumber) {
         return CodeBasePublication
             .builder()
-            .commonData(CommonPublicationData.getBuilder(config)
-                                             .codeBaseFingerprint(getFingerprint().getSha256())
-                                             .sequenceNumber(sequenceNumber)
-                                             .build())
+            .commonData(config.commonPublicationDataBuilder()
+                              .codeBaseFingerprint(getFingerprint().getSha256())
+                              .sequenceNumber(sequenceNumber)
+                              .build())
             .entries(getEntries())
             .overriddenSignatures(new HashMap<>(overriddenSignatures))
             .strangeSignatures(getStrangeSignatureMap())

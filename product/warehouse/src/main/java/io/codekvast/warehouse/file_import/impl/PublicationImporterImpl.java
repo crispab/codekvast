@@ -21,8 +21,8 @@
  */
 package io.codekvast.warehouse.file_import.impl;
 
-import io.codekvast.agent.lib.model.v1.CodeBasePublication;
-import io.codekvast.agent.lib.model.v1.InvocationDataPublication;
+import io.codekvast.agent.api.model.v1.CodeBasePublication;
+import io.codekvast.agent.api.model.v1.InvocationDataPublication;
 import io.codekvast.warehouse.file_import.CodeBaseImporter;
 import io.codekvast.warehouse.file_import.InvocationDataImporter;
 import io.codekvast.warehouse.file_import.PublicationImporter;
@@ -41,8 +41,8 @@ import java.util.Set;
  * It deserializes the object and dispatches to the specialized importer.
  *
  * @author olle.hallin@crisp.se
- * @see io.codekvast.agent.lib.model.v1.CodeBasePublication
- * @see io.codekvast.agent.lib.model.v1.InvocationDataPublication
+ * @see CodeBasePublication
+ * @see InvocationDataPublication
  */
 @Service
 @Slf4j

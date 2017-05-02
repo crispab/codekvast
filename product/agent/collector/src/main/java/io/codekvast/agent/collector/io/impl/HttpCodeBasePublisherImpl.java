@@ -24,7 +24,7 @@ package io.codekvast.agent.collector.io.impl;
 import io.codekvast.agent.collector.io.CodekvastPublishingException;
 import io.codekvast.agent.lib.codebase.CodeBase;
 import io.codekvast.agent.lib.config.CollectorConfig;
-import io.codekvast.agent.lib.model.Endpoints;
+import io.codekvast.agent.api.model.Endpoints;
 import io.codekvast.agent.lib.util.FileUtils;
 import io.codekvast.agent.lib.util.LogUtil;
 import lombok.extern.slf4j.Slf4j;

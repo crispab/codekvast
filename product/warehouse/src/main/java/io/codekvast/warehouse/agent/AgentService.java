@@ -21,11 +21,10 @@
  */
 package io.codekvast.warehouse.agent;
 
-import io.codekvast.agent.lib.codebase.CodeBaseFingerprint;
-import io.codekvast.agent.lib.model.v1.CodeBasePublication;
-import io.codekvast.agent.lib.model.v1.InvocationDataPublication;
-import io.codekvast.agent.lib.model.v1.rest.GetConfigRequest1;
-import io.codekvast.agent.lib.model.v1.rest.GetConfigResponse1;
+import io.codekvast.agent.api.model.v1.CodeBasePublication;
+import io.codekvast.agent.api.model.v1.InvocationDataPublication;
+import io.codekvast.agent.api.model.v1.rest.GetConfigRequest1;
+import io.codekvast.agent.api.model.v1.rest.GetConfigResponse1;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,7 +48,7 @@ public interface AgentService {
      * Save an uploaded {@link CodeBasePublication} into the import area where it will be processed by another thread.
      *
      * @param licenseKey          The agent's licenseKey.
-     * @param codeBaseFingerprint Is the {@link CodeBaseFingerprint}'s SHA-256 value for the code base.
+     * @param codeBaseFingerprint Is the CodeBaseFingerprint's SHA-256 value for the code base.
      * @param inputStream         The data input stream.  @return The resulting file or null of the code base was already uploaded.
      * @throws LicenseViolationException If invalid license or license violations
      */
@@ -60,7 +59,7 @@ public interface AgentService {
      * Save an uploaded {@link InvocationDataPublication} into the import area where it will be processed by another thread.
      *
      * @param licenseKey          The agent's licenseKey.
-     * @param codeBaseFingerprint Is the associated code base's {@link CodeBaseFingerprint}'s SHA-256 value.
+     * @param codeBaseFingerprint Is the associated code base's CodeBaseFingerprint's SHA-256 value.
      * @param inputStream         The data input stream.  @return The resulting file or null if the invocation data was already uploaded.
      * @throws LicenseViolationException If invalid license or license violations
      */

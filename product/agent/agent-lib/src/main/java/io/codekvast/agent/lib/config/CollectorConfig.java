@@ -22,8 +22,10 @@
 package io.codekvast.agent.lib.config;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.codekvast.agent.api.model.v1.CommonPublicationData;
 import io.codekvast.agent.lib.appversion.AppVersionResolver;
-import io.codekvast.agent.lib.model.Endpoints;
+import io.codekvast.agent.api.model.Endpoints;
+import io.codekvast.agent.lib.util.Constants;
 import lombok.*;
 import io.codekvast.agent.lib.util.ConfigUtils;
 import okhttp3.OkHttpClient;
@@ -164,5 +166,23 @@ public class CollectorConfig implements CodekvastConfig {
     public String getFilenamePrefix(@NonNull String prefix) {
         String result = String.format("%s-%s-%s-", prefix.replaceAll("-+$", ""), appName, getResolvedAppVersion());
         return result.toLowerCase().replaceAll("[^a-z0-9._+-]", "");
+    }
+
+    public CommonPublicationData.CommonPublicationDataBuilder commonPublicationDataBuilder() {
+        return CommonPublicationData
+            .builder()
+            .appName(getAppName())
+            .appVersion(getResolvedAppVersion())
+            .collectorVersion(Constants.COLLECTOR_VERSION)
+            .computerId(Constants.COMPUTER_ID)
+            .environment(getEnvironment())
+            .excludePackages(getExcludePackages())
+            .hostName(Constants.HOST_NAME)
+            .jvmStartedAtMillis(Constants.JVM_STARTED_AT_MILLIS)
+            .jvmUuid(Constants.JVM_UUID)
+            .methodVisibility(getMethodVisibility())
+            .packages(getPackages())
+            .tags(getTags());
+
     }
 }

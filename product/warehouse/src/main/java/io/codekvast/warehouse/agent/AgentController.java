@@ -21,9 +21,9 @@
  */
 package io.codekvast.warehouse.agent;
 
-import io.codekvast.agent.lib.model.Endpoints;
-import io.codekvast.agent.lib.model.v1.rest.GetConfigRequest1;
-import io.codekvast.agent.lib.model.v1.rest.GetConfigResponse1;
+import io.codekvast.agent.api.model.Endpoints;
+import io.codekvast.agent.api.model.v1.rest.GetConfigRequest1;
+import io.codekvast.agent.api.model.v1.rest.GetConfigResponse1;
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

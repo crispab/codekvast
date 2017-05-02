@@ -21,8 +21,8 @@
  */
 package io.codekvast.warehouse.file_import.impl;
 
-import io.codekvast.agent.lib.model.v1.CodeBaseEntry;
-import io.codekvast.agent.lib.model.v1.CommonPublicationData;
+import io.codekvast.agent.api.model.v1.CodeBaseEntry;
+import io.codekvast.agent.api.model.v1.CommonPublicationData;
 
 import java.util.Collection;
 import java.util.Set;

@@ -21,10 +21,10 @@
  */
 package io.codekvast.warehouse.file_import.impl;
 
-import io.codekvast.agent.lib.model.v1.CodeBaseEntry;
-import io.codekvast.agent.lib.model.v1.CommonPublicationData;
-import io.codekvast.agent.lib.model.v1.MethodSignature;
-import io.codekvast.agent.lib.model.v1.SignatureStatus;
+import io.codekvast.agent.api.model.v1.CodeBaseEntry;
+import io.codekvast.agent.api.model.v1.CommonPublicationData;
+import io.codekvast.agent.api.model.v1.MethodSignature;
+import io.codekvast.agent.api.model.v1.SignatureStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;

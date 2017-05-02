@@ -8,7 +8,7 @@ import io.codekvast.agent.collector.io.impl.NoOpCodeBasePublisherImpl;
 import io.codekvast.agent.collector.io.impl.NoOpInvocationDataPublisherImpl;
 import io.codekvast.agent.lib.config.CollectorConfig;
 import io.codekvast.agent.lib.config.CollectorConfigFactory;
-import io.codekvast.agent.lib.model.v1.rest.GetConfigResponse1;
+import io.codekvast.agent.api.model.v1.rest.GetConfigResponse1;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

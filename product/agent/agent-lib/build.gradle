@@ -9,6 +9,7 @@ dependencies {
     compileOnly lombok
     compileOnly aspectjWeaver
     compileOnly "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
+    compile project(":product:agent:agent-api")
 
     compile slf4jApi
     compile 'org.reflections:reflections:0.9.11'

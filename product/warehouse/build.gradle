@@ -26,7 +26,7 @@ configurations.compile {
 
 dependencies {
     compileOnly lombok
-    compile project(':product:agent:agent-lib')
+    compile project(':product:agent:agent-api')
     compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
     compile opencsv
     compile 'javax.inject:javax.inject:1'
