@@ -6,7 +6,7 @@
 1. Warehouse: Implemented detection of inconsistent collector config.
 1. Warehouse: Added a landing page for feature voting, to make it simpler to use Google Analytics.
 1. Adopted Yarn instead of npm for installing Node dependencies.
-1. Started eliminating Codekvast Daemon.
+1. Eliminated the Codekvast Daemon.
 1. Renamed all packages from `se.crisp.codekvast` to `io.codekvast`.
 1. Bumped minimum Java version for the agent to Java 7.
 1. Renamed /api/v1/... endpoints to /webapp/v1/...
