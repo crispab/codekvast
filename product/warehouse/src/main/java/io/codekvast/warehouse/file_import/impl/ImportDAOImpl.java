@@ -110,6 +110,7 @@ public class ImportDAOImpl implements ImportDAO {
         importNewMethods(publishedAtMillis, entries, existingMethods);
         updateIncompleteMethods(publishedAtMillis, entries, incompleteMethods, existingMethods, invocationsNotFoundInCodeBase);
         ensureInitialInvocations(appId, jvmId, entries, existingMethods, existingInvocations);
+        // TODO: update initial invocation status if different from entries*.status
     }
 
     @Override

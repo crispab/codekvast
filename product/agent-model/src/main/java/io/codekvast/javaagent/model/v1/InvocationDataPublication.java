@@ -32,7 +32,6 @@ import java.util.Set;
  *
  * @author olle.hallin@crisp.se
  */
-@SuppressWarnings({"ClassWithTooManyFields", "ClassWithTooManyMethods"})
 @Data
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -53,7 +52,7 @@ public class InvocationDataPublication implements Serializable {
     @Override
     public String toString() {
         return String.format(
-            "InvocationDataPublication{commonData=%s, , recordingIntervalStartedAt=%2$tF:%2$tT%2$tz, invocations.size()=%3$d}",
+            "InvocationDataPublication{commonData=%s, invocations.size()=%3$d, recordingIntervalStartedAt=%2$tF:%2$tT%2$tz}",
             commonData, recordingIntervalStartedAtMillis, invocations.size());
     }
 
