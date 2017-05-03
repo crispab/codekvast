@@ -49,7 +49,7 @@ public class FileImportTaskTest {
         // An empty importPath
 
         // when
-        task.importDaemonFiles();
+        task.importPublicationFiles();
 
         // then
         verifyNoMoreInteractions(importer);
@@ -61,7 +61,7 @@ public class FileImportTaskTest {
         File file = createImportFile(".bar");
 
         // when
-        task.importDaemonFiles();
+        task.importPublicationFiles();
 
         // then
         assertThat(file.exists(), is(true));
@@ -76,7 +76,7 @@ public class FileImportTaskTest {
         when(importer.importPublicationFile(any(File.class))).thenReturn(true);
 
         // when
-        task.importDaemonFiles();
+        task.importPublicationFiles();
 
         // then
         verify(importer).importPublicationFile(file);
@@ -91,7 +91,7 @@ public class FileImportTaskTest {
         when(importer.importPublicationFile(any(File.class))).thenReturn(false);
 
         // when
-        task.importDaemonFiles();
+        task.importPublicationFiles();
 
         // then
         verify(importer).importPublicationFile(file);
@@ -105,7 +105,7 @@ public class FileImportTaskTest {
         File file = createImportFile(".ser");
 
         // when
-        task.importDaemonFiles();
+        task.importPublicationFiles();
 
         // then
         verify(importer).importPublicationFile(file);
