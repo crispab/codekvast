@@ -52,7 +52,7 @@ public class InvocationDataImporterImpl implements InvocationDataImporter {
         CommonPublicationData commonData = publication.getCommonData();
         long appId = importDAO.importApplication(commonData);
         long jvmId = importDAO.importJvm(commonData);
-        importDAO.importInvocations(appId, jvmId, publication.getCommonData().getPublishedAtMillis(),
+        importDAO.importInvocations(appId, jvmId, publication.getRecordingIntervalStartedAtMillis(),
                                     new TreeSet<>(publication.getInvocations()));
     }
 }

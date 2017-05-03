@@ -182,6 +182,7 @@ public class CollectorConfig implements CodekvastConfig {
             .jvmUuid(Constants.JVM_UUID)
             .methodVisibility(getMethodVisibility())
             .packages(getPackages())
+            .publishedAtMillis(System.currentTimeMillis())
             .tags(getTags());
 
     }
