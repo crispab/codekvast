@@ -100,6 +100,28 @@ public class SchedulerTest {
     }
 
     @Test
+    public void should_handle_shutdown_after_first_poll_but_before_first_publishing() throws Exception {
+        // given
+        when(configPollerMock.doPoll()).thenReturn(
+            configResponse
+                .toBuilder()
+                .codeBasePublisherCheckIntervalSeconds(1000)
+                .invocationDataPublisherIntervalSeconds(1000)
+                .build());
+
+        // when
+        scheduler.run();
+        scheduler.shutdown();
+
+        // then
+        verify(configPollerMock, times(1)).doPoll();
+        verifyNoMoreInteractions(configPollerMock);
+
+        assertThat(codeBasePublisher.getSequenceNumber(), is(1));
+        assertThat(invocationDataPublisher.getSequenceNumber(), is(1));
+    }
+
+    @Test
     public void should_handle_initial_poll_exceptions() throws Exception {
         when(configPollerMock.doPoll()).thenThrow(new IOException("Mock: No contact with server"));
         scheduler.run();
