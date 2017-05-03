@@ -152,8 +152,7 @@ public class CodeBaseScanner {
                 MethodSignature thisSignature = SignatureUtils.makeMethodSignature(clazz, method);
 
                 MethodSignature declaringSignature = SignatureUtils
-                    .makeMethodSignature(findDeclaringClass(method.getDeclaringClass(), method, packages),
-                                         method);
+                    .makeMethodSignature(findDeclaringClass(method.getDeclaringClass(), method, packages), method);
 
                 if (shouldExcludeSignature(declaringSignature, excludePackages)) {
                     status = SignatureStatus.EXCLUDED_BY_PACKAGE_NAME;

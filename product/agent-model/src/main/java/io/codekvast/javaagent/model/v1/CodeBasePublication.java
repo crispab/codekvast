@@ -21,11 +21,9 @@
  */
 package io.codekvast.javaagent.model.v1;
 
-import io.codekvast.javaagent.model.PublishingUtils;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.validation.constraints.AssertTrue;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
@@ -62,24 +60,6 @@ public class CodeBasePublication implements Serializable {
      */
     @NonNull
     private Map<String, String> strangeSignatures;
-
-    /**
-     * Trap for strange signatures. It checks that left and right parenthesis are either both present or missing and if present in correct
-     * order.
-     *
-     * @return false if some bad signature is found in entries.
-     */
-    @SuppressWarnings("unused")
-    @AssertTrue
-    public boolean isValid() {
-        boolean result = true;
-        for (CodeBaseEntry entry : entries) {
-            if (!PublishingUtils.isValid(entry.getSignature())) {
-                result = false;
-            }
-        }
-        return result;
-    }
 
     @Override
     public String toString() {

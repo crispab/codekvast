@@ -21,28 +21,22 @@
  */
 package io.codekvast.javaagent.codebase;
 
+import io.codekvast.javaagent.config.CollectorConfig;
 import io.codekvast.javaagent.model.v1.CodeBaseEntry;
 import io.codekvast.javaagent.model.v1.CodeBasePublication;
 import io.codekvast.javaagent.model.v1.MethodSignature;
 import io.codekvast.javaagent.model.v1.SignatureStatus;
-import io.codekvast.javaagent.config.CollectorConfig;
+import io.codekvast.javaagent.util.SignatureUtils;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
-import java.io.LineNumberReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 /**
  * Handles a code base, i.e., the set of methods in an application.
@@ -54,9 +48,6 @@ import java.util.regex.PatternSyntaxException;
 @EqualsAndHashCode(of = "fingerprint")
 @Slf4j
 public class CodeBase {
-
-    private static final String ADDED_PATTERNS_FILENAME = "/io/codekvast/byte-code-added-methods.txt";
-    private static final String ENHANCED_PATTERNS_FILENAME = "/io/codekvast/byte-code-enhanced-methods.txt";
 
     private final List<File> codeBaseFiles;
 
@@ -75,100 +66,14 @@ public class CodeBase {
     @Getter
     private final CodeBaseFingerprint fingerprint;
 
-    private static final Set<String> strangeSignatures = new TreeSet<>();
-
     private List<URL> urls;
     private boolean needsExploding = false;
-
-    private final List<Pattern> bytecodeAddedPatterns;
-    private final List<Pattern> bytecodeEnhancedPatterns;
-    private final Set<Pattern> loggedBadPatterns = new HashSet<>();
 
     public CodeBase(CollectorConfig config) {
         this.config = config;
         this.codeBaseFiles = config.getCodeBaseFiles();
         this.fingerprint = calculateFingerprint();
-        this.bytecodeAddedPatterns = readByteCodePatternsFrom(ADDED_PATTERNS_FILENAME);
-        this.bytecodeEnhancedPatterns = readByteCodePatternsFrom(ENHANCED_PATTERNS_FILENAME);
     }
-
-    private List<Pattern> readByteCodePatternsFrom(String resourceName) {
-        List<Pattern> result = new ArrayList<>();
-        log.trace("Reading byte code patterns from {}", resourceName);
-        try {
-            LineNumberReader reader = new LineNumberReader(
-                new BufferedReader(new InputStreamReader(getClass().getResource(resourceName).openStream(), Charset.forName("UTF-8"))));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                line = line.trim();
-                if (!line.isEmpty() && !line.startsWith("#")) {
-                    addPatternTo(result, resourceName, reader.getLineNumber(), line);
-                }
-            }
-        } catch (Exception e) {
-            log.error("Cannot read " + resourceName);
-        }
-        return result;
-    }
-
-    private void addPatternTo(Collection<Pattern> result, String fileName, int lineNumber, String pattern) {
-        try {
-            result.add(Pattern.compile(pattern));
-        } catch (PatternSyntaxException e) {
-            log.error("Illegal regexp syntax in {}:{}: {}", fileName, lineNumber, e.toString());
-        }
-    }
-
-    private String normalizeSignature(MethodSignature methodSignature) {
-        return methodSignature == null ? null : normalizeSignature(methodSignature.getAspectjString());
-    }
-
-    String normalizeSignature(String signature) {
-        if (signature == null) {
-            return null;
-        }
-
-        if (isStrangeSignature(signature)) {
-            strangeSignatures.add(signature);
-        }
-
-        for (Pattern pattern : bytecodeAddedPatterns) {
-            if (pattern.matcher(signature).matches()) {
-                return null;
-            }
-        }
-        String result = signature.replaceAll(" final ", " ");
-
-        for (Pattern pattern : bytecodeEnhancedPatterns) {
-            Matcher matcher = pattern.matcher(result);
-            if (matcher.matches()) {
-                if (matcher.groupCount() != 3) {
-                    logBadPattern(pattern);
-                } else {
-                    result = matcher.group(1) + "." + matcher.group(2) + matcher.group(3);
-                    log.trace("Normalized {} to {}", signature, result);
-                    break;
-                }
-            }
-        }
-
-        if (isStrangeSignature(result)) {
-            log.warn("Could not normalize {}: {}", signature, result);
-        }
-        return result;
-    }
-
-    boolean isStrangeSignature(String signature) {
-        return signature.contains("..") || signature.contains("$$") || signature.contains("CGLIB")
-            || signature.contains("EnhancerByGuice") || signature.contains("FastClassByGuice");
-    }
-
-    private void logBadPattern(Pattern pattern) {
-        if (loggedBadPatterns.add(pattern)) {
-            log.error("Expected exactly 3 capturing groups in regexp '{}', ignored.", pattern);
-        }
-    }
-
 
     URL[] getUrls() {
         if (needsExploding) {
@@ -228,8 +133,8 @@ public class CodeBase {
     }
 
     void addSignature(MethodSignature thisSignature, MethodSignature declaringSignature, SignatureStatus status) {
-        String thisNormalizedSignature = normalizeSignature(thisSignature);
-        String declaringNormalizedSignature = normalizeSignature(declaringSignature);
+        String thisNormalizedSignature = SignatureUtils.normalizeSignature(thisSignature);
+        String declaringNormalizedSignature = SignatureUtils.normalizeSignature(declaringSignature);
 
         if (declaringNormalizedSignature != null) {
             if (!declaringNormalizedSignature.equals(thisNormalizedSignature) && thisNormalizedSignature != null) {
@@ -255,7 +160,14 @@ public class CodeBase {
 
         for (Map.Entry<String, MethodSignature> entry : signatures.entrySet()) {
             String name = entry.getKey();
-            result.add(new CodeBaseEntry(name, entry.getValue(), statuses.get(name)));
+            result.add(
+                CodeBaseEntry.builder()
+                             .normalizedSignature(name)
+                             .methodSignature(entry.getValue())
+                             .signature(SignatureUtils.stripModifiers(name))
+                             .visibility(SignatureUtils.getVisibility(name))
+                             .signatureStatus(statuses.get(name))
+                             .build());
         }
 
         return result;
@@ -270,16 +182,8 @@ public class CodeBase {
                               .build())
             .entries(getEntries())
             .overriddenSignatures(new HashMap<>(overriddenSignatures))
-            .strangeSignatures(getStrangeSignatureMap())
+            .strangeSignatures(SignatureUtils.getStrangeSignatureMap())
             .build();
-    }
-
-    private Map<String, String> getStrangeSignatureMap() {
-        Map<String, String> result = new TreeMap<>();
-        for (String s : strangeSignatures) {
-            result.put(s, normalizeSignature(s));
-        }
-        return result;
     }
 
 }

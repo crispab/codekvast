@@ -95,7 +95,7 @@ public class InvocationRegistry {
      * @param signature The captured method invocation signature.
      */
     public void registerMethodInvocation(Signature signature) {
-        String sig = SignatureUtils.signatureToString(signature, false);
+        String sig = SignatureUtils.signatureToString(signature);
 
         // HashSet.contains() is thread-safe, so test first before deciding to add, but do the actual update from
         // a background worker thread.

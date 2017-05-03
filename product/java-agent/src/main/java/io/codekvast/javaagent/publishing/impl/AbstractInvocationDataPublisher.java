@@ -21,11 +21,11 @@
  */
 package io.codekvast.javaagent.publishing.impl;
 
-import io.codekvast.javaagent.model.PublishingUtils;
-import io.codekvast.javaagent.publishing.CodekvastPublishingException;
-import io.codekvast.javaagent.publishing.InvocationDataPublisher;
 import io.codekvast.javaagent.codebase.CodeBaseFingerprint;
 import io.codekvast.javaagent.config.CollectorConfig;
+import io.codekvast.javaagent.publishing.CodekvastPublishingException;
+import io.codekvast.javaagent.publishing.InvocationDataPublisher;
+import io.codekvast.javaagent.util.SignatureUtils;
 import lombok.Getter;
 import org.slf4j.Logger;
 
@@ -57,14 +57,17 @@ public abstract class AbstractInvocationDataPublisher extends AbstractPublisher 
 
             log.debug("Publishing invocation data #{}", this.getSequenceNumber());
 
-            doPublishInvocationData(recordingIntervalStartedAtMillis, stripModifiers(invocations));
+            doPublishInvocationData(recordingIntervalStartedAtMillis, normalizeSignatures(invocations));
         }
     }
 
-    Set<String> stripModifiers(Set<String> invocations) {
+    private Set<String> normalizeSignatures(Set<String> invocations) {
         Set<String> result = new HashSet<>();
         for (String s : invocations) {
-            result.add(PublishingUtils.stripModifiers(s));
+            String normalizedSignature = SignatureUtils.normalizeSignature(s);
+            if (normalizedSignature != null) {
+                result.add(SignatureUtils.stripModifiers(normalizedSignature));
+            }
         }
         return result;
     }
