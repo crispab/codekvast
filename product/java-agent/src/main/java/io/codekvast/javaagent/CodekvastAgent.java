@@ -196,9 +196,7 @@ public class CodekvastAgent {
                                       "io.codekvast.javaagent", "codekvast"));
 
         File file = config.getAspectFile();
-        if (config.isClobberAopXml() || !file.canRead()) {
-            FileUtils.writeToFile(xml, file);
-        }
+        FileUtils.writeToFile(xml, file);
         return "file:" + file.getAbsolutePath();
     }
 

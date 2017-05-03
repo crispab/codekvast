@@ -40,7 +40,6 @@ public class CodeBaseScannerTest {
     private CodeBase getCodeBase(String codeBase) {
         return new CodeBase(AgentConfigFactory.createSampleAgentConfig().toBuilder()
                                               .codeBase(new File(codeBase).getAbsolutePath())
-                                              .dataPath(temporaryFolder.getRoot())
                                               .packages(ScannerTest1.class.getPackage().getName())
                                               .excludePackages(ExcludedScannerTest5.class.getPackage().getName())
                                               .build());

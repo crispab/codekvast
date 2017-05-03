@@ -26,7 +26,7 @@ import io.codekvast.javaagent.util.FileUtils;
 import io.codekvast.javaagent.util.SignatureUtils;
 
 import java.io.File;
-import java.net.URI;
+import java.io.IOException;
 import java.util.Properties;
 
 /**
@@ -34,7 +34,6 @@ import java.util.Properties;
  */
 public class AgentConfigFactory {
 
-    private static final boolean DEFAULT_CLOBBER_AOP_XML = true;
     private static final boolean DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_SLF4J = true;
     private static final String DEFAULT_ASPECTJ_OPTIONS = "";
     private static final String DEFAULT_ENVIRONMENT = "";
@@ -44,27 +43,35 @@ public class AgentConfigFactory {
     private static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
     private static final String SAMPLE_CODEBASE_URI1 = "/path/to/codebase1/";
     private static final String SAMPLE_CODEBASE_URI2 = "/path/to/codebase2/";
-    private static final File DEFAULT_DATA_PATH = new File("/tmp/codekvast/.agent");
     private static final String SAMPLE_TAGS = "key1=value1, key2=value2";
     private static final String OVERRIDE_SEPARATOR = ";";
     private static final String UNSPECIFIED = "unspecified";
     private static final String TAGS_KEY = "tags";
     private static final String TRIAL_LICENSE_KEY = "";
+    private static final File DEFAULT_ASPECT_FILE;
+
+    static {
+        try {
+            DEFAULT_ASPECT_FILE = File.createTempFile("codekvast-", "-aop.xml");
+        } catch (IOException e) {
+            throw new RuntimeException("Cannot create codekvast-aop.xml", e);
+        }
+    }
 
     private AgentConfigFactory() {
     }
 
-    public static AgentConfig parseAgentConfig(URI uri, String cmdLineArgs) {
-        return parseAgentConfig(uri, cmdLineArgs, false);
+    static AgentConfig parseAgentConfig(File file, String cmdLineArgs) {
+        return parseAgentConfig(file, cmdLineArgs, false);
     }
 
-    public static AgentConfig parseAgentConfig(URI uri, String cmdLineArgs, boolean prependSystemPropertiesToTags) {
-        if (uri == null) {
+    public static AgentConfig parseAgentConfig(File file, String cmdLineArgs, boolean prependSystemPropertiesToTags) {
+        if (file == null) {
             return null;
         }
 
         try {
-            Properties props = FileUtils.readPropertiesFrom(uri);
+            Properties props = FileUtils.readPropertiesFrom(file);
 
             parseOverrides(props, System.getProperty(AgentConfigLocator.SYSPROP_OPTS));
             parseOverrides(props, cmdLineArgs);
@@ -74,7 +81,7 @@ public class AgentConfigFactory {
 
             return buildAgentConfig(props);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Cannot parse " + uri, e);
+            throw new IllegalArgumentException("Cannot parse " + file, e);
         }
     }
 
@@ -88,7 +95,7 @@ public class AgentConfigFactory {
         }
     }
 
-    public static AgentConfig buildAgentConfig(Properties props) {
+    private static AgentConfig buildAgentConfig(Properties props) {
         // Backwards compatibility kludge. "packages" and "packagePrefixes" were renamed in version 0.16.0
         String packages = ConfigUtils.getOptionalStringValue(props, "packagePrefixes", null);
         if (packages == null) {
@@ -104,14 +111,13 @@ public class AgentConfigFactory {
         return AgentConfig.builder()
                           .appName(validateAppName(ConfigUtils.getMandatoryStringValue(props, "appName")))
                           .appVersion(ConfigUtils.getOptionalStringValue(props, "appVersion", UNSPECIFIED))
+                          .aspectFile(DEFAULT_ASPECT_FILE)
                           .aspectjOptions(ConfigUtils.getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
                           .bridgeAspectjMessagesToSLF4J(ConfigUtils.getOptionalBooleanValue(props, "bridgeAspectjMessagesToSLF4J",
                                                                                                 DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_SLF4J))
-                          .clobberAopXml(ConfigUtils.getOptionalBooleanValue(props, "clobberAopXml", DEFAULT_CLOBBER_AOP_XML))
                           .codeBase(ConfigUtils.getMandatoryStringValue(props, "codeBase"))
                           .collectorResolutionSeconds(ConfigUtils.getOptionalIntValue(props, "collectorResolutionSeconds",
                                                                                       DEFAULT_COLLECTOR_RESOLUTION_SECONDS))
-                          .dataPath(ConfigUtils.getDataPath(props, DEFAULT_DATA_PATH))
                           .environment(ConfigUtils.getOptionalStringValue(props, "environment", DEFAULT_ENVIRONMENT))
                           .methodVisibility(ConfigUtils.getOptionalStringValue(props, "methodVisibility", DEFAULT_METHOD_VISIBILITY))
                           .packages(packages)
@@ -163,17 +169,12 @@ public class AgentConfigFactory {
         return appName;
     }
 
-    public static void saveTo(AgentConfig config, File file) {
-        FileUtils.writePropertiesTo(file, config, "Codekvast AgentConfig");
-    }
-
     public static AgentConfig createSampleAgentConfig() {
         return AgentConfigFactory.createTemplateConfig().toBuilder()
                                  .appName("Sample Application Name")
                                  .codeBase(SAMPLE_CODEBASE_URI1 + " , " + SAMPLE_CODEBASE_URI2)
                                  .packages("com.acme. , foo.bar.")
                                  .excludePackages("some.excluded.package")
-                                 .dataPath(DEFAULT_DATA_PATH)
                                  .build();
     }
 
@@ -181,12 +182,11 @@ public class AgentConfigFactory {
         return AgentConfig.builder()
                           .appName(UNSPECIFIED)
                           .appVersion(UNSPECIFIED)
+                          .aspectFile(DEFAULT_ASPECT_FILE)
                           .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
                           .bridgeAspectjMessagesToSLF4J(DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_SLF4J)
-                          .clobberAopXml(DEFAULT_CLOBBER_AOP_XML)
                           .codeBase(UNSPECIFIED)
                           .collectorResolutionSeconds(DEFAULT_COLLECTOR_RESOLUTION_SECONDS)
-                          .dataPath(ConfigUtils.getDataPath(new Properties(), DEFAULT_DATA_PATH))
                           .environment(DEFAULT_ENVIRONMENT)
                           .methodVisibility(DEFAULT_METHOD_VISIBILITY)
                           .packages(UNSPECIFIED)

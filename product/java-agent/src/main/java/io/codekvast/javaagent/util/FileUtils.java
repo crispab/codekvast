@@ -21,20 +21,13 @@
  */
 package io.codekvast.javaagent.util;
 
-import io.codekvast.javaagent.config.CodekvastConfig;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Low-level file utilities used by the codekvast agent.
@@ -47,51 +40,7 @@ public final class FileUtils {
 
     private static final String UTF_8 = "UTF-8";
 
-    public static void writePropertiesTo(File file, Object object, String comment) {
-        Writer out = null;
-        try {
-            file.getParentFile().mkdirs();
-
-            // Write the properties alphabetically
-            Set<String> lines = new TreeSet<>();
-
-            extractFieldValuesFrom(object, lines);
-
-            out = new OutputStreamWriter(new FileOutputStream(file), UTF_8);
-            out.write(String.format("# %s%n", comment));
-            out.write(String.format("#%n"));
-            for (String line : lines) {
-                out.write(String.format("%s%n", line));
-            }
-
-        } catch (IOException | IllegalAccessException e) {
-            log.error("Cannot write {}: {}", file, e);
-        } finally {
-            safeClose(out);
-        }
-    }
-
-    private static void extractFieldValuesFrom(Object object, Set<String> lines) throws IllegalAccessException {
-        Field[] fields = object.getClass().getDeclaredFields();
-        for (Field field : fields) {
-            if (!Modifier.isStatic(field.getModifiers())) {
-                field.setAccessible(true);
-                Object value = field.get(object);
-                if (value instanceof CodekvastConfig) {
-                    extractFieldValuesFrom(value, lines);
-                } else if (value != null) {
-                    lines.add(String.format("%s = %s", field.getName(),
-                                            ConfigUtils.expandVariables(null, value.toString())
-                                                       .replace("\\", "\\\\")
-                                                       .replace(":", "\\:")));
-                } else {
-                    lines.add(String.format("# %s = ", field.getName()));
-                }
-            }
-        }
-    }
-
-    private static Properties readPropertiesFrom(File file) throws IOException {
+    public static Properties readPropertiesFrom(File file) throws IOException {
         if (!file.exists()) {
             throw new IOException(String.format("'%s' does not exist", file.getAbsolutePath()));
         }
@@ -104,7 +53,7 @@ public final class FileUtils {
             throw new IOException(String.format("Cannot read '%s'", file.getAbsolutePath()));
         }
 
-        return readPropertiesFrom(new FileInputStream(file));
+        return readPropertiesFrom(new BufferedInputStream(new FileInputStream(file)));
     }
 
     private static Properties readPropertiesFrom(InputStream inputStream) throws IOException {
@@ -117,17 +66,6 @@ public final class FileUtils {
             safeClose(reader);
         }
         return result;
-    }
-
-    public static Properties readPropertiesFrom(URI uri) throws IOException, URISyntaxException {
-        String scheme = uri.getScheme();
-        if (scheme == null) {
-            return readPropertiesFrom(new File(new URI("file:" + uri.getPath())));
-        }
-        if (scheme.equals("classpath")) {
-            return readPropertiesFrom(FileUtils.class.getResourceAsStream(uri.getPath()));
-        }
-        return readPropertiesFrom(new File(uri));
     }
 
     private static void safeClose(Closeable closeable) {
@@ -157,7 +95,7 @@ public final class FileUtils {
                     log.warn("Failed to create {}", parentDir);
                 }
             }
-            writer = new OutputStreamWriter(new FileOutputStream(file), UTF_8);
+            writer = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(file)), UTF_8);
             writer.write(text);
             writer.flush();
         } catch (IOException e) {

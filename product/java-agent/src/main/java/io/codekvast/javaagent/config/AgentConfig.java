@@ -55,9 +55,6 @@ public class AgentConfig implements CodekvastConfig {
     private String serverUrl;
 
     @NonNull
-    private File dataPath;
-
-    @NonNull
     private String aspectjOptions;
 
     private boolean bridgeAspectjMessagesToSLF4J;
@@ -66,8 +63,6 @@ public class AgentConfig implements CodekvastConfig {
     private String methodVisibility;
 
     private int collectorResolutionSeconds;
-
-    private boolean clobberAopXml;
 
     @NonNull
     private String appName;
@@ -90,21 +85,15 @@ public class AgentConfig implements CodekvastConfig {
     @NonNull
     private String tags;
 
+    @NonNull
+    @JsonIgnore
+    private File aspectFile;
+
     @JsonIgnore
     private transient String resolvedAppVersion;
 
     @JsonIgnore
     private transient OkHttpClient httpClient;
-
-    @JsonIgnore
-    public File getAspectFile() {
-        return new File(myDataPath(appName), "aop.xml");
-    }
-
-    @JsonIgnore
-    protected File myDataPath(String appName) {
-        return new File(dataPath, ConfigUtils.normalizePathName(appName));
-    }
 
     @JsonIgnore
     public List<String> getNormalizedPackages() {
@@ -186,4 +175,5 @@ public class AgentConfig implements CodekvastConfig {
             .tags(getTags());
 
     }
+
 }

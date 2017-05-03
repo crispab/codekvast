@@ -33,14 +33,12 @@ public class InvocationRegistryTest {
     public void beforeTest() throws IOException, NoSuchMethodException {
         String codeBase = temporaryFolder.newFolder("codebase1").getAbsolutePath() + ", "
             + temporaryFolder.newFolder("codebase2").getAbsolutePath();
-        File dataPath = temporaryFolder.newFolder(".collector");
 
         //@formatter:off
         AgentConfig config = AgentConfigFactory.createSampleAgentConfig().toBuilder()
                                        .appName(APP_NAME)
                                        .appVersion(APP_VERSION)
                                        .codeBase(codeBase)
-                                       .dataPath(dataPath)
                                        .build();
         //@formatter:on
         InvocationRegistry.initialize(config);

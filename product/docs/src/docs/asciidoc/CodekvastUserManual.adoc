@@ -529,13 +529,6 @@ See also {aspectj-ltw-config}.
 {nbsp}{nbsp}-verbose -showWeaveInfo
 |
 
-|clobberAopXml
-|Should $dataPath/$appName/aop.xml be overwritten when collector is restarted?
-See <<about-clobberAopXml>>
-|*true* or *false*.
-|
-|true
-
 |bridgeAspectjMessagesToSLF4J
 |Should aspectjweaver be configured with a bridge that sends AspectJ messages to SLF4J?
 See <<about-bridgeAspectjMessages>>
@@ -618,19 +611,6 @@ They cannot know if a public or protected method is dead, since they cannot know
 |*private* |Track all methods. |*all* |Highest
 
 |===
-
-[[about-clobberAopXml]]
-==== About clobberAopXml
-Normally, codekvast-collector uses the information in codekvast.conf for producing a tailored `$dataPath/$appName/aop.xml` that then is fed to
-aspectjweaver. This is done every time the instrumented application starts.
-
-If you have special needs, you can disable this behaviour:
-
-. Start the application so that an initial `$dataPath/$appName/aop.xml` is generated from `codekvast.conf`.
-. Stop the application
-. Edit `codekvast.conf` and set `clobberAopXml = false`.
-. Edit `$dataPath/$appName/aop.xml` to suit your needs. See {aspectj-ltw-config}.
-. Start the application.
 
 [[about-bridgeAspectjMessages]]
 ==== About Bridging AspectJ messages to SLF4J
