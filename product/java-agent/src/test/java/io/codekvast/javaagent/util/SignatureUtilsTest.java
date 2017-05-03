@@ -210,6 +210,15 @@ public class SignatureUtilsTest {
         assertThat(stripModifiersAndReturnType(signature), is("public foobar"));
     }
 
+    @Test
+    public void should_detect_visibilities() {
+        assertThat(SignatureUtils.getVisibility("foo public bar"), is("public"));
+        assertThat(SignatureUtils.getVisibility("foo protected bar"), is("protected"));
+        assertThat(SignatureUtils.getVisibility("foo package-private bar"), is("package-private"));
+        assertThat(SignatureUtils.getVisibility("foo private bar"), is("private"));
+        assertThat(SignatureUtils.getVisibility("foo bar"), is("package-private"));
+    }
+
     @SuppressWarnings("unused")
     public interface TestInterface {
         void foo();

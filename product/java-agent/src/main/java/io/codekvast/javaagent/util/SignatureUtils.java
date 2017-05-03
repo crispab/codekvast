@@ -55,7 +55,7 @@ public class SignatureUtils {
     public static final String PROTECTED = "protected";
     public static final String PACKAGE_PRIVATE = "package-private";
     public static final String PRIVATE = "private";
-    private static final String[] VISIBILITY_KEYWORDS = {PUBLIC, PROTECTED, PRIVATE};
+    private static final String[] VISIBILITY_KEYWORDS = {PUBLIC, PROTECTED, PACKAGE_PRIVATE, PRIVATE};
 
     private static final List<Pattern> bytecodeAddedPatterns;
     private static final List<Pattern> bytecodeEnhancedPatterns;
