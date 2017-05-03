@@ -23,12 +23,12 @@ package io.codekvast.javaagent.scheduler;
 
 import io.codekvast.javaagent.CodekvastThreadFactory;
 import io.codekvast.javaagent.InvocationRegistry;
+import io.codekvast.javaagent.config.CollectorConfig;
+import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.javaagent.publishing.CodeBasePublisher;
 import io.codekvast.javaagent.publishing.CodeBasePublisherFactory;
 import io.codekvast.javaagent.publishing.InvocationDataPublisher;
 import io.codekvast.javaagent.publishing.InvocationDataPublisherFactory;
-import io.codekvast.javaagent.config.CollectorConfig;
-import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.javaagent.util.LogUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -110,9 +110,9 @@ public class Scheduler implements Runnable {
             // Make sure the last invocation data is published...
             if (invocationDataPublisher.getCodeBaseFingerprint() == null) {
                 // CodeBasePublisher has not executed yet
-
                 codeBasePublisherState.scheduleNow();
                 publishCodeBaseIfNeeded();
+                invocationDataPublisher.setCodeBaseFingerprint(codeBasePublisher.getCodeBaseFingerprint());
             }
             invocationDataPublisherState.scheduleNow();
             publishInvocationDataIfNeeded();
