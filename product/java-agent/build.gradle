@@ -54,7 +54,7 @@ shadowJar {
 
     manifest {
         attributes(
-            "Premain-Class": "io.codekvast.javaagent.CodekvastJavaAgent",
+            "Premain-Class": "io.codekvast.javaagent.CodekvastAgent",
             "Implementation-Title": archivesBaseName,
             "Implementation-Version": codekvastDisplayVersion
         )
