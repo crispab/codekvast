@@ -1,8 +1,8 @@
 package io.codekvast.javaagent.publishing.impl;
 
 import io.codekvast.javaagent.codebase.CodeBase;
-import io.codekvast.javaagent.config.CollectorConfig;
-import io.codekvast.javaagent.config.CollectorConfigFactory;
+import io.codekvast.javaagent.config.AgentConfig;
+import io.codekvast.javaagent.config.AgentConfigFactory;
 import okhttp3.*;
 import org.junit.Test;
 
@@ -17,8 +17,8 @@ import static org.junit.Assert.assertThat;
  */
 public class HttpCodeBasePublisherImplTest {
 
-    private final CollectorConfig config = CollectorConfigFactory
-        .createSampleCollectorConfig().toBuilder()
+    private final AgentConfig config = AgentConfigFactory
+        .createSampleAgentConfig().toBuilder()
         .appName("appName").appVersion("appVersion").build();
     private final CodeBase codeBase = new CodeBase(config);
     private final HttpCodeBasePublisherImpl publisher = new TestableHttpCodeBasePublisherImpl();

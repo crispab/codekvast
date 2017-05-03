@@ -1,4 +1,4 @@
-package integrationTest.collector;
+package integrationTest.agent;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -8,8 +8,8 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import io.codekvast.javaagent.AspectjMessageHandler;
-import io.codekvast.javaagent.config.CollectorConfig;
-import io.codekvast.javaagent.config.CollectorConfigFactory;
+import io.codekvast.javaagent.config.AgentConfig;
+import io.codekvast.javaagent.config.AgentConfigFactory;
 import io.codekvast.javaagent.util.FileUtils;
 import io.codekvast.testsupport.ProcessUtils;
 
@@ -26,27 +26,27 @@ import static org.junit.Assert.assertThat;
 @RunWith(MockitoJUnitRunner.class)
 public class JavaAgentIntegrationTest {
 
-    private final String aspectjweaver = System.getProperty("integrationTest.aspectjweaver");
-    private final String jacocoagent = System.getProperty("integrationTest.jacocoagent");
-    private final String codekvastagent = System.getProperty("integrationTest.codekvastagent");
+    private final String aspectjWeaver = System.getProperty("integrationTest.aspectjWeaver");
+    private final String jacocoAgent = System.getProperty("integrationTest.jacocoAgent");
+    private final String codekvastAgent = System.getProperty("integrationTest.codekvastAgent");
     private final String classpath = System.getProperty("integrationTest.classpath");
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-    private CollectorConfig collectorConfig;
+    private AgentConfig agentConfig;
 
-    private final Map<String, File> collectorOutputFiles = new TreeMap<>();
+    private final Map<String, File> agentOutputFiles = new TreeMap<>();
 
     @Before
     public void beforeTest() throws Exception {
-        collectorConfig = CollectorConfigFactory.createSampleCollectorConfig().toBuilder()
-                                                .appName("SampleApp")
-                                                .aspectjOptions("-verbose -showWeaveInfo")
-                                                .packages("sample")
-                                                .dataPath(temporaryFolder.newFolder())
-                                                .licenseKey("licenseKey")
-                                                .build();
+        agentConfig = AgentConfigFactory.createSampleAgentConfig().toBuilder()
+                                        .appName("SampleApp")
+                                        .aspectjOptions("-verbose -showWeaveInfo")
+                                        .packages("sample")
+                                        .dataPath(temporaryFolder.newFolder())
+                                        .licenseKey("licenseKey")
+                                        .build();
     }
 
     @Test
@@ -56,14 +56,14 @@ public class JavaAgentIntegrationTest {
         // when
 
         // then
-        assertThat(aspectjweaver, notNullValue());
-        assertThat(jacocoagent, notNullValue());
-        assertThat(codekvastagent, notNullValue());
+        assertThat(aspectjWeaver, notNullValue());
+        assertThat(jacocoAgent, notNullValue());
+        assertThat(codekvastAgent, notNullValue());
         assertThat(classpath, notNullValue());
     }
 
     @Test
-    public void should_not_start_collector_when_no_config() throws Exception {
+    public void should_not_start_when_no_config() throws Exception {
         // given
         List<String> command = buildJavaCommand(null);
 
@@ -80,7 +80,7 @@ public class JavaAgentIntegrationTest {
         // TODO Rewrite test
 
         // given
-        List<String> command = buildJavaCommand(writeCollectorConfigToFile());
+        List<String> command = buildJavaCommand(writeAgentConfigToFile());
 
         // when
         String stdout = ProcessUtils.executeCommand(command);
@@ -94,9 +94,9 @@ public class JavaAgentIntegrationTest {
         assertThat(stdout, containsString("[main] INFO sample.app.SampleApp - 2+2=4"));
         assertThat(stdout, containsString("[Codekvast Shutdown Hook]"));
 
-        walkFileTree(collectorOutputFiles, collectorConfig.getDataPath());
+        walkFileTree(agentOutputFiles, agentConfig.getDataPath());
 
-        assertThat(collectorOutputFiles.keySet(), hasItems("aop.xml", "invocations.dat.00000", "jvm.dat"));
+        assertThat(agentOutputFiles.keySet(), hasItems("aop.xml", "invocations.dat.00000", "jvm.dat"));
 
         List<String> lines = readLinesFrom("invocations.dat.00000");
         assertThat(lines, hasItem("public sample.app.SampleApp.main(java.lang.String[])"));
@@ -106,7 +106,7 @@ public class JavaAgentIntegrationTest {
     }
 
     private List<String> readLinesFrom(String basename) throws IOException {
-        File file = collectorOutputFiles.get(basename);
+        File file = agentOutputFiles.get(basename);
         List<String> result = new ArrayList<>();
         BufferedReader reader = new BufferedReader(new FileReader(file));
         String line;
@@ -116,17 +116,17 @@ public class JavaAgentIntegrationTest {
         return result;
     }
 
-    private String writeCollectorConfigToFile() throws IOException {
+    private String writeAgentConfigToFile() throws IOException {
         File file = new File(temporaryFolder.getRoot(), "codekvast.conf");
-        FileUtils.writePropertiesTo(file, collectorConfig, getClass().getSimpleName());
+        FileUtils.writePropertiesTo(file, agentConfig, getClass().getSimpleName());
         return file.getAbsolutePath();
     }
 
     private List<String> buildJavaCommand(String configPath) {
         List<String> command = new ArrayList<>(Arrays.asList("java",
-                                                             "-javaagent:" + jacocoagent,
-                                                             "-javaagent:" + codekvastagent,
-                                                             "-javaagent:" + aspectjweaver,
+                                                             "-javaagent:" + jacocoAgent,
+                                                             "-javaagent:" + codekvastAgent,
+                                                             "-javaagent:" + aspectjWeaver,
                                                              "-cp", classpath));
         if (configPath != null) {
             command.add("-Dcodekvast.configuration=" + configPath);

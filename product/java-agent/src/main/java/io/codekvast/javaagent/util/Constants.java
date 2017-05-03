@@ -29,13 +29,13 @@ import java.util.UUID;
  * @author olle.hallin@crisp.se
  */
 public class Constants {
-    public static final String COLLECTOR_VERSION = getCollectorVersion();
+    public static final String AGENT_VERSION = getAgentVersion();
     public static final String COMPUTER_ID = ComputerID.compute().toString();
     public static final String HOST_NAME = getHostName();
     public static final String JVM_UUID = UUID.randomUUID().toString();
     public static final long JVM_STARTED_AT_MILLIS = System.currentTimeMillis();
 
-    private static String getCollectorVersion() {
+    private static String getAgentVersion() {
         String version = Constants.class.getPackage().getImplementationVersion();
         return version == null ? "dev" : version;
     }

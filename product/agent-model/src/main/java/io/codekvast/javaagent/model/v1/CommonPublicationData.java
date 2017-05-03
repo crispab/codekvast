@@ -53,7 +53,7 @@ public class CommonPublicationData implements Serializable {
 
     @NonNull
     @Size(min = 1)
-    private String collectorVersion;
+    private String agentVersion;
 
     @NonNull
     @Size(min = 1)

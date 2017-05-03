@@ -21,11 +21,11 @@
  */
 package io.codekvast.javaagent.publishing;
 
-import io.codekvast.javaagent.config.CollectorConfig;
+import io.codekvast.javaagent.config.AgentConfig;
 
 /**
  * @author olle.hallin@crisp.se
  */
 public interface CodeBasePublisherFactory {
-    CodeBasePublisher create(String name, CollectorConfig config);
+    CodeBasePublisher create(String name, AgentConfig config);
 }

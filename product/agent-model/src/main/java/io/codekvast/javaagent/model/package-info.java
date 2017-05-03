@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 /**
- * Model objects shared between the codekvast collector and the server
+ * Model objects shared between the codekvast agent and the server
  * .
  *
  * @author olle.hallin@crisp.se

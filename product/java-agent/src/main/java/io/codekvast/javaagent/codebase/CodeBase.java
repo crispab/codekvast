@@ -21,7 +21,7 @@
  */
 package io.codekvast.javaagent.codebase;
 
-import io.codekvast.javaagent.config.CollectorConfig;
+import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.model.v1.CodeBaseEntry;
 import io.codekvast.javaagent.model.v1.CodeBasePublication;
 import io.codekvast.javaagent.model.v1.MethodSignature;
@@ -52,7 +52,7 @@ public class CodeBase {
     private final List<File> codeBaseFiles;
 
     @Getter
-    private final CollectorConfig config;
+    private final AgentConfig config;
 
     @Getter
     private final Map<String, MethodSignature> signatures = new TreeMap<>();
@@ -69,7 +69,7 @@ public class CodeBase {
     private List<URL> urls;
     private boolean needsExploding = false;
 
-    public CodeBase(CollectorConfig config) {
+    public CodeBase(AgentConfig config) {
         this.config = config;
         this.codeBaseFiles = config.getCodeBaseFiles();
         this.fingerprint = calculateFingerprint();

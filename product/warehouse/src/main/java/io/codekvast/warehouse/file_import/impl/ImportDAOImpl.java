@@ -83,13 +83,16 @@ public class ImportDAOImpl implements ImportDAO {
         if (updated != 0) {
             log.trace("Updated JVM {}", data.getJvmUuid());
         } else {
+            // TODO: rename columns with "collector" in the name
+            // TODO: Drop column collectorVcsId
+
             jdbcTemplate.update(
                 "INSERT INTO jvms(uuid, startedAt, dumpedAt, collectorResolutionSeconds, methodVisibility, packages, excludePackages, " +
                     "environment, collectorComputerId, collectorHostname, collectorVersion, collectorVcsId, tags) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 data.getJvmUuid(), new Timestamp(data.getJvmStartedAtMillis()), dumpedAt, 0, data.getMethodVisibility(),
                 data.getPackages(), data.getExcludePackages(), data.getEnvironment(), data.getComputerId(),
-                data.getHostName(), data.getCollectorVersion(), "vcsId", data.getTags());
+                data.getHostName(), data.getAgentVersion(), "", data.getTags());
 
             log.trace("Inserted jvm {} started at {}", data.getJvmUuid(), Instant.ofEpochMilli(data.getJvmStartedAtMillis()));
         }

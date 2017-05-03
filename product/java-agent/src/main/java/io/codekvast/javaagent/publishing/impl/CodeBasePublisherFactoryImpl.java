@@ -23,7 +23,7 @@ package io.codekvast.javaagent.publishing.impl;
 
 import io.codekvast.javaagent.publishing.CodeBasePublisher;
 import io.codekvast.javaagent.publishing.CodeBasePublisherFactory;
-import io.codekvast.javaagent.config.CollectorConfig;
+import io.codekvast.javaagent.config.AgentConfig;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -42,7 +42,7 @@ public class CodeBasePublisherFactoryImpl implements CodeBasePublisherFactory {
      * @return A configured implementation of CodeBasePublisher
      */
     @Override
-    public CodeBasePublisher create(String name, CollectorConfig config) {
+    public CodeBasePublisher create(String name, AgentConfig config) {
         if (name.equals(NoOpCodeBasePublisherImpl.NAME)) {
             return new NoOpCodeBasePublisherImpl(config);
         }

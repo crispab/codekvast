@@ -23,7 +23,7 @@ package io.codekvast.javaagent;
 
 import io.codekvast.javaagent.publishing.CodekvastPublishingException;
 import io.codekvast.javaagent.publishing.InvocationDataPublisher;
-import io.codekvast.javaagent.config.CollectorConfig;
+import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.util.SignatureUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -76,9 +76,9 @@ public class InvocationRegistry {
     /**
      * Should be called before handing over to the AspectJ load-time weaver, or else nothing will be registered.
      *
-     * @param config The collector configuration. May be null, in which case the registry is disabled.
+     * @param config The agent configuration. May be null, in which case the registry is disabled.
      */
-    public static void initialize(CollectorConfig config) {
+    public static void initialize(AgentConfig config) {
         if (config == null) {
             instance = new NullInvocationRegistry();
             return;

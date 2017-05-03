@@ -22,7 +22,7 @@
 package io.codekvast.javaagent.publishing.impl;
 
 import io.codekvast.javaagent.codebase.CodeBase;
-import io.codekvast.javaagent.config.CollectorConfig;
+import io.codekvast.javaagent.config.AgentConfig;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -33,7 +33,7 @@ public class NoOpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
 
     public static final String NAME = "no-op";
 
-    public NoOpCodeBasePublisherImpl(CollectorConfig config) {
+    public NoOpCodeBasePublisherImpl(AgentConfig config) {
         super(log, config);
     }
 

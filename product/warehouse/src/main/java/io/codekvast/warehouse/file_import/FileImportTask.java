@@ -30,7 +30,7 @@ import javax.inject.Inject;
 import java.io.File;
 
 /**
- * Scans a certain directory for files produced by the Codekvast collector, and attempts to import them to the database.
+ * Scans a certain directory for files produced by the Codekvast agent and imports them to the database.
  *
  * @author olle.hallin@crisp.se
  */

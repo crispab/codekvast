@@ -57,10 +57,10 @@ public class SampleApp {
         System.out.printf("Invoked a trivial untracked        method %,d times in %5d ms%n", count, untrackedElapsedMillis);
         System.out.printf("Invoked a trivial untracked logged method %,d times in %5d ms%n", count, untrackedLoggedElapsedMillis);
         System.out.printf("Invoked a trivial   tracked        method %,d times in %5d ms%n", count, trackedElapsedMillis);
-        System.out.printf("Codekvast collector adds roughly %d ns to a method call%n", overheadNanos);
+        System.out.printf("Codekvast adds roughly %d ns to a method call%n", overheadNanos);
 
         if (overheadNanos <= 5) {
-            throw new IllegalStateException("Unreasonable overhead: " + overheadNanos + ". Is Codekvast collector correctly wired?");
+            throw new IllegalStateException("Unreasonable overhead: " + overheadNanos + ". Is Codekvast Agent correctly wired?");
         }
     }
 
@@ -105,14 +105,14 @@ public class SampleApp {
             String verdict = shouldBeAvailable ? "GOOD:" : "BAD: ";
             String result = shouldBeAvailable
                     ? "is unavoidable."
-                    : "has leaked into my class path from -javaagent:codekvast-collector.jar";
+                    : "has leaked into my class path from -javaagent:codekvast-agent.jar";
             System.out.printf("%s %s can load class %s, which %s%n", verdict, SampleApp.class.getName(), className, result);
         } catch (ClassNotFoundException e) {
 
             String verdict = shouldBeAvailable ? "BAD: " : "GOOD:";
             String result = shouldBeAvailable
-                    ? ", which indicates that codekvast-collector is not enabled!"
-                    : ". We don't want codekvast-collector internals to leak into the application.";
+                    ? ", which indicates that codekvast-agent is not enabled!"
+                    : ". We don't want codekvast-agent internals to leak into the application.";
             System.out.printf("%s %s cannot load class %s%s%n", verdict, SampleApp.class.getName(), className, result);
         }
     }

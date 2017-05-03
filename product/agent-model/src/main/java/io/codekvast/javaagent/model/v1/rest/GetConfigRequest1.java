@@ -56,33 +56,33 @@ public class GetConfigRequest1 {
     private final String appVersion;
 
     /**
-     * Which version of the collector is doing this request?
+     * Which version of the agent is doing this request?
      */
     @NonNull
-    @Size(min = 1, message = "collectorVersion must be at least 1 characters")
-    private final String collectorVersion;
+    @Size(min = 1, message = "agentVersion must be at least 1 characters")
+    private final String agentVersion;
 
     /**
-     * What is the name of the host in which the collector executes?
+     * What is the name of the host in which the agent executes?
      */
     @NonNull
     @Size(min = 1, message = "hostName must be at least 1 characters")
     private final String hostName;
 
     /**
-     * What is the random UUID of the JVM in which the collector executes?
+     * What is the random UUID of the JVM in which the agent executes?
      */
     @NonNull
     @Size(min = 1, message = "jvmUuid must be at least 1 characters")
     private final String jvmUuid;
 
     /**
-     * When was the JVM in which the collector executes started?
+     * When was the JVM in which the agent executes started?
      */
     private final long startedAtMillis;
 
     /**
-     * What is the ID of the computer in which the collector executes?
+     * What is the ID of the computer in which the agent executes?
      */
     @NonNull
     @Size(min = 1, message = "computerId must be at least 1 characters")
@@ -92,7 +92,7 @@ public class GetConfigRequest1 {
         return GetConfigRequest1.builder()
                                 .appName("appName")
                                 .appVersion("appVersion")
-                                .collectorVersion("collectorVersion")
+                                .agentVersion("agentVersion")
                                 .computerId("computerId")
                                 .hostName("hostName")
                                 .jvmUuid("jvmUuid")

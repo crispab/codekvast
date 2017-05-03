@@ -26,7 +26,7 @@ import io.codekvast.javaagent.publishing.CodekvastPublishingException;
 import io.codekvast.javaagent.codebase.CodeBase;
 import io.codekvast.javaagent.codebase.CodeBaseFingerprint;
 import io.codekvast.javaagent.codebase.CodeBaseScanner;
-import io.codekvast.javaagent.config.CollectorConfig;
+import io.codekvast.javaagent.config.AgentConfig;
 import lombok.Getter;
 import org.slf4j.Logger;
 
@@ -38,7 +38,7 @@ abstract class AbstractCodeBasePublisher extends AbstractPublisher implements Co
     @Getter
     private CodeBaseFingerprint codeBaseFingerprint;
 
-    AbstractCodeBasePublisher(Logger log, CollectorConfig config) {
+    AbstractCodeBasePublisher(Logger log, AgentConfig config) {
         super(log, config);
     }
 

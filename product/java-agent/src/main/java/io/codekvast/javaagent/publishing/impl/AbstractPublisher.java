@@ -22,7 +22,7 @@
 package io.codekvast.javaagent.publishing.impl;
 
 import io.codekvast.javaagent.publishing.Publisher;
-import io.codekvast.javaagent.config.CollectorConfig;
+import io.codekvast.javaagent.config.AgentConfig;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 @Getter
 public abstract class AbstractPublisher implements Publisher {
 
-    private final CollectorConfig config;
+    private final AgentConfig config;
     protected final Logger log;
 
     @Setter
@@ -44,7 +44,7 @@ public abstract class AbstractPublisher implements Publisher {
     @Getter
     private int sequenceNumber;
 
-    AbstractPublisher(Logger log, CollectorConfig config) {
+    AbstractPublisher(Logger log, AgentConfig config) {
         this.log = log;
         this.config = config;
     }

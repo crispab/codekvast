@@ -1,6 +1,6 @@
 package io.codekvast.javaagent.codebase;
 
-import io.codekvast.javaagent.config.CollectorConfigFactory;
+import io.codekvast.javaagent.config.AgentConfigFactory;
 import org.junit.Test;
 
 import java.io.File;
@@ -19,10 +19,10 @@ public class CodeBaseTest {
     private CodeBase codeBase;
 
     private CodeBase getCodeBase(String codeBase) {
-        return new CodeBase(CollectorConfigFactory.createSampleCollectorConfig()
-                                                  .toBuilder()
-                                                  .codeBase(new File(codeBase).getAbsolutePath())
-                                                  .build());
+        return new CodeBase(AgentConfigFactory.createSampleAgentConfig()
+                                              .toBuilder()
+                                              .codeBase(new File(codeBase).getAbsolutePath())
+                                              .build());
     }
 
     @Test(expected = NullPointerException.class)

@@ -101,9 +101,9 @@ check.dependsOn verifyShadowJar
 integrationTest {
     inputs.files shadowJar.outputs.files
 
-    systemProperty 'integrationTest.codekvastagent', shadowJar.outputs.files.asPath
-    systemProperty 'integrationTest.aspectjweaver', configurations.aspectjweaver.asPath
-    systemProperty 'integrationTest.jacocoagent', "${configurations.jacocoagent.asPath}=destfile=build/jacoco/integrationTest2.exec,output=file,dumponexit=true"
+    systemProperty 'integrationTest.codekvastAgent', shadowJar.outputs.files.asPath
+    systemProperty 'integrationTest.aspectjWeaver', configurations.aspectjweaver.asPath
+    systemProperty 'integrationTest.jacocoAgent', "${configurations.jacocoagent.asPath}=destfile=build/jacoco/integrationTest2.exec,output=file,dumponexit=true"
     systemProperty 'integrationTest.classpath', "build/classes/integrationTest/:$configurations.sampleappRuntime.asPath"
 }
 

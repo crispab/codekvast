@@ -22,7 +22,7 @@
 package io.codekvast.javaagent.publishing.impl;
 
 import io.codekvast.javaagent.codebase.CodeBaseFingerprint;
-import io.codekvast.javaagent.config.CollectorConfig;
+import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.publishing.CodekvastPublishingException;
 import io.codekvast.javaagent.publishing.InvocationDataPublisher;
 import io.codekvast.javaagent.util.SignatureUtils;
@@ -40,7 +40,7 @@ public abstract class AbstractInvocationDataPublisher extends AbstractPublisher 
 
     private CodeBaseFingerprint codeBaseFingerprint;
 
-    AbstractInvocationDataPublisher(Logger log, CollectorConfig config) {
+    AbstractInvocationDataPublisher(Logger log, AgentConfig config) {
         super(log, config);
     }
 

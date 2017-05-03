@@ -506,12 +506,12 @@ See <<about-specifying-method-visibility>>.
 |methodVisibility=protected
 |protected
 
-|collectorResolutionSeconds
+|collectionResolutionSeconds
 |Controls how often invocation data is exported from the Codekvast collector.
 A higher value means less CPU overhead but higher memory demand.
 A higher value also means less precision.
 | A positive integer.
-| collectorResolutionSeconds=3600
+| collectionResolutionSeconds=3600
 | 600
 
 |dataPath

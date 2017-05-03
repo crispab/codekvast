@@ -27,14 +27,14 @@ import java.io.File;
 import java.net.URI;
 
 /**
- * This class locates the file to feed into {@link CollectorConfigFactory#parseCollectorConfig(URI, String)} .
+ * This class locates the file to feed into {@link AgentConfigFactory#parseAgentConfig(URI, String)} .
  * 
  * It does this by checking a number of locations, stopping as soon as a file with the correct name is found.
  *
  * @author olle.hallin@crisp.se
  */
 @Slf4j
-public class CollectorConfigLocator {
+public class AgentConfigLocator {
 
     private static final String ENVVAR_CATALINA_BASE = "CATALINA_BASE";
     private static final String ENVVAR_CATALINA_HOME = "CATALINA_HOME";
@@ -46,11 +46,11 @@ public class CollectorConfigLocator {
     static final String SYSPROP_HOME = "codekvast.home";
     static final String SYSPROP_OPTS = "codekvast.options";
 
-    private CollectorConfigLocator() {
+    private AgentConfigLocator() {
     }
 
     /**
-     * Attempts to find a codekvast-collector.conf or codekvast.conf in a number of locations.
+     * Attempts to find codekvast.conf in a number of locations.
      *
      * @return null if no config file could be found.
      */
@@ -115,7 +115,7 @@ public class CollectorConfigLocator {
             return file.toURI();
         }
 
-        file = tryLocation(constructLocation(getCollectorHome(), "conf"));
+        file = tryLocation(constructLocation(getAgentHome(), "conf"));
         if (file != null) {
             log.info("Found {}", file);
             return file.toURI();
@@ -151,12 +151,6 @@ public class CollectorConfigLocator {
             return file;
         }
 
-        file = new File(location, "codekvast-collector.conf");
-        log.debug("Looking for {}", file);
-        if (file.canRead()) {
-            return file;
-        }
-
         file = new File(location, "codekvast.conf");
         log.debug("Looking for {}", file);
         if (file.canRead()) {
@@ -166,9 +160,9 @@ public class CollectorConfigLocator {
         return null;
     }
 
-    private static String getCollectorHome() {
+    private static String getAgentHome() {
         try {
-            File home = new File(CollectorConfigLocator.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile();
+            File home = new File(AgentConfigLocator.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile();
             String homeName = home.getName();
             if (homeName.endsWith("/lib") || homeName.endsWith("/endorsed") || homeName.endsWith("/javaagent")) {
                 home = home.getParentFile();

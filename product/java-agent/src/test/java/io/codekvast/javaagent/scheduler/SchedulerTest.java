@@ -6,8 +6,8 @@ import io.codekvast.javaagent.publishing.InvocationDataPublisher;
 import io.codekvast.javaagent.publishing.InvocationDataPublisherFactory;
 import io.codekvast.javaagent.publishing.impl.NoOpCodeBasePublisherImpl;
 import io.codekvast.javaagent.publishing.impl.NoOpInvocationDataPublisherImpl;
-import io.codekvast.javaagent.config.CollectorConfig;
-import io.codekvast.javaagent.config.CollectorConfigFactory;
+import io.codekvast.javaagent.config.AgentConfig;
+import io.codekvast.javaagent.config.AgentConfigFactory;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import org.junit.Before;
 import org.junit.Rule;
@@ -40,7 +40,7 @@ public class SchedulerTest {
     @Mock
     private InvocationDataPublisherFactory invocationDataPublisherFactoryMock;
 
-    private CollectorConfig config = CollectorConfigFactory.createSampleCollectorConfig();
+    private AgentConfig config = AgentConfigFactory.createSampleAgentConfig();
 
     private CodeBasePublisher codeBasePublisher = new NoOpCodeBasePublisherImpl(config);
 
@@ -65,10 +65,10 @@ public class SchedulerTest {
         MockitoAnnotations.initMocks(this);
         scheduler = new Scheduler(config, configPollerMock, codeBasePublisherFactoryMock, invocationDataPublisherFactoryMock);
 
-        when(codeBasePublisherFactoryMock.create(anyString(), any(CollectorConfig.class)))
+        when(codeBasePublisherFactoryMock.create(anyString(), any(AgentConfig.class)))
             .thenReturn(codeBasePublisher);
 
-        when(invocationDataPublisherFactoryMock.create(anyString(), any(CollectorConfig.class)))
+        when(invocationDataPublisherFactoryMock.create(anyString(), any(AgentConfig.class)))
             .thenReturn(invocationDataPublisher);
     }
 

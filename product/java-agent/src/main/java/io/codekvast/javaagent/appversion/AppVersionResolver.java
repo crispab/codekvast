@@ -21,7 +21,7 @@
  */
 package io.codekvast.javaagent.appversion;
 
-import io.codekvast.javaagent.config.CollectorConfig;
+import io.codekvast.javaagent.config.AgentConfig;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -31,9 +31,9 @@ import java.util.Collection;
 public class AppVersionResolver {
 
     private final Collection<AppVersionStrategy> appVersionStrategies = new ArrayList<>();
-    private final CollectorConfig config;
+    private final AgentConfig config;
 
-    public AppVersionResolver(CollectorConfig config) {
+    public AppVersionResolver(AgentConfig config) {
         this.config = config;
 
         this.appVersionStrategies.add(new LiteralAppVersionStrategy());

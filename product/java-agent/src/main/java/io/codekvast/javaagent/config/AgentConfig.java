@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Encapsulates the configuration that is used by codekvast-collector.
+ * Encapsulates the configuration that is used by the Codekvast agent.
  *
  * @author olle.hallin@crisp.se
  */
@@ -44,7 +44,7 @@ import java.util.concurrent.TimeUnit;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Setter(AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
-public class CollectorConfig implements CodekvastConfig {
+public class AgentConfig implements CodekvastConfig {
     public static final String INVOCATIONS_BASENAME = "invocations.dat";
     public static final String JVM_BASENAME = "jvm.dat";
 
@@ -173,7 +173,7 @@ public class CollectorConfig implements CodekvastConfig {
             .builder()
             .appName(getAppName())
             .appVersion(getResolvedAppVersion())
-            .collectorVersion(Constants.COLLECTOR_VERSION)
+            .agentVersion(Constants.AGENT_VERSION)
             .computerId(Constants.COMPUTER_ID)
             .environment(getEnvironment())
             .excludePackages(getExcludePackages())

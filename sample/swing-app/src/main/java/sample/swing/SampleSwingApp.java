@@ -1,8 +1,8 @@
 package sample.swing;
 
 import io.codekvast.javaagent.CodekvastAgent;
-import io.codekvast.javaagent.config.CollectorConfig;
-import io.codekvast.javaagent.config.CollectorConfigFactory;
+import io.codekvast.javaagent.config.AgentConfig;
+import io.codekvast.javaagent.config.AgentConfigFactory;
 
 import javax.swing.*;
 
@@ -16,7 +16,7 @@ public class SampleSwingApp extends JFrame {
     }
 
     private static void initializeCodekvast() {
-        CollectorConfig config = CollectorConfigFactory
+        AgentConfig config = AgentConfigFactory
                 .createTemplateConfig()
                 .toBuilder()
                 .appName("swing-app")

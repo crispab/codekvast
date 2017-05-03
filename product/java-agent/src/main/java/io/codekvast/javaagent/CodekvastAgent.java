@@ -25,9 +25,9 @@ import io.codekvast.javaagent.publishing.impl.CodeBasePublisherFactoryImpl;
 import io.codekvast.javaagent.publishing.impl.InvocationDataPublisherFactoryImpl;
 import io.codekvast.javaagent.scheduler.impl.ConfigPollerImpl;
 import io.codekvast.javaagent.scheduler.Scheduler;
-import io.codekvast.javaagent.config.CollectorConfig;
-import io.codekvast.javaagent.config.CollectorConfigFactory;
-import io.codekvast.javaagent.config.CollectorConfigLocator;
+import io.codekvast.javaagent.config.AgentConfig;
+import io.codekvast.javaagent.config.AgentConfigFactory;
+import io.codekvast.javaagent.config.AgentConfigLocator;
 import io.codekvast.javaagent.config.MethodAnalyzer;
 import io.codekvast.javaagent.util.FileUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -45,19 +45,19 @@ import java.util.Set;
  * <p>
  * Invocation: Add the following options to the Java command line:
  * <pre><code>
- *    -javaagent:/path/to/codekvast-collector-n.n.jar -javaagent:/path/to/aspectjweaver-n.n.jar
+ *    -javaagent:/path/to/codekvast-agent-n.n.jar -javaagent:/path/to/aspectjweaver-n.n.jar
  * </code></pre>
  * <p>
- * <em>NOTE: the ordering of the collector and the aspectjweaver is important!</em>
+ * <em>NOTE: the ordering of codekvast-agent and aspectjweaver is important!</em>
  * <p>
  * CodekvastAgent could also be initialized from a statically woven aspect.
  * <p>
- * In that case, the aspect should have a static block that locates the config and initializes the collector:
+ * In that case, the aspect should have a static block that locates the config and initializes the agent:
  * <pre><code>
  *     public aspect MethodExecutionAspect extends AbstractMethodExecutionAspect {
  *
  *         static {
- *             CollectorConfig config = ...
+ *             AgentConfig config = ...
  *             CodekvastAgent.initialize(config);
  *         }
  *
@@ -85,12 +85,12 @@ public class CodekvastAgent {
     /**
      * This method is invoked by the JVM as part of bootstrapping the -javaagent
      *
-     * @param args The string after the equals sign in -javaagent:codekvast-collector.jar=args. Is used as overrides to the collector
+     * @param args The string after the equals sign in -javaagent:codekvast-agent.jar=args. Is used as overrides to the agent
      *             configuration file.
      * @param inst The standard instrumentation hook.
      */
     public static void premain(String args, Instrumentation inst) {
-        CollectorConfig config = CollectorConfigFactory.parseCollectorConfig(CollectorConfigLocator.locateConfig(), args, true);
+        AgentConfig config = AgentConfigFactory.parseAgentConfig(AgentConfigLocator.locateConfig(), args, true);
 
         initialize(config);
     }
@@ -100,7 +100,7 @@ public class CodekvastAgent {
      *
      * @param config The configuration object. May be null, in which case Codekvast is disabled.
      */
-    public static void initialize(CollectorConfig config) {
+    public static void initialize(AgentConfig config) {
         if (config == null) {
             if (scheduler != null) {
                 scheduler.shutdown();
@@ -142,12 +142,12 @@ public class CodekvastAgent {
         return thread;
     }
 
-    private static String getNormalizedPackages(CollectorConfig config) {
+    private static String getNormalizedPackages(AgentConfig config) {
         List<String> prefixes = config.getNormalizedPackages();
         return prefixes.size() == 1 ? prefixes.get(0) : prefixes.toString();
     }
 
-    private static void defineAspectjLoadTimeWeaverConfig(CollectorConfig config) {
+    private static void defineAspectjLoadTimeWeaverConfig(AgentConfig config) {
         try {
             Class.forName("org.aspectj.bridge.Constants");
 
@@ -169,7 +169,7 @@ public class CodekvastAgent {
      *
      * @return A file URI to a temporary aop-ajc.xml file.
      */
-    private static String createAopXml(CollectorConfig config) {
+    private static String createAopXml(AgentConfig config) {
         String messageHandlerClass = config.isBridgeAspectjMessagesToSLF4J()
             ? String.format("-XmessageHandlerClass:%s ", AspectjMessageHandler.class.getName())
             : "";

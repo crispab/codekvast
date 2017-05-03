@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 /**
- * Utility classes used by both the codekvast daemon and the collector.
+ * Utility classes used by the agent.
  *
  * @author olle.hallin@crisp.se
  */

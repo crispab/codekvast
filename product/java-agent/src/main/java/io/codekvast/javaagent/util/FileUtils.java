@@ -37,7 +37,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Low-level file utilities used by the codekvast daemon and the collector.
+ * Low-level file utilities used by the codekvast agent.
  *
  * @author olle.hallin@crisp.se
  */

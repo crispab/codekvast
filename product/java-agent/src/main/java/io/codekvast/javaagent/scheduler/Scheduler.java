@@ -23,7 +23,7 @@ package io.codekvast.javaagent.scheduler;
 
 import io.codekvast.javaagent.CodekvastThreadFactory;
 import io.codekvast.javaagent.InvocationRegistry;
-import io.codekvast.javaagent.config.CollectorConfig;
+import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.javaagent.publishing.CodeBasePublisher;
 import io.codekvast.javaagent.publishing.CodeBasePublisherFactory;
@@ -40,7 +40,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Responsible for executing recurring tasks within the collector.
+ * Responsible for executing recurring tasks within the agent.
  *
  * @author olle.hallin@crisp.se
  */
@@ -48,7 +48,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class Scheduler implements Runnable {
     // Collaborators
-    private final CollectorConfig config;
+    private final AgentConfig config;
     private final ConfigPoller configPoller;
     private final CodeBasePublisherFactory codeBasePublisherFactory;
     private final InvocationDataPublisherFactory invocationDataPublisherFactory;
@@ -64,7 +64,7 @@ public class Scheduler implements Runnable {
     private final SchedulerState invocationDataPublisherState = new SchedulerState("invocationData").initialize(10, 10);
     private InvocationDataPublisher invocationDataPublisher;
 
-    public Scheduler(CollectorConfig config,
+    public Scheduler(AgentConfig config,
                      ConfigPoller configPoller,
                      CodeBasePublisherFactory codeBasePublisherFactory,
                      InvocationDataPublisherFactory invocationDataPublisherFactory) {

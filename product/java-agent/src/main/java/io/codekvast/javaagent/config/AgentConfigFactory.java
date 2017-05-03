@@ -30,9 +30,9 @@ import java.net.URI;
 import java.util.Properties;
 
 /**
- * A factory for {@link CollectorConfig} objects.
+ * A factory for {@link AgentConfig} objects.
  */
-public class CollectorConfigFactory {
+public class AgentConfigFactory {
 
     private static final boolean DEFAULT_CLOBBER_AOP_XML = true;
     private static final boolean DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_SLF4J = true;
@@ -44,21 +44,21 @@ public class CollectorConfigFactory {
     private static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
     private static final String SAMPLE_CODEBASE_URI1 = "/path/to/codebase1/";
     private static final String SAMPLE_CODEBASE_URI2 = "/path/to/codebase2/";
-    private static final File DEFAULT_DATA_PATH = new File("/tmp/codekvast/.collector");
+    private static final File DEFAULT_DATA_PATH = new File("/tmp/codekvast/.agent");
     private static final String SAMPLE_TAGS = "key1=value1, key2=value2";
     private static final String OVERRIDE_SEPARATOR = ";";
     private static final String UNSPECIFIED = "unspecified";
     private static final String TAGS_KEY = "tags";
     private static final String TRIAL_LICENSE_KEY = "";
 
-    private CollectorConfigFactory() {
+    private AgentConfigFactory() {
     }
 
-    public static CollectorConfig parseCollectorConfig(URI uri, String cmdLineArgs) {
-        return parseCollectorConfig(uri, cmdLineArgs, false);
+    public static AgentConfig parseAgentConfig(URI uri, String cmdLineArgs) {
+        return parseAgentConfig(uri, cmdLineArgs, false);
     }
 
-    public static CollectorConfig parseCollectorConfig(URI uri, String cmdLineArgs, boolean prependSystemPropertiesToTags) {
+    public static AgentConfig parseAgentConfig(URI uri, String cmdLineArgs, boolean prependSystemPropertiesToTags) {
         if (uri == null) {
             return null;
         }
@@ -66,13 +66,13 @@ public class CollectorConfigFactory {
         try {
             Properties props = FileUtils.readPropertiesFrom(uri);
 
-            parseOverrides(props, System.getProperty(CollectorConfigLocator.SYSPROP_OPTS));
+            parseOverrides(props, System.getProperty(AgentConfigLocator.SYSPROP_OPTS));
             parseOverrides(props, cmdLineArgs);
             if (prependSystemPropertiesToTags) {
                 doPrependSystemPropertiesToTags(props);
             }
 
-            return buildCollectorConfig(props);
+            return buildAgentConfig(props);
         } catch (Exception e) {
             throw new IllegalArgumentException("Cannot parse " + uri, e);
         }
@@ -88,7 +88,7 @@ public class CollectorConfigFactory {
         }
     }
 
-    public static CollectorConfig buildCollectorConfig(Properties props) {
+    public static AgentConfig buildAgentConfig(Properties props) {
         // Backwards compatibility kludge. "packages" and "packagePrefixes" were renamed in version 0.16.0
         String packages = ConfigUtils.getOptionalStringValue(props, "packagePrefixes", null);
         if (packages == null) {
@@ -101,25 +101,25 @@ public class CollectorConfigFactory {
         }
         // End
 
-        return CollectorConfig.builder()
-                              .appName(validateAppName(ConfigUtils.getMandatoryStringValue(props, "appName")))
-                              .appVersion(ConfigUtils.getOptionalStringValue(props, "appVersion", UNSPECIFIED))
-                              .aspectjOptions(ConfigUtils.getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
-                              .bridgeAspectjMessagesToSLF4J(ConfigUtils.getOptionalBooleanValue(props, "bridgeAspectjMessagesToSLF4J",
+        return AgentConfig.builder()
+                          .appName(validateAppName(ConfigUtils.getMandatoryStringValue(props, "appName")))
+                          .appVersion(ConfigUtils.getOptionalStringValue(props, "appVersion", UNSPECIFIED))
+                          .aspectjOptions(ConfigUtils.getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
+                          .bridgeAspectjMessagesToSLF4J(ConfigUtils.getOptionalBooleanValue(props, "bridgeAspectjMessagesToSLF4J",
                                                                                                 DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_SLF4J))
-                              .clobberAopXml(ConfigUtils.getOptionalBooleanValue(props, "clobberAopXml", DEFAULT_CLOBBER_AOP_XML))
-                              .codeBase(ConfigUtils.getMandatoryStringValue(props, "codeBase"))
-                              .collectorResolutionSeconds(ConfigUtils.getOptionalIntValue(props, "collectorResolutionSeconds",
-                                                                                          DEFAULT_COLLECTOR_RESOLUTION_SECONDS))
-                              .dataPath(ConfigUtils.getDataPath(props, DEFAULT_DATA_PATH))
-                              .environment(ConfigUtils.getOptionalStringValue(props, "environment", DEFAULT_ENVIRONMENT))
-                              .methodVisibility(ConfigUtils.getOptionalStringValue(props, "methodVisibility", DEFAULT_METHOD_VISIBILITY))
-                              .packages(packages)
-                              .excludePackages(excludePackages)
-                              .licenseKey(ConfigUtils.getOptionalStringValue(props, "licenseKey", TRIAL_LICENSE_KEY))
-                              .serverUrl(ConfigUtils.getOptionalStringValue(props, "serverUrl", DEFAULT_SERVER_URL))
-                              .tags(ConfigUtils.getOptionalStringValue(props, TAGS_KEY, ""))
-                              .build();
+                          .clobberAopXml(ConfigUtils.getOptionalBooleanValue(props, "clobberAopXml", DEFAULT_CLOBBER_AOP_XML))
+                          .codeBase(ConfigUtils.getMandatoryStringValue(props, "codeBase"))
+                          .collectorResolutionSeconds(ConfigUtils.getOptionalIntValue(props, "collectorResolutionSeconds",
+                                                                                      DEFAULT_COLLECTOR_RESOLUTION_SECONDS))
+                          .dataPath(ConfigUtils.getDataPath(props, DEFAULT_DATA_PATH))
+                          .environment(ConfigUtils.getOptionalStringValue(props, "environment", DEFAULT_ENVIRONMENT))
+                          .methodVisibility(ConfigUtils.getOptionalStringValue(props, "methodVisibility", DEFAULT_METHOD_VISIBILITY))
+                          .packages(packages)
+                          .excludePackages(excludePackages)
+                          .licenseKey(ConfigUtils.getOptionalStringValue(props, "licenseKey", TRIAL_LICENSE_KEY))
+                          .serverUrl(ConfigUtils.getOptionalStringValue(props, "serverUrl", DEFAULT_SERVER_URL))
+                          .tags(ConfigUtils.getOptionalStringValue(props, TAGS_KEY, ""))
+                          .build();
     }
 
     private static void doPrependSystemPropertiesToTags(Properties props) {
@@ -163,38 +163,38 @@ public class CollectorConfigFactory {
         return appName;
     }
 
-    public static void saveTo(CollectorConfig config, File file) {
-        FileUtils.writePropertiesTo(file, config, "Codekvast CollectorConfig");
+    public static void saveTo(AgentConfig config, File file) {
+        FileUtils.writePropertiesTo(file, config, "Codekvast AgentConfig");
     }
 
-    public static CollectorConfig createSampleCollectorConfig() {
-        return CollectorConfigFactory.createTemplateConfig().toBuilder()
-                                     .appName("Sample Application Name")
-                                     .codeBase(SAMPLE_CODEBASE_URI1 + " , " + SAMPLE_CODEBASE_URI2)
-                                     .packages("com.acme. , foo.bar.")
-                                     .excludePackages("some.excluded.package")
-                                     .dataPath(DEFAULT_DATA_PATH)
-                                     .build();
+    public static AgentConfig createSampleAgentConfig() {
+        return AgentConfigFactory.createTemplateConfig().toBuilder()
+                                 .appName("Sample Application Name")
+                                 .codeBase(SAMPLE_CODEBASE_URI1 + " , " + SAMPLE_CODEBASE_URI2)
+                                 .packages("com.acme. , foo.bar.")
+                                 .excludePackages("some.excluded.package")
+                                 .dataPath(DEFAULT_DATA_PATH)
+                                 .build();
     }
 
-    public static CollectorConfig createTemplateConfig() {
-        return CollectorConfig.builder()
-                              .appName(UNSPECIFIED)
-                              .appVersion(UNSPECIFIED)
-                              .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
-                              .bridgeAspectjMessagesToSLF4J(DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_SLF4J)
-                              .clobberAopXml(DEFAULT_CLOBBER_AOP_XML)
-                              .codeBase(UNSPECIFIED)
-                              .collectorResolutionSeconds(DEFAULT_COLLECTOR_RESOLUTION_SECONDS)
-                              .dataPath(ConfigUtils.getDataPath(new Properties(), DEFAULT_DATA_PATH))
-                              .environment(DEFAULT_ENVIRONMENT)
-                              .methodVisibility(DEFAULT_METHOD_VISIBILITY)
-                              .packages(UNSPECIFIED)
-                              .excludePackages("")
-                              .licenseKey(TRIAL_LICENSE_KEY)
-                              .serverUrl(DEFAULT_SERVER_URL)
-                              .tags(createSystemPropertiesTags() + ", " + SAMPLE_TAGS)
-                              .build();
+    public static AgentConfig createTemplateConfig() {
+        return AgentConfig.builder()
+                          .appName(UNSPECIFIED)
+                          .appVersion(UNSPECIFIED)
+                          .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
+                          .bridgeAspectjMessagesToSLF4J(DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_SLF4J)
+                          .clobberAopXml(DEFAULT_CLOBBER_AOP_XML)
+                          .codeBase(UNSPECIFIED)
+                          .collectorResolutionSeconds(DEFAULT_COLLECTOR_RESOLUTION_SECONDS)
+                          .dataPath(ConfigUtils.getDataPath(new Properties(), DEFAULT_DATA_PATH))
+                          .environment(DEFAULT_ENVIRONMENT)
+                          .methodVisibility(DEFAULT_METHOD_VISIBILITY)
+                          .packages(UNSPECIFIED)
+                          .excludePackages("")
+                          .licenseKey(TRIAL_LICENSE_KEY)
+                          .serverUrl(DEFAULT_SERVER_URL)
+                          .tags(createSystemPropertiesTags() + ", " + SAMPLE_TAGS)
+                          .build();
     }
 
 }

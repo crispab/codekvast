@@ -23,7 +23,7 @@ package io.codekvast.javaagent.publishing.impl;
 
 import io.codekvast.javaagent.publishing.CodekvastPublishingException;
 import io.codekvast.javaagent.codebase.CodeBase;
-import io.codekvast.javaagent.config.CollectorConfig;
+import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.model.Endpoints;
 import io.codekvast.javaagent.util.FileUtils;
 import io.codekvast.javaagent.util.LogUtil;
@@ -47,7 +47,7 @@ public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
 
     private static final MediaType APPLICATION_OCTET_STREAM = MediaType.parse("application/octet-stream");
 
-    HttpCodeBasePublisherImpl(CollectorConfig config) {
+    HttpCodeBasePublisherImpl(AgentConfig config) {
         super(log, config);
     }
 

@@ -2,8 +2,8 @@ package io.codekvast.javaagent.publishing.impl;
 
 import io.codekvast.javaagent.publishing.CodeBasePublisher;
 import io.codekvast.javaagent.publishing.CodeBasePublisherFactory;
-import io.codekvast.javaagent.config.CollectorConfig;
-import io.codekvast.javaagent.config.CollectorConfigFactory;
+import io.codekvast.javaagent.config.AgentConfig;
+import io.codekvast.javaagent.config.AgentConfigFactory;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.boot.test.rule.OutputCapture;
@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
  */
 public class CodeBasePublisherFactoryImplTest {
 
-    private final CollectorConfig config = CollectorConfigFactory.createSampleCollectorConfig();
+    private final AgentConfig config = AgentConfigFactory.createSampleAgentConfig();
 
     @Rule
     public OutputCapture output = new OutputCapture();

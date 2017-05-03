@@ -21,12 +21,12 @@
  */
 package io.codekvast.javaagent.publishing;
 
-import io.codekvast.javaagent.config.CollectorConfig;
+import io.codekvast.javaagent.config.AgentConfig;
 
 /**
  * @author olle.hallin@crisp.se
  */
 public interface InvocationDataPublisherFactory {
 
-    InvocationDataPublisher create(String name, CollectorConfig config);
+    InvocationDataPublisher create(String name, AgentConfig config);
 }

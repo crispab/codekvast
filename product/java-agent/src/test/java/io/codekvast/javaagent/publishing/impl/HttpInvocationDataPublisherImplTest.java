@@ -1,8 +1,8 @@
 package io.codekvast.javaagent.publishing.impl;
 
 import io.codekvast.javaagent.codebase.CodeBaseFingerprint;
-import io.codekvast.javaagent.config.CollectorConfig;
-import io.codekvast.javaagent.config.CollectorConfigFactory;
+import io.codekvast.javaagent.config.AgentConfig;
+import io.codekvast.javaagent.config.AgentConfigFactory;
 import okhttp3.*;
 import org.junit.Test;
 
@@ -20,8 +20,8 @@ import static org.junit.Assert.assertThat;
  */
 public class HttpInvocationDataPublisherImplTest {
 
-    private final CollectorConfig config = CollectorConfigFactory
-        .createSampleCollectorConfig().toBuilder().appName("appName").appVersion("appVersion").build();
+    private final AgentConfig config = AgentConfigFactory
+        .createSampleAgentConfig().toBuilder().appName("appName").appVersion("appVersion").build();
 
     private File uploadedFile;
 

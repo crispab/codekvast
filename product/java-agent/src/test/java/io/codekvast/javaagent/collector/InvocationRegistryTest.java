@@ -1,8 +1,8 @@
 package io.codekvast.javaagent.collector;
 
 import io.codekvast.javaagent.InvocationRegistry;
-import io.codekvast.javaagent.config.CollectorConfig;
-import io.codekvast.javaagent.config.CollectorConfigFactory;
+import io.codekvast.javaagent.config.AgentConfig;
+import io.codekvast.javaagent.config.AgentConfigFactory;
 import io.codekvast.javaagent.util.SignatureUtils;
 import org.aspectj.lang.Signature;
 import org.junit.After;
@@ -26,7 +26,6 @@ public class InvocationRegistryTest {
     @Rule
     public final TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-    private CollectorConfig config;
     private Signature signature1;
     private Signature signature2;
 
@@ -37,7 +36,7 @@ public class InvocationRegistryTest {
         File dataPath = temporaryFolder.newFolder(".collector");
 
         //@formatter:off
-        config = CollectorConfigFactory.createSampleCollectorConfig().toBuilder()
+        AgentConfig config = AgentConfigFactory.createSampleAgentConfig().toBuilder()
                                        .appName(APP_NAME)
                                        .appVersion(APP_VERSION)
                                        .codeBase(codeBase)

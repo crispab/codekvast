@@ -20,6 +20,6 @@
  * THE SOFTWARE.
  */
 /**
- * REST API offered to the Codekvast Collectors.
+ * REST API offered to the Codekvast Agent.
  */
 package io.codekvast.warehouse.agent;

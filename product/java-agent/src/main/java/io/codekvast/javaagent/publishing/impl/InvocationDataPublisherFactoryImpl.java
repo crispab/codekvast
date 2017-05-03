@@ -23,7 +23,7 @@ package io.codekvast.javaagent.publishing.impl;
 
 import io.codekvast.javaagent.publishing.InvocationDataPublisher;
 import io.codekvast.javaagent.publishing.InvocationDataPublisherFactory;
-import io.codekvast.javaagent.config.CollectorConfig;
+import io.codekvast.javaagent.config.AgentConfig;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -42,7 +42,7 @@ public class InvocationDataPublisherFactoryImpl implements InvocationDataPublish
      */
 
     @Override
-    public InvocationDataPublisher create(String name, CollectorConfig config) {
+    public InvocationDataPublisher create(String name, AgentConfig config) {
         if (name.equals(NoOpInvocationDataPublisherImpl.NAME)) {
             return new NoOpInvocationDataPublisherImpl(config);
         }

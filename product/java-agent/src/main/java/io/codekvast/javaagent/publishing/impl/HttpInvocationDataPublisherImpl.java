@@ -22,7 +22,7 @@
 package io.codekvast.javaagent.publishing.impl;
 
 import io.codekvast.javaagent.publishing.CodekvastPublishingException;
-import io.codekvast.javaagent.config.CollectorConfig;
+import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.model.Endpoints;
 import io.codekvast.javaagent.model.v1.InvocationDataPublication;
 import io.codekvast.javaagent.util.FileUtils;
@@ -48,7 +48,7 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
 
     private static final MediaType APPLICATION_OCTET_STREAM = MediaType.parse("application/octet-stream");
 
-    HttpInvocationDataPublisherImpl(CollectorConfig config) {
+    HttpInvocationDataPublisherImpl(AgentConfig config) {
         super(log, config);
     }
 

@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 /**
- * This is the main entry point to the Codekvast Collector.
+ * This is the main entry point to the Codekvast Agent.
  *
  * @author olle.hallin@crisp.se
  */

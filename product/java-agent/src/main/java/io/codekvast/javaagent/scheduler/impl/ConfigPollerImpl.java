@@ -23,7 +23,7 @@ package io.codekvast.javaagent.scheduler.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.codekvast.javaagent.scheduler.ConfigPoller;
-import io.codekvast.javaagent.config.CollectorConfig;
+import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.javaagent.util.Constants;
@@ -37,19 +37,19 @@ import java.io.IOException;
  */
 @Slf4j
 public class ConfigPollerImpl implements ConfigPoller {
-    private final CollectorConfig config;
+    private final AgentConfig config;
     private final GetConfigRequest1 requestTemplate;
 
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public ConfigPollerImpl(CollectorConfig config) {
+    public ConfigPollerImpl(AgentConfig config) {
         this.config = config;
         this.requestTemplate = GetConfigRequest1.builder()
                                                 .appName(config.getAppName())
                                                 .appVersion("to-be-resolved")
-                                                .collectorVersion(Constants.COLLECTOR_VERSION)
+                                                .agentVersion(Constants.AGENT_VERSION)
                                                 .computerId(Constants.COMPUTER_ID)
                                                 .hostName(Constants.HOST_NAME)
                                                 .jvmUuid(Constants.JVM_UUID)

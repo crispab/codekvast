@@ -6,7 +6,7 @@ import io.codekvast.javaagent.codebase.scannertest.ScannerTest2;
 import io.codekvast.javaagent.codebase.scannertest.ScannerTest3;
 import io.codekvast.javaagent.codebase.scannertest.ScannerTest4;
 import io.codekvast.javaagent.codebase.scannertest.excluded.ExcludedScannerTest5;
-import io.codekvast.javaagent.config.CollectorConfigFactory;
+import io.codekvast.javaagent.config.AgentConfigFactory;
 import io.codekvast.javaagent.model.v1.CodeBaseEntry;
 import io.codekvast.javaagent.model.v1.SignatureStatus;
 import org.junit.Before;
@@ -38,12 +38,12 @@ public class CodeBaseScannerTest {
     }
 
     private CodeBase getCodeBase(String codeBase) {
-        return new CodeBase(CollectorConfigFactory.createSampleCollectorConfig().toBuilder()
-                                                  .codeBase(new File(codeBase).getAbsolutePath())
-                                                  .dataPath(temporaryFolder.getRoot())
-                                                  .packages(ScannerTest1.class.getPackage().getName())
-                                                  .excludePackages(ExcludedScannerTest5.class.getPackage().getName())
-                                                  .build());
+        return new CodeBase(AgentConfigFactory.createSampleAgentConfig().toBuilder()
+                                              .codeBase(new File(codeBase).getAbsolutePath())
+                                              .dataPath(temporaryFolder.getRoot())
+                                              .packages(ScannerTest1.class.getPackage().getName())
+                                              .excludePackages(ExcludedScannerTest5.class.getPackage().getName())
+                                              .build());
     }
 
     @Test
