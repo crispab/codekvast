@@ -8,4 +8,9 @@ mainClassName = "sample.swing.SampleSwingApp"
 dependencies {
     compile project(":product:java-agent")
     compile project(":sample:sample-lib")
+
+    runtime logback
+    runtime aspectjRuntime
 }
+
+run.dependsOn installDist

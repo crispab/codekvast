@@ -104,8 +104,8 @@ public class MariadbIntegrationTest {
         // when
 
         // then
-        assertThat("Wrong number of applied Flyway migrations", flyway.info().applied().length, is(10));
         assertThat("Wrong number of pending Flyway migrations", flyway.info().pending().length, is(0));
+        assertThat(countRowsInTable("schema_version WHERE success != 1"), is(0));
     }
 
     @Test

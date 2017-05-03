@@ -32,7 +32,7 @@ import org.aspectj.lang.annotation.Pointcut;
  * It is weaved into the target app by the AspectJ load-time weaver.
  *
  * @author olle.hallin@crisp.se
- * @see CodekvastJavaAgent
+ * @see CodekvastAgent
  */
 @SuppressWarnings("NoopMethodInAbstractClass")
 @Aspect
@@ -41,7 +41,7 @@ public abstract class AbstractMethodExecutionAspect {
     /**
      * This abstract pointcut specifies what method executions to detect.
      * <p>
-     * It is made concrete by an XML file that is created on-the-fly by {@link CodekvastJavaAgent} before
+     * It is made concrete by an XML file that is created on-the-fly by {@link CodekvastAgent} before
      * loading the AspectJ load-time weaving javaagent.
      */
     @Pointcut

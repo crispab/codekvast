@@ -1,9 +1,8 @@
 package sample.swing;
 
-import io.codekvast.javaagent.CodekvastJavaAgent;
+import io.codekvast.javaagent.CodekvastAgent;
 import io.codekvast.javaagent.config.CollectorConfig;
 import io.codekvast.javaagent.config.CollectorConfigFactory;
-import io.codekvast.javaagent.util.ConfigUtils;
 
 import javax.swing.*;
 
@@ -20,12 +19,13 @@ public class SampleSwingApp extends JFrame {
         CollectorConfig config = CollectorConfigFactory
                 .createTemplateConfig()
                 .toBuilder()
-                .appName(ConfigUtils.expandVariables(null, "$APP_NAME"))
+                .appName("swing-app")
                 .appVersion("from static aspect")
-                .codeBase("$APP_HOME/lib")
+                .codeBase("build/install/swing-app/lib")
                 .packages("sample")
+                .methodVisibility("private")
                 .build();
-        CodekvastJavaAgent.initialize(config);
+        CodekvastAgent.initialize(config);
     }
 
     private void createGUI() {

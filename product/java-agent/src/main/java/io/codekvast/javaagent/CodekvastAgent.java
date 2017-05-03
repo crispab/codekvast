@@ -50,7 +50,7 @@ import java.util.Set;
  * <p>
  * <em>NOTE: the ordering of the collector and the aspectjweaver is important!</em>
  * <p>
- * CodekvastJavaAgent could also be initialized from a statically woven aspect.
+ * CodekvastAgent could also be initialized from a statically woven aspect.
  * <p>
  * In that case, the aspect should have a static block that locates the config and initializes the collector:
  * <pre><code>
@@ -58,7 +58,7 @@ import java.util.Set;
  *
  *         static {
  *             CollectorConfig config = ...
- *             CodekvastJavaAgent.initialize(config);
+ *             CodekvastAgent.initialize(config);
  *         }
  *
  *         public pointcut methodExecution: execution(public * *..*(..)) &amp;&amp; within(foo..*)
@@ -69,7 +69,7 @@ import java.util.Set;
  * @author olle.hallin@crisp.se
  */
 @Slf4j
-public class CodekvastJavaAgent {
+public class CodekvastAgent {
 
     private static final String NAME = "Codekvast";
 
@@ -78,7 +78,7 @@ public class CodekvastJavaAgent {
 
     private static Scheduler scheduler;
 
-    private CodekvastJavaAgent() {
+    private CodekvastAgent() {
         // Not possible to instantiate a javaagent
     }
 
@@ -96,7 +96,7 @@ public class CodekvastJavaAgent {
     }
 
     /**
-     * Initializes CodekvastJavaAgent. Before this method has been invoked, no method invocations are recorded.
+     * Initializes CodekvastAgent. Before this method has been invoked, no method invocations are recorded.
      *
      * @param config The configuration object. May be null, in which case Codekvast is disabled.
      */

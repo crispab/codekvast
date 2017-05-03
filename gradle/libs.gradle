@@ -5,6 +5,7 @@ ext {
     springfoxVersion = '2.6.1'
 
     aspectjWeaver = "org.aspectj:aspectjweaver:$aspectjVersion"
+    aspectjRuntime = "org.aspectj:aspectjrt:$aspectjVersion"
 
     slf4jApi = 'org.slf4j:slf4j-api:1.7.25'
     testFrameworks = [
