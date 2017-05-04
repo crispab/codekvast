@@ -46,7 +46,7 @@ public class MariadbIntegrationTest {
     private final long now = System.currentTimeMillis();
 
     private static final int PORT = 3306;
-    private static final String DATABASE = "codekvast_warehouse";
+    private static final String DATABASE = "codekvast";
     private static final String USERNAME = "codekvast";
     private static final String PASSWORD = "codekvast";
 

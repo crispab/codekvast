@@ -154,7 +154,7 @@ String executeDockerCompose(String args) {
     def process = command.execute([
             "WAREHOUSE_VERSION=$codekvastDisplayVersion",
             "WAREHOUSE_CONTAINER_PREFIX=warehousesystest",
-            "WAREHOUSE_API_PORT=0",
+            "WAREHOUSE_PORT=0",
             "WAREHOUSE_RESTART_POLICY='on-failure:10'",
             "WAREHOUSE_QUEUE_DIR=$queueDir",
             "WAREHOUSE_LOG_DIR=$logDir",
@@ -172,9 +172,9 @@ String executeDockerCompose(String args) {
 
 def waitForAppReadyAt(String endpoint) {
     def url = "http://" + endpoint
-    logger.debug("Trying to to GET {}", url)
+    logger.debug("Trying to GET {}", url)
 
-    int numberOfAttempts = 120
+    int numberOfAttempts = 60
     int remainingAttempts = numberOfAttempts
     while (true) {
         try {

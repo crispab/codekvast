@@ -9,7 +9,7 @@ declare WAREHOUSE_VERSION=${WAREHOUSE_VERSION:-latest}
 
 # On what port should Codekvast Warehouse expose the REST API (0=random)?
 # Edit to suit your needs.
-declare WAREHOUSE_API_PORT=${WAREHOUSE_API_PORT:-0}
+declare WAREHOUSE_PORT=${WAREHOUSE_PORT:-0}
 
 # Where to queue data files uploaded by Codekvast Agent?
 declare WAREHOUSE_QUEUE_DIR=${WAREHOUSE_QUEUE_DIR:-/var/codekvast}
@@ -24,7 +24,6 @@ declare WAREHOUSE_LOG_DIR=${WAREHOUSE_LOG_DIR:-/var/log}
 declare WAREHOUSE_DATABASE_DIR=${WAREHOUSE_DATABASE_DIR:-/var/lib/codekvast-database}
 
 #--- No changes below this line! ---------------------------------------
-declare COLON=${WAREHOUSE_VOLUME_SEPARATOR:-:}
 
 cat << EOF | docker-compose -p ${WAREHOUSE_CONTAINER_PREFIX:-codekvast} -f- $@
 version: '2'
@@ -35,8 +34,8 @@ services:
     image: crisp/codekvast-warehouse:${WAREHOUSE_VERSION}
 
     volumes:
-    - ${WAREHOUSE_QUEUE_DIR}${COLON}/var/codekvast
-    - ${WAREHOUSE_LOG_DIR}${COLON}/var/log
+    - ${WAREHOUSE_QUEUE_DIR}:/var/codekvast
+    - ${WAREHOUSE_LOG_DIR}:/var/log
 
     links:
     - db:database
@@ -44,20 +43,20 @@ services:
     restart: ${WAREHOUSE_RESTART_POLICY}
 
     ports:
-    - "${WAREHOUSE_API_PORT}:8080"
+    - "${WAREHOUSE_PORT}:8080"
 
   db:
     image: mariadb:10
 
     environment:
     - MYSQL_ROOT_PASSWORD=root
-    - MYSQL_DATABASE=codekvast_warehouse
+    - MYSQL_DATABASE=codekvast
     - MYSQL_USER=codekvast
     - MYSQL_PASSWORD=codekvast
     - TERM=xterm-256color
 
     volumes:
-    - ${WAREHOUSE_DATABASE_DIR}${COLON}/var/lib/mysql
+    - ${WAREHOUSE_DATABASE_DIR}:/var/lib/mysql
 
     expose:
     - "3306"

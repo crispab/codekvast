@@ -23,7 +23,7 @@ task startMariadb {
                     '--name codekvast_database ' +
                     '-p 3306:3306 ' +
                     '-e MYSQL_ROOT_PASSWORD=root ' +
-                    '-e MYSQL_DATABASE=codekvast_warehouse ' +
+                    '-e MYSQL_DATABASE=codekvast ' +
                     '-e MYSQL_USER=codekvast ' +
                     '-e MYSQL_PASSWORD=codekvast ' +
                     '-e TERM=xterm-256color ' +
@@ -38,7 +38,7 @@ task startMariadb {
 }
 
 flyway {
-    url = 'jdbc:mariadb://localhost/codekvast_warehouse'
+    url = 'jdbc:mariadb://localhost/codekvast'
     user = 'codekvast'
     password = 'codekvast'
     validateOnMigrate = false
