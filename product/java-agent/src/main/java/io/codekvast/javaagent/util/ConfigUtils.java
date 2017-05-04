@@ -100,6 +100,10 @@ public final class ConfigUtils {
         return Boolean.valueOf(getOptionalStringValue(props, key, Boolean.toString(defaultValue)));
     }
 
+    public static int getOptionalIntValue(Properties props, String key, int defaultValue) {
+        return Integer.valueOf(getOptionalStringValue(props, key, Integer.toString(defaultValue)));
+    }
+
     public static String getMandatoryStringValue(Properties props, String key) {
         String value = expandVariables(props, props.getProperty(key));
         if (value == null || value.trim().length() == 0) {

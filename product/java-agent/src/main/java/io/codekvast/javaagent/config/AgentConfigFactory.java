@@ -39,6 +39,9 @@ public class AgentConfigFactory {
     private static final String DEFAULT_ENVIRONMENT = "";
     private static final String DEFAULT_METHOD_VISIBILITY = SignatureUtils.PROTECTED;
     private static final String DEFAULT_SERVER_URL = "http://localhost:8080";
+    private static final int DEFAULT_HTTP_CONNECT_TIMEOUT_SECONDS = 10;
+    private static final int DEFAULT_HTTP_READ_TIMEOUT_SECONDS = 10;
+    private static final int DEFAULT_HTTP_WRITE_TIMEOUT_SECONDS = 30;
     private static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
     private static final String SAMPLE_CODEBASE_URI1 = "/path/to/codebase1/";
     private static final String SAMPLE_CODEBASE_URI2 = "/path/to/codebase2/";
@@ -113,13 +116,19 @@ public class AgentConfigFactory {
                           .aspectFile(DEFAULT_ASPECT_FILE)
                           .aspectjOptions(ConfigUtils.getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
                           .bridgeAspectjMessagesToSLF4J(ConfigUtils.getOptionalBooleanValue(props, "bridgeAspectjMessagesToSLF4J",
-                                                                                                DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_SLF4J))
+                                                                                            DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_SLF4J))
                           .codeBase(ConfigUtils.getMandatoryStringValue(props, "codeBase"))
                           .environment(ConfigUtils.getOptionalStringValue(props, "environment", DEFAULT_ENVIRONMENT))
+                          .excludePackages(excludePackages)
+                          .httpConnectTimeoutSeconds(
+                              ConfigUtils.getOptionalIntValue(props, "httpConnectTimeoutSeconds", DEFAULT_HTTP_CONNECT_TIMEOUT_SECONDS))
+                          .httpReadTimeoutSeconds(
+                              ConfigUtils.getOptionalIntValue(props, "httpReadTimeoutSeconds", DEFAULT_HTTP_READ_TIMEOUT_SECONDS))
+                          .httpWriteTimeoutSeconds(
+                              ConfigUtils.getOptionalIntValue(props, "httpWriteTimeoutSeconds", DEFAULT_HTTP_WRITE_TIMEOUT_SECONDS))
+                          .licenseKey(ConfigUtils.getOptionalStringValue(props, "licenseKey", TRIAL_LICENSE_KEY))
                           .methodVisibility(ConfigUtils.getOptionalStringValue(props, "methodVisibility", DEFAULT_METHOD_VISIBILITY))
                           .packages(packages)
-                          .excludePackages(excludePackages)
-                          .licenseKey(ConfigUtils.getOptionalStringValue(props, "licenseKey", TRIAL_LICENSE_KEY))
                           .serverUrl(ConfigUtils.getOptionalStringValue(props, "serverUrl", DEFAULT_SERVER_URL))
                           .tags(ConfigUtils.getOptionalStringValue(props, TAGS_KEY, ""))
                           .build();
@@ -184,10 +193,13 @@ public class AgentConfigFactory {
                           .bridgeAspectjMessagesToSLF4J(DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_SLF4J)
                           .codeBase(UNSPECIFIED)
                           .environment(DEFAULT_ENVIRONMENT)
+                          .excludePackages("")
+                          .httpConnectTimeoutSeconds(DEFAULT_HTTP_CONNECT_TIMEOUT_SECONDS)
+                          .httpReadTimeoutSeconds(DEFAULT_HTTP_READ_TIMEOUT_SECONDS)
+                          .httpWriteTimeoutSeconds(DEFAULT_HTTP_WRITE_TIMEOUT_SECONDS)
+                          .licenseKey(TRIAL_LICENSE_KEY)
                           .methodVisibility(DEFAULT_METHOD_VISIBILITY)
                           .packages(UNSPECIFIED)
-                          .excludePackages("")
-                          .licenseKey(TRIAL_LICENSE_KEY)
                           .serverUrl(DEFAULT_SERVER_URL)
                           .tags(createSystemPropertiesTags() + ", " + SAMPLE_TAGS)
                           .build();

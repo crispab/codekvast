@@ -93,6 +93,10 @@ public class AgentConfig implements CodekvastConfig {
     @JsonIgnore
     private transient OkHttpClient httpClient;
 
+    private int httpConnectTimeoutSeconds;
+    private int httpReadTimeoutSeconds;
+    private int httpWriteTimeoutSeconds;
+
     @JsonIgnore
     public List<String> getNormalizedPackages() {
         return ConfigUtils.getNormalizedPackages(packages);
@@ -140,10 +144,9 @@ public class AgentConfig implements CodekvastConfig {
     public OkHttpClient getHttpClient() {
         if (httpClient == null) {
             httpClient = new OkHttpClient.Builder()
-                // TODO: make OkHttpClient timeouts configurable
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .writeTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(10, TimeUnit.SECONDS)
+                .connectTimeout(httpConnectTimeoutSeconds, TimeUnit.SECONDS)
+                .writeTimeout(httpWriteTimeoutSeconds, TimeUnit.SECONDS)
+                .readTimeout(httpReadTimeoutSeconds, TimeUnit.SECONDS)
                 // TODO: OkHttpClient.proxy()
                 .build();
         }

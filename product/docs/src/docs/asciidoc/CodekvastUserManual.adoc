@@ -138,7 +138,9 @@ The Codekvast Warehouse will listen on port 8080.
 
 === Codekvast Agent
 
-TODO Document how to install the agent in Heroku.
+// TODO Document how to install the agent in Heroku.
+
+To Be Completed.
 
 ////
 Your application must be modified to attach the Codekvast Agent.
@@ -341,6 +343,38 @@ See <<about-bridgeAspectjMessages>>
 |*true* or *false*.
 |
 |true
+
+|serverUrl
+|Where is the Codekvast Server?
+|A HTTP or HTTPS URL
+|http://codekvast.mycorp.com
+|http://localhost:8080
+
+|licenseKey
+|What is my license key for authenticating to the Codekvast Server at?
+|A string obtained when registering at XXX.
+|
+|
+
+// TODO document licenseKey
+
+|httpConnectTimeoutSeconds
+|How long shall the agent wait for establishing a connection to the server?
+|A positive integer denoting a number of seconds.
+|
+|10
+
+|httpReadTimeoutSeconds
+|How long shall the agent wait when reading a response from the server?
+|A positive integer denoting a number of seconds.
+|
+|10
+
+|httpWriteTimeoutSeconds
+|How long may a request to the server take at most?
+|A positive integer denoting a number of seconds.
+|
+|30
 
 |===
 
