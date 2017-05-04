@@ -47,18 +47,19 @@ public class FileImportTask {
         this.codekvastSettings = codekvastSettings;
         this.publicationImporter = publicationImporter;
 
-        log.info("Looking for files in {} every {} seconds", codekvastSettings.getImportPath(),
-                 codekvastSettings.getImportPathPollIntervalSeconds());
+        log.info("Looking for files in {} every {} seconds", codekvastSettings.getQueuePath(),
+                 codekvastSettings.getQueuePathPollIntervalSeconds());
     }
 
-    @Scheduled(initialDelayString = "${codekvast.importPathPollInitialDelaySeconds}000",
-        fixedDelayString = "${codekvast.importPathPollIntervalSeconds}000")
+    @Scheduled(
+        initialDelayString = "${codekvast.queuePathPollInitialDelaySeconds}000",
+        fixedDelayString = "${codekvast.queuePathPollIntervalSeconds}000")
     public void importPublicationFiles() {
         String oldThreadName = Thread.currentThread().getName();
         Thread.currentThread().setName("Codekvast FileImport");
         try {
-            log.trace("Looking for files to import in {}", codekvastSettings.getImportPath());
-            walkDirectory(codekvastSettings.getImportPath());
+            log.trace("Looking for files to import in {}", codekvastSettings.getQueuePath());
+            walkDirectory(codekvastSettings.getQueuePath());
         } finally {
             Thread.currentThread().setName(oldThreadName);
         }

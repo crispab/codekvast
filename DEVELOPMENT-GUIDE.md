@@ -9,7 +9,6 @@ The following stack is used when developing Codekvast (in alphabetical order):
 1. Docker 1.10.3+ and Docker Compose 1.6.2+ (For running MariaDB and Codekvast Warehouse)
 1. Github
 1. Gradle 
-1. H2 database (disk persistent data, server embedded in Codekvast Daemon)
 1. Inkscape (SVG graphics)
 1. Java 8
 1. Lombok

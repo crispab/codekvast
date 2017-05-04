@@ -89,23 +89,23 @@ public class AgentServiceImpl implements AgentService {
     }
 
     private File doSaveInputStream(InputStream inputStream, String prefix) throws IOException {
-        createDirectory(settings.getImportPath());
+        createDirectory(settings.getQueuePath());
 
-        File result = File.createTempFile(prefix, ".ser", settings.getImportPath());
+        File result = File.createTempFile(prefix, ".ser", settings.getQueuePath());
         Files.copy(inputStream, result.toPath(), REPLACE_EXISTING);
 
         log.debug("Saved uploaded publication to {}", result);
         return result;
     }
 
-    private void createDirectory(File importPath) throws IOException {
-        if (!importPath.isDirectory()) {
-            log.debug("Creating {}", settings.getImportPath());
-            settings.getImportPath().mkdirs();
-            if (!settings.getImportPath().isDirectory()) {
+    private void createDirectory(File queuePath) throws IOException {
+        if (!queuePath.isDirectory()) {
+            log.debug("Creating {}", settings.getQueuePath());
+            settings.getQueuePath().mkdirs();
+            if (!settings.getQueuePath().isDirectory()) {
                 throw new IOException("Could not create import directory");
             }
-            log.info("Created {}", importPath);
+            log.info("Created {}", queuePath);
         }
     }
 

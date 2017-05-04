@@ -11,8 +11,8 @@ declare WAREHOUSE_VERSION=${WAREHOUSE_VERSION:-latest}
 # Edit to suit your needs.
 declare WAREHOUSE_API_PORT=${WAREHOUSE_API_PORT:-0}
 
-# Where to look for data files from Codekvast Daemons?
-declare WAREHOUSE_INPUT_DIR=${WAREHOUSE_INPUT_DIR:-/tmp/codekvast/warehouse}
+# Where to queue data files uploaded by Codekvast Agent?
+declare WAREHOUSE_QUEUE_DIR=${WAREHOUSE_QUEUE_DIR:-/var/codekvast}
 
 # How should Docker handle restarts of warehouse containers?
 declare WAREHOUSE_RESTART_POLICY=${WAREHOUSE_RESTART_POLICY:-unless-stopped}
@@ -35,7 +35,7 @@ services:
     image: crisp/codekvast-warehouse:${WAREHOUSE_VERSION}
 
     volumes:
-    - ${WAREHOUSE_INPUT_DIR}${COLON}/tmp/codekvast/.warehouse
+    - ${WAREHOUSE_QUEUE_DIR}${COLON}/var/codekvast
     - ${WAREHOUSE_LOG_DIR}${COLON}/var/log
 
     links:

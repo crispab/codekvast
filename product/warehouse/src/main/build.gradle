@@ -51,7 +51,7 @@ run {
 
     jvmArgs = ['-ea']
     args = ["--logging.file=$buildDir/log/${applicationName}.log",
-            '--codekvast.importPathPollIntervalSeconds=10',
+            '--codekvast.queuePathPollIntervalSeconds=10',
             "--spring.resources.staticLocations=" +
                 "file:$projectDir/src/webapp/dist/," +
                 "classpath:/META-INF/resources"]

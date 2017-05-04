@@ -38,15 +38,15 @@ public class FileImportTaskTest {
     @Before
     public void beforeTest() throws Exception {
         settings = new CodekvastSettings();
-        settings.setImportPath(temporaryFolder.getRoot());
+        settings.setQueuePath(temporaryFolder.getRoot());
 
         task = new FileImportTask(settings, importer);
     }
 
     @Test
-    public void should_handle_empty_importPath() throws Exception {
+    public void should_handle_empty_queuePath() throws Exception {
         // given
-        // An empty importPath
+        // An empty queuePath
 
         // when
         task.importPublicationFiles();

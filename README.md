@@ -34,9 +34,7 @@ Codekvast is released under the MIT license.
 
 Pre-built binaries, a User Manual and Docker Compose files are available for download from [Codekvast at Bintray](https://bintray.com/crisp/codekvast/distributions/view#files)
 
-* codekvast-daemon-x.x.x.zip contains the *Codekvast Collector* and the *Codekvast Daemon*.
-
-* codekvast-warehouse-x.x.x.zip contains *Codekvast Warehouse* as a regular Linux System-V service. Install MariaDB separately.
+* codekvast-agent-x.x.x.zip contains the *Codekvast Agent*.
 
 * codekvast-warehouse.sh is a Docker Compose script that runs Codekvast Warehouse and MariaDB as Docker images (pulled from Docker Hub).
 

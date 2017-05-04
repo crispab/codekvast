@@ -27,7 +27,7 @@ public class AgentServiceImplTest {
 
     @Before
     public void setUp() {
-        settings.setImportPath(temporaryFolder.getRoot());
+        settings.setQueuePath(temporaryFolder.getRoot());
     }
 
     @Test(expected = LicenseViolationException.class)
