@@ -30,7 +30,7 @@ public class HttpInvocationDataPublisherImplTest {
     @Test
     public void should_create_and_upload_file() throws Exception {
         Set<String> invocations = new HashSet<>(Arrays.asList("a", "b", "c"));
-        publisher.setCodeBaseFingerprint(new CodeBaseFingerprint(1, "sha256"));
+        publisher.setCodeBaseFingerprint(CodeBaseFingerprint.builder(config).build());
         publisher.doPublishInvocationData(System.currentTimeMillis(), invocations);
 
         assertThat(uploadedFile, notNullValue());

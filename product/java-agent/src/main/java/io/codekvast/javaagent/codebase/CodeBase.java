@@ -87,7 +87,7 @@ public class CodeBase {
         long startedAt = System.currentTimeMillis();
 
         urls = new ArrayList<>();
-        CodeBaseFingerprint.Builder builder = CodeBaseFingerprint.builder();
+        CodeBaseFingerprint.Builder builder = CodeBaseFingerprint.builder(config);
         for (File codeBaseFile : codeBaseFiles) {
             if (codeBaseFile.isDirectory()) {
                 addUrl(codeBaseFile);

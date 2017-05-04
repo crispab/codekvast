@@ -21,12 +21,15 @@
  */
 package io.codekvast.javaagent.codebase;
 
+import io.codekvast.javaagent.config.AgentConfig;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.util.Set;
 import java.util.TreeSet;
@@ -43,17 +46,22 @@ import static javax.xml.bind.DatatypeConverter.printBase64Binary;
 @Slf4j
 public class CodeBaseFingerprint {
     private final int numFiles;
-    private String sha256;
 
-    static Builder builder() {
-        return new Builder();
+    @NonNull
+    private final String sha256;
+
+    public static Builder builder(AgentConfig config) {
+        return new Builder(config);
     }
 
     /**
      * Builder for incrementally building a CodeBaseFingerprint
      */
-    static class Builder {
-        Set<File> files = new TreeSet<File>();
+    @RequiredArgsConstructor
+    public static class Builder {
+        private final AgentConfig config;
+
+        private Set<File> files = new TreeSet<>();
 
         Builder record(File file) {
             if (files.add(file)) {
@@ -65,22 +73,28 @@ public class CodeBaseFingerprint {
         }
 
         byte[] longToBytes(long l) {
+            long value = l;
             byte[] result = new byte[Long.SIZE / Byte.SIZE];
-            for (int i = 7; i >= 0; i--) {
-                result[i] = (byte) (l & 0xFF);
-                l >>= Byte.SIZE;
+            for (int i = 0; i < result.length; i++) {
+                result[i] = (byte) (value & 0xFF);
+                value >>= Byte.SIZE;
             }
             return result;
         }
 
         @SneakyThrows
-        CodeBaseFingerprint build() {
+        public CodeBaseFingerprint build() {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
+            Charset utf8 = Charset.forName("UTF-8");
+            md.update(config.getNormalizedPackages().toString().getBytes(utf8));
+            md.update(config.getNormalizedExcludePackages().toString().getBytes(utf8));
+            md.update(config.getMethodAnalyzer().toString().getBytes(utf8));
+
             md.update(longToBytes(files.size()));
             for (File file : files) {
                 md.update(longToBytes(file.length()));
                 md.update(longToBytes(file.lastModified()));
-                md.update(file.getName().getBytes());
+                md.update(file.getName().getBytes(utf8));
             }
             return new CodeBaseFingerprint(files.size(), printBase64Binary(md.digest()));
         }

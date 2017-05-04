@@ -1,5 +1,7 @@
 package io.codekvast.javaagent.codebase;
 
+import io.codekvast.javaagent.config.AgentConfig;
+import io.codekvast.javaagent.config.AgentConfigFactory;
 import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,7 +24,7 @@ public class CodeBaseFingerprintTest {
     public final TemporaryFolder folder = new TemporaryFolder();
 
     private final File files[] = new File[3];
-    private final long now = 1492881351977L;
+    private final AgentConfig config = AgentConfigFactory.createSampleAgentConfig();
 
     @Before
     public void beforeTest() throws IOException {
@@ -35,8 +37,8 @@ public class CodeBaseFingerprintTest {
     @Test
     public void should_be_equal_when_empty() throws IOException {
         // given
-        CodeBaseFingerprint fp1 = CodeBaseFingerprint.builder().build();
-        CodeBaseFingerprint fp2 = CodeBaseFingerprint.builder().build();
+        CodeBaseFingerprint fp1 = CodeBaseFingerprint.builder(config).build();
+        CodeBaseFingerprint fp2 = CodeBaseFingerprint.builder(config).build();
 
         // when
 
@@ -50,8 +52,8 @@ public class CodeBaseFingerprintTest {
     @Test
     public void should_not_be_equal_when_different_files() throws IOException {
         // given
-        CodeBaseFingerprint.Builder b1 = CodeBaseFingerprint.builder();
-        CodeBaseFingerprint.Builder b2 = CodeBaseFingerprint.builder();
+        CodeBaseFingerprint.Builder b1 = CodeBaseFingerprint.builder(config);
+        CodeBaseFingerprint.Builder b2 = CodeBaseFingerprint.builder(config);
 
         // when
         b1.record(files[1]);
@@ -71,20 +73,20 @@ public class CodeBaseFingerprintTest {
     @Test
     public void should_have_certain_value_when_empty() throws IOException {
         // given
-        CodeBaseFingerprint fp1 = CodeBaseFingerprint.builder().build();
+        CodeBaseFingerprint fp1 = CodeBaseFingerprint.builder(config).build();
 
         // when
 
         // then
         assertThat(fp1.getNumFiles(), is(0));
-        assertThat(fp1.getSha256(), is("r1Vw9aGBC3r3jK9LxwpmDw31HkK6+R1N5bIyjeDoPfw="));
+        assertThat(fp1.getSha256(), is("eLOcAEeBUbujF8chETZte9+arWfYgCOFJ+pld5EmcUI="));
     }
 
     @Test
     public void should_be_insensitive_to_file_order() throws IOException {
         // given
-        CodeBaseFingerprint fp1 = CodeBaseFingerprint.builder().record(files[1]).record(files[2]).build();
-        CodeBaseFingerprint fp2 = CodeBaseFingerprint.builder().record(files[2]).record(files[1]).build();
+        CodeBaseFingerprint fp1 = CodeBaseFingerprint.builder(config).record(files[1]).record(files[2]).build();
+        CodeBaseFingerprint fp2 = CodeBaseFingerprint.builder(config).record(files[2]).record(files[1]).build();
 
         // when
 
@@ -96,8 +98,8 @@ public class CodeBaseFingerprintTest {
     @Test
     public void should_ignore_duplicate_files() throws IOException {
         // given
-        CodeBaseFingerprint fp1 = CodeBaseFingerprint.builder().record(files[1]).build();
-        CodeBaseFingerprint fp2 = CodeBaseFingerprint.builder().record(files[1]).record(files[1]).build();
+        CodeBaseFingerprint fp1 = CodeBaseFingerprint.builder(config).record(files[1]).build();
+        CodeBaseFingerprint fp2 = CodeBaseFingerprint.builder(config).record(files[1]).record(files[1]).build();
 
         // when
 
@@ -111,11 +113,12 @@ public class CodeBaseFingerprintTest {
     @Test
     public void should_include_last_modified_in_calculation() throws IOException {
         // given
-        CodeBaseFingerprint fp1 = CodeBaseFingerprint.builder().record(files[1]).build();
+        CodeBaseFingerprint fp1 = CodeBaseFingerprint.builder(config).record(files[1]).build();
+        long now = 1492881351977L;
 
         // when
         files[1].setLastModified(now + 10);
-        CodeBaseFingerprint fp2 = CodeBaseFingerprint.builder().record(files[1]).build();
+        CodeBaseFingerprint fp2 = CodeBaseFingerprint.builder(config).record(files[1]).build();
 
         // then
         assertThat(files[1].lastModified(), not(is(now)));
@@ -125,12 +128,54 @@ public class CodeBaseFingerprintTest {
     @Test
     public void should_include_length_in_calculation() throws IOException {
         // given
-        CodeBaseFingerprint fp1 = CodeBaseFingerprint.builder().record(files[1]).build();
+        CodeBaseFingerprint fp1 = CodeBaseFingerprint.builder(config).record(files[1]).build();
 
         // when
         writeFile(files[1], "foobar");
 
-        CodeBaseFingerprint fp2 = CodeBaseFingerprint.builder().record(files[1]).build();
+        CodeBaseFingerprint fp2 = CodeBaseFingerprint.builder(config).record(files[1]).build();
+
+        // then
+        assertThat(fp2, not(equalTo(fp1)));
+    }
+
+    @Test
+    public void should_include_packages_in_calculation() throws IOException {
+        // given
+        CodeBaseFingerprint fp1 = CodeBaseFingerprint.builder(config).build();
+
+        // when
+        CodeBaseFingerprint fp2 = CodeBaseFingerprint.builder(config.toBuilder()
+                                                                    .packages(config.getPackages() + "; some.more.packages")
+                                                                    .build())
+                                                     .build();
+
+        // then
+        assertThat(fp2, not(equalTo(fp1)));
+    }
+
+    @Test
+    public void should_include_exclude_packages_in_calculation() throws IOException {
+        // given
+        CodeBaseFingerprint fp1 = CodeBaseFingerprint.builder(config).build();
+
+        // when
+        CodeBaseFingerprint fp2 = CodeBaseFingerprint.builder(config.toBuilder()
+                                                                    .excludePackages(config.getExcludePackages() + "; some.more.packages")
+                                                                    .build())
+                                                     .build();
+
+        // then
+        assertThat(fp2, not(equalTo(fp1)));
+    }
+
+    @Test
+    public void should_include_method_visibility_in_calculation() throws IOException {
+        // given
+        CodeBaseFingerprint fp1 = CodeBaseFingerprint.builder(config.toBuilder().methodVisibility("public").build()).build();
+
+        // when
+        CodeBaseFingerprint fp2 = CodeBaseFingerprint.builder(config.toBuilder().methodVisibility("private").build()).build();
 
         // then
         assertThat(fp2, not(equalTo(fp1)));

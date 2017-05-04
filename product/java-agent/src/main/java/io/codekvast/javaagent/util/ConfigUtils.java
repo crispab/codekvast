@@ -22,12 +22,10 @@
 package io.codekvast.javaagent.util;
 
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Properties;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,6 +34,7 @@ import java.util.regex.Pattern;
  *
  * @author olle.hallin@crisp.se
  */
+@Slf4j
 @UtilityClass
 public final class ConfigUtils {
 
@@ -49,10 +48,11 @@ public final class ConfigUtils {
                 }
             }
         }
+        Collections.sort(result);
         return result;
     }
 
-    public static String getNormalizedPackagePrefix(String packagePrefix) {
+    static String getNormalizedPackagePrefix(String packagePrefix) {
         int dot = packagePrefix.length() - 1;
         while (dot >= 0 && packagePrefix.charAt(dot) == '.') {
             dot -= 1;
@@ -61,19 +61,15 @@ public final class ConfigUtils {
     }
 
 
-    public static String normalizePathName(String path) {
-        return path.replaceAll("[^a-zA-Z0-9_-]", "").toLowerCase(Locale.ENGLISH);
-    }
-
     public static String getOptionalStringValue(Properties props, String key, String defaultValue) {
         return expandVariables(props, props.getProperty(key, defaultValue));
     }
 
-    public static String expandVariables(Properties props, String value) {
+    static String expandVariables(Properties props, String value) {
         if (value == null) {
             return null;
         }
-        Pattern pattern = Pattern.compile("\\$(\\{([a-zA-Z0-9._-]+)\\}|([a-zA-Z0-9._-]+))");
+        Pattern pattern = Pattern.compile("\\$(\\{([a-zA-Z0-9._-]+)}|([a-zA-Z0-9._-]+))");
         Matcher matcher = pattern.matcher(value);
         StringBuffer sb = new StringBuffer();
         while (matcher.find()) {
@@ -91,8 +87,7 @@ public final class ConfigUtils {
                 String prefix = key1 != null ? "\\$\\{" : "\\$";
                 String suffix = key1 != null ? "\\}" : "";
                 replacement = String.format("%s%s%s", prefix, key, suffix);
-                //noinspection UseOfSystemOutOrSystemErr
-                System.err.printf("Warning: unrecognized variable: %s%n", replacement.replace("\\", ""));
+                log.warn("Warning: unrecognized variable: {}", replacement.replace("\\", ""));
             }
 
             matcher.appendReplacement(sb, replacement);
@@ -103,18 +98,6 @@ public final class ConfigUtils {
 
     public static boolean getOptionalBooleanValue(Properties props, String key, boolean defaultValue) {
         return Boolean.valueOf(getOptionalStringValue(props, key, Boolean.toString(defaultValue)));
-    }
-
-    public static int getOptionalIntValue(Properties props, String key, int defaultValue) {
-        String value = expandVariables(props, props.getProperty(key));
-        if (value != null) {
-            try {
-                return Integer.parseInt(value);
-            } catch (NumberFormatException e) {
-                throw new IllegalArgumentException(String.format("Illegal integer value for %s: %s", key, value));
-            }
-        }
-        return defaultValue;
     }
 
     public static String getMandatoryStringValue(Properties props, String key) {
@@ -138,7 +121,4 @@ public final class ConfigUtils {
         return result;
     }
 
-    public static File getDataPath(Properties props, File defaultDataPath) {
-        return new File(getOptionalStringValue(props, "dataPath", defaultDataPath.getAbsolutePath()));
-    }
 }
