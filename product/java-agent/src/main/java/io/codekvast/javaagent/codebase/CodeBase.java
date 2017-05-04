@@ -162,7 +162,6 @@ public class CodeBase {
             String name = entry.getKey();
             result.add(
                 CodeBaseEntry.builder()
-                             .normalizedSignature(name)
                              .methodSignature(entry.getValue())
                              .signature(SignatureUtils.stripModifiers(name))
                              .visibility(SignatureUtils.getVisibility(name))

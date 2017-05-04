@@ -38,12 +38,6 @@ public class CodeBaseEntry implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * The normalized signature in String form.
-     */
-    @NonNull
-    private final String normalizedSignature; // TODO Remove when daemon is dead.
-
-    /**
      * The low-level description of the signature.
      */
     private final MethodSignature methodSignature;
