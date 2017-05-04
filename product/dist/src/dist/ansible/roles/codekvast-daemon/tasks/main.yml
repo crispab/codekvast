@@ -1,0 +1,23 @@
+---
+- name: Assert that Java is installed
+  shell: which java
+
+- name: Download {{tarball}} from Bintray
+  get_url: url={{download_url_prefix}}/{{tarball}} dest=/root/{{tarball}}
+
+- name: Unpack {{tarball}} into /opt
+  unarchive:
+  args:
+    src: /root/{{tarball}}
+    dest: /opt
+    owner: "{{run_codekvast_daemon_as}}"
+    copy: no
+
+- name: Configure the Codekvast Daemon
+  template: src=application.properties dest={{codekvast_config}} backup=yes
+
+- name: Define the Codekvast Daemon service
+  file: src=/opt/codekvast-daemon-{{codekvast_version}}/codekvast-daemon.jar dest=/etc/init.d/{{service_name}} state=link force=yes
+
+- name: Restart the Codekvast Daemon service
+  service: name={{service_name}} state=restarted

@@ -13,7 +13,7 @@ configurations {
 }
 
 def seleniumVersion = '3.4.0'
-ext.workDir = new File("/tmp/codekvast-systemTest")
+ext.workDir = file("$buildDir/tmp/systemTest")
 
 dependencies {
     systemTestCompileOnly lombok
@@ -51,8 +51,7 @@ task startSystemTestEnvironment {
         if (endpoint == "") {
             throw new IllegalStateException("Failed to execute 'docker-compose up'")
         }
-        logger.lifecycle("Waiting for http://{} to respond", endpoint)
-        waitForAppReadyAt endpoint
+        waitForAppReady()
     }
 }
 
@@ -170,13 +169,19 @@ String executeDockerCompose(String args) {
     return stdout
 }
 
-def waitForAppReadyAt(String endpoint) {
-    def url = "http://" + endpoint
-    logger.debug("Trying to GET {}", url)
-
+def waitForAppReady() {
     int numberOfAttempts = 60
     int remainingAttempts = numberOfAttempts
+    def lastUrl = ""
     while (true) {
+        def url = "http://${executeDockerCompose("port app 8080")}"
+        if (url != lastUrl) {
+            logger.lifecycle("Waiting for {} to respond", url)
+        } else {
+            logger.debug("Waiting for {} to respond", url)
+        }
+        lastUrl = url
+
         try {
             def text = new URL(url).text
             return

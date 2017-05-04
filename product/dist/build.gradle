@@ -23,12 +23,19 @@ distributions {
         }
     }
 
-    // TODO: add dist for agent
+    ansible {
+        baseName = "codekvast-ansible-$codekvastVersion"
+        contents {
+            from file('src/dist/ansible')
+            expand(project.properties)
+            filteringCharset = 'UTF-8'
+        }
+    }
 }
 
 task bintrayStage(type: Sync) {
     from warehouseDistZip
-    // from agentDistZip
+    from ansibleDistZip
     from tasks.getByPath(':product:docs:asciidoctor'), {
         include 'CodekvastUserManual.html'
         rename { "CodekvastUserManual-${codekvastVersion}.html" }
