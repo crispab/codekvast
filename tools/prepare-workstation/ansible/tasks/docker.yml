@@ -10,7 +10,7 @@
   changed_when: false
 
 - name: Install docker-compose
-  when: "installed_version.stdout is not defined or installed_version.stdout.find('{{ docker_compose_version }}') == -1"
+  when: installed_version.stdout is not defined or installed_version.stdout.find(docker_compose_version) == -1
   get_url:
     url: https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}
     dest: /usr/local/bin/docker-compose
@@ -25,7 +25,7 @@
   changed_when: false
 
 - name: Install docker-machine
-  when: "installed_version.stdout is not defined or installed_version.stdout.find('{{ docker_machine_version }}') == -1"
+  when: installed_version.stdout is not defined or installed_version.stdout.find(docker_machine_version) == -1
   get_url:
     url: https://github.com/docker/machine/releases/download/v{{ docker_machine_version }}/docker-machine-{{ ansible_system }}-{{ ansible_architecture }}
     dest: /usr/local/bin/docker-machine
