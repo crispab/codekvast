@@ -76,23 +76,20 @@ public class ImportDAOImpl implements ImportDAO {
     @Override
     public long importJvm(CommonPublicationData data) {
 
-        Timestamp dumpedAt = new Timestamp(data.getPublishedAtMillis());
+        Timestamp publishedAt = new Timestamp(data.getPublishedAtMillis());
 
-        int updated = jdbcTemplate.update("UPDATE jvms SET dumpedAt = ? WHERE uuid = ?",
-                                          dumpedAt, data.getJvmUuid());
+        int updated = jdbcTemplate.update("UPDATE jvms SET publishedAt = ? WHERE uuid = ?",
+                                          publishedAt, data.getJvmUuid());
         if (updated != 0) {
             log.trace("Updated JVM {}", data.getJvmUuid());
         } else {
-            // TODO: rename columns with "collector" in the name
-            // TODO: Drop column collectorVcsId
-
             jdbcTemplate.update(
-                "INSERT INTO jvms(uuid, startedAt, dumpedAt, collectorResolutionSeconds, methodVisibility, packages, excludePackages, " +
-                    "environment, collectorComputerId, collectorHostname, collectorVersion, collectorVcsId, tags) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                data.getJvmUuid(), new Timestamp(data.getJvmStartedAtMillis()), dumpedAt, 0, data.getMethodVisibility(),
+                "INSERT INTO jvms(uuid, startedAt, publishedAt, methodVisibility, packages, excludePackages, " +
+                    "environment, computerId, hostname, agentVersion, tags) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                data.getJvmUuid(), new Timestamp(data.getJvmStartedAtMillis()), publishedAt, data.getMethodVisibility(),
                 data.getPackages(), data.getExcludePackages(), data.getEnvironment(), data.getComputerId(),
-                data.getHostName(), data.getAgentVersion(), "", data.getTags());
+                data.getHostname(), data.getAgentVersion(), data.getTags());
 
             log.trace("Inserted jvm {} started at {}", data.getJvmUuid(), Instant.ofEpochMilli(data.getJvmStartedAtMillis()));
         }

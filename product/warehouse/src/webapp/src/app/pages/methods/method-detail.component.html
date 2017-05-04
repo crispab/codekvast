@@ -76,7 +76,7 @@
             <tbody>
             <tr>
                 <th class="w-25">Hosts:</th>
-                <td class="w-75">{{ env.hostNames.join(', ') }}</td>
+                <td class="w-75">{{ env.hostnames.join(', ') }}</td>
             </tr>
             <tr>
                 <th>Last Invoked:</th>
@@ -119,7 +119,7 @@
             </tr>
             <tr>
                 <th>Last report:</th>
-                <td>{{ app.dumpedAtMillis | ckAge:settings.dateFormat }}</td>
+                <td>{{ app.publishedAtMillis | ckAge:settings.dateFormat }}</td>
             </tr>
             </tbody>
         </table>

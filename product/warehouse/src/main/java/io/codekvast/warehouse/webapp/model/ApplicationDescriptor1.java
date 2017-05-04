@@ -53,7 +53,7 @@ public class ApplicationDescriptor1 implements Comparable<ApplicationDescriptor1
      * When was the last time we received data from this application version?
      */
     @NonNull
-    private final Long dumpedAtMillis;
+    private final Long publishedAtMillis;
 
     /**
      * When was this particular method invoked in this application version?
@@ -70,7 +70,7 @@ public class ApplicationDescriptor1 implements Comparable<ApplicationDescriptor1
     /**
      * Merge two application descriptors, taking the min and max values of both.
      * @param that The other descriptor to merge with.
-     * @return An application descriptor with extreme values of startedAtMillis, dumpedAtMillis, invokedAtMillis and the latest status.
+     * @return An application descriptor with extreme values of startedAtMillis, publishedAtMillis, invokedAtMillis and the latest status.
      */
     public ApplicationDescriptor1 mergeWith(ApplicationDescriptor1 that) {
         return that == null ? this
@@ -78,7 +78,7 @@ public class ApplicationDescriptor1 implements Comparable<ApplicationDescriptor1
                                         .name(this.name)
                                         .version(this.version)
                                         .startedAtMillis(Math.min(this.startedAtMillis, that.startedAtMillis))
-                                        .dumpedAtMillis(Math.max(this.dumpedAtMillis, that.dumpedAtMillis))
+                                        .publishedAtMillis(Math.max(this.publishedAtMillis, that.publishedAtMillis))
                                         .invokedAtMillis(Math.max(this.invokedAtMillis, that.invokedAtMillis))
                                         .status(this.invokedAtMillis > that.invokedAtMillis ? this.status : that.status)
                                         .build();

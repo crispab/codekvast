@@ -47,7 +47,7 @@ public class EnvironmentDescriptor1 implements Comparable<EnvironmentDescriptor1
      */
     @NonNull
     @Singular
-    private final Set<String> hostNames;
+    private final Set<String> hostnames;
 
     /**
      * What tags are configured for Codekvast in the environments for this particular method?
@@ -96,7 +96,7 @@ public class EnvironmentDescriptor1 implements Comparable<EnvironmentDescriptor1
                                     .invokedAtMillis(Math.max(this.invokedAtMillis, that.invokedAtMillis))
                                     .collectedToMillis(Math.max(this.collectedToMillis, that.collectedToMillis))
                                     .collectedSinceMillis(Math.min(this.collectedSinceMillis, that.collectedSinceMillis))
-                                    .hostNames(union(this.hostNames, that.hostNames))
+                                    .hostnames(union(this.hostnames, that.hostnames))
                                     .tags(union(this.tags, that.tags))
                                     .build();
     }

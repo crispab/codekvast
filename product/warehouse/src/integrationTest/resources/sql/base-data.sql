@@ -21,10 +21,10 @@ INSERT INTO methods (id, visibility, signature) VALUES
   (10, 'public', 'm10');
 
 DELETE FROM jvms;
-INSERT INTO jvms (id, uuid, collectorResolutionSeconds, methodVisibility, packages, excludePackages,
-                  collectorComputerId, collectorHostname, collectorVersion, collectorVcsId, tags)
+INSERT INTO jvms (id, uuid, methodVisibility, packages, excludePackages,
+                  computerId, hostname, agentVersion, tags)
 VALUES
-  (1, 'uuid1', 600, 'public', 'com.foobar', 'com.foobar.excluded', 'computerId', 'hostname', 'version', 'vcsId', 'tag1=t1,tag2=t2'),
-  (2, 'uuid2', 600, 'public', 'com.foobar', 'com.foobar.excluded', 'computerId', 'hostname', 'version', 'vcsId', 'tag1=t1,tag2=t2'),
-  (3, 'uuid3', 600, 'public', 'com.foobar', 'com.foobar.excluded', 'computerId', 'hostname', 'version', 'vcsId', 'tag1=t1,tag2=t2'),
-  (4, 'uuid4', 600, 'public', 'com.foobar', 'com.foobar.excluded', 'computerId', 'hostname', 'version', 'vcsId', 'tag1=t1,tag2=t2');
+  (1, 'uuid1', 'public', 'com.foobar', 'com.foobar.excluded', 'computerId', 'hostname', 'version', 'tag1=t1,tag2=t2'),
+  (2, 'uuid2', 'public', 'com.foobar', 'com.foobar.excluded', 'computerId', 'hostname', 'version', 'tag1=t1,tag2=t2'),
+  (3, 'uuid3', 'public', 'com.foobar', 'com.foobar.excluded', 'computerId', 'hostname', 'version', 'tag1=t1,tag2=t2'),
+  (4, 'uuid4', 'public', 'com.foobar', 'com.foobar.excluded', 'computerId', 'hostname', 'version', 'tag1=t1,tag2=t2');

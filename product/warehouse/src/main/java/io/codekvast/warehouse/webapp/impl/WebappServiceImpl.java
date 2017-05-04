@@ -99,7 +99,7 @@ public class WebappServiceImpl implements WebappService {
             // This is probably doable in pure SQL too, provided you are a black-belt SQL ninja. Unfortunately I'm not that strong at SQL.
 
             return String.format("SELECT i.methodId, a.name AS appName, a.version AS appVersion,\n" +
-                "  i.invokedAtMillis, i.status, j.startedAt, j.dumpedAt, j.environment, j.collectorHostname, j.tags,\n" +
+                "  i.invokedAtMillis, i.status, j.startedAt, j.publishedAt, j.environment, j.hostname, j.tags,\n" +
                 "  m.visibility, m.signature, m.declaringType, m.methodName, m.modifiers, m.packageName\n" +
                 "  FROM invocations i\n" +
                 "  JOIN applications a ON a.id = i.applicationId \n" +
@@ -127,7 +127,7 @@ public class WebappServiceImpl implements WebappService {
 
             queryState.countRow();
             long startedAt = rs.getTimestamp("startedAt").getTime();
-            long dumpedAt = rs.getTimestamp("dumpedAt").getTime();
+            long publishedAt = rs.getTimestamp("publishedAt").getTime();
             long invokedAtMillis = rs.getLong("invokedAtMillis");
 
             MethodDescriptor1.MethodDescriptor1Builder builder = queryState.getBuilder();
@@ -139,17 +139,17 @@ public class WebappServiceImpl implements WebappService {
                                                .name(appName)
                                                .version(appVersion)
                                                .startedAtMillis(startedAt)
-                                               .dumpedAtMillis(dumpedAt)
+                                               .publishedAtMillis(publishedAt)
                                                .invokedAtMillis(invokedAtMillis)
                                                .status(SignatureStatus.valueOf(rs.getString("status")))
                                                .build());
 
             queryState.saveEnvironment(EnvironmentDescriptor1.builder()
                                                              .name(rs.getString("environment"))
-                                                             .hostName(rs.getString("collectorHostname"))
+                                                             .hostname(rs.getString("hostname"))
                                                              .tags(splitOnCommaOrSemicolon(rs.getString("tags")))
                                                              .collectedSinceMillis(startedAt)
-                                                             .collectedToMillis(dumpedAt)
+                                                             .collectedToMillis(publishedAt)
                                                              .invokedAtMillis(invokedAtMillis)
                                                              .build());
 

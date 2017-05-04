@@ -68,7 +68,7 @@ public class CommonPublicationData implements Serializable {
 
     @NonNull
     @Size(min = 1)
-    private String hostName;
+    private String hostname;
 
     @Min(1_490_000_000_000L)
     private long jvmStartedAtMillis;
@@ -97,10 +97,10 @@ public class CommonPublicationData implements Serializable {
     @Override
     public String toString() {
         return String.format(
-            "CommonPublicationData{appName='%1$s', appVersion='%2$s', hostName='%3$s', publishedAt=%4$tF:%4$tT%4$tz}",
+            "CommonPublicationData{appName='%1$s', appVersion='%2$s', hostname='%3$s', publishedAt=%4$tF:%4$tT%4$tz}",
             appName,
             appVersion,
-            hostName,
+            hostname,
             publishedAtMillis);
     }
 

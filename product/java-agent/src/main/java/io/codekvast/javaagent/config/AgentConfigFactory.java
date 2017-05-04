@@ -38,7 +38,6 @@ public class AgentConfigFactory {
     private static final String DEFAULT_ASPECTJ_OPTIONS = "";
     private static final String DEFAULT_ENVIRONMENT = "";
     private static final String DEFAULT_METHOD_VISIBILITY = SignatureUtils.PROTECTED;
-    private static final int DEFAULT_COLLECTOR_RESOLUTION_SECONDS = 600;
     private static final String DEFAULT_SERVER_URL = "http://localhost:8080";
     private static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
     private static final String SAMPLE_CODEBASE_URI1 = "/path/to/codebase1/";
@@ -116,8 +115,6 @@ public class AgentConfigFactory {
                           .bridgeAspectjMessagesToSLF4J(ConfigUtils.getOptionalBooleanValue(props, "bridgeAspectjMessagesToSLF4J",
                                                                                                 DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_SLF4J))
                           .codeBase(ConfigUtils.getMandatoryStringValue(props, "codeBase"))
-                          .collectorResolutionSeconds(ConfigUtils.getOptionalIntValue(props, "collectorResolutionSeconds",
-                                                                                      DEFAULT_COLLECTOR_RESOLUTION_SECONDS))
                           .environment(ConfigUtils.getOptionalStringValue(props, "environment", DEFAULT_ENVIRONMENT))
                           .methodVisibility(ConfigUtils.getOptionalStringValue(props, "methodVisibility", DEFAULT_METHOD_VISIBILITY))
                           .packages(packages)
@@ -186,7 +183,6 @@ public class AgentConfigFactory {
                           .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
                           .bridgeAspectjMessagesToSLF4J(DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_SLF4J)
                           .codeBase(UNSPECIFIED)
-                          .collectorResolutionSeconds(DEFAULT_COLLECTOR_RESOLUTION_SECONDS)
                           .environment(DEFAULT_ENVIRONMENT)
                           .methodVisibility(DEFAULT_METHOD_VISIBILITY)
                           .packages(UNSPECIFIED)

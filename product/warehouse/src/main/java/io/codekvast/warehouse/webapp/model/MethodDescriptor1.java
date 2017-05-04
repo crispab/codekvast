@@ -96,10 +96,10 @@ public class MethodDescriptor1 {
     }
 
     /**
-     * @return The maximum value of occursInApplications.getDumpedAtMillis
+     * @return The maximum value of occursInApplications.getPublishedAtMillis
      */
     public Long getCollectedToMillis() {
-        return occursInApplications.stream().map(ApplicationDescriptor1::getDumpedAtMillis).reduce(Math::max).orElse(0L);
+        return occursInApplications.stream().map(ApplicationDescriptor1::getPublishedAtMillis).reduce(Math::max).orElse(0L);
     }
 
     /**

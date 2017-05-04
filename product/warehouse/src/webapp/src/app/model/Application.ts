@@ -1,5 +1,5 @@
 export class Application {
-    dumpedAtMillis: number;
+    publishedAtMillis: number;
     invokedAtMillis: number;
     name: string;
     startedAtMillis: number;

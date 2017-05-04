@@ -62,8 +62,6 @@ public class AgentConfig implements CodekvastConfig {
     @NonNull
     private String methodVisibility;
 
-    private int collectorResolutionSeconds;
-
     @NonNull
     private String appName;
 
@@ -166,7 +164,7 @@ public class AgentConfig implements CodekvastConfig {
             .computerId(Constants.COMPUTER_ID)
             .environment(getEnvironment())
             .excludePackages(getExcludePackages())
-            .hostName(Constants.HOST_NAME)
+            .hostname(Constants.HOST_NAME)
             .jvmStartedAtMillis(Constants.JVM_STARTED_AT_MILLIS)
             .jvmUuid(Constants.JVM_UUID)
             .methodVisibility(getMethodVisibility())

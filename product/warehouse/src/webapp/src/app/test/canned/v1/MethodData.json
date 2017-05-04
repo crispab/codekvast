@@ -22,7 +22,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 1489355538422,
           "status": "INVOKED"
         }
@@ -30,7 +30,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -78,7 +78,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -86,7 +86,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -134,7 +134,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -142,7 +142,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -190,7 +190,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -198,7 +198,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -246,7 +246,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -254,7 +254,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -302,7 +302,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 1489355538422,
           "status": "INVOKED"
         }
@@ -310,7 +310,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -358,7 +358,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 1489355538422,
           "status": "INVOKED"
         }
@@ -366,7 +366,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -414,7 +414,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 1489355538422,
           "status": "INVOKED"
         }
@@ -422,7 +422,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -470,7 +470,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 1489355538422,
           "status": "INVOKED"
         }
@@ -478,7 +478,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -526,7 +526,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 1489355538422,
           "status": "INVOKED"
         }
@@ -534,7 +534,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -582,7 +582,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -590,7 +590,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -638,7 +638,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -646,7 +646,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -694,7 +694,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -702,7 +702,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -750,7 +750,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 1489355549425,
           "status": "INVOKED"
         }
@@ -758,7 +758,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -806,7 +806,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -814,7 +814,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -862,7 +862,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -870,7 +870,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -918,7 +918,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 1489355538422,
           "status": "INVOKED"
         }
@@ -926,7 +926,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -974,7 +974,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 1489355538422,
           "status": "INVOKED"
         }
@@ -982,7 +982,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -1030,7 +1030,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -1038,7 +1038,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -1086,7 +1086,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 1489355538422,
           "status": "INVOKED"
         }
@@ -1094,7 +1094,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -1142,7 +1142,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 1489355538422,
           "status": "INVOKED"
         }
@@ -1150,7 +1150,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -1198,7 +1198,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -1206,7 +1206,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -1254,7 +1254,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 0,
           "status": "EXCLUDED_SINCE_TRIVIAL"
         }
@@ -1262,7 +1262,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -1310,7 +1310,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 0,
           "status": "EXCLUDED_SINCE_TRIVIAL"
         }
@@ -1318,7 +1318,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -1366,7 +1366,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 0,
           "status": "EXCLUDED_SINCE_TRIVIAL"
         }
@@ -1374,7 +1374,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -1422,7 +1422,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 1489355538422,
           "status": "INVOKED"
         }
@@ -1430,7 +1430,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -1478,7 +1478,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 0,
           "status": "EXCLUDED_SINCE_TRIVIAL"
         }
@@ -1486,7 +1486,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -1534,7 +1534,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -1542,7 +1542,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -1590,7 +1590,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -1598,7 +1598,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -1646,7 +1646,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -1654,7 +1654,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -1702,7 +1702,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -1710,7 +1710,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -1758,7 +1758,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 0,
           "status": "EXCLUDED_BY_PACKAGE_NAME"
         }
@@ -1766,7 +1766,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -1814,7 +1814,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -1822,7 +1822,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -1870,7 +1870,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -1878,7 +1878,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -1926,7 +1926,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 1489355549425,
           "status": "INVOKED"
         }
@@ -1934,7 +1934,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -1982,7 +1982,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 1489355549425,
           "status": "INVOKED"
         }
@@ -1990,7 +1990,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -2038,7 +2038,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -2046,7 +2046,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -2094,7 +2094,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -2102,7 +2102,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -2150,7 +2150,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 1489355549425,
           "status": "INVOKED"
         }
@@ -2158,7 +2158,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -2206,7 +2206,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 1489355549425,
           "status": "INVOKED"
         }
@@ -2214,7 +2214,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -2262,7 +2262,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -2270,7 +2270,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -2318,7 +2318,7 @@
           "name": "sample-ltw",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
-          "dumpedAtMillis": 1489355550000,
+          "publishedAtMillis": 1489355550000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -2326,7 +2326,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas"
           ],
           "tags": [
@@ -2374,7 +2374,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -2382,7 +2382,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -2390,7 +2390,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -2443,7 +2443,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -2451,7 +2451,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -2459,7 +2459,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -2512,7 +2512,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -2520,7 +2520,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -2528,7 +2528,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -2581,7 +2581,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -2589,7 +2589,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -2597,7 +2597,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -2650,7 +2650,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -2658,7 +2658,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -2666,7 +2666,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -2719,7 +2719,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -2727,7 +2727,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -2735,7 +2735,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -2788,7 +2788,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -2796,7 +2796,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -2804,7 +2804,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -2857,7 +2857,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -2865,7 +2865,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -2873,7 +2873,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -2926,7 +2926,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -2934,7 +2934,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -2942,7 +2942,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -2995,7 +2995,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -3003,7 +3003,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -3011,7 +3011,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -3064,7 +3064,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -3072,7 +3072,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -3080,7 +3080,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -3133,7 +3133,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 1489516419962,
           "status": "INVOKED"
         },
@@ -3141,7 +3141,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 1492010153561,
           "status": "INVOKED"
         }
@@ -3149,7 +3149,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -3202,7 +3202,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 1489516714965,
           "status": "INVOKED"
         },
@@ -3210,7 +3210,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -3218,7 +3218,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -3272,7 +3272,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 1489516714965,
           "status": "INVOKED"
         },
@@ -3280,7 +3280,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -3288,7 +3288,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -3342,7 +3342,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -3350,7 +3350,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -3358,7 +3358,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -3411,7 +3411,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -3419,7 +3419,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -3427,7 +3427,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -3480,7 +3480,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -3488,7 +3488,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -3496,7 +3496,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -3549,7 +3549,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 1489516429965,
           "status": "INVOKED"
         },
@@ -3557,7 +3557,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 1492010173561,
           "status": "INVOKED"
         }
@@ -3565,7 +3565,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -3618,7 +3618,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -3626,7 +3626,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -3634,7 +3634,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -3687,7 +3687,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -3695,7 +3695,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -3703,7 +3703,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -3756,7 +3756,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -3764,7 +3764,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -3772,7 +3772,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -3825,7 +3825,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -3833,7 +3833,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -3841,7 +3841,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -3894,7 +3894,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -3902,7 +3902,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -3910,7 +3910,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -3963,7 +3963,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -3971,7 +3971,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -3979,7 +3979,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -4032,7 +4032,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -4040,7 +4040,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -4048,7 +4048,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -4101,7 +4101,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -4109,7 +4109,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -4117,7 +4117,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -4170,7 +4170,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -4178,7 +4178,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -4186,7 +4186,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -4239,7 +4239,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -4247,7 +4247,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -4255,7 +4255,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -4308,7 +4308,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -4316,7 +4316,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -4324,7 +4324,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -4377,7 +4377,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -4385,7 +4385,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -4393,7 +4393,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -4446,7 +4446,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -4454,7 +4454,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -4462,7 +4462,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -4515,7 +4515,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -4523,7 +4523,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -4531,7 +4531,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -4584,7 +4584,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -4592,7 +4592,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -4600,7 +4600,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -4653,7 +4653,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -4661,7 +4661,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -4669,7 +4669,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -4722,7 +4722,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -4730,7 +4730,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -4738,7 +4738,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -4791,7 +4791,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -4799,7 +4799,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -4807,7 +4807,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -4860,7 +4860,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -4868,7 +4868,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -4876,7 +4876,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -4929,7 +4929,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -4937,7 +4937,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -4945,7 +4945,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -4998,7 +4998,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -5006,7 +5006,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -5014,7 +5014,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -5067,7 +5067,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -5075,7 +5075,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -5083,7 +5083,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -5136,7 +5136,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -5144,7 +5144,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -5152,7 +5152,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -5205,7 +5205,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -5213,7 +5213,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -5221,7 +5221,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -5274,7 +5274,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -5282,7 +5282,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -5290,7 +5290,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -5343,7 +5343,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -5351,7 +5351,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -5359,7 +5359,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -5412,7 +5412,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -5420,7 +5420,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -5428,7 +5428,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -5481,7 +5481,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -5489,7 +5489,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -5497,7 +5497,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -5550,7 +5550,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -5558,7 +5558,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -5566,7 +5566,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -5619,7 +5619,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -5627,7 +5627,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -5635,7 +5635,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -5688,7 +5688,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -5696,7 +5696,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -5704,7 +5704,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -5757,7 +5757,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -5765,7 +5765,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -5773,7 +5773,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -5826,7 +5826,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -5834,7 +5834,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -5842,7 +5842,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -5895,7 +5895,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -5903,7 +5903,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -5911,7 +5911,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -5964,7 +5964,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -5972,7 +5972,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -5980,7 +5980,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -6033,7 +6033,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -6041,7 +6041,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -6049,7 +6049,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -6102,7 +6102,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -6110,7 +6110,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -6118,7 +6118,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -6171,7 +6171,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -6179,7 +6179,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -6187,7 +6187,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -6240,7 +6240,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -6248,7 +6248,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -6256,7 +6256,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],
@@ -6309,7 +6309,7 @@
           "name": "Jenkins",
           "version": "1.598",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077998000,
+          "publishedAtMillis": 1492077998000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         },
@@ -6317,7 +6317,7 @@
           "name": "Jenkins",
           "version": "1.600",
           "startedAtMillis": 1489518812000,
-          "dumpedAtMillis": 1492077939000,
+          "publishedAtMillis": 1492077939000,
           "invokedAtMillis": 0,
           "status": "NOT_INVOKED"
         }
@@ -6325,7 +6325,7 @@
       "collectedInEnvironments": [
         {
           "name": "Gradle",
-          "hostNames": [
+          "hostnames": [
             "fjottas",
             "olle3"
           ],

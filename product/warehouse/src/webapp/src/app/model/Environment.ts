@@ -2,7 +2,7 @@ export class Environment {
     collectedDays: number;
     collectedSinceMillis: number;
     collectedToMillis: number;
-    hostNames: String[];
+    hostnames: String[];
     invokedAtMillis: number;
     name: String;
     tags: String[];

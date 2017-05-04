@@ -66,8 +66,8 @@ public class GetConfigRequest1 {
      * What is the name of the host in which the agent executes?
      */
     @NonNull
-    @Size(min = 1, message = "hostName must be at least 1 characters")
-    private final String hostName;
+    @Size(min = 1, message = "hostname must be at least 1 characters")
+    private final String hostname;
 
     /**
      * What is the random UUID of the JVM in which the agent executes?
@@ -94,7 +94,7 @@ public class GetConfigRequest1 {
                                 .appVersion("appVersion")
                                 .agentVersion("agentVersion")
                                 .computerId("computerId")
-                                .hostName("hostName")
+                                .hostname("hostname")
                                 .jvmUuid("jvmUuid")
                                 .licenseKey("licenseKey")
                                 .build();

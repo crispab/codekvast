@@ -31,7 +31,7 @@ import java.util.UUID;
 public class Constants {
     public static final String AGENT_VERSION = getAgentVersion();
     public static final String COMPUTER_ID = ComputerID.compute().toString();
-    public static final String HOST_NAME = getHostName();
+    public static final String HOST_NAME = getHostname();
     public static final String JVM_UUID = UUID.randomUUID().toString();
     public static final long JVM_STARTED_AT_MILLIS = System.currentTimeMillis();
 
@@ -40,7 +40,7 @@ public class Constants {
         return version == null ? "dev" : version;
     }
 
-    private static String getHostName() {
+    private static String getHostname() {
         try {
             return InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException e) {

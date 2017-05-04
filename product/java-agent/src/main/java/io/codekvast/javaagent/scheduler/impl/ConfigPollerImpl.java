@@ -51,7 +51,7 @@ public class ConfigPollerImpl implements ConfigPoller {
                                                 .appVersion("to-be-resolved")
                                                 .agentVersion(Constants.AGENT_VERSION)
                                                 .computerId(Constants.COMPUTER_ID)
-                                                .hostName(Constants.HOST_NAME)
+                                                .hostname(Constants.HOST_NAME)
                                                 .jvmUuid(Constants.JVM_UUID)
                                                 .licenseKey(config.getLicenseKey())
                                                 .startedAtMillis(System.currentTimeMillis())

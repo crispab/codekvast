@@ -76,7 +76,7 @@ public class MethodDescriptor1Test {
                                                           .version("1.1")
                                                           .status(EXCLUDED_BY_PACKAGE_NAME)
                                                           .startedAtMillis(collectedSinceMillis)
-                                                          .dumpedAtMillis(collectedToMillis)
+                                                          .publishedAtMillis(collectedToMillis)
                                                           .invokedAtMillis(invokedAtMillis1)
                                                           .build())
                                 .occursInApplication(
@@ -85,7 +85,7 @@ public class MethodDescriptor1Test {
                                                           .version("1.2")
                                                           .status(NOT_INVOKED)
                                                           .startedAtMillis(collectedSinceMillis + 10)
-                                                          .dumpedAtMillis(collectedToMillis - 10)
+                                                          .publishedAtMillis(collectedToMillis - 10)
                                                           .invokedAtMillis(invokedAtMillis1 - 10)
                                                           .build())
                                 .occursInApplication(
@@ -94,7 +94,7 @@ public class MethodDescriptor1Test {
                                                           .version("1.3")
                                                           .status(INVOKED)
                                                           .startedAtMillis(collectedSinceMillis)
-                                                          .dumpedAtMillis(collectedToMillis)
+                                                          .publishedAtMillis(collectedToMillis)
                                                           .invokedAtMillis(invokedAtMillis2)
                                                           .build())
                                 .collectedInEnvironment(
@@ -112,8 +112,8 @@ public class MethodDescriptor1Test {
                                                           .collectedSinceMillis(collectedSinceMillis)
                                                           .collectedToMillis(collectedToMillis)
                                                           .invokedAtMillis(invokedAtMillis2)
-                                                          .hostName("server1.customer1.com")
-                                                          .hostName("server2.customer1.com")
+                                                          .hostname("server1.customer1.com")
+                                                          .hostname("server2.customer1.com")
                                                           .tag("foo=1")
                                                           .tag("bar=2")
                                                           .tag("baz")
