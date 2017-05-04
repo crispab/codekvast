@@ -376,6 +376,18 @@ See <<about-bridgeAspectjMessages>>
 |
 |30
 
+|httpProxyHost
+|Do we need to call the Codekvast Server via an HTTP proxy such as Squid?
+|hostname-or-IP-address
+|10.57.0.10
+|
+
+|httpProxyPort
+|Which port at the proxy should we connect to?
+|A socket port number
+|
+|3128
+
 |===
 
 [[about-specifying-code-base]]

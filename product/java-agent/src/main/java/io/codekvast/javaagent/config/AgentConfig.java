@@ -22,15 +22,17 @@
 package io.codekvast.javaagent.config;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.codekvast.javaagent.model.v1.CommonPublicationData;
 import io.codekvast.javaagent.appversion.AppVersionResolver;
 import io.codekvast.javaagent.model.Endpoints;
+import io.codekvast.javaagent.model.v1.CommonPublicationData;
+import io.codekvast.javaagent.util.ConfigUtils;
 import io.codekvast.javaagent.util.Constants;
 import lombok.*;
-import io.codekvast.javaagent.util.ConfigUtils;
 import okhttp3.OkHttpClient;
 
 import java.io.File;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -39,6 +41,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author olle.hallin@crisp.se
  */
+@SuppressWarnings("ClassWithTooManyFields")
 @Data
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -83,6 +86,12 @@ public class AgentConfig implements CodekvastConfig {
     @NonNull
     private String tags;
 
+    private int httpConnectTimeoutSeconds;
+    private int httpReadTimeoutSeconds;
+    private int httpWriteTimeoutSeconds;
+    private String httpProxyHost;
+    private int httpProxyPort;
+
     @NonNull
     @JsonIgnore
     private File aspectFile;
@@ -92,10 +101,6 @@ public class AgentConfig implements CodekvastConfig {
 
     @JsonIgnore
     private transient OkHttpClient httpClient;
-
-    private int httpConnectTimeoutSeconds;
-    private int httpReadTimeoutSeconds;
-    private int httpWriteTimeoutSeconds;
 
     @JsonIgnore
     public List<String> getNormalizedPackages() {
@@ -143,14 +148,22 @@ public class AgentConfig implements CodekvastConfig {
     @JsonIgnore
     public OkHttpClient getHttpClient() {
         if (httpClient == null) {
+            validate();
             httpClient = new OkHttpClient.Builder()
                 .connectTimeout(httpConnectTimeoutSeconds, TimeUnit.SECONDS)
                 .writeTimeout(httpWriteTimeoutSeconds, TimeUnit.SECONDS)
                 .readTimeout(httpReadTimeoutSeconds, TimeUnit.SECONDS)
-                // TODO: OkHttpClient.proxy()
+                .proxy(createHttpProxy())
                 .build();
         }
         return httpClient;
+    }
+
+    private Proxy createHttpProxy() {
+        if (httpProxyHost == null || httpProxyHost.trim().isEmpty()) {
+            return null;
+        }
+        return new Proxy(Proxy.Type.HTTP, new InetSocketAddress(httpProxyHost, httpProxyPort));
     }
 
     public String getFilenamePrefix(@NonNull String prefix) {
@@ -177,4 +190,10 @@ public class AgentConfig implements CodekvastConfig {
 
     }
 
+    AgentConfig validate() {
+        if (httpProxyPort <= 0) {
+            throw new IllegalArgumentException("Illegal httpProxyPort " + httpProxyPort + ": must be a positive integer");
+        }
+        return this;
+    }
 }

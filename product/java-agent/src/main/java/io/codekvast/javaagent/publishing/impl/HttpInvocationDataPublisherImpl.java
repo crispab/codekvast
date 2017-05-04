@@ -69,12 +69,13 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
         String url = getConfig().getInvocationDataUploadEndpoint();
         File file = null;
         try {
-            file = FileUtils.serializeToFile(createPublication(recordingIntervalStartedAtMillis, invocations),
+            InvocationDataPublication publication = createPublication(recordingIntervalStartedAtMillis, invocations);
+            file = FileUtils.serializeToFile(publication,
                                              getConfig().getFilenamePrefix("invocations-"), ".ser");
 
             doPost(file, url, getCodeBaseFingerprint().getSha256());
 
-            log.debug("Uploaded {} of invocation data to {}", LogUtil.humanReadableByteCount(file.length()), url);
+            log.debug("Uploaded {} invocations ({}) to {}", publication.getInvocations().size(), LogUtil.humanReadableByteCount(file.length()), url);
         } catch (Exception e) {
             throw new CodekvastPublishingException("Cannot upload invocation data to " + url, e);
         } finally {

@@ -39,6 +39,8 @@ public class AgentConfigFactory {
     private static final String DEFAULT_ENVIRONMENT = "";
     private static final String DEFAULT_METHOD_VISIBILITY = SignatureUtils.PROTECTED;
     private static final String DEFAULT_SERVER_URL = "http://localhost:8080";
+    private static final String DEFAULT_HTTP_PROXY_HOST = null;
+    private static final int DEFAULT_HTTP_PROXY_PORT = 3128;
     private static final int DEFAULT_HTTP_CONNECT_TIMEOUT_SECONDS = 10;
     private static final int DEFAULT_HTTP_READ_TIMEOUT_SECONDS = 10;
     private static final int DEFAULT_HTTP_WRITE_TIMEOUT_SECONDS = 30;
@@ -98,40 +100,36 @@ public class AgentConfigFactory {
     }
 
     private static AgentConfig buildAgentConfig(Properties props) {
-        // Backwards compatibility kludge. "packages" and "packagePrefixes" were renamed in version 0.16.0
-        String packages = ConfigUtils.getOptionalStringValue(props, "packagePrefixes", null);
-        if (packages == null) {
-            packages = ConfigUtils.getMandatoryStringValue(props, "packages");
-        }
-
-        String excludePackages = ConfigUtils.getOptionalStringValue(props, "excludePackagePrefixes", null);
-        if (excludePackages == null) {
-            excludePackages = ConfigUtils.getOptionalStringValue(props, "excludePackages", "");
-        }
-        // End
 
         return AgentConfig.builder()
                           .appName(validateAppName(ConfigUtils.getMandatoryStringValue(props, "appName")))
                           .appVersion(ConfigUtils.getOptionalStringValue(props, "appVersion", UNSPECIFIED))
                           .aspectFile(DEFAULT_ASPECT_FILE)
                           .aspectjOptions(ConfigUtils.getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
-                          .bridgeAspectjMessagesToSLF4J(ConfigUtils.getOptionalBooleanValue(props, "bridgeAspectjMessagesToSLF4J",
-                                                                                            DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_SLF4J))
+                          .bridgeAspectjMessagesToSLF4J(
+                                           ConfigUtils.getOptionalBooleanValue(props, "bridgeAspectjMessagesToSLF4J",
+                                                                               DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_SLF4J))
                           .codeBase(ConfigUtils.getMandatoryStringValue(props, "codeBase"))
                           .environment(ConfigUtils.getOptionalStringValue(props, "environment", DEFAULT_ENVIRONMENT))
-                          .excludePackages(excludePackages)
+                          .excludePackages(ConfigUtils.getOptionalStringValue(props, "excludePackages", ""))
                           .httpConnectTimeoutSeconds(
-                              ConfigUtils.getOptionalIntValue(props, "httpConnectTimeoutSeconds", DEFAULT_HTTP_CONNECT_TIMEOUT_SECONDS))
+                                           ConfigUtils.getOptionalIntValue(props, "httpConnectTimeoutSeconds",
+                                                                           DEFAULT_HTTP_CONNECT_TIMEOUT_SECONDS))
+                          .httpProxyHost(ConfigUtils.getOptionalStringValue(props, "httpProxyHost", DEFAULT_HTTP_PROXY_HOST))
+                          .httpProxyPort(ConfigUtils.getOptionalIntValue(props, "httpProxyPort", DEFAULT_HTTP_PROXY_PORT))
                           .httpReadTimeoutSeconds(
-                              ConfigUtils.getOptionalIntValue(props, "httpReadTimeoutSeconds", DEFAULT_HTTP_READ_TIMEOUT_SECONDS))
+                                           ConfigUtils
+                                               .getOptionalIntValue(props, "httpReadTimeoutSeconds", DEFAULT_HTTP_READ_TIMEOUT_SECONDS))
                           .httpWriteTimeoutSeconds(
-                              ConfigUtils.getOptionalIntValue(props, "httpWriteTimeoutSeconds", DEFAULT_HTTP_WRITE_TIMEOUT_SECONDS))
+                                           ConfigUtils
+                                               .getOptionalIntValue(props, "httpWriteTimeoutSeconds", DEFAULT_HTTP_WRITE_TIMEOUT_SECONDS))
                           .licenseKey(ConfigUtils.getOptionalStringValue(props, "licenseKey", TRIAL_LICENSE_KEY))
-                          .methodVisibility(ConfigUtils.getOptionalStringValue(props, "methodVisibility", DEFAULT_METHOD_VISIBILITY))
-                          .packages(packages)
+                          .methodVisibility(
+                                           ConfigUtils.getOptionalStringValue(props, "methodVisibility", DEFAULT_METHOD_VISIBILITY))
+                          .packages(ConfigUtils.getMandatoryStringValue(props, "packages"))
                           .serverUrl(ConfigUtils.getOptionalStringValue(props, "serverUrl", DEFAULT_SERVER_URL))
                           .tags(ConfigUtils.getOptionalStringValue(props, TAGS_KEY, ""))
-                          .build();
+                          .build().validate();
     }
 
     private static void doPrependSystemPropertiesToTags(Properties props) {
@@ -195,6 +193,8 @@ public class AgentConfigFactory {
                           .environment(DEFAULT_ENVIRONMENT)
                           .excludePackages("")
                           .httpConnectTimeoutSeconds(DEFAULT_HTTP_CONNECT_TIMEOUT_SECONDS)
+                          .httpProxyHost(DEFAULT_HTTP_PROXY_HOST)
+                          .httpProxyPort(DEFAULT_HTTP_PROXY_PORT)
                           .httpReadTimeoutSeconds(DEFAULT_HTTP_READ_TIMEOUT_SECONDS)
                           .httpWriteTimeoutSeconds(DEFAULT_HTTP_WRITE_TIMEOUT_SECONDS)
                           .licenseKey(TRIAL_LICENSE_KEY)

@@ -21,6 +21,7 @@
  */
 package io.codekvast.javaagent.publishing.impl;
 
+import io.codekvast.javaagent.model.v1.CodeBasePublication;
 import io.codekvast.javaagent.publishing.CodekvastPublishingException;
 import io.codekvast.javaagent.codebase.CodeBase;
 import io.codekvast.javaagent.config.AgentConfig;
@@ -68,11 +69,12 @@ public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
         File file = null;
         try {
 
-            file = FileUtils.serializeToFile(codeBase.getCodeBasePublication(this.getSequenceNumber()), getConfig().getFilenamePrefix("codebase-"), ".ser");
+            CodeBasePublication publication = codeBase.getCodeBasePublication(this.getSequenceNumber());
+            file = FileUtils.serializeToFile(publication, getConfig().getFilenamePrefix("codebase-"), ".ser");
 
             doPost(file, url, codeBase.getFingerprint().getSha256());
 
-            log.debug("Uploaded {} of code base data to {}", LogUtil.humanReadableByteCount(file.length()), url);
+            log.debug("Uploaded {} methods ({}) to {}", publication.getEntries().size(), LogUtil.humanReadableByteCount(file.length()), url);
         } catch (IOException e) {
             throw new CodekvastPublishingException("Cannot upload code base to " + url, e);
         } finally {
