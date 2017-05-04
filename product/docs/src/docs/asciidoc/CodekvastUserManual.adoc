@@ -30,27 +30,16 @@ production>> but not used by any real users for a <<usage-cycle, usage cycle>>.
 Codekvast works for Java and other languages that execute in a JVM.
 
 == Architecture
-Codekvast consists of three parts: the *Collector*, the *Daemon* and the *Warehouse*.
+Codekvast consists of two parts: the *Agent* and the *Warehouse*.
 
 .Responsibilities
-Codekvast Collector:: The collector is attached to the JVM that runs your application. It records the invocations of the methods of
-interest. At the end of each recording interval, the <<invocation-data, invocation data>> is written to a text file, and a new recording
-interval is started.
-There is exactly one collector per JVM. The collector uses http://en.wikipedia.org/wiki/AspectJ[AspectJ, role="external", window="_new"]
-for hooking into your application. *The collector requires Java 7 or higher.*
+Codekvast Agent:: The agent is attached to the JVM that runs your application. It makes an inventory of the <<code-base, code base>> and records the invocations of the methods of
+interest. At the end of each recording interval, the <<invocation-data, invocation data>> is transferred to the warehouse, and a new recording
+interval is started. The agent uses http://en.wikipedia.org/wiki/AspectJ[AspectJ, role="external", window="_new"]
+for hooking into your application. *The agent requires Java 7 or higher.*
 
-Codekvast Daemon:: The daemon analyses the application's <<application-binaries, binaries>> to produce an <<method-inventory, inventory>> of the
-application. It also consumes the invocation data produced by the collector(s). The inventory consists of all the method signatures that the collector potentially can record. The daemon combines the method inventory with the invocation data
-from the collector(s) and uploads it to the warehouse. There is one daemon per server host. One daemon can collect invocation data from
-several JVMs that are executing in the same host. *The daemon requires Java 8 or higher.*
-
-Codekvast Warehouse:: The warehouse receives inventory and invocation data from the daemon(s), stores it in a database and makes it available for browsing
+Codekvast Warehouse:: The warehouse receives code base and invocation publications from the agents, stores it in a database and makes it available for browsing and reporting
 in a web interface. It also offers a REST interface to facilitate IDE plugin development. There is only one warehouse. *The warehouse requires Java 8 or higher plus MariaDB server 10 or higher*
-
-[TIP]
-====
-Codekvast Warehouse including MariaDB is available as Docker images. See <<codekvast-warehouse-docker-installation, Codekvast Warehouse Docker Compose installation guide>>.
-====
 
 ---
 
@@ -58,272 +47,78 @@ Codekvast Warehouse including MariaDB is available as Docker images. See <<codek
 [ditaa, "architecture-diagram"]
 .Architecture Diagram
 ....
-+------------------------------------------------------------------------------+         +---------------------------+
-| Host_1                                                                       |         | Host_n                    |
-|                                                                              |         |                           |
-|   +------------------------------+        +-------------------------+        |         |  +-=-----------------+    |
-|   | JVM 1                        |        | JVM m                   |        |         |  | One or more JVMs  |    |
-|   | +---------------------+      |        | +---------------------+ |        |         |  |                   |    |
-|   | | Your app_1          |      |        | | Your app_m          | |        |         |  |                   |    |
-|   | | cGRE                |      |        | | cGRE                | |        |         |  |                   |    |
-|   | +---------------------+      |        | +---------------------+ |        |         |  |                   |    |
-|   |   ^              |           |        |                         |        |         |  |                   |    |
-|   |   |<-=weaves     |<-=invokes |        |                         |        |         |  |                   |    |
-|   | +--------------+ |           |        | +---------------------+ |        |         |  |                   |    |
-|   | | aspectjweaver| |           |        | | aspectjweaver       | |        |         |  |                   |    |
-|   | | c999         | |           |-=----  | | c999                | |        |         |  |                   |    |
-|   | +--------------+ |           |        | +---------------------+ |        |         |  |                   |    |
-|   |   ^              |           |        |                         |        |         |  |                   |    |
-|   |   |<-=instructs  v           |        |                         |        |  -=---- |  |                   |    |
-|   | +---------------------+      |        | +---------------------+ |        |         |  |                   |    |
-|   | | Codekvast collector |      |        | | Codekvast collector | |        |         |  |                   |    |
-|   | | cYEL                |      |        | | cYEL                | |        |         |  |                   |    |
-|   | +----+------+---------+      |        | +----+---------+------+ |        |         |  |                   |    |
-|   |      |      |                |        |      |         |        |        |         |  |         |         |    |
-|   |      |      \--------------\ |        |  /---/         |        |        |         |  |         |         |    |
-|   +------|---------------------|-+        +--|-------------|--------+        |         |  +---------|---------+    |
-|          |                     |             |             |                 |         |            |              |
-|          | <-=--produces       |<-=-reads-=->|             |                 |         |            |              |
-|          V                     v             v             V                 |         |            V              |
-|       +------------------+   +-----------------+   +------------------+      |         |    +-=---------------+    |
-|       | Invocation data  |   | codekvast.conf  |   | Invocation data  |      |         |    | Invocation data |    |
-|       | files            |   | cYEL            |   | files            |      |         |    | files           |    |
-|       |                  |   |                 |   |                  |      |         |    |                 |    |
-|       | {d}              |   | {d}             |   | {d}              |      |         |    | {d}             |    |
-|       +------------------+   +-----------------+   +------------------+      |         |    +-----------------+    |
-|                ^                                            ^                |         |            ^              |
-|                | <-=-------------consumes----------------=->|                |         |            |              |
-|                \------------\       /-----------------------/                |         |            |              |
-|                             |       |                                        |         |            |              |
-|                             |       |               /-=--loads classes from  |         |            |              |
-|                     +-------+-------+------------+  |  /------------------\  |         |  +-=-------+----------+   |
-|                     | Codekvast daemon 1         |  v  |app_1 binaries    |  |         |  | Codekvast daemon n |   |
-|                     | cYEL                       |---->|cGRE              |  |         |  | cYEL               |   |
-|                     |                            |--\  \------------------/  |         |  |                    |   |
-|                     |                            |  |          :             |         |  |                    |   |
-|                     +---+------------------------+  |          |             |         |  +-----+--------------+   |
-|                         |<-=produces                |  /------------------\  |         |        |                  |
-|                         v                           |  |app_m binaries    |  |         |        v                  |
-|                     +------------+                  \->|cGRE              |  |         |  +-=----------+           |
-|                     | aggregated |                     \------------------/  |         |  | aggregated |           |
-|                     | data (zip) |                                           |         |  | data (zip) |           |
-|                     | {d}        |                                           |         |  | {d}        |           |
-|                     +---+--------+                                           |         |  +--+---------+           |
-|                         |                                                    |         |     :                     |
-+-------------------------|----------------------------------------------------+         +-----|---------------------+
-                          |                                                                    |
-                          |<-=--------------------File transfer-----------------------------=->|
-                          |                                                                    |
-                          \----------------\                                /------------------/
-                                           |                                |
-                                           v                                v
-                                       +----------------------------------------+
-                                       | Codekvast Warehouse                    |
-                                       |                          /----------\  |
-                                       | o File import            | MariaDB  |  |
-                                       | o Persistence layer <--->| database |  |
-                                       | o IDE API                |          |  |
-                                       | o Reporting              |          |  |
-                                       |                          \----------/  |
-                                       | cYEL                                   |
-                                       +----------------------------------------+
-                                                ^                     ^
-                                                |<-=-- HTTP           |<-=-- REST
-                                                v                     v
-                                           /---------------\     /---------------\
-                                           | HTML5         |     | IDE           |
-                                           | browser       |     |               |
-                                           \---------------/     \---------------/
++---------------------------------------------------------------+
+| Host_1                                                        |
+|                                                               |
+|   +--------------------------------+                          |
+|   | JVM 1                          |                          |
+|   | +---------------------+        |                          |
+|   | | Your app            |        |                          |
+|   | | cGRE                |        |       +----------------+ |
+|   | +---------------------+        |       | codekvast.conf | |
+|   |   ^              |             |       |                | |
+|   |   |<-=- weaves   |<-=- invokes |   /-->| cYEL           | |
+|   | +--------------+ |             |   |   | {d}            | |
+|   | | aspectjweaver| |             |   |   +----------------+ |
+|   | | c999         | |             |   |                      |
+|   | +--------------+ |             |   |                      |
+|   |   ^              |             |   |<-=- reads            |
+|   |   |<-=-instructs v             |   |                      |
+|   | +---------------------+        |   |                      |
+|   | | Codekvast agent     +------------/   /----------------\ |
+|   | | cYEL                +--------------->|app binaries    | |
+|   | +----+------+---------+        |   ^   |cGRE            | |
+|   |      |      |                  |   |   \----------------/ |
+|   |      |      \--------------\   |   |                      |
+|   +------|---------------------|---+   \-=- makes inventory of|
+|          |                     |                              |
+|          | <-=--produces----=->|                              |
+|          |                     |                              |
+|          v                     v                              |
+|      +------------------+    +------------------+             |
+|      | Code base        |    | Invocation data  |             |
+|      | publications     |    | publications     |             |
+|      |                  |    |                  |             |
+|      | {d}              |    | {d}              |             |
+|      +------------------+    +------------------+             |
+|              |                         |                      |
++--------------|-------------------------|----------------------+
+               |                         |
+               |<-=--- HTTP POST -----=->|
+               |                         |
+               \-----\                   |
+                     |                   |
+                     v                   v
+           +----------------------------------------+
+           | Codekvast Warehouse                    |
+           |                          /----------\  |
+           | o Publication import     | MariaDB  |  |
+           | o Persistence layer <--->| database |  |
+           | o IDE API                |          |  |
+           | o Reporting              |          |  |
+           | o Web application        \----------/  |
+           | cYEL                                   |
+           +----------------------------------------+
+                    ^                     ^
+                    |<-=-- HTTP           |<-=-- REST
+                    v                     v
+               /---------------\     /---------------\
+               | HTML5         |     | IDE           |
+               | browser       |     |               |
+               \---------------/     \---------------/
 
             +---------------------+   +----------------------+    +--------------------+
  Legend:    |Your application cGRE|   |Part of Codekvast cYEL|    |Part of AspectJ c999|
             +---------------------+   +----------------------+    +--------------------+
 ....
 == Installation
-=== Install Codekvast Daemon
-
-The Codekvast daemon must be installed in each host that runs an application that shall be tracked by Codekvast.
-
-You have two options here:
-
-. Let http://www.ansible.com/[Ansible] do it for you, all hosts at once.
-. Do it manually, host by host
-
-==== The Ansible way
-Execute the following commands in a shell:
-
-[source,bash,subs="attributes,verbatim"]
-----
-apt-get update # <1>
-apt-get install wget ansible unzip # <1>
-wget {bintrayDownloadPrefix}/codekvast-ansible-{codekvastVersion}.zip
-unzip codekvast-ansible-{codekvastVersion}.zip
-cd codekvast-ansible-{codekvastVersion}
-----
-<1> This works for Debian-based distros. For Redhat, use `yum` instead of `apt-get`.
-
-Now, edit `codekvast-daemon.yml` and `inventory` to suit your needs.
-
-Finally, let Ansible do the heavy lifting of installing and configuring Codekvast Daemon in the hosts in `inventory`:
-
-[source,bash,subs="attributes,verbatim"]
-----
-ansible-playbook -i inventory codekvast-daemon.yml
-----
-
-If you have configured `codekvast_warehouse` in `codekvast-daemon.yml`, you must make sure that the hosts can connect without
-username and password. See <<configuring-scp-to-codekvast-warehouse>>.
-
-==== Manual installation
-Execute the following commands in a shell:
-
-[source,bash,subs="attributes,verbatim"]
-----
-RUN_DAEMON_AS_USER=root # <1>
-sudo /etc/init.d/codekvast-daemon stop # <2>
-sudo wget {bintrayDownloadPrefix}/codekvast-daemon-{codekvastVersion}.zip
-sudo unzip codekvast-daemon-{codekvastVersion}.zip -d /opt
-sudo chown $RUN_DAEMON_AS_USER /opt/codekvast-daemon-{codekvastVersion}/codekvast-daemon.jar # <1>
-sudo rm -f /etc/init.d/codekvast-daemon # <2>
-sudo ln -s /opt/codekvast-daemon-{codekvastVersion}/codekvast-daemon.jar /etc/init.d/codekvast-daemon # <3>
-sudo update-rc.d codekvast-daemon defaults # <4>
-sudo vi /opt/codekvast-daemon-{codekvastVersion}/application.properties # <5>
-----
-<1> Insert the name of the user that runs your application(s) here. Codekvast Daemon needs permission to delete consumed
-collection data files. You can also assign proper owner and/or permissions to /tmp/codekvast/.collector/ so that codekvast-daemon can remove
-collector data files created by your application(s). See `man chmod` and `man chown`.
-The daemon will run with the same user as the owner of the application jar file.
-<2> In case you are upgrading from a previous version
-<3> This works for  Linux distros that support System-V.
-<4> This works for Debian-based distros. For Redhat, use `chkconfig --add codekvast-daemon` instead.
-<5> Configure the daemon to suit your needs.
-
-If you have configured `uploadToHost` in `/opt/codekvast-daemon-{codekvastVersion}/application.properties` you also need
-to make sure that SCP works without asking for a password. See <<configuring-scp-to-codekvast-warehouse>>.
-
-[[configuring-scp-to-codekvast-warehouse]]
-=== Configuring automatic upload to Codekvast Warehouse
-If you want Codekvast Daemon to upload collection data automatically to Codekvast Warehouse you must make sure
-that the Codekvast Daemons can connect with ssh and scp to Codekvast Warehouse without having to provide a username and password.
-
-This is done by creating and uploading a public key from each Codekvast Daemon server to the Codekvast Warehouse server.
-
-For each Codekvast Daemon server, enter the following commands with the same user as the owner of `/opt/codekvast-daemon-{codekvastVersion}/codekvast-daemon.jar`:
-
-[source,bash,subs="attributes,verbatim"]
-----
-SCP_TARGET=$( grep uploadToHost /opt/codekvast-daemon-{codekvastVersion}/application.properties | cut -d= -f2- ) # <1>
-ssh-keygen # <2>
-ssh-copy-id $SCP_TARGET # <3>
-----
-<1> Extract the value of the uploadToHost parameter
-<2> Generate a SSH key pair
-<3> Upload the public key to the target server. You will have to enter your password in the target server here.
-
-Once you have uploaded the public SSH key to the Codekvast Warehouse host, test that it works (still being the user that owns
-`codekvast-daemon.jar`):
-
-[source,bash,subs="attributes,verbatim"]
-----
-ssh $SCP_TARGET # <1>
-exit # <2>
-----
-<1> You should be logged in without password
-<2> Exit from the target server
-
-Finally, restart Codekvast Daemon and check that it works:
-
-[source,bash,subs="attributes,verbatim"]
-----
-sudo /etc/init.d/codekvast-daemon restart
-----
-
-Check that automatic upload is correctly configured by issuing
-
-[source,bash,subs="attributes,verbatim"]
-----
-sudo tail -f /var/log/codekvast-daemon.log
-----
-
-After 10-15 seconds there will be an INFO logging containing the words "Will upload to".
-
-=== Modify your applications`' start scripts
-
-[[install-collector-tomcat-linux]]
-==== Tomcat (Linux)
-
-[source,bash,subs="attributes,verbatim"]
-----
-cd path/to/tomcat # <1>
-cp /opt/codekvast-daemon-{codekvastVersion}/codekvast-collector.conf conf/ # <2>
-cp /opt/codekvast-daemon-{codekvastVersion}/tomcat/setenv.sh bin/
-mkdir endorsed
-# Copy your preferred SLF4J backend binding to endorsed/ # <3>
-----
-<1> Substitute `path/to` with the actual path were Tomcat is installed.
-<2> Edit `conf/codekvast-collector.conf` to suit your needs. See <<configuring-codekvast-collector, Configuring Codekvast Collector>>.
-<3> Example for Java Util Logging: slf4j-jdk14-1.7.7.jar. Select the same binding as your app use.
- See also {slf4j-manual}.
-
-==== Tomcat (Windows)
-
-[source,cmd,subs="attributes,verbatim"]
-----
-set CODEKVAST_HOME="path\to\codekvast-daemon-{codekvastVersion}" # <1>
-cd path\to\tomcat # <2>
-mkdir endorsed
-copy %CODEKVAST_HOME%\javaagents\* endorsed
-copy %CODEKVAST_HOME%\tomcat\setenv.bat bin\ # <3>
-copy %CODEKVAST_HOME%\codekvast-collector.conf conf\ # <4>
-REM copy your preferred SLF4J backend binding to endorsed\ # <5>
-----
-<1> Substitute `path\to` with the actual path were Codekvast is installed.
-<2> Substitute `path\to` with the actual path were Tomcat is installed.
-<3> Edit `bin\setenv.bat` so that CODEKVAST_HOME matches the path were codekvast-daemon-{codekvastVersion} is installed.
-<4> Edit `conf\codekvast-collector.conf` to suit your needs. See <<configuring-codekvast-collector, Configuring Codekvast Collector>>.
-<5> Example for Java Util Logging: slf4j-jdk14-1.7.7.jar. Select the same binding as your app use.
- See also {slf4j-manual}.
-
-==== Other applications
-
-Use <<install-collector-tomcat-linux, the installation guide for Tomcat>> as a basis.
-
-The goal is to make
-
-`-javaagent:/path/to/codekvast-collector-{codekvastVersion}.jar -javaagent:/path/to/aspectjweaver-{aspectjVersion}.jar`
-
-appear as the first arguments to the `java` command and `codekvast-collector.conf` or `codekvast.conf` appear in any of the locations that
-Codekvast Collector expects it. See <<codekvast-collector-config-file-location, Configuring Codekvast Collector>>.
-
-You must also make sure that the preferred SLF4J backend is available to the system class loader.
-
-[TIP]
-====
-There is a helper script called `/opt/codekvast-daemon{codekvastVersion}/showJvmParams.sh` which produces a valid JAVA_OPTS that can be pasted
-into your application's start script.
-====
-
-==== Trouble shooting
-
-If you get `LinkageError` on some aspectj-related type::
-. Move `aspectjweaver-{aspectjVersion}.jar` to a separate directory (called `/path/to/endorsed` below).
-. Add `-Djava.ext.dirs=/path/to/endorsed/` to the `java` command.
-
-Warning from SLF4J about logging is disabled::
-. Make sure that SLF4J is properly configured with a backend. See also {slf4j-manual}.
-
-No data in /tmp/codekvast::
-. set `aspectjOptions=-verbose -showWeaveInfo` in codekvast-collector.conf
-. restart your application
-. Use the logging for determining the problem. See <<codekvast-collector-logging, Codekvast Collector Logging>>.
 
 [[codekvast-warehouse-installation]]
 === Install Codekvast Warehouse
 
-[[codekvast-warehouse-docker-installation]]
-==== The Docker way
+Codekvast Warehouse is distributed with Docker Compose executed from a shell script.
 
-This works for Mac OS X and Linux. Windows is not supported.
+It works for Mac OS X and Linux. Windows is not supported.
 
 . Make sure Docker Engine and Docker Compose are installed. See https://docs.docker.com/compose/install/
 . Execute the following commands in a shell:
@@ -339,63 +134,90 @@ The MariaDB database files will be located in `/var/lib/codekvast-database`.
 
 The Codekvast Warehouse log files will be located in `/var/log/codekvast/`.
 
-Codekvast Warehouse will look for import files in `/tmp/codekvast/.import`.
+The Codekvast Warehouse will listen on port 8080.
 
-[[codekvast-warehouse-conventional-installation]]
-==== Manual installation
+=== Codekvast Agent
 
-. Make sure Java 8 or higher is installed.
-. Make sure MariaDB server 10 or higher is installed.
-. Execute the following commands in a shell:
+TODO Document how to install the agent in Heroku.
+
+////
+Your application must be modified to attach the Codekvast Agent.
+
+It means the following things:
+
+- Download the agent installation package codekvast-agent-{{codekvastVersion}.zip
+- Unzip it to some known location
+- Create `codekvast.conf` and put it in a location where Codekvast Agent will find it.
+- Modify your application's start script
+
+[[install-agent-tomcat-linux]]
+==== Tomcat (Linux)
 
 [source,bash,subs="attributes,verbatim"]
 ----
-sudo adduser codekvast # <1>
-sudo mysql << EOF  # <2>
-create database if not exists codekvast_warehouse;
-grant all on codekvast_warehouse.* to 'codekvast'@'localhost' identified by 'codekvast';
-EOF
-sudo wget {bintrayDownloadPrefix}/codekvast-warehouse-{codekvastVersion}.zip
-sudo unzip codekvast-warehouse-{codekvastVersion}.zip -d /opt
-sudo chown codekvast:codekvast /opt/codekvast-warehouse-{codekvastVersion}/codekvast-warehouse.jar # <1>
-sudo rm -f /etc/init.d/codekvast-warehouse
-sudo ln -s /opt/codekvast-warehouse-{codekvastVersion}/codekvast-warehouse.jar /etc/init.d/codekvast-warehouse # <3>
-sudo update-rc.d codekvast-warehouse defaults # <4>
-sudo vi /opt/codekvast-warehouse-{codekvastVersion}/application.properties # <5>
+cd path/to/tomcat # <1>
+cp /opt/codekvast-daemon-{codekvastVersion}/codekvast.conf conf/ # <2>
+cp /opt/codekvast-daemon-{codekvastVersion}/tomcat/setenv.sh bin/
+mkdir endorsed
+# Copy your preferred SLF4J backend binding to endorsed/ # <3>
 ----
-<1> The service will run with the same user as the owner of the application jar file.
-<2> You might need to add the options -u<username> and -p<password> to the mysql command.
-<3> This works for Linux distros that support System-V.
-<4> This works for Debian based distros. For Redhat, use `chkconfig --add codekvast-warehouse` instead.
-<5> Edit application.properties to suit your needs. See <<configuring-codekvast-warehouse, Configuring Codekvast Warehouse>>.
+<1> Substitute `path/to` with the actual path were Tomcat is installed.
+<2> Edit `conf/codekvast.conf` to suit your needs. See <<configuring-codekvast-agent, Configuring Codekvast Agent>>.
+<3> Example for Java Util Logging: slf4j-jdk14-1.7.7.jar. Select the same binding as your app use.
+ See also {slf4j-manual}.
 
-Once you have finished editing application.properties, execute
+==== Other applications
 
-----
-sudo /etc/init.d/codekvast-warehouse start
-----
+Use <<install-agent-tomcat-linux, the installation guide for Tomcat>> as a basis.
+////
 
-Check that it starts correctly by issuing
-----
-sudo tail -f /var/log/codekvast-warehouse.log
-----
+The goal is to make
+
+`-javaagent:/path/to/codekvast-agent-{codekvastVersion}.jar -javaagent:/path/to/aspectjweaver-{aspectjVersion}.jar`
+
+appear as the first arguments to the `java` command and to put `codekvast.conf` to any of the locations that
+Codekvast Agent expects it. See <<codekvast-agent-config-file-location, Configuring Codekvast Agent>>.
+
+You must also make sure that the preferred SLF4J backend is available to the system class loader.
+
+////
+[TIP]
+====
+There is a helper script called `/opt/codekvast-daemon{codekvastVersion}/showJvmParams.sh` which produces a valid JAVA_OPTS that can be pasted
+into your application's start script.
+====
+////
+
+==== Trouble shooting
+
+If you get `LinkageError` on some aspectj-related type::
+. Move `aspectjweaver-{aspectjVersion}.jar` to a separate directory (called `/path/to/endorsed` below).
+. Add `-Djava.ext.dirs=/path/to/endorsed/` to the `java` command.
+
+Warning from SLF4J about logging is disabled::
+. Make sure that SLF4J is properly configured with a backend. See also {slf4j-manual}.
+
+No data is uploaded to Codekvast Warehouse::
+. set `aspectjOptions=-verbose -showWeaveInfo` in `codekvast.conf`
+. restart your application
+. Use the logging for determining the problem. See <<codekvast-agent-logging, Codekvast Agent Logging>>.
 
 == Configuration
 
-[[configuring-codekvast-collector]]
-=== Codekvast Collector
+[[configuring-codekvast-agent]]
+=== Codekvast Agent
 
-[[codekvast-collector-logging]]
+[[codekvast-agent-logging]]
 ==== Logging
 
-The Codekvast Collector uses SLF4J as logging API. This is just a compile-time API, which needs to be connected to a logging backend at runtime.
+The Codekvast Agent uses SLF4J as logging API. This is just a compile-time API, which needs to be connected to a logging backend at runtime.
 
 Codekvast's loggers are prefixed with `io.codekvast.`.
 
 See also {slf4j-manual}.
 
 The selected backend binding (e.g., slf4j-jdk14.x.x.jar) needs to be available in the system class loader,
-which loads the codekvast-collector javaagent.
+which loads the codekvast-agent javaagent.
 
 In many cases this means it shall be put in a directory pointed to by the JVM system property `jvm.endorsed.dir`.
 In the case of a webapp deployed to Tomcat, this is the directory `$CATALINA_BASE/endorsed`.
@@ -403,26 +225,24 @@ In the case of a webapp deployed to Tomcat, this is the directory `$CATALINA_BAS
 Failing to configure a backend will manifest as warnings printed on standard error upon application start.
 
 
-[[codekvast-collector-config-file-location]]
+[[codekvast-agent-config-file-location]]
 ==== Configuration File Name and Location
 
-The collector reads it's configuration from a file named either `codekvast-collector.conf` or `codekvast.conf` in any of these places (the
-first found file will win)
+The Codekvast agent reads it's configuration from a file named `codekvast.conf` in any of these places (the
+first found file will win):
 
 . The Java system property `-Dcodekvast.configuration=path/to/configfile`.
 . The environment variable `CODEKVAST_CONFIG=path/to/configfile`.
-. The file `${codekvast.home}/codekvast-collector.conf` or `${codekvast.home}/codekvast.conf` (codekvast.home is a Java system property)
-. The file `${codekvast.home}/conf/codekvast-collector.conf` or `${codekvast.home}/conf/codekvast.conf` (codekvast.home is a Java system property)
-. The file `$\{CODEKVAST_HOME}/codekvast-collector.conf` or `$\{CODEKVAST_HOME}/codekvast.conf` (CODEKVAST_HOME is an environment variable)
-. The file `$\{CODEKVAST_HOME}/conf/codekvast-collector.conf` or `$\{CODEKVAST_HOME}/conf/codekvast.conf` (CODEKVAST_HOME is an environment variable)
-. In a similar way it looks for `codekvast-collector.conf` and `codekvast.conf` in
-.. `${catalina.home}/conf`
-.. `$\{CATALINA_HOME}/conf`
-.. `${catalina.base}/conf`
-.. `$\{CATALINA_BASE}/conf`
-. It looks for codekvast-collector.conf and codekvast.conf in the `conf/` sibling directory to where codekvast-collector-{codekvastVersion}.jar is located.
-. It looks for codekvast-collector.conf and codekvast.conf in `/etc/codekvast`.
-. It looks for codekvast-collector.conf and codekvast.conf in `/etc`.
+. It looks for `codekvast.conf` in
+.. `.` (i.e., the working directory)
+.. `./conf`
+.. `${catalina.home}/conf` (catalina.home is a Java system property)
+.. `$\{CATALINA_HOME}/conf` (CATALINA_HOME is an environment variable)
+.. `${catalina.base}/conf` (catalina.base is a Java system property)
+.. `$\{CATALINA_BASE}/conf` (CATALINA_BASE is an environment variable)
+.. `$\{HOME}/.config` (HOME is an environment variable)
+. It looks for codekvast.conf in `/etc/codekvast`.
+. It looks for codekvast.conf in `/etc`.
 
 ==== Config file override mechanism
 It is possible to override one or more parameters that were specified in the configuration file by defining the Java system property
@@ -430,24 +250,24 @@ It is possible to override one or more parameters that were specified in the con
 
 .Example
 ----
--Dcodekvast.options=appName=myApp;collectorIntervalSeconds=600
+-Dcodekvast.options=appName=myApp;environment=staging
 ----
 
-The override mechanism comes in handy when you have more than one app in the same host, with mostly identical configuration. Probably
-just the application name is different.
+The override mechanism comes in handy when you want to use the same configuration files in many environments. Probably just the
+environment name is different.
 
-==== Codekvast Collector configuration file
+==== Codekvast Agent configuration file
 
 The format of the file is a standard Java Properties file, that is, `key: value` or `key = value`. Long lines can be continued by ending the
 line with a backslash ('\') and indenting the continuation line with at least one space.
 
 The right-hand side may contain references to environment variables and Java system properties. Example:
 ....
-dataDir = ${user.home}/codekvast
-dataDir = $HOME/codekvast
+codeBase = ${app.home}/lib
+codeBase = $APP_HOME/lib
 ....
 
-.Codekvast Collector parameters (mandatory parameters in *bold face*)
+.Codekvast Agent parameters (mandatory parameters in *bold face*)
 [cols="1,2,3,5,1", options="header"]
 |===
 |Parameter
@@ -506,22 +326,8 @@ See <<about-specifying-method-visibility>>.
 |methodVisibility=protected
 |protected
 
-|collectionResolutionSeconds
-|Controls how often invocation data is exported from the Codekvast collector.
-A higher value means less CPU overhead but higher memory demand.
-A higher value also means less precision.
-| A positive integer.
-| collectionResolutionSeconds=3600
-| 600
-
-|dataPath
-|Which part of the file system shall Codekvast Collector dump the invocation data to?
-|A file system path.
-|dataPath=/var/lib/codekvast/data
-|/tmp/codekvast/.collector
-
 |aspectjOptions
-|Should Codekvast Collector configure logging for Aspectj Weaver?
+|Should Codekvast Agent configure logging for Aspectj Weaver?
 Useful for trouble shooting.
 See also {aspectj-ltw-config}.
 |A string.
@@ -583,7 +389,7 @@ the file name.
 
 [[about-exclude-package-prefixes]]
 ==== About excluding packages from collection
-Codekvast Collector is extremely efficient, and each tracked method only incurs a runtime cost of approximately {overhead-nanoseconds} nanoseconds.
+Codekvast Agent is extremely efficient, and each tracked method only incurs a runtime cost of approximately {overhead-nanoseconds} nanoseconds.
 If you have code that execute in tight loops even this low overhead could be too much.
 
 In such situations you can exclude code from Codekvast. See also <<about-specifying-method-visibility, Specifying Method Visibility>>
@@ -597,7 +403,7 @@ By specifying which methods shall be tracked, you can control the overhead.
 [NOTE]
 ====
 Modern IDEs like IntelliJ are capable of suggesting deletion of dead methods as long as the method visibility is package private or private.
-They cannot know if a public or protected method is dead, since they cannot know what other clients to the method that exist.
+They cannot suggest deletion of public or protected method is dead, since they cannot know what other clients to the method that exist.
 ====
 
 .Method visibilities
@@ -614,16 +420,10 @@ They cannot know if a public or protected method is dead, since they cannot know
 
 [[about-bridgeAspectjMessages]]
 ==== About Bridging AspectJ messages to SLF4J
-Normally, codekvast-collector installs an AspectJ `IMessageHandler` that acts as a bridge between aspectjweaver and SLF4J.
+Normally, codekvast-agent installs an AspectJ `IMessageHandler` that acts as a bridge between aspectjweaver and SLF4J.
 If your application uses another implementation or if you want the default behaviour, this bridge can be disabled.
 
-See also {aspectj-ltw-config} and <<codekvast-collector-logging, Codekvast Collector Logging>>.
-
-[[configuring-codekvast-daemon]]
-=== Codekvast Daemon
-The daemon reads it configuration from /opt/codekvast-daemon-{codekvastVersion}/application.properties.
-
-The file is self-documenting.
+See also {aspectj-ltw-config} and <<codekvast-agent-logging, Codekvast Agent Logging>>.
 
 [[configuring-codekvast-warehouse]]
 === Codekvast Warehouse
@@ -644,7 +444,7 @@ than if you use Codekvast in production!
 +
 [NOTE]
 ====
-The Codekvast Collector is extremely efficient. It adds roughly {overhead-nanoseconds} nanoseconds to each tracked method call.
+The Codekvast Agent is extremely efficient. It adds roughly {overhead-nanoseconds} nanoseconds to each tracked method call.
 
 The memory consumption is low. For a fairly large server application (0.5 million lines of code), the complete set of tracked
 method names occupy less than 10 MB of heap space.
@@ -706,6 +506,9 @@ while, you can experiment with different values of usage cycle.
 +
 Different applications that are parts of the same solution probably have different usage cycles. Example: front-end web, mobile API,
 back-office web, data warehouse.
+
+[[code-base]]
+Code Base:: The the complete set of methods that exist in the application. It contains the fully qualified names of the methods and meta-data about if the method is recorded or not.
 
 [[invocation-data]]
 Invocation Data:: The set of methods that have been invoked during a collection interval. It contains the fully qualified names of the

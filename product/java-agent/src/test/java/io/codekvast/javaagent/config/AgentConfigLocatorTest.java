@@ -17,7 +17,6 @@ public class AgentConfigLocatorTest {
     @Before
     public void beforeTest() throws Exception {
         System.clearProperty(AgentConfigLocator.SYSPROP_CONFIG);
-        System.clearProperty(AgentConfigLocator.SYSPROP_HOME);
     }
 
     @After
@@ -42,18 +41,6 @@ public class AgentConfigLocatorTest {
     @Test
     public void should_handle_valid_conf_directory() throws Exception {
         System.setProperty(AgentConfigLocator.SYSPROP_CONFIG, "src/test/resources/agentConfigLocatorTest/conf");
-        assertThat(AgentConfigLocator.locateConfig(), not(nullValue()));
-    }
-
-    @Test
-    public void should_handle_valid_home_conf() throws Exception {
-        System.setProperty(AgentConfigLocator.SYSPROP_HOME, "src/test/resources/agentConfigLocatorTest");
-        assertThat(AgentConfigLocator.locateConfig(), not(nullValue()));
-    }
-
-    @Test
-    public void should_handle_valid_home() throws Exception {
-        System.setProperty(AgentConfigLocator.SYSPROP_HOME, "src/test/resources/agentConfigLocatorTest/conf");
         assertThat(AgentConfigLocator.locateConfig(), not(nullValue()));
     }
 

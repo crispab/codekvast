@@ -37,12 +37,11 @@ public class AgentConfigLocator {
 
     private static final String ENVVAR_CATALINA_BASE = "CATALINA_BASE";
     private static final String ENVVAR_CATALINA_HOME = "CATALINA_HOME";
-    private static final String ENVVAR_CONFIG = "CODEKVAST_CONFIG";
-    private static final String ENVVAR_HOME = "CODEKVAST_HOME";
+    private static final String ENVVAR_CODEKVAST_CONFIG = "CODEKVAST_CONFIG";
+    private static final String ENVVAR_HOME = "HOME";
     private static final String SYSPROP_CATALINA_BASE = "catalina.base";
     private static final String SYSPROP_CATALINA_HOME = "catalina.home";
     static final String SYSPROP_CONFIG = "codekvast.configuration";
-    static final String SYSPROP_HOME = "codekvast.home";
     static final String SYSPROP_OPTS = "codekvast.options";
 
     private AgentConfigLocator() {
@@ -60,31 +59,19 @@ public class AgentConfigLocator {
             return file;
         }
 
-        file = tryLocation(System.getenv(ENVVAR_CONFIG));
+        file = tryLocation(System.getenv(ENVVAR_CODEKVAST_CONFIG));
         if (file != null) {
             log.info("Found {}", file);
             return file;
         }
 
-        file = tryLocation(constructLocation(System.getProperty(SYSPROP_HOME), ""));
+        file = tryLocation(".");
         if (file != null) {
             log.info("Found {}", file);
             return file;
         }
 
-        file = tryLocation(constructLocation(System.getProperty(SYSPROP_HOME), "conf"));
-        if (file != null) {
-            log.info("Found {}", file);
-            return file;
-        }
-
-        file = tryLocation(constructLocation(System.getenv(ENVVAR_HOME), ""));
-        if (file != null) {
-            log.info("Found {}", file);
-            return file;
-        }
-
-        file = tryLocation(constructLocation(System.getenv(ENVVAR_HOME), "conf"));
+        file = tryLocation("./conf");
         if (file != null) {
             log.info("Found {}", file);
             return file;
@@ -114,7 +101,7 @@ public class AgentConfigLocator {
             return file;
         }
 
-        file = tryLocation(constructLocation(getAgentHome(), "conf"));
+        file = tryLocation(constructLocation(System.getenv(ENVVAR_HOME), ".config"));
         if (file != null) {
             log.info("Found {}", file);
             return file;
@@ -156,19 +143,6 @@ public class AgentConfigLocator {
             return file;
         }
 
-        return null;
-    }
-
-    private static String getAgentHome() {
-        try {
-            File home = new File(AgentConfigLocator.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile();
-            String homeName = home.getName();
-            if (homeName.endsWith("/lib") || homeName.endsWith("/endorsed") || homeName.endsWith("/javaagent")) {
-                home = home.getParentFile();
-            }
-            return home.getAbsolutePath();
-        } catch (Exception ignored) {
-        }
         return null;
     }
 }
