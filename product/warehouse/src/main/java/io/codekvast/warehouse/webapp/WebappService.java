@@ -40,6 +40,8 @@ public interface WebappService {
     String DEFAULT_MAX_RESULTS_STR = "" + DEFAULT_MAX_RESULTS;
     boolean DEFAULT_ONLY_TRULY_DEAD_METHODS = false;
     boolean DEFAULT_NORMALIZE_SIGNATURE = true;
+    long DEMO_CUSTOMER_ID = 1L; // TODO: add authentication to the webapp
+
 
     /**
      * Retrieve information about a set of methods.
