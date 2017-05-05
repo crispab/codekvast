@@ -57,6 +57,7 @@ public class AgentConfigFactory {
     static {
         try {
             DEFAULT_ASPECT_FILE = File.createTempFile("codekvast-", "-aop.xml");
+            DEFAULT_ASPECT_FILE.deleteOnExit();
         } catch (IOException e) {
             throw new RuntimeException("Cannot create codekvast-aop.xml", e);
         }

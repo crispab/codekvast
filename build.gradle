@@ -21,13 +21,6 @@ subprojects {
 
     apply plugin: 'eclipse'
     apply plugin: 'idea'
-    idea {
-        // Make spring loaded work when doing 'gradle bootRun'...
-        module {
-            inheritOutputDirs = false
-            outputDir = file("$buildDir/classes/main/")
-        }
-    }
 
     ext.gitHead = Grgit.open(dir: rootDir).head()
 
