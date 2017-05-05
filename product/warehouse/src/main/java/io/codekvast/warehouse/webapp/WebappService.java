@@ -46,22 +46,23 @@ public interface WebappService {
      *
      * Use case:
      * <ol>
-     *     <li>In IDEA: Right-click a method name -&gt; Copy Reference (Ctrl-Alt-Shift-C)</li>
-     *     <li>In Codekvast Warehouse web UI: paste into the search field (Ctrl-V)</li>
+     * <li>In IDEA: Right-click a method name -&gt; Copy Reference (Ctrl-Alt-Shift-C)</li>
+     * <li>In Codekvast Warehouse web UI: paste into the search field (Ctrl-V)</li>
      * </ol>
      *
-     * @param request The request parameters
+     * @param customerId The customer ID.
+     * @param request    The request parameters.
      * @return A list of matching methods. Does never return null.
      */
     @NotNull
-    List<MethodDescriptor1> getMethods(@Valid GetMethodsRequest1 request);
+    List<MethodDescriptor1> getMethods(long customerId, @Valid GetMethodsRequest1 request);
 
     /**
      * Retrieve information about a particular method.
      *
-     * @param methodId The primary key of the method.
-     *
+     * @param customerId The customer ID.
+     * @param methodId   The primary key of the method.
      * @return an optional MethodDescriptor1. Does never return null.
      */
-    Optional<MethodDescriptor1> getMethodById(@NotNull Long methodId);
+    Optional<MethodDescriptor1> getMethodById(long customerId, @NotNull Long methodId);
 }

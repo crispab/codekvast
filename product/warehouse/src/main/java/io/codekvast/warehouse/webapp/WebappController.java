@@ -54,6 +54,7 @@ public class WebappController {
 
     private static final String WEBAPP_V1_METHODS = "/webapp/v1/methods";
     private static final String WEBAPP_V1_METHOD = "/webapp/v1/method/detail/{id}";
+    private static final long DEMO_CUSTOMER_ID = 1L; // TODO: add authentication to the webapp
 
     private final WebappService webappService;
     private final CodekvastSettings settings;
@@ -86,7 +87,7 @@ public class WebappController {
     public ResponseEntity<MethodDescriptor1> getMethod1(@PathVariable(value = "id") Long methodId) {
         long startedAt = System.currentTimeMillis();
 
-        Optional<MethodDescriptor1> result = webappService.getMethodById(methodId);
+        Optional<MethodDescriptor1> result = webappService.getMethodById(DEMO_CUSTOMER_ID, methodId);
 
         log.debug("{} method with id={} in {} ms", result.isPresent() ? "Found" : "Could not find", methodId, System.currentTimeMillis() - startedAt);
 
@@ -99,7 +100,7 @@ public class WebappController {
 
         GetMethodsRequest1 request = GetMethodsRequest1.defaults().toBuilder().signature(signature).maxResults(maxResults).build();
 
-        List<MethodDescriptor1> methods = webappService.getMethods(request);
+        List<MethodDescriptor1> methods = webappService.getMethods(DEMO_CUSTOMER_ID, request);
 
         GetMethodsResponse1 response = GetMethodsResponse1.builder()
                                                           .timestamp(startedAt)

@@ -60,19 +60,19 @@ public class WebappServiceImpl implements WebappService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<MethodDescriptor1> getMethods(@Valid GetMethodsRequest1 request) {
+    public List<MethodDescriptor1> getMethods(long customerId, @Valid GetMethodsRequest1 request) {
         MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler("m.signature LIKE ?", request.getMaxResults());
 
-        jdbcTemplate.query(rowCallbackHandler.getSelectStatement(), rowCallbackHandler, request.getNormalizedSignature());
+        jdbcTemplate.query(rowCallbackHandler.getSelectStatement(), rowCallbackHandler, customerId, request.getNormalizedSignature());
 
         return rowCallbackHandler.getResult();
     }
 
     @Override
-    public Optional<MethodDescriptor1> getMethodById(@NotNull Long methodId) {
+    public Optional<MethodDescriptor1> getMethodById(long customerId, @NotNull Long methodId) {
         MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler("m.id = ?", 1);
 
-        jdbcTemplate.query(rowCallbackHandler.getSelectStatement(), rowCallbackHandler, methodId);
+        jdbcTemplate.query(rowCallbackHandler.getSelectStatement(), rowCallbackHandler, customerId, methodId);
 
         return rowCallbackHandler.getResult().stream().findFirst();
     }
@@ -105,7 +105,7 @@ public class WebappServiceImpl implements WebappService {
                 "  JOIN applications a ON a.id = i.applicationId \n" +
                 "  JOIN methods m ON m.id = i.methodId\n" +
                 "  JOIN jvms j ON j.id = i.jvmId\n" +
-                "  WHERE %s\n" +
+                "  WHERE i.customerId = ? AND %s\n" +
                 "  ORDER BY i.methodId ASC", whereClause);
         }
 
