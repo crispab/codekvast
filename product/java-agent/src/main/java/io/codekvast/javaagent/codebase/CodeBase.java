@@ -172,11 +172,12 @@ public class CodeBase {
         return result;
     }
 
-    public CodeBasePublication getCodeBasePublication(int sequenceNumber) {
+    public CodeBasePublication getCodeBasePublication(long customerId, int sequenceNumber) {
         return CodeBasePublication
             .builder()
             .commonData(config.commonPublicationDataBuilder()
                               .codeBaseFingerprint(getFingerprint().getSha256())
+                              .customerId(customerId)
                               .sequenceNumber(sequenceNumber)
                               .build())
             .entries(getEntries())

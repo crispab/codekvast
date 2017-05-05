@@ -19,20 +19,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.warehouse.file_import;
+package io.codekvast.warehouse.customer.impl;
 
-import io.codekvast.javaagent.model.v1.InvocationDataPublication;
+import io.codekvast.warehouse.customer.CustomerService;
+import io.codekvast.warehouse.customer.LicenseViolationException;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
+import java.util.List;
 
 /**
  * @author olle.hallin@crisp.se
  */
-public interface InvocationDataImporter {
+@Service
+@Slf4j
+public class CustomerServiceImpl implements CustomerService {
 
-    /**
-     * Imports an InvocationDataPublication
-     *
-     * @param publication The publication to import.
-     * @return true iff the publication was handled.
-     */
-    boolean importPublication(InvocationDataPublication publication);
+    private final JdbcTemplate jdbcTemplate;
+
+    @Inject
+    public CustomerServiceImpl(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Override
+    public long checkLicenseKeyAndGetCustomerId(@NonNull String licenseKey) throws LicenseViolationException {
+        List<Long> ids = jdbcTemplate.queryForList("SELECT id FROM customers WHERE licenseKey = ?", Long.class, licenseKey.trim());
+
+        if (ids.isEmpty()) {
+            throw new LicenseViolationException("Invalid license key: '" + licenseKey + "'");
+        }
+
+        long result = ids.get(0);
+        log.debug("licenseKey '{}' belongs to customer {}", licenseKey, result);
+        return result;
+    }
 }

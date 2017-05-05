@@ -69,7 +69,7 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
         String url = getConfig().getInvocationDataUploadEndpoint();
         File file = null;
         try {
-            InvocationDataPublication publication = createPublication(recordingIntervalStartedAtMillis, invocations);
+            InvocationDataPublication publication = createPublication(getCustomerId(), recordingIntervalStartedAtMillis, invocations);
             file = FileUtils.serializeToFile(publication,
                                              getConfig().getFilenamePrefix("invocations-"), ".ser");
 
@@ -106,11 +106,12 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
         return getConfig().getHttpClient().newCall(request).execute();
     }
 
-    private InvocationDataPublication createPublication(long recordingIntervalStartedAtMillis, Set<String> invocations) {
+    private InvocationDataPublication createPublication(long customerId, long recordingIntervalStartedAtMillis, Set<String> invocations) {
 
         return InvocationDataPublication.builder()
                                         .commonData(getConfig().commonPublicationDataBuilder()
                                                                .codeBaseFingerprint(getCodeBaseFingerprint().getSha256())
+                                                               .customerId(customerId)
                                                                .sequenceNumber(this.getSequenceNumber())
                                                                .build())
                                         .recordingIntervalStartedAtMillis(recordingIntervalStartedAtMillis)

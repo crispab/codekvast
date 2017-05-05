@@ -39,6 +39,9 @@ import java.io.Serializable;
 public class CommonPublicationData implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    @Min(value = 1, message = "customerId must be a positive number")
+    private long customerId;
+
     @NonNull
     @Size(min = 1)
     private String appName;
@@ -97,7 +100,8 @@ public class CommonPublicationData implements Serializable {
     @Override
     public String toString() {
         return String.format(
-            "CommonPublicationData{appName='%1$s', appVersion='%2$s', hostname='%3$s', publishedAt=%4$tF:%4$tT%4$tz}",
+            "CommonPublicationData{customerId=%1$d, appName='%2$s', appVersion='%3$s', hostname='%4$s', publishedAt=%5$tF:%5$tT%5$tz}",
+            customerId,
             appName,
             appVersion,
             hostname,

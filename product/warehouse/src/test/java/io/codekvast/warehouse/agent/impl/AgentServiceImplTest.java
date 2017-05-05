@@ -1,38 +1,44 @@
 package io.codekvast.warehouse.agent.impl;
 
+import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
+import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.warehouse.agent.AgentService;
-import io.codekvast.warehouse.agent.LicenseViolationException;
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
+import io.codekvast.warehouse.customer.CustomerService;
+import io.codekvast.warehouse.customer.LicenseViolationException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
-import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import org.junit.rules.TemporaryFolder;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.when;
 
 public class AgentServiceImplTest {
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
+    @Mock
+    private CustomerService customerService;
+
     private final CodekvastSettings settings = new CodekvastSettings();
-    private final AgentService service = new AgentServiceImpl(settings);
     private final GetConfigRequest1 request = GetConfigRequest1.sample();
+
+    private AgentService service;
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
         settings.setQueuePath(temporaryFolder.getRoot());
-    }
-
-    @Test(expected = LicenseViolationException.class)
-    public void should_throw_for_invalid_license_key() throws Exception {
-        service.getConfig(request.toBuilder().licenseKey("-----").build());
+        service = new AgentServiceImpl(settings, customerService);
     }
 
     @Test
@@ -47,15 +53,17 @@ public class AgentServiceImplTest {
     }
 
     @Test(expected = LicenseViolationException.class)
-    public void should_reject_uploaded_codebase_when_invalid_license() throws Exception {
-        service.saveCodeBasePublication("-----", "fingerprint", null);
+    public void should_have_checked_licenseKey() throws Exception {
+        when(customerService.checkLicenseKeyAndGetCustomerId(eq("key"))).thenThrow(
+            new LicenseViolationException("Mock: invalid license"));
+        service.saveCodeBasePublication("key", "fingerprint", null);
     }
 
     @Test
     public void should_save_uploaded_codebase_no_license() throws Exception {
         String contents = "Dummy Code Base Publication";
 
-        File resultingFile = service.saveCodeBasePublication(null,
+        File resultingFile = service.saveCodeBasePublication("key",
                                                              "fingerprint",
                                                              new ByteArrayInputStream(contents.getBytes()));
 
@@ -64,6 +72,16 @@ public class AgentServiceImplTest {
         assertThat(resultingFile.getName(), endsWith(".ser"));
         assertThat(resultingFile.exists(), is(true));
         assertThat(resultingFile.length(), is((long) contents.length()));
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void should_reject_null_codebase_licenseKey() throws Exception {
+        service.saveCodeBasePublication(null, "fingerprint", null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void should_reject_null_invocation_data_licenseKey() throws Exception {
+        service.saveInvocationDataPublication(null, "fingerprint", null);
     }
 
 }

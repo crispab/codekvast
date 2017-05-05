@@ -19,14 +19,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.warehouse.agent;
+package io.codekvast.warehouse.customer;
 
 /**
- * Thrown when an javaagent is denied to connect.
+ * @author olle.hallin@crisp.se
  */
-public class LicenseViolationException extends RuntimeException {
+public interface CustomerService {
 
-    public LicenseViolationException(String message) {
-        super(message);
-    }
+    long checkLicenseKeyAndGetCustomerId(String licenseKey) throws LicenseViolationException;
+
 }

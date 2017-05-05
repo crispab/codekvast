@@ -53,29 +53,33 @@ public class ImportDAOImpl implements ImportDAO {
     }
 
     @Override
-    public long importApplication(CommonPublicationData commonData) {
-        String name = commonData.getAppName();
-        String version = commonData.getAppVersion();
-        Timestamp createAt = new Timestamp(commonData.getJvmStartedAtMillis());
+    public long importApplication(CommonPublicationData data) {
+        long customerId = data.getCustomerId();
+        String name = data.getAppName();
+        String version = data.getAppVersion();
+        Timestamp createAt = new Timestamp(data.getJvmStartedAtMillis());
 
         int updated = jdbcTemplate.update("UPDATE applications SET createdAt = LEAST(createdAt, ?) " +
-                                              "WHERE name = ? AND version = ?", createAt, name, version);
+                                              "WHERE customerId = ? AND name = ? AND version = ?", createAt, customerId, name, version);
         if (updated != 0) {
             log.trace("Updated application {} {}", name, version);
         } else {
-            jdbcTemplate.update("INSERT INTO applications(name, version, createdAt) VALUES (?, ?, ?)",
-                                name, version, createAt);
-            log.trace("Inserted application {} {} {}", name, version, createAt);
+            jdbcTemplate.update("INSERT INTO applications(customerId, name, version, createdAt) VALUES (?, ?, ?, ?)",
+                                customerId, name, version, createAt);
+            log.trace("Inserted application {} {} {} {}", customerId, name, version, createAt);
         }
 
-        Long result = jdbcTemplate.queryForObject("SELECT id FROM applications WHERE name = ? AND version = ?", Long.class, name, version);
-        log.debug("application {} {} has id {}", name, version, result);
+        Long result = jdbcTemplate
+            .queryForObject("SELECT id FROM applications WHERE customerId = ? AND name = ? AND version = ?", Long.class, customerId, name,
+                            version);
+        log.debug("application {} {} {} has id {}", customerId, name, version, result);
         return result;
     }
 
     @Override
     public long importJvm(CommonPublicationData data) {
 
+        long customerId = data.getCustomerId();
         Timestamp publishedAt = new Timestamp(data.getPublishedAtMillis());
 
         int updated = jdbcTemplate.update("UPDATE jvms SET publishedAt = ? WHERE uuid = ?",
@@ -84,14 +88,14 @@ public class ImportDAOImpl implements ImportDAO {
             log.trace("Updated JVM {}", data.getJvmUuid());
         } else {
             jdbcTemplate.update(
-                "INSERT INTO jvms(uuid, startedAt, publishedAt, methodVisibility, packages, excludePackages, " +
+                "INSERT INTO jvms(customerId, uuid, startedAt, publishedAt, methodVisibility, packages, excludePackages, " +
                     "environment, computerId, hostname, agentVersion, tags) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                data.getJvmUuid(), new Timestamp(data.getJvmStartedAtMillis()), publishedAt, data.getMethodVisibility(),
-                data.getPackages(), data.getExcludePackages(), data.getEnvironment(), data.getComputerId(),
-                data.getHostname(), data.getAgentVersion(), data.getTags());
-
-            log.trace("Inserted jvm {} started at {}", data.getJvmUuid(), Instant.ofEpochMilli(data.getJvmStartedAtMillis()));
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                customerId, data.getJvmUuid(), new Timestamp(data.getJvmStartedAtMillis()), publishedAt, data.getMethodVisibility(),
+                data.getPackages(), data.getExcludePackages(), data.getEnvironment(), data.getComputerId(), data.getHostname(),
+                data.getAgentVersion(), data.getTags());
+            log.trace("Inserted jvm {} {} started at {}", customerId, data.getJvmUuid(),
+                      Instant.ofEpochMilli(data.getJvmStartedAtMillis()));
         }
 
         Long result = jdbcTemplate.queryForObject("SELECT id FROM jvms WHERE uuid = ?", Long.class, data.getJvmUuid());
@@ -101,89 +105,92 @@ public class ImportDAOImpl implements ImportDAO {
     }
 
     @Override
-    public void importMethods(long appId, long jvmId, long publishedAtMillis, Collection<CodeBaseEntry> entries) {
-        Map<String, Long> existingMethods = getExistingMethods();
-        Set<String> incompleteMethods = getIncompleteMethods();
-        Set<Long> invocationsNotFoundInCodeBase = getInvocationsNotFoundInCodeBase();
-        Set<Long> existingInvocations = getExistingInvocations(appId, jvmId);
+    public void importMethods(long customerId, long appId, long jvmId, long publishedAtMillis, Collection<CodeBaseEntry> entries) {
+        Map<String, Long> existingMethods = getExistingMethods(customerId);
+        Set<String> incompleteMethods = getIncompleteMethods(customerId);
+        Set<Long> invocationsNotFoundInCodeBase = getInvocationsNotFoundInCodeBase(customerId);
+        Set<Long> existingInvocations = getExistingInvocations(customerId, appId, jvmId);
 
-        importNewMethods(publishedAtMillis, entries, existingMethods);
-        updateIncompleteMethods(publishedAtMillis, entries, incompleteMethods, existingMethods, invocationsNotFoundInCodeBase);
-        ensureInitialInvocations(appId, jvmId, entries, existingMethods, existingInvocations);
+        importNewMethods(customerId, publishedAtMillis, entries, existingMethods);
+        updateIncompleteMethods(customerId, publishedAtMillis, entries, incompleteMethods, existingMethods, invocationsNotFoundInCodeBase);
+        ensureInitialInvocations(customerId, appId, jvmId, entries, existingMethods, existingInvocations);
         // TODO: update initial invocation status if different from entries*.status
     }
 
     @Override
-    public void importInvocations(long appId, long jvmId, long invokedAtMillis, Set<String> invocations) {
-        Map<String, Long> existingMethods = getExistingMethods();
-        Set<Long> existingInvocations = getExistingInvocations(appId, jvmId);
+    public void importInvocations(long customerId, long appId, long jvmId, long invokedAtMillis, Set<String> invocations) {
+        Map<String, Long> existingMethods = getExistingMethods(customerId);
+        Set<Long> existingInvocations = getExistingInvocations(customerId, appId, jvmId);
 
-        doImportInvocations(appId, jvmId, invokedAtMillis, invocations, existingMethods, existingInvocations);
+        doImportInvocations(customerId, appId, jvmId, invokedAtMillis, invocations, existingMethods, existingInvocations);
     }
 
-    private void doImportInvocations(long appId, long jvmId, long invokedAtMillis, Set<String> invokedSignatures,
+    private void doImportInvocations(long customerId, long appId, long jvmId, long invokedAtMillis, Set<String> invokedSignatures,
                                      Map<String, Long> existingMethods, Set<Long> existingInvocations) {
         for (String signature : invokedSignatures) {
             Long methodId = existingMethods.get(signature);
             if (methodId == null) {
                 log.trace("Inserting incomplete method {}:{}", methodId, signature);
-                existingMethods.put(signature, doInsertRow(new InsertIncompleteMethodStatement(signature, invokedAtMillis)));
+                existingMethods.put(signature, doInsertRow(new InsertIncompleteMethodStatement(customerId, signature, invokedAtMillis)));
                 methodId = existingMethods.get(signature);
             }
             if (existingInvocations.contains(methodId)) {
                 log.trace("Updating invocation {}", signature);
-                jdbcTemplate.update(new UpdateInvocationStatement(appId, jvmId, methodId, invokedAtMillis));
+                jdbcTemplate.update(new UpdateInvocationStatement(customerId, appId, jvmId, methodId, invokedAtMillis));
             } else {
                 log.trace("Inserting invocation {}", signature);
                 jdbcTemplate
-                    .update(new InsertInvocationStatement(appId, jvmId, methodId, SignatureStatus.NOT_FOUND_IN_CODE_BASE,
+                    .update(new InsertInvocationStatement(customerId, appId, jvmId, methodId, SignatureStatus.NOT_FOUND_IN_CODE_BASE,
                                                           invokedAtMillis, 1L));
             }
         }
     }
 
-    private Map<String, Long> getExistingMethods() {
+    private Map<String, Long> getExistingMethods(long customerId) {
         Map<String, Long> result = new HashMap<>();
-        jdbcTemplate.query("SELECT id, signature FROM methods",
+        jdbcTemplate.query("SELECT id, signature FROM methods WHERE customerId = " + customerId,
                            rs -> {
                                result.put(rs.getString(2), rs.getLong(1));
                            });
         return result;
     }
 
-    private Set<String> getIncompleteMethods() {
+    private Set<String> getIncompleteMethods(long customerId) {
         return new HashSet<>(
-            jdbcTemplate.queryForList("SELECT signature FROM methods WHERE methodName IS NULL ", String.class));
+            jdbcTemplate.queryForList("SELECT signature FROM methods WHERE methods.customerId = ? AND methodName IS NULL ", String.class,
+                                      customerId));
     }
 
-    private Set<Long> getInvocationsNotFoundInCodeBase() {
+    private Set<Long> getInvocationsNotFoundInCodeBase(long customerId) {
         return new HashSet<>(
             jdbcTemplate
-                .queryForList("SELECT methodId FROM invocations WHERE status = ?", Long.class,
-                              SignatureStatus.NOT_FOUND_IN_CODE_BASE.name())
+                .queryForList("SELECT methodId FROM invocations WHERE customerId = ? AND status = ?", Long.class,
+                              customerId, SignatureStatus.NOT_FOUND_IN_CODE_BASE.name())
         );
     }
 
 
-    private Set<Long> getExistingInvocations(long appId, long jvmId) {
+    private Set<Long> getExistingInvocations(long customerId, long appId, long jvmId) {
         return new HashSet<>(
-            jdbcTemplate.queryForList("SELECT methodId FROM invocations WHERE applicationId = ? AND jvmId = ?", Long.class, appId, jvmId));
+            jdbcTemplate
+                .queryForList("SELECT methodId FROM invocations WHERE customerId = ? AND applicationId = ? AND jvmId = ?", Long.class,
+                              customerId, appId, jvmId));
     }
 
-    private void importNewMethods(long publishedAtMillis, Collection<CodeBaseEntry> entries, Map<String, Long> existingMethods) {
+    private void importNewMethods(long customerId, long publishedAtMillis, Collection<CodeBaseEntry> entries, Map<String, Long> existingMethods) {
         long startedAtMillis = System.currentTimeMillis();
         int count = 0;
         for (CodeBaseEntry entry : entries) {
             String signature = entry.getSignature();
             if (!existingMethods.containsKey(signature)) {
-                existingMethods.put(signature, doInsertRow(new InsertCompleteMethodStatement(publishedAtMillis, entry)));
+                existingMethods.put(signature, doInsertRow(new InsertCompleteMethodStatement(customerId, publishedAtMillis, entry)));
                 count += 1;
             }
         }
         log.debug("Imported {} methods in {} ms", count, System.currentTimeMillis() - startedAtMillis);
     }
 
-    private void updateIncompleteMethods(long publishedAtMillis, Collection<CodeBaseEntry> entries, Set<String> incompleteMethods,
+    private void updateIncompleteMethods(long customerId, long publishedAtMillis, Collection<CodeBaseEntry> entries, Set<String> incompleteMethods,
                                          Map<String, Long> existingMethods, Set<Long> incompleteInvocations) {
         long startedAtMillis = System.currentTimeMillis();
         int count = 0;
@@ -191,14 +198,14 @@ public class ImportDAOImpl implements ImportDAO {
             long methodId = existingMethods.get(entry.getSignature());
             if (incompleteMethods.contains(entry.getSignature()) || incompleteInvocations.contains(methodId)) {
                 log.debug("Updating {}", entry.getSignature());
-                jdbcTemplate.update(new UpdateIncompleteMethodStatement(publishedAtMillis, entry));
+                jdbcTemplate.update(new UpdateIncompleteMethodStatement(customerId, publishedAtMillis, entry));
                 count += 1;
             }
         }
         log.debug("Updated {} incomplete methods in {} ms", count, System.currentTimeMillis() - startedAtMillis);
     }
 
-    private void ensureInitialInvocations(long appId, long jvmId, Collection<CodeBaseEntry> entries,
+    private void ensureInitialInvocations(long customerId, long appId, long jvmId, Collection<CodeBaseEntry> entries,
                                           Map<String, Long> existingMethods, Set<Long> existingInvocations) {
         long startedAtMillis = System.currentTimeMillis();
         int importCount = 0;
@@ -206,7 +213,7 @@ public class ImportDAOImpl implements ImportDAO {
         for (CodeBaseEntry entry : entries) {
             long methodId = existingMethods.get(entry.getSignature());
             if (!existingInvocations.contains(methodId)) {
-                jdbcTemplate.update(new InsertInvocationStatement(appId, jvmId, methodId, entry.getSignatureStatus(),
+                jdbcTemplate.update(new InsertInvocationStatement(customerId, appId, jvmId, methodId, entry.getSignatureStatus(),
                                                                   0L, 0L));
                 existingInvocations.add(methodId);
                 importCount += 1;
@@ -223,19 +230,21 @@ public class ImportDAOImpl implements ImportDAO {
 
     @RequiredArgsConstructor
     private static class InsertCompleteMethodStatement implements PreparedStatementCreator {
+        private final long customerId;
         private final long publishedAtMillis;
         private final CodeBaseEntry entry;
 
         @Override
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 
-            PreparedStatement ps = con.prepareStatement("INSERT INTO methods(visibility, signature, createdAt, declaringType, " +
+            PreparedStatement ps = con.prepareStatement("INSERT INTO methods(customerId, visibility, signature, createdAt, declaringType, " +
                                                             "exceptionTypes, methodName, modifiers, packageName, parameterTypes, " +
                                                             "returnType) " +
-                                                            "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                                                            "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                                                         Statement.RETURN_GENERATED_KEYS);
-            int column = 0;
             MethodSignature method = entry.getMethodSignature();
+            int column = 0;
+            ps.setLong(++column, customerId);
             ps.setString(++column, entry.getVisibility());
             ps.setString(++column, entry.getSignature());
             ps.setTimestamp(++column, new Timestamp(publishedAtMillis));
@@ -252,6 +261,7 @@ public class ImportDAOImpl implements ImportDAO {
 
     @RequiredArgsConstructor
     private static class UpdateIncompleteMethodStatement implements PreparedStatementCreator {
+        private final long customerId;
         private final long publishedAtMillis;
         private final CodeBaseEntry entry;
 
@@ -262,7 +272,7 @@ public class ImportDAOImpl implements ImportDAO {
                 "UPDATE methods SET " +
                     "visibility = ?, createdAt = LEAST(createdAt, ?), declaringType = ?, exceptionTypes = ?, methodName = ?, modifiers = " +
                     "?" +
-                    ", packageName = ?, parameterTypes = ?,returnType = ? WHERE signature = ?");
+                    ", packageName = ?, parameterTypes = ?, returnType = ? WHERE customerId = ? AND signature = ?");
             int column = 0;
             MethodSignature method = entry.getMethodSignature();
             ps.setString(++column, entry.getVisibility());
@@ -274,6 +284,7 @@ public class ImportDAOImpl implements ImportDAO {
             ps.setString(++column, method.getPackageName());
             ps.setString(++column, method.getParameterTypes());
             ps.setString(++column, method.getReturnType());
+            ps.setLong(++column, customerId);
             ps.setString(++column, entry.getSignature());
             return ps;
         }
@@ -281,6 +292,7 @@ public class ImportDAOImpl implements ImportDAO {
 
     @RequiredArgsConstructor
     private class InsertInvocationStatement implements PreparedStatementCreator {
+        private final long customerId;
         private final long appId;
         private final long jvmId;
         private final long methodId;
@@ -291,9 +303,10 @@ public class ImportDAOImpl implements ImportDAO {
         @Override
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
             PreparedStatement ps =
-                con.prepareStatement("INSERT INTO invocations(applicationId, jvmId, methodId, status, invokedAtMillis, invocationCount) " +
-                                         "VALUES(?, ?, ?, ?, ?, ?)");
+                con.prepareStatement("INSERT INTO invocations(customerId, applicationId, jvmId, methodId, status, invokedAtMillis, invocationCount) " +
+                                         "VALUES(?, ?, ?, ?, ?, ?, ?)");
             int column = 0;
+            ps.setLong(++column, customerId);
             ps.setLong(++column, appId);
             ps.setLong(++column, jvmId);
             ps.setLong(++column, methodId);
@@ -306,6 +319,7 @@ public class ImportDAOImpl implements ImportDAO {
 
     @RequiredArgsConstructor
     private class UpdateInvocationStatement implements PreparedStatementCreator {
+        private final long customerId;
         private final long appId;
         private final long jvmId;
         private final long methodId;
@@ -317,11 +331,12 @@ public class ImportDAOImpl implements ImportDAO {
                 con.prepareStatement(
                     "UPDATE invocations SET invokedAtMillis = GREATEST(invokedAtMillis, ?), " +
                         "status = ?, invocationCount = invocationCount + 1 " +
-                        "WHERE applicationId = ? AND jvmId = ? AND methodId = ?",
+                        "WHERE customerId = ? AND applicationId = ? AND jvmId = ? AND methodId = ?",
                     Statement.RETURN_GENERATED_KEYS);
             int column = 0;
             ps.setLong(++column, invokedAtMillis);
             ps.setString(++column, SignatureStatus.INVOKED.name());
+            ps.setLong(++column, customerId);
             ps.setLong(++column, appId);
             ps.setLong(++column, jvmId);
             ps.setLong(++column, methodId);
@@ -331,14 +346,16 @@ public class ImportDAOImpl implements ImportDAO {
 
     @RequiredArgsConstructor
     private class InsertIncompleteMethodStatement implements PreparedStatementCreator {
+        private final long customerId;
         private final String signature;
         private final long invokedAtMillis;
 
         @Override
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
             PreparedStatement ps =
-                con.prepareStatement("INSERT INTO methods(visibility, signature, createdAt) VALUES (?, ?, ?)");
+                con.prepareStatement("INSERT INTO methods(customerId, visibility, signature, createdAt) VALUES (?, ?, ?, ?)");
             int column = 0;
+            ps.setLong(++column, customerId);
             ps.setString(++column, "");
             ps.setString(++column, signature);
             ps.setTimestamp(++column, new Timestamp(invokedAtMillis));

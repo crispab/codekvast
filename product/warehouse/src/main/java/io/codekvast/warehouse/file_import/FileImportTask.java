@@ -73,8 +73,8 @@ public class FileImportTask {
                     if (file.isDirectory()) {
                         walkDirectory(file);
                     } else if (file.getName().endsWith(".ser")) {
-                        boolean imported = publicationImporter.importPublicationFile(file);
-                        if (imported && codekvastSettings.isDeleteImportedFiles()) {
+                        boolean handled = publicationImporter.importPublicationFile(file);
+                        if (handled && codekvastSettings.isDeleteImportedFiles()) {
                             deleteFile(file);
                         }
                     } else {

@@ -19,20 +19,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.warehouse.file_import;
-
-import io.codekvast.javaagent.model.v1.InvocationDataPublication;
+package io.codekvast.warehouse.customer;
 
 /**
- * @author olle.hallin@crisp.se
+ * Thrown when a license violation has occurred.
  */
-public interface InvocationDataImporter {
+public class LicenseViolationException extends RuntimeException {
 
-    /**
-     * Imports an InvocationDataPublication
-     *
-     * @param publication The publication to import.
-     * @return true iff the publication was handled.
-     */
-    boolean importPublication(InvocationDataPublication publication);
+    public LicenseViolationException(String message) {
+        super(message);
+    }
 }

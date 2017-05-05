@@ -159,7 +159,7 @@ public class Scheduler implements Runnable {
             codeBasePublisher = codeBasePublisherFactory.create(newName, config);
             codeBasePublisherState.scheduleNext();
         }
-        codeBasePublisher.configure(dynamicConfig.getCodeBasePublisherConfig());
+        codeBasePublisher.configure(dynamicConfig.getCustomerId(), dynamicConfig.getCodeBasePublisherConfig());
     }
 
     private void configureInvocationDataPublisher() {
@@ -176,7 +176,7 @@ public class Scheduler implements Runnable {
             invocationDataPublisher.setCodeBaseFingerprint(codeBasePublisher.getCodeBaseFingerprint());
         }
 
-        invocationDataPublisher.configure(dynamicConfig.getInvocationDataPublisherConfig());
+        invocationDataPublisher.configure(dynamicConfig.getCustomerId(), dynamicConfig.getInvocationDataPublisherConfig());
     }
 
     private void publishCodeBaseIfNeeded() {

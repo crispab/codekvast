@@ -25,6 +25,7 @@ import io.codekvast.javaagent.model.v1.CodeBasePublication;
 import io.codekvast.javaagent.model.v1.InvocationDataPublication;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
+import io.codekvast.warehouse.customer.LicenseViolationException;
 
 import java.io.File;
 import java.io.IOException;

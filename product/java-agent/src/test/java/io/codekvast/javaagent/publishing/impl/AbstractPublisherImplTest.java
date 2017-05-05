@@ -21,30 +21,31 @@ public class AbstractPublisherImplTest {
 
     @Test
     public void should_handle_configure_enabled_true() throws Exception {
-        publisher.configure("enabled=true");
+        publisher.configure(1L, "enabled=true");
 
         assertThat(publisher.isEnabled(), is(true));
         output.expect(containsString("DEBUG"));
         output.expect(containsString("Setting enabled=true, was=false"));
+        output.expect(containsString("customerId 1"));
     }
 
     @Test
     public void should_handle_configure_enabled_false() throws Exception {
-        publisher.configure("enabled=false");
+        publisher.configure(-1L, "enabled=false");
         assertThat(publisher.isEnabled(), is(false));
         output.expect(is(""));
     }
 
     @Test
     public void should_handle_configure_enabled_foobar() throws Exception {
-        publisher.configure("enabled=foobar");
+        publisher.configure(-1L, "enabled=foobar");
         assertThat(publisher.isEnabled(), is(false));
         output.expect(is(""));
     }
 
     @Test
     public void should_handle_configure_enabled_true_foobar() throws Exception {
-        publisher.configure("enabled=true; enabled=foobar");
+        publisher.configure(0L, "enabled=true; enabled=foobar");
         assertThat(publisher.isEnabled(), is(false));
         output.expect(containsString("DEBUG"));
         output.expect(containsString("Setting enabled=true, was=false"));
@@ -52,7 +53,7 @@ public class AbstractPublisherImplTest {
 
     @Test
     public void should_handle_configure_syntax_error() throws Exception {
-        publisher.configure("enabled=foo=bar");
+        publisher.configure(0L, "enabled=foo=bar");
         assertThat(publisher.isEnabled(), is(false));
         output.expect(containsString("WARN"));
         output.expect(containsString("Illegal key-value pair: enabled=foo=bar"));

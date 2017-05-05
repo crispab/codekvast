@@ -32,6 +32,7 @@ public interface CodeBaseImporter {
      * Imports a CodeBasePublication
      *
      * @param publication The publication to import.
+     * @return true iff the publication was handled
      */
-    void importPublication(CodeBasePublication publication);
+    boolean importPublication(CodeBasePublication publication);
 }

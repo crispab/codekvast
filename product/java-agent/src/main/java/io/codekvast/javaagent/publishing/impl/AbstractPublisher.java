@@ -21,8 +21,8 @@
  */
 package io.codekvast.javaagent.publishing.impl;
 
-import io.codekvast.javaagent.publishing.Publisher;
 import io.codekvast.javaagent.config.AgentConfig;
+import io.codekvast.javaagent.publishing.Publisher;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -41,7 +41,8 @@ public abstract class AbstractPublisher implements Publisher {
     @Setter
     private boolean enabled;
 
-    @Getter
+    private long customerId = -1L;
+
     private int sequenceNumber;
 
     AbstractPublisher(Logger log, AgentConfig config) {
@@ -50,7 +51,12 @@ public abstract class AbstractPublisher implements Publisher {
     }
 
     @Override
-    public void configure(String keyValuePairs) {
+    public void configure(long customerId, String keyValuePairs) {
+        if (customerId != this.customerId) {
+            this.customerId = customerId;
+            log.debug("Using customerId {}", customerId);
+        }
+
         String[] pairs = keyValuePairs.split(";");
 
         for (String pair : pairs) {
@@ -96,5 +102,4 @@ public abstract class AbstractPublisher implements Publisher {
      * @return true iff the key was recognized.
      */
     abstract boolean doSetValue(String key, String value);
-
 }

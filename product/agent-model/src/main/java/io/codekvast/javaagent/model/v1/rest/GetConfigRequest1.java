@@ -37,8 +37,9 @@ import javax.validation.constraints.Size;
 public class GetConfigRequest1 {
 
     /**
-     * What is my license key? Null or blank is acceptable and means run with a trial license.
+     * What is my license key? Blank is acceptable and means run with a trial license.
      */
+    @NonNull
     private final String licenseKey;
 
     /**

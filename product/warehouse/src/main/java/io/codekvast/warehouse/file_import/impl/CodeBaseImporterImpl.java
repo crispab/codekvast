@@ -46,12 +46,14 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void importPublication(CodeBasePublication publication) {
+    public boolean importPublication(CodeBasePublication publication) {
         log.debug("Importing {}", publication);
 
-        CommonPublicationData commonData = publication.getCommonData();
-        long appId = importDAO.importApplication(commonData);
-        long jvmId = importDAO.importJvm(commonData);
-        importDAO.importMethods(appId, jvmId, publication.getCommonData().getPublishedAtMillis(), publication.getEntries());
+        CommonPublicationData data = publication.getCommonData();
+        long customerId = data.getCustomerId();
+        long appId = importDAO.importApplication(data);
+        long jvmId = importDAO.importJvm(data);
+        importDAO.importMethods(customerId, appId, jvmId, publication.getCommonData().getPublishedAtMillis(), publication.getEntries());
+        return true;
     }
 }

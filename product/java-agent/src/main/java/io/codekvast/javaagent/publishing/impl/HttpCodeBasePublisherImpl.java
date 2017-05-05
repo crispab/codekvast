@@ -69,7 +69,7 @@ public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
         File file = null;
         try {
 
-            CodeBasePublication publication = codeBase.getCodeBasePublication(this.getSequenceNumber());
+            CodeBasePublication publication = codeBase.getCodeBasePublication(getCustomerId(), this.getSequenceNumber());
             file = FileUtils.serializeToFile(publication, getConfig().getFilenamePrefix("codebase-"), ".ser");
 
             doPost(file, url, codeBase.getFingerprint().getSha256());

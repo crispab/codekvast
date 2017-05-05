@@ -33,7 +33,7 @@ public interface PublicationImporter {
      *
      * @param file The file that contains the serialized publication.
      *
-     * @return true iff the contained object was recognized.
+     * @return true iff the contained object was handled.
      */
     boolean importPublicationFile(File file);
 }

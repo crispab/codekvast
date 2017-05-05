@@ -57,3 +57,10 @@ processResources {
     }
     filteringCharset = 'UTF-8'
 }
+
+jar {
+    // Make sure we exclude the unexpanded versions of *.properties
+    exclude {
+        it.file.name.endsWith('.properties') && it.file.path.contains('classes')
+    }
+}

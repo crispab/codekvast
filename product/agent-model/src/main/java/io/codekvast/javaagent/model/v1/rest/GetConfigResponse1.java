@@ -28,11 +28,17 @@ import lombok.*;
  *
  * @author olle.hallin@crisp.se
  */
+@SuppressWarnings("ClassWithTooManyFields")
 @Builder(toBuilder = true)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @ToString
 public class GetConfigResponse1 {
+
+    /**
+     * What customerId should I use when publishing data?
+     */
+    private long customerId;
 
     /**
      * How often shall the server be polled for dynamic config?
@@ -112,6 +118,7 @@ public class GetConfigResponse1 {
 
     public static GetConfigResponse1 sample() {
         return builder()
+            .customerId(-1)
             .codeBasePublisherConfig("codeBasePublisherConfig")
             .codeBasePublisherName("codeBasePublisherName")
             .invocationDataPublisherConfig("invocationDataPublisherConfig")

@@ -179,12 +179,12 @@ public class AgentConfig implements CodekvastConfig {
             .agentVersion(Constants.AGENT_VERSION)
             .computerId(Constants.COMPUTER_ID)
             .environment(getEnvironment())
-            .excludePackages(getExcludePackages())
+            .excludePackages(getNormalizedExcludePackages().toString())
             .hostname(Constants.HOST_NAME)
             .jvmStartedAtMillis(Constants.JVM_STARTED_AT_MILLIS)
             .jvmUuid(Constants.JVM_UUID)
             .methodVisibility(getMethodVisibility())
-            .packages(getPackages())
+            .packages(getNormalizedPackages().toString())
             .publishedAtMillis(System.currentTimeMillis())
             .tags(getTags());
 

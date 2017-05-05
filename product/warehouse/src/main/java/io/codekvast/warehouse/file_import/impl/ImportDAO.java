@@ -53,21 +53,23 @@ public interface ImportDAO {
     /**
      * Inserts missing rows into the database's methods and invocations tables.
      * Does never update existing rows.
-     *  @param appId             The application ID returned by {@link #importApplication(CommonPublicationData)}
+     * @param customerId
+     * @param appId             The application ID returned by {@link #importApplication(CommonPublicationData)}
      * @param jvmId             The JVM ID returned by {@link #importJvm(CommonPublicationData)}
      * @param publishedAtMillis The timestamp the publication was published.
      * @param entries           The collection of code base entries to store.
      */
-    void importMethods(long appId, long jvmId, long publishedAtMillis, Collection<CodeBaseEntry> entries);
+    void importMethods(long customerId, long appId, long jvmId, long publishedAtMillis, Collection<CodeBaseEntry> entries);
 
     /**
      * Inserts or updates rows into the invocations table.
      * Existing rows are updated with the new interval.
      *
+     * @param customerId
      * @param appId           The application ID returned by {@link #importApplication(CommonPublicationData)}
      * @param jvmId           The JVM ID returned by {@link #importJvm(CommonPublicationData)}
      * @param invokedAtMillis The start of the recording interval.
      * @param invocations     The set of signatures that were invoked in this recording interval.
      */
-    void importInvocations(long appId, long jvmId, long invokedAtMillis, Set<String> invocations);
+    void importInvocations(long customerId, long appId, long jvmId, long invokedAtMillis, Set<String> invocations);
 }

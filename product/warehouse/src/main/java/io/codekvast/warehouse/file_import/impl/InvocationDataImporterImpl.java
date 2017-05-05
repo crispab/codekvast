@@ -46,13 +46,16 @@ public class InvocationDataImporterImpl implements InvocationDataImporter {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void importPublication(InvocationDataPublication publication) {
+    public boolean importPublication(InvocationDataPublication publication) {
         log.debug("Importing {}", publication);
 
         CommonPublicationData commonData = publication.getCommonData();
+        long customerId = commonData.getCustomerId();
         long appId = importDAO.importApplication(commonData);
         long jvmId = importDAO.importJvm(commonData);
-        importDAO.importInvocations(appId, jvmId, publication.getRecordingIntervalStartedAtMillis(),
+
+        importDAO.importInvocations(customerId, appId, jvmId, publication.getRecordingIntervalStartedAtMillis(),
                                     new TreeSet<>(publication.getInvocations()));
+        return true;
     }
 }

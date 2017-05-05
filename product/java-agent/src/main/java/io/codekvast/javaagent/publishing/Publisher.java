@@ -35,9 +35,10 @@ public interface Publisher {
     /**
      * Configure this publisher.
      *
+     * @param customerId    The customerId to use when publishing stuff
      * @param keyValuePairs The specialized config received from the server, a semi-colon separated list of key=value pairs.
      */
-    void configure(String keyValuePairs);
+    void configure(long customerId, String keyValuePairs);
 
     /**
      * How many times has a publication actually been executed?
