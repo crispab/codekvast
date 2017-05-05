@@ -36,7 +36,6 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-logging'
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-undertow'
-    compile 'org.springframework.boot:spring-boot-starter-security'
     compile "io.springfox:springfox-swagger2:${springfoxVersion}"
 
     runtime 'com.zaxxer:HikariCP'
