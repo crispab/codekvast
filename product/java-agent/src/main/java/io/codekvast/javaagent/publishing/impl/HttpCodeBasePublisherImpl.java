@@ -21,6 +21,7 @@
  */
 package io.codekvast.javaagent.publishing.impl;
 
+import io.codekvast.javaagent.codebase.CodeBaseFingerprint;
 import io.codekvast.javaagent.model.v1.CodeBasePublication;
 import io.codekvast.javaagent.publishing.CodekvastPublishingException;
 import io.codekvast.javaagent.codebase.CodeBase;
@@ -80,6 +81,11 @@ public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
         } finally {
             FileUtils.safeDelete(file);
         }
+    }
+
+    @Override
+    boolean isCodeBasePublished(CodeBaseFingerprint fingerprint) {
+        return false; // TODO implement isCodeBasePublished(CodeBaseFingerprint)
     }
 
     void doPost(File file, String url, String fingerprint) throws IOException {

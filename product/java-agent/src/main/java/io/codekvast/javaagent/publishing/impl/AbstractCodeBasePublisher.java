@@ -46,7 +46,8 @@ abstract class AbstractCodeBasePublisher extends AbstractPublisher implements Co
     public void publishCodeBase() throws CodekvastPublishingException {
         if (isEnabled()) {
             CodeBase newCodeBase = new CodeBase(getConfig());
-            if (!newCodeBase.getFingerprint().equals(codeBaseFingerprint)) {
+            if (!newCodeBase.getFingerprint().equals(codeBaseFingerprint) && !isCodeBasePublished(newCodeBase.getFingerprint())) {
+
                 incrementSequenceNumber();
 
                 new CodeBaseScanner().scanSignatures(newCodeBase);
@@ -56,6 +57,10 @@ abstract class AbstractCodeBasePublisher extends AbstractPublisher implements Co
                 codeBaseFingerprint = newCodeBase.getFingerprint();
             }
         }
+    }
+
+    boolean isCodeBasePublished(CodeBaseFingerprint fingerprint) {
+        return false;
     }
 
     abstract void doPublishCodeBase(CodeBase codeBase) throws CodekvastPublishingException;
