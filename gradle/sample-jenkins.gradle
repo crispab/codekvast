@@ -121,10 +121,10 @@ verbose = true
 
 processResources.dependsOn generateCodekvastConfig
 
-task generateTomcatRunHook {
+task generateTomcatSetenvSh {
     description = "Generates a setenv.sh in \$CATALINA_HOME/bin that hooks up Codekvast"
     group = "build"
-    dependsOn installJenkinsInTomcat7, generateCodekvastConfig
+    dependsOn installJenkinsInTomcat7, generateCodekvastConfig, installTomcatEndorsed
     def setenvFile = file("$catalinaBase/bin/setenv.sh")
 
     inputs.file file("build.gradle")
@@ -172,7 +172,7 @@ LOGGING_MANAGER=\"-Djava.util.logging.manager=java.util.logging.LogManager\"
 task run(type: Exec) {
     description = "Run Jenkins with Codekvast Collector attached"
     group = "application"
-    dependsOn generateTomcatRunHook, installTomcatEndorsed
+    dependsOn generateTomcatSetenvSh
     commandLine "$catalinaBase/bin/catalina.sh", "run"
 }
 
