@@ -20,7 +20,7 @@ dependencies {
 
     systemTestCompile project(':product:testsupport')
     systemTestCompile 'org.gebish:geb-spock:1.1.1'
-    systemTestCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
+    systemTestCompile 'org.spockframework:spock-core:1.1-groovy-2.4'
     systemTestCompile "org.seleniumhq.selenium:selenium-api:$seleniumVersion"
 
     systemTestRuntime "com.codeborne:phantomjsdriver:1.4.2"
