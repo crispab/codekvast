@@ -1,15 +1,12 @@
 package io.codekvast.warehouse.heroku;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import javax.xml.bind.DatatypeConverter;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,14 +18,17 @@ import java.util.Map;
 @Slf4j
 public class HerokuController {
 
-    @RequestMapping( path = "/heroku/resources", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<HerokuProvisionResponse> provision(@RequestHeader("Authorization") String auth, @RequestHeader HttpHeaders headers) {
+    @RequestMapping(path = "/heroku/resources", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<HerokuProvisionResponse> provision(@Valid @RequestBody HerokuProvisionRequest request,
+                                                             @RequestHeader("Authorization") String auth) {
+        log.debug("request={}", request);
         log.debug("auth={}", auth);
-        log.debug("headers={}", headers);
 
         if (!validAuth(auth)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+
+        // TODO: implement provisioning
 
         return ResponseEntity.ok(HerokuProvisionResponse
                                      .builder()
@@ -38,8 +38,22 @@ public class HerokuController {
 
     }
 
+    @RequestMapping(path = "/heroku/resources/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<String> deprovision(@PathVariable("id") String id,
+                                              @RequestHeader("Authorization") String auth) {
+        log.debug("id={}", id);
+
+        if (!validAuth(auth)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // TODO: implement deprovisioning
+
+        return ResponseEntity.ok("{}");
+    }
+
     private boolean validAuth(String auth) {
-        // The password is defined in addon-manifest.json
+        // The password is defined in src/heroku/addon-manifest.json
 
         String expected = "Basic " + DatatypeConverter.printBase64Binary("codekvast:2e54f4269dc7d2acdbe6c5d737d5371c".getBytes());
         return auth.equals(expected);
