@@ -21,12 +21,12 @@
  */
 package io.codekvast.javaagent.publishing.impl;
 
-import io.codekvast.javaagent.codebase.CodeBaseFingerprint;
-import io.codekvast.javaagent.model.v1.CodeBasePublication;
-import io.codekvast.javaagent.publishing.CodekvastPublishingException;
 import io.codekvast.javaagent.codebase.CodeBase;
+import io.codekvast.javaagent.codebase.CodeBaseFingerprint;
 import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.model.Endpoints;
+import io.codekvast.javaagent.model.v1.CodeBasePublication;
+import io.codekvast.javaagent.publishing.CodekvastPublishingException;
 import io.codekvast.javaagent.util.FileUtils;
 import io.codekvast.javaagent.util.LogUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -75,7 +75,8 @@ public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
 
             doPost(file, url, codeBase.getFingerprint().getSha256());
 
-            log.debug("Uploaded {} methods ({}) to {}", publication.getEntries().size(), LogUtil.humanReadableByteCount(file.length()), url);
+            log.debug("Uploaded {} methods ({}) to {}", publication.getEntries().size(), LogUtil.humanReadableByteCount(file.length()),
+                      url);
         } catch (IOException e) {
             throw new CodekvastPublishingException("Cannot upload code base to " + url, e);
         } finally {
@@ -85,7 +86,10 @@ public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
 
     @Override
     boolean isCodeBasePublished(CodeBaseFingerprint fingerprint) {
-        return false; // TODO implement isCodeBasePublished(CodeBaseFingerprint)
+        // Will not implement this feature now.
+        // See https://trello.com/c/icZaxWSa
+
+        return false;
     }
 
     void doPost(File file, String url, String fingerprint) throws IOException {
