@@ -52,6 +52,7 @@ run {
     jvmArgs = ['-ea']
     args = ["--logging.file=$buildDir/log/${applicationName}.log",
             '--codekvast.queuePathPollIntervalSeconds=10',
+            '--codekvast.herokuApiPassword=2e54f4269dc7d2acdbe6c5d737d5371c',
             "--spring.resources.staticLocations=" +
                 "file:$projectDir/src/webapp/dist/," +
                 "classpath:/META-INF/resources"]

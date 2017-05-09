@@ -258,6 +258,10 @@ It is possible to override one or more parameters that were specified in the con
 The override mechanism comes in handy when you want to use the same configuration files in many environments. Probably just the
 environment name is different.
 
+It is also possible to override any single parameter value by defining an environment variable with a name derived from the
+parameter name: the environment variable `CODEKVAST_APP_NAME` will override the configuration file parameter `appName`,
+ `CODEKVAST_ENVIRONMENT` will override `environment` and so on.
+
 ==== Codekvast Agent configuration file
 
 The format of the file is a standard Java Properties file, that is, `key: value` or `key = value`. Long lines can be continued by ending the

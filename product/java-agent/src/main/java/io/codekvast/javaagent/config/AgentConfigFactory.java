@@ -103,30 +103,30 @@ public class AgentConfigFactory {
     private static AgentConfig buildAgentConfig(Properties props) {
 
         return AgentConfig.builder()
-                          .appName(validateAppName(ConfigUtils.getMandatoryStringValue(props, "appName")))
+                          .appName(ConfigUtils.getMandatoryStringValue(props, "appName"))
                           .appVersion(ConfigUtils.getOptionalStringValue(props, "appVersion", UNSPECIFIED))
                           .aspectFile(DEFAULT_ASPECT_FILE)
                           .aspectjOptions(ConfigUtils.getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
                           .bridgeAspectjMessagesToSLF4J(
-                                           ConfigUtils.getOptionalBooleanValue(props, "bridgeAspectjMessagesToSLF4J",
-                                                                               DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_SLF4J))
+                              ConfigUtils.getOptionalBooleanValue(props, "bridgeAspectjMessagesToSLF4J",
+                                                                  DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_SLF4J))
                           .codeBase(ConfigUtils.getMandatoryStringValue(props, "codeBase"))
                           .environment(ConfigUtils.getOptionalStringValue(props, "environment", DEFAULT_ENVIRONMENT))
                           .excludePackages(ConfigUtils.getOptionalStringValue(props, "excludePackages", ""))
                           .httpConnectTimeoutSeconds(
-                                           ConfigUtils.getOptionalIntValue(props, "httpConnectTimeoutSeconds",
-                                                                           DEFAULT_HTTP_CONNECT_TIMEOUT_SECONDS))
+                              ConfigUtils.getOptionalIntValue(props, "httpConnectTimeoutSeconds",
+                                                              DEFAULT_HTTP_CONNECT_TIMEOUT_SECONDS))
                           .httpProxyHost(ConfigUtils.getOptionalStringValue(props, "httpProxyHost", DEFAULT_HTTP_PROXY_HOST))
                           .httpProxyPort(ConfigUtils.getOptionalIntValue(props, "httpProxyPort", DEFAULT_HTTP_PROXY_PORT))
                           .httpReadTimeoutSeconds(
-                                           ConfigUtils
-                                               .getOptionalIntValue(props, "httpReadTimeoutSeconds", DEFAULT_HTTP_READ_TIMEOUT_SECONDS))
+                              ConfigUtils
+                                  .getOptionalIntValue(props, "httpReadTimeoutSeconds", DEFAULT_HTTP_READ_TIMEOUT_SECONDS))
                           .httpWriteTimeoutSeconds(
-                                           ConfigUtils
-                                               .getOptionalIntValue(props, "httpWriteTimeoutSeconds", DEFAULT_HTTP_WRITE_TIMEOUT_SECONDS))
+                              ConfigUtils
+                                  .getOptionalIntValue(props, "httpWriteTimeoutSeconds", DEFAULT_HTTP_WRITE_TIMEOUT_SECONDS))
                           .licenseKey(ConfigUtils.getOptionalStringValue(props, "licenseKey", TRIAL_LICENSE_KEY))
                           .methodVisibility(
-                                           ConfigUtils.getOptionalStringValue(props, "methodVisibility", DEFAULT_METHOD_VISIBILITY))
+                              ConfigUtils.getOptionalStringValue(props, "methodVisibility", DEFAULT_METHOD_VISIBILITY))
                           .packages(ConfigUtils.getMandatoryStringValue(props, "packages"))
                           .serverUrl(ConfigUtils.getOptionalStringValue(props, "serverUrl", DEFAULT_SERVER_URL))
                           .tags(ConfigUtils.getOptionalStringValue(props, TAGS_KEY, ""))
@@ -165,13 +165,6 @@ public class AgentConfigFactory {
         }
 
         return sb.toString();
-    }
-
-    private static String validateAppName(String appName) {
-        if (appName.startsWith(".")) {
-            throw new IllegalArgumentException("appName must not start with '.': " + appName);
-        }
-        return appName;
     }
 
     public static AgentConfig createSampleAgentConfig() {

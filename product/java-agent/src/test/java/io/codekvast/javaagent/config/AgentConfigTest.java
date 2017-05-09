@@ -34,11 +34,6 @@ public class AgentConfigTest {
         assertThat(config2.getAppName(), is("appName2"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testParseConfigFileWithIllegalAppNameOverride() throws IOException, URISyntaxException {
-        AgentConfigFactory.parseAgentConfig(file, "appName=.illegalAppName");
-    }
-
     @Test
     public void testParseConfigFilePathWithSyspropAndCmdLineOverride() throws IOException, URISyntaxException {
         System.setProperty(AgentConfigLocator.SYSPROP_OPTS, "codeBase=/path/to/$appName");

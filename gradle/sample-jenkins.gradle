@@ -106,11 +106,9 @@ task generateCodekvastConfig {
         configFile.parentFile.mkdirs()
         configFile.text = """# Run Codekvast against Jenkins in Tomcat
 #aspectjOptions = -verbose -showWeaveInfo
-appName = Jenkins
 appVersion = manifest jenkins-cli.*\\\\.jar Jenkins-CLI-Version
 aspectjOptions = -verbose
 codeBase = $catalinaBase/webapps/jenkins, ${System.properties['user.home']}/.jenkins/plugins
-collectionResolutionSeconds = 5
 methodVisibility = private
 packages = hudson, jenkins
 tags = development, sample
@@ -174,5 +172,8 @@ task run(type: Exec) {
     group = "application"
     dependsOn generateTomcatSetenvSh
     commandLine "$catalinaBase/bin/catalina.sh", "run"
+
+    // Illustrate that config can be injected from environment variables
+    environment['CODEKVAST_APP_NAME']='Jenkins'
 }
 

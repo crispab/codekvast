@@ -50,6 +50,9 @@ public class CodekvastSettings {
     private int queuePathPollIntervalSeconds;
     private boolean deleteImportedFiles;
 
+    private String herokuApiPassword;
+    private String herokuApiSsoSalt;
+
     @PostConstruct
     public void logStartup() {
         System.out.printf("%s v%s (%s) started%n", applicationName, displayVersion, commitDate);

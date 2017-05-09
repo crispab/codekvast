@@ -43,8 +43,9 @@ public final class ConfigUtils {
         if (packages != null) {
             String[] prefixes = packages.split("[:;,]");
             for (String prefix : prefixes) {
-                if (!prefix.isEmpty()) {
-                    result.add(getNormalizedPackagePrefix(prefix.trim()));
+                String trimmedPrefix = prefix.trim();
+                if (!trimmedPrefix.isEmpty()) {
+                    result.add(getNormalizedPackagePrefix(trimmedPrefix));
                 }
             }
         }
@@ -61,14 +62,23 @@ public final class ConfigUtils {
     }
 
 
-    public static String getOptionalStringValue(Properties props, String key, String defaultValue) {
-        return expandVariables(props, props.getProperty(key, defaultValue));
+    public static String getOptionalStringValue(Properties props, String propertyName, String defaultValue) {
+        return expandVariables(props, propertyName, defaultValue);
+    }
+
+    static String expandVariables(Properties props, String key, String defaultValue) {
+        String value = System.getenv(getEnvVarName(key));
+        if (value == null) {
+            value = props.getProperty(key, defaultValue);
+        }
+        return expandVariables(props, value);
     }
 
     static String expandVariables(Properties props, String value) {
         if (value == null) {
             return null;
         }
+
         Pattern pattern = Pattern.compile("\\$(\\{([a-zA-Z0-9._-]+)}|([a-zA-Z0-9._-]+))");
         Matcher matcher = pattern.matcher(value);
         StringBuffer sb = new StringBuffer();
@@ -87,13 +97,17 @@ public final class ConfigUtils {
                 String prefix = key1 != null ? "\\$\\{" : "\\$";
                 String suffix = key1 != null ? "\\}" : "";
                 replacement = String.format("%s%s%s", prefix, key, suffix);
-                log.warn("Warning: unrecognized variable: {}", replacement.replace("\\", ""));
+                log.warn("Unrecognized variable: {}", replacement.replace("\\", ""));
             }
 
             matcher.appendReplacement(sb, replacement);
         }
         matcher.appendTail(sb);
         return sb.toString();
+    }
+
+    static String getEnvVarName(String propertyName) {
+        return "CODEKVAST_" + propertyName.replaceAll("([A-Z])", "_$1").toUpperCase();
     }
 
     public static boolean getOptionalBooleanValue(Properties props, String key, boolean defaultValue) {
@@ -104,10 +118,10 @@ public final class ConfigUtils {
         return Integer.valueOf(getOptionalStringValue(props, key, Integer.toString(defaultValue)));
     }
 
-    public static String getMandatoryStringValue(Properties props, String key) {
-        String value = expandVariables(props, props.getProperty(key));
-        if (value == null || value.trim().length() == 0) {
-            throw new IllegalArgumentException("Missing or empty property: " + key);
+    public static String getMandatoryStringValue(Properties props, String propertyName) {
+        String value = expandVariables(props, propertyName, null);
+        if (value == null || value.trim().isEmpty()) {
+            throw new IllegalArgumentException("Missing property: " + propertyName + " (or environment variable $" + getEnvVarName(propertyName) + ")");
         }
         return value;
     }
