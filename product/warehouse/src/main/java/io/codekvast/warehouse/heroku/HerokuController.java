@@ -42,60 +42,53 @@ import java.util.Map;
 public class HerokuController {
 
     private final CodekvastSettings settings;
+    private final HerokuService herokuService;
 
     @Inject
-    public HerokuController(CodekvastSettings settings) {
+    public HerokuController(CodekvastSettings settings, HerokuService herokuService) {
         this.settings = settings;
+        this.herokuService = herokuService;
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> onHerokuAuthenticationException(HerokuAuthenticationException e) {
+        log.warn("Invalid credentials");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     @RequestMapping(path = "/heroku/resources", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<HerokuProvisionResponse> provision(@Valid @RequestBody HerokuProvisionRequest request,
-                                                             @RequestHeader("Authorization") String auth) {
+                                                             @RequestHeader("Authorization") String auth)
+        throws HerokuException {
         log.debug("request={}", request);
-        log.debug("auth={}", auth);
 
-        if (!validAuth(auth)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+        validateCredentials(auth);
 
-        // TODO: implement provisioning
-
-        return ResponseEntity.ok(HerokuProvisionResponse
-                                     .builder()
-                                     .id("4711") // TODO: pick from customers table
-                                     .config(getConfig())
-                                     .build());
-
+        return ResponseEntity.ok(herokuService.provision(request));
     }
 
     @RequestMapping(path = "/heroku/resources/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<String> deprovision(@PathVariable("id") String id,
-                                              @RequestHeader("Authorization") String auth) {
+                                              @RequestHeader("Authorization") String auth) throws HerokuException {
         log.debug("id={}", id);
 
-        if (!validAuth(auth)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+        validateCredentials(auth);
 
-        // TODO: implement deprovisioning
+        herokuService.deprovision(id);
 
         return ResponseEntity.ok("{}");
     }
 
-    private boolean validAuth(String auth) {
+    private void validateCredentials(String auth) throws HerokuAuthenticationException {
+        log.debug("auth={}", auth);
+
         // The password is also defined in src/heroku/addon-manifest.json which has been uploaded to Heroku.
 
         String credentials = "codekvast:" + settings.getHerokuApiPassword();
         String expected = "Basic " + DatatypeConverter.printBase64Binary(credentials.getBytes());
-        return auth.equals(expected);
-    }
 
-    private Map<String, String> getConfig() {
-        // TODO: implement
-        Map<String, String> result = new HashMap<>();
-        result.put("CODEKVAST_APP_NAME", "The name of the instrumented app");
-        result.put("CODEKVAST_URL", "http://localhost:8080");
-        result.put("CODEKVAST_LICENSE_KEY", "");
-        return result;
+        if (!auth.equals(expected)) {
+            throw new HerokuAuthenticationException("Invalid credentials: " + auth);
+        }
     }
 }

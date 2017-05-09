@@ -1,0 +1,14 @@
+//--- Heroku add-on
+
+task validateHerokuAddOnManifest(type: Exec) {
+    description "Validates the Heroku addon-manifest.json"
+    group "Heroku Partner"
+
+    inputs.dir file('src/heroku')
+
+    executable 'kensa'
+    workingDir 'src/heroku'
+
+    args 'test', 'manifest'
+}
+check.dependsOn validateHerokuAddOnManifest

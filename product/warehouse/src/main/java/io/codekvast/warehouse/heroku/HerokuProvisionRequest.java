@@ -34,7 +34,9 @@ import java.util.Map;
 @ToString
 public class HerokuProvisionRequest {
     private final String heroku_id;
-    private final String region;
     private final String plan;
+    private final String region;
+    private final String callback_url;
     private final Map<String, String> options;
+    private final String uuid;
 }

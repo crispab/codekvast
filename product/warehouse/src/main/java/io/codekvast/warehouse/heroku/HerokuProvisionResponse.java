@@ -35,5 +35,7 @@ public class HerokuProvisionResponse {
 
     private final String id;
 
+    private final String message;
+
     private final Map<String, String> config;
 }

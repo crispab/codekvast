@@ -91,6 +91,11 @@ public class CodekvastSettings {
      */
     private String herokuApiSsoSalt;
 
+    /**
+     * Which value should the Heroku add-on provide as CODEKVAST_URL?
+     */
+    private String herokuCodekvastUrl;
+
     @PostConstruct
     public void logStartup() {
         System.out.printf("%s v%s (%s) started%n", applicationName, displayVersion, commitDate);
