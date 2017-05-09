@@ -65,6 +65,9 @@ module.exports = {
                 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css',
                 'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'
             ],
+            scripts: [
+                'https://s3.amazonaws.com/assets.heroku.com/boomerang/boomerang.js'
+            ],
             devServer: 'http://localhost:8088',
             googleAnalytics: {
                 trackingId: 'UA-97240168-1',

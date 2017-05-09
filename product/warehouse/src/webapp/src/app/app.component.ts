@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewEncapsulation} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {ConfigService} from './services/config.service';
 import {NavigationEnd, Router} from '@angular/router';
 import {TitleCasePipe} from '@angular/common';
@@ -13,7 +13,7 @@ import 'rxjs/add/operator/map';
     encapsulation: ViewEncapsulation.None, // or else styling of html and body won't work in app.component.css
     providers: [TitleCasePipe]
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewInit {
     constructor(private configService: ConfigService,
                 private titleService: Title,
                 private router: Router,
@@ -28,6 +28,11 @@ export class AppComponent implements OnInit {
                 let feature = this.titleCasePipe.transform(url.substr(1));
                 this.titleService.setTitle('Codekvast ' + feature)
             })
+    }
+
+    ngAfterViewInit(): void {
+        // TODO: do if Heroku SSO
+        // window['Boomerang'].init({app: 'foo', addon: 'codekvast'});
     }
 
     getApiPrefix(): String {
