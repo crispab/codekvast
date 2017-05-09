@@ -31,8 +31,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.xml.bind.DatatypeConverter;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author olle.hallin@crisp.se
@@ -65,6 +63,19 @@ public class HerokuController {
         validateCredentials(auth);
 
         return ResponseEntity.ok(herokuService.provision(request));
+    }
+
+    @RequestMapping(path = "/heroku/resources/{id}", method = RequestMethod.PUT)
+    public ResponseEntity<String> changePlan(@PathVariable("id") String id,
+                                             @Valid @RequestBody HerokuChangePlanRequest request,
+                                             @RequestHeader("Authorization") String auth) throws HerokuException {
+        log.debug("id={}, request={}", id,  request);
+
+        validateCredentials(auth);
+
+        herokuService.changePlan(id, request);
+
+        return ResponseEntity.ok("{}");
     }
 
     @RequestMapping(path = "/heroku/resources/{id}", method = RequestMethod.DELETE)

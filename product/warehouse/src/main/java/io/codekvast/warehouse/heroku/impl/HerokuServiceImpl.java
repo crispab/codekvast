@@ -1,11 +1,9 @@
 package io.codekvast.warehouse.heroku.impl;
 
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
-import io.codekvast.warehouse.heroku.HerokuException;
-import io.codekvast.warehouse.heroku.HerokuProvisionRequest;
-import io.codekvast.warehouse.heroku.HerokuProvisionResponse;
-import io.codekvast.warehouse.heroku.HerokuService;
+import io.codekvast.warehouse.heroku.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,19 +45,53 @@ public class HerokuServiceImpl implements HerokuService {
         config.put("CODEKVAST_URL", settings.getHerokuCodekvastUrl());
 
         HerokuProvisionResponse response = HerokuProvisionResponse.builder()
-                                                               .id(request.getUuid())
-                                                               .config(config)
-                                                               .message("You also need to add codekvast.conf to your application!")
-                                                               .build();
+                                                                  .id(request.getUuid())
+                                                                  .config(config)
+                                                                  .message("You also need to add codekvast.conf to your application!")
+                                                                  .build();
         log.debug("Returning {}", response);
         return response;
     }
 
     @Override
     @Transactional
+    public void changePlan(String externalId, HerokuChangePlanRequest request) throws HerokuException {
+        log.debug("Received {} for customers.externalId={}", request, externalId);
+
+        Map<String, Object> customer;
+        try {
+            customer = jdbcTemplate.queryForMap("SELECT name, plan FROM customers WHERE externalId = ?", externalId);
+        } catch (EmptyResultDataAccessException e) {
+            log.warn("Invalid customer.externalId: {}", externalId);
+            return;
+        }
+
+        String name = (String) customer.get("name");
+        String oldPlan = (String) customer.get("plan");
+
+        if (request.getPlan().equals(oldPlan)) {
+            log.info("'{}' is already on plan '{}'", name, request.getPlan());
+            return;
+        }
+
+        int count = jdbcTemplate.update("UPDATE customers SET plan = ? WHERE externalId = ?",
+                                        request.getPlan(), externalId);
+
+        if (count == 0) {
+            log.warn("Failed to change plan for '{}' from '{}' to '{}'", name, oldPlan, request.getPlan());
+        } else {
+            log.info("Changed plan for '{}' from '{}' to '{}'", name, oldPlan, request.getPlan());
+            // TODO: adjust to new plan
+        }
+    }
+
+    @Override
+    @Transactional
     public void deprovision(String externalId) throws HerokuException {
-        Long customerId = jdbcTemplate.queryForObject("SELECT id FROM customers WHERE externalId = ?", Long.class, externalId);
-        if (customerId == null) {
+        Long customerId;
+        try {
+            customerId = jdbcTemplate.queryForObject("SELECT id FROM customers WHERE externalId = ?", Long.class, externalId);
+        } catch (EmptyResultDataAccessException e) {
             log.warn("Invalid customer.externalId: {}", externalId);
             return;
         }

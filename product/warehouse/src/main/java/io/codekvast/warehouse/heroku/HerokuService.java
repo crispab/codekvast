@@ -16,10 +16,20 @@ public interface HerokuService {
     HerokuProvisionResponse provision(HerokuProvisionRequest request) throws HerokuException;
 
     /**
+     * Request to change plan.
+     *
+     * @param externalId The value of {@link HerokuProvisionResponse#id}.
+     * @param request    The change plan request.
+     * @throws HerokuException If failed to deprovision, try again later.
+     */
+    void changePlan(String externalId, HerokuChangePlanRequest request) throws HerokuException;
+
+    /**
      * Deprovision Codekvast from one Heroku app.
      *
      * @param externalId The value of {@link HerokuProvisionResponse#id}.
      * @throws HerokuException If failed to deprovision, try again later.
      */
     void deprovision(String externalId) throws HerokuException;
+
 }
