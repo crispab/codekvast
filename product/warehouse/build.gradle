@@ -25,10 +25,13 @@ configurations.compile {
 }
 
 dependencies {
+    // Annotation processors
     compileOnly lombok
+    compileOnly 'org.springframework.boot:spring-boot-configuration-processor'
+
+    // Regular dependencies
     compile project(':product:agent-model')
     compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
-    compile opencsv
     compile 'javax.inject:javax.inject:1'
     compile 'org.flywaydb:flyway-core'
     compile 'org.springframework.boot:spring-boot-devtools'

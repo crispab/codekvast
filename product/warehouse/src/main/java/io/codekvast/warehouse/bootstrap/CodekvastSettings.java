@@ -40,17 +40,55 @@ import java.io.File;
 @Data
 @Slf4j
 public class CodekvastSettings {
+
+    /**
+     * The name of the application, injected from the build system.
+     */
     private String applicationName;
+
+    /**
+     * The version of the application, injected from the build system.
+     */
     private String displayVersion;
+
+    /**
+     * The name of the person doing the last commit, injected from the build system.
+     */
     private String committer;
+
+    /**
+     * The date of the last commit, injected from the build system.
+     */
     private String commitDate;
+
+    /**
+     * The last commit message, injected from the build system.
+     */
     private String commitMessage;
 
+    /**
+     * The path to the agent publication queue
+     */
     private File queuePath;
+
+    /**
+     * How often to scan queuePath for new files.
+     */
     private int queuePathPollIntervalSeconds;
+
+    /**
+     * Should imported files be deleted after successful import?
+     */
     private boolean deleteImportedFiles;
 
+    /**
+     * What password will Heroku use when contacting us?
+     */
     private String herokuApiPassword;
+
+    /**
+     * What SSO salt value will Heroku use when launching the warehouse webapp via SSO?
+     */
     private String herokuApiSsoSalt;
 
     @PostConstruct
