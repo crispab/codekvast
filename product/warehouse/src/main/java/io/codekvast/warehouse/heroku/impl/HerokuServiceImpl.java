@@ -1,17 +1,42 @@
+/*
+ * Copyright (c) 2015-2017 Crisp AB
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 package io.codekvast.warehouse.heroku.impl;
 
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
 import io.codekvast.warehouse.heroku.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import static javax.xml.bind.DatatypeConverter.printHexBinary;
 
 /**
  * @author olle.hallin@crisp.se
@@ -22,11 +47,13 @@ public class HerokuServiceImpl implements HerokuService {
 
     private final CodekvastSettings settings;
     private final JdbcTemplate jdbcTemplate;
+    private final MessageDigest sha1;
 
     @Inject
-    public HerokuServiceImpl(CodekvastSettings settings, JdbcTemplate jdbcTemplate) {
+    public HerokuServiceImpl(CodekvastSettings settings, JdbcTemplate jdbcTemplate) throws NoSuchAlgorithmException {
         this.settings = settings;
         this.jdbcTemplate = jdbcTemplate;
+        this.sha1 = MessageDigest.getInstance("SHA-1");
     }
 
     @Override
@@ -61,7 +88,7 @@ public class HerokuServiceImpl implements HerokuService {
         Map<String, Object> customer;
         try {
             customer = jdbcTemplate.queryForMap("SELECT name, plan FROM customers WHERE externalId = ?", externalId);
-        } catch (EmptyResultDataAccessException e) {
+        } catch (IncorrectResultSizeDataAccessException e) {
             log.warn("Invalid customer.externalId: {}", externalId);
             return;
         }
@@ -91,7 +118,7 @@ public class HerokuServiceImpl implements HerokuService {
         Long customerId;
         try {
             customerId = jdbcTemplate.queryForObject("SELECT id FROM customers WHERE externalId = ?", Long.class, externalId);
-        } catch (EmptyResultDataAccessException e) {
+        } catch (IncorrectResultSizeDataAccessException e) {
             log.warn("Invalid customer.externalId: {}", externalId);
             return;
         }
@@ -110,5 +137,42 @@ public class HerokuServiceImpl implements HerokuService {
 
         count = jdbcTemplate.update("DELETE FROM customers WHERE id = ?", customerId);
         log.debug("Deleted {} customer rows", count);
+    }
+
+    @Override
+    @Transactional
+    public long singleSignOn(String externalId, long timestampSeconds, String token, String email) throws HerokuSsoException {
+
+
+        String expectedToken = makeSsoToken(externalId, timestampSeconds);
+
+
+        log.debug("id={}, token={}, timestamp={}, expectedToken={}", externalId, token, timestampSeconds, expectedToken);
+
+        long nowSeconds = System.currentTimeMillis() / 1000L;
+        if (timestampSeconds > nowSeconds + 5 * 60) {
+            throw new HerokuSsoException("Timestamp is too far into the future");
+        }
+
+        if (timestampSeconds < nowSeconds - 5 * 60) {
+            throw new HerokuSsoException("Too old timestamp");
+        }
+
+        if (!expectedToken.equals(token)) {
+            throw new HerokuSsoException("Invalid token");
+        }
+
+        try {
+            Long customerId = jdbcTemplate.queryForObject("SELECT id FROM customers WHERE externalId = ?", Long.class, externalId);
+            log.info("Logged in customerId={}, email={}", customerId, email);
+            return customerId;
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new HerokuSsoException("Invalid token");
+        }
+    }
+
+    String makeSsoToken(String externalId, long timestampSeconds) {
+        return printHexBinary(
+            sha1.digest(String.format("%s:%s:%d", externalId, settings.getHerokuApiSsoSalt(), timestampSeconds).getBytes())).toLowerCase();
     }
 }

@@ -24,11 +24,11 @@ package io.codekvast.warehouse.webapp;
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
 import io.codekvast.warehouse.webapp.model.GetMethodsRequest1;
 import io.codekvast.warehouse.webapp.model.GetMethodsResponse1;
+import io.codekvast.warehouse.webapp.model.MethodDescriptor1;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import io.codekvast.warehouse.webapp.model.MethodDescriptor1;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
@@ -76,7 +76,8 @@ public class WebappController {
     @RequestMapping(method = GET, value = WEBAPP_V1_METHODS)
     @CrossOrigin(origins = "http://localhost:8088")
     public ResponseEntity<GetMethodsResponse1> getMethods1(@RequestParam(value = "signature", defaultValue = "%") String signature,
-                                                           @RequestParam(name = "maxResults", defaultValue = WebappService.DEFAULT_MAX_RESULTS_STR)
+                                                           @RequestParam(name = "maxResults", defaultValue = WebappService
+                                                               .DEFAULT_MAX_RESULTS_STR)
                                                                Integer maxResults) {
         return ResponseEntity.ok().body(doGetMethods(signature, maxResults));
     }
@@ -86,9 +87,10 @@ public class WebappController {
     public ResponseEntity<MethodDescriptor1> getMethod1(@PathVariable(value = "id") Long methodId) {
         long startedAt = System.currentTimeMillis();
 
-        Optional<MethodDescriptor1> result = webappService.getMethodById(WebappService.DEMO_CUSTOMER_ID, methodId);
+        Optional<MethodDescriptor1> result = webappService.getMethodById(CustomerIdFilter.getCustomerId(), methodId);
 
-        log.debug("{} method with id={} in {} ms", result.isPresent() ? "Found" : "Could not find", methodId, System.currentTimeMillis() - startedAt);
+        log.debug("{} method with id={} in {} ms", result.isPresent() ? "Found" : "Could not find", methodId,
+                  System.currentTimeMillis() - startedAt);
 
         return result.map(method -> ResponseEntity.ok().body(method))
                      .orElseGet(() -> ResponseEntity.notFound().build());
@@ -99,7 +101,7 @@ public class WebappController {
 
         GetMethodsRequest1 request = GetMethodsRequest1.defaults().toBuilder().signature(signature).maxResults(maxResults).build();
 
-        List<MethodDescriptor1> methods = webappService.getMethods(WebappService.DEMO_CUSTOMER_ID, request);
+        List<MethodDescriptor1> methods = webappService.getMethods(CustomerIdFilter.getCustomerId(), request);
 
         GetMethodsResponse1 response = GetMethodsResponse1.builder()
                                                           .timestamp(startedAt)

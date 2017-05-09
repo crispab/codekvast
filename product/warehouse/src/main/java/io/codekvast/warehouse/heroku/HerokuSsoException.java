@@ -24,9 +24,8 @@ package io.codekvast.warehouse.heroku;
 /**
  * @author olle.hallin@crisp.se
  */
-class HerokuAuthenticationException extends HerokuException {
-
-    HerokuAuthenticationException(String message) {
+public class HerokuSsoException extends HerokuException {
+    public HerokuSsoException(String message) {
         super(message);
     }
 }

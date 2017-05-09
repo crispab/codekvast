@@ -9,11 +9,11 @@
     "sso_salt": "0e0b2c02238fb9482364fe54cf192333",
     "production": {
       "base_url": "https://app.codekvast.io/heroku/resources",
-      "sso_url": "https://app.codekvast.io/sso/login"
+      "sso_url": "https://app.codekvast.io/heroku/sso/"
     },
     "test": {
       "base_url": "http://localhost:8080/heroku/resources",
-      "sso_url": "http://localhost:8080/sso/login"
+      "sso_url": "http://localhost:8080/heroku/sso/"
     },
     "version": 1
   }

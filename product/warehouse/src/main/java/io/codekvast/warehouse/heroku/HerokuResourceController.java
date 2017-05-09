@@ -24,26 +24,29 @@ package io.codekvast.warehouse.heroku;
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.xml.bind.DatatypeConverter;
+import java.security.NoSuchAlgorithmException;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 /**
  * @author olle.hallin@crisp.se
  */
 @RestController
 @Slf4j
-public class HerokuController {
+public class HerokuResourceController {
 
     private final CodekvastSettings settings;
     private final HerokuService herokuService;
 
     @Inject
-    public HerokuController(CodekvastSettings settings, HerokuService herokuService) {
+    public HerokuResourceController(CodekvastSettings settings, HerokuService herokuService) throws NoSuchAlgorithmException {
         this.settings = settings;
         this.herokuService = herokuService;
     }
@@ -54,7 +57,7 @@ public class HerokuController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    @RequestMapping(path = "/heroku/resources", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(path = "/heroku/resources", method = POST, consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<HerokuProvisionResponse> provision(@Valid @RequestBody HerokuProvisionRequest request,
                                                              @RequestHeader("Authorization") String auth)
         throws HerokuException {
@@ -65,11 +68,11 @@ public class HerokuController {
         return ResponseEntity.ok(herokuService.provision(request));
     }
 
-    @RequestMapping(path = "/heroku/resources/{id}", method = RequestMethod.PUT)
+    @RequestMapping(path = "/heroku/resources/{id}", method = PUT)
     public ResponseEntity<String> changePlan(@PathVariable("id") String id,
                                              @Valid @RequestBody HerokuChangePlanRequest request,
                                              @RequestHeader("Authorization") String auth) throws HerokuException {
-        log.debug("id={}, request={}", id,  request);
+        log.debug("id={}, request={}", id, request);
 
         validateCredentials(auth);
 
@@ -78,7 +81,7 @@ public class HerokuController {
         return ResponseEntity.ok("{}");
     }
 
-    @RequestMapping(path = "/heroku/resources/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(path = "/heroku/resources/{id}", method = DELETE)
     public ResponseEntity<String> deprovision(@PathVariable("id") String id,
                                               @RequestHeader("Authorization") String auth) throws HerokuException {
         log.debug("id={}", id);
