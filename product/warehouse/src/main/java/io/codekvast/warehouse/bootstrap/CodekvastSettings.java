@@ -30,6 +30,9 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.File;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Wrapper for environment properties codekvast.*
  *
@@ -96,8 +99,16 @@ public class CodekvastSettings {
      */
     private String herokuCodekvastUrl;
 
+    private String webappJwtSecret;
+
+    private Long jwtExpirationSeconds;
+
     @PostConstruct
     public void logStartup() {
+        validate("herokuApiPassword", herokuApiPassword);
+        validate("herokuApiSsoSalt", herokuApiSsoSalt);
+        validate("webappJwtSecret", webappJwtSecret);
+
         System.out.printf("%s v%s (%s) started%n", applicationName, displayVersion, commitDate);
         log.info("{} v{} ({}) starts", applicationName, displayVersion, commitDate);
     }
@@ -107,4 +118,10 @@ public class CodekvastSettings {
         System.out.printf("%s v%s (%s) shuts down%n", applicationName, displayVersion, commitDate);
         log.info("{} v{} ({}) shuts down", applicationName, displayVersion, commitDate);
     }
+
+    private void validate(String name, String value) {
+        checkNotNull(value, "codekvast." + name + " is null");
+        checkArgument(!value.trim().isEmpty(), "codekvast." + name + " is empty");
+    }
+
 }
