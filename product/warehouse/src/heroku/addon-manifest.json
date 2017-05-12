@@ -5,8 +5,8 @@
     "config_vars": ["CODEKVAST_APP_NAME", "CODEKVAST_LICENSE_KEY", "CODEKVAST_URL"],
     "requires": [],
     "regions": [ "*" ],
-    "password": "2e54f4269dc7d2acdbe6c5d737d5371c",
-    "sso_salt": "0e0b2c02238fb9482364fe54cf192333",
+    "password": "herokuApiPassword",
+    "sso_salt": "herokuApiSsoSalt",
     "production": {
       "base_url": "https://app.codekvast.io/heroku/resources",
       "sso_url": "https://app.codekvast.io/heroku/sso/"
