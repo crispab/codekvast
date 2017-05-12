@@ -25,7 +25,7 @@ import io.codekvast.javaagent.model.v1.CodeBasePublication;
 import io.codekvast.javaagent.model.v1.InvocationDataPublication;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
-import io.codekvast.warehouse.customer.LicenseViolationException;
+import lombok.NonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -67,4 +67,6 @@ public interface AgentService {
     File saveInvocationDataPublication(String licenseKey, String codeBaseFingerprint,
                                        InputStream inputStream)
         throws LicenseViolationException, IOException;
+
+    long checkLicenseKeyAndGetCustomerId(@NonNull String licenseKey) throws LicenseViolationException;
 }

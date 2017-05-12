@@ -19,14 +19,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.warehouse.heroku;
+package io.codekvast.warehouse.agent;
 
 /**
- * @author olle.hallin@crisp.se
+ * Thrown when a license violation has occurred.
  */
-class HerokuAuthenticationException extends HerokuException {
+public class LicenseViolationException extends RuntimeException {
 
-    HerokuAuthenticationException(String message) {
+    public LicenseViolationException(String message) {
         super(message);
     }
 }

@@ -22,6 +22,7 @@
 package io.codekvast.warehouse.webapp;
 
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
+import io.codekvast.warehouse.security.SecurityConfig;
 import io.codekvast.warehouse.webapp.model.GetMethodsRequest1;
 import io.codekvast.warehouse.webapp.model.GetMethodsResponse1;
 import io.codekvast.warehouse.webapp.model.MethodDescriptor1;
@@ -31,6 +32,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.time.Instant;
@@ -41,6 +45,7 @@ import java.util.Locale;
 import java.util.Optional;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
  * The Webapp REST controller.
@@ -54,6 +59,7 @@ public class WebappController {
 
     private static final String WEBAPP_V1_METHODS = "/webapp/v1/methods";
     private static final String WEBAPP_V1_METHOD = "/webapp/v1/method/detail/{id}";
+    private static final String WEBAPP_V1_REFRESH_TOKEN = "/webapp/v1/refreshToken";
 
     private final WebappService webappService;
     private final CodekvastSettings settings;
@@ -94,6 +100,19 @@ public class WebappController {
 
         return result.map(method -> ResponseEntity.ok().body(method))
                      .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @RequestMapping(method = POST, value = WEBAPP_V1_REFRESH_TOKEN)
+    public String refreshAuthenticationToken(@CookieValue(SecurityConfig.AUTH_TOKEN_COOKIE) String authToken,
+                                             HttpServletRequest request, HttpServletResponse response) {
+        // TODO: decode, validate and refresh JWT token
+
+        Cookie cookie = new Cookie(SecurityConfig.AUTH_TOKEN_COOKIE, authToken);
+        cookie.setHttpOnly(false);
+        cookie.setSecure(request.isSecure());
+        response.addCookie(cookie);
+
+        return "OK";
     }
 
     private GetMethodsResponse1 doGetMethods(String signature, Integer maxResults) {

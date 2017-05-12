@@ -25,6 +25,8 @@ import io.codekvast.warehouse.bootstrap.CodekvastSettings;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
@@ -32,6 +34,7 @@ import javax.validation.Valid;
 import javax.xml.bind.DatatypeConverter;
 import java.security.NoSuchAlgorithmException;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
@@ -52,7 +55,7 @@ public class HerokuResourceController {
     }
 
     @ExceptionHandler
-    public ResponseEntity<String> onHerokuAuthenticationException(HerokuAuthenticationException e) {
+    public ResponseEntity<String> onAuthenticationException(AuthenticationException e) {
         log.warn("Invalid credentials");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
@@ -71,7 +74,7 @@ public class HerokuResourceController {
     @RequestMapping(path = "/heroku/resources/{id}", method = PUT)
     public ResponseEntity<String> changePlan(@PathVariable("id") String id,
                                              @Valid @RequestBody HerokuChangePlanRequest request,
-                                             @RequestHeader("Authorization") String auth) throws HerokuException {
+                                             @RequestHeader(AUTHORIZATION) String auth) throws HerokuException {
         log.debug("id={}, request={}", id, request);
 
         validateCredentials(auth);
@@ -83,7 +86,7 @@ public class HerokuResourceController {
 
     @RequestMapping(path = "/heroku/resources/{id}", method = DELETE)
     public ResponseEntity<String> deprovision(@PathVariable("id") String id,
-                                              @RequestHeader("Authorization") String auth) throws HerokuException {
+                                              @RequestHeader(AUTHORIZATION) String auth) throws HerokuException {
         log.debug("id={}", id);
 
         validateCredentials(auth);
@@ -93,7 +96,7 @@ public class HerokuResourceController {
         return ResponseEntity.ok("{}");
     }
 
-    private void validateCredentials(String auth) throws HerokuAuthenticationException {
+    private void validateCredentials(String auth) throws AuthenticationException {
         log.debug("auth={}", auth);
 
         // The password is also defined in src/heroku/addon-manifest.json which has been uploaded to Heroku.
@@ -102,7 +105,7 @@ public class HerokuResourceController {
         String expected = "Basic " + DatatypeConverter.printBase64Binary(credentials.getBytes());
 
         if (!auth.equals(expected)) {
-            throw new HerokuAuthenticationException("Invalid credentials: " + auth);
+            throw new BadCredentialsException("Invalid credentials: " + auth);
         }
     }
 }

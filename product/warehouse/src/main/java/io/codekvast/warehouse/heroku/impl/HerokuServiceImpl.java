@@ -139,40 +139,4 @@ public class HerokuServiceImpl implements HerokuService {
         log.debug("Deleted {} customer rows", count);
     }
 
-    @Override
-    @Transactional
-    public long singleSignOn(String externalId, long timestampSeconds, String token, String email) throws HerokuSsoException {
-
-
-        String expectedToken = makeSsoToken(externalId, timestampSeconds);
-
-
-        log.debug("id={}, token={}, timestamp={}, expectedToken={}", externalId, token, timestampSeconds, expectedToken);
-
-        long nowSeconds = System.currentTimeMillis() / 1000L;
-        if (timestampSeconds > nowSeconds + 5 * 60) {
-            throw new HerokuSsoException("Timestamp is too far into the future");
-        }
-
-        if (timestampSeconds < nowSeconds - 5 * 60) {
-            throw new HerokuSsoException("Too old timestamp");
-        }
-
-        if (!expectedToken.equals(token)) {
-            throw new HerokuSsoException("Invalid token");
-        }
-
-        try {
-            Long customerId = jdbcTemplate.queryForObject("SELECT id FROM customers WHERE externalId = ?", Long.class, externalId);
-            log.info("Logged in customerId={}, email={}", customerId, email);
-            return customerId;
-        } catch (IncorrectResultSizeDataAccessException e) {
-            throw new HerokuSsoException("Invalid token");
-        }
-    }
-
-    String makeSsoToken(String externalId, long timestampSeconds) {
-        return printHexBinary(
-            sha1.digest(String.format("%s:%s:%d", externalId, settings.getHerokuApiSsoSalt(), timestampSeconds).getBytes())).toLowerCase();
-    }
 }

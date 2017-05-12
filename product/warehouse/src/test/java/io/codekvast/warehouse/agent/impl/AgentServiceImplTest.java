@@ -4,20 +4,23 @@ import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.warehouse.agent.AgentService;
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
-import io.codekvast.warehouse.customer.CustomerService;
-import io.codekvast.warehouse.customer.LicenseViolationException;
+import io.codekvast.warehouse.agent.LicenseViolationException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -27,7 +30,7 @@ public class AgentServiceImplTest {
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Mock
-    private CustomerService customerService;
+    private JdbcTemplate jdbcTemplate;
 
     private final CodekvastSettings settings = new CodekvastSettings();
     private final GetConfigRequest1 request = GetConfigRequest1.sample();
@@ -38,7 +41,8 @@ public class AgentServiceImplTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         settings.setQueuePath(temporaryFolder.getRoot());
-        service = new AgentServiceImpl(settings, customerService);
+        service = new AgentServiceImpl(settings, jdbcTemplate);
+        when(jdbcTemplate.queryForObject(anyString(), eq(Long.class), anyString())).thenReturn(1L);
     }
 
     @Test
@@ -54,8 +58,8 @@ public class AgentServiceImplTest {
 
     @Test(expected = LicenseViolationException.class)
     public void should_have_checked_licenseKey() throws Exception {
-        when(customerService.checkLicenseKeyAndGetCustomerId(eq("key"))).thenThrow(
-            new LicenseViolationException("Mock: invalid license"));
+        when(jdbcTemplate.queryForObject(anyString(), eq(Long.class), anyString())).thenThrow(new EmptyResultDataAccessException(0));
+
         service.saveCodeBasePublication("key", "fingerprint", null);
     }
 

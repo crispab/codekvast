@@ -25,7 +25,6 @@ import io.codekvast.javaagent.model.Endpoints;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
-import io.codekvast.warehouse.customer.LicenseViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -37,7 +36,6 @@ import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
-
 import java.io.IOException;
 
 import static java.lang.String.format;
