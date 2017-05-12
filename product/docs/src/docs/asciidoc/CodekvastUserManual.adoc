@@ -59,19 +59,19 @@ in a web interface. It also offers a REST interface to facilitate IDE plugin dev
 |   |   ^              |             |       |                | |
 |   |   |<-=- weaves   |<-=- invokes |   /-->| cYEL           | |
 |   | +--------------+ |             |   |   | {d}            | |
-|   | | aspectjweaver| |             |   |   +----------------+ |
+|   | | aspectjweaver| |             |   |   +----------------+ |                       Legend:
 |   | | c999         | |             |   |                      |
-|   | +--------------+ |             |   |                      |
-|   |   ^              |             |   |<-=- reads            |
-|   |   |<-=-instructs v             |   |                      |
+|   | +--------------+ |             |   |                      |                +----------------------+
+|   |   ^              |             |   |<-=- reads            |                |Your application cGRE |
+|   |   |<-=-instructs v             |   |                      |                +----------------------+
 |   | +---------------------+        |   |                      |
-|   | | Codekvast agent     +------------/   /----------------\ |
-|   | | cYEL                +--------------->|app binaries    | |
-|   | +----+------+---------+        |   ^   |cGRE            | |
+|   | | Codekvast agent     +------------/   /----------------\ |                +----------------------+
+|   | | cYEL                +--------------->|app binaries    | |                |Part of Codekvast cYEL|
+|   | +----+------+---------+        |   ^   |cGRE            | |                +----------------------+
 |   |      |      |                  |   |   \----------------/ |
-|   |      |      \--------------\   |   |                      |
-|   +------|---------------------|---+   \-=- makes inventory of|
-|          |                     |                              |
+|   |      |      \--------------\   |   |                      |                +----------------------+
+|   +------|---------------------|---+   \-=- makes inventory of|                |Part of AspectJ c999  |
+|          |                     |                              |                +----------------------+
 |          | <-=--produces----=->|                              |
 |          |                     |                              |
 |          v                     v                              |
@@ -106,10 +106,6 @@ in a web interface. It also offers a REST interface to facilitate IDE plugin dev
                | HTML5         |     | IDE           |
                | browser       |     |               |
                \---------------/     \---------------/
-
-            +---------------------+   +----------------------+    +--------------------+
- Legend:    |Your application cGRE|   |Part of Codekvast cYEL|    |Part of AspectJ c999|
-            +---------------------+   +----------------------+    +--------------------+
 ....
 == Installation
 
