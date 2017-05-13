@@ -37,10 +37,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.inject.Inject;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -76,7 +74,7 @@ public class HerokuSsoController {
     }
 
     @RequestMapping(path = "/heroku/sso/", method = POST, consumes = APPLICATION_FORM_URLENCODED_VALUE)
-    public String singleSignOn(
+    public String doSingleSignOn(
         @RequestParam("id") String id,
         @RequestParam("timestamp") long timestamp,
         @RequestParam("token") String token,
@@ -87,15 +85,15 @@ public class HerokuSsoController {
 
         log.debug("id={}, nav-data={}", id, navData);
 
-        String jwt = singleSignOn(id, timestamp, token, email);
+        String jwt = doSingleSignOn(id, timestamp, token, email);
 
-        response.addCookie(securityHandler.createAuthTokenCookie(jwt, request.isSecure()));
+        securityHandler.attachAuthToken(response, jwt, request.isSecure());
 
         return "redirect:/sso/" + jwt;
     }
 
-    private String singleSignOn(String externalId, long timestampSeconds, String token, String email) throws AuthenticationException {
-        String expectedToken = makeSsoToken(externalId, timestampSeconds);
+    private String doSingleSignOn(String externalId, long timestampSeconds, String token, String email) throws AuthenticationException {
+        String expectedToken = makeHerokuSsoToken(externalId, timestampSeconds);
         log.debug("id={}, token={}, timestamp={}, expectedToken={}", externalId, token, timestampSeconds, expectedToken);
 
         long nowSeconds = System.currentTimeMillis() / 1000L;
@@ -114,13 +112,13 @@ public class HerokuSsoController {
         try {
             Long customerId = jdbcTemplate.queryForObject("SELECT id FROM customers WHERE externalId = ?", Long.class, externalId);
             log.info("Logged in customerId={}, email={}", customerId, email);
-            return securityHandler.makeJwtToken(customerId, email);
+            return securityHandler.createToken(customerId, email);
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new UsernameNotFoundException("Invalid id");
         }
     }
 
-    String makeSsoToken(String externalId, long timestampSeconds) {
+    String makeHerokuSsoToken(String externalId, long timestampSeconds) {
         return printHexBinary(
             sha1.digest(String.format("%s:%s:%d", externalId, settings.getHerokuApiSsoSalt(), timestampSeconds).getBytes())).toLowerCase();
     }

@@ -22,53 +22,35 @@
 package io.codekvast.warehouse.security;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.inject.Inject;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-
 @Slf4j
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
-    @Inject
-    public JwtAuthenticationTokenFilter() {
+    private final SecurityHandler securityHandler;
+
+    public JwtAuthenticationTokenFilter(SecurityHandler securityHandler) {
+        this.securityHandler = securityHandler;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
         throws ServletException, IOException {
-        // TODO: implement token validation
-        /*
-        String authToken = request.getHeader(AUTHORIZATION);
 
-        if (authToken != null && authToken.startsWith("Bearer ")) {
-            authToken = authToken.substring("Bearer ".length());
+        securityHandler.authenticate(request);
+
+        try {
+            chain.doFilter(request, response);
+        } finally {
+            securityHandler.removeAuthentication();
         }
-
-        String username = jwtTokenUtil.getUsernameFromToken(authToken);
-
-        log.debug("Checking authentication for user {}", username);
-
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
-            if (jwtTokenUtil.validateToken(authToken, userDetails)) {
-                UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                logger.info("authenticated user " + username + ", setting security context");
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
-        }
-        */
-        chain.doFilter(request, response);
     }
 }

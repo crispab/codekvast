@@ -39,7 +39,7 @@ public class HerokuSsoControllerTest {
         int timestamp = 1267597772;
 
         // when
-        String token = controller.makeSsoToken(id, timestamp);
+        String token = controller.makeHerokuSsoToken(id, timestamp);
 
         // then
         assertThat(token, is("bb466eb1d6bc345d11072c3cd25c311f21be130d"));

@@ -32,7 +32,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
@@ -106,10 +105,8 @@ public class WebappController {
     }
 
     @RequestMapping(method = POST, value = WEBAPP_V1_REFRESH_TOKEN)
-    public String refreshAuthenticationToken(@CookieValue(SecurityHandler.AUTH_TOKEN_COOKIE) String token,
-                                             HttpServletRequest request, HttpServletResponse response) {
-        response.addCookie(securityHandler.createAuthTokenCookie(securityHandler.refreshJwtToken(token), request.isSecure()));
-
+    public String refreshAuthenticationToken(HttpServletRequest request, HttpServletResponse response) {
+        securityHandler.refreshToken(request, response);
         return "OK";
     }
 
