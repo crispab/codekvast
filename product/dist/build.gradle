@@ -4,6 +4,17 @@ description = 'Packaging Codekvast for distribution'
 
 distributions {
 
+    agent {
+        baseName = "codekvast-agent-$codekvastVersion"
+        contents {
+            from tasks.getByPath(':product:java-agent:javaagents'), {
+                into "agent"
+            }
+
+            from file('src/dist/codekvast.conf')
+        }
+    }
+
     warehouse {
         baseName = "codekvast-warehouse-$codekvastVersion"
         contents {
@@ -34,6 +45,7 @@ distributions {
 }
 
 task bintrayStage(type: Sync) {
+    from agentDistZip
     from warehouseDistZip
     from ansibleDistZip
     from tasks.getByPath(':product:docs:asciidoctor'), {
