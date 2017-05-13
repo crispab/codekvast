@@ -29,7 +29,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
 /**
- * A validated parameters object for {@link WebappService#getMethods(long, GetMethodsRequest1)}
+ * A validated parameters object for {@link WebappService#getMethods(GetMethodsRequest1)}
  *
  * @author olle.hallin@crisp.se
  */

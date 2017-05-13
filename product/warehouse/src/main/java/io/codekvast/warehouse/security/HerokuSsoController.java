@@ -45,8 +45,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import static javax.xml.bind.DatatypeConverter.printHexBinary;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpHeaders.SET_COOKIE;
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
@@ -60,11 +58,14 @@ public class HerokuSsoController {
     private final CodekvastSettings settings;
     private final JdbcTemplate jdbcTemplate;
     private final MessageDigest sha1;
+    private final SecurityHandler securityHandler;
 
     @Inject
-    public HerokuSsoController(CodekvastSettings settings, JdbcTemplate jdbcTemplate) throws NoSuchAlgorithmException {
+    public HerokuSsoController(CodekvastSettings settings, JdbcTemplate jdbcTemplate,
+                               SecurityHandler securityHandler) throws NoSuchAlgorithmException {
         this.settings = settings;
         this.jdbcTemplate = jdbcTemplate;
+        this.securityHandler = securityHandler;
         this.sha1 = MessageDigest.getInstance("SHA-1");
     }
 
@@ -88,10 +89,7 @@ public class HerokuSsoController {
 
         String jwt = singleSignOn(id, timestamp, token, email);
 
-        Cookie cookie = new Cookie(SecurityConfig.AUTH_TOKEN_COOKIE, jwt);
-        cookie.setHttpOnly(false);
-        cookie.setSecure(request.isSecure());
-        response.addCookie(cookie);
+        response.addCookie(securityHandler.createAuthTokenCookie(jwt, request.isSecure()));
 
         return "redirect:/sso/" + jwt;
     }
@@ -116,9 +114,9 @@ public class HerokuSsoController {
         try {
             Long customerId = jdbcTemplate.queryForObject("SELECT id FROM customers WHERE externalId = ?", Long.class, externalId);
             log.info("Logged in customerId={}, email={}", customerId, email);
-            return "TODO: Make JWT token";
+            return securityHandler.makeJwtToken(customerId, email);
         } catch (IncorrectResultSizeDataAccessException e) {
-            throw new UsernameNotFoundException("Invalid token");
+            throw new UsernameNotFoundException("Invalid id");
         }
     }
 

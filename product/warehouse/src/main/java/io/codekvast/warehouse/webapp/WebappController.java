@@ -22,7 +22,7 @@
 package io.codekvast.warehouse.webapp;
 
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
-import io.codekvast.warehouse.security.SecurityConfig;
+import io.codekvast.warehouse.security.SecurityHandler;
 import io.codekvast.warehouse.webapp.model.GetMethodsRequest1;
 import io.codekvast.warehouse.webapp.model.GetMethodsResponse1;
 import io.codekvast.warehouse.webapp.model.MethodDescriptor1;
@@ -63,11 +63,14 @@ public class WebappController {
 
     private final WebappService webappService;
     private final CodekvastSettings settings;
+    private final SecurityHandler securityHandler;
 
     @Inject
-    public WebappController(WebappService webappService, CodekvastSettings settings) {
+    public WebappController(WebappService webappService, CodekvastSettings settings,
+                            SecurityHandler securityHandler) {
         this.webappService = webappService;
         this.settings = settings;
+        this.securityHandler = securityHandler;
     }
 
     @ExceptionHandler
@@ -93,7 +96,7 @@ public class WebappController {
     public ResponseEntity<MethodDescriptor1> getMethod1(@PathVariable(value = "id") Long methodId) {
         long startedAt = System.currentTimeMillis();
 
-        Optional<MethodDescriptor1> result = webappService.getMethodById(CustomerIdFilter.getCustomerId(), methodId);
+        Optional<MethodDescriptor1> result = webappService.getMethodById(methodId);
 
         log.debug("{} method with id={} in {} ms", result.isPresent() ? "Found" : "Could not find", methodId,
                   System.currentTimeMillis() - startedAt);
@@ -103,14 +106,9 @@ public class WebappController {
     }
 
     @RequestMapping(method = POST, value = WEBAPP_V1_REFRESH_TOKEN)
-    public String refreshAuthenticationToken(@CookieValue(SecurityConfig.AUTH_TOKEN_COOKIE) String authToken,
+    public String refreshAuthenticationToken(@CookieValue(SecurityHandler.AUTH_TOKEN_COOKIE) String token,
                                              HttpServletRequest request, HttpServletResponse response) {
-        // TODO: decode, validate and refresh JWT token
-
-        Cookie cookie = new Cookie(SecurityConfig.AUTH_TOKEN_COOKIE, authToken);
-        cookie.setHttpOnly(false);
-        cookie.setSecure(request.isSecure());
-        response.addCookie(cookie);
+        response.addCookie(securityHandler.createAuthTokenCookie(securityHandler.refreshJwtToken(token), request.isSecure()));
 
         return "OK";
     }
@@ -120,7 +118,7 @@ public class WebappController {
 
         GetMethodsRequest1 request = GetMethodsRequest1.defaults().toBuilder().signature(signature).maxResults(maxResults).build();
 
-        List<MethodDescriptor1> methods = webappService.getMethods(CustomerIdFilter.getCustomerId(), request);
+        List<MethodDescriptor1> methods = webappService.getMethods(request);
 
         GetMethodsResponse1 response = GetMethodsResponse1.builder()
                                                           .timestamp(startedAt)

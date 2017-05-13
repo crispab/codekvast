@@ -25,7 +25,7 @@ public class HerokuSsoControllerTest {
     @Before
     public void beforeTest() throws Exception {
         MockitoAnnotations.initMocks(this);
-        controller = new HerokuSsoController(settings, jdbcTemplate);
+        controller = new HerokuSsoController(settings, jdbcTemplate, new SecurityHandler());
     }
 
 

@@ -56,8 +56,6 @@ import java.io.IOException;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    public static final String AUTH_TOKEN_COOKIE = "authToken";
-
     private final JwtUnauthorizedHandler unauthorizedHandler;
 
     @Inject

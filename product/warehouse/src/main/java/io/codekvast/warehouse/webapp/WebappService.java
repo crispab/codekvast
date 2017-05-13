@@ -40,7 +40,6 @@ public interface WebappService {
     String DEFAULT_MAX_RESULTS_STR = "" + DEFAULT_MAX_RESULTS;
     boolean DEFAULT_ONLY_TRULY_DEAD_METHODS = false;
     boolean DEFAULT_NORMALIZE_SIGNATURE = true;
-    long DEMO_CUSTOMER_ID = 1L; // TODO: add authentication to the webapp
 
 
     /**
@@ -52,19 +51,17 @@ public interface WebappService {
      * <li>In Codekvast Warehouse web UI: paste into the search field (Ctrl-V)</li>
      * </ol>
      *
-     * @param customerId The customer ID.
      * @param request    The request parameters.
      * @return A list of matching methods. Does never return null.
      */
     @NotNull
-    List<MethodDescriptor1> getMethods(long customerId, @Valid GetMethodsRequest1 request);
+    List<MethodDescriptor1> getMethods(@Valid GetMethodsRequest1 request);
 
     /**
      * Retrieve information about a particular method.
      *
-     * @param customerId The customer ID.
      * @param methodId   The primary key of the method.
      * @return an optional MethodDescriptor1. Does never return null.
      */
-    Optional<MethodDescriptor1> getMethodById(long customerId, @NotNull Long methodId);
+    Optional<MethodDescriptor1> getMethodById(@NotNull Long methodId);
 }

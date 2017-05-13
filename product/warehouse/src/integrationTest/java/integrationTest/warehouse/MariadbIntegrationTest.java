@@ -171,7 +171,7 @@ public class MariadbIntegrationTest {
         // given
 
         // when query with too short signature
-        webappService.getMethods(1L, GetMethodsRequest1.defaults().toBuilder().signature("").build());
+        webappService.getMethods(GetMethodsRequest1.defaults().toBuilder().signature("").build());
     }
 
     @Test
@@ -179,8 +179,8 @@ public class MariadbIntegrationTest {
         // given
 
         // when find exact signature
-        List<MethodDescriptor1> methods = webappService.getMethods(WebappService.DEMO_CUSTOMER_ID,
-                GetMethodsRequest1.defaults().toBuilder().signature("foobar").build());
+        List<MethodDescriptor1> methods = webappService.getMethods(
+            GetMethodsRequest1.defaults().toBuilder().signature("foobar").build());
 
         // then
         assertThat(methods, hasSize(0));
@@ -206,7 +206,7 @@ public class MariadbIntegrationTest {
         // generateQueryTestData();
 
         // when
-        Optional<MethodDescriptor1> result = webappService.getMethodById(WebappService.DEMO_CUSTOMER_ID, -1L);
+        Optional<MethodDescriptor1> result = webappService.getMethodById(-1L);
 
         // then
         assertThat(result.isPresent(), is(false));

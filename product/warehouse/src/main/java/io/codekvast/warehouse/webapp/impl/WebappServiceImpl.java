@@ -22,6 +22,7 @@
 package io.codekvast.warehouse.webapp.impl;
 
 import io.codekvast.javaagent.model.v1.SignatureStatus;
+import io.codekvast.warehouse.security.SecurityHandler;
 import io.codekvast.warehouse.webapp.WebappService;
 import io.codekvast.warehouse.webapp.model.ApplicationDescriptor1;
 import io.codekvast.warehouse.webapp.model.EnvironmentDescriptor1;
@@ -52,27 +53,32 @@ import java.util.*;
 public class WebappServiceImpl implements WebappService {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SecurityHandler securityHandler;
 
     @Inject
-    public WebappServiceImpl(JdbcTemplate jdbcTemplate) {
+    public WebappServiceImpl(JdbcTemplate jdbcTemplate, SecurityHandler securityHandler) {
         this.jdbcTemplate = jdbcTemplate;
+        this.securityHandler = securityHandler;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<MethodDescriptor1> getMethods(long customerId, @Valid GetMethodsRequest1 request) {
-        MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler("m.signature LIKE ?", request.getMaxResults());
+    public List<MethodDescriptor1> getMethods(@Valid GetMethodsRequest1 request) {
 
-        jdbcTemplate.query(rowCallbackHandler.getSelectStatement(), rowCallbackHandler, customerId, request.getNormalizedSignature());
+        MethodDescriptorRowCallbackHandler rowCallbackHandler =
+            new MethodDescriptorRowCallbackHandler("m.signature LIKE ?", request.getMaxResults());
+
+        jdbcTemplate.query(rowCallbackHandler.getSelectStatement(), rowCallbackHandler, securityHandler.getCustomerId(),
+                           request.getNormalizedSignature());
 
         return rowCallbackHandler.getResult();
     }
 
     @Override
-    public Optional<MethodDescriptor1> getMethodById(long customerId, @NotNull Long methodId) {
+    public Optional<MethodDescriptor1> getMethodById(@NotNull Long methodId) {
         MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler("m.id = ?", 1);
 
-        jdbcTemplate.query(rowCallbackHandler.getSelectStatement(), rowCallbackHandler, customerId, methodId);
+        jdbcTemplate.query(rowCallbackHandler.getSelectStatement(), rowCallbackHandler, securityHandler.getCustomerId(), methodId);
 
         return rowCallbackHandler.getResult().stream().findFirst();
     }
@@ -95,18 +101,19 @@ public class WebappServiceImpl implements WebappService {
 
             // This is a simpler to understand approach than trying to do everything in the database.
             // Let the database do the joining and selection, and the Java layer do the data reduction. The query will return several rows
-            // for each method that matches the WHERE clause, and the RowCallbackHandler reduces them to only one MethodDescriptor1 per method ID.
+            // for each method that matches the WHERE clause, and the RowCallbackHandler reduces them to only one MethodDescriptor1 per
+            // method ID.
             // This is probably doable in pure SQL too, provided you are a black-belt SQL ninja. Unfortunately I'm not that strong at SQL.
 
             return String.format("SELECT i.methodId, a.name AS appName, a.version AS appVersion,\n" +
-                "  i.invokedAtMillis, i.status, j.startedAt, j.publishedAt, j.environment, j.hostname, j.tags,\n" +
-                "  m.visibility, m.signature, m.declaringType, m.methodName, m.modifiers, m.packageName\n" +
-                "  FROM invocations i\n" +
-                "  JOIN applications a ON a.id = i.applicationId \n" +
-                "  JOIN methods m ON m.id = i.methodId\n" +
-                "  JOIN jvms j ON j.id = i.jvmId\n" +
-                "  WHERE i.customerId = ? AND %s\n" +
-                "  ORDER BY i.methodId ASC", whereClause);
+                                     "  i.invokedAtMillis, i.status, j.startedAt, j.publishedAt, j.environment, j.hostname, j.tags,\n" +
+                                     "  m.visibility, m.signature, m.declaringType, m.methodName, m.modifiers, m.packageName\n" +
+                                     "  FROM invocations i\n" +
+                                     "  JOIN applications a ON a.id = i.applicationId \n" +
+                                     "  JOIN methods m ON m.id = i.methodId\n" +
+                                     "  JOIN jvms j ON j.id = i.jvmId\n" +
+                                     "  WHERE i.customerId = ? AND %s\n" +
+                                     "  ORDER BY i.methodId ASC", whereClause);
         }
 
         @Override
@@ -135,14 +142,14 @@ public class WebappServiceImpl implements WebappService {
             String appVersion = rs.getString("appVersion");
 
             queryState.saveApplication(ApplicationDescriptor1
-                                               .builder()
-                                               .name(appName)
-                                               .version(appVersion)
-                                               .startedAtMillis(startedAt)
-                                               .publishedAtMillis(publishedAt)
-                                               .invokedAtMillis(invokedAtMillis)
-                                               .status(SignatureStatus.valueOf(rs.getString("status")))
-                                               .build());
+                                           .builder()
+                                           .name(appName)
+                                           .version(appVersion)
+                                           .startedAtMillis(startedAt)
+                                           .publishedAtMillis(publishedAt)
+                                           .invokedAtMillis(invokedAtMillis)
+                                           .status(SignatureStatus.valueOf(rs.getString("status")))
+                                           .build());
 
             queryState.saveEnvironment(EnvironmentDescriptor1.builder()
                                                              .name(rs.getString("environment"))
