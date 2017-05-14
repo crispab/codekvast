@@ -47,7 +47,7 @@ flyway {
 //--- Run & bootRun -----------------------------------------------------------------------------------------------------
 run {
     group "Backend Development"
-    dependsOn startMariadb
+    dependsOn startMariadb, ":product:warehouse:frontendBuild"
 
     jvmArgs = ['-ea']
     args = ["--logging.file=$buildDir/log/${applicationName}.log",
@@ -63,7 +63,7 @@ run {
 
 bootRun {
     group "Backend Development"
-    dependsOn startMariadb
+    dependsOn startMariadb, ":product:warehouse:frontendBuild"
 
     jvmArgs = run.jvmArgs
     args = run.args
