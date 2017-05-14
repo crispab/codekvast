@@ -22,6 +22,7 @@
 package io.codekvast.warehouse.bootstrap;
 
 import lombok.Data;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -38,10 +39,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * @author olle.hallin@crisp.se
  */
+@SuppressWarnings({"ClassWithTooManyFields", "ClassWithTooManyMethods"})
 @Component("codekvastSettings")
 @ConfigurationProperties(prefix = "codekvast")
 @Data
 @Slf4j
+@ToString(exclude={"herokuApiPassword", "herokuApiSsoSalt", "webappJwtSecret"})
 public class CodekvastSettings {
 
     /**
@@ -77,12 +80,12 @@ public class CodekvastSettings {
     /**
      * How often to scan queuePath for new files.
      */
-    private int queuePathPollIntervalSeconds;
+    private int queuePathPollIntervalSeconds = 60;
 
     /**
      * Should imported files be deleted after successful import?
      */
-    private boolean deleteImportedFiles;
+    private boolean deleteImportedFiles = true;
 
     /**
      * What password will Heroku use when contacting us?
@@ -101,7 +104,7 @@ public class CodekvastSettings {
 
     private String webappJwtSecret;
 
-    private Long jwtExpirationSeconds;
+    private Long webappJwtExpirationSeconds = 1800L;
 
     @PostConstruct
     public void logStartup() {
