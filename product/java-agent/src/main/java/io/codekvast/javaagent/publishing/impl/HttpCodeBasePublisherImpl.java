@@ -29,7 +29,7 @@ import io.codekvast.javaagent.model.v1.CodeBasePublication;
 import io.codekvast.javaagent.publishing.CodekvastPublishingException;
 import io.codekvast.javaagent.util.FileUtils;
 import io.codekvast.javaagent.util.LogUtil;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 import okhttp3.*;
 
 import java.io.File;
@@ -42,7 +42,7 @@ import java.io.IOException;
  *
  * @author olle.hallin@crisp.se
  */
-@Slf4j
+@Log
 public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
 
     static final String NAME = "http";
@@ -75,8 +75,8 @@ public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
 
             doPost(file, url, codeBase.getFingerprint().getSha256());
 
-            log.debug("Uploaded {} methods ({}) to {}", publication.getEntries().size(), LogUtil.humanReadableByteCount(file.length()),
-                      url);
+            log.fine(String.format("Uploaded %d methods (%s) to %s", publication.getEntries().size(),
+                                    LogUtil.humanReadableByteCount(file.length()), url));
         } catch (IOException e) {
             throw new CodekvastPublishingException("Cannot upload code base to " + url, e);
         } finally {

@@ -21,12 +21,12 @@
  */
 package io.codekvast.javaagent;
 
+import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.publishing.CodekvastPublishingException;
 import io.codekvast.javaagent.publishing.InvocationDataPublisher;
-import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.util.SignatureUtils;
 import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 import org.aspectj.lang.Signature;
 
 import java.util.HashSet;
@@ -42,7 +42,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @author olle.hallin@crisp.se
  */
 @SuppressWarnings("Singleton")
-@Slf4j
+@Log
 public class InvocationRegistry {
 
     @SuppressWarnings("StaticInitializerReferencesSubClass")
@@ -62,7 +62,7 @@ public class InvocationRegistry {
         startWorker();
     }
 
-    void startWorker() {
+    private void startWorker() {
         if (!isNullRegistry()) {
             Thread worker = CodekvastThreadFactory.builder().name("registry").build().newThread(new InvocationsAdder());
             worker.start();
@@ -130,7 +130,7 @@ public class InvocationRegistry {
                 try {
                     invocations[currentInvocationIndex].add(queue.take());
                 } catch (InterruptedException e) {
-                    log.debug("Interrupted");
+                    log.fine("Interrupted");
                     return;
                 }
             }

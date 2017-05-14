@@ -21,7 +21,7 @@
  */
 package io.codekvast.javaagent.appversion;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 
 import java.io.File;
 import java.util.Collection;
@@ -31,7 +31,7 @@ import java.util.Collection;
  *
  * @author olle.hallin@crisp.se
  */
-@Slf4j
+@Log
 public class LiteralAppVersionStrategy extends AbstractAppVersionStrategy {
 
     public LiteralAppVersionStrategy() {

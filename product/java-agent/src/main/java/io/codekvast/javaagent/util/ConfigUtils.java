@@ -22,10 +22,13 @@
 package io.codekvast.javaagent.util;
 
 import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,8 +37,8 @@ import java.util.regex.Pattern;
  *
  * @author olle.hallin@crisp.se
  */
-@Slf4j
 @UtilityClass
+@Log
 public final class ConfigUtils {
 
     public static List<String> getNormalizedPackages(String packages) {
@@ -66,7 +69,7 @@ public final class ConfigUtils {
         return expandVariables(props, propertyName, defaultValue);
     }
 
-    static String expandVariables(Properties props, String key, String defaultValue) {
+    private static String expandVariables(Properties props, String key, String defaultValue) {
         String value = System.getenv(getEnvVarName(key));
         if (value == null) {
             value = props.getProperty(key, defaultValue);
@@ -97,7 +100,7 @@ public final class ConfigUtils {
                 String prefix = key1 != null ? "\\$\\{" : "\\$";
                 String suffix = key1 != null ? "\\}" : "";
                 replacement = String.format("%s%s%s", prefix, key, suffix);
-                log.warn("Unrecognized variable: {}", replacement.replace("\\", ""));
+                log.warning("Unrecognized variable: " + replacement.replace("\\", ""));
             }
 
             matcher.appendReplacement(sb, replacement);

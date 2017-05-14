@@ -21,17 +21,17 @@
  */
 package io.codekvast.javaagent.publishing.impl;
 
+import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.publishing.CodeBasePublisher;
 import io.codekvast.javaagent.publishing.CodeBasePublisherFactory;
-import io.codekvast.javaagent.config.AgentConfig;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 
 /**
  * Factory for CodeBasePublisher implementations.
  *
  * @author olle.hallin@crisp.se
  */
-@Slf4j
+@Log
 public class CodeBasePublisherFactoryImpl implements CodeBasePublisherFactory {
 
     /**
@@ -51,7 +51,7 @@ public class CodeBasePublisherFactoryImpl implements CodeBasePublisherFactory {
             return new HttpCodeBasePublisherImpl(config);
         }
 
-        log.warn("Unrecognized code base publisher name: '{}', will use {}", name, NoOpCodeBasePublisherImpl.NAME);
+        log.warning(String.format("Unrecognized code base publisher name: '%s', will use %s", name, NoOpCodeBasePublisherImpl.NAME));
         return new NoOpCodeBasePublisherImpl(config);
     }
 

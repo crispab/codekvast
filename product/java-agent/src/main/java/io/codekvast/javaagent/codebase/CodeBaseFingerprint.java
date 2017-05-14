@@ -26,7 +26,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.Value;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -43,7 +43,7 @@ import static javax.xml.bind.DatatypeConverter.printBase64Binary;
  */
 @Value
 @RequiredArgsConstructor
-@Slf4j
+@Log
 public class CodeBaseFingerprint {
     private final int numFiles;
 
@@ -65,9 +65,9 @@ public class CodeBaseFingerprint {
 
         Builder record(File file) {
             if (files.add(file)) {
-                log.trace("Recorded {}", file);
+                log.finest("Recorded " + file);
             } else {
-                log.debug("Ignored duplicate file {}", file);
+                log.fine("Ignored duplicate file " + file);
             }
             return this;
         }

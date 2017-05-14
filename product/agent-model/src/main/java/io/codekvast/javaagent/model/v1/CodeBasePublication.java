@@ -22,7 +22,6 @@
 package io.codekvast.javaagent.model.v1;
 
 import lombok.*;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -38,7 +37,6 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Setter(AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
-@Slf4j
 public class CodeBasePublication implements Serializable {
     private static final long serialVersionUID = 1L;
 

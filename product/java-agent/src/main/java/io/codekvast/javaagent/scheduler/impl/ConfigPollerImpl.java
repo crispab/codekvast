@@ -22,20 +22,23 @@
 package io.codekvast.javaagent.scheduler.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.codekvast.javaagent.scheduler.ConfigPoller;
 import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
+import io.codekvast.javaagent.scheduler.ConfigPoller;
 import io.codekvast.javaagent.util.Constants;
-import lombok.extern.slf4j.Slf4j;
-import okhttp3.*;
+import lombok.extern.java.Log;
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 import java.io.IOException;
 
 /**
  * @author olle.hallin@crisp.se
  */
-@Slf4j
+@Log
 public class ConfigPollerImpl implements ConfigPoller {
     private final AgentConfig config;
     private final GetConfigRequest1 requestTemplate;
@@ -62,12 +65,12 @@ public class ConfigPollerImpl implements ConfigPoller {
     public GetConfigResponse1 doPoll() throws Exception {
         GetConfigRequest1 request = expandRequestTemplate();
 
-        log.debug("Posting {} to {}", request, config.getPollConfigRequestEndpoint());
+        log.fine(String.format("Posting %s to %s", request, config.getPollConfigRequestEndpoint()));
 
         GetConfigResponse1 response =
             objectMapper.readValue(doHttpPost(objectMapper.writeValueAsString(request)), GetConfigResponse1.class);
 
-        log.debug("Received {} in response", response);
+        log.fine("Received " + response + " in response");
         return response;
     }
 

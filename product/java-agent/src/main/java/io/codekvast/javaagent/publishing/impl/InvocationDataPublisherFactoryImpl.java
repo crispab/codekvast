@@ -21,17 +21,17 @@
  */
 package io.codekvast.javaagent.publishing.impl;
 
+import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.publishing.InvocationDataPublisher;
 import io.codekvast.javaagent.publishing.InvocationDataPublisherFactory;
-import io.codekvast.javaagent.config.AgentConfig;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 
 /**
  * A factory for InvocationDataPublisher instances.
  *
  * @author olle.hallin@crisp.se
  */
-@Slf4j
+@Log
 public class InvocationDataPublisherFactoryImpl implements InvocationDataPublisherFactory {
     /**
      * Creates an instance of the InvocationDataPublisher strategy.
@@ -51,7 +51,8 @@ public class InvocationDataPublisherFactoryImpl implements InvocationDataPublish
             return new HttpInvocationDataPublisherImpl(config);
         }
 
-        log.warn("Unrecognized invocation data publisher name: '{}', will use {}", name, NoOpInvocationDataPublisherImpl.NAME);
+        log.warning(
+            String.format("Unrecognized invocation data publisher name: '%s', will use %s", name, NoOpInvocationDataPublisherImpl.NAME));
         return new NoOpInvocationDataPublisherImpl(config);
     }
 

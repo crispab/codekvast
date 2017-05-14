@@ -31,7 +31,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -44,9 +44,9 @@ import java.util.*;
  * @author olle.hallin@crisp.se
  */
 @SuppressWarnings({"ClassWithTooManyFields", "ClassWithTooManyMethods"})
-@ToString(of = "codeBaseFiles", includeFieldNames = false)
+@ToString(of = {"codeBaseFiles", "fingerprint"})
 @EqualsAndHashCode(of = "fingerprint")
-@Slf4j
+@Log
 public class CodeBase {
 
     private final List<File> codeBaseFiles;
@@ -106,14 +106,14 @@ public class CodeBase {
 
         CodeBaseFingerprint result = builder.build();
 
-        log.debug("Made fingerprint of {} files at {} in {} ms, fingerprint={}", result.getNumFiles(), codeBaseFiles, System.currentTimeMillis() - startedAt,
-                  result);
+        log.fine(String.format("Made fingerprint of %d files at %s in %d ms, fingerprint=%s", result.getNumFiles(), codeBaseFiles,
+                                System.currentTimeMillis() - startedAt, result));
         return result;
     }
 
     @SneakyThrows(MalformedURLException.class)
     private void addUrl(File file) {
-        log.trace("Adding URL {}", file);
+        log.finest("Adding URL " + file);
         urls.add(file.toURI().toURL());
     }
 
@@ -138,10 +138,11 @@ public class CodeBase {
 
         if (declaringNormalizedSignature != null) {
             if (!declaringNormalizedSignature.equals(thisNormalizedSignature) && thisNormalizedSignature != null) {
-                log.trace("  Adding {} -> {} to overridden signatures", thisNormalizedSignature, declaringNormalizedSignature);
+                log.finest(
+                    String.format("  Adding %s -> %s to overridden signatures", thisNormalizedSignature, declaringNormalizedSignature));
                 overriddenSignatures.put(thisNormalizedSignature, declaringNormalizedSignature);
             } else if (signatures.put(declaringNormalizedSignature, declaringSignature) == null) {
-                log.trace("  Found {}", declaringNormalizedSignature);
+                log.finest("  Found " + declaringNormalizedSignature);
             }
             statuses.put(declaringNormalizedSignature, status);
         }

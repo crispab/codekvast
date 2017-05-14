@@ -32,7 +32,7 @@ import io.codekvast.javaagent.publishing.InvocationDataPublisherFactory;
 import io.codekvast.javaagent.util.LogUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 
 import java.util.Date;
 import java.util.concurrent.Executors;
@@ -45,7 +45,7 @@ import java.util.concurrent.TimeUnit;
  * @author olle.hallin@crisp.se
  */
 @SuppressWarnings("ClassWithTooManyFields")
-@Slf4j
+@Log
 public class Scheduler implements Runnable {
     // Collaborators
     private final AgentConfig config;
@@ -86,7 +86,7 @@ public class Scheduler implements Runnable {
      */
     public Scheduler start() {
         executor.scheduleAtFixedRate(this, 10L, 10L, TimeUnit.SECONDS);
-        log.info("Scheduler started; pulling dynamic config from {}", config.getServerUrl());
+        log.info("Scheduler started; pulling dynamic config from " + config.getServerUrl());
         return this;
     }
 
@@ -96,12 +96,12 @@ public class Scheduler implements Runnable {
     public void shutdown() {
         long startedAt = System.currentTimeMillis();
 
-        log.debug("Stopping scheduler");
+        log.fine("Stopping scheduler");
         executor.shutdown();
         try {
             executor.awaitTermination(60, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            log.debug("Stop interrupted");
+            log.fine("Stop interrupted");
         }
 
         if (dynamicConfig != null) {
@@ -118,13 +118,13 @@ public class Scheduler implements Runnable {
             publishInvocationDataIfNeeded();
         }
 
-        log.info("Scheduler stopped in {} ms", System.currentTimeMillis() - startedAt);
+        log.info(String.format("Scheduler stopped in %d ms", System.currentTimeMillis() - startedAt));
     }
 
     @Override
     public void run() {
         if (executor.isShutdown()) {
-            log.debug("Scheduler is shutting down");
+            log.fine("Scheduler is shutting down");
             return;
         }
 
@@ -181,7 +181,7 @@ public class Scheduler implements Runnable {
 
     private void publishCodeBaseIfNeeded() {
         if (codeBasePublisherState.isDueTime() && dynamicConfig != null) {
-            log.debug("Checking if code base needs to be published...");
+            log.fine("Checking if code base needs to be published...");
 
             try {
                 codeBasePublisher.publishCodeBase();
@@ -195,7 +195,7 @@ public class Scheduler implements Runnable {
 
     private void publishInvocationDataIfNeeded() {
         if (invocationDataPublisherState.isDueTime() && dynamicConfig != null) {
-            log.debug("Checking if invocation data needs to be published...");
+            log.fine("Checking if invocation data needs to be published...");
 
             try {
                 InvocationRegistry.instance.publishInvocationData(invocationDataPublisher);
@@ -209,7 +209,7 @@ public class Scheduler implements Runnable {
 
     @Getter
     @RequiredArgsConstructor
-    @Slf4j
+    @Log
     static class SchedulerState {
         private final String name;
 
@@ -240,15 +240,15 @@ public class Scheduler implements Runnable {
         void scheduleNext() {
             nextEventAtMillis = System.currentTimeMillis() + intervalSeconds * 1000L;
             if (numFailures > 0) {
-                log.debug("{} is exiting failure state after {} failures", name, numFailures);
+                log.fine(name + " is exiting failure state after " + numFailures + " failures");
             }
             resetRetryCounter();
-            log.debug("{} will execute next at {}", name, new Date(nextEventAtMillis));
+            log.fine(name + " will execute next at " + new Date(nextEventAtMillis));
         }
 
         void scheduleNow() {
             nextEventAtMillis = 0L;
-            log.debug("{} will execute now at {}", name, new Date(nextEventAtMillis));
+            log.fine(name + " will execute now");
         }
 
         void scheduleRetry() {
@@ -262,7 +262,7 @@ public class Scheduler implements Runnable {
             nextEventAtMillis = System.currentTimeMillis() + retryIntervalSeconds * retryIntervalFactor * 1000L;
             numFailures += 1;
 
-            log.debug("{} has failed {} times, will retry at {}", name, numFailures, new Date(nextEventAtMillis));
+            log.fine(name + " has failed " + numFailures + " times, will retry at " + new Date(nextEventAtMillis));
         }
 
         boolean isDueTime() {

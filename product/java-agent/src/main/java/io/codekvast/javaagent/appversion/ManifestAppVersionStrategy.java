@@ -21,7 +21,7 @@
  */
 package io.codekvast.javaagent.appversion;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,12 +42,12 @@ import java.util.jar.JarFile;
  *
  * @author olle.hallin@crisp.se
  */
-@Slf4j
+@Log
 public class ManifestAppVersionStrategy extends AbstractAppVersionStrategy {
 
     private static final String DEFAULT_MANIFEST_ATTRIBUTE = "Implementation-Version";
 
-    public ManifestAppVersionStrategy() {
+    ManifestAppVersionStrategy() {
         super("manifest", "search");
     }
 
@@ -67,18 +67,18 @@ public class ManifestAppVersionStrategy extends AbstractAppVersionStrategy {
                 Attributes attributes = jarFile.getManifest().getMainAttributes();
                 String resolvedVersion = attributes.getValue(manifestAttribute);
                 if (resolvedVersion != null) {
-                    log.debug("{}!/META-INF/MANIFEST.MF:{}={}", jarUri, manifestAttribute, resolvedVersion);
+                    log.fine(String.format("%s!/META-INF/MANIFEST.MF:%s=%s", jarUri, manifestAttribute, resolvedVersion));
                     return resolvedVersion;
                 }
                 if (!manifestAttribute.equalsIgnoreCase(DEFAULT_MANIFEST_ATTRIBUTE)) {
                     resolvedVersion = attributes.getValue(DEFAULT_MANIFEST_ATTRIBUTE);
                 }
                 if (resolvedVersion != null) {
-                    log.debug("{}!/META-INF/MANIFEST.MF:{}={}", jarUri, DEFAULT_MANIFEST_ATTRIBUTE, resolvedVersion);
+                    log.fine(String.format("%s!/META-INF/MANIFEST.MF:%s=%s", jarUri, DEFAULT_MANIFEST_ATTRIBUTE, resolvedVersion));
                     return resolvedVersion;
                 }
             } catch (Exception e) {
-                log.error("Cannot open " + jarUri + ": " + e);
+                log.severe("Cannot open " + jarUri + ": " + e);
             } finally {
                 if (jarFile != null) {
                     try {
@@ -88,7 +88,7 @@ public class ManifestAppVersionStrategy extends AbstractAppVersionStrategy {
                 }
             }
         }
-        log.error("Cannot resolve {}!/META-INF/MANIFEST.MF:{}", jarUri, manifestAttribute);
+        log.severe(String.format("Cannot resolve %s!/META-INF/MANIFEST.MF:%s", jarUri, manifestAttribute));
         return UNKNOWN_VERSION;
     }
 
@@ -121,7 +121,7 @@ public class ManifestAppVersionStrategy extends AbstractAppVersionStrategy {
 
     private URL search(File dir, String regex) throws MalformedURLException {
         if (!dir.isDirectory()) {
-            log.warn("{} is not a directory", dir);
+            log.warning(dir + " is not a directory");
             return null;
         }
 
@@ -130,7 +130,7 @@ public class ManifestAppVersionStrategy extends AbstractAppVersionStrategy {
         if (files != null) {
             for (File file : files) {
                 if (file.isFile() && file.getName().matches(regex)) {
-                    log.debug("Found {}", file);
+                    log.fine("Found " + file);
                     return new URL(file.toURI().toString());
                 }
             }

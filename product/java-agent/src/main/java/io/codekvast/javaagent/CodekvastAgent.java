@@ -21,16 +21,16 @@
  */
 package io.codekvast.javaagent;
 
-import io.codekvast.javaagent.publishing.impl.CodeBasePublisherFactoryImpl;
-import io.codekvast.javaagent.publishing.impl.InvocationDataPublisherFactoryImpl;
-import io.codekvast.javaagent.scheduler.impl.ConfigPollerImpl;
-import io.codekvast.javaagent.scheduler.Scheduler;
 import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.config.AgentConfigFactory;
 import io.codekvast.javaagent.config.AgentConfigLocator;
 import io.codekvast.javaagent.config.MethodAnalyzer;
+import io.codekvast.javaagent.publishing.impl.CodeBasePublisherFactoryImpl;
+import io.codekvast.javaagent.publishing.impl.InvocationDataPublisherFactoryImpl;
+import io.codekvast.javaagent.scheduler.Scheduler;
+import io.codekvast.javaagent.scheduler.impl.ConfigPollerImpl;
 import io.codekvast.javaagent.util.FileUtils;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 import org.aspectj.bridge.Constants;
 
 import java.io.File;
@@ -68,7 +68,7 @@ import java.util.Set;
  *
  * @author olle.hallin@crisp.se
  */
-@Slf4j
+@Log
 public class CodekvastAgent {
 
     private static final String NAME = "Codekvast";
@@ -85,8 +85,8 @@ public class CodekvastAgent {
     /**
      * This method is invoked by the JVM as part of bootstrapping the -javaagent
      *
-     * @param args The string after the equals sign in -javaagent:codekvast-agent.jar=args. Is used as overrides to the agent
-     *             configuration file.
+     * @param args The string after the equals sign in -javaagent:codekvast-agent.jar=args. Is used as overrides to the agent configuration
+     *             file.
      * @param inst The standard instrumentation hook.
      */
     public static void premain(String args, Instrumentation inst) {
@@ -127,17 +127,11 @@ public class CodekvastAgent {
 
         Runtime.getRuntime().addShutdownHook(createShutdownHook());
 
-        log.info("{} is ready to detect used code within({}..*).", NAME, getNormalizedPackages(config));
+        log.info(String.format("%s is ready to detect used code within(%s..*).", NAME, getNormalizedPackages(config)));
     }
 
     private static Thread createShutdownHook() {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                log.info("Shutting down...");
-                initialize(null);
-            }
-        });
+        Thread thread = new Thread(new MyShutdownHook());
         thread.setName(NAME + " Shutdown Hook");
         return thread;
     }
@@ -157,9 +151,9 @@ public class CodekvastAgent {
                                    Constants.AOP_AJC_XML + ";" +
                                    Constants.AOP_OSGI_XML);
 
-            log.debug("{}={}", ASPECTJ_WEAVER_CONFIGURATION, System.getProperty(ASPECTJ_WEAVER_CONFIGURATION));
+            log.fine(ASPECTJ_WEAVER_CONFIGURATION + "=" + System.getProperty(ASPECTJ_WEAVER_CONFIGURATION));
         } catch (ClassNotFoundException e) {
-            log.warn("Not using AspectJ load-time weaving.");
+            log.warning("Not using AspectJ load-time weaving.");
         }
     }
 
@@ -203,7 +197,7 @@ public class CodekvastAgent {
     private static String getIncludeExcludeElements(String element, List<String> packages, String... extraPrefixes) {
         StringBuilder sb = new StringBuilder();
 
-        Set<String> prefixes = new HashSet<String>(packages);
+        Set<String> prefixes = new HashSet<>(packages);
         Collections.addAll(prefixes, extraPrefixes);
 
         for (String prefix : prefixes) {
@@ -224,5 +218,13 @@ public class CodekvastAgent {
                 "|| execution(public *..new(..)) || execution(protected *..new(..))";
         }
         return "execution(public * *..*(..)) || execution(public *..new(..))";
+    }
+
+    private static class MyShutdownHook implements Runnable {
+        @Override
+        public void run() {
+            log.info("Shutting down...");
+            initialize(null);
+        }
     }
 }

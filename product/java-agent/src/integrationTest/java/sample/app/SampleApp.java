@@ -1,11 +1,11 @@
 package sample.app;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 
 /**
  * @author olle.hallin@crisp.se
  */
-@Slf4j
+@Log
 public class SampleApp {
     private final int dummy;
 
@@ -18,6 +18,6 @@ public class SampleApp {
     }
 
     public static void main(String[] args) {
-        log.info("2+2={}", new SampleApp().add(2, 2));
+        log.info("2+2=" + new SampleApp().add(2, 2));
     }
 }

@@ -1,12 +1,9 @@
 package io.codekvast.javaagent.codebase.scannertest;
 
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * @author olle.hallin@crisp.se
  */
 @SuppressWarnings({"UnusedDeclaration", "UseOfSystemOutOrSystemErr"})
-@Slf4j
 public class ScannerTest4 extends java.util.Date {
 
     public ScannerTest4(long date) {

@@ -27,10 +27,10 @@ import io.codekvast.javaagent.publishing.CodekvastPublishingException;
 import io.codekvast.javaagent.publishing.InvocationDataPublisher;
 import io.codekvast.javaagent.util.SignatureUtils;
 import lombok.Getter;
-import org.slf4j.Logger;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * @author olle.hallin@crisp.se
@@ -55,7 +55,7 @@ public abstract class AbstractInvocationDataPublisher extends AbstractPublisher 
         if (isEnabled() && getCodeBaseFingerprint() != null) {
             incrementSequenceNumber();
 
-            log.debug("Publishing invocation data #{}", this.getSequenceNumber());
+            log.fine("Publishing invocation data #" + this.getSequenceNumber());
 
             doPublishInvocationData(recordingIntervalStartedAtMillis, normalizeSignatures(invocations));
         }

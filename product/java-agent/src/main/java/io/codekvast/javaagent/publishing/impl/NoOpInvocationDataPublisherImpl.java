@@ -22,14 +22,14 @@
 package io.codekvast.javaagent.publishing.impl;
 
 import io.codekvast.javaagent.config.AgentConfig;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 
 import java.util.Set;
 
 /**
  * @author olle.hallin@crisp.se
  */
-@Slf4j
+@Log
 public class NoOpInvocationDataPublisherImpl extends AbstractInvocationDataPublisher {
 
     static final String NAME = "no-op";

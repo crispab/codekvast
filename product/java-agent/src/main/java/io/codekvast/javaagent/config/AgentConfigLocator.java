@@ -21,7 +21,7 @@
  */
 package io.codekvast.javaagent.config;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 
 import java.io.File;
 
@@ -32,7 +32,7 @@ import java.io.File;
  *
  * @author olle.hallin@crisp.se
  */
-@Slf4j
+@Log
 public class AgentConfigLocator {
 
     private static final String ENVVAR_CATALINA_BASE = "CATALINA_BASE";
@@ -55,70 +55,70 @@ public class AgentConfigLocator {
     public static File locateConfig() {
         File file = tryLocation(System.getProperty(SYSPROP_CONFIG));
         if (file != null) {
-            log.info("Found {}", file);
+            log.info("Found " + file);
             return file;
         }
 
         file = tryLocation(System.getenv(ENVVAR_CODEKVAST_CONFIG));
         if (file != null) {
-            log.info("Found {}", file);
+            log.info("Found " + file);
             return file;
         }
 
         file = tryLocation(".");
         if (file != null) {
-            log.info("Found {}", file);
+            log.info("Found " + file);
             return file;
         }
 
         file = tryLocation("./conf");
         if (file != null) {
-            log.info("Found {}", file);
+            log.info("Found " + file);
             return file;
         }
 
         file = tryLocation(constructLocation(System.getProperty(SYSPROP_CATALINA_HOME), "conf"));
         if (file != null) {
-            log.info("Found {}", file);
+            log.info("Found " + file);
             return file;
         }
 
         file = tryLocation(constructLocation(System.getenv(ENVVAR_CATALINA_HOME), "conf"));
         if (file != null) {
-            log.info("Found {}", file);
+            log.info("Found " + file);
             return file;
         }
 
         file = tryLocation(constructLocation(System.getProperty(SYSPROP_CATALINA_BASE), "conf"));
         if (file != null) {
-            log.info("Found {}", file);
+            log.info("Found " + file);
             return file;
         }
 
         file = tryLocation(constructLocation(System.getenv(ENVVAR_CATALINA_BASE), "conf"));
         if (file != null) {
-            log.info("Found {}", file);
+            log.info("Found " + file);
             return file;
         }
 
         file = tryLocation(constructLocation(System.getenv(ENVVAR_HOME), ".config"));
         if (file != null) {
-            log.info("Found {}", file);
+            log.info("Found " + file);
             return file;
         }
 
         file = tryLocation("/etc/codekvast");
         if (file != null) {
-            log.info("Found {}", file);
+            log.info("Found " + file);
             return file;
         }
 
         file = tryLocation("/etc");
         if (file != null) {
-            log.info("Found {}", file);
+            log.info("Found " + file);
             return file;
         }
-        log.warn("No configuration file found, Codekvast will not start.");
+        log.warning("No configuration file found, Codekvast will not start.");
         return null;
     }
 
@@ -132,13 +132,13 @@ public class AgentConfigLocator {
         }
 
         File file = new File(location);
-        log.debug("Examining {}", file);
+        log.fine("Examining " + file);
         if (file.isFile()) {
             return file;
         }
 
         file = new File(location, "codekvast.conf");
-        log.debug("Looking for {}", file);
+        log.fine("Looking for " + file);
         if (file.canRead()) {
             return file;
         }

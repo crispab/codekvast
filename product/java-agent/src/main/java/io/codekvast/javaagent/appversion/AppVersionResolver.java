@@ -22,12 +22,12 @@
 package io.codekvast.javaagent.appversion;
 
 import io.codekvast.javaagent.config.AgentConfig;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-@Slf4j
+@Log
 public class AppVersionResolver {
 
     private final Collection<AppVersionStrategy> appVersionStrategies = new ArrayList<>();
@@ -48,12 +48,12 @@ public class AppVersionResolver {
         for (AppVersionStrategy strategy : appVersionStrategies) {
             if (strategy.canHandle(args)) {
                 String resolvedVersion = strategy.resolveAppVersion(config.getCodeBaseFiles(), args);
-                log.debug("Resolved appVersion '{}' to '{}'", version, resolvedVersion);
+                log.fine(String.format("Resolved appVersion '%s' to '%s'", version, resolvedVersion));
                 return resolvedVersion;
             }
         }
 
-        log.debug("Cannot resolve appVersion '{}', using it as-is", version);
+        log.fine(String.format("Cannot resolve appVersion '%s', using it as-is", version));
         return version;
     }
 

@@ -28,7 +28,8 @@ import io.codekvast.javaagent.codebase.CodeBaseFingerprint;
 import io.codekvast.javaagent.codebase.CodeBaseScanner;
 import io.codekvast.javaagent.config.AgentConfig;
 import lombok.Getter;
-import org.slf4j.Logger;
+
+import java.util.logging.Logger;
 
 /**
  * Abstract base class for code base publishers.

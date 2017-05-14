@@ -23,7 +23,7 @@ package io.codekvast.javaagent.util;
 
 import io.codekvast.javaagent.model.v1.MethodSignature;
 import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 import org.aspectj.lang.Signature;
 import org.aspectj.runtime.reflect.Factory;
 
@@ -45,7 +45,7 @@ import java.util.regex.PatternSyntaxException;
  * @author olle.hallin@crisp.se
  */
 @UtilityClass
-@Slf4j
+@Log
 public class SignatureUtils {
 
     private static final String ADDED_PATTERNS_FILENAME = "/io/codekvast/byte-code-added-methods.txt";
@@ -69,10 +69,11 @@ public class SignatureUtils {
 
     private static List<Pattern> readByteCodePatternsFrom(String resourceName) {
         List<Pattern> result = new ArrayList<>();
-        log.trace("Reading byte code patterns from {}", resourceName);
+        log.finest("Reading byte code patterns from " + resourceName);
         try {
             LineNumberReader reader = new LineNumberReader(
-                new BufferedReader(new InputStreamReader(SignatureUtils.class.getResource(resourceName).openStream(), Charset.forName("UTF-8"))));
+                new BufferedReader(
+                    new InputStreamReader(SignatureUtils.class.getResource(resourceName).openStream(), Charset.forName("UTF-8"))));
             String line;
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
@@ -81,7 +82,7 @@ public class SignatureUtils {
                 }
             }
         } catch (Exception e) {
-            log.error("Cannot read " + resourceName);
+            log.severe("Cannot read " + resourceName);
         }
         return result;
     }
@@ -90,7 +91,7 @@ public class SignatureUtils {
         try {
             result.add(Pattern.compile(pattern));
         } catch (PatternSyntaxException e) {
-            log.error("Illegal regexp syntax in {}:{}: {}", fileName, lineNumber, e.toString());
+            log.severe(String.format("Illegal regexp syntax in %s:%s: %s", fileName, lineNumber, e.toString()));
         }
     }
 
@@ -121,29 +122,28 @@ public class SignatureUtils {
                     logBadPattern(pattern);
                 } else {
                     result = matcher.group(1) + "." + matcher.group(2) + matcher.group(3);
-                    log.trace("Normalized {} to {}", signature, result);
+                    log.finest(String.format("Normalized %s to %s", signature, result));
                     break;
                 }
             }
         }
 
         if (isStrangeSignature(result)) {
-            log.warn("Could not normalize {}: {}", signature, result);
+            log.warning(String.format("Could not normalize %s: %s", signature, result));
         }
         return result;
     }
 
-    public boolean isStrangeSignature(String signature) {
+    boolean isStrangeSignature(String signature) {
         return signature.contains("..") || signature.contains("$$") || signature.contains("CGLIB")
             || signature.contains("EnhancerByGuice") || signature.contains("FastClassByGuice");
     }
 
     private void logBadPattern(Pattern pattern) {
         if (loggedBadPatterns.add(pattern)) {
-            log.error("Expected exactly 3 capturing groups in regexp '{}', ignored.", pattern);
+            log.severe(String.format("Expected exactly 3 capturing groups in regexp '%s', ignored.", pattern));
         }
     }
-
 
 
     /**

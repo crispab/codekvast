@@ -21,7 +21,7 @@
  */
 package io.codekvast.javaagent.appversion;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 
 import java.io.File;
 import java.util.Collection;
@@ -36,10 +36,10 @@ import java.util.regex.PatternSyntaxException;
  *</p>
  * @author olle.hallin@crisp.se
  */
-@Slf4j
+@Log
 public class FilenameAppVersionStrategy extends AbstractAppVersionStrategy {
 
-    public FilenameAppVersionStrategy() {
+    FilenameAppVersionStrategy() {
         super("filename", "pattern");
     }
 
@@ -58,16 +58,16 @@ public class FilenameAppVersionStrategy extends AbstractAppVersionStrategy {
                     return version;
                 }
             }
-            log.error("Cannot resolve {} {}: pattern not matched", args[0], args[1]);
+            log.severe(String.format("Cannot resolve %s %s: pattern not matched", args[0], args[1]));
         } catch (PatternSyntaxException e) {
-            log.error("Cannot resolve {} {}: illegal syntax for {}", args[0], args[1], Pattern.class.getName());
+            log.severe(String.format("Cannot resolve %s %s: illegal syntax for %s", args[0], args[1], Pattern.class.getName()));
         }
         return UNKNOWN_VERSION;
     }
 
     private String search(File dir, Pattern pattern) {
         if (!dir.isDirectory()) {
-            log.warn("{} is not a directory", dir);
+            log.warning(dir + " is not a directory");
             return null;
         }
 
@@ -79,7 +79,7 @@ public class FilenameAppVersionStrategy extends AbstractAppVersionStrategy {
                     Matcher matcher = pattern.matcher(file.getName());
                     if (matcher.matches()) {
                         String version = matcher.group(matcher.groupCount());
-                        log.debug("Found version '{}' in {}", version, file);
+                        log.fine(String.format("Found version '%s' in %s", version, file));
                         return version;
                     }
                 }

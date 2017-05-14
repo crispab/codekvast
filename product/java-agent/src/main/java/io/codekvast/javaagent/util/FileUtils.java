@@ -22,7 +22,7 @@
 package io.codekvast.javaagent.util;
 
 import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -35,7 +35,7 @@ import java.util.Properties;
  * @author olle.hallin@crisp.se
  */
 @UtilityClass
-@Slf4j
+@Log
 public final class FileUtils {
 
     private static final String UTF_8 = "UTF-8";
@@ -89,10 +89,10 @@ public final class FileUtils {
         try {
             File parentDir = file.getParentFile();
             if (parentDir != null && !parentDir.isDirectory()) {
-                log.debug("Creating {}", parentDir);
+                log.fine("Creating " + parentDir);
                 parentDir.mkdirs();
                 if (!parentDir.isDirectory()) {
-                    log.warn("Failed to create {}", parentDir);
+                    log.warning("Failed to create " + parentDir);
                 }
             }
             writer = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(file)), UTF_8);
@@ -127,7 +127,7 @@ public final class FileUtils {
         try (ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(file)))) {
             oos.writeObject(object);
         }
-        log.debug("Serialized {} in {} ms", object.getClass().getSimpleName(), System.currentTimeMillis() - startedAt);
+        log.fine(String.format("Serialized %s in %d ms", object.getClass().getSimpleName(), System.currentTimeMillis() - startedAt));
         return file;
     }
 

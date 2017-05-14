@@ -21,13 +21,13 @@
  */
 package io.codekvast.javaagent.publishing.impl;
 
-import io.codekvast.javaagent.publishing.CodekvastPublishingException;
 import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.model.Endpoints;
 import io.codekvast.javaagent.model.v1.InvocationDataPublication;
+import io.codekvast.javaagent.publishing.CodekvastPublishingException;
 import io.codekvast.javaagent.util.FileUtils;
 import io.codekvast.javaagent.util.LogUtil;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 import okhttp3.*;
 
 import java.io.File;
@@ -41,10 +41,10 @@ import java.util.Set;
  *
  * @author olle.hallin@crisp.se
  */
-@Slf4j
+@Log
 public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPublisher {
 
-    public static final String NAME = "http";
+    static final String NAME = "http";
 
     private static final MediaType APPLICATION_OCTET_STREAM = MediaType.parse("application/octet-stream");
 
@@ -75,7 +75,8 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
 
             doPost(file, url, getCodeBaseFingerprint().getSha256());
 
-            log.debug("Uploaded {} invocations ({}) to {}", publication.getInvocations().size(), LogUtil.humanReadableByteCount(file.length()), url);
+            log.fine(String.format("Uploaded %d invocations (%s) to %s", publication.getInvocations().size(),
+                                    LogUtil.humanReadableByteCount(file.length()), url));
         } catch (Exception e) {
             throw new CodekvastPublishingException("Cannot upload invocation data to " + url, e);
         } finally {

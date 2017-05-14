@@ -38,14 +38,14 @@ dependencies {
     testCompile lombok
     testCompile testFrameworks
 
-    testRuntime logback
+    // testRuntime logback
 
     integrationTestCompile project(":product:testsupport")
-    integrationTestRuntime logback
+    // integrationTestRuntime logback
 
     jacocoagent 'org.jacoco:org.jacoco.agent:0.7.9:runtime@jar'
 
-    sampleappRuntime logback
+    // sampleappRuntime logback
 }
 
 shadowJar {

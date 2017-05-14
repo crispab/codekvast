@@ -62,6 +62,7 @@ public class SchedulerTest {
 
     @Before
     public void setUp() throws Exception {
+        System.setProperty("java.util.logging.ConsoleHandler.level", "ALL");
         MockitoAnnotations.initMocks(this);
         scheduler = new Scheduler(config, configPollerMock, codeBasePublisherFactoryMock, invocationDataPublisherFactoryMock);
 

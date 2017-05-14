@@ -23,12 +23,12 @@ package io.codekvast.javaagent.publishing.impl;
 
 import io.codekvast.javaagent.codebase.CodeBase;
 import io.codekvast.javaagent.config.AgentConfig;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 
 /**
  * Dummy (no-op) implementation of CodeBasePublisher.
  */
-@Slf4j
+@Log
 public class NoOpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
 
     public static final String NAME = "no-op";

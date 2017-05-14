@@ -21,7 +21,7 @@
  */
 package io.codekvast.javaagent;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
@@ -32,7 +32,7 @@ import static org.aspectj.bridge.IMessage.WEAVEINFO;
 /**
  * A bridge from AspectJ's IMessageHandler to SLF4J
  */
-@Slf4j(topic = "io.codekvast.aspectjweaver")
+@Log(topic = "io.codekvast.aspectjweaver")
 public class AspectjMessageHandler implements IMessageHandler {
     public static final String LOGGER_NAME = "";
 
@@ -42,24 +42,24 @@ public class AspectjMessageHandler implements IMessageHandler {
 
             String m = message.getMessage();
             if (!m.contains("not weaving") || !m.contains("codekvast")) {
-                log.debug("{}", m);
+                log.fine(m);
             }
             return true;
         }
         if (message.isInfo()) {
-            log.info("{}", message.getMessage());
+            log.info(message.getMessage());
             return true;
         }
         if (message.isWarning()) {
-            log.warn("{}", message.getMessage());
+            log.warning(message.getMessage());
             return true;
         }
         if (message.isError()) {
-            log.error("{}", message.getMessage());
+            log.severe(message.getMessage());
             return true;
         }
         if (message.getKind() == WEAVEINFO) {
-            log.debug("{}", message.getMessage());
+            log.info(message.getMessage());
             return true;
         }
         return false;

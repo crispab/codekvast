@@ -25,7 +25,8 @@ import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.publishing.Publisher;
 import lombok.Getter;
 import lombok.Setter;
-import org.slf4j.Logger;
+
+import java.util.logging.Logger;
 
 /**
  * Abstract base class for publishers.
@@ -54,19 +55,19 @@ public abstract class AbstractPublisher implements Publisher {
     public void configure(long customerId, String keyValuePairs) {
         if (customerId != this.customerId) {
             this.customerId = customerId;
-            log.debug("Using customerId {}", customerId);
+            log.fine("Using customerId " + customerId);
         }
 
         String[] pairs = keyValuePairs.split(";");
 
         for (String pair : pairs) {
             if (!pair.trim().isEmpty()) {
-                log.trace("Analyzing {}", pair);
+                log.finest("Analyzing " + pair);
                 String[] parts = pair.trim().split("=");
                 if (parts.length == 2) {
                     setValue(parts[0].trim(), parts[1].trim());
                 } else {
-                    log.warn("Illegal key-value pair: {}", pair);
+                    log.warning("Illegal key-value pair: " + pair);
                 }
             }
         }
@@ -77,15 +78,15 @@ public abstract class AbstractPublisher implements Publisher {
             boolean newValue = Boolean.valueOf(value);
             boolean oldValue = this.enabled;
             if (oldValue != newValue) {
-                log.debug("Setting {}={}, was={}", key, newValue, this.enabled);
+                log.fine(String.format("Setting %s=%s, was=%s", key, newValue, this.enabled));
                 this.enabled = newValue;
             }
         } else {
             boolean recognized = doSetValue(key, value);
             if (recognized) {
-                log.debug("Setting {}={}", key, value);
+                log.fine(String.format("Setting %s=%s", key, value));
             } else {
-                log.warn("Unrecognized key-value pair: {}={}", key, value);
+                log.warning(String.format("Unrecognized key-value pair: %s=%s", key, value));
             }
         }
     }
