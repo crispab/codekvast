@@ -53,11 +53,11 @@ node {
                     }
                 }
 
-                stage('Build Docker image') {
-                    sh './gradlew :product:warehouse:buildDockerImage'
-                }
-
-// TODO                stage('System test') {
+// TODO           stage('Build Docker image') {
+//                    sh './gradlew :product:warehouse:buildDockerImage'
+//                }
+//
+//                stage('System test') {
 //                    try {
 //                        sh './gradlew systemTest'
 //                    } finally {
