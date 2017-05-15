@@ -1,6 +1,7 @@
 import {ActivatedRoute, Router} from '@angular/router';
 import {Component, OnInit} from '@angular/core';
 import {StateService} from '../services/state.service';
+import {AuthState} from './auth.state';
 
 @Component({
     selector: 'ck-sso',
@@ -13,7 +14,8 @@ export class SsoComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.stateService.setCurrentUser(this.route.snapshot.params['token']);
+        let state = this.stateService.getState(AuthState.KEY, () => new AuthState());
+        state.setAuthToken(this.route.snapshot.params['token'], this.route.snapshot.params['navData']);
 
         // noinspection JSIgnoredPromiseFromCall
         this.router.navigate(['']);

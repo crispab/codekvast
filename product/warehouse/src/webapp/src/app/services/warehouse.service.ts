@@ -22,7 +22,7 @@ export class WarehouseService {
     constructor(private http: Http, private configService: ConfigService, private stateService: StateService,
                 private router: Router) {
         this.headers.set('Content-type', 'application/json; charset=utf-8');
-        this.headers.set('Authorization', this.stateService.getCurrentUser());
+        this.headers.set('Authorization', this.stateService.getAuthToken());
     }
 
     getMethods(signature?: string, maxResults?: number): Observable<MethodData> {
@@ -71,12 +71,12 @@ export class WarehouseService {
     }
 
     private replaceAuthToken(res: any) {
-        return this.stateService.setCurrentUser(res.headers.get(this.AUTH_TOKEN_HEADER));
+        return this.stateService.setAuthToken(res.headers.get(this.AUTH_TOKEN_HEADER));
     }
 
     private handle401(res: any) {
         if (res.status === 401) {
-            this.stateService.removeCurrentUser();
+            this.stateService.removeAuthToken();
             this.router.navigate(['']);
         }
     }

@@ -8,8 +8,6 @@ export class StateService {
 
     state = {};
 
-    private currentUser: string;
-
     getState<T>(key: string, initialState: () => T): T {
         if (!this.state.hasOwnProperty(key)) {
             this.state[key] = initialState();
@@ -17,17 +15,4 @@ export class StateService {
         return this.state[key];
     }
 
-    setCurrentUser(currentUser: string) {
-        this.currentUser = currentUser;
-        console.log('Current user: %o', currentUser);
-    }
-
-    getCurrentUser() {
-        return this.currentUser;
-    }
-
-    removeCurrentUser() {
-        this.currentUser = undefined;
-        console.log('Current user is undefined');
-    }
 }

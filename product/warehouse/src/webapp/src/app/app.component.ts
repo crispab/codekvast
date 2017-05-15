@@ -1,11 +1,10 @@
-import {AfterViewInit, Component, OnInit, ViewEncapsulation} from '@angular/core';
+import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {ConfigService} from './services/config.service';
 import {NavigationEnd, Router} from '@angular/router';
 import {TitleCasePipe} from '@angular/common';
 import {Title} from '@angular/platform-browser';
 import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/map';
-import {StateService} from './services/state.service';
 
 @Component({
     selector: '#app',
@@ -14,9 +13,9 @@ import {StateService} from './services/state.service';
     encapsulation: ViewEncapsulation.None, // or else styling of html and body won't work in app.component.css
     providers: [TitleCasePipe]
 })
-export class AppComponent implements OnInit, AfterViewInit {
+export class AppComponent implements OnInit {
     constructor(private configService: ConfigService, private titleService: Title, private router: Router,
-                private titleCasePipe: TitleCasePipe, private stateService: StateService) {
+                private titleCasePipe: TitleCasePipe) {
     }
 
     ngOnInit(): void {
@@ -29,20 +28,11 @@ export class AppComponent implements OnInit, AfterViewInit {
             })
     }
 
-    ngAfterViewInit(): void {
-        // TODO: do if Heroku SSO
-        // window['Boomerang'].init({app: 'foo', addon: 'codekvast'});
-    }
-
     getApiPrefix(): String {
         return this.configService.getApiPrefix();
     }
 
     getVersion(): String {
         return this.configService.getVersion();
-    }
-
-    getCurrentUser(): String {
-        return this.stateService.getCurrentUser() + ' (' + new Date().getTime() + ')';
     }
 }

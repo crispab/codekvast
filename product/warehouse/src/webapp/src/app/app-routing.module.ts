@@ -23,7 +23,7 @@ const routes: Routes = [
         path: 'method/:id',
         component: MethodDetailComponent
     }, {
-        path: 'sso/:token',
+        path: 'sso/:token/:navData',
         component: SsoComponent
     }, {
         path: 'status',
