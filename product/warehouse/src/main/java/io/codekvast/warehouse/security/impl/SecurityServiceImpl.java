@@ -22,7 +22,9 @@
 package io.codekvast.warehouse.security.impl;
 
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
-import org.springframework.security.authentication.CredentialsExpiredException;
+import io.codekvast.warehouse.security.WebappCredentials;
+import io.jsonwebtoken.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -31,23 +33,33 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.io.UnsupportedEncodingException;
+import java.time.Instant;
+import java.util.Date;
 import java.util.Set;
 
+import static io.codekvast.warehouse.security.WebappCredentials.*;
 import static java.util.Collections.singleton;
 
 /**
  * @author olle.hallin@crisp.se
  */
 @Component
+@Slf4j
 public class SecurityServiceImpl implements SecurityService {
 
     private static final Set<SimpleGrantedAuthority> USER_ROLE = singleton(new SimpleGrantedAuthority("ROLE_USER"));
+    private static final String JWT_CLAIM_EMAIL = "email";
+    private static final String JWT_CLAIM_SOURCE = "source";
 
     private final CodekvastSettings settings;
+    private final byte[] jwtSecret;
+    private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS512;
 
     @Inject
-    public SecurityServiceImpl(CodekvastSettings settings) {
+    public SecurityServiceImpl(CodekvastSettings settings) throws UnsupportedEncodingException {
         this.settings = settings;
+        this.jwtSecret = settings.getWebappJwtSecret().getBytes("UTF-8");
     }
 
     @Override
@@ -67,36 +79,41 @@ public class SecurityServiceImpl implements SecurityService {
     }
 
     @Override
-    public String createWebappToken(Long customerId, String email) {
-        // TODO: Make a proper JWT token
-        long expiresAt = System.currentTimeMillis() + settings.getWebappJwtExpirationSeconds() * 1000L;
-        return String.format("%d:%d:%s", customerId, expiresAt, email);
+    public String createWebappToken(Long customerId, WebappCredentials credentials) {
+
+        String token = Jwts.builder()
+                             .setId(credentials.getExternalId())
+                             .setSubject(Long.toString(customerId))
+                             .setIssuedAt(new Date())
+                             .setExpiration(Date.from(Instant.now().plusSeconds(settings.getWebappJwtExpirationSeconds())))
+                             .claim(JWT_CLAIM_EMAIL, credentials.getEmail())
+                             .claim(JWT_CLAIM_SOURCE, credentials.getSource().name())
+                             .signWith(signatureAlgorithm, jwtSecret)
+                             .compact();
+        return token;
     }
 
     private Authentication toAuthentication(String token) throws AuthenticationException {
-        // TODO: extract from proper JWT bearer token
+
         if (token == null) {
             return null;
         }
 
-        String parts[] = token.split(":");
-        if (parts.length != 3) {
-            return null;
-        }
-
         try {
-            Long customerId = Long.valueOf(parts[0]);
-            // TODO: validate customerId
+            Jws<Claims> claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
 
-            Long expiresAtMillis = Long.valueOf(parts[1]);
-            long now = System.currentTimeMillis();
-            if (expiresAtMillis < now) {
-                throw new CredentialsExpiredException("Token has expired");
-            }
-
-            String email = parts[2];
-            return new PreAuthenticatedAuthenticationToken(customerId, email, USER_ROLE);
-        } catch (NumberFormatException e) {
+            String externalId = claims.getBody().getId();
+            Long customerId = Long.valueOf(claims.getBody().getSubject());
+            String email = claims.getBody().get(JWT_CLAIM_EMAIL, String.class);
+            SignOnSource source = SignOnSource.valueOf(claims.getBody().get(JWT_CLAIM_SOURCE, String.class));
+            return new PreAuthenticatedAuthenticationToken(customerId,
+                                                           builder()
+                                                               .externalId(externalId)
+                                                               .email(email)
+                                                               .source(source)
+                                                               .build(),
+                                                           USER_ROLE);
+        } catch (NumberFormatException | SignatureException e) {
             return null;
         }
     }
@@ -107,10 +124,12 @@ public class SecurityServiceImpl implements SecurityService {
 
         if (auth instanceof PreAuthenticatedAuthenticationToken) {
             Long customerId = (Long) auth.getPrincipal();
-            String email = (String) auth.getCredentials();
+            //noinspection CastToConcreteClass
+            WebappCredentials credentials = (WebappCredentials) auth.getCredentials();
 
-            return createWebappToken(customerId, email);
+            return createWebappToken(customerId, credentials);
         }
         return null;
     }
+
 }

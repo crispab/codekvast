@@ -21,26 +21,23 @@
  */
 package io.codekvast.warehouse.security;
 
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Value;
+
 /**
- * Business interface dealing with webapp SSO tokens.
- *
  * @author olle.hallin@crisp.se
  */
-public interface WebappTokenProvider {
+@Value
+@Builder
+public class WebappCredentials {
 
-    /**
-     * Used for converting a successful Single Sign-On to a webapp token.
-     *
-     * @param customerId  The internal customerId
-     * @param credentials The credentials to convert to a token
-     * @return A (JWT) token to use when launching the webapp.
-     */
-    String createWebappToken(Long customerId, WebappCredentials credentials);
+    public enum SignOnSource {HEROKU}
 
-    /**
-     * Extends the lifetime of a webapp token.
-     *
-     * @return A new webapp token to use in future webapp API requests.
-     */
-    String renewWebappToken();
+    @NonNull
+    private final String externalId;
+    @NonNull
+    private final String email;
+    @NonNull
+    private final SignOnSource source;
 }

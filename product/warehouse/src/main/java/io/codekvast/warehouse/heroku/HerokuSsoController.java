@@ -22,6 +22,7 @@
 package io.codekvast.warehouse.heroku;
 
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
+import io.codekvast.warehouse.security.WebappCredentials;
 import io.codekvast.warehouse.security.WebappTokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -110,8 +111,15 @@ public class HerokuSsoController {
 
         try {
             Long customerId = jdbcTemplate.queryForObject("SELECT id FROM customers WHERE externalId = ?", Long.class, externalId);
+
             log.info("Logged in customerId={}, email={}", customerId, email);
-            return webappTokenProvider.createWebappToken(customerId, email);
+            return webappTokenProvider.createWebappToken(
+                customerId,
+                WebappCredentials.builder()
+                                 .externalId(externalId)
+                                 .email(email)
+                                 .source(WebappCredentials.SignOnSource.HEROKU)
+                                 .build());
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new UsernameNotFoundException("Invalid id");
         }
