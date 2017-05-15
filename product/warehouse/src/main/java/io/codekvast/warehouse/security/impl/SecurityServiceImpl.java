@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.warehouse.security;
+package io.codekvast.warehouse.security.impl;
 
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
 import org.springframework.security.authentication.CredentialsExpiredException;
@@ -31,50 +31,48 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import java.util.Set;
 
 import static java.util.Collections.singleton;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 /**
  * @author olle.hallin@crisp.se
  */
 @Component
-public class SecurityHandler {
+public class SecurityServiceImpl implements SecurityService {
 
     private static final Set<SimpleGrantedAuthority> USER_ROLE = singleton(new SimpleGrantedAuthority("ROLE_USER"));
+
     private static long DEMO_CUSTOMER_ID = 1L;
 
     private final CodekvastSettings settings;
 
     @Inject
-    public SecurityHandler(CodekvastSettings settings) {
+    public SecurityServiceImpl(CodekvastSettings settings) {
         this.settings = settings;
     }
 
+    @Override
     public Long getCustomerId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication == null ? DEMO_CUSTOMER_ID : (Long) authentication.getPrincipal();
     }
 
-    void authenticate(HttpServletRequest request) {
-        String token = getAuthToken(request);
+    @Override
+    public void authenticateToken(String token) {
         SecurityContextHolder.getContext().setAuthentication(toAuthentication(token));
     }
 
-    void removeAuthentication() {
+    @Override
+    public void removeAuthentication() {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
-    String createToken(Long customerId, String email) {
+    @Override
+    public String createWebappToken(Long customerId, String email) {
         // TODO: Make a proper JWT token
         long expiresAt = System.currentTimeMillis() + settings.getWebappJwtExpirationSeconds() * 1000L;
         return String.format("%d:%d:%s", customerId, expiresAt, email);
-    }
-
-    private String getAuthToken(HttpServletRequest request) {
-        return request.getHeader(AUTHORIZATION);
     }
 
     private Authentication toAuthentication(String token) throws AuthenticationException {
@@ -105,14 +103,15 @@ public class SecurityHandler {
         }
     }
 
-    public String renewAuthenticationToken() {
+    @Override
+    public String renewWebappToken() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth instanceof PreAuthenticatedAuthenticationToken) {
             Long customerId = (Long) auth.getPrincipal();
             String email = (String) auth.getCredentials();
 
-            return createToken(customerId, email);
+            return createWebappToken(customerId, email);
         }
         return null;
     }

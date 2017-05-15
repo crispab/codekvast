@@ -1,6 +1,7 @@
-package io.codekvast.warehouse.security;
+package io.codekvast.warehouse.heroku;
 
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
+import io.codekvast.warehouse.security.impl.SecurityServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -25,7 +26,7 @@ public class HerokuSsoControllerTest {
     @Before
     public void beforeTest() throws Exception {
         MockitoAnnotations.initMocks(this);
-        controller = new HerokuSsoController(settings, jdbcTemplate, new SecurityHandler(settings));
+        controller = new HerokuSsoController(settings, jdbcTemplate, new SecurityServiceImpl(settings));
     }
 
 

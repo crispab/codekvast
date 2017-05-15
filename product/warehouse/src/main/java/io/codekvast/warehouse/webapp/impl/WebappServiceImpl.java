@@ -22,7 +22,7 @@
 package io.codekvast.warehouse.webapp.impl;
 
 import io.codekvast.javaagent.model.v1.SignatureStatus;
-import io.codekvast.warehouse.security.SecurityHandler;
+import io.codekvast.warehouse.security.CustomerIdProvider;
 import io.codekvast.warehouse.webapp.WebappService;
 import io.codekvast.warehouse.webapp.model.ApplicationDescriptor1;
 import io.codekvast.warehouse.webapp.model.EnvironmentDescriptor1;
@@ -53,12 +53,12 @@ import java.util.*;
 public class WebappServiceImpl implements WebappService {
 
     private final JdbcTemplate jdbcTemplate;
-    private final SecurityHandler securityHandler;
+    private final CustomerIdProvider customerIdProvider;
 
     @Inject
-    public WebappServiceImpl(JdbcTemplate jdbcTemplate, SecurityHandler securityHandler) {
+    public WebappServiceImpl(JdbcTemplate jdbcTemplate, CustomerIdProvider customerIdProvider) {
         this.jdbcTemplate = jdbcTemplate;
-        this.securityHandler = securityHandler;
+        this.customerIdProvider = customerIdProvider;
     }
 
     @Override
@@ -68,7 +68,7 @@ public class WebappServiceImpl implements WebappService {
         MethodDescriptorRowCallbackHandler rowCallbackHandler =
             new MethodDescriptorRowCallbackHandler("m.signature LIKE ?", request.getMaxResults());
 
-        jdbcTemplate.query(rowCallbackHandler.getSelectStatement(), rowCallbackHandler, securityHandler.getCustomerId(),
+        jdbcTemplate.query(rowCallbackHandler.getSelectStatement(), rowCallbackHandler, customerIdProvider.getCustomerId(),
                            request.getNormalizedSignature());
 
         return rowCallbackHandler.getResult();
@@ -78,7 +78,7 @@ public class WebappServiceImpl implements WebappService {
     public Optional<MethodDescriptor1> getMethodById(@NotNull Long methodId) {
         MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler("m.id = ?", 1);
 
-        jdbcTemplate.query(rowCallbackHandler.getSelectStatement(), rowCallbackHandler, securityHandler.getCustomerId(), methodId);
+        jdbcTemplate.query(rowCallbackHandler.getSelectStatement(), rowCallbackHandler, customerIdProvider.getCustomerId(), methodId);
 
         return rowCallbackHandler.getResult().stream().findFirst();
     }

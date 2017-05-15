@@ -19,9 +19,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.warehouse.security;
+package io.codekvast.warehouse.heroku;
 
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
+import io.codekvast.warehouse.security.WebappTokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -56,14 +57,14 @@ public class HerokuSsoController {
     private final CodekvastSettings settings;
     private final JdbcTemplate jdbcTemplate;
     private final MessageDigest sha1;
-    private final SecurityHandler securityHandler;
+    private final WebappTokenProvider webappTokenProvider;
 
     @Inject
     public HerokuSsoController(CodekvastSettings settings, JdbcTemplate jdbcTemplate,
-                               SecurityHandler securityHandler) throws NoSuchAlgorithmException {
+                               WebappTokenProvider webappTokenProvider) throws NoSuchAlgorithmException {
         this.settings = settings;
         this.jdbcTemplate = jdbcTemplate;
-        this.securityHandler = securityHandler;
+        this.webappTokenProvider = webappTokenProvider;
         this.sha1 = MessageDigest.getInstance("SHA-1");
     }
 
@@ -110,7 +111,7 @@ public class HerokuSsoController {
         try {
             Long customerId = jdbcTemplate.queryForObject("SELECT id FROM customers WHERE externalId = ?", Long.class, externalId);
             log.info("Logged in customerId={}, email={}", customerId, email);
-            return securityHandler.createToken(customerId, email);
+            return webappTokenProvider.createWebappToken(customerId, email);
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new UsernameNotFoundException("Invalid id");
         }

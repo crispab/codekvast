@@ -21,8 +21,7 @@
  */
 package io.codekvast.warehouse.webapp;
 
-import io.codekvast.warehouse.bootstrap.CodekvastSettings;
-import io.codekvast.warehouse.security.SecurityHandler;
+import io.codekvast.warehouse.security.WebappTokenProvider;
 import io.codekvast.warehouse.webapp.model.GetMethodsRequest1;
 import io.codekvast.warehouse.webapp.model.GetMethodsResponse1;
 import io.codekvast.warehouse.webapp.model.MethodDescriptor1;
@@ -57,10 +56,10 @@ public class WebappController {
     private static final String AUTH_TOKEN_HEADER = "X-codekvast-auth-token";
 
     private final WebappService webappService;
-    private final SecurityHandler securityHandler;
+    private final WebappTokenProvider securityHandler;
 
     @Inject
-    public WebappController(WebappService webappService, SecurityHandler securityHandler) {
+    public WebappController(WebappService webappService, WebappTokenProvider securityHandler) {
         this.webappService = webappService;
         this.securityHandler = securityHandler;
     }
@@ -81,7 +80,7 @@ public class WebappController {
                                                                .DEFAULT_MAX_RESULTS_STR)
                                                                Integer maxResults) {
         return ResponseEntity.ok()
-                             .header(AUTH_TOKEN_HEADER, securityHandler.renewAuthenticationToken())
+                             .header(AUTH_TOKEN_HEADER, securityHandler.renewWebappToken())
                              .body(doGetMethods(signature, maxResults));
     }
 
@@ -96,16 +95,16 @@ public class WebappController {
                   System.currentTimeMillis() - startedAt);
 
         return result.map(method -> ResponseEntity.ok()
-                                                  .header(AUTH_TOKEN_HEADER, securityHandler.renewAuthenticationToken())
+                                                  .header(AUTH_TOKEN_HEADER, securityHandler.renewWebappToken())
                                                   .body(method))
                      .orElseGet(() -> ResponseEntity.notFound()
-                                                    .header(AUTH_TOKEN_HEADER, securityHandler.renewAuthenticationToken())
+                                                    .header(AUTH_TOKEN_HEADER, securityHandler.renewWebappToken())
                                                     .build());
     }
 
     @RequestMapping(method = POST, value = WEBAPP_RENEW_AUTH_TOKEN, produces = MediaType.TEXT_PLAIN_VALUE)
     public String renewAuthToken() {
-        return securityHandler.renewAuthenticationToken();
+        return securityHandler.renewWebappToken();
     }
 
     private GetMethodsResponse1 doGetMethods(String signature, Integer maxResults) {

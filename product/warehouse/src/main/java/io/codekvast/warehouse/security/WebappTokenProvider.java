@@ -21,34 +21,25 @@
  */
 package io.codekvast.warehouse.security;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.filter.OncePerRequestFilter;
+/**
+ * Business interface dealing with webapp SSO tokens.
+ *
+ * @author olle.hallin@crisp.se
+ */
+public interface WebappTokenProvider {
+    /**
+     * Used for converting a successful Heroku SSO to a webapp token.
+     *
+     * @param customerId The customerId
+     * @param email      The current Heroku user's email address.
+     * @return A (JWT) token to use when launching the webapp.
+     */
+    String createWebappToken(Long customerId, String email);
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
-@Slf4j
-public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
-
-    private final SecurityHandler securityHandler;
-
-    public JwtAuthenticationTokenFilter(SecurityHandler securityHandler) {
-        this.securityHandler = securityHandler;
-    }
-
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-        throws ServletException, IOException {
-
-        securityHandler.authenticate(request);
-
-        try {
-            chain.doFilter(request, response);
-        } finally {
-            securityHandler.removeAuthentication();
-        }
-    }
+    /**
+     * Extends the lifetime of a webapp token.
+     *
+     * @return A new webapp token to use in future webapp API requests.
+     */
+    String renewWebappToken();
 }

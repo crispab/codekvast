@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.warehouse.security;
+package io.codekvast.warehouse.security.impl;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,17 +52,17 @@ import java.io.IOException;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtUnauthorizedHandler unauthorizedHandler;
-    private final SecurityHandler securityHandler;
+    private final SecurityService securityService;
 
     @Inject
-    public SecurityConfig(JwtUnauthorizedHandler unauthorizedHandler, SecurityHandler securityHandler) {
+    public SecurityConfig(JwtUnauthorizedHandler unauthorizedHandler, SecurityService securityService) {
         this.unauthorizedHandler = unauthorizedHandler;
-        this.securityHandler = securityHandler;
+        this.securityService = securityService;
     }
 
     @Bean
-    public JwtAuthenticationTokenFilter authenticationTokenFilterBean() throws Exception {
-        return new JwtAuthenticationTokenFilter(securityHandler);
+    public AuthenticationTokenFilter authenticationTokenFilterBean() throws Exception {
+        return new AuthenticationTokenFilter(securityService);
     }
 
     @Override
