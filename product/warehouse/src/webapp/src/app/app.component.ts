@@ -5,6 +5,7 @@ import {TitleCasePipe} from '@angular/common';
 import {Title} from '@angular/platform-browser';
 import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/map';
+import {StateService} from './services/state.service';
 
 @Component({
     selector: '#app',
@@ -14,10 +15,8 @@ import 'rxjs/add/operator/map';
     providers: [TitleCasePipe]
 })
 export class AppComponent implements OnInit, AfterViewInit {
-    constructor(private configService: ConfigService,
-                private titleService: Title,
-                private router: Router,
-                private titleCasePipe: TitleCasePipe) {
+    constructor(private configService: ConfigService, private titleService: Title, private router: Router,
+                private titleCasePipe: TitleCasePipe, private stateService: StateService) {
     }
 
     ngOnInit(): void {
@@ -41,5 +40,9 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     getVersion(): String {
         return this.configService.getVersion();
+    }
+
+    getCurrentUser(): String {
+        return this.stateService.getCurrentUser() + ' (' + new Date().getTime() + ')';
     }
 }

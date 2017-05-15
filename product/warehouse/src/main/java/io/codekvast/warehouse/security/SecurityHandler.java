@@ -21,45 +21,41 @@
  */
 package io.codekvast.warehouse.security;
 
+import io.codekvast.warehouse.bootstrap.CodekvastSettings;
+import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.Cookie;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Set;
 
-import static java.util.Collections.*;
+import static java.util.Collections.singleton;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 /**
  * @author olle.hallin@crisp.se
  */
 @Component
 public class SecurityHandler {
-    public static final String AUTH_TOKEN_COOKIE = "authToken";
-    private static final long TTL_SECONDS = 1800L;
+
     private static final Set<SimpleGrantedAuthority> USER_ROLE = singleton(new SimpleGrantedAuthority("ROLE_USER"));
     private static long DEMO_CUSTOMER_ID = 1L;
+
+    private final CodekvastSettings settings;
+
+    @Inject
+    public SecurityHandler(CodekvastSettings settings) {
+        this.settings = settings;
+    }
 
     public Long getCustomerId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication == null ? DEMO_CUSTOMER_ID : (Long) authentication.getPrincipal();
-    }
-
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response) {
-        String token = getAuthToken(request);
-        attachAuthToken(response, refreshToken(token), request.isSecure());
-    }
-
-    String createToken(Long customerId, String email) {
-        return createToken(customerId, TTL_SECONDS, email);
-    }
-
-    void attachAuthToken(HttpServletResponse response, String token, boolean secure) {
-        response.addCookie(createAuthTokenCookie(token, secure));
     }
 
     void authenticate(HttpServletRequest request) {
@@ -71,62 +67,37 @@ public class SecurityHandler {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
-    private String createToken(Long customerId, Long ttlSeconds, String email) {
+    String createToken(Long customerId, String email) {
         // TODO: Make a proper JWT token
-        return String.format("%d:%d:%s", customerId, ttlSeconds, email);
+        long expiresAt = System.currentTimeMillis() + settings.getWebappJwtExpirationSeconds() * 1000L;
+        return String.format("%d:%d:%s", customerId, expiresAt, email);
     }
 
     private String getAuthToken(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals(SecurityHandler.AUTH_TOKEN_COOKIE)) {
-                    return cookie.getValue();
-                }
+        return request.getHeader(AUTHORIZATION);
+    }
+
+    private Authentication toAuthentication(String token) throws AuthenticationException {
+        // TODO: extract from proper JWT bearer token
+        if (token == null) {
+            return null;
+        }
+
+        String parts[] = token.split(":");
+        if (parts.length != 3) {
+            return null;
+        }
+
+        try {
+            Long customerId = Long.valueOf(parts[0]);
+            // TODO: validate customerId
+
+            Long expiresAtMillis = Long.valueOf(parts[1]);
+            long now = System.currentTimeMillis();
+            if (expiresAtMillis < now) {
+                throw new CredentialsExpiredException("Token has expired");
             }
-        }
-        return null;
-    }
 
-    private String refreshToken(String token) {
-        // TODO: extend TTL on the JWT token
-        if (token == null) {
-            return null;
-        }
-        String parts[] = token.split(":");
-        if (parts.length != 3) {
-            return null;
-        }
-        try {
-            Long customerId = Long.valueOf(parts[0]);
-            Long ttlSeconds = Long.valueOf(parts[1]);
-            String email = parts[2];
-            return createToken(customerId, ttlSeconds + 300, email);
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
-
-    private Cookie createAuthTokenCookie(String jwt, boolean secure) {
-        Cookie cookie = new Cookie(SecurityHandler.AUTH_TOKEN_COOKIE, jwt);
-        cookie.setHttpOnly(false);
-        cookie.setSecure(secure);
-        return cookie;
-    }
-
-    private Authentication toAuthentication(String token) {
-        // TODO: extract from proper JWT token
-        if (token == null) {
-            return null;
-        }
-
-        String parts[] = token.split(":");
-        if (parts.length != 3) {
-            return null;
-        }
-
-        try {
-            Long customerId = Long.valueOf(parts[0]);
             String email = parts[2];
             return new PreAuthenticatedAuthenticationToken(customerId, email, USER_ROLE);
         } catch (NumberFormatException e) {
@@ -134,4 +105,15 @@ public class SecurityHandler {
         }
     }
 
+    public String renewAuthenticationToken() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth instanceof PreAuthenticatedAuthenticationToken) {
+            Long customerId = (Long) auth.getPrincipal();
+            String email = (String) auth.getCredentials();
+
+            return createToken(customerId, email);
+        }
+        return null;
+    }
 }

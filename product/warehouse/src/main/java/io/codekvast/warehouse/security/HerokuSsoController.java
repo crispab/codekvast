@@ -87,8 +87,6 @@ public class HerokuSsoController {
 
         String jwt = doSingleSignOn(id, timestamp, token, email);
 
-        securityHandler.attachAuthToken(response, jwt, request.isSecure());
-
         return "redirect:/sso/" + jwt;
     }
 

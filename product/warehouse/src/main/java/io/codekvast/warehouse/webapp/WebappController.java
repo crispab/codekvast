@@ -32,15 +32,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -58,17 +52,16 @@ public class WebappController {
 
     private static final String WEBAPP_V1_METHODS = "/webapp/v1/methods";
     private static final String WEBAPP_V1_METHOD = "/webapp/v1/method/detail/{id}";
-    private static final String WEBAPP_V1_REFRESH_TOKEN = "/webapp/v1/refreshToken";
+    private static final String WEBAPP_RENEW_AUTH_TOKEN = "/webapp/renewAuthToken";
+
+    private static final String AUTH_TOKEN_HEADER = "X-codekvast-auth-token";
 
     private final WebappService webappService;
-    private final CodekvastSettings settings;
     private final SecurityHandler securityHandler;
 
     @Inject
-    public WebappController(WebappService webappService, CodekvastSettings settings,
-                            SecurityHandler securityHandler) {
+    public WebappController(WebappService webappService, SecurityHandler securityHandler) {
         this.webappService = webappService;
-        this.settings = settings;
         this.securityHandler = securityHandler;
     }
 
@@ -87,7 +80,9 @@ public class WebappController {
                                                            @RequestParam(name = "maxResults", defaultValue = WebappService
                                                                .DEFAULT_MAX_RESULTS_STR)
                                                                Integer maxResults) {
-        return ResponseEntity.ok().body(doGetMethods(signature, maxResults));
+        return ResponseEntity.ok()
+                             .header(AUTH_TOKEN_HEADER, securityHandler.renewAuthenticationToken())
+                             .body(doGetMethods(signature, maxResults));
     }
 
     @RequestMapping(method = GET, value = WEBAPP_V1_METHOD)
@@ -100,14 +95,17 @@ public class WebappController {
         log.debug("{} method with id={} in {} ms", result.isPresent() ? "Found" : "Could not find", methodId,
                   System.currentTimeMillis() - startedAt);
 
-        return result.map(method -> ResponseEntity.ok().body(method))
-                     .orElseGet(() -> ResponseEntity.notFound().build());
+        return result.map(method -> ResponseEntity.ok()
+                                                  .header(AUTH_TOKEN_HEADER, securityHandler.renewAuthenticationToken())
+                                                  .body(method))
+                     .orElseGet(() -> ResponseEntity.notFound()
+                                                    .header(AUTH_TOKEN_HEADER, securityHandler.renewAuthenticationToken())
+                                                    .build());
     }
 
-    @RequestMapping(method = POST, value = WEBAPP_V1_REFRESH_TOKEN)
-    public String refreshAuthenticationToken(HttpServletRequest request, HttpServletResponse response) {
-        securityHandler.refreshToken(request, response);
-        return "OK";
+    @RequestMapping(method = POST, value = WEBAPP_RENEW_AUTH_TOKEN, produces = MediaType.TEXT_PLAIN_VALUE)
+    public String renewAuthToken() {
+        return securityHandler.renewAuthenticationToken();
     }
 
     private GetMethodsResponse1 doGetMethods(String signature, Integer maxResults) {
@@ -128,26 +126,4 @@ public class WebappController {
         return response;
     }
 
-    // Experimental stuff below
-
-    @RequestMapping(method = GET, value = "/server/instant")
-    public Instant getInstant() {
-        return Instant.now();
-    }
-
-    @RequestMapping(method = GET, value = "/server/localDateTime")
-    public LocalDateTime getLocalDateTime() {
-        return LocalDateTime.now();
-    }
-
-    @RequestMapping(method = GET, value = "/server/localDateTime/iso")
-    public String getLocalDateTimeString(Locale locale) {
-        DateTimeFormatter dtf = DateTimeFormatter.ISO_LOCAL_DATE_TIME.withLocale(locale);
-        return LocalDateTime.now().format(dtf);
-    }
-
-    @RequestMapping(method = GET, value = "/server/version")
-    public CodekvastSettings getVersion() {
-        return settings;
-    }
 }

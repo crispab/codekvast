@@ -1,17 +1,32 @@
 import {WarehouseService} from './warehouse.service';
 import {ConfigService} from './config.service';
+import {StateService} from './state.service';
+import {Router} from '@angular/router';
 
 let warehouse: WarehouseService;
 
 const configServiceMock: ConfigService = {
-    getVersion() { return 'dev' },
-    getApiPrefix() { return 'xxx' }
+    getVersion() {
+        return 'dev'
+    },
+    getApiPrefix() {
+        return 'xxx'
+    }
 } as ConfigService;
+
+const stateServiceMock: StateService = {
+    getCurrentUser() {
+        return 'foobar'
+    },
+} as StateService;
+
+const routerMock: Router = {
+} as Router;
 
 describe('WarehouseService', () => {
 
     beforeEach(() => {
-        warehouse = new WarehouseService(null, configServiceMock);
+        warehouse = new WarehouseService(null, configServiceMock, stateServiceMock, routerMock);
     });
 
     it('should construct a get methods url without parameters', () => {

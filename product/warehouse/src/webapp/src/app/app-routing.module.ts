@@ -6,6 +6,7 @@ import {MethodsComponent} from './pages/methods/methods.component';
 import {MethodDetailComponent} from './pages/methods/method-detail.component';
 import {ReportGeneratorComponent} from './pages/report-generator/report-generator.component';
 import {VoteResultComponent} from './pages/vote-result/vote-result.component';
+import {SsoComponent} from './components/sso.component';
 
 const routes: Routes = [
     {
@@ -21,6 +22,9 @@ const routes: Routes = [
     }, {
         path: 'method/:id',
         component: MethodDetailComponent
+    }, {
+        path: 'sso/:token',
+        component: SsoComponent
     }, {
         path: 'status',
         component: CollectionStatusComponent

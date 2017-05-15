@@ -3,6 +3,7 @@ import {APP_BASE_HREF} from '@angular/common';
 import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
 import {BrowserModule, Title} from '@angular/platform-browser';
+import {CollectionStatusComponent} from './pages/collection-status/collection-status.component';
 import {ConfigService} from './services/config.service';
 import {FormsModule} from '@angular/forms';
 import {HomeComponent} from './pages/home/home.component';
@@ -14,11 +15,11 @@ import {MethodsComponent} from './pages/methods/methods.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {ReportGeneratorComponent} from './pages/report-generator/report-generator.component';
 import {SettingsComponent} from './components/settings-editor.component';
+import {SsoComponent} from './components/sso.component';
 import {StateService} from './services/state.service';
-import {CollectionStatusComponent} from './pages/collection-status/collection-status.component';
 import {VoteComponent} from './components/vote.component';
-import {WarehouseService} from './services/warehouse.service';
 import {VoteResultComponent} from './pages/vote-result/vote-result.component';
+import {WarehouseService} from './services/warehouse.service';
 
 @NgModule({
     imports: [
@@ -34,6 +35,7 @@ import {VoteResultComponent} from './pages/vote-result/vote-result.component';
         MethodsComponent,
         ReportGeneratorComponent,
         SettingsComponent,
+        SsoComponent,
         VoteComponent,
         VoteResultComponent,
     ],
