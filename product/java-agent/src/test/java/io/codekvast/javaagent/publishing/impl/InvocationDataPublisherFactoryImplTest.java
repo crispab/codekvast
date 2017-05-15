@@ -19,7 +19,7 @@ public class InvocationDataPublisherFactoryImplTest {
     private final AgentConfig config = AgentConfigFactory.createSampleAgentConfig();
 
     @Rule
-    public OutputCapture output = new OutputCapture();
+    public OutputCapture output = new JulAwareOutputCapture();
 
     private final InvocationDataPublisherFactory factory = new InvocationDataPublisherFactoryImpl();
 
@@ -50,7 +50,6 @@ public class InvocationDataPublisherFactoryImplTest {
 
         // then
         assertThat(publisher, instanceOf(NoOpInvocationDataPublisherImpl.class));
-        output.expect(containsString("WARN"));
         output.expect(containsString("Unrecognized invocation data publisher name: 'foobar', will use no-op"));
     }
 }

@@ -15,7 +15,7 @@ import static org.junit.Assert.assertThat;
 public class AbstractPublisherImplTest {
 
     @Rule
-    public OutputCapture output = new OutputCapture();
+    public OutputCapture output = new JulAwareOutputCapture();
 
     private final Publisher publisher = new NoOpCodeBasePublisherImpl(null);
 
@@ -24,7 +24,6 @@ public class AbstractPublisherImplTest {
         publisher.configure(1L, "enabled=true");
 
         assertThat(publisher.isEnabled(), is(true));
-        output.expect(containsString("DEBUG"));
         output.expect(containsString("Setting enabled=true, was=false"));
         output.expect(containsString("customerId 1"));
     }
@@ -47,7 +46,6 @@ public class AbstractPublisherImplTest {
     public void should_handle_configure_enabled_true_foobar() throws Exception {
         publisher.configure(0L, "enabled=true; enabled=foobar");
         assertThat(publisher.isEnabled(), is(false));
-        output.expect(containsString("DEBUG"));
         output.expect(containsString("Setting enabled=true, was=false"));
     }
 
@@ -55,7 +53,6 @@ public class AbstractPublisherImplTest {
     public void should_handle_configure_syntax_error() throws Exception {
         publisher.configure(0L, "enabled=foo=bar");
         assertThat(publisher.isEnabled(), is(false));
-        output.expect(containsString("WARN"));
         output.expect(containsString("Illegal key-value pair: enabled=foo=bar"));
     }
 

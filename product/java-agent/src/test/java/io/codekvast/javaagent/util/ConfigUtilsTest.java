@@ -1,5 +1,6 @@
 package io.codekvast.javaagent.util;
 
+import io.codekvast.javaagent.publishing.impl.JulAwareOutputCapture;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,7 +23,7 @@ public class ConfigUtilsTest {
     private static final String MY_PROP3 = ConfigUtilsTest.class.getName() + ".prop3";
 
     @Rule
-    public OutputCapture output = new OutputCapture();
+    public OutputCapture output = new JulAwareOutputCapture();
 
     @After
     public void afterTest() {

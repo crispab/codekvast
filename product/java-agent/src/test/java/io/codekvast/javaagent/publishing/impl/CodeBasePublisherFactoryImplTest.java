@@ -19,7 +19,7 @@ public class CodeBasePublisherFactoryImplTest {
     private final AgentConfig config = AgentConfigFactory.createSampleAgentConfig();
 
     @Rule
-    public OutputCapture output = new OutputCapture();
+    public OutputCapture output = new JulAwareOutputCapture();
 
     private final CodeBasePublisherFactory factory = new CodeBasePublisherFactoryImpl();
 
@@ -40,7 +40,6 @@ public class CodeBasePublisherFactoryImplTest {
 
         // then
         assertThat(publisher, instanceOf(NoOpCodeBasePublisherImpl.class));
-        output.expect(containsString("WARN"));
         output.expect(containsString("Unrecognized code base publisher name: 'foobar', will use no-op"));
     }
 }

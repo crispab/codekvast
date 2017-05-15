@@ -87,8 +87,7 @@ task verifyShadowJar {
             if (name.endsWith(".class")
                 && !name.startsWith("io/codekvast/")
                 && !name.startsWith("codekvast/")
-                && !name.startsWith("org/aspectj/")
-                && !name.startsWith("org/slf4j/")) {
+                && !name.startsWith("org/aspectj/")) {
                 throw new IllegalStateException("Class not relocated in shadowJar: $name")
             }
         }
@@ -97,6 +96,10 @@ task verifyShadowJar {
     }
 }
 check.dependsOn verifyShadowJar
+
+test {
+    systemProperty 'java.util.logging.config.file', 'src/test/resources/logging.properties'
+}
 
 integrationTest {
     inputs.files shadowJar.outputs.files

@@ -1,10 +1,13 @@
 package io.codekvast.javaagent.config;
 
+import io.codekvast.javaagent.publishing.impl.JulAwareOutputCapture;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.boot.test.rule.OutputCapture;
+
+import java.util.logging.LogManager;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -12,7 +15,7 @@ import static org.junit.Assert.assertThat;
 public class AgentConfigLocatorTest {
 
     @Rule
-    public OutputCapture outputCapture = new OutputCapture();
+    public OutputCapture outputCapture = new JulAwareOutputCapture();
 
     @Before
     public void beforeTest() throws Exception {
@@ -47,7 +50,7 @@ public class AgentConfigLocatorTest {
     @Test
     public void should_handle_no_hints_given() throws Exception {
         assertThat(AgentConfigLocator.locateConfig(), nullValue());
-        outputCapture.expect(containsString("WARN " + AgentConfigLocator.class.getName()));
+        outputCapture.expect(containsString(AgentConfigLocator.class.getName()));
         outputCapture.expect(containsString("No configuration file found"));
     }
 }

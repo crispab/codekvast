@@ -4,6 +4,7 @@ import io.codekvast.javaagent.publishing.CodeBasePublisher;
 import io.codekvast.javaagent.publishing.CodeBasePublisherFactory;
 import io.codekvast.javaagent.publishing.InvocationDataPublisher;
 import io.codekvast.javaagent.publishing.InvocationDataPublisherFactory;
+import io.codekvast.javaagent.publishing.impl.JulAwareOutputCapture;
 import io.codekvast.javaagent.publishing.impl.NoOpCodeBasePublisherImpl;
 import io.codekvast.javaagent.publishing.impl.NoOpInvocationDataPublisherImpl;
 import io.codekvast.javaagent.config.AgentConfig;
@@ -17,6 +18,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.rule.OutputCapture;
 
 import java.io.IOException;
+import java.util.logging.LogManager;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -29,7 +31,7 @@ import static org.mockito.Mockito.*;
 public class SchedulerTest {
 
     @Rule
-    public OutputCapture output = new OutputCapture();
+    public OutputCapture output = new JulAwareOutputCapture();
 
     @Mock
     private ConfigPoller configPollerMock;
@@ -62,7 +64,6 @@ public class SchedulerTest {
 
     @Before
     public void setUp() throws Exception {
-        System.setProperty("java.util.logging.ConsoleHandler.level", "ALL");
         MockitoAnnotations.initMocks(this);
         scheduler = new Scheduler(config, configPollerMock, codeBasePublisherFactoryMock, invocationDataPublisherFactoryMock);
 

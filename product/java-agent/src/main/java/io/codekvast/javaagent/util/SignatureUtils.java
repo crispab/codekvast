@@ -69,7 +69,7 @@ public class SignatureUtils {
 
     private static List<Pattern> readByteCodePatternsFrom(String resourceName) {
         List<Pattern> result = new ArrayList<>();
-        log.finest("Reading byte code patterns from " + resourceName);
+        log.fine("Reading byte code patterns from " + resourceName);
         try {
             LineNumberReader reader = new LineNumberReader(
                 new BufferedReader(
@@ -122,7 +122,7 @@ public class SignatureUtils {
                     logBadPattern(pattern);
                 } else {
                     result = matcher.group(1) + "." + matcher.group(2) + matcher.group(3);
-                    log.finest(String.format("Normalized %s to %s", signature, result));
+                    log.finer(String.format("Normalized %s to %s", signature, result));
                     break;
                 }
             }

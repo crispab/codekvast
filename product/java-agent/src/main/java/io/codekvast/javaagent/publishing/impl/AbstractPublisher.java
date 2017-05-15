@@ -61,9 +61,10 @@ public abstract class AbstractPublisher implements Publisher {
         String[] pairs = keyValuePairs.split(";");
 
         for (String pair : pairs) {
-            if (!pair.trim().isEmpty()) {
+            pair = pair.trim();
+            if (!pair.isEmpty()) {
                 log.finest("Analyzing " + pair);
-                String[] parts = pair.trim().split("=");
+                String[] parts = pair.split("=");
                 if (parts.length == 2) {
                     setValue(parts[0].trim(), parts[1].trim());
                 } else {
