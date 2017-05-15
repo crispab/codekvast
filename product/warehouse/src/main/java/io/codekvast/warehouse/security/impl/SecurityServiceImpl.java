@@ -43,8 +43,6 @@ public class SecurityServiceImpl implements SecurityService {
 
     private static final Set<SimpleGrantedAuthority> USER_ROLE = singleton(new SimpleGrantedAuthority("ROLE_USER"));
 
-    private static long DEMO_CUSTOMER_ID = 1L;
-
     private final CodekvastSettings settings;
 
     @Inject
@@ -55,7 +53,7 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public Long getCustomerId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication == null ? DEMO_CUSTOMER_ID : (Long) authentication.getPrincipal();
+        return authentication == null ? null : (Long) authentication.getPrincipal();
     }
 
     @Override
