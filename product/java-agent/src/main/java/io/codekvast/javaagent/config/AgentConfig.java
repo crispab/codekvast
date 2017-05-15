@@ -60,7 +60,7 @@ public class AgentConfig implements CodekvastConfig {
     @NonNull
     private String aspectjOptions;
 
-    private boolean bridgeAspectjMessagesToSLF4J;
+    private boolean bridgeAspectjMessagesToJUL;
 
     @NonNull
     private String methodVisibility;

@@ -15,7 +15,6 @@
 :attribute-missing: warn
 :description: Codekvast is a tool that detects Truly Dead Code in your Java app.
 :aspectj-ltw-config: link:https://eclipse.org/aspectj/doc/next/devguide/ltw-configuration.html[AspectJ Load-Time Weaver configuration]
-:slf4j-manual: link:https://www.slf4j.org/manual.html[SLF4J user manual]
 :overhead-nanoseconds: 20
 
 
@@ -157,12 +156,10 @@ cd path/to/tomcat # <1>
 cp /opt/codekvast-daemon-{codekvastVersion}/codekvast.conf conf/ # <2>
 cp /opt/codekvast-daemon-{codekvastVersion}/tomcat/setenv.sh bin/
 mkdir endorsed
-# Copy your preferred SLF4J backend binding to endorsed/ # <3>
+# Copy the java agents to endorsed/
 ----
 <1> Substitute `path/to` with the actual path were Tomcat is installed.
 <2> Edit `conf/codekvast.conf` to suit your needs. See <<configuring-codekvast-agent, Configuring Codekvast Agent>>.
-<3> Example for Java Util Logging: slf4j-jdk14-1.7.7.jar. Select the same binding as your app use.
- See also {slf4j-manual}.
 
 ==== Other applications
 
@@ -175,8 +172,6 @@ The goal is to make
 
 appear as the first arguments to the `java` command and to put `codekvast.conf` to any of the locations that
 Codekvast Agent expects it. See <<codekvast-agent-config-file-location, Configuring Codekvast Agent>>.
-
-You must also make sure that the preferred SLF4J backend is available to the system class loader.
 
 ////
 [TIP]
@@ -192,9 +187,6 @@ If you get `LinkageError` on some aspectj-related type::
 . Move `aspectjweaver-{aspectjVersion}.jar` to a separate directory (called `/path/to/endorsed` below).
 . Add `-Djava.ext.dirs=/path/to/endorsed/` to the `java` command.
 
-Warning from SLF4J about logging is disabled::
-. Make sure that SLF4J is properly configured with a backend. See also {slf4j-manual}.
-
 No data is uploaded to Codekvast Warehouse::
 . set `aspectjOptions=-verbose -showWeaveInfo` in `codekvast.conf`
 . restart your application
@@ -208,20 +200,9 @@ No data is uploaded to Codekvast Warehouse::
 [[codekvast-agent-logging]]
 ==== Logging
 
-The Codekvast Agent uses SLF4J as logging API. This is just a compile-time API, which needs to be connected to a logging backend at runtime.
+The Codekvast Agent uses java.util.logging as logging API.
 
 Codekvast's loggers are prefixed with `io.codekvast.`.
-
-See also {slf4j-manual}.
-
-The selected backend binding (e.g., slf4j-jdk14.x.x.jar) needs to be available in the system class loader,
-which loads the codekvast-agent javaagent.
-
-In many cases this means it shall be put in a directory pointed to by the JVM system property `jvm.endorsed.dir`.
-In the case of a webapp deployed to Tomcat, this is the directory `$CATALINA_BASE/endorsed`.
-
-Failing to configure a backend will manifest as warnings printed on standard error upon application start.
-
 
 [[codekvast-agent-config-file-location]]
 ==== Configuration File Name and Location
@@ -337,8 +318,8 @@ See also {aspectj-ltw-config}.
 {nbsp}{nbsp}-verbose -showWeaveInfo
 |
 
-|bridgeAspectjMessagesToSLF4J
-|Should aspectjweaver be configured with a bridge that sends AspectJ messages to SLF4J?
+|bridgeAspectjMessagesToJUL
+|Should aspectjweaver be configured with a bridge that sends AspectJ messages to java.util.logging (JUL)?
 See <<about-bridgeAspectjMessages>>
 |*true* or *false*.
 |
@@ -465,8 +446,8 @@ They cannot suggest deletion of public or protected method is dead, since they c
 |===
 
 [[about-bridgeAspectjMessages]]
-==== About Bridging AspectJ messages to SLF4J
-Normally, codekvast-agent installs an AspectJ `IMessageHandler` that acts as a bridge between aspectjweaver and SLF4J.
+==== About Bridging AspectJ messages to JUL
+Normally, codekvast-agent installs an AspectJ `IMessageHandler` that acts as a bridge between aspectjweaver and java.util.logging (JUL).
 If your application uses another implementation or if you want the default behaviour, this bridge can be disabled.
 
 See also {aspectj-ltw-config} and <<codekvast-agent-logging, Codekvast Agent Logging>>.

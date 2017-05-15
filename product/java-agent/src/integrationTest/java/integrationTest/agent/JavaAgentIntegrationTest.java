@@ -64,7 +64,6 @@ public class JavaAgentIntegrationTest {
 
         // then
         assertThat(stdout, containsString("Found " + temporaryFolder.getRoot().getAbsolutePath() + "/codekvast.conf"));
-        assertThat(stdout, not(containsString("SLF4J: Defaulting to no-operation (NOP) logger implementation")));
         assertThat(stdout, containsString("INFO " + AspectjMessageHandler.LOGGER_NAME));
         assertThat(stdout, containsString("AspectJ Weaver Version"));
         assertThat(stdout, containsString("Join point 'method-execution(void sample.app.SampleApp.main(java.lang.String[]))"));

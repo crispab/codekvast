@@ -30,7 +30,7 @@ import static org.aspectj.bridge.IMessage.Kind;
 import static org.aspectj.bridge.IMessage.WEAVEINFO;
 
 /**
- * A bridge from AspectJ's IMessageHandler to SLF4J
+ * A bridge from AspectJ's IMessageHandler to java.util.logging (JUL)
  */
 @Log(topic = "io.codekvast.aspectjweaver")
 public class AspectjMessageHandler implements IMessageHandler {

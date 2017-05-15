@@ -34,7 +34,7 @@ import java.util.Properties;
  */
 public class AgentConfigFactory {
 
-    private static final boolean DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_SLF4J = true;
+    private static final boolean DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_JUL = true;
     private static final String DEFAULT_ASPECTJ_OPTIONS = "";
     private static final String DEFAULT_ENVIRONMENT = "";
     private static final String DEFAULT_METHOD_VISIBILITY = SignatureUtils.PROTECTED;
@@ -107,9 +107,9 @@ public class AgentConfigFactory {
                           .appVersion(ConfigUtils.getOptionalStringValue(props, "appVersion", UNSPECIFIED))
                           .aspectFile(DEFAULT_ASPECT_FILE)
                           .aspectjOptions(ConfigUtils.getOptionalStringValue(props, "aspectjOptions", DEFAULT_ASPECTJ_OPTIONS))
-                          .bridgeAspectjMessagesToSLF4J(
-                              ConfigUtils.getOptionalBooleanValue(props, "bridgeAspectjMessagesToSLF4J",
-                                                                  DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_SLF4J))
+                          .bridgeAspectjMessagesToJUL(
+                              ConfigUtils.getOptionalBooleanValue(props, "bridgeAspectjMessagesToJUL",
+                                                                  DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_JUL))
                           .codeBase(ConfigUtils.getMandatoryStringValue(props, "codeBase"))
                           .environment(ConfigUtils.getOptionalStringValue(props, "environment", DEFAULT_ENVIRONMENT))
                           .excludePackages(ConfigUtils.getOptionalStringValue(props, "excludePackages", ""))
@@ -182,7 +182,7 @@ public class AgentConfigFactory {
                           .appVersion(UNSPECIFIED)
                           .aspectFile(DEFAULT_ASPECT_FILE)
                           .aspectjOptions(SAMPLE_ASPECTJ_OPTIONS)
-                          .bridgeAspectjMessagesToSLF4J(DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_SLF4J)
+                          .bridgeAspectjMessagesToJUL(DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_JUL)
                           .codeBase(UNSPECIFIED)
                           .environment(DEFAULT_ENVIRONMENT)
                           .excludePackages("")

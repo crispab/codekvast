@@ -164,7 +164,7 @@ public class CodekvastAgent {
      * @return A file URI to a temporary aop-ajc.xml file.
      */
     private static String createAopXml(AgentConfig config) {
-        String messageHandlerClass = config.isBridgeAspectjMessagesToSLF4J()
+        String messageHandlerClass = config.isBridgeAspectjMessagesToJUL()
             ? String.format("-XmessageHandlerClass:%s ", AspectjMessageHandler.class.getName())
             : "";
 
