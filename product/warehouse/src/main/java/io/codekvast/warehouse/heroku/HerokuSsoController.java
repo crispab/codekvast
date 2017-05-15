@@ -89,7 +89,7 @@ public class HerokuSsoController {
 
         String jwt = doSingleSignOn(id, timestamp, token, email);
 
-        return "redirect:/sso/" + jwt;
+        return "redirect:/sso/" + jwt + "/" + navData;
     }
 
     private String doSingleSignOn(String externalId, long timestampSeconds, String token, String email) throws AuthenticationException {

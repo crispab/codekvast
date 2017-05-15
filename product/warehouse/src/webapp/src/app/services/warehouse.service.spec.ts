@@ -14,19 +14,13 @@ const configServiceMock: ConfigService = {
     }
 } as ConfigService;
 
-const stateServiceMock: StateService = {
-    getCurrentUser() {
-        return 'foobar'
-    },
-} as StateService;
-
 const routerMock: Router = {
 } as Router;
 
 describe('WarehouseService', () => {
 
     beforeEach(() => {
-        warehouse = new WarehouseService(null, configServiceMock, stateServiceMock, routerMock);
+        warehouse = new WarehouseService(null, configServiceMock, new StateService(), routerMock);
     });
 
     it('should construct a get methods url without parameters', () => {

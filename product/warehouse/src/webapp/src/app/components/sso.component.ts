@@ -1,7 +1,6 @@
 import {ActivatedRoute, Router} from '@angular/router';
 import {Component, OnInit} from '@angular/core';
 import {StateService} from '../services/state.service';
-import {AuthState} from './auth.state';
 
 @Component({
     selector: 'ck-sso',
@@ -14,8 +13,18 @@ export class SsoComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        let state = this.stateService.getState(AuthState.KEY, () => new AuthState());
-        state.setAuthToken(this.route.snapshot.params['token'], this.route.snapshot.params['navData']);
+        this.stateService.getAuthState().setAuthToken(this.route.snapshot.params['token']);
+
+        let Boomerang = window['Boomerang'];
+        let navData = this.route.snapshot.params['navData'];
+        if (navData) {
+            let args = JSON.parse(atob(navData));
+            console.log('navData=%o', args);
+            let app = args.app || args.appname;
+            Boomerang.init({app: app, addon: 'codekvast'});
+        } else {
+            Boomerang.reset();
+        }
 
         // noinspection JSIgnoredPromiseFromCall
         this.router.navigate(['']);

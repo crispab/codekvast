@@ -77,7 +77,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 
             .authorizeRequests()
-            .antMatchers("/javaagent/**", "/heroku/**", "/*.js", "/assets/**", "/sso/**").permitAll()
+            .antMatchers("/favicon.ico", "/javaagent/**", "/heroku/**", "/*.js", "/assets/**", "/sso/**").permitAll()
             .antMatchers(HttpMethod.OPTIONS, "/webapp/**").permitAll()
             .anyRequest().authenticated();
 

@@ -6,11 +6,8 @@ export class AuthState {
 
     authToken: string;
 
-    setAuthToken(token: string, navData: string) {
+    setAuthToken(token: string) {
         this.authToken = token;
-        if (navData) {
-            window['Boomerang'].init(navData);
-        }
     }
 
 }
