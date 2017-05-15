@@ -40,6 +40,7 @@ public class CodeBasePublisherFactoryImplTest {
 
         // then
         assertThat(publisher, instanceOf(NoOpCodeBasePublisherImpl.class));
+        output.expect(containsString("[WARNING]"));
         output.expect(containsString("Unrecognized code base publisher name: 'foobar', will use no-op"));
     }
 }

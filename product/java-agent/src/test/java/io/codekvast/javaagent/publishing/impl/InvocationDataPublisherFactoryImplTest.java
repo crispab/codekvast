@@ -50,6 +50,7 @@ public class InvocationDataPublisherFactoryImplTest {
 
         // then
         assertThat(publisher, instanceOf(NoOpInvocationDataPublisherImpl.class));
+        output.expect(containsString("[WARNING]"));
         output.expect(containsString("Unrecognized invocation data publisher name: 'foobar', will use no-op"));
     }
 }

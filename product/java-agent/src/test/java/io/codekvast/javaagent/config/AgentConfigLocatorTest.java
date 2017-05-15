@@ -50,7 +50,7 @@ public class AgentConfigLocatorTest {
     @Test
     public void should_handle_no_hints_given() throws Exception {
         assertThat(AgentConfigLocator.locateConfig(), nullValue());
-        outputCapture.expect(containsString(AgentConfigLocator.class.getName()));
+        outputCapture.expect(containsString("[WARNING] " + AgentConfigLocator.class.getName()));
         outputCapture.expect(containsString("No configuration file found"));
     }
 }
