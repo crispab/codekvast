@@ -13,7 +13,7 @@ export class SsoComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.stateService.getAuthState().setAuthToken(this.route.snapshot.params['token']);
+        this.stateService.setAuthToken(this.route.snapshot.params['token']);
 
         let Boomerang = window['Boomerang'];
         let navData = this.route.snapshot.params['navData'];
