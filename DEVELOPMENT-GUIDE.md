@@ -8,6 +8,7 @@ The following stack is used when developing Codekvast (in alphabetical order):
 1. AspectJ (in Load-Time Weaving mode)
 1. Docker 1.10.3+ and Docker Compose 1.6.2+ (For running MariaDB and Codekvast Warehouse)
 1. Github
+1. git-crypt
 1. Gradle 
 1. Inkscape (SVG graphics)
 1. Java 8
@@ -31,6 +32,11 @@ GitHub pages (i.e., http://codekvast.crisp.se) lives under the Git branch `gh-pa
 
 Development tools live under `tools/`.
 
+Provisioning scripts live under `provisioning/`.
+
+*NOTE: the provisioning/ tree is encrypted with git-crypt! Contact the maintainer
+for obtaining the key.*
+
 ## Development environment
 
 There is a Bash script that prepares the development environment.
@@ -40,16 +46,24 @@ It uses Ansible for setting up the workstation so that it works for Codekvast.
 
 If you run some other OS or prefer to do it by hand, here are the requirements:
 
+### git-crypt
+
+The provisioning/ directory is encrypted with git-crypt and a symmetric key.
+
+Place the key file `.codekvast-git-crypt-key` in $HOME and do `git-crypt unlock $HOME/.codekvast-git-crypt-key` to unlock.
+
 ### JDK and Node.js
 
 Java 8 is required. OpenJDK is recommended.
 
 Node.js 6, NPM 3.10+ and PhantomJS are required.
 
-Use the following command to install OpenJDK 8, Node.js, npm, PhantomJS and Yarn (Ubuntu, Debian):
+git-crypt is required for deploying to the cloud.
+
+Use the following command to install OpenJDK 8, git-crypt, Node.js, npm, PhantomJS and Yarn (Ubuntu, Debian):
 
     curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
-    sudo apt-get install openjdk-8-jdk openjdk-8-doc openjdk-8-source nodejs
+    sudo apt install openjdk-8-jdk openjdk-8-doc openjdk-8-source git-crypt nodejs
     sudo npm install -g phantomjs-prebuilt
     curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
     echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
