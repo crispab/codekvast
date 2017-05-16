@@ -18,8 +18,7 @@ apply from: "$projectDir/src/webapp/build.gradle"
 apply from: "$projectDir/src/docker/build.gradle"
 apply from: "$projectDir/src/heroku/build.gradle"
 apply from: "$projectDir/src/integrationTest/build.gradle"
-// TODO: rewrite systemTest to run without docker-compose
-// apply from: "$projectDir/src/systemTest/build.gradle"
+apply from: "$projectDir/src/systemTest/build.gradle"
 
 configurations.compile {
     exclude module: 'spring-boot-starter-tomcat'

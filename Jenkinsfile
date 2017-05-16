@@ -13,7 +13,7 @@ node {
                 }
 
                 stage('Compile Java') {
-                    sh "./gradlew classes testClasses integrationTestClasses" // TODO systemTestClasses"
+                    sh "./gradlew classes testClasses integrationTestClasses systemTestClasses"
                 }
 
                 stage('Java unit test') {
@@ -53,19 +53,19 @@ node {
                     }
                 }
 
-// TODO           stage('Build Docker image') {
-//                    sh './gradlew :product:warehouse:buildDockerImage'
-//                }
-//
-//                stage('System test') {
-//                    try {
-//                        sh './gradlew systemTest'
-//                    } finally {
-//                        // Prevent junit publisher to fail if Gradle has skipped the test
-//                        sh "find . -name '*.xml' | grep '/build/test-results/systemTest/' | xargs touch"
-//                        junit '**/build/test-results/systemTest/*.xml'
-//                    }
-//                }
+                stage('Build Docker image') {
+                    sh './gradlew :product:warehouse:buildDockerImage'
+                }
+
+                stage('System test') {
+                    try {
+                        sh './gradlew systemTest'
+                    } finally {
+                        // Prevent junit publisher to fail if Gradle has skipped the test
+                        sh "find . -name '*.xml' | grep '/build/test-results/systemTest/' | xargs touch"
+                        junit '**/build/test-results/systemTest/*.xml'
+                    }
+                }
 
                 stage('Documentation & reports') {
                     sh './gradlew -Dorg.gradle.configureondemand=false :product:docs:build :product:aggregateJavadoc'
