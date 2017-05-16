@@ -1,16 +1,17 @@
 DELETE FROM invocations;
-
+DELETE FROM applications;
+DELETE FROM methods;
+DELETE FROM jvms;
 DELETE FROM customers;
+
 INSERT INTO customers(id, name, licenseKey) VALUES(1, 'Demo', '');
 
-DELETE FROM applications;
 INSERT INTO applications (id, customerId, name, version) VALUES
   (11, 1, 'app1', 'v1'),
   (12, 1, 'app1', 'v2'),
   (21, 1, 'app2', 'v1'),
   (22, 1, 'app2', 'v2');
 
-DELETE FROM methods;
 INSERT INTO methods (id, customerId, visibility, signature) VALUES
   (1, 1, 'public', 'm1'),
   (2, 1, 'public', 'm2'),
@@ -23,7 +24,6 @@ INSERT INTO methods (id, customerId, visibility, signature) VALUES
   (9, 1, 'public', 'm9'),
   (10, 1, 'public', 'm10');
 
-DELETE FROM jvms;
 INSERT INTO jvms (id, customerId, uuid, methodVisibility, packages, excludePackages,
                   computerId, hostname, agentVersion, tags)
 VALUES

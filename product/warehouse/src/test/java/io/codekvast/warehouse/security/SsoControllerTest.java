@@ -1,4 +1,4 @@
-package io.codekvast.warehouse.heroku;
+package io.codekvast.warehouse.security;
 
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
 import io.codekvast.warehouse.security.impl.SecurityServiceImpl;
@@ -9,30 +9,31 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author olle.hallin@crisp.se
  */
-public class HerokuSsoControllerTest {
+public class SsoControllerTest {
 
     private CodekvastSettings settings = new CodekvastSettings();
 
     @Mock
     private JdbcTemplate jdbcTemplate;
 
-    private HerokuSsoController controller;
+    private SsoController controller;
 
     @Before
     public void beforeTest() throws Exception {
         MockitoAnnotations.initMocks(this);
-        controller = new HerokuSsoController(settings, jdbcTemplate, new SecurityServiceImpl(settings));
+        settings.setWebappJwtSecret("secret");
+        controller = new SsoController(settings, jdbcTemplate, new SecurityServiceImpl(settings));
     }
 
 
     @Test
-    public void should_generate_correct_sso_token() {
-        // Example from https://devcenter.heroku.com/articles/add-on-single-sign-on
+    public void should_generate_correct_heroku_sso_token() {
+        // Example data from https://devcenter.heroku.com/articles/add-on-single-sign-on
 
         // given
         String id = "123";

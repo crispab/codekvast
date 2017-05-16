@@ -33,11 +33,16 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.inject.Inject;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 /**
  * Configuration of Spring Security.
@@ -51,24 +56,26 @@ import java.io.IOException;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final JwtUnauthorizedHandler unauthorizedHandler;
+    static final String ROLE_USER = "USER";
+
+    private final UnauthorizedHandler unauthorizedHandler;
     private final SecurityService securityService;
 
     @Inject
-    public SecurityConfig(JwtUnauthorizedHandler unauthorizedHandler, SecurityService securityService) {
+    public SecurityConfig(UnauthorizedHandler unauthorizedHandler, SecurityService securityService) {
         this.unauthorizedHandler = unauthorizedHandler;
         this.securityService = securityService;
     }
 
     @Bean
-    public AuthenticationTokenFilter authenticationTokenFilterBean() throws Exception {
-        return new AuthenticationTokenFilter(securityService);
+    public AuthenticationTokenFilter authenticationTokenFilter() throws Exception {
+        return new AuthenticationTokenFilter();
     }
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-            // we don't need CSRF because our token is invulnerable
+            // We cannot use CSRF since agents must be able to POST
             .csrf().disable()
 
             .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
@@ -77,25 +84,45 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 
             .authorizeRequests()
-            .antMatchers("/favicon.ico", "/javaagent/**", "/heroku/**", "/*.js", "/assets/**", "/sso/**").permitAll()
-            .antMatchers(HttpMethod.OPTIONS, "/webapp/**").permitAll()
-            .anyRequest().authenticated();
 
-        // Custom JWT based security filter
+            // /webapp/** should be authorized
+            .antMatchers(HttpMethod.OPTIONS, "/webapp/**").permitAll()
+            .antMatchers("/webapp/**").hasRole(ROLE_USER)
+
+            // But the rest should be open
+            .anyRequest().permitAll();
+
+        // Custom token-based security filter
         httpSecurity
-            .addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(authenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         // disable page caching
         httpSecurity.headers().cacheControl();
     }
 
     @Component
-    public static class JwtUnauthorizedHandler implements AuthenticationEntryPoint {
+    public static class UnauthorizedHandler implements AuthenticationEntryPoint {
 
         @Override
         public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
             throws IOException {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
         }
+    }
+
+    private class AuthenticationTokenFilter extends OncePerRequestFilter {
+
+        @Override
+        protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws ServletException, IOException {
+
+            securityService.authenticateToken(request.getHeader(AUTHORIZATION));
+            try {
+                chain.doFilter(request, response);
+            } finally {
+                securityService.removeAuthentication();
+            }
+        }
+
     }
 }

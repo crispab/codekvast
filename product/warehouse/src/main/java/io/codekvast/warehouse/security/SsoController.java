@@ -19,11 +19,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.warehouse.heroku;
+package io.codekvast.warehouse.security;
 
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
-import io.codekvast.warehouse.security.WebappCredentials;
-import io.codekvast.warehouse.security.WebappTokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -53,7 +51,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  */
 @Controller
 @Slf4j
-public class HerokuSsoController {
+public class SsoController {
 
     private final CodekvastSettings settings;
     private final JdbcTemplate jdbcTemplate;
@@ -61,8 +59,8 @@ public class HerokuSsoController {
     private final WebappTokenProvider webappTokenProvider;
 
     @Inject
-    public HerokuSsoController(CodekvastSettings settings, JdbcTemplate jdbcTemplate,
-                               WebappTokenProvider webappTokenProvider) throws NoSuchAlgorithmException {
+    public SsoController(CodekvastSettings settings, JdbcTemplate jdbcTemplate,
+                         WebappTokenProvider webappTokenProvider) throws NoSuchAlgorithmException {
         this.settings = settings;
         this.jdbcTemplate = jdbcTemplate;
         this.webappTokenProvider = webappTokenProvider;
@@ -76,7 +74,7 @@ public class HerokuSsoController {
     }
 
     @RequestMapping(path = "/heroku/sso/", method = POST, consumes = APPLICATION_FORM_URLENCODED_VALUE)
-    public String doSingleSignOn(
+    public String doHerokuSingleSignOn(
         @RequestParam("id") String id,
         @RequestParam("timestamp") long timestamp,
         @RequestParam("token") String token,
@@ -87,12 +85,12 @@ public class HerokuSsoController {
 
         log.debug("id={}, nav-data={}", id, navData);
 
-        String jwt = doSingleSignOn(id, timestamp, token, email);
+        String jwt = doHerokuSingleSignOn(id, timestamp, token, email);
 
         return "redirect:/sso/" + jwt + "/" + navData;
     }
 
-    private String doSingleSignOn(String externalId, long timestampSeconds, String token, String email) throws AuthenticationException {
+    private String doHerokuSingleSignOn(String externalId, long timestampSeconds, String token, String email) throws AuthenticationException {
         String expectedToken = makeHerokuSsoToken(externalId, timestampSeconds);
         log.debug("id={}, token={}, timestamp={}, expectedToken={}", externalId, token, timestampSeconds, expectedToken);
 

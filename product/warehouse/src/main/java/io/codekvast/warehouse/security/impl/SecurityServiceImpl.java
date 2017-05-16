@@ -38,7 +38,6 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.Set;
 
-import static io.codekvast.warehouse.security.WebappCredentials.*;
 import static java.util.Collections.singleton;
 
 /**
@@ -48,9 +47,11 @@ import static java.util.Collections.singleton;
 @Slf4j
 public class SecurityServiceImpl implements SecurityService {
 
-    private static final Set<SimpleGrantedAuthority> USER_ROLE = singleton(new SimpleGrantedAuthority("ROLE_USER"));
+    private static final Set<SimpleGrantedAuthority> USER_ROLE = singleton(new SimpleGrantedAuthority(SecurityConfig.ROLE_USER));
+
     private static final String JWT_CLAIM_EMAIL = "email";
     private static final String JWT_CLAIM_SOURCE = "source";
+    private static final String BEARER_ = "Bearer ";
 
     private final CodekvastSettings settings;
     private final byte[] jwtSecret;
@@ -82,14 +83,14 @@ public class SecurityServiceImpl implements SecurityService {
     public String createWebappToken(Long customerId, WebappCredentials credentials) {
 
         String token = Jwts.builder()
-                             .setId(credentials.getExternalId())
-                             .setSubject(Long.toString(customerId))
-                             .setIssuedAt(new Date())
-                             .setExpiration(Date.from(Instant.now().plusSeconds(settings.getWebappJwtExpirationSeconds())))
-                             .claim(JWT_CLAIM_EMAIL, credentials.getEmail())
-                             .claim(JWT_CLAIM_SOURCE, credentials.getSource().name())
-                             .signWith(signatureAlgorithm, jwtSecret)
-                             .compact();
+                           .setId(credentials.getExternalId())
+                           .setSubject(Long.toString(customerId))
+                           .setIssuedAt(new Date())
+                           .setExpiration(Date.from(Instant.now().plusSeconds(settings.getWebappJwtExpirationSeconds())))
+                           .claim(JWT_CLAIM_EMAIL, credentials.getEmail())
+                           .claim(JWT_CLAIM_SOURCE, credentials.getSource().name())
+                           .signWith(signatureAlgorithm, jwtSecret)
+                           .compact();
         return token;
     }
 
@@ -99,15 +100,17 @@ public class SecurityServiceImpl implements SecurityService {
             return null;
         }
 
+        int pos = token.startsWith(BEARER_) ? BEARER_.length() : 0;
+
         try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
+            Jws<Claims> claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token.substring(pos));
 
             String externalId = claims.getBody().getId();
             Long customerId = Long.valueOf(claims.getBody().getSubject());
             String email = claims.getBody().get(JWT_CLAIM_EMAIL, String.class);
-            SignOnSource source = SignOnSource.valueOf(claims.getBody().get(JWT_CLAIM_SOURCE, String.class));
+            WebappCredentials.SignOnSource source = WebappCredentials.SignOnSource.valueOf(claims.getBody().get(JWT_CLAIM_SOURCE, String.class));
             return new PreAuthenticatedAuthenticationToken(customerId,
-                                                           builder()
+                                                           WebappCredentials.builder()
                                                                .externalId(externalId)
                                                                .email(email)
                                                                .source(source)
