@@ -22,7 +22,7 @@ export class WarehouseService {
     constructor(private http: Http, private configService: ConfigService, private stateService: StateService,
                 private router: Router) {
         this.headers.set('Content-type', 'application/json; charset=utf-8');
-        this.headers.set('Authorization', this.stateService.getAuthToken());
+        this.headers.set('Authorization', 'Bearer ' + this.stateService.getAuthToken());
     }
 
     getMethods(signature?: string, maxResults?: number): Observable<MethodData> {

@@ -13,15 +13,27 @@ export class SsoComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.stateService.setAuthToken(this.route.snapshot.params['token']);
+        let token = this.route.snapshot.params['token'];
+        this.stateService.setAuthToken(token);
+
+        let parts = token.split('\.');
+        console.log('parts=%o', parts);
+
+        // header = parts[0]
+        let payload = JSON.parse(atob(parts[1]));
+        console.log('payload=%o', payload);
+        // signature = parts[2]
 
         let Boomerang = window['Boomerang'];
-        let navData = this.route.snapshot.params['navData'];
-        if (navData) {
+        if (payload.source === 'HEROKU') {
+            let navData = this.route.snapshot.params['navData'];
             let args = JSON.parse(atob(navData));
             console.log('navData=%o', args);
             let app = args.app || args.appname;
-            Boomerang.init({app: app, addon: 'codekvast'});
+            Boomerang.init({
+                app: app,
+                addon: 'codekvast'
+            });
         } else {
             Boomerang.reset();
         }

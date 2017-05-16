@@ -47,7 +47,7 @@ import static java.util.Collections.singleton;
 @Slf4j
 public class SecurityServiceImpl implements SecurityService {
 
-    private static final Set<SimpleGrantedAuthority> USER_ROLE = singleton(new SimpleGrantedAuthority(SecurityConfig.ROLE_USER));
+    private static final Set<SimpleGrantedAuthority> USER_AUTHORITY = singleton(new SimpleGrantedAuthority(SecurityConfig.ROLE_USER));
 
     private static final String JWT_CLAIM_EMAIL = "email";
     private static final String JWT_CLAIM_SOURCE = "source";
@@ -115,7 +115,7 @@ public class SecurityServiceImpl implements SecurityService {
                                                                .email(email)
                                                                .source(source)
                                                                .build(),
-                                                           USER_ROLE);
+                                                           USER_AUTHORITY);
         } catch (NumberFormatException | SignatureException e) {
             return null;
         }

@@ -87,7 +87,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
             // /webapp/** should be authorized
             .antMatchers(HttpMethod.OPTIONS, "/webapp/**").permitAll()
-            .antMatchers("/webapp/**").hasRole(ROLE_USER)
+            .antMatchers("/webapp/**").authenticated()
 
             // But the rest should be open
             .anyRequest().permitAll();
