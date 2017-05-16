@@ -23,7 +23,10 @@ package io.codekvast.warehouse.security.impl;
 
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
 import io.codekvast.warehouse.security.WebappCredentials;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -49,6 +52,7 @@ public class SecurityServiceImpl implements SecurityService {
 
     private static final Set<SimpleGrantedAuthority> USER_AUTHORITY = singleton(new SimpleGrantedAuthority("ROLE_USER"));
 
+    private static final String JWT_CLAIM_CUSTOMER_NAME = "customerName";
     private static final String JWT_CLAIM_EMAIL = "email";
     private static final String JWT_CLAIM_SOURCE = "source";
     private static final String BEARER_ = "Bearer ";
@@ -87,6 +91,7 @@ public class SecurityServiceImpl implements SecurityService {
                            .setSubject(Long.toString(customerId))
                            .setIssuedAt(new Date())
                            .setExpiration(Date.from(Instant.now().plusSeconds(settings.getWebappJwtExpirationSeconds())))
+                           .claim(JWT_CLAIM_CUSTOMER_NAME, credentials.getCustomerName())
                            .claim(JWT_CLAIM_EMAIL, credentials.getEmail())
                            .claim(JWT_CLAIM_SOURCE, credentials.getSource().name())
                            .signWith(signatureAlgorithm, jwtSecret)
@@ -107,14 +112,17 @@ public class SecurityServiceImpl implements SecurityService {
 
             String externalId = claims.getBody().getId();
             Long customerId = Long.valueOf(claims.getBody().getSubject());
+            String customerName = claims.getBody().get(JWT_CLAIM_CUSTOMER_NAME, String.class);
             String email = claims.getBody().get(JWT_CLAIM_EMAIL, String.class);
-            WebappCredentials.SignOnSource source = WebappCredentials.SignOnSource.valueOf(claims.getBody().get(JWT_CLAIM_SOURCE, String.class));
+            WebappCredentials.SignOnSource source =
+                WebappCredentials.SignOnSource.valueOf(claims.getBody().get(JWT_CLAIM_SOURCE, String.class));
             return new PreAuthenticatedAuthenticationToken(customerId,
                                                            WebappCredentials.builder()
-                                                               .externalId(externalId)
-                                                               .email(email)
-                                                               .source(source)
-                                                               .build(),
+                                                                            .externalId(externalId)
+                                                                            .customerName(customerName)
+                                                                            .email(email)
+                                                                            .source(source)
+                                                                            .build(),
                                                            USER_AUTHORITY);
         } catch (Exception e) {
             log.debug("Failed to authenticate token: " + e);

@@ -5,6 +5,8 @@ import {TitleCasePipe} from '@angular/common';
 import {Title} from '@angular/platform-browser';
 import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/map';
+import {LoginState} from './model/login-state';
+import {StateService} from './services/state.service';
 
 @Component({
     selector: '#app',
@@ -14,8 +16,8 @@ import 'rxjs/add/operator/map';
     providers: [TitleCasePipe]
 })
 export class AppComponent implements OnInit {
-    constructor(private configService: ConfigService, private titleService: Title, private router: Router,
-                private titleCasePipe: TitleCasePipe) {
+    constructor(private configService: ConfigService, private stateService: StateService, private titleService: Title,
+                private router: Router, private titleCasePipe: TitleCasePipe) {
     }
 
     ngOnInit(): void {
@@ -34,5 +36,13 @@ export class AppComponent implements OnInit {
 
     getVersion(): String {
         return this.configService.getVersion();
+    }
+
+    getLoginState() {
+        if (this.stateService.isLoggedIn()) {
+            let loginState = this.stateService.getState(LoginState.KEY, () => new LoginState());
+            return `Logged in as ${loginState.email} / ${loginState.customerName}`
+        }
+        return 'Not logged in';
     }
 }

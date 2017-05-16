@@ -37,6 +37,8 @@ public class WebappCredentials {
     @NonNull
     private final String externalId;
     @NonNull
+    private final String customerName;
+    @NonNull
     private final String email;
     @NonNull
     private final SignOnSource source;

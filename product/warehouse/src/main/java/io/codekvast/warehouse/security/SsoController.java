@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 
 import static javax.xml.bind.DatatypeConverter.printHexBinary;
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
@@ -108,13 +109,16 @@ public class SsoController {
         }
 
         try {
-            Long customerId = jdbcTemplate.queryForObject("SELECT id FROM customers WHERE externalId = ?", Long.class, externalId);
+            Map<String, Object> row = jdbcTemplate.queryForMap("SELECT id, name FROM customers WHERE externalId = ?", externalId);
 
+            Long customerId = (Long) row.get("id");
+            String customerName = (String) row.get("name");
             log.info("Logged in customerId={}, email={}", customerId, email);
             return webappTokenProvider.createWebappToken(
                 customerId,
                 WebappCredentials.builder()
                                  .externalId(externalId)
+                                 .customerName(customerName)
                                  .email(email)
                                  .source(WebappCredentials.SignOnSource.HEROKU)
                                  .build());

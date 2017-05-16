@@ -56,9 +56,10 @@ run {
             '--codekvast.herokuApiPassword=herokuApiPassword',
             '--codekvast.herokuApiSsoSalt=herokuApiSsoSalt',
             '--codekvast.webappJwtSecret=webappJwtSecret',
-            "--spring.resources.staticLocations=" +
+            '--codekvast.webappJwtExpirationSeconds=15',
+            '--spring.resources.staticLocations=' +
                 "file:$projectDir/src/webapp/dist/," +
-                "classpath:/META-INF/resources"]
+                'classpath:/META-INF/resources']
 }
 
 bootRun {
