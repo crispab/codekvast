@@ -11,6 +11,9 @@ const configServiceMock: ConfigService = {
     },
     getApiPrefix() {
         return 'xxx'
+    },
+    isDemoMode() {
+        return true;
     }
 } as ConfigService;
 

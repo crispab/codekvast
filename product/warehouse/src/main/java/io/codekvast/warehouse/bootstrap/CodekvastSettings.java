@@ -31,9 +31,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.File;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * Wrapper for environment properties codekvast.*
  *
@@ -44,7 +41,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @ConfigurationProperties(prefix = "codekvast")
 @Data
 @Slf4j
-@ToString(exclude={"herokuApiPassword", "herokuApiSsoSalt", "webappJwtSecret"})
+@ToString(exclude = {"herokuApiPassword", "herokuApiSsoSalt", "webappJwtSecret"})
 public class CodekvastSettings {
 
     /**
@@ -102,29 +99,46 @@ public class CodekvastSettings {
      */
     private String herokuCodekvastUrl;
 
+    /**
+     * Should the webapp be secured?
+     * Leaving this empty will enable running the webapp in demo mode, with only one customerId=1
+     */
     private String webappJwtSecret;
 
+    /**
+     * How long shall a webapp authentication token live?
+     */
     private Long webappJwtExpirationSeconds = 1800L;
+
+    /**
+     * @return true iff the webapp should be secured with a JWT token
+     */
+    public boolean isDemoMode() {
+        return webappJwtSecret == null || webappJwtSecret.trim().isEmpty();
+    }
+
+    /**
+     * @return The customerId to use for unauthenticated data queries. Will return -1 if running in secure mode and an unauthenticated
+     * request is received.
+     */
+    public Long getDemoCustomerId() {
+        return isDemoMode() ? 1L : -1L;
+    }
 
     @PostConstruct
     public void logStartup() {
-        validate("herokuApiPassword", herokuApiPassword);
-        validate("herokuApiSsoSalt", herokuApiSsoSalt);
-        validate("webappJwtSecret", webappJwtSecret);
+        String demoMode = isDemoMode() ? " in demo mode" : "";
 
-        System.out.printf("%s v%s (%s) started%n", applicationName, displayVersion, commitDate);
-        log.info("{} v{} ({}) starts", applicationName, displayVersion, commitDate);
+        //noinspection UseOfSystemOutOrSystemErr
+        System.out.printf("%s v%s (%s) started%s%n", applicationName, displayVersion, commitDate, demoMode);
+        log.info("{} v{} ({}) starts{}", applicationName, displayVersion, commitDate, demoMode);
     }
 
     @PreDestroy
     public void logShutdown() {
+        //noinspection UseOfSystemOutOrSystemErr
         System.out.printf("%s v%s (%s) shuts down%n", applicationName, displayVersion, commitDate);
         log.info("{} v{} ({}) shuts down", applicationName, displayVersion, commitDate);
-    }
-
-    private void validate(String name, String value) {
-        checkNotNull(value, "codekvast." + name + " is null");
-        checkArgument(!value.trim().isEmpty(), "codekvast." + name + " is empty");
     }
 
 }

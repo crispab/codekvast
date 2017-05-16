@@ -16,6 +16,7 @@ export class WarehouseService {
     readonly METHODS_URL = '/webapp/v1/methods';
     readonly METHOD_BY_ID_URL = '/webapp/v1/method/detail/';
     readonly RENEW_AUTH_TOKEN_URL = '/webapp/renewAuthToken';
+    readonly IS_DEMO_MODE_URL = '/webapp/isDemoMode';
     readonly AUTH_TOKEN_HEADER = 'X-Codekvast-Auth-Token';
 
     constructor(private http: Http, private configService: ConfigService, private stateService: StateService, private router: Router) {
@@ -30,7 +31,6 @@ export class WarehouseService {
         const url: string = this.constructGetMethodsUrl(signature, maxResults);
         console.log('url=%s', url);
         return this.http.get(url, {headers: this.getHeaders()})
-                   .do(res => console.log(res))
                    .do(res => this.replaceAuthToken(res), res => this.handleErrors(res))
                    .map(res => res.json());
     }
@@ -53,19 +53,24 @@ export class WarehouseService {
         const url = this.constructGetMethodByIdUrl(id);
         console.log('url=%s', url);
         return this.http.get(url, {headers: this.getHeaders()})
-                   .do(res => console.log(res))
                    .do(res => this.replaceAuthToken(res), res => this.handleErrors(res))
                    .map(res => res.json());
     }
 
     ping(): Observable<boolean> {
         if (this.stateService.getAuthToken() !== null) {
-            return this.http.get(this.RENEW_AUTH_TOKEN_URL, {headers: this.getHeaders()})
-                       .do(res => console.log(res))
+            return this.http.get(this.configService.getApiPrefix() + this.RENEW_AUTH_TOKEN_URL, {headers: this.getHeaders()})
+                       .do(res => console.log('ping: %o', res))
                        .do(res => this.replaceAuthToken(res), res => this.handleErrors(res))
                        .map(() => true);
         }
         return Observable.of(true);
+    }
+
+    isDemoMode(): Observable<boolean> {
+        return this.http.get(this.configService.getApiPrefix() + this.IS_DEMO_MODE_URL)
+                   .do(res => console.log('isDemoMode: %o', res))
+                   .map(res => res.text() === 'true');
     }
 
     constructGetMethodByIdUrl(id: number) {

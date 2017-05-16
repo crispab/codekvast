@@ -7,6 +7,7 @@ import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/map';
 import {LoginState} from './model/login-state';
 import {StateService} from './services/state.service';
+import {WarehouseService} from './services/warehouse.service';
 
 @Component({
     selector: '#app',
@@ -16,8 +17,9 @@ import {StateService} from './services/state.service';
     providers: [TitleCasePipe]
 })
 export class AppComponent implements OnInit {
+
     constructor(private configService: ConfigService, private stateService: StateService, private titleService: Title,
-                private router: Router, private titleCasePipe: TitleCasePipe) {
+                private router: Router, private titleCasePipe: TitleCasePipe, private warehouseService: WarehouseService) {
     }
 
     ngOnInit(): void {
@@ -26,8 +28,10 @@ export class AppComponent implements OnInit {
             .map(event => (event as NavigationEnd).urlAfterRedirects)
             .subscribe(url => {
                 let feature = this.titleCasePipe.transform(url.substr(1));
-                this.titleService.setTitle('Codekvast ' + feature)
-            })
+                this.titleService.setTitle('Codekvast ' + feature);
+                this.warehouseService.isDemoMode().subscribe(demoMode => this.stateService.demoMode = demoMode);
+            });
+
     }
 
     getApiPrefix(): String {
@@ -39,10 +43,15 @@ export class AppComponent implements OnInit {
     }
 
     getLoginState() {
+        if (this.stateService.demoMode) {
+            return 'Demo mode';
+        }
+
         if (this.stateService.isLoggedIn()) {
             let loginState = this.stateService.getState(LoginState.KEY, () => new LoginState());
             return `Logged in as ${loginState.email} / ${loginState.customerName}`
         }
+
         return 'Not logged in';
     }
 }

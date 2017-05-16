@@ -64,13 +64,17 @@ public class SecurityServiceImpl implements SecurityService {
     @Inject
     public SecurityServiceImpl(CodekvastSettings settings) throws UnsupportedEncodingException {
         this.settings = settings;
-        this.jwtSecret = settings.getWebappJwtSecret().getBytes("UTF-8");
+        String secret = settings.getWebappJwtSecret();
+        if (secret == null) {
+            secret = "";
+        }
+        this.jwtSecret = secret.getBytes("UTF-8");
     }
 
     @Override
     public Long getCustomerId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication == null ? null : (Long) authentication.getPrincipal();
+        return authentication == null ? settings.getDemoCustomerId() : (Long) authentication.getPrincipal();
     }
 
     @Override
@@ -85,23 +89,23 @@ public class SecurityServiceImpl implements SecurityService {
 
     @Override
     public String createWebappToken(Long customerId, WebappCredentials credentials) {
-
-        String token = Jwts.builder()
-                           .setId(credentials.getExternalId())
-                           .setSubject(Long.toString(customerId))
-                           .setIssuedAt(new Date())
-                           .setExpiration(Date.from(Instant.now().plusSeconds(settings.getWebappJwtExpirationSeconds())))
-                           .claim(JWT_CLAIM_CUSTOMER_NAME, credentials.getCustomerName())
-                           .claim(JWT_CLAIM_EMAIL, credentials.getEmail())
-                           .claim(JWT_CLAIM_SOURCE, credentials.getSource().name())
-                           .signWith(signatureAlgorithm, jwtSecret)
-                           .compact();
-        return token;
+        return settings.isDemoMode()
+            ? null
+            : Jwts.builder()
+                  .setId(credentials.getExternalId())
+                  .setSubject(Long.toString(customerId))
+                  .setIssuedAt(new Date())
+                  .setExpiration(Date.from(Instant.now().plusSeconds(settings.getWebappJwtExpirationSeconds())))
+                  .claim(JWT_CLAIM_CUSTOMER_NAME, credentials.getCustomerName())
+                  .claim(JWT_CLAIM_EMAIL, credentials.getEmail())
+                  .claim(JWT_CLAIM_SOURCE, credentials.getSource().name())
+                  .signWith(signatureAlgorithm, jwtSecret)
+                  .compact();
     }
 
     private Authentication toAuthentication(String token) throws AuthenticationException {
 
-        if (token == null) {
+        if (token == null || settings.isDemoMode()) {
             return null;
         }
 
@@ -133,7 +137,6 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public String renewWebappToken() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
         if (auth instanceof PreAuthenticatedAuthenticationToken) {
             log.debug("Authenticated");
             Long customerId = (Long) auth.getPrincipal();
@@ -142,7 +145,6 @@ public class SecurityServiceImpl implements SecurityService {
 
             return createWebappToken(customerId, credentials);
         }
-        log.debug("Not authenticated");
         return null;
     }
 

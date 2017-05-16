@@ -21,6 +21,7 @@
  */
 package io.codekvast.warehouse.webapp;
 
+import io.codekvast.warehouse.bootstrap.CodekvastSettings;
 import io.codekvast.warehouse.security.WebappTokenProvider;
 import io.codekvast.warehouse.webapp.model.GetMethodsRequest1;
 import io.codekvast.warehouse.webapp.model.GetMethodsResponse1;
@@ -51,17 +52,21 @@ public class WebappController {
 
     private static final String WEBAPP_V1_METHODS = "/webapp/v1/methods";
     private static final String WEBAPP_V1_METHOD = "/webapp/v1/method/detail/{id}";
-    public static final String WEBAPP_RENEW_AUTH_TOKEN = "/webapp/renewAuthToken";
+    private static final String WEBAPP_RENEW_AUTH_TOKEN = "/webapp/renewAuthToken";
+    public static final String WEBAPP_IS_DEMO_MODE = "/webapp/isDemoMode";
 
     private static final String X_CODEKVAST_AUTH_TOKEN = "X-Codekvast-Auth-Token";
 
     private final WebappService webappService;
     private final WebappTokenProvider securityHandler;
+    private final CodekvastSettings settings;
 
     @Inject
-    public WebappController(WebappService webappService, WebappTokenProvider securityHandler) {
+    public WebappController(WebappService webappService, WebappTokenProvider securityHandler,
+                            CodekvastSettings settings) {
         this.webappService = webappService;
         this.securityHandler = securityHandler;
+        this.settings = settings;
     }
 
     @ExceptionHandler
@@ -103,12 +108,21 @@ public class WebappController {
     }
 
     @RequestMapping(method = GET, value = WEBAPP_RENEW_AUTH_TOKEN, produces = MediaType.TEXT_PLAIN_VALUE)
+    @CrossOrigin(origins = "http://localhost:8088")
     public ResponseEntity<String> renewAuthToken() {
         log.debug("Renewing auth token for {}", SecurityContextHolder.getContext().getAuthentication());
 
         return ResponseEntity.ok()
                              .header(X_CODEKVAST_AUTH_TOKEN, securityHandler.renewWebappToken())
                              .body("OK");
+    }
+
+    @RequestMapping(method = GET, value = WEBAPP_IS_DEMO_MODE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @CrossOrigin(origins = "http://localhost:8088")
+    public ResponseEntity<String> isDemoMode() {
+        log.trace("Is demo mode? {}", settings.isDemoMode());
+
+        return ResponseEntity.ok(Boolean.toString(settings.isDemoMode()));
     }
 
     private GetMethodsResponse1 doGetMethods(String signature, Integer maxResults) {

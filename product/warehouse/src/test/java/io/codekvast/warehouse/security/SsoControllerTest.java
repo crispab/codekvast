@@ -26,7 +26,6 @@ public class SsoControllerTest {
     @Before
     public void beforeTest() throws Exception {
         MockitoAnnotations.initMocks(this);
-        settings.setWebappJwtSecret("secret");
         controller = new SsoController(settings, jdbcTemplate, new SecurityServiceImpl(settings));
     }
 

@@ -11,6 +11,7 @@ export class StateService {
     private readonly AUTH_TOKEN = 'authToken';
 
     state = {};
+    demoMode = true;
 
     getState<T>(key: string, initialState: () => T): T {
         if (isNullOrUndefined(this.state[key])) {

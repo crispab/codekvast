@@ -21,6 +21,8 @@
  */
 package io.codekvast.warehouse.security.impl;
 
+import io.codekvast.warehouse.bootstrap.CodekvastSettings;
+import io.codekvast.warehouse.webapp.WebappController;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -58,11 +60,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UnauthorizedHandler unauthorizedHandler;
     private final SecurityService securityService;
+    private final CodekvastSettings settings;
 
     @Inject
-    public SecurityConfig(UnauthorizedHandler unauthorizedHandler, SecurityService securityService) {
+    public SecurityConfig(UnauthorizedHandler unauthorizedHandler, SecurityService securityService,
+                          CodekvastSettings settings) {
         this.unauthorizedHandler = unauthorizedHandler;
         this.securityService = securityService;
+        this.settings = settings;
     }
 
     @Bean
@@ -72,6 +77,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
+        if (settings.isDemoMode()) {
+            return;
+        }
+
         httpSecurity
             // We cannot use CSRF since agents must be able to POST
             .csrf().disable()
@@ -84,6 +93,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
 
             // /webapp/** should be authorized
+            .antMatchers(HttpMethod.GET, WebappController.WEBAPP_IS_DEMO_MODE).permitAll()
             .antMatchers(HttpMethod.OPTIONS, "/webapp/**").permitAll()
             .antMatchers("/webapp/**").hasRole("USER")
 
