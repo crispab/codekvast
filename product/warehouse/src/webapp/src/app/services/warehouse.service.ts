@@ -8,6 +8,7 @@ import '../../rxjs-operators';
 import {isNumber} from 'util';
 import {StateService} from './state.service';
 import {Router} from '@angular/router';
+import 'rxjs/add/observable/of';
 
 @Injectable()
 export class WarehouseService {
@@ -15,14 +16,9 @@ export class WarehouseService {
     readonly METHODS_URL = '/webapp/v1/methods';
     readonly METHOD_BY_ID_URL = '/webapp/v1/method/detail/';
     readonly RENEW_AUTH_TOKEN_URL = '/webapp/renewAuthToken';
-    readonly AUTH_TOKEN_HEADER = 'X-codekvast-auth-token';
+    readonly AUTH_TOKEN_HEADER = 'X-Codekvast-Auth-Token';
 
-    readonly headers = new Headers();
-
-    constructor(private http: Http, private configService: ConfigService, private stateService: StateService,
-                private router: Router) {
-        this.headers.set('Content-type', 'application/json; charset=utf-8');
-        this.headers.set('Authorization', 'Bearer ' + this.stateService.getAuthToken());
+    constructor(private http: Http, private configService: ConfigService, private stateService: StateService, private router: Router) {
     }
 
     getMethods(signature?: string, maxResults?: number): Observable<MethodData> {
@@ -33,8 +29,9 @@ export class WarehouseService {
 
         const url: string = this.constructGetMethodsUrl(signature, maxResults);
         console.log('url=%s', url);
-        return this.http.get(url, {headers: this.headers})
-                   .do(res => this.replaceAuthToken(res), res => this.handle401(res))
+        return this.http.get(url, {headers: this.getHeaders()})
+                   .do(res => console.log(res))
+                   .do(res => this.replaceAuthToken(res), res => this.handleErrors(res))
                    .map(res => res.json());
     }
 
@@ -55,31 +52,45 @@ export class WarehouseService {
     getMethodById(id: number): Observable<Method> {
         const url = this.constructGetMethodByIdUrl(id);
         console.log('url=%s', url);
-        return this.http.get(url, {headers: this.headers})
-                   .do(res => this.replaceAuthToken(res), res => this.handle401(res))
+        return this.http.get(url, {headers: this.getHeaders()})
+                   .do(res => console.log(res))
+                   .do(res => this.replaceAuthToken(res), res => this.handleErrors(res))
                    .map(res => res.json());
     }
 
-    ping(): void {
-        this.http.get(this.RENEW_AUTH_TOKEN_URL, {headers: this.headers})
-            .subscribe(res => this.replaceAuthToken(res), res => this.handle401(res));
+    ping(): Observable<boolean> {
+        if (this.stateService.getAuthToken() !== null) {
+            return this.http.get(this.RENEW_AUTH_TOKEN_URL, {headers: this.getHeaders()})
+                       .do(res => console.log(res))
+                       .do(res => this.replaceAuthToken(res), res => this.handleErrors(res))
+                       .map(() => true);
+        }
+        return Observable.of(true);
     }
-
 
     constructGetMethodByIdUrl(id: number) {
         return this.configService.getApiPrefix() + this.METHOD_BY_ID_URL + id;
+    }
+
+    private getHeaders() {
+        let headers = new Headers();
+        headers.set('Content-type', 'application/json; charset=utf-8');
+        headers.set('Authorization', 'Bearer ' + this.stateService.getAuthToken());
+        return headers;
     }
 
     private replaceAuthToken(res: any) {
         return this.stateService.setAuthToken(res.headers.get(this.AUTH_TOKEN_HEADER));
     }
 
-    private handle401(res: any) {
+    private handleErrors(res: any) {
+        console.log('Error=%o', res);
         if (res.status === 401) {
             this.stateService.setAuthToken(null);
             // TODO: handle status 401 Unauthorized
-            this.router.navigate(['']);
         }
+        // noinspection JSIgnoredPromiseFromCall
+        this.router.navigate(['']);
     }
 
 }

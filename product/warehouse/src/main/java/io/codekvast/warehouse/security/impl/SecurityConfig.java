@@ -56,8 +56,6 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    static final String ROLE_USER = "USER";
-
     private final UnauthorizedHandler unauthorizedHandler;
     private final SecurityService securityService;
 
@@ -87,7 +85,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
             // /webapp/** should be authorized
             .antMatchers(HttpMethod.OPTIONS, "/webapp/**").permitAll()
-            .antMatchers("/webapp/**").authenticated()
+            .antMatchers("/webapp/**").hasRole("USER")
 
             // But the rest should be open
             .anyRequest().permitAll();

@@ -7,6 +7,8 @@ import {MethodDetailComponent} from './pages/methods/method-detail.component';
 import {ReportGeneratorComponent} from './pages/report-generator/report-generator.component';
 import {VoteResultComponent} from './pages/vote-result/vote-result.component';
 import {SsoComponent} from './components/sso.component';
+import {AuthTokenRenewer} from './guards/auth-token-renewer';
+import {IsLoggedIn} from './guards/is-logged-in';
 
 const routes: Routes = [
     {
@@ -15,25 +17,31 @@ const routes: Routes = [
         pathMatch: 'full'
     }, {
         path: 'home',
-        component: HomeComponent
+        component: HomeComponent,
+        canActivate: [AuthTokenRenewer]
     }, {
         path: 'methods',
-        component: MethodsComponent
+        component: MethodsComponent,
+        canActivate: [IsLoggedIn, AuthTokenRenewer]
     }, {
         path: 'method/:id',
-        component: MethodDetailComponent
+        component: MethodDetailComponent,
+        canActivate: [IsLoggedIn, AuthTokenRenewer]
     }, {
         path: 'sso/:token/:navData',
         component: SsoComponent
     }, {
         path: 'status',
-        component: CollectionStatusComponent
+        component: CollectionStatusComponent,
+        canActivate: [IsLoggedIn, AuthTokenRenewer]
     }, {
         path: 'reports',
-        component: ReportGeneratorComponent
+        component: ReportGeneratorComponent,
+        canActivate: [IsLoggedIn, AuthTokenRenewer]
     }, {
         path: 'vote-result/:feature/:vote',
-        component: VoteResultComponent
+        component: VoteResultComponent,
+        canActivate: [IsLoggedIn, AuthTokenRenewer]
     }, {
         path: '**',
         redirectTo: 'home',

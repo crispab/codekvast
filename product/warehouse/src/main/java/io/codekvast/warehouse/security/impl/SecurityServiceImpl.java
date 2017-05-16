@@ -47,7 +47,7 @@ import static java.util.Collections.singleton;
 @Slf4j
 public class SecurityServiceImpl implements SecurityService {
 
-    private static final Set<SimpleGrantedAuthority> USER_AUTHORITY = singleton(new SimpleGrantedAuthority(SecurityConfig.ROLE_USER));
+    private static final Set<SimpleGrantedAuthority> USER_AUTHORITY = singleton(new SimpleGrantedAuthority("ROLE_USER"));
 
     private static final String JWT_CLAIM_EMAIL = "email";
     private static final String JWT_CLAIM_SOURCE = "source";
@@ -116,7 +116,8 @@ public class SecurityServiceImpl implements SecurityService {
                                                                .source(source)
                                                                .build(),
                                                            USER_AUTHORITY);
-        } catch (NumberFormatException | SignatureException e) {
+        } catch (Exception e) {
+            log.debug("Failed to authenticate token: " + e);
             return null;
         }
     }
@@ -126,12 +127,14 @@ public class SecurityServiceImpl implements SecurityService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth instanceof PreAuthenticatedAuthenticationToken) {
+            log.debug("Authenticated");
             Long customerId = (Long) auth.getPrincipal();
             //noinspection CastToConcreteClass
             WebappCredentials credentials = (WebappCredentials) auth.getCredentials();
 
             return createWebappToken(customerId, credentials);
         }
+        log.debug("Not authenticated");
         return null;
     }
 

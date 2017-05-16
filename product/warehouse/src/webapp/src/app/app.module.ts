@@ -20,6 +20,8 @@ import {StateService} from './services/state.service';
 import {VoteComponent} from './components/vote.component';
 import {VoteResultComponent} from './pages/vote-result/vote-result.component';
 import {WarehouseService} from './services/warehouse.service';
+import {AuthTokenRenewer} from './guards/auth-token-renewer';
+import {IsLoggedIn} from './guards/is-logged-in';
 
 @NgModule({
     imports: [
@@ -40,10 +42,12 @@ import {WarehouseService} from './services/warehouse.service';
         VoteResultComponent,
     ],
     providers: [
+        AuthTokenRenewer,
         ConfigService,
+        IsLoggedIn,
+        StateService,
         Title,
         WarehouseService,
-        StateService,
         {
             provide: APP_BASE_HREF,
             useValue: '/'

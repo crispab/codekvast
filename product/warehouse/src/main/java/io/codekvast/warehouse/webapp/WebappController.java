@@ -28,6 +28,7 @@ import io.codekvast.warehouse.webapp.model.MethodDescriptor1;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
@@ -37,7 +38,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
  * The Webapp REST controller.
@@ -51,9 +51,9 @@ public class WebappController {
 
     private static final String WEBAPP_V1_METHODS = "/webapp/v1/methods";
     private static final String WEBAPP_V1_METHOD = "/webapp/v1/method/detail/{id}";
-    private static final String WEBAPP_RENEW_AUTH_TOKEN = "/webapp/renewAuthToken";
+    public static final String WEBAPP_RENEW_AUTH_TOKEN = "/webapp/renewAuthToken";
 
-    private static final String AUTH_TOKEN_HEADER = "X-codekvast-auth-token";
+    private static final String X_CODEKVAST_AUTH_TOKEN = "X-Codekvast-Auth-Token";
 
     private final WebappService webappService;
     private final WebappTokenProvider securityHandler;
@@ -80,7 +80,7 @@ public class WebappController {
                                                                .DEFAULT_MAX_RESULTS_STR)
                                                                Integer maxResults) {
         return ResponseEntity.ok()
-                             .header(AUTH_TOKEN_HEADER, securityHandler.renewWebappToken())
+                             .header(X_CODEKVAST_AUTH_TOKEN, securityHandler.renewWebappToken())
                              .body(doGetMethods(signature, maxResults));
     }
 
@@ -95,16 +95,20 @@ public class WebappController {
                   System.currentTimeMillis() - startedAt);
 
         return result.map(method -> ResponseEntity.ok()
-                                                  .header(AUTH_TOKEN_HEADER, securityHandler.renewWebappToken())
+                                                  .header(X_CODEKVAST_AUTH_TOKEN, securityHandler.renewWebappToken())
                                                   .body(method))
                      .orElseGet(() -> ResponseEntity.notFound()
-                                                    .header(AUTH_TOKEN_HEADER, securityHandler.renewWebappToken())
+                                                    .header(X_CODEKVAST_AUTH_TOKEN, securityHandler.renewWebappToken())
                                                     .build());
     }
 
-    @RequestMapping(method = POST, value = WEBAPP_RENEW_AUTH_TOKEN, produces = MediaType.TEXT_PLAIN_VALUE)
-    public String renewAuthToken() {
-        return securityHandler.renewWebappToken();
+    @RequestMapping(method = GET, value = WEBAPP_RENEW_AUTH_TOKEN, produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<String> renewAuthToken() {
+        log.debug("Renewing auth token for {}", SecurityContextHolder.getContext().getAuthentication());
+
+        return ResponseEntity.ok()
+                             .header(X_CODEKVAST_AUTH_TOKEN, securityHandler.renewWebappToken())
+                             .body("OK");
     }
 
     private GetMethodsResponse1 doGetMethods(String signature, Integer maxResults) {

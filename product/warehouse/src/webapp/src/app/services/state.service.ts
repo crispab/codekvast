@@ -22,10 +22,16 @@ export class StateService {
     }
 
     setAuthToken(token: string) {
+        console.log('Setting auth token %o', token);
         if (token) {
             localStorage.setItem(this.AUTH_TOKEN, token);
         } else {
             localStorage.removeItem(this.AUTH_TOKEN);
         }
+    }
+
+    isLoggedIn() {
+        let token = this.getAuthToken();
+        return !!token;
     }
 }
