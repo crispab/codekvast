@@ -34,8 +34,10 @@ Development tools live under `tools/`.
 
 Provisioning scripts live under `provisioning/`.
 
-*NOTE: the provisioning/ tree is encrypted with git-crypt! Contact the maintainer
-for obtaining the key.*
+*NOTE: the provisioning/ tree is encrypted with git-crypt since it stores sensible data like cloud provider credentials!*
+
+Authorized developers are enabled to unlock the repo by adding their public GPG keys.
+See `man git-crypt`, `git-crypt help add-gpg-user` and `git-crypt help unlock`.
 
 ## Development environment
 
@@ -48,9 +50,9 @@ If you run some other OS or prefer to do it by hand, here are the requirements:
 
 ### git-crypt
 
-The provisioning/ directory is encrypted with git-crypt and a symmetric key.
+The `provisioning/` directory is encrypted with `git-crypt` and GPG public keys.
 
-Place the key file `.codekvast-git-crypt-key` in $HOME and do `git-crypt unlock $HOME/.codekvast-git-crypt-key` to unlock.
+You must be added as trusted developer by `git-crypt add-gpg-user` to access the provisioning directory.
 
 ### JDK and Node.js
 
