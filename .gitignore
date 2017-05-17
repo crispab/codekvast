@@ -24,11 +24,10 @@ node_modules/
 typings/
 target/
 tools/downloaded/
-npm-debug.log**
+*.log
 **/src/webapp/src/**/*.js
 **/src/webapp/src/**/*.js.map
 a.a
-phantomjsdriver.log
 product/warehouse/src/webapp/dist/
 .settings/
 .project
