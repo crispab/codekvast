@@ -1,8 +1,8 @@
 ---
 #---------------------------------------------------------------------------
-# Top level playbook for the entire Codekvast solution
+# Configures all servers once the infrastructure has been provisioned.
+# See also infrastructure.yml
 #---------------------------------------------------------------------------
-- {include: aws.yml, tags: [aws, dns]}
 - {include: database.yml, tags: [server, database]}
 - {include: nginx.yml, tags: [server, nginx]}
 - {include: application.yml, tags: [server, application]}

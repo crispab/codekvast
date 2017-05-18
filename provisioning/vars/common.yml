@@ -1,3 +1,4 @@
 # Common variables used by more than one playbook
 
 codekvast_server_name: app.codekvast.io
+aws_region: eu-central-1

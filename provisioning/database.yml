@@ -3,7 +3,8 @@
 # Playbook that installs the Codekvast Database, which is served by MariaDB
 #-----------------------------------------------------------------------------------------------------------
 - name: Codevast Database Server
-  hosts: all
+  hosts: tag_role_database
+  user: ubuntu
   become: yes
 
   vars_files:

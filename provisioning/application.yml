@@ -3,7 +3,8 @@
 # Playbook that installs the Codekvast Server application, which is an executable Spring Boot jar
 #-----------------------------------------------------------------------------------------------------------
 - name: Codekvast Server Application
-  hosts: all
+  hosts: tag_role_backend
+  user: ubuntu
   become: yes
 
   vars_files:
@@ -42,7 +43,9 @@
       mode: 0700
     notify: restart codekvast
 
-  - name: Link /etc/init.d/codekvast to executable jar
+  # TODO: install a proper systemd codekvast.service file with an auto restart policy
+
+  - name: Link the executable jar to /etc/init.d/codekvast
     file:
       src: /opt/codekvast/codekvast-warehouse-{{ codekvastVersion }}-all.jar
       dest: /etc/init.d/codekvast
@@ -53,8 +56,11 @@
     template: src=codekvast/application.properties dest=/opt/codekvast/application.properties owner=codekvast group=codekvast
     notify: restart codekvast
 
-  - name: Define and start codekvast service
-    service: name=codekvast enabled=yes state=started
+  - name: Enable codekvast service
+    service: name=codekvast enabled=yes
+
+  - name: Start codekvast service
+    service: name=codekvast state=started
 
   handlers:
   - name: restart codekvast

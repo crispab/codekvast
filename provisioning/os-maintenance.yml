@@ -1,0 +1,12 @@
+---
+#-----------------------------------------------------------------------------------------------------------
+# Playbook for doing operating system maintenance
+#-----------------------------------------------------------------------------------------------------------
+- name: Codekvast Server
+  hosts: all
+  user: ubuntu
+  become: yes
+
+  tasks:
+    - name: Upgrade installed packages
+      apt: update_cache=yes upgrade=safe autoremove=yes purge=yes

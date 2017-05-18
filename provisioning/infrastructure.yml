@@ -1,0 +1,98 @@
+---
+#---------------------------------------------------------------
+# Playbook which provisions the infrastructure using AWS
+#---------------------------------------------------------------
+- name: AWS infrastructure
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars_files:
+    - vars/common.yml
+
+  vars:
+    ami_id: ami-060cde69 # Stock Ubuntu Server Xenial 16.04 LTS, 64-bit, SSD EBS
+    vpc_id: vpc-e2a5f08b
+    vpc_subnet_id: subnet-4eecc227 # In eu-central-1a
+    resource_tags:
+     - {Name: Codekvast-staging, owner: Codekvast, env: staging, role: "database,backend,webserver"}
+     - {Name: Codekvast-prod, owner: Codekvast, env: prod, role: "database,backend,webserver"}
+
+  tasks:
+  - name: Write DNS records
+    local_action:
+      module: route53
+      command: "{{ item.command | default('create') }}"
+      overwrite: yes
+      record: "{{ item.name }}"
+      ttl: "{{ item.ttl | default('7200') }}"
+      type: "{{ item.type | default('CNAME') }}"
+      value: "{{ item.value }}"
+      zone: codekvast.io
+      profile: codekvast # in ~/.boto
+    with_items:
+    - { name: 'www.codekvast.io', value: crispab.github.io, owner: olle }
+    loop_control:
+      label: "{{ item.name }}"
+
+  - name: Create security group
+    local_action:
+      module: ec2_group
+      name: codekvast
+      region: "{{ aws_region }}"
+      description: "Codekvast protection group"
+      profile: codekvast
+      rules:
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: 0.0.0.0/0
+
+  - name: Create EC2 instances
+    local_action:
+      module: ec2
+      assign_public_ip: yes
+      vpc_subnet_id: "{{ vpc_subnet_id }}"
+      group: [codekvast, codekvast-ssh]
+      image: "{{ ami_id }}"
+      instance_type: t2.micro
+      user_data: "{{ lookup('file', 'files/ubuntu-cloud-init.sh') }}"
+      exact_count: 1
+      count_tag: "{{ item }}"
+      instance_tags: "{{ item }}"
+      wait: yes
+      region: "{{ aws_region }}"
+      key_name: codekvast
+      profile: codekvast # in ~/.boto
+    with_items: "{{ resource_tags }}"
+
+#----------------------------------------------------------------------------------
+- name: Codekvast Webserver CNAME
+  hosts: tag_role_webserver
+  connection: local
+  gather_facts: no
+  become: no
+
+  tasks:
+
+  - set_fact: hostnames={{ ['app-prod.codekvast.io', 'app.codekvast.io'] }}
+    when: ec2_tag_env == 'prod'
+
+  - set_fact: hostnames={{ ['app-staging.codekvast.io'] }}
+    when: ec2_tag_env == 'staging'
+
+  - name: Define CNAME app*.codekvast.io
+    route53:
+      command: create
+      overwrite: yes
+      record: "{{ item }}"
+      ttl: 600
+      type: CNAME
+      value: "{{ ec2_public_dns_name }}"
+      zone: codekvast.io
+      profile: codekvast # in ~/.boto
+    with_items: "{{ hostnames }}"

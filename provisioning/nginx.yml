@@ -5,7 +5,8 @@
 # TODO: Implement certbot
 #-----------------------------------------------------------------------------------------------------------
 - name: Codekvast Nginx configuration
-  hosts: all
+  hosts: tag_role_webserver
+  user: ubuntu
   become: yes
 
   vars_files:
