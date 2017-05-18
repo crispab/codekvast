@@ -40,3 +40,7 @@
 
   roles:
   - geerlingguy.nginx
+
+  post_tasks:
+  - include: tasks/nginx-certbot.yml
+    when: vagrantMode is not defined

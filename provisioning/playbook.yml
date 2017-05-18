@@ -2,6 +2,7 @@
 #---------------------------------------------------------------------------
 # Top level playbook for the entire Codekvast solution
 #---------------------------------------------------------------------------
-- {include: database.yml, tags: database}
+- {include: aws.yml, tags: [aws, dns]}
+- {include: database.yml, tags: [server, database]}
 - {include: nginx.yml, tags: [server, nginx]}
 - {include: application.yml, tags: [server, application]}

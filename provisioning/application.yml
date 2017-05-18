@@ -9,20 +9,20 @@
   vars_files:
   - vars/secrets.yml
   - vars/common.yml
-  - ../gradle.properties
 
   vars:
     codekvast_queue_path: /var/codekvast/queue
     codekvast_queue_pollIntervalSeconds: 30
     codekvast_webapp_jwtExpirationSeconds: 1800
     codekvast_heroku_codekvast_url: https://{{ codekvast_server_name }}
+    codekvastVersion: "{{ lookup('ini', 'codekvastVersion type=properties file=../gradle.properties') }}"
 
   tasks:
+  - debug: var=codekvastVersion
+
   - name: Install OpenJDK 8
     package: name=openjdk-8-jdk-headless state=installed
     notify: restart codekvast
-
-  - debug: var=codekvastVersion
 
   - name: Create codekvast group
     group: name=codekvast state=present
