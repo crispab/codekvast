@@ -127,12 +127,6 @@
         from_port: 443
         to_port: 443
         cidr_ip: 0.0.0.0/0
-      rules_egress:
-      - proto: tcp
-        from_port: 8080
-        to_port: 8080
-        group_name: codekvast-internal-{{ item }}
-        group_desc: "Codekvast internal security group ({{ item }})"
     with_items:
     - staging
     - prod
@@ -142,7 +136,9 @@
       module: ec2
       assign_public_ip: yes
       vpc_subnet_id: "{{ vpc_subnet_id[item.env] }}"
-      group: ["codekvast-internal-{{ item.env }}", "codekvast-ssh"]
+      group:
+      - "codekvast-internal-{{ item.env }}"
+      - codekvast-ssh
       image: "{{ ami_id }}"
       instance_type: t2.micro
       user_data: "{{ lookup('file', 'files/ubuntu-cloud-init.sh') }}"
