@@ -6,6 +6,7 @@
   hosts: tag_role_backend
   user: ubuntu
   become: yes
+  serial: 1
 
   vars_files:
   - vars/secrets.yml
@@ -19,6 +20,18 @@
     codekvastVersion: "{{ lookup('ini', 'codekvastVersion type=properties file=../gradle.properties') }}"
 
   tasks:
+  - name: Record EC2 facts
+    action: ec2_facts
+
+  - name: Take out of load balancer
+    ec2_elb:
+      instance_id: "{{ ansible_ec2_instance_id }}"
+      region: "{{ aws_region }}"
+      profile: codekvast
+      state: absent
+    connection: local
+    become: no
+
   - debug: var=codekvastVersion
 
   - name: Install OpenJDK 8
@@ -61,6 +74,17 @@
 
   - name: Start codekvast service
     service: name=codekvast state=started
+
+  - name: Register with load balancer
+    ec2_elb:
+      instance_id: "{{ ansible_ec2_instance_id }}"
+      ec2_elbs: "{{ item }}"
+      state: present
+      region: "{{ aws_region }}"
+      profile: codekvast
+    with_items: "{{ ec2_elbs }}"
+    connection: local
+    become: no
 
   handlers:
   - name: restart codekvast

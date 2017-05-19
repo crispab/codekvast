@@ -1,3 +1,0 @@
----
-# Conditionally included to add certbot to Nginx
-- debug: msg="Hello from nginx-certbot.yml!"
