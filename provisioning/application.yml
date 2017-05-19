@@ -26,13 +26,20 @@
   - name: Take out of load balancer
     ec2_elb:
       instance_id: "{{ ansible_ec2_instance_id }}"
+      state: absent
+      wait: yes
+      wait_timeout: 30
       region: "{{ aws_region }}"
       profile: codekvast
-      state: absent
     connection: local
     become: no
 
-  - debug: var=codekvastVersion
+  - name: Stop running service
+    service: name=codekvast state=stopped
+    ignore_errors: true
+
+  - name: Wait until service has stopped
+    wait_for: port=8080 state=stopped timeout=60
 
   - name: Install OpenJDK 8
     package: name=openjdk-8-jdk-headless state=installed
@@ -75,11 +82,16 @@
   - name: Start codekvast service
     service: name=codekvast state=started
 
+  - name: Wait until service has started
+    wait_for: port=8080 state=started timeout=60
+
   - name: Register with load balancer
     ec2_elb:
       instance_id: "{{ ansible_ec2_instance_id }}"
       ec2_elbs: "{{ item }}"
       state: present
+      wait: yes
+      wait_timeout: 30
       region: "{{ aws_region }}"
       profile: codekvast
     with_items: "{{ ec2_elbs }}"
