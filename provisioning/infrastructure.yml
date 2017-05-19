@@ -13,77 +13,110 @@
   vars:
     ami_id: ami-060cde69 # Stock Ubuntu Server Xenial 16.04 LTS, 64-bit, SSD EBS
     vpc_id: vpc-e2a5f08b
-    vpc_subnet_id: subnet-4eecc227 # In eu-central-1a
-    common_tags: &common_tags
-      Owner: Codekvast
+    tags:
+      staging:
+        Name: Codekvast-staging
+        env: staging
+        Owner: Codekvast
+      prod:
+        Name: Codekvast-prod
+        env: prod
+        Owner: Codekvast
+
+    vpc_subnet_id: # TODO: replace with dynamic lookup
+      staging: subnet-4eecc227 # In eu-central-1a
+      prod: subnet-0b7b1971 # In eu-central-1a
+
+    vpc_subnets:
+    - env: staging
+      az: eu-central-1a
+      cidr: 172.31.0.0/20
+    - env: prod
+      az: eu-central-1a
+      cidr: 172.31.32.0/20
+
     load_balancers:
-      - dns_names: ['api-staging.codekvast.io']
-        name: Codekvast-staging
-        instances: tag_env_staging
-        tags:
-          Name: Codekvast-staging
-          env: staging
-          <<: *common_tags
-      - dns_names: ['api.codekvast.io', 'api-prod.codekvast.io']
-        name: Codekvast-prod
-        instances: tag_env_prod
-        tags:
-          Name: Codekvast-prod
-          env: staging
-          <<: *common_tags
+    - env: staging
+      instances: tag_env_staging
+
+    - env: prod
+      instances: tag_env_prod
+
     ec2_instances:
-      - count: 2
-        load_balancer: Codekvast-staging
-        tags:
-          Name: Codekvast-staging
-          env: staging
-          role: "database,backend,webserver"
-          <<: *common_tags
-      - count: 1
-        load_balancer: Codekvast-prod
-        tags:
-          Name: Codekvast-prod
-          env: prod
-          role: "database,backend,webserver"
-          <<: *common_tags
+    - env: staging
+      count: 1
+      tags: "{{ {'role': 'database,backend,webserver'} | combine(tags.staging) }}"
+
+    - env: prod
+      count: 1
+      role: "database,backend,webserver"
+      tags: "{{ {'role': 'database,backend,webserver'} | combine(tags.prod) }}"
+
+    dns_records:
+    - { name: 'www.codekvast.io', value: crispab.github.io, owner: olle }
 
   tasks:
-#  - name: Create static DNS records
-#    local_action:
-#      module: route53
-#      command: "{{ item.command | default('create') }}"
-#      overwrite: yes
-#      record: "{{ item.name }}"
-#      ttl: "{{ item.ttl | default('7200') }}"
-#      type: "{{ item.type | default('CNAME') }}"
-#      value: "{{ item.value }}"
-#      zone: codekvast.io
-#      profile: codekvast # in ~/.boto
-#    with_items:
-#    - { name: 'www.codekvast.io', value: crispab.github.io, owner: olle }
-#    loop_control:
-#      label: "{{ item.name }}"
+  - name: Create static DNS records
+    local_action:
+      module: route53
+      command: "{{ item.command | default('create') }}"
+      overwrite: yes
+      record: "{{ item.name }}"
+      ttl: "{{ item.ttl | default('7200') }}"
+      type: "{{ item.type | default('CNAME') }}"
+      value: "{{ item.value }}"
+      zone: codekvast.io
+      profile: codekvast # in ~/.boto
+    with_items: "{{ dns_records }}"
+    loop_control:
+      label: "{{ item.name }}"
+
+  - name: Create VPC subnets
+    local_action:
+      module: ec2_vpc_subnet
+      state: present
+      vpc_id: "{{ vpc_id }}"
+      az: "{{ item.az }}"
+      cidr: "{{ item.cidr }}"
+      resource_tags: "{{ tags[item.env] }}"
+      region: "{{ aws_region }}"
+      profile: codekvast
+    with_items: "{{ vpc_subnets }}"
+
+  - name: Retrieve resulting subnet ids
+    local_action:
+      module: ec2_vpc_subnet_facts
+      filters:
+        "tag:Owner": Codekvast
+      region: "{{ aws_region }}"
+      profile: codekvast
+    register: found_vpc_subnets
+
+  # TODO: transform found_vpc_subnets to vpc_subnet_id and remove the literal at top
 
   - name: Create internal security group
     local_action:
       module: ec2_group
-      name: codekvast-internal
+      name: codekvast-internal-{{ item }}
       region: "{{ aws_region }}"
-      description: "Codekvast internal security group"
+      description: "Codekvast internal security group ({{ item }})"
       profile: codekvast
       rules:
       - proto: tcp
         from_port: 8080
         to_port: 8080
-        group_name: codekvast-public
-        group_desc: "Codekvast public security group"
+        group_name: codekvast-public-{{ item }}
+        group_desc: "Codekvast public security group ({{ item }})"
+    with_items:
+    - staging
+    - prod
 
   - name: Create public security group
     local_action:
       module: ec2_group
-      name: codekvast-public
+      name: codekvast-public-{{ item }}
       region: "{{ aws_region }}"
-      description: "Codekvast public security group"
+      description: "Codekvast public security group ({{ item }})"
       profile: codekvast
       rules:
       - proto: tcp
@@ -98,15 +131,18 @@
       - proto: tcp
         from_port: 8080
         to_port: 8080
-        group_name: codekvast-internal
-        group_desc: "Codekvast internal security group"
+        group_name: codekvast-internal-{{ item }}
+        group_desc: "Codekvast internal security group ({{ item }})"
+    with_items:
+    - staging
+    - prod
 
-  - name: Create EC2 instances
+  - name: Create/destroy EC2 instances
     local_action:
       module: ec2
       assign_public_ip: yes
-      vpc_subnet_id: "{{ vpc_subnet_id }}"
-      group: [codekvast-internal, codekvast-ssh]
+      vpc_subnet_id: "{{ vpc_subnet_id[item.env] }}"
+      group: ["codekvast-internal-{{ item.env }}", "codekvast-ssh"]
       image: "{{ ami_id }}"
       instance_type: t2.micro
       user_data: "{{ lookup('file', 'files/ubuntu-cloud-init.sh') }}"
@@ -133,7 +169,7 @@
       module: ec2_elb_lb
       region: "{{ aws_region }}"
       profile: codekvast
-      name: "{{ item.name }}"
+      name: "Codekvast-{{ item.env }}"
       instance_ids: "{{ groups[item.instances]|map('extract', hostvars, 'ec2_id')|list }}"
       listeners:
       - protocol: http
@@ -147,39 +183,50 @@
 #        ssl_certificate_id: "arn:aws:iam::123456789012:server-certificate/company/servercerts/ProdServerCert"
       purge_instance_ids: yes
       security_group_names:
-      - codekvast-public
+      - codekvast-public-{{ item.env }}
       state: present
-      subnets:
-      - "{{ vpc_subnet_id }}"
-      tags: "{{ item.tags }}"
+      subnets: "{{ vpc_subnet_id[item.env] }}"
+      tags: "{{ tags[item.env] }}"
       wait: yes
     with_items: "{{ load_balancers }}"
 
-#----------------------------------------------------------------------------------
-#- name: Codekvast Webserver CNAME
-#  hosts: tag_role_webserver
-#  connection: local
-#  gather_facts: no
-#  become: no
-#
-#  tasks:
-#    - debug: var=ec2_id
-#
-#  - set_fact: hostnames={{ ['app-prod.codekvast.io', 'app.codekvast.io'] }}
-#    when: ec2_tag_env == 'prod'
-#
-#  - set_fact: hostnames={{ ['app-staging.codekvast.io'] }}
-#    when: ec2_tag_env == 'staging'
-#
-#  - name: Define CNAME app*.codekvast.io
-#    route53:
-#      command: create
-#      overwrite: yes
-#      record: "{{ item }}"
-#      ttl: 600
-#      type: CNAME
-#      value: "{{ ec2_public_dns_name }}"
-#      zone: codekvast.io
-#      profile: codekvast # in ~/.boto
-#    with_items: "{{ hostnames }}"
-#
+  - local_action:
+      module: ec2_elb_facts
+      names: Codekvast-prod
+      region: "{{ aws_region }}"
+      profile: codekvast
+    register: lb_prod
+
+  - local_action:
+      module: ec2_elb_facts
+      names: Codekvast-staging
+      region: "{{ aws_region }}"
+      profile: codekvast
+    register: lb_staging
+
+  - set_fact:
+      lb_cnames:
+      - dns_name: "{{ lb_prod.elbs[0].dns_name }}"
+        cname: api.codekvast.io
+      - dns_name: "{{ lb_prod.elbs[0].dns_name }}"
+        cname: app.codekvast.io
+      - dns_name: "{{ lb_staging.elbs[0].dns_name }}"
+        cname: api-staging.codekvast.io
+      - dns_name: "{{ lb_staging.elbs[0].dns_name }}"
+        cname: app-staging.codekvast.io
+
+  - debug: var=lb_cnames
+
+  - name: Define load balancer CNAMEs
+    local_action:
+      module: route53
+      command: create
+      overwrite: yes
+      record: "{{ item.cname }}"
+      ttl: 600
+      type: CNAME
+      value: "{{ item.dns_name }}"
+      zone: codekvast.io
+      profile: codekvast # in ~/.boto
+    with_items: "{{ lb_cnames }}"
+
