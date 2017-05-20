@@ -1,0 +1,13 @@
+aws_region: eu-central-1
+aws_resource_name: "Codekvast-{{ customer }}-{{ env }}"
+aws_az: "{{ aws_region }}a"
+
+aws_ami_id: ami-060cde69 # Stock Ubuntu Server Xenial 16.04 LTS, 64-bit, SSD EBS
+
+aws_common_tags:
+  Name: "{{ aws_resource_name }}"
+  Customer: "{{ customer }}"
+  Env: "{{ env }}"
+  Owner: Codekvast
+
+ec2_instance_type: "t2.micro"

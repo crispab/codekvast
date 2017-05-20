@@ -1,0 +1,2 @@
+---
+- include: "stack-state-{{ stack_state }}.yml"

@@ -1,0 +1,186 @@
+---
+- name: Create VPC
+  local_action:
+    module: ec2_vpc_net
+    region: "{{ aws_region }}"
+    profile: codekvast
+    state: "{{ stack_state }}"
+    name: "{{ aws_resource_name }}"
+    cidr_block: "{{ vpc_cidr_base }}.0.0/16"
+    tags: "{{ aws_common_tags }}"
+  register: net
+
+- set_fact: vpc_id="{{ net.vpc.id }}"
+
+- name: Create VPC subnet
+  local_action:
+    module: ec2_vpc_subnet
+    region: "{{ aws_region }}"
+    profile: codekvast
+    vpc_id: "{{ vpc_id }}"
+    state: "{{ stack_state }}"
+    az: "{{ aws_az }}"
+    cidr: "{{ vpc_cidr_base}}.1.0/24"
+    resource_tags: "{{ aws_common_tags }}"
+  register: subnet
+
+- set_fact: subnet_id="{{ subnet.subnet.id }}"
+
+- name: Create SSH security group
+  local_action:
+    module: ec2_group
+    region: "{{ aws_region }}"
+    profile: codekvast
+    vpc_id: "{{ vpc_id }}"
+    state: "{{ stack_state }}"
+    name: "codekvast-{{ customer }}-{{ env }}-ssh"
+    description: "Codekvast SSH access"
+    rules:
+    - proto: tcp
+      from_port: 22
+      to_port: 22
+      cidr_ip: 0.0.0.0/0
+  register: sg_ssh
+
+- set_fact: ssh_group_id="{{ sg_ssh.group_id }}"
+
+- name: Create frontend security group
+  local_action:
+    module: ec2_group
+    region: "{{ aws_region }}"
+    profile: codekvast
+    vpc_id: "{{ vpc_id }}"
+    state: "{{ stack_state }}"
+    name: "codekvast-{{ customer }}-{{ env }}-frontend"
+    description: "Codekvast internet-facing security group"
+    rules:
+    - proto: tcp
+      from_port: 80
+      to_port: 80
+      cidr_ip: 0.0.0.0/0
+    - proto: tcp
+      from_port: 443
+      to_port: 443
+      cidr_ip: 0.0.0.0/0
+  register: sg_frontend
+
+- set_fact: frontend_group_id="{{ sg_frontend.group_id }}"
+
+- name: Create backend security group
+  local_action:
+    module: ec2_group
+    region: "{{ aws_region }}"
+    profile: codekvast
+    vpc_id: "{{ vpc_id }}"
+    name: "codekvast-{{ customer }}-{{ env }}-backend"
+    description: "Codekvast backend security group"
+    rules:
+    - proto: tcp
+      from_port: 22
+      to_port: 22
+      group_id: "{{ ssh_group_id }}"
+    - proto: tcp
+      from_port: 8080
+      to_port: 8080
+      group_id: "{{ frontend_group_id }}"
+  register: sg_backend
+
+- set_fact: backend_group_id="{{ sg_backend.group_id }}"
+
+- set_fact:
+    role_tag:
+      role: "database,backend,frontend"
+
+- name: Create EC2 instance
+  local_action:
+    module: ec2
+    region: "{{ aws_region }}"
+    profile: codekvast # in ~/.boto
+    key_name: codekvast
+    assign_public_ip: yes
+    vpc_subnet_id: "{{ subnet_id }}"
+    group_id: "{{ backend_group_id }}"
+    image: "{{ aws_ami_id }}"
+    instance_type: "{{ ec2_instance_type }}"
+    user_data: "{{ lookup('file', 'files/ubuntu-cloud-init.sh') }}"
+    exact_count: 1
+    count_tag: "{{ role_tag }}"
+    instance_tags: "{{ role_tag | combine(aws_common_tags) }}"
+    wait: yes
+  register: ec2
+
+- name: Refresh external EC2 cache
+  command: "{{ inventory_dir }}/ec2.py --refresh-cache"
+  when: ec2.changed
+
+- name: Refresh in-memory EC2 cache
+  meta: refresh_inventory
+  when: ec2.changed
+
+#- name: Create Elastic Load Balancers
+#  local_action:
+#    module: ec2_elb_lb
+#    region: "{{ aws_region }}"
+#    profile: codekvast
+#    name: "Codekvast-{{ item.env }}"
+#    instance_ids: "{{ groups[item.instances]|map('extract', hostvars, 'ec2_id')|list }}"
+#    listeners:
+#    - protocol: http
+#      load_balancer_port: 80
+#      instance_port: 8080
+#      proxy_protocol: True
+##      - protocol: https
+##        load_balancer_port: 443
+##        instance_protocol: http
+##        instance_port: 80
+##        ssl_certificate_id: "arn:aws:iam::123456789012:server-certificate/company/servercerts/ProdServerCert"
+#    purge_instance_ids: yes
+#    security_group_names:
+#    - codekvast-public-{{ item.env }}
+#    state: "{{ stack_state }}"
+#    subnets: "{{ vpc_subnet_id[item.env] }}"
+#    tags: "{{ tags[item.env] }}"
+#    wait: yes
+#  with_items: "{{ load_balancers }}"
+#
+#- local_action:
+#    module: ec2_elb_facts
+#    names: Codekvast-prod
+#    region: "{{ aws_region }}"
+#    profile: codekvast
+#  register: lb_prod
+#
+#- local_action:
+#    module: ec2_elb_facts
+#    names: Codekvast-staging
+#    region: "{{ aws_region }}"
+#    profile: codekvast
+#  register: lb_staging
+#
+#- set_fact:
+#    lb_cnames:
+#    - dns_name: "{{ lb_prod.elbs[0].dns_name }}"
+#      cname: api.codekvast.io
+#    - dns_name: "{{ lb_prod.elbs[0].dns_name }}"
+#      cname: app.codekvast.io
+#    - dns_name: "{{ lb_staging.elbs[0].dns_name }}"
+#      cname: api-staging.codekvast.io
+#    - dns_name: "{{ lb_staging.elbs[0].dns_name }}"
+#      cname: app-staging.codekvast.io
+#
+#- debug: var=lb_cnames
+#
+#- name: Define load balancer CNAMEs
+#  local_action:
+#    module: route53
+#    command: create
+#    overwrite: yes
+#    record: "{{ item.cname }}"
+#    ttl: 600
+#    type: CNAME
+#    value: "{{ item.dns_name }}"
+#    zone: codekvast.io
+#    profile: codekvast # in ~/.boto
+#  with_items: "{{ lb_cnames }}"
+#
+#
