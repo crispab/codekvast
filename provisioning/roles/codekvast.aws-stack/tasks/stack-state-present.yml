@@ -134,20 +134,31 @@
 
 - set_fact: elb_dns_name="{{ elb.elb.dns_name }}"
 
-- name: Define load balancer's CNAME
+- name: Define load balancer's CNAMEs
   local_action:
     module: route53
     profile: codekvast # in ~/.boto
     command: create
     overwrite: yes
-    record: "{{ item }}"
-    value: "{{ elb_dns_name }}"
+    record: "{{ item }}.codekvast.io"
+    value: "{{ elb_dns_name }}.codekvast.io"
     ttl: 600
     type: CNAME
     zone: codekvast.io
   with_items: "{{ stack_dns_names }}"
 
-- debug: var=ec2
+- name: Define instance's CNAMEs
+  local_action:
+    module: route53
+    profile: codekvast # in ~/.boto
+    command: create
+    overwrite: yes
+    record: "{{ item }}00.codekvast.io"
+    value: "{{ ec2.tagged_instances[0].public_dns_name }}.codekvast.io"
+    ttl: 600
+    type: CNAME
+    zone: codekvast.io
+  with_items: "{{ stack_dns_names }}"
 
 - name: Wait for OpenSSH on EC2 instance
   local_action:

@@ -38,5 +38,5 @@
     vpc_cidr_base: "10.0"
     stack_state: present
     stack_dns_names:
-    - api-staging.codekvast.io
-    - app-staging.codekvast.io
+    - api-staging
+    - app-staging
