@@ -111,9 +111,6 @@
     name: "{{ aws_resource_name }}"
     instance_ids: "{{ frontend_instance_id }}"
     listeners:
-    - protocol: tcp
-      load_balancer_port: 22
-      instance_port: 22
     - protocol: http
       load_balancer_port: 80
       instance_port: 8080
@@ -122,7 +119,15 @@
       load_balancer_port: 443
       instance_protocol: http
       instance_port: 8080
-      ssl_certificate_id: "arn:aws:acm:eu-central-1:186662504461:certificate/8048dc21-578a-406e-87e5-1ae6a26bfc6d"
+      ssl_certificate_id: "{{ ssl_certificate_id }}"
+    health_check:
+      ping_protocol: http
+      ping_port: 9080
+      ping_path: /management/health
+      response_timeout: 5
+      interval: 15
+      unhealthy_threshold: 2
+      healthy_threshold: 2
     purge_instance_ids: yes
     security_group_names:
     - codekvast-{{ customer }}-{{ env }}-frontend

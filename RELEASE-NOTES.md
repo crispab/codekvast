@@ -11,6 +11,7 @@
 1. Bumped minimum Java version for the agent to Java 7.
 1. Renamed /api/v1/... endpoints to /webapp/v1/...
 1. Agent zip distribution build.
+1. Added provisioning/ containing Ansible playbooks for setting up an AWS stack per customer/environment.
 
 ## 0.18.6
 1. Restructured and cleaned up README.md
