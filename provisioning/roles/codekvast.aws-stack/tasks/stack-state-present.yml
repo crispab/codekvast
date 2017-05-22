@@ -70,6 +70,25 @@
       to_port: 443
       cidr_ip: 0.0.0.0/0
 
+- name: Create backend security group
+  local_action:
+    module: ec2_group
+    region: "{{ aws_region }}"
+    profile: codekvast
+    vpc_id: "{{ vpc_id }}"
+    state: "{{ stack_state }}"
+    name: "codekvast-{{ customer }}-{{ env }}-backend"
+    description: "Codekvast backend access"
+    rules:
+    - proto: tcp
+      from_port: 8080
+      to_port: 8080
+      group_name: "codekvast-{{ customer }}-{{ env }}-frontend"
+    - proto: tcp
+      from_port: 9080
+      to_port: 9080
+      group_name: "codekvast-{{ customer }}-{{ env }}-frontend"
+
 - name: Create management security group
   local_action:
     module: ec2_group
@@ -78,16 +97,12 @@
     vpc_id: "{{ vpc_id }}"
     state: "{{ stack_state }}"
     name: "codekvast-{{ customer }}-{{ env }}-management"
-    description: "Codekvast MANAGEMENT access"
+    description: "Codekvast management access"
     rules:
     - proto: tcp
       from_port: 22
       to_port: 22
       cidr_ip: 0.0.0.0/0
-    - proto: tcp
-      from_port: 9080
-      to_port: 9080
-      group_name: "codekvast-{{ customer }}-{{ env }}-frontend"
 
 - set_fact:
     role_tag:
@@ -102,7 +117,7 @@
     assign_public_ip: yes
     vpc_subnet_id: "{{ subnet_id }}"
     groups:
-    - "codekvast-{{ customer }}-{{ env }}-frontend"
+    - "codekvast-{{ customer }}-{{ env }}-backend"
     - "codekvast-{{ customer }}-{{ env }}-management"
     image: "{{ aws_ami_id }}"
     instance_type: "{{ ec2_instance_type }}"
