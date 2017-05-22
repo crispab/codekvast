@@ -32,4 +32,11 @@
       label: "{{ item.name }}"
 
   roles:
-  - {role: codekvast.aws-stack, customer: Demo, env: staging, vpc_cidr_base: "10.0", stack_state: present}
+  - role: codekvast.aws-stack
+    customer: Demo
+    env: staging
+    vpc_cidr_base: "10.0"
+    stack_state: present
+    stack_dns_names:
+    - api-staging.codekvast.io
+    - app-staging.codekvast.io
