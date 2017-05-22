@@ -15,7 +15,6 @@
     dns_records:
     - { name: 'www.codekvast.io', value: crispab.github.io, owner: olle }
 
-
   pre_tasks:
   - name: Create static DNS records
     local_action:

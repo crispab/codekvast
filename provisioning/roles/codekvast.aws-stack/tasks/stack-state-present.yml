@@ -35,21 +35,6 @@
 
 - set_fact: subnet_id="{{ subnet.subnet.id }}"
 
-- name: Create SSH security group
-  local_action:
-    module: ec2_group
-    region: "{{ aws_region }}"
-    profile: codekvast
-    vpc_id: "{{ vpc_id }}"
-    state: "{{ stack_state }}"
-    name: "codekvast-{{ customer }}-{{ env }}-ssh"
-    description: "Codekvast SSH access"
-    rules: # TODO: narrow to developers' set of IP addresses
-    - proto: tcp
-      from_port: 22
-      to_port: 22
-      cidr_ip: 0.0.0.0/0
-
 - name: Create frontend security group
   local_action:
     module: ec2_group
@@ -69,6 +54,25 @@
       to_port: 443
       cidr_ip: 0.0.0.0/0
 
+- name: Create management security group
+  local_action:
+    module: ec2_group
+    region: "{{ aws_region }}"
+    profile: codekvast
+    vpc_id: "{{ vpc_id }}"
+    state: "{{ stack_state }}"
+    name: "codekvast-{{ customer }}-{{ env }}-management"
+    description: "Codekvast MANAGEMENT access"
+    rules:
+    - proto: tcp
+      from_port: 22
+      to_port: 22
+      cidr_ip: 0.0.0.0/0
+    - proto: tcp
+      from_port: 9080
+      to_port: 9080
+      group_name: "codekvast-{{ customer }}-{{ env }}-frontend"
+
 - set_fact:
     role_tag:
       role: "database,backend,frontend"
@@ -83,7 +87,7 @@
     vpc_subnet_id: "{{ subnet_id }}"
     groups:
     - "codekvast-{{ customer }}-{{ env }}-frontend"
-    - "codekvast-{{ customer }}-{{ env }}-ssh"
+    - "codekvast-{{ customer }}-{{ env }}-management"
     image: "{{ aws_ami_id }}"
     instance_type: "{{ ec2_instance_type }}"
     user_data: "{{ lookup('file', 'files/ubuntu-cloud-init.sh') }}"
