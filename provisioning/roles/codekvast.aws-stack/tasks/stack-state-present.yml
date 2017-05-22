@@ -35,6 +35,22 @@
 
 - set_fact: subnet_id="{{ subnet.subnet.id }}"
 
+- name: Set up subnet route table
+  local_action:
+    module: ec2_vpc_route_table
+    region: "{{ aws_region }}"
+    profile: codekvast
+    vpc_id: "{{ vpc_id }}"
+    tags: "{{ aws_common_tags }}"
+    subnets:
+      - "{{ subnet_id }}"
+    routes:
+      - dest: 0.0.0.0/0
+        gateway_id: "{{ igw.gateway_id }}"
+  register: route_table
+
+- debug: var=route_table
+
 - name: Create frontend security group
   local_action:
     module: ec2_group
@@ -150,7 +166,7 @@
     command: create
     overwrite: yes
     record: "{{ item }}.codekvast.io"
-    value: "{{ elb_dns_name }}.codekvast.io"
+    value: "{{ elb_dns_name }}"
     ttl: 600
     type: CNAME
     zone: codekvast.io
@@ -163,7 +179,7 @@
     command: create
     overwrite: yes
     record: "{{ item }}00.codekvast.io"
-    value: "{{ ec2.tagged_instances[0].public_dns_name }}.codekvast.io"
+    value: "{{ ec2.tagged_instances[0].public_dns_name }}"
     ttl: 600
     type: CNAME
     zone: codekvast.io
