@@ -85,14 +85,18 @@ public class CodekvastAgent {
     /**
      * This method is invoked by the JVM as part of bootstrapping the -javaagent
      *
-     * @param args The string after the equals sign in -javaagent:codekvast-agent.jar=args. Is used as overrides to the agent configuration
-     *             file.
-     * @param inst The standard instrumentation hook.
+     * @param args            The string after the equals sign in -javaagent:codekvast-agent.jar=args. Is used as overrides to the agent
+     *                        configuration file.
+     * @param instrumentation The standard instrumentation hook.
      */
-    public static void premain(String args, Instrumentation inst) {
+    public static void premain(String args, Instrumentation instrumentation) {
         AgentConfig config = AgentConfigFactory.parseAgentConfig(AgentConfigLocator.locateConfig(), args, true);
 
         initialize(config);
+
+        if (config != null) {
+            org.aspectj.weaver.loadtime.Agent.premain(args, instrumentation);
+        }
     }
 
     /**
@@ -131,7 +135,6 @@ public class CodekvastAgent {
     }
 
     private static Thread createShutdownHook() {
-        // TODO: solve class loading problem in shutdown hook. It cannot find io.codekvast.javaagent.AspectjMessageHandler.
         Thread thread = new Thread(new MyShutdownHook(), NAME + " Shutdown Hook");
         return thread;
     }

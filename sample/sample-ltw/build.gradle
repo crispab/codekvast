@@ -6,8 +6,7 @@ apply plugin: 'application'
 mainClassName = "sample.app.SampleApp"
 
 configurations {
-    aspectjweaver
-    collector
+    codekvastagent
 }
 
 dependencies {
@@ -19,8 +18,7 @@ dependencies {
 
     runtime logback
 
-    aspectjweaver "org.aspectj:aspectjweaver:1.8.7"
-    collector project(path: ":product:java-agent", configuration: 'shadow')
+    codekvastagent project(path: ":product:java-agent", configuration: 'shadow')
 }
 
 task generateCodekvastConfig {
@@ -58,7 +56,6 @@ run {
 
     jvmArgs = [
             "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath",
-            "-javaagent:$configurations.collector.asPath",
-            "-javaagent:$configurations.aspectjweaver.asPath"
+            "-javaagent:$configurations.codekvastagent.asPath"
     ]
 }

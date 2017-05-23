@@ -13,7 +13,6 @@ archivesBaseName = "codekvast-javaagent"
 version = codekvastVersion
 
 configurations {
-    aspectjweaver
     jacocoagent
     sampleappRuntime
 }
@@ -28,13 +27,10 @@ dependencies {
     compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
     compile 'org.reflections:reflections:0.9.11'
     compile 'com.squareup.okhttp3:okhttp:3.7.0'
+    compile aspectjWeaver
 
-    compileOnly aspectjWeaver
     compileOnly lombok
 
-    aspectjweaver aspectjWeaver
-
-    testCompile aspectjWeaver
     testCompile lombok
     testCompile testFrameworks
 
@@ -60,12 +56,14 @@ shadowJar {
         )
     }
 
-    relocate 'javassist', 'codekvast.javassist'
-    relocate 'javax.validation', 'codekvast.javax.validation'
-    relocate 'com', 'codekvast.com'
-    relocate 'org.reflections', 'codekvast.org.reflections'
-    relocate 'okhttp3', 'codekvast.okhttp3'
-    relocate 'okio', 'codekvast.okio'
+    relocate 'aj.org', 'ck.aj.org'
+    relocate 'com', 'ck.com'
+    relocate 'javassist', 'ck.javassist'
+    relocate 'javax', 'ck.javax'
+    relocate 'okhttp3', 'ck.okhttp3'
+    relocate 'okio', 'ck.okio'
+// NOTE: cannot relocate org.aspectj, since it causes class-loading problems. relocate 'org.aspectj', 'ck.org.aspectj'
+    relocate 'org.reflections', 'ck.org.reflections'
 }
 
 task verifyShadowJar {
@@ -86,13 +84,13 @@ task verifyShadowJar {
             def name = zipEntry.getName()
             if (name.endsWith(".class")
                 && !name.startsWith("io/codekvast/")
-                && !name.startsWith("codekvast/")
-                && !name.startsWith("org/aspectj/")) {
+                && !name.startsWith("org/aspectj/")
+                && !name.startsWith("ck/")) {
                 throw new IllegalStateException("Class not relocated in shadowJar: $name")
             }
         }
 
-        assert shadowJarFile.length() < 7_000_000 // bytes, it is currently approx. 5.7 MB
+        assert shadowJarFile.length() < 8_000_000 // bytes, it is currently approx. 7.6 MB
     }
 }
 check.dependsOn verifyShadowJar
@@ -102,10 +100,10 @@ test {
 }
 
 integrationTest {
+    dependsOn verifyShadowJar
     inputs.files shadowJar.outputs.files
 
     systemProperty 'integrationTest.codekvastAgent', shadowJar.outputs.files.asPath
-    systemProperty 'integrationTest.aspectjWeaver', configurations.aspectjweaver.asPath
     systemProperty 'integrationTest.jacocoAgent', "${configurations.jacocoagent.asPath}=destfile=build/jacoco/integrationTest2.exec,output=file,dumponexit=true"
     systemProperty 'integrationTest.classpath', "build/classes/integrationTest/:$configurations.sampleappRuntime.asPath"
 }
@@ -126,7 +124,6 @@ artifacts {
 }
 
 task javaagents(type: Sync) {
-    from configurations.aspectjweaver
     from tasks.shadowJar
     into "$buildDir/javaagents"
 }
@@ -136,7 +133,7 @@ publishing {
     publications {
         shadowJar(MavenPublication) {
             groupId 'io.codekvast'
-            artifactId 'codekvast-collector'
+            artifactId 'codekvast-agent'
             version codekvastVersion
             from components.shadow
             artifact sourcesJar { classifier "sources" }
@@ -158,9 +155,9 @@ bintray {
     pkg {
         userOrg = 'crisp'
         repo = 'maven-repo'
-        name = 'codekvast-collector'
+        name = 'codekvast-agent'
         desc = 'The javaagent part of Codekvast.'
-        websiteUrl = 'http://codekvast.crisp.se'
+        websiteUrl = 'http://www.codekvast.io'
         vcsUrl = 'https://github.com/crispab/codekvast.git'
         issueTrackerUrl = 'https://github.com/crispab/codekvast/issues'
         licenses = ['MIT']
