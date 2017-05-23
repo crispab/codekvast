@@ -72,18 +72,14 @@
       mode: 0700
     notify: restart codekvast
 
-  # TODO: install a proper systemd codekvast.service file with an auto restart policy
+  - name: Remove /etc/init.d/codekvast
+    file: dest=/etc/init.d/codekvast state=absent
 
-  - name: Link the executable jar to /etc/init.d/codekvast
-    file:
-      src: /opt/codekvast/codekvast-warehouse-{{ codekvastVersion }}-all.jar
-      dest: /etc/init.d/codekvast
-      state: link
-    notify: restart codekvast
-
-  - name: Install Codekvast configuration file
-    template: src=codekvast/application.properties dest=/opt/codekvast/application.properties owner=codekvast group=codekvast
-    notify: restart codekvast
+  - name: Install /etc/systemd/system/codekvast.service
+    template: src=codekvast/codekvast.service dest=/etc/systemd/system/codekvast.service owner=root group=root
+    notify:
+    - systemctl daemon-reload
+    - restart codekvast
 
   - name: Enable codekvast service
     service: name=codekvast enabled=yes
@@ -92,7 +88,7 @@
     service: name=codekvast state=started
 
   - name: Wait until service has started
-    wait_for: port=8080 state=started timeout=60
+    wait_for: port=8080 state=started timeout=30
 
   - name: Register with load balancer
     ec2_elb:
@@ -108,5 +104,8 @@
     become: no
 
   handlers:
+  - name: systemctl daemon-reload
+    shell: systemctl daemon-reload
+
   - name: restart codekvast
     service: name=codekvast state=restarted

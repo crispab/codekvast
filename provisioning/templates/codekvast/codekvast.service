@@ -1,0 +1,13 @@
+[Unit]
+Description=codekvast
+After=syslog.target
+
+[Service]
+User=codekvast
+ExecStart=/opt/codekvast/codekvast-warehouse-{{ codekvastVersion }}-all.jar
+SuccessExitStatus=143
+TimeoutSec=30
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
