@@ -80,7 +80,7 @@ set +e
 echo "Uploading distributions to Bintray..."
 ${GRADLEW} --console=plain :product:dist:bintrayUpload
 
-echo "Uploading codekvast-collector-${CODEKVAST_VERSION}-all.jar to jcenter..."
+echo "Uploading codekvast-agent-${CODEKVAST_VERSION}-all.jar to jcenter..."
 ${GRADLEW} --console=plain :product:java-agent:bintrayUpload
 
 echo "Pushing $WAREHOUSE_IMAGE_NAME to Docker Hub..."

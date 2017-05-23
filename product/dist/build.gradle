@@ -76,7 +76,7 @@ bintray {
         repo = 'codekvast'
         name = 'distributions'
         desc = 'Codekvast is a Runtime Intelligence tool used for identifying Truly Dead Code, i.e., code that no-one has accessed in a certain period of time.'
-        websiteUrl = 'http://codekvast.crisp.se'
+        websiteUrl = 'http://www.codekvast.io'
         vcsUrl = 'https://github.com/crispab/codekvast.git'
         issueTrackerUrl = 'https://github.com/crispab/codekvast/issues'
         licenses = ['MIT']

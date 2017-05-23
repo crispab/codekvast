@@ -28,7 +28,7 @@ The product itself lives under `product/`.
 
 Sample projects to use when testing Codekvast lives under `sample/`.
 
-GitHub pages (i.e., http://codekvast.crisp.se) lives under the Git branch `gh-pages`.
+GitHub pages (i.e., http://www.codekvast.io) lives under the Git branch `gh-pages`.
 
 Development tools live under `tools/`.
 

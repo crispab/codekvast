@@ -45,8 +45,8 @@ public class SwaggerConfig {
         return new ApiInfo(settings.getApplicationName(),
                            "Codekvast Warehouse",
                            settings.getDisplayVersion(),
-                           "http://codekvast.crisp.se",
-                           new Contact("Olle Hallin", "http://codekvast.crisp.se", "olle.hallin@crisp.se"),
+                           "http://www.codekvast.io",
+                           new Contact("Olle Hallin", "http://www.codekvast.io", "olle.hallin@crisp.se"),
                            "MIT",
                            "https://opensource.org/licenses/MIT");
 
