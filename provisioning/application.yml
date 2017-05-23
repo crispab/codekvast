@@ -13,6 +13,10 @@
   - vars/common.yml
 
   vars:
+    customer: "{{ hostvars[inventory_hostname]['ec2_tag_Customer'] }}"
+    env: "{{ hostvars[inventory_hostname]['ec2_tag_Env'] }}"
+    database_group_name: "tag_Name_Codekvast_{{ customer }}_{{ env }}_database"
+
     codekvast_queue_path: /var/codekvast/queue
     codekvast_queue_pollIntervalSeconds: 30
     codekvast_webapp_jwtExpirationSeconds: 1800
@@ -20,6 +24,8 @@
     codekvastVersion: "{{ lookup('ini', 'codekvastVersion type=properties file=../gradle.properties') }}"
 
   tasks:
+  - set_fact: database_dns_names="{{ groups[database_group_name]|map('extract', hostvars, 'ec2_private_dns_name')|list }}"
+
   - name: Setting timezone to UTC
     timezone: name=UTC
 

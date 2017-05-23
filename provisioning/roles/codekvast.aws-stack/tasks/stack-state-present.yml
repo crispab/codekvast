@@ -87,6 +87,21 @@
       to_port: 9080
       group_name: "codekvast-{{ stack.customer }}-{{ stack.env }}-frontend"
 
+- name: Create database security group
+  local_action:
+    module: ec2_group
+    region: "{{ aws_region }}"
+    profile: codekvast
+    vpc_id: "{{ vpc_id }}"
+    state: "{{ stack.state }}"
+    name: "codekvast-{{ stack.customer }}-{{ stack.env }}-database"
+    description: "Codekvast database access"
+    rules:
+    - proto: tcp
+      from_port: 3306
+      to_port: 3306
+      group_name: "codekvast-{{ stack.customer }}-{{ stack.env }}-backend"
+
 - name: Create management security group
   local_action:
     module: ec2_group
@@ -103,10 +118,42 @@
       cidr_ip: 0.0.0.0/0
 
 - set_fact:
-    role_tag:
-      role: "database,backend,frontend"
+    role_tag_database:
+      Name: "Codekvast-{{ stack.customer }}-{{ stack.env }}-database"
+      role: "database"
+      Customer: "{{ stack.customer }}"
+      Env: "{{ stack.env }}"
+      Owner: Codekvast
+    role_tag_backend:
+      Name: "Codekvast-{{ stack.customer }}-{{ stack.env }}-backend"
+      role: "backend,frontend"
+      Customer: "{{ stack.customer }}"
+      Env: "{{ stack.env }}"
+      Owner: Codekvast
 
-- name: Create EC2 instance
+- name: Create EC2 database instance
+  local_action:
+    module: ec2
+    region: "{{ aws_region }}"
+    profile: codekvast # in ~/.boto
+    key_name: codekvast
+    assign_public_ip: yes
+    vpc_subnet_id: "{{ subnet_id }}"
+    groups:
+    - "codekvast-{{ stack.customer }}-{{ stack.env }}-database"
+    - "codekvast-{{ stack.customer }}-{{ stack.env }}-management"
+    image: "{{ aws_ami_id }}"
+    instance_type: "{{ ec2_instance_type }}"
+    user_data: "{{ lookup('file', 'files/ubuntu-cloud-init.sh') }}"
+    exact_count: 1
+    count_tag: "{{ role_tag_database }}"
+    instance_tags: "{{ role_tag_database }}"
+    wait: yes
+  register: ec2database
+
+- set_fact: database_instance_id="{{ ec2database.tagged_instances[0].id }}"
+
+- name: Create EC2 backend instance
   local_action:
     module: ec2
     region: "{{ aws_region }}"
@@ -121,20 +168,20 @@
     instance_type: "{{ ec2_instance_type }}"
     user_data: "{{ lookup('file', 'files/ubuntu-cloud-init.sh') }}"
     exact_count: 1
-    count_tag: "{{ role_tag }}"
-    instance_tags: "{{ role_tag | combine(aws_common_tags) }}"
+    count_tag: "{{ role_tag_backend }}"
+    instance_tags: "{{ role_tag_backend }}"
     wait: yes
-  register: ec2
+  register: ec2backend
 
-- set_fact: frontend_instance_id="{{ ec2.tagged_instances[0].id }}"
+- set_fact: backend_instance_id="{{ ec2backend.tagged_instances[0].id }}"
 
 - name: Refresh external EC2 cache
   command: "{{ inventory_dir }}/ec2.py --refresh-cache"
-  when: ec2.changed
+  when: ec2database.changed or ec2backend.changed
 
 - name: Refresh in-memory EC2 cache
   meta: refresh_inventory
-  when: ec2.changed
+  when: ec2database.changed or ec2backend.changed
 
 - name: Create Elastic Load Balancer
   local_action:
@@ -142,7 +189,7 @@
     region: "{{ aws_region }}"
     profile: codekvast
     name: "{{ aws_stack_name }}"
-    instance_ids: "{{ frontend_instance_id }}"
+    instance_ids: "{{ backend_instance_id }}"
     listeners:
     - protocol: http
       load_balancer_port: 80
@@ -192,7 +239,7 @@
     command: create
     overwrite: yes
     record: "{{ item }}00.codekvast.io"
-    value: "{{ ec2.tagged_instances[0].public_dns_name }}"
+    value: "{{ ec2backend.tagged_instances[0].public_dns_name }}"
     ttl: 600
     type: CNAME
     zone: codekvast.io
@@ -207,9 +254,12 @@
     tags: "{{ aws_common_tags }}"
 
 
-- name: Wait for OpenSSH on EC2 instance
+- name: Wait for OpenSSH on EC2 instances
   local_action:
     module: wait_for
-    host: "{{ ec2.tagged_instances[0].public_ip }}"
+    host: "{{ item }}"
     port: 22
     search_regex: OpenSSH
+  with_items:
+  - "{{ ec2database.tagged_instances[0].public_ip }}"
+  - "{{ ec2backend.tagged_instances[0].public_ip }}"
