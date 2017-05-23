@@ -29,27 +29,6 @@
   - name: Setting timezone to UTC
     timezone: name=UTC
 
-  - name: Record EC2 facts
-    action: ec2_facts
-
-  - name: Take out of load balancer
-    ec2_elb:
-      instance_id: "{{ ansible_ec2_instance_id }}"
-      state: absent
-      wait: yes
-      wait_timeout: 30
-      region: "{{ aws_region }}"
-      profile: codekvast
-    connection: local
-    become: no
-
-  - name: Stop running service
-    service: name=codekvast state=stopped
-    ignore_errors: true
-
-  - name: Wait until service has stopped
-    wait_for: port=8080 state=stopped timeout=60
-
   - name: Install OpenJDK 8
     package: name=openjdk-8-jdk-headless state=installed
     notify: restart codekvast
@@ -61,7 +40,17 @@
     user: name=codekvast group=codekvast state=present home=/opt/codekvast
 
   - name: Create directories
-    file: path={{ codekvast_queue_path }} state=directory owner=codekvast group=codekvast
+    file: path={{ item }} state=directory owner=codekvast group=codekvast
+    with_items:
+    - "{{ codekvast_queue_path }}"
+    - /var/log/codekvast
+
+  - name: Stop running service
+    service: name=codekvast state=stopped
+    ignore_errors: true
+
+  - name: Wait until service has stopped
+    wait_for: port=8080 state=stopped timeout=60
 
   - name: Install codekvast executable jar
     copy:
@@ -72,8 +61,9 @@
       mode: 0700
     notify: restart codekvast
 
-  - name: Remove /etc/init.d/codekvast
-    file: dest=/etc/init.d/codekvast state=absent
+  - name: Install Codekvast configuration file
+    template: src=codekvast/application.properties dest=/opt/codekvast/application.properties owner=codekvast group=codekvast
+    notify: restart codekvast
 
   - name: Install /etc/systemd/system/codekvast.service
     template: src=codekvast/codekvast.service dest=/etc/systemd/system/codekvast.service owner=root group=root
@@ -87,21 +77,15 @@
   - name: Start codekvast service
     service: name=codekvast state=started
 
+  - meta: flush_handlers
+
   - name: Wait until service has started
     wait_for: port=8080 state=started timeout=30
 
-  - name: Register with load balancer
-    ec2_elb:
-      instance_id: "{{ ansible_ec2_instance_id }}"
-      ec2_elbs: "{{ item }}"
-      state: present
-      wait: yes
-      wait_timeout: 30
-      region: "{{ aws_region }}"
-      profile: codekvast
-    with_items: "{{ ec2_elbs }}"
-    connection: local
-    become: no
+  - name: Remove cruft
+    file: path={{ item }} state=absent
+    with_items:
+    - /var/log/codekvast.log
 
   handlers:
   - name: systemctl daemon-reload
