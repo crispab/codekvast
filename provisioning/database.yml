@@ -42,8 +42,6 @@
   - set_fact:
       s3_database_backup_bucket: "io.codekvast.{{ customer|lower }}.{{ env|lower }}.backup"
 
-  - debug: var=s3_database_backup_bucket
-
   - name: Install s3cmd
     package: name=s3cmd state=installed
 
