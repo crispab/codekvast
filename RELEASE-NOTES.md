@@ -1,5 +1,8 @@
 # Codekvast Release Notes
 
+## 0.20.0
+1. Merged codekvast-agent.jar and aspectjweaver.jar
+
 ## 0.19.0
 1. Warehouse: Added invocation statuses to method summary and method details page.
 1. Warehouse: Added settings editor.

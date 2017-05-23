@@ -62,7 +62,7 @@ in a web interface. It also offers a REST interface to facilitate IDE plugin dev
 |   | | c999         | |             |   |                      |
 |   | +--------------+ |             |   |                      |                +----------------------+
 |   |   ^              |             |   |<-=- reads            |                |Your application cGRE |
-|   |   |<-=-instructs v             |   |                      |                +----------------------+
+|   |   |<-=-embeds    v             |   |                      |                +----------------------+
 |   | +---------------------+        |   |                      |
 |   | | Codekvast agent     +------------/   /----------------\ |                +----------------------+
 |   | | cYEL                +--------------->|app binaries    | |                |Part of Codekvast cYEL|
@@ -168,7 +168,7 @@ Use <<install-agent-tomcat-linux, the installation guide for Tomcat>> as a basis
 
 The goal is to make
 
-`-javaagent:/path/to/codekvast-agent-{codekvastVersion}.jar -javaagent:/path/to/aspectjweaver-{aspectjVersion}.jar`
+`-javaagent:/path/to/codekvast-agent-{codekvastVersion}.jar`
 
 appear as the first arguments to the `java` command and to put `codekvast.conf` to any of the locations that
 Codekvast Agent expects it. See <<codekvast-agent-config-file-location, Configuring Codekvast Agent>>.
@@ -182,10 +182,6 @@ into your application's start script.
 ////
 
 ==== Trouble shooting
-
-If you get `LinkageError` on some aspectj-related type::
-. Move `aspectjweaver-{aspectjVersion}.jar` to a separate directory (called `/path/to/endorsed` below).
-. Add `-Djava.ext.dirs=/path/to/endorsed/` to the `java` command.
 
 No data is uploaded to Codekvast Warehouse::
 . set `aspectjOptions=-verbose -showWeaveInfo` in `codekvast.conf`
