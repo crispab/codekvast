@@ -11,5 +11,5 @@ for f in ~/.boto ~/.ssh/codekvast-amazon.pem; do
 done
 
 cd $(dirname $0)
-ansible-playbook --private-key ~/.ssh/codekvast-amazon.pem infrastructure.yml $*
+ansible-playbook --private-key ~/.ssh/codekvast-amazon.pem playbooks/infrastructure.yml $*
 

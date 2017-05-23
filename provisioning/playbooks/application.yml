@@ -21,7 +21,7 @@
     codekvast_queue_pollIntervalSeconds: 30
     codekvast_webapp_jwtExpirationSeconds: 1800
     codekvast_heroku_codekvast_url: https://{{ codekvast_server_name }}
-    codekvastVersion: "{{ lookup('ini', 'codekvastVersion type=properties file=../gradle.properties') }}"
+    codekvastVersion: "{{ lookup('ini', 'codekvastVersion type=properties file=../../gradle.properties') }}"
 
   tasks:
   - name: Lookup the private DNS name for the database server
@@ -55,7 +55,7 @@
 
   - name: Install codekvast executable jar
     copy:
-      src: ../product/warehouse/build/libs/codekvast-warehouse-{{ codekvastVersion }}-all.jar
+      src: ../../product/warehouse/build/libs/codekvast-warehouse-{{ codekvastVersion }}-all.jar
       dest: /opt/codekvast/codekvast-warehouse-{{ codekvastVersion }}-all.jar
       owner: codekvast
       group: codekvast

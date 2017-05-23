@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #---------------------------------------------------------------------------------------------------
-# Deploys Codekvast to the staging environment
+# Upgrades the servers' operating system in prod
 #---------------------------------------------------------------------------------------------------
 
 for f in ~/.boto ~/.ssh/codekvast-amazon.pem; do
@@ -11,4 +11,4 @@ for f in ~/.boto ~/.ssh/codekvast-amazon.pem; do
 done
 
 cd $(dirname $0)
-ansible-playbook --private-key ~/.ssh/codekvast-amazon.pem playbooks/servers.yml --limit tag_Env_staging $*
+ansible-playbook --private-key ~/.ssh/codekvast-amazon.pem playbooks/os-maintenance.yml --limit tag_Env_prod $*

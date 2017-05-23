@@ -8,7 +8,7 @@
     "password": "herokuApiPassword",
     "sso_salt": "herokuApiSsoSalt",
     "production": {
-      "base_url": "https://app.codekvast.io/heroku/resources",
+      "base_url": "https://api.codekvast.io/heroku/resources",
       "sso_url": "https://app.codekvast.io/heroku/sso/"
     },
     "test": {
