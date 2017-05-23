@@ -244,6 +244,8 @@
     type: CNAME
     zone: codekvast.io
   with_indexed_items: "{{ ec2backends.tagged_instances }}"
+  loop_control:
+    label: "{{ item.1.public_dns_name }}"
 
 - name: Create S3 bucket for database backups
   local_action:
