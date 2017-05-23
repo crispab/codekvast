@@ -7,15 +7,5 @@ version = codekvastVersion
 
 dependencies {
     compileOnly lombok
-    compileOnly aspectjWeaver
-    compileOnly "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
-
     compile 'javax.validation:validation-api:1.1.0.Final'
-
-    testCompile aspectjWeaver
-    testCompile lombok
-    testCompile testFrameworks
-    testCompile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
-
-    testRuntime logback
 }
