@@ -1,4 +1,8 @@
 # Common variables used by more than one playbook
 
 aws_region: eu-central-1
+
+aws_stacks:
+- {customer: Demo, env: staging, cidr_base: "10.0", state: present, cnames: ['api-staging', 'app-staging']}
+
 codekvast_server_name: app.codekvast.io

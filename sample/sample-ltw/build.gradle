@@ -43,7 +43,9 @@ excludePackages = sample.lib.excluded
 methodVisibility = all
 packages = sample. , foo.bar.
 tags = development, sample
+bridgeAspectjMessagesToJUL = false
 
+serverUrl = https://api-staging.codekvast.io
 httpProxyHost =   
 httpProxyPort = 4711
 """
@@ -57,7 +59,6 @@ run {
     jvmArgs = [
             "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath",
             "-javaagent:$configurations.collector.asPath",
-            "-javaagent:$configurations.aspectjweaver.asPath",
-            "-Djava.ext.dirs=$configurations.collector.asPath"
+            "-javaagent:$configurations.aspectjweaver.asPath"
     ]
 }

@@ -5,8 +5,8 @@
     region: "{{ aws_region }}"
     profile: codekvast
     filters:
-      cidr_block: "{{ vpc_cidr_base }}.0.0/16"
-      "tag:Name": "{{ aws_resource_name }}"
+      cidr_block: "{{ stack.cidr_base }}.0.0/16"
+      "tag:Name": "{{ aws_stack_name }}"
   register: net
 
 - debug: var=net.vpcs[0].id
@@ -19,14 +19,14 @@
     region: "{{ aws_region }}"
     profile: codekvast
     vpc_id: "{{ vpc_id }}"
-    cidr: "{{ vpc_cidr_base}}.1.0/24"
-    state: "{{ stack_state }}"
+    cidr: "{{ stack.cidr_base }}.1.0/24"
+    state: "{{ stack.state }}"
 
 - name: Destroy VPC
   local_action:
     module: ec2_vpc_net
     region: "{{ aws_region }}"
     profile: codekvast
-    name: "{{ aws_resource_name }}"
-    cidr_block: "{{ vpc_cidr_base }}.0.0/16"
-    state: "{{ stack_state }}"
+    name: "{{ aws_stack_name }}"
+    cidr_block: "{{ stack.cidr_base }}.0.0/16"
+    state: "{{ stack.state }}"

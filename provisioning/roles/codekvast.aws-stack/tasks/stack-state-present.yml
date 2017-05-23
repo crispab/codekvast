@@ -4,9 +4,9 @@
     module: ec2_vpc_net
     region: "{{ aws_region }}"
     profile: codekvast
-    state: "{{ stack_state }}"
-    name: "{{ aws_resource_name }}"
-    cidr_block: "{{ vpc_cidr_base }}.0.0/16"
+    state: "{{ stack.state }}"
+    name: "{{ aws_stack_name }}"
+    cidr_block: "{{ stack.cidr_base }}.0.0/16"
     tags: "{{ aws_common_tags }}"
   register: net
 
@@ -17,7 +17,7 @@
     module: ec2_vpc_igw
     region: "{{ aws_region }}"
     profile: codekvast
-    state: "{{ stack_state }}"
+    state: "{{ stack.state }}"
     vpc_id: "{{ vpc_id }}"
   register: igw
 
@@ -27,9 +27,9 @@
     region: "{{ aws_region }}"
     profile: codekvast
     vpc_id: "{{ vpc_id }}"
-    state: "{{ stack_state }}"
+    state: "{{ stack.state }}"
     az: "{{ aws_az }}"
-    cidr: "{{ vpc_cidr_base}}.1.0/24"
+    cidr: "{{ stack.cidr_base }}.1.0/24"
     resource_tags: "{{ aws_common_tags }}"
   register: subnet
 
@@ -49,16 +49,14 @@
         gateway_id: "{{ igw.gateway_id }}"
   register: route_table
 
-- debug: var=route_table
-
 - name: Create frontend security group
   local_action:
     module: ec2_group
     region: "{{ aws_region }}"
     profile: codekvast
     vpc_id: "{{ vpc_id }}"
-    state: "{{ stack_state }}"
-    name: "codekvast-{{ customer }}-{{ env }}-frontend"
+    state: "{{ stack.state }}"
+    name: "codekvast-{{ stack.customer }}-{{ stack.env }}-frontend"
     description: "Codekvast internet-facing security group"
     rules:
     - proto: tcp
@@ -76,18 +74,18 @@
     region: "{{ aws_region }}"
     profile: codekvast
     vpc_id: "{{ vpc_id }}"
-    state: "{{ stack_state }}"
-    name: "codekvast-{{ customer }}-{{ env }}-backend"
+    state: "{{ stack.state }}"
+    name: "codekvast-{{ stack.customer }}-{{ stack.env }}-backend"
     description: "Codekvast backend access"
     rules:
     - proto: tcp
       from_port: 8080
       to_port: 8080
-      group_name: "codekvast-{{ customer }}-{{ env }}-frontend"
+      group_name: "codekvast-{{ stack.customer }}-{{ stack.env }}-frontend"
     - proto: tcp
       from_port: 9080
       to_port: 9080
-      group_name: "codekvast-{{ customer }}-{{ env }}-frontend"
+      group_name: "codekvast-{{ stack.customer }}-{{ stack.env }}-frontend"
 
 - name: Create management security group
   local_action:
@@ -95,8 +93,8 @@
     region: "{{ aws_region }}"
     profile: codekvast
     vpc_id: "{{ vpc_id }}"
-    state: "{{ stack_state }}"
-    name: "codekvast-{{ customer }}-{{ env }}-management"
+    state: "{{ stack.state }}"
+    name: "codekvast-{{ stack.customer }}-{{ stack.env }}-management"
     description: "Codekvast management access"
     rules:
     - proto: tcp
@@ -117,8 +115,8 @@
     assign_public_ip: yes
     vpc_subnet_id: "{{ subnet_id }}"
     groups:
-    - "codekvast-{{ customer }}-{{ env }}-backend"
-    - "codekvast-{{ customer }}-{{ env }}-management"
+    - "codekvast-{{ stack.customer }}-{{ stack.env }}-backend"
+    - "codekvast-{{ stack.customer }}-{{ stack.env }}-management"
     image: "{{ aws_ami_id }}"
     instance_type: "{{ ec2_instance_type }}"
     user_data: "{{ lookup('file', 'files/ubuntu-cloud-init.sh') }}"
@@ -143,7 +141,7 @@
     module: ec2_elb_lb
     region: "{{ aws_region }}"
     profile: codekvast
-    name: "{{ aws_resource_name }}"
+    name: "{{ aws_stack_name }}"
     instance_ids: "{{ frontend_instance_id }}"
     listeners:
     - protocol: http
@@ -165,8 +163,8 @@
       healthy_threshold: 2
     purge_instance_ids: yes
     security_group_names:
-    - codekvast-{{ customer }}-{{ env }}-frontend
-    state: "{{ stack_state }}"
+    - codekvast-{{ stack.customer }}-{{ stack.env }}-frontend
+    state: "{{ stack.state }}"
     subnets: "{{ subnet_id }}"
     tags: "{{ aws_common_tags }}"
     wait: yes
@@ -185,7 +183,7 @@
     ttl: 600
     type: CNAME
     zone: codekvast.io
-  with_items: "{{ stack_dns_names }}"
+  with_items: "{{ stack.cnames }}"
 
 - name: Define instance's CNAMEs
   local_action:
@@ -198,7 +196,16 @@
     ttl: 600
     type: CNAME
     zone: codekvast.io
-  with_items: "{{ stack_dns_names }}"
+  with_items: "{{ stack.cnames }}"
+
+- name: Create S3 bucket for database backups
+  local_action:
+    module: s3_bucket
+    region: "{{ aws_region }}"
+    profile: codekvast
+    name: "{{ s3_database_backup_bucket }}"
+    tags: "{{ aws_common_tags }}"
+
 
 - name: Wait for OpenSSH on EC2 instance
   local_action:

@@ -9,6 +9,7 @@
 
   vars_files:
   - vars/secrets.yml
+  - vars/common.yml
 
   vars:
     mysql_origin: 'default'
@@ -32,11 +33,25 @@
   - {role: HanXHX.mysql, tags: mariadb}
 
   post_tasks:
+  - set_fact:
+      customer: "{{ hostvars[inventory_hostname]['ec2_tag_Customer'] }}"
+      env: "{{ hostvars[inventory_hostname]['ec2_tag_Env'] }}"
+      s3_bucket_location: "{{ hostvars[inventory_hostname]['ec2_region'] }}"
+
+  - set_fact:
+      s3_database_backup_bucket: "io.codekvast.{{ customer|lower }}.{{ env|lower }}.backup"
+
+  - debug: var=s3_database_backup_bucket
+
+  - name: Install s3cmd
+    package: name=s3cmd state=installed
+
   - name: Install backup scripts
     template: src=database/{{ item }}.j2 dest=/root/{{ item }} mode=755
     with_items:
     - mariadb-backup
     - mariadb-restore
+    - s3cfg
 
   - name: Link /root/mariadb-backup to /etc/cron.daily
     file: src=/root/mariadb-backup dest=/etc/cron.daily/mariadb-backup state=link

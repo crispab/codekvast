@@ -5,12 +5,15 @@
 
 declare weekday=$(date --utc +%A | tr [A-Z] [a-z])
 declare targetDir={{ mysql_backup_dir }}/latest
+declare tarball={{ mysql_backup_dir }}/mariadb-backup-$weekday.tar.gz
+declare bucket={{ s3_database_backup_bucket }}
 
 rm -fr $targetDir
 mkdir -p $targetDir
 xtrabackup --backup --target-dir $targetDir
 
 cd $targetDir
-tar czf {{ mysql_backup_dir }}/mariadb-backup-$weekday.tar.gz *
+tar czf $tarball *
 
-# TODO: upload the backup to an S3 bucket
+s3cmd --config=/root/s3cfg --progress --force put $tarball s3://$bucket
+s3cmd --config=/root/s3cfg ls s3://$bucket

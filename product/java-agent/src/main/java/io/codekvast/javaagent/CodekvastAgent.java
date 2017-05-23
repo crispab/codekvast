@@ -131,8 +131,8 @@ public class CodekvastAgent {
     }
 
     private static Thread createShutdownHook() {
-        Thread thread = new Thread(new MyShutdownHook());
-        thread.setName(NAME + " Shutdown Hook");
+        // TODO: solve class loading problem in shutdown hook. It cannot find io.codekvast.javaagent.AspectjMessageHandler.
+        Thread thread = new Thread(new MyShutdownHook(), NAME + " Shutdown Hook");
         return thread;
     }
 

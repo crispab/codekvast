@@ -20,6 +20,9 @@
     codekvastVersion: "{{ lookup('ini', 'codekvastVersion type=properties file=../gradle.properties') }}"
 
   tasks:
+  - name: Setting timezone to UTC
+    timezone: name=UTC
+
   - name: Record EC2 facts
     action: ec2_facts
 

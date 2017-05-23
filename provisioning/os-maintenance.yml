@@ -8,5 +8,5 @@
   become: yes
 
   tasks:
-    - name: Upgrade installed packages
-      apt: update_cache=yes upgrade=safe autoremove=yes purge=yes
+  - name: Upgrade installed packages
+    apt: update_cache=yes upgrade=safe autoremove=yes purge=yes
