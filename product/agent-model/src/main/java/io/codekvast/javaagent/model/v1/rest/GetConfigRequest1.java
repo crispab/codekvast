@@ -34,6 +34,7 @@ import javax.validation.constraints.Size;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @ToString
+@EqualsAndHashCode
 public class GetConfigRequest1 {
 
     /**
