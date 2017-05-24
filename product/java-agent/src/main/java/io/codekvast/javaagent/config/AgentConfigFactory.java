@@ -75,6 +75,10 @@ public class AgentConfigFactory {
             return null;
         }
 
+        if (file.getName().endsWith(".conf.ser")) {
+            return FileUtils.deserializeFromFile(file, AgentConfig.class);
+        }
+
         try {
             Properties props = FileUtils.readPropertiesFrom(file);
 

@@ -21,7 +21,6 @@
  */
 package io.codekvast.javaagent.config;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.codekvast.javaagent.appversion.AppVersionResolver;
 import io.codekvast.javaagent.model.Endpoints;
 import io.codekvast.javaagent.model.v1.CommonPublicationData;
@@ -31,6 +30,7 @@ import lombok.*;
 import okhttp3.OkHttpClient;
 
 import java.io.File;
+import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.List;
@@ -41,13 +41,15 @@ import java.util.concurrent.TimeUnit;
  *
  * @author olle.hallin@crisp.se
  */
-@SuppressWarnings("ClassWithTooManyFields")
+@SuppressWarnings({"ClassWithTooManyFields", "ClassWithTooManyMethods", "OverlyComplexClass"})
 @Data
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Setter(AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
-public class AgentConfig implements CodekvastConfig {
+public class AgentConfig implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     public static final String INVOCATIONS_BASENAME = "invocations.dat";
     public static final String JVM_BASENAME = "jvm.dat";
 
@@ -93,51 +95,40 @@ public class AgentConfig implements CodekvastConfig {
     private int httpProxyPort;
 
     @NonNull
-    @JsonIgnore
     private File aspectFile;
 
-    @JsonIgnore
-    private transient String resolvedAppVersion;
+    private String resolvedAppVersion;
 
-    @JsonIgnore
     private transient OkHttpClient httpClient;
 
-    @JsonIgnore
     public List<String> getNormalizedPackages() {
         return ConfigUtils.getNormalizedPackages(packages);
     }
 
-    @JsonIgnore
     public List<String> getNormalizedExcludePackages() {
         return ConfigUtils.getNormalizedPackages(excludePackages);
     }
 
-    @JsonIgnore
     public List<File> getCodeBaseFiles() {
         return ConfigUtils.getCommaSeparatedFileValues(codeBase, false);
     }
 
-    @JsonIgnore
     public MethodAnalyzer getMethodAnalyzer() {
         return new MethodAnalyzer(this.methodVisibility);
     }
 
-    @JsonIgnore
     public String getPollConfigRequestEndpoint() {
         return String.format("%s%s", serverUrl, Endpoints.AGENT_V1_POLL_CONFIG);
     }
 
-    @JsonIgnore
     public String getCodeBaseUploadEndpoint() {
         return String.format("%s%s", serverUrl, Endpoints.AGENT_V1_UPLOAD_CODEBASE);
     }
 
-    @JsonIgnore
     public String getInvocationDataUploadEndpoint() {
         return String.format("%s%s", serverUrl, Endpoints.AGENT_V1_UPLOAD_INVOCATION_DATA);
     }
 
-    @JsonIgnore
     public String getResolvedAppVersion() {
         if (resolvedAppVersion == null) {
             resolvedAppVersion = new AppVersionResolver(this).resolveAppVersion();
@@ -145,7 +136,6 @@ public class AgentConfig implements CodekvastConfig {
         return resolvedAppVersion;
     }
 
-    @JsonIgnore
     public OkHttpClient getHttpClient() {
         if (httpClient == null) {
             validate();

@@ -21,17 +21,18 @@
  */
 package io.codekvast.javaagent.codebase;
 
+import com.google.common.reflect.ClassPath;
 import io.codekvast.javaagent.config.MethodAnalyzer;
 import io.codekvast.javaagent.model.v1.MethodSignature;
 import io.codekvast.javaagent.model.v1.SignatureStatus;
 import io.codekvast.javaagent.util.SignatureUtils;
 import lombok.extern.java.Log;
-import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -90,17 +91,21 @@ public class CodeBaseScanner {
     }
 
     private Set<String> getRecognizedTypes(Set<String> packages, URLClassLoader appClassLoader) {
-        // This is a weird way of using Reflections.
-        // We're only interested in it's ability to enumerate everything inside a class loader.
-        // The actual Reflections object is immediately discarded. Our data is collected by the filter.
-
-        // TODO: Replace Reflections with Guava's ClassPath
-
-        RecordingClassFileFilter recordingClassNameFilter = new RecordingClassFileFilter(packages);
-
-        new Reflections(appClassLoader, new SubTypesScanner(), recordingClassNameFilter);
-
-        return recordingClassNameFilter.getMatchedClassNames();
+        Set<String> result = new HashSet<>();
+        try {
+            ClassPath classPath = ClassPath.from(appClassLoader);
+            for (ClassPath.ClassInfo classInfo : classPath.getAllClasses()) {
+                String name = classInfo.getPackageName();
+                for (String aPackage : packages) {
+                    if (name.startsWith(aPackage)) {
+                        result.add(classInfo.getName());
+                    }
+                }
+            }
+        } catch (IOException e) {
+            log.severe("Cannot create ClassPath: " + e);
+        }
+        return result;
     }
 
     void findTrackedConstructors(CodeBase codeBase, Class<?> clazz) {

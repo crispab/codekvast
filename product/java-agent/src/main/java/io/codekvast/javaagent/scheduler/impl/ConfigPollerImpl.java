@@ -21,7 +21,7 @@
  */
 package io.codekvast.javaagent.scheduler.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
@@ -45,7 +45,7 @@ public class ConfigPollerImpl implements ConfigPoller {
 
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final Gson gson = new Gson();
 
     public ConfigPollerImpl(AgentConfig config) {
         this.config = config;
@@ -68,7 +68,7 @@ public class ConfigPollerImpl implements ConfigPoller {
         log.fine(String.format("Posting %s to %s", request, config.getPollConfigRequestEndpoint()));
 
         GetConfigResponse1 response =
-            objectMapper.readValue(doHttpPost(objectMapper.writeValueAsString(request)), GetConfigResponse1.class);
+            gson.fromJson(doHttpPost(gson.toJson(request)), GetConfigResponse1.class);
 
         log.fine("Received " + response + " in response");
         return response;

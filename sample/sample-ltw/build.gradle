@@ -43,7 +43,7 @@ packages = sample. , foo.bar.
 tags = development, sample
 bridgeAspectjMessagesToJUL = false
 
-serverUrl = https://api-staging.codekvast.io
+# serverUrl = https://api-staging.codekvast.io
 httpProxyHost =   
 httpProxyPort = 4711
 """

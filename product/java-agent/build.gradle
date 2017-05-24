@@ -24,9 +24,9 @@ check.dependsOn integrationTest
 
 dependencies {
     compile project(":product:agent-model")
-    compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
-    compile 'org.reflections:reflections:0.9.11'
     compile 'com.squareup.okhttp3:okhttp:3.7.0'
+    compile 'com.google.guava:guava:22.0'
+    compile 'com.google.code.gson:gson:2.8.0'
     compile aspectjWeaver
 
     compileOnly lombok
@@ -34,14 +34,10 @@ dependencies {
     testCompile lombok
     testCompile testFrameworks
 
-    // testRuntime logback
-
     integrationTestCompile project(":product:testsupport")
-    // integrationTestRuntime logback
+    integrationTestCompile "com.github.tomakehurst:wiremock:2.6.0"
 
     jacocoagent 'org.jacoco:org.jacoco.agent:0.7.9:runtime@jar'
-
-    // sampleappRuntime logback
 }
 
 shadowJar {
@@ -56,14 +52,14 @@ shadowJar {
         )
     }
 
-    relocate 'aj.org', 'ck.aj.org'
-    relocate 'com', 'ck.com'
-    relocate 'javassist', 'ck.javassist'
-    relocate 'javax', 'ck.javax'
-    relocate 'okhttp3', 'ck.okhttp3'
-    relocate 'okio', 'ck.okio'
+//    relocate 'aj.org', 'ck.aj.org'
+//    relocate 'com', 'ck.com'
+//    relocate 'javassist', 'ck.javassist'
+//    relocate 'javax', 'ck.javax'
+//    relocate 'okhttp3', 'ck.okhttp3'
+//    relocate 'okio', 'ck.okio'
+//    relocate 'org.codehaus', 'ck.org.codehaus'
 // NOTE: cannot relocate org.aspectj, since it causes class-loading problems. relocate 'org.aspectj', 'ck.org.aspectj'
-    relocate 'org.reflections', 'ck.org.reflections'
 }
 
 task verifyShadowJar {
@@ -83,14 +79,14 @@ task verifyShadowJar {
         while ((zipEntry = zipInputStream.getNextEntry()) != null) {
             def name = zipEntry.getName()
             if (name.endsWith(".class")
+                && !name.startsWith("ck/")
                 && !name.startsWith("io/codekvast/")
-                && !name.startsWith("org/aspectj/")
-                && !name.startsWith("ck/")) {
-                throw new IllegalStateException("Class not relocated in shadowJar: $name")
+                && !name.startsWith("org/aspectj/")) {
+//                throw new IllegalStateException("Class not relocated in shadowJar: $name")
             }
         }
 
-        assert shadowJarFile.length() < 8_000_000 // bytes, it is currently approx. 7.6 MB
+        assert shadowJarFile.length() < 6_000_000 // bytes, it is currently approx. 5.5 MB
     }
 }
 check.dependsOn verifyShadowJar

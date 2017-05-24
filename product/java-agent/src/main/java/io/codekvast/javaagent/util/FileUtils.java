@@ -131,4 +131,12 @@ public final class FileUtils {
         return file;
     }
 
+    public static <T> T  deserializeFromFile(File file, Class<T> classOfT) {
+        try (ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)))) {
+            return classOfT.cast(ois.readObject());
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
