@@ -225,14 +225,12 @@ public class CodekvastAgent {
 
             setContextClassLoader(null);
 
-            // thread.setDaemon(false);
-
             setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
 
                 @SuppressWarnings("UseOfSystemOutOrSystemErr")
                 @Override
                 public void uncaughtException(Thread t, Throwable e) {
-                    System.err.println("Uncaught exception in  " + t.getName());
+                    System.err.println(NAME + " Uncaught exception in  " + t.getName());
                     e.printStackTrace(System.err);
                 }
             });
@@ -240,8 +238,13 @@ public class CodekvastAgent {
 
         @Override
         public void run() {
-            log.info("Shutting down...");
+            //noinspection UseOfSystemOutOrSystemErr
+            // Cannot use logger here, since logging could have been shut down already
+            System.err.println(NAME + " is shutting down...");
+            long startedAt = System.currentTimeMillis();
             initialize(null);
+            long elapsed = System.currentTimeMillis() - startedAt;
+            System.err.println(NAME + " shutdown completed in " + elapsed + " ms");
         }
     }
 }

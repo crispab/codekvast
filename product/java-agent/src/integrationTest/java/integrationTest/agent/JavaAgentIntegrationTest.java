@@ -95,7 +95,7 @@ public class JavaAgentIntegrationTest {
         assertThat(stdout, containsString("AspectJ Weaver Version "));
         assertThat(stdout, containsString("[INFO] sample.app.SampleApp - 2+2=4"));
         assertThat(stdout, containsString("Join point 'method-execution(void sample.app.SampleApp.main(java.lang.String[]))"));
-        assertThat(stdout, containsString("[INFO] io.codekvast.javaagent.CodekvastAgent - Shutting down..."));
+        assertThat(stdout, containsString("Codekvast shutdown completed in "));
 
         verify(postRequestedFor(urlEqualTo(Endpoints.AGENT_V1_POLL_CONFIG)));
 
@@ -109,7 +109,7 @@ public class JavaAgentIntegrationTest {
                           "-javaagent:" + jacocoAgent,
                           "-javaagent:" + codekvastAgent,
                           "-cp", classpath,
-                          "-Djava.ext.dirs=" + new File(codekvastAgent).getParentFile().getAbsolutePath(),
+                          "-Djava.ext.dirs=" + codekvastAgent,
                           "-Djava.util.logging.config.file=src/integrationTest/resources/logging.properties",
                           "-Duser.language=en",
                           "-Duser.country=US"));

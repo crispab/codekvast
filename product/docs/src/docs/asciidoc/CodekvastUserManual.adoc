@@ -168,9 +168,9 @@ Use <<install-agent-tomcat-linux, the installation guide for Tomcat>> as a basis
 
 The goal is to make
 
-`-javaagent:/path/to/codekvast-agent-{codekvastVersion}.jar`
+`-javaagent:/path/to/codekvast-agent-{codekvastVersion}-all.jar -Djava.ext.dirs=/path/to/codekvast-agent-{codekvastVersion}-all.jar`
 
-appear as the first arguments to the `java` command and to put `codekvast.conf` to any of the locations that
+appear as arguments to the `java` command and to put `codekvast.conf` in any of the locations that
 Codekvast Agent expects it. See <<codekvast-agent-config-file-location, Configuring Codekvast Agent>>.
 
 ////

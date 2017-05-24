@@ -69,7 +69,7 @@ public class SignatureUtils {
 
     private static List<Pattern> readByteCodePatternsFrom(String resourceName) {
         List<Pattern> result = new ArrayList<>();
-        log.fine("Reading byte code patterns from " + resourceName);
+        log.finer("Reading byte code patterns from " + resourceName);
         try {
             LineNumberReader reader = new LineNumberReader(
                 new BufferedReader(
