@@ -85,7 +85,7 @@ public class Scheduler implements Runnable {
      * @return this
      */
     public Scheduler start() {
-        executor.scheduleAtFixedRate(this, 10L, 10L, TimeUnit.SECONDS);
+        executor.scheduleAtFixedRate(this, 0L, 10L, TimeUnit.SECONDS);
         log.info("Scheduler started; pulling dynamic config from " + config.getServerUrl());
         return this;
     }

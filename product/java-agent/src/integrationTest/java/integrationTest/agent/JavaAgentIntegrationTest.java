@@ -22,6 +22,7 @@ import java.util.List;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
@@ -98,7 +99,8 @@ public class JavaAgentIntegrationTest {
 
         verify(postRequestedFor(urlEqualTo(Endpoints.AGENT_V1_POLL_CONFIG)));
 
-        // assertThat(stdout, not(containsString("java.lang.ClassNotFoundException: io.codekvast.javaagent.AspectjMessageHandler")));
+        assertThat(stdout, not(containsString(" error ")));
+        assertThat(stdout, not(containsString("[SEVERE]")));
     }
 
     private List<String> buildJavaCommand(String configPath) {
@@ -107,6 +109,7 @@ public class JavaAgentIntegrationTest {
                           "-javaagent:" + jacocoAgent,
                           "-javaagent:" + codekvastAgent,
                           "-cp", classpath,
+                          "-Djava.ext.dirs=" + new File(codekvastAgent).getParentFile().getAbsolutePath(),
                           "-Djava.util.logging.config.file=src/integrationTest/resources/logging.properties",
                           "-Duser.language=en",
                           "-Duser.country=US"));

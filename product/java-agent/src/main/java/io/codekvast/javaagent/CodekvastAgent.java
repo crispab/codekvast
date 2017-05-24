@@ -34,7 +34,6 @@ import lombok.extern.java.Log;
 import org.aspectj.bridge.Constants;
 
 import java.io.File;
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.instrument.Instrumentation;
 import java.util.Collections;
 import java.util.HashSet;
@@ -130,27 +129,9 @@ public class CodekvastAgent {
                                   new InvocationDataPublisherFactoryImpl())
             .start();
 
-        Runtime.getRuntime().addShutdownHook(createShutdownHook());
+        Runtime.getRuntime().addShutdownHook(new MyShutdownHook());
 
         log.info(String.format("%s is ready to detect used code within(%s..*).", NAME, getNormalizedPackages(config)));
-    }
-
-    private static Thread createShutdownHook() {
-        Thread thread = new Thread(new MyShutdownHook(), NAME + " Shutdown Hook");
-
-        thread.setContextClassLoader(Thread.currentThread().getContextClassLoader());
-
-        thread.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-
-            @SuppressWarnings("UseOfSystemOutOrSystemErr")
-            @Override
-            public void uncaughtException(Thread t, Throwable e) {
-                System.err.println("Uncaught exception in  " + t.getName());
-                e.printStackTrace(System.err);
-            }
-        });
-
-        return thread;
     }
 
     private static String getNormalizedPackages(AgentConfig config) {
@@ -237,7 +218,26 @@ public class CodekvastAgent {
         return "execution(public * *..*(..)) || execution(public *..new(..))";
     }
 
-    private static class MyShutdownHook implements Runnable {
+    private static class MyShutdownHook extends Thread {
+
+        MyShutdownHook() {
+            setName(NAME + " shutdown hook");
+
+            setContextClassLoader(null);
+
+            // thread.setDaemon(false);
+
+            setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+
+                @SuppressWarnings("UseOfSystemOutOrSystemErr")
+                @Override
+                public void uncaughtException(Thread t, Throwable e) {
+                    System.err.println("Uncaught exception in  " + t.getName());
+                    e.printStackTrace(System.err);
+                }
+            });
+        }
+
         @Override
         public void run() {
             log.info("Shutting down...");
