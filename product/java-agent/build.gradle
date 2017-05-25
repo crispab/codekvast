@@ -52,14 +52,28 @@ shadowJar {
         )
     }
 
-//    relocate 'aj.org', 'ck.aj.org'
-//    relocate 'com', 'ck.com'
-//    relocate 'javassist', 'ck.javassist'
-//    relocate 'javax', 'ck.javax'
-//    relocate 'okhttp3', 'ck.okhttp3'
-//    relocate 'okio', 'ck.okio'
-//    relocate 'org.codehaus', 'ck.org.codehaus'
-// NOTE: cannot relocate org.aspectj, since it causes class-loading problems. relocate 'org.aspectj', 'ck.org.aspectj'
+    dependencies {
+        exclude(dependency('com.google.code.findbugs:jsr305:'))
+        exclude(dependency('com.google.errorprone:error_prone_annotations:'))
+        exclude(dependency('com.google.j2objc:j2objc-annotations:'))
+        exclude(dependency('org.codehaus.mojo:animal-sniffer-annotations:'))
+    }
+
+    exclude 'META-INF/maven/**'
+    exclude 'aspectj*.dtd'
+    exclude 'publicsuffixes.gz'
+
+    relocate 'aj.org', 'ck.aj.org'
+    relocate 'com', 'ck.com'
+    relocate 'javax.annotation', 'ck.javax.annotation'
+    relocate 'javax.validation', 'ck.javax.validation'
+    relocate 'okhttp3', 'ck.okhttp3'
+    relocate 'okio', 'ck.okio'
+
+    relocate('org.aspectj', 'ck.org.aspectj') {
+        exclude 'org/aspectj/lang/**' // Cannot be relocated, since that would break weaving
+    }
+
 }
 
 task verifyShadowJar {
@@ -78,15 +92,14 @@ task verifyShadowJar {
         ZipEntry zipEntry
         while ((zipEntry = zipInputStream.getNextEntry()) != null) {
             def name = zipEntry.getName()
-            if (name.endsWith(".class")
-                && !name.startsWith("ck/")
-                && !name.startsWith("io/codekvast/")
-                && !name.startsWith("org/aspectj/")) {
-//                throw new IllegalStateException("Class not relocated in shadowJar: $name")
-            }
+
+            assert !name.endsWith(".class") ||
+                name.startsWith("ck/") ||
+                name.startsWith("io/codekvast/") ||
+                name.startsWith("org/aspectj/lang")
         }
 
-        assert shadowJarFile.length() < 6_000_000 // bytes, it is currently approx. 5.5 MB
+        assert shadowJarFile.length() < 6_000_000 // bytes, it is currently approx. 5.3 MB
     }
 }
 check.dependsOn verifyShadowJar

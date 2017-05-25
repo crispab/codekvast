@@ -64,6 +64,8 @@ public class Scheduler implements Runnable {
     private final SchedulerState invocationDataPublisherState = new SchedulerState("invocationData").initialize(10, 10);
     private InvocationDataPublisher invocationDataPublisher;
 
+    private int runCount = 0;
+
     public Scheduler(AgentConfig config,
                      ConfigPoller configPoller,
                      CodeBasePublisherFactory codeBasePublisherFactory,
@@ -85,7 +87,7 @@ public class Scheduler implements Runnable {
      * @return this
      */
     public Scheduler start() {
-        executor.scheduleAtFixedRate(this, 0L, 10L, TimeUnit.SECONDS);
+        executor.scheduleAtFixedRate(this, 10L, 10L, TimeUnit.SECONDS);
         log.info("Scheduler started; pulling dynamic config from " + config.getServerUrl());
         return this;
     }
@@ -95,6 +97,11 @@ public class Scheduler implements Runnable {
      */
     public void shutdown() {
         long startedAt = System.currentTimeMillis();
+
+        if (runCount == 0) {
+            log.finer("Shutting down before first scheduled execution");
+            run();
+        }
 
         log.fine("Stopping scheduler");
         executor.shutdown();
@@ -123,6 +130,7 @@ public class Scheduler implements Runnable {
 
     @Override
     public void run() {
+        runCount += 1;
         if (executor.isShutdown()) {
             log.fine("Scheduler is shutting down");
             return;

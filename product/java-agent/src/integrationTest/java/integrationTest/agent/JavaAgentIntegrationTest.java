@@ -98,6 +98,8 @@ public class JavaAgentIntegrationTest {
         assertThat(stdout, containsString("Codekvast shutdown completed in "));
 
         verify(postRequestedFor(urlEqualTo(Endpoints.AGENT_V1_POLL_CONFIG)));
+//        verify(postRequestedFor(urlEqualTo(Endpoints.AGENT_V1_UPLOAD_CODEBASE)));
+//        verify(postRequestedFor(urlEqualTo(Endpoints.AGENT_V1_UPLOAD_INVOCATION_DATA)));
 
         assertThat(stdout, not(containsString(" error ")));
         assertThat(stdout, not(containsString("[SEVERE]")));
