@@ -19,9 +19,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.warehouse.security.impl;
+package io.codekvast.warehouse.bootstrap;
 
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
+import io.codekvast.warehouse.security.impl.SecurityService;
 import io.codekvast.warehouse.webapp.WebappController;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -77,35 +78,35 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-        if (settings.isDemoMode()) {
-            return;
-        }
-
         httpSecurity
             // We cannot use CSRF since agents must be able to POST
             .csrf().disable()
 
-            .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
+            // and we don't want HttpSessions
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-            // don't create session
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+        if (!settings.isDemoMode()) {
 
-            .authorizeRequests()
+            httpSecurity
+                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
 
-            // /webapp/** should be authorized
-            .antMatchers(HttpMethod.GET, WebappController.WEBAPP_IS_DEMO_MODE).permitAll()
-            .antMatchers(HttpMethod.OPTIONS, "/webapp/**").permitAll()
-            .antMatchers("/webapp/**").hasRole("USER")
+                .authorizeRequests()
 
-            // But the rest should be open
-            .anyRequest().permitAll();
+                // /webapp/** should require an authorized user
+                .antMatchers(HttpMethod.GET, WebappController.WEBAPP_IS_DEMO_MODE).permitAll()
+                .antMatchers(HttpMethod.OPTIONS, "/webapp/**").permitAll()
+                .antMatchers("/webapp/**").hasRole("USER")
 
-        // Custom token-based security filter
-        httpSecurity
-            .addFilterBefore(authenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+                // But the rest should be open
+                .anyRequest().permitAll();
 
-        // disable page caching
-        httpSecurity.headers().cacheControl();
+            // Custom token-based security filter
+            httpSecurity
+                .addFilterBefore(authenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+
+            // disable page caching
+            httpSecurity.headers().cacheControl();
+        }
     }
 
     @Component
