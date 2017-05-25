@@ -43,7 +43,10 @@ public class AgentConfigFactory {
     private static final int DEFAULT_HTTP_PROXY_PORT = 3128;
     private static final int DEFAULT_HTTP_CONNECT_TIMEOUT_SECONDS = 10;
     private static final int DEFAULT_HTTP_READ_TIMEOUT_SECONDS = 10;
-    private static final int DEFAULT_HTTP_WRITE_TIMEOUT_SECONDS = 30;
+    private static final int DEFAULT_HTTP_WRITE_TIMEOUT_SECONDS = 3;
+    private static final int DEFAULT_SCHEDULER_INITIAL_DELAY_MILLIS = 10_000;
+    private static final int DEFAULT_SCHEDULER_INTERVAL_MILLIS = 10_000;
+
     private static final String SAMPLE_ASPECTJ_OPTIONS = "-verbose -showWeaveInfo";
     private static final String SAMPLE_CODEBASE_URI1 = "/path/to/codebase1/";
     private static final String SAMPLE_CODEBASE_URI2 = "/path/to/codebase2/";
@@ -133,6 +136,9 @@ public class AgentConfigFactory {
                               ConfigUtils.getOptionalStringValue(props, "methodVisibility", DEFAULT_METHOD_VISIBILITY))
                           .packages(ConfigUtils.getMandatoryStringValue(props, "packages"))
                           .serverUrl(ConfigUtils.getOptionalStringValue(props, "serverUrl", DEFAULT_SERVER_URL))
+                          .schedulerInitialDelayMillis(
+                              ConfigUtils.getOptionalIntValue(props, "schedulerInitialDelayMillis", DEFAULT_SCHEDULER_INITIAL_DELAY_MILLIS))
+                          .schedulerIntervalMillis(ConfigUtils.getOptionalIntValue(props, "schedulerIntervalMillis", DEFAULT_SCHEDULER_INTERVAL_MILLIS))
                           .tags(ConfigUtils.getOptionalStringValue(props, TAGS_KEY, ""))
                           .build().validate();
     }
@@ -198,6 +204,8 @@ public class AgentConfigFactory {
                           .licenseKey(TRIAL_LICENSE_KEY)
                           .methodVisibility(DEFAULT_METHOD_VISIBILITY)
                           .packages(UNSPECIFIED)
+                          .schedulerInitialDelayMillis(DEFAULT_SCHEDULER_INITIAL_DELAY_MILLIS)
+                          .schedulerIntervalMillis(DEFAULT_SCHEDULER_INTERVAL_MILLIS)
                           .serverUrl(DEFAULT_SERVER_URL)
                           .tags(createSystemPropertiesTags() + ", " + SAMPLE_TAGS)
                           .build();

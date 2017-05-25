@@ -97,16 +97,6 @@ public class Scheduler implements Runnable {
         long startedAt = System.currentTimeMillis();
         synchronized (executor) {
 
-            if (dynamicConfig == null) {
-                log.finer("Shutting down before first scheduled execution");
-                pollState.scheduleNow();
-                run();
-
-                if (dynamicConfig == null) {
-                    log.finer("Demand poll failed");
-                }
-            }
-
             log.fine("Stopping scheduler");
             executor.shutdown();
             try {
