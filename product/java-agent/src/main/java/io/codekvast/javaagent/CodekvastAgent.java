@@ -185,8 +185,8 @@ public class CodekvastAgent {
             messageHandlerClass + config.getAspectjOptions(),
             getIncludeExcludeElements("include", config.getNormalizedPackages()),
             getIncludeExcludeElements("exclude", config.getNormalizedExcludePackages(),
-                                      "io.codekvast.javaagent", "codekvast"));
-
+                                      "io.codekvast.javaagent", "ck"));
+        log.finest("aop.xml=" + xml);
         File file = config.getAspectFile();
         FileUtils.writeToFile(xml, file);
         return "file:" + file.getAbsolutePath();

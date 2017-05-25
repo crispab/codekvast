@@ -6,6 +6,7 @@ import io.codekvast.javaagent.AspectjMessageHandler;
 import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.config.AgentConfigFactory;
 import io.codekvast.javaagent.model.Endpoints;
+import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.javaagent.util.FileUtils;
 import io.codekvast.testsupport.ProcessUtils;
 import org.junit.Before;
@@ -51,13 +52,15 @@ public class JavaAgentIntegrationTest {
                                         .packages("sample")
                                         .codeBase("build/classes/integrationTest")
                                         .bridgeAspectjMessagesToJUL(true)
+                                        .schedulerInitialDelayMillis(0)
+                                        .schedulerIntervalMillis(100)
                                         .build();
         agentConfigFile = FileUtils.serializeToFile(agentConfig, "codekvast", ".conf.ser");
         agentConfigFile.deleteOnExit();
     }
 
     @Test
-    public void should_have_paths_to_javaagents() throws Exception {
+    public void should_have_been_invoked_correctly() throws Exception {
         // given
 
         // when
@@ -83,6 +86,25 @@ public class JavaAgentIntegrationTest {
     @Test
     public void should_collect_data_when_valid_config_specified() throws Exception {
         // given
+        givenThat(post(Endpoints.AGENT_V1_POLL_CONFIG)
+                      .willReturn(okJson(gson.toJson(
+                          GetConfigResponse1.builder()
+                                            .codeBasePublisherName("http")
+                                            .codeBasePublisherConfig("enabled=true")
+                                            .customerId(1)
+                                            .invocationDataPublisherName("http")
+                                            .invocationDataPublisherConfig("enabled=true")
+                                            .configPollIntervalSeconds(1)
+                                            .configPollRetryIntervalSeconds(1)
+                                            .codeBasePublisherCheckIntervalSeconds(1)
+                                            .codeBasePublisherRetryIntervalSeconds(1)
+                                            .invocationDataPublisherIntervalSeconds(1)
+                                            .invocationDataPublisherRetryIntervalSeconds(1)
+                                            .build()))));
+
+        givenThat(post(Endpoints.AGENT_V1_UPLOAD_CODEBASE).willReturn(ok()));
+        givenThat(post(Endpoints.AGENT_V1_UPLOAD_INVOCATION_DATA).willReturn(ok()));
+
         List<String> command = buildJavaCommand(agentConfigFile.getAbsolutePath());
 
         // when
@@ -98,20 +120,21 @@ public class JavaAgentIntegrationTest {
         assertThat(stdout, containsString("Codekvast shutdown completed in "));
 
         verify(postRequestedFor(urlEqualTo(Endpoints.AGENT_V1_POLL_CONFIG)));
-//        verify(postRequestedFor(urlEqualTo(Endpoints.AGENT_V1_UPLOAD_CODEBASE)));
-//        verify(postRequestedFor(urlEqualTo(Endpoints.AGENT_V1_UPLOAD_INVOCATION_DATA)));
+        verify(postRequestedFor(urlEqualTo(Endpoints.AGENT_V1_UPLOAD_CODEBASE)));
+        verify(postRequestedFor(urlEqualTo(Endpoints.AGENT_V1_UPLOAD_INVOCATION_DATA)));
 
-        assertThat(stdout, not(containsString(" error ")));
+        assertThat(stdout, not(containsString("error")));
         assertThat(stdout, not(containsString("[SEVERE]")));
     }
 
     private List<String> buildJavaCommand(String configPath) {
+        String cp = classpath.endsWith(":") ? classpath.substring(0, classpath.length()-2) : classpath;
         List<String> command = new ArrayList<>(
             Arrays.asList("java",
                           "-javaagent:" + jacocoAgent,
                           "-javaagent:" + codekvastAgent,
-                          "-cp", classpath,
                           "-Djava.ext.dirs=" + codekvastAgent,
+                          "-cp", cp,
                           "-Djava.util.logging.config.file=src/integrationTest/resources/logging.properties",
                           "-Duser.language=en",
                           "-Duser.country=US"));

@@ -116,4 +116,17 @@ public class AgentConfigTest {
         config.getHttpClient();
     }
 
+    @Test
+    public void should_have_scheduler_intervals_in_sample_config() {
+        AgentConfig config = AgentConfigFactory.createSampleAgentConfig();
+        assertThat(config.getSchedulerInitialDelayMillis(), not(is(0L)));
+        assertThat(config.getSchedulerIntervalMillis(), not(is(0L)));
+    }
+
+    @Test
+    public void should_have_scheduler_intervals_in_template_config() {
+        AgentConfig config = AgentConfigFactory.createTemplateConfig();
+        assertThat(config.getSchedulerInitialDelayMillis(), not(is(0L)));
+        assertThat(config.getSchedulerIntervalMillis(), not(is(0L)));
+    }
 }

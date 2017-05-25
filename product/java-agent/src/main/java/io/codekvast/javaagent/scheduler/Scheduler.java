@@ -64,8 +64,6 @@ public class Scheduler implements Runnable {
     private final SchedulerState invocationDataPublisherState = new SchedulerState("invocationData").initialize(10, 10);
     private InvocationDataPublisher invocationDataPublisher;
 
-    private int runCount = 0;
-
     public Scheduler(AgentConfig config,
                      ConfigPoller configPoller,
                      CodeBasePublisherFactory codeBasePublisherFactory,
@@ -87,58 +85,70 @@ public class Scheduler implements Runnable {
      * @return this
      */
     public Scheduler start() {
-        executor.scheduleAtFixedRate(this, 10L, 10L, TimeUnit.SECONDS);
+        executor.scheduleAtFixedRate(this, config.getSchedulerInitialDelayMillis(), config.getSchedulerIntervalMillis(), TimeUnit.MILLISECONDS);
         log.info("Scheduler started; pulling dynamic config from " + config.getServerUrl());
         return this;
     }
 
     /**
-     * Shuts down the scheduler. Performs a last invocation data publishing before returning.
+     * Shuts down the scheduler. Performs a last publishing before returning.
      */
     public void shutdown() {
         long startedAt = System.currentTimeMillis();
+        synchronized (executor) {
 
-        if (runCount == 0) {
-            log.finer("Shutting down before first scheduled execution");
-            run();
-        }
+            if (dynamicConfig == null) {
+                log.finer("Shutting down before first scheduled execution");
+                pollState.scheduleNow();
+                run();
 
-        log.fine("Stopping scheduler");
-        executor.shutdown();
-        try {
-            executor.awaitTermination(60, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            log.fine("Stop interrupted");
-        }
-
-        if (dynamicConfig != null) {
-            // We have done at least one successful poll
-
-            // Make sure the last invocation data is published...
-            if (invocationDataPublisher.getCodeBaseFingerprint() == null) {
-                // CodeBasePublisher has not executed yet
-                codeBasePublisherState.scheduleNow();
-                publishCodeBaseIfNeeded();
-                invocationDataPublisher.setCodeBaseFingerprint(codeBasePublisher.getCodeBaseFingerprint());
+                if (dynamicConfig == null) {
+                    log.finer("Demand poll failed");
+                }
             }
-            invocationDataPublisherState.scheduleNow();
-            publishInvocationDataIfNeeded();
-        }
 
+            log.fine("Stopping scheduler");
+            executor.shutdown();
+            try {
+                executor.awaitTermination(10, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                log.fine("Stop interrupted");
+            }
+
+            if (dynamicConfig != null) {
+                // We have done at least one successful config poll
+
+                // Make sure the last invocation data is published...
+                if (invocationDataPublisher.getCodeBaseFingerprint() == null) {
+                    // CodeBasePublisher has not executed yet
+                    codeBasePublisherState.scheduleNow();
+                    publishCodeBaseIfNeeded();
+                    invocationDataPublisher.setCodeBaseFingerprint(codeBasePublisher.getCodeBaseFingerprint());
+                }
+                invocationDataPublisherState.scheduleNow();
+                publishInvocationDataIfNeeded();
+            }
+        }
         log.info(String.format("Scheduler stopped in %d ms", System.currentTimeMillis() - startedAt));
     }
 
     @Override
     public void run() {
-        runCount += 1;
-        if (executor.isShutdown()) {
-            log.fine("Scheduler is shutting down");
-            return;
-        }
+        synchronized (executor) {
+            if (executor.isShutdown()) {
+                log.fine("Scheduler is shutting down");
+                return;
+            }
 
-        pollDynamicConfigIfNeeded();
-        publishCodeBaseIfNeeded();
-        publishInvocationDataIfNeeded();
+            try {
+                pollDynamicConfigIfNeeded();
+                publishCodeBaseIfNeeded();
+                publishInvocationDataIfNeeded();
+            } catch (Throwable t) {
+                //noinspection UseOfSystemOutOrSystemErr
+                System.err.println("Codekvast scheduler failure: " + t);
+            }
+        }
     }
 
     private void pollDynamicConfigIfNeeded() {

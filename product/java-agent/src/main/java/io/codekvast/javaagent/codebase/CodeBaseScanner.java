@@ -55,10 +55,10 @@ public class CodeBaseScanner {
      */
     public int scanSignatures(CodeBase codeBase) {
         long startedAt = System.currentTimeMillis();
-        log.fine("Scanning code base " + codeBase);
+        log.fine("Scanning " + codeBase);
         int result = 0;
 
-        URLClassLoader appClassLoader = new URLClassLoader(codeBase.getUrls(), System.class.getClassLoader());
+        URLClassLoader appClassLoader = new URLClassLoader(codeBase.getUrls(), ClassLoader.getSystemClassLoader());
         Set<String> packages = new TreeSet<>(codeBase.getConfig().getNormalizedPackages());
         Set<String> excludePackages = new TreeSet<>(codeBase.getConfig().getNormalizedExcludePackages());
 

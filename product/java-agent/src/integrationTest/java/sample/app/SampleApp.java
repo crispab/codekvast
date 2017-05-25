@@ -17,7 +17,9 @@ public class SampleApp {
         return p1 + p2;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         log.info("2+2=" + new SampleApp().add(2, 2));
+        Thread.sleep(1_500L);
+        log.info("Exit");
     }
 }

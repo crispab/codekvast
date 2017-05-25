@@ -93,6 +93,10 @@ public class AgentConfig implements Serializable {
     private int httpWriteTimeoutSeconds;
     private String httpProxyHost;
     private int httpProxyPort;
+    @Builder.Default
+    private long schedulerInitialDelayMillis = 10_000L;
+    @Builder.Default
+    private long schedulerIntervalMillis = 10_000L;
 
     @NonNull
     private File aspectFile;
