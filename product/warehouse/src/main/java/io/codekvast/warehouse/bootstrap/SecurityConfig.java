@@ -21,8 +21,7 @@
  */
 package io.codekvast.warehouse.bootstrap;
 
-import io.codekvast.warehouse.bootstrap.CodekvastSettings;
-import io.codekvast.warehouse.security.impl.SecurityService;
+import io.codekvast.warehouse.security.SecurityService;
 import io.codekvast.warehouse.webapp.WebappController;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

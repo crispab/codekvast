@@ -22,6 +22,7 @@
 package io.codekvast.warehouse.security.impl;
 
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
+import io.codekvast.warehouse.security.SecurityService;
 import io.codekvast.warehouse.security.WebappCredentials;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;

@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.warehouse.security.impl;
+package io.codekvast.warehouse.security;
 
 import io.codekvast.warehouse.security.CustomerIdProvider;
 import io.codekvast.warehouse.security.WebappTokenProvider;

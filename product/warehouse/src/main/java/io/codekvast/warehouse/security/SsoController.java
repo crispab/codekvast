@@ -80,9 +80,7 @@ public class SsoController {
         @RequestParam("timestamp") long timestamp,
         @RequestParam("token") String token,
         @RequestParam("nav-data") String navData,
-        @RequestParam("email") String email,
-        HttpServletRequest request,
-        HttpServletResponse response) throws AuthenticationException {
+        @RequestParam("email") String email) throws AuthenticationException {
 
         log.debug("id={}, nav-data={}", id, navData);
 
