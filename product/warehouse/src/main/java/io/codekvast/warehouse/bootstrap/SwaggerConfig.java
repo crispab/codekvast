@@ -31,6 +31,8 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger.web.UiConfiguration;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import java.util.ArrayList;
+
 /**
  * Configure the embedded Swagger API docs stuff.
  *
@@ -48,7 +50,8 @@ public class SwaggerConfig {
                            "http://www.codekvast.io",
                            new Contact("Olle Hallin", "http://www.codekvast.io", "olle.hallin@crisp.se"),
                            "MIT",
-                           "https://opensource.org/licenses/MIT");
+                           "https://opensource.org/licenses/MIT",
+                           new ArrayList<>());
 
     }
 
