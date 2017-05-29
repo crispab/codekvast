@@ -2,7 +2,7 @@
   "id": "codekvast",
   "name": "Codekvast",
   "api": {
-    "config_vars": ["CODEKVAST_APP_NAME", "CODEKVAST_LICENSE_KEY", "CODEKVAST_URL"],
+    "config_vars": ["CODEKVAST_LICENSE_KEY", "CODEKVAST_URL"],
     "requires": [],
     "regions": [ "*" ],
     "password": "herokuApiPassword",

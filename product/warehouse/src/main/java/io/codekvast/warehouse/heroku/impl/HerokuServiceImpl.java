@@ -67,14 +67,14 @@ public class HerokuServiceImpl implements HerokuService {
                             request.getUuid(), request.getHeroku_id(), licenseKey, request.getPlan());
 
         Map<String, String> config = new HashMap<>();
-        config.put("CODEKVAST_APP_NAME", request.getHeroku_id());
-        config.put("CODEKVAST_LICENSE_KEY", licenseKey);
         config.put("CODEKVAST_URL", settings.getHerokuCodekvastUrl());
+        config.put("CODEKVAST_LICENSE_KEY", licenseKey);
 
         HerokuProvisionResponse response = HerokuProvisionResponse.builder()
                                                                   .id(request.getUuid())
                                                                   .config(config)
-                                                                  .message("You also need to add codekvast.conf to your application!")
+                                                                  .message("Continue at https://docs.codekvast.io/configure-heroku-addon")
+                                                                  // TODO: Create https://docs.codekvast.io/configure-heroku-addon
                                                                   .build();
         log.debug("Returning {}", response);
         return response;
