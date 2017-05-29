@@ -131,12 +131,13 @@ public class CodekvastAgent {
 
         Runtime.getRuntime().addShutdownHook(new MyShutdownHook());
 
-        log.info(String.format("%s is ready to detect used code within(%s..*).", NAME, getNormalizedPackages(config)));
+        log.info(String.format("%s is ready to detect used code in %s %s within %s.", NAME, config.getAppName(),
+                               config.getResolvedAppVersion(), getPrettyPackages(config)));
     }
 
-    private static String getNormalizedPackages(AgentConfig config) {
+    private static String getPrettyPackages(AgentConfig config) {
         List<String> prefixes = config.getNormalizedPackages();
-        return prefixes.size() == 1 ? prefixes.get(0) : prefixes.toString();
+        return prefixes.size() == 1 ? "package " + prefixes.get(0) : "packages " + prefixes.toString();
     }
 
     private static void defineAspectjLoadTimeWeaverConfig(AgentConfig config) {

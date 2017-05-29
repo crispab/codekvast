@@ -48,6 +48,7 @@ public class JavaAgentIntegrationTest {
         agentConfig = AgentConfigFactory.createTemplateConfig().toBuilder()
                                         .serverUrl("http://localhost:" + wireMockRule.port())
                                         .appName("SampleApp")
+                                        .appVersion("literal 1.0")
                                         .aspectjOptions("-verbose -showWeaveInfo")
                                         .packages("sample")
                                         .codeBase("build/classes/integrationTest")
