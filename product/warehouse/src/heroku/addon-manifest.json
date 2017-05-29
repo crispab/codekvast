@@ -8,12 +8,12 @@
     "regions": [
       "*"
     ],
-    "version": 2,
-    "password": "MTQwZGUyMTc0Y2M5OWE2YTc2MTI2YmZk",
+    "version": 3,
+    "password": "herokuApiPassword",
     "requires": [
 
     ],
-    "sso_salt": "Y2I0MGMzYzUyZmU1NWU0NmJiM2FmNjY5",
+    "sso_salt": "herokuApiSsoSalt",
     "production": {
       "sso_url": "https://app.codekvast.io/heroku/sso/",
       "base_url": "https://api.codekvast.io/heroku/resources"
@@ -24,5 +24,5 @@
     ]
   },
   "name": "Codekvast",
-  "$base": 149555574283760
+  "$base": 149609033573457
 }
