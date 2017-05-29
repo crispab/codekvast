@@ -1,20 +1,28 @@
 {
   "id": "codekvast",
-  "name": "Codekvast",
   "api": {
-    "config_vars": ["CODEKVAST_LICENSE_KEY", "CODEKVAST_URL"],
-    "requires": [],
-    "regions": [ "*" ],
-    "password": "herokuApiPassword",
-    "sso_salt": "herokuApiSsoSalt",
-    "production": {
-      "base_url": "https://api.codekvast.io/heroku/resources",
-      "sso_url": "https://app.codekvast.io/heroku/sso/"
-    },
     "test": {
-      "base_url": "http://localhost:8080/heroku/resources",
-      "sso_url": "http://localhost:8080/heroku/sso/"
+      "sso_url": "http://localhost:8080/heroku/sso/",
+      "base_url": "http://localhost:8080/heroku/resources"
     },
-    "version": 2
-  }
+    "regions": [
+      "*"
+    ],
+    "version": 2,
+    "password": "MTQwZGUyMTc0Y2M5OWE2YTc2MTI2YmZk",
+    "requires": [
+
+    ],
+    "sso_salt": "Y2I0MGMzYzUyZmU1NWU0NmJiM2FmNjY5",
+    "production": {
+      "sso_url": "https://app.codekvast.io/heroku/sso/",
+      "base_url": "https://api.codekvast.io/heroku/resources"
+    },
+    "config_vars": [
+      "CODEKVAST_LICENSE_KEY",
+      "CODEKVAST_URL"
+    ]
+  },
+  "name": "Codekvast",
+  "$base": 149555574283760
 }
