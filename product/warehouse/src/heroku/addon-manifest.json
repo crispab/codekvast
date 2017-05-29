@@ -15,6 +15,6 @@
       "base_url": "http://localhost:8080/heroku/resources",
       "sso_url": "http://localhost:8080/heroku/sso/"
     },
-    "version": 1
+    "version": 2
   }
 }
