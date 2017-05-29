@@ -57,6 +57,6 @@ run {
     jvmArgs = [
             "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath",
             "-javaagent:$configurations.codekvastagent.asPath",
-            "-Djava.ext.dirs=$configurations.codekvastagent.asPath"
+            "-Xbootclasspath/a:$configurations.codekvastagent.asPath"
     ]
 }

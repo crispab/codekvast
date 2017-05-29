@@ -145,7 +145,7 @@ It means the following things:
 - Download the agent installation package codekvast-agent-{codekvastVersion}.zip
 - Unzip it to the root of your application.
 - Edit `codekvast.conf`
-- Modify your application's start script to add `-javaagent:codekvast/javaagent/codekvast-agent-{codekvastVersion}-all.jar -Djava.ext.dirs=codekvast/javaagent/codekvast-agent-{codekvastVersion}-all.jar` to the `java` command.
+- Modify your application's start script to add `-javaagent:codekvast/javaagent/codekvast-agent-{codekvastVersion}-all.jar -Xbootclasspath/a:codekvast/javaagent/codekvast-agent-{codekvastVersion}-all.jar` to the `java` command.
 
 [[install-agent-tomcat-linux]]
 ==== Tomcat (Linux)
@@ -168,7 +168,7 @@ Use <<install-agent-tomcat-linux, the installation guide for Tomcat>> as a basis
 
 The goal is to make
 
-`-javaagent:codekvast/agent/codekvast-agent-{codekvastVersion}-all.jar -Djava.ext.dirs=codekvast/agent/codekvast-agent-{codekvastVersion}-all.jar`
+`-javaagent:codekvast/agent/codekvast-agent-{codekvastVersion}-all.jar -Xbootclasspath/a:codekvast/agent/codekvast-agent-{codekvastVersion}-all.jar`
 
 appear as arguments to the `java` command and to put `codekvast.conf` in any of the locations that
 Codekvast Agent expects it. See <<codekvast-agent-config-file-location, Configuring Codekvast Agent>>.

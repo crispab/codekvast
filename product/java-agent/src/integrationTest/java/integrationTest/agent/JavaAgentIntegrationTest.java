@@ -133,7 +133,7 @@ public class JavaAgentIntegrationTest {
             Arrays.asList("java",
                           "-javaagent:" + jacocoAgent,
                           "-javaagent:" + codekvastAgent,
-                          "-Djava.ext.dirs=" + codekvastAgent,
+                          "-Xbootclasspath/a:" + codekvastAgent,
                           "-cp", cp,
                           "-Djava.util.logging.config.file=src/integrationTest/resources/logging.properties",
                           "-Duser.language=en",
