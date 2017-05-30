@@ -8,12 +8,16 @@ distributions {
         baseName = "codekvast-agent-$codekvastVersion"
         contents {
             from(file('src/dist/codekvast.conf')) {
+                into "/"
                 expand(project.properties)
             }
 
-            from(tasks.getByPath(':product:java-agent:javaagents'))
+            from(tasks.getByPath(':product:java-agent:javaagents')) {
+                into "/codekvast"
+            }
 
             from(tasks.getByPath(':product:docs:asciidoctor')) {
+                into "/codekvast"
                 include 'CodekvastUserManual.html'
                 rename { "CodekvastUserManual-${codekvastVersion}.html" }
             }
