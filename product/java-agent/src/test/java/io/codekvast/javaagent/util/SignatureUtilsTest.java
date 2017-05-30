@@ -28,16 +28,17 @@ public class SignatureUtilsTest {
     private final Method testMethods[] = TestClass.class.getDeclaredMethods();
     private final Constructor testConstructors[] = TestClass.class.getDeclaredConstructors();
 
-    private final String[] guiceGeneratedMethods = {
+    private final String[] byteCodeAddedMethods = {
         "public int se.customer.module.l2mgr.impl.persistence.FlowDomainFragmentLongTransactionEAO..EnhancerByGuice..969b9638." +
             ".FastClassByGuice..96f9109e.getIndex(com.google.inject.internal.cglib.core..Signature)",
         "public int se.customer.module.l1mgr.connectivity.persistence.TrailEAO..EnhancerByGuice..a219ec4a..FastClassByGuice." +
             ".2d349e96.getIndex(java.lang.Class[])",
+        "public void io.codekvast.sample.codekvastspringheroku.CodekvastSampleApplication..EnhancerBySpringCGLIB..a405a15d()",
         };
 
     @Test
-    public void should_ignore_guice_generated_signatures() throws URISyntaxException {
-        for (String s : guiceGeneratedMethods) {
+    public void should_ignore_byte_code_added_signatures() throws URISyntaxException {
+        for (String s : byteCodeAddedMethods) {
             String sig = SignatureUtils.normalizeSignature(s);
             assertThat("Guice-generated method should be ignored", sig, nullValue());
         }

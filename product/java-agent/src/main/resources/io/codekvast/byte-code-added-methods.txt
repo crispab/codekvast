@@ -1,7 +1,7 @@
 # This file contains regular expressions for methods that are synthesized in runtime by e.g., Guice or Spring Framework.
 # Such methods should be ignored, since there is no source code behind them.
 #
-# One pattern per line
+# One pattern per line.
 # Empty lines and lines beginning with # are ignored.
 # Syntax: see java.util.regex.Pattern.compile()
 # Charset: UTF-8
@@ -20,6 +20,7 @@
 .*\.\.EnhancerBySpringCGLIB\.\.[0-9a-f]+\.guavaModule\(\)
 .*\.\.EnhancerBySpringCGLIB\.\.[0-9a-f]+\.isFrozen\(\)
 .*\.\.EnhancerBySpringCGLIB\.\.[0-9a-f]+\.jdk8Module\(\)
+.*\.\.EnhancerBySpringCGLIB\.\.[0-9a-f]+\(\)
 .*\.\.FastClassByGuice.*\.getIndex\(java\.lang\.Class\[\]\)$
 .*\.\.FastClassByGuice.*\.getIndex\(java\.lang\.String, java\.lang\.Class\[\]\)$
 .*\.\.FastClassByGuice.*\.invoke\(int, java\.lang\.Object, java\.lang\.Object\[\]\)$
