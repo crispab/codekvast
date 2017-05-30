@@ -45,10 +45,8 @@ import java.util.Set;
  * <p>
  * Invocation: Add the following options to the Java command line:
  * <pre><code>
- *    -javaagent:/path/to/codekvast-agent-n.n.jar -javaagent:/path/to/aspectjweaver-n.n.jar
+ *    -javaagent:/path/to/codekvast-agent-n.n.jar -Xbootclasspath/a:/path/to/codekvast-agent-n.n.jar
  * </code></pre>
- * <p>
- * <em>NOTE: the ordering of codekvast-agent and aspectjweaver is important!</em>
  * <p>
  * CodekvastAgent could also be initialized from a statically woven aspect.
  * <p>

@@ -41,8 +41,13 @@ dependencies {
     jacocoagent 'org.jacoco:org.jacoco.agent:0.7.9:runtime@jar'
 }
 
+jar {
+    classifier = 'naked'
+}
+
 shadowJar {
-    classifier = 'all'
+    classifier = ''
+
     inputs.file file('build.gradle')
 
     manifest {

@@ -8,17 +8,13 @@ distributions {
         baseName = "codekvast-agent-$codekvastVersion"
         contents {
             from(file('src/dist/codekvast.conf')) {
-                into "/"
                 expand(project.properties)
             }
 
-            from(tasks.getByPath(':product:java-agent:javaagents')) {
-                into "/codekvast/agent"
-            }
+            from(tasks.getByPath(':product:java-agent:javaagents'))
 
             from(tasks.getByPath(':product:docs:asciidoctor')) {
                 include 'CodekvastUserManual.html'
-                into "/codekvast"
                 rename { "CodekvastUserManual-${codekvastVersion}.html" }
             }
 
@@ -44,20 +40,11 @@ distributions {
         }
     }
 
-    ansible {
-        baseName = "codekvast-ansible-$codekvastVersion"
-        contents {
-            from file('src/dist/ansible')
-            expand(project.properties)
-            filteringCharset = 'UTF-8'
-        }
-    }
 }
 
 task bintrayStage(type: Sync) {
     from agentDistZip
     from warehouseDistZip
-    from ansibleDistZip
     from tasks.getByPath(':product:docs:asciidoctor'), {
         include 'CodekvastUserManual.html'
         rename { "CodekvastUserManual-${codekvastVersion}.html" }
