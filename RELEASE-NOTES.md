@@ -1,5 +1,8 @@
 # Codekvast Release Notes
 
+## 0.20.3
+1. Fixed a OkHttp Response leak in java-agent
+
 ## 0.20.2
 1. Made Heroku add-on shareable across apps.
 

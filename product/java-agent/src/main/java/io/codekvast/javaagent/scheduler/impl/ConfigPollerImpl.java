@@ -87,12 +87,12 @@ public class ConfigPollerImpl implements ConfigPoller {
             .post(RequestBody.create(JSON, bodyJson))
             .build();
 
-        Response response = config.getHttpClient().newCall(request).execute();
+        try (Response response = config.getHttpClient().newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException(response.body().string());
+            }
 
-        if (!response.isSuccessful()) {
-            throw new IOException(response.body().string());
+            return response.body().string();
         }
-
-        return response.body().string();
     }
 }

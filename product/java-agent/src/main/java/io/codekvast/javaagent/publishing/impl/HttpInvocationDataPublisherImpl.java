@@ -95,10 +95,11 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
             .build();
 
         Request request = new Request.Builder().url(url).post(requestBody).build();
-        Response response = executeRequest(request);
 
-        if (!response.isSuccessful()) {
-            throw new IOException(response.body().string());
+        try (Response response = executeRequest(request)) {
+            if (!response.isSuccessful()) {
+                throw new IOException(response.body().string());
+            }
         }
     }
 
