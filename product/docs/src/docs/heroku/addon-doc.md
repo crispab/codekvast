@@ -43,7 +43,7 @@ Continue with the procedures which follows to configure the Codekvast agent.
 
 1. Change the environment variable `JAVA_OPTS`:
 ```term
-heroku config:set JAVA_OPTS="-javaagent:codekvast/codekvast-javaagent-0.20.3.jar" -Xbootclasspath/a:codekvast/codekvast-javaagent-0.20.3.jar"
+heroku config:set JAVA_OPTS="-javaagent:codekvast/codekvast-javaagent-0.20.3.jar -Xbootclasspath/a:codekvast/codekvast-javaagent-0.20.3.jar"
 ```
 
 ### Using Gradle dependencies
