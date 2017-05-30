@@ -8,10 +8,10 @@
     "regions": [
       "*"
     ],
-    "version": 3,
+    "version": 1,
     "password": "herokuApiPassword",
     "requires": [
-
+      "attachable"
     ],
     "sso_salt": "herokuApiSsoSalt",
     "production": {

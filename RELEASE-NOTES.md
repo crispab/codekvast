@@ -1,6 +1,10 @@
 # Codekvast Release Notes
 
+## 0.20.2
+1. Made Heroku add-on shareable across apps.
+
 ## 0.20.1
+1. Removed classifier 'all' from codekvast-agent-x.x.x.jar. It used to be named codekvast-agent-x.x.x-all.jar
 
 ## 0.20.0
 1. Merged codekvast-agent.jar and aspectjweaver.jar
