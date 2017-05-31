@@ -62,16 +62,16 @@ public class CodeBaseScanner {
         Set<String> packages = new TreeSet<>(codeBase.getConfig().getNormalizedPackages());
         Set<String> excludePackages = new TreeSet<>(codeBase.getConfig().getNormalizedExcludePackages());
 
-        Set<String> recognizedTypes = getRecognizedTypes(packages, appClassLoader);
+        Set<ClassPath.ClassInfo> recognizedClasses = getRecognizedClasses(packages, appClassLoader);
 
-        for (String type : recognizedTypes) {
+        for (ClassPath.ClassInfo classInfo : recognizedClasses) {
             try {
-                Class<?> clazz = Class.forName(type, false, appClassLoader);
+                Class<?> clazz = classInfo.load();
                 findTrackedConstructors(codeBase, clazz);
                 findTrackedMethods(codeBase, packages, excludePackages, clazz);
                 result += 1;
-            } catch (ClassNotFoundException | NoClassDefFoundError e) {
-                log.warning("Cannot analyze " + type + ": " + e);
+            } catch (NoClassDefFoundError e) {
+                log.warning("Cannot analyze " + classInfo + ": " + e);
             }
         }
 
@@ -90,15 +90,15 @@ public class CodeBaseScanner {
         return result;
     }
 
-    private Set<String> getRecognizedTypes(Set<String> packages, URLClassLoader appClassLoader) {
-        Set<String> result = new HashSet<>();
+    private Set<ClassPath.ClassInfo> getRecognizedClasses(Set<String> packages, ClassLoader classLoader) {
+        Set<ClassPath.ClassInfo> result = new HashSet<>();
         try {
-            ClassPath classPath = ClassPath.from(appClassLoader);
+            ClassPath classPath = ClassPath.from(classLoader);
             for (ClassPath.ClassInfo classInfo : classPath.getAllClasses()) {
                 String name = classInfo.getPackageName();
                 for (String aPackage : packages) {
                     if (name.startsWith(aPackage)) {
-                        result.add(classInfo.getName());
+                        result.add(classInfo);
                     }
                 }
             }

@@ -2,6 +2,7 @@ package io.codekvast.javaagent.codebase;
 
 import io.codekvast.javaagent.config.AgentConfigFactory;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -37,7 +38,8 @@ public class CodeBaseScannerBootRepackageTest {
     }
 
     @Test
-    public void testScanCodeBaseForDirectoryWithMyClassFiles() throws URISyntaxException {
+    @Ignore("Not Yet Implemented")
+    public void testScanCodeBaseForSpringBootRepackagedJar() throws URISyntaxException {
         int numClasses = scanner.scanSignatures(codeBase);
         assertThat(numClasses, is(4));
     }

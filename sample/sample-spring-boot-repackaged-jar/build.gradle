@@ -20,13 +20,49 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    codekvastagent
+}
+
+
 dependencies {
     compileOnly 'org.projectlombok:lombok:1.16.16'
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile project(":sample:sample-lib")
     testCompile 'org.springframework.boot:spring-boot-starter-test'
+
+    codekvastagent project(path: ":product:java-agent", configuration: 'shadow')
 }
 
 build.dependsOn bootRepackage
 
-// TODO: attach codekvast-javaagent
+task generateCodekvastConfig {
+    group "Build"
+    description "Generates a codekvast.conf for test"
+
+    def configFile = file("$buildDir/codekvast.conf")
+
+    inputs.file file("build.gradle")
+    outputs.file configFile
+
+    doLast {
+        configFile.parentFile.mkdirs()
+        configFile.text = """# Run Codekvast against Sample App
+appName = $archivesBaseName
+appVersion = 1.3
+aspectjOptions = -verbose -showWeaveInfo
+codeBase = not-used
+excludePackages = sample.lib.excluded
+methodVisibility = all
+packages = sample. , foo.bar.
+tags = development, sample
+bridgeAspectjMessagesToJUL = true
+
+# serverUrl = https://api-staging.codekvast.io
+httpProxyHost =   
+httpProxyPort = 4711
+"""
+    }
+}
+
+processResources.dependsOn generateCodekvastConfig
