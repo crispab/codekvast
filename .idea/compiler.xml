@@ -33,10 +33,14 @@
       <module name="rest_daemon_test" target="1.8" />
       <module name="sample-concrete-aspect_main" target="1.8" />
       <module name="sample-concrete-aspect_test" target="1.8" />
+      <module name="sample-gradle-application_main" target="1.7" />
+      <module name="sample-gradle-application_test" target="1.7" />
       <module name="sample-lib_main" target="1.7" />
       <module name="sample-lib_test" target="1.7" />
       <module name="sample-ltw_main" target="1.7" />
       <module name="sample-ltw_test" target="1.7" />
+      <module name="sample-spring-boot-executable-jar_main" target="1.8" />
+      <module name="sample-spring-boot-executable-jar_test" target="1.8" />
       <module name="sample_concrete_aspect_main" target="1.8" />
       <module name="sample_concrete_aspect_test" target="1.8" />
       <module name="sample_lib_main" target="1.6" />

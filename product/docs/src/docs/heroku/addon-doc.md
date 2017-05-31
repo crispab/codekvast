@@ -46,6 +46,20 @@ Continue with the procedures which follows to configure the Codekvast agent.
 heroku config:set JAVA_OPTS="-javaagent:codekvast/codekvast-javaagent-0.20.3.jar -Xbootclasspath/a:codekvast/codekvast-javaagent-0.20.3.jar"
 ```
 
+### If you use Gradle and Spring Boot
+
+If you use the `spring-boot-gradle-plugin` to build an executable jar file, then you must edit `Procfile` so that it injects $JAVA_OPTS on the command line:
+```term
+web: env SERVER_PORT=$PORT java $JAVA_OPTS -jar build/libs/*.jar
+```
+
+You must also edit codekvast.conf so that
+```properties
+codeBase = build/libs, build/classes/main
+```
+
+or else Codekvast will not find your application's classes.
+
 ### Using Gradle dependencies
 
 It is possible to configure Gradle to download the Codekvast agent as a regular build-time dependency instead of adding it to Git.
@@ -68,8 +82,9 @@ It's necessary to locally replicate the add-on config vars so your development e
 Use the Heroku Local command-line tool to configure, run and manage process types specified in your app's [Procfile](procfile). Heroku Local reads configuration variables from a `.env` file. To view all of your app's config vars, type `heroku config`. Use the following command for each value that you want to add to your `.env` file:
 
 ```term
-$ heroku config:get CODEKVAST_URL -s  >> .env
-$ heroku config:get CODEKVAST_LICENSE_KEY -s  >> .env
+heroku config:get CODEKVAST_URL -s  >> .env
+heroku config:get CODEKVAST_LICENSE_KEY -s  >> .env
+heroku config:get JAVA_OPTS -s  >> .env
 ```
 
 > Warning

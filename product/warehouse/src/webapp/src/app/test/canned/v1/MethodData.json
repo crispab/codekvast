@@ -19,7 +19,7 @@
       "declaringType": "sample.app.AbstractTracked",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -75,7 +75,7 @@
       "declaringType": "sample.app.TrackedClass",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -131,7 +131,7 @@
       "declaringType": "sample.app.guice.TimedInterceptor",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -187,7 +187,7 @@
       "declaringType": "sample.app.guice.TimedInterceptorModule",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -243,7 +243,7 @@
       "declaringType": "sample.lib.used.Bar1$InnerClassNeverUsed",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -299,7 +299,7 @@
       "declaringType": "sample.app.SampleApp",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -355,7 +355,7 @@
       "declaringType": "sample.app.SampleApp",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -411,7 +411,7 @@
       "declaringType": "sample.app.SampleApp",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -467,7 +467,7 @@
       "declaringType": "sample.app.SampleApp",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -523,7 +523,7 @@
       "declaringType": "sample.app.SampleApp",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -579,7 +579,7 @@
       "declaringType": "sample.app.TrackedClass",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -635,7 +635,7 @@
       "declaringType": "sample.lib.used.Bar1$InnerClassNeverUsed",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -691,7 +691,7 @@
       "declaringType": "sample.lib.used.Bar1",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -747,7 +747,7 @@
       "declaringType": "sample.lib.used.Bar1",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -803,7 +803,7 @@
       "declaringType": "sample.app.AbstractTracked",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -859,7 +859,7 @@
       "declaringType": "sample.app.guice.TimedInterceptorModule",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -915,7 +915,7 @@
       "declaringType": "sample.app.SampleApp",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -971,7 +971,7 @@
       "declaringType": "sample.app.SampleApp",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -1027,7 +1027,7 @@
       "declaringType": "sample.app.SampleApp",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -1083,7 +1083,7 @@
       "declaringType": "sample.app.SampleApp",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -1139,7 +1139,7 @@
       "declaringType": "sample.app.TrackedClass",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -1195,7 +1195,7 @@
       "declaringType": "sample.app.TrackedClass",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -1251,7 +1251,7 @@
       "declaringType": "sample.app.TrackedClass",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -1307,7 +1307,7 @@
       "declaringType": "sample.app.TrackedClass",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -1363,7 +1363,7 @@
       "declaringType": "sample.app.TrackedClass",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -1419,7 +1419,7 @@
       "declaringType": "sample.app.TrackedClass",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -1475,7 +1475,7 @@
       "declaringType": "sample.app.TrackedClass",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -1531,7 +1531,7 @@
       "declaringType": "sample.app.TrackedClass",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -1587,7 +1587,7 @@
       "declaringType": "sample.app.TrackedClass",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -1643,7 +1643,7 @@
       "declaringType": "sample.app.guice.TimedInterceptor",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -1699,7 +1699,7 @@
       "declaringType": "sample.lib.excluded.ExcludedClass",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -1755,7 +1755,7 @@
       "declaringType": "sample.lib.excluded.ExcludedClass",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -1811,7 +1811,7 @@
       "declaringType": "sample.lib.not_used.FooImpl",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -1867,7 +1867,7 @@
       "declaringType": "sample.lib.not_used.FooImpl",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -1923,7 +1923,7 @@
       "declaringType": "sample.lib.used.Bar1",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -1979,7 +1979,7 @@
       "declaringType": "sample.lib.used.Bar1",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -2035,7 +2035,7 @@
       "declaringType": "sample.lib.used.Bar1",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -2091,7 +2091,7 @@
       "declaringType": "sample.lib.used.Bar1",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -2147,7 +2147,7 @@
       "declaringType": "sample.lib.used.Bar2",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -2203,7 +2203,7 @@
       "declaringType": "sample.lib.used.Bar2",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -2259,7 +2259,7 @@
       "declaringType": "sample.lib.used.Bar3",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,
@@ -2315,7 +2315,7 @@
       "declaringType": "sample.lib.used.Bar3",
       "occursInApplications": [
         {
-          "name": "sample-ltw",
+          "name": "sample-gradle-application",
           "version": "1.3",
           "startedAtMillis": 1489355538000,
           "publishedAtMillis": 1489355550000,

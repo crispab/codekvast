@@ -1,0 +1,25 @@
+
+.container {
+    display: flex;
+    background-color: aqua;
+    flex-direction: column;
+}
+
+.headbar {
+    display: flex;
+    flex-direction: row;
+}
+
+.navbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.likeButton {
+    background-color: bisque;
+    box-shadow: 10px 10px 5px #888888;
+    padding: 0.5em;
+    margin: 1px;
+    font-size: larger;
+}

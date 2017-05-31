@@ -198,7 +198,7 @@ The following procedure can be used for demo purposes and also when doing develo
 This will start Codekvast Warehouse that will consume the data files uploaded by the instrumented apps.
 1. In terminal #2 do `./gradlew :sample:jenkins1:run`. This will download and start one version of Jenkins with Codekvast attached.
 1. In terminal #3 do `./gradlew :sample:jenkins2:run`. This will download and start another version of Jenkins with Codekvast attached.
-1. In terminal #4 do `./gradlew :sample:sample-ltw:run`. This will launch the short-lived `sample.app.SampleApp` with Codekvast attached. The SampleApp is handy when
+1. In terminal #4 do `./gradlew :sample:sample-gradle-application:run`. This will launch the short-lived `sample.app.SampleApp` with Codekvast attached. The SampleApp is handy when
 you want to correlate source code to the data that is collected by Codekvast.
 1. Open a web browser at http://localhost:8080. It will show the warehouse web interface wher e you can inspect the collected data.
 
