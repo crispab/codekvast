@@ -1,4 +1,4 @@
-package io.codekvast.sample.codekvastspringheroku.button.two;
+package se.crisp.sample.springboot.button.two;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +9,7 @@ public class ButtonTwoService {
 
     private static final Logger logger = LoggerFactory.getLogger(ButtonTwoService.class);
 
+    @SuppressWarnings("unused")
     public void doSomething() {
         logger.info("Doing something 2");
     }

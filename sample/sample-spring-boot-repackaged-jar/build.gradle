@@ -1,3 +1,6 @@
+//-----------------------------------------------------------------------------------------
+// Illustrates how to attach codekvast-javaagent.jar to a repackaged Spring Boot jar
+//-----------------------------------------------------------------------------------------
 buildscript {
     repositories {
         mavenCentral()
@@ -23,3 +26,5 @@ dependencies {
 }
 
 build.dependsOn bootRepackage
+
+// TODO: attach codekvast-javaagent

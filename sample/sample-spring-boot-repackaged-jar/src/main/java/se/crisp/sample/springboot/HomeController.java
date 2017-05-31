@@ -1,15 +1,14 @@
-package io.codekvast.sample.codekvastspringheroku;
+package se.crisp.sample.springboot;
 
-import io.codekvast.sample.codekvastspringheroku.button.one.ButtonOneService;
-import io.codekvast.sample.codekvastspringheroku.button.two.ButtonTwoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import se.crisp.sample.springboot.button.one.ButtonOneService;
+import se.crisp.sample.springboot.button.two.ButtonTwoService;
 
-import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @Controller
 @RequestMapping(method = GET)
