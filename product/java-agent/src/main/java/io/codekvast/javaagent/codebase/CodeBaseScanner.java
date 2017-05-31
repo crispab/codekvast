@@ -93,9 +93,12 @@ public class CodeBaseScanner {
     private Set<String> getRecognizedTypes(Set<String> packages, URLClassLoader appClassLoader) {
         Set<String> result = new HashSet<>();
         try {
-            ClassPath classPath = ClassPath.from(appClassLoader);
+            ClassPath classPath = ClassPath.from(Thread.currentThread().getContextClassLoader());
             for (ClassPath.ClassInfo classInfo : classPath.getAllClasses()) {
                 String name = classInfo.getPackageName();
+                if (name.contains("sample.")) {
+                    int i = 17;
+                }
                 for (String aPackage : packages) {
                     if (name.startsWith(aPackage)) {
                         result.add(classInfo.getName());
