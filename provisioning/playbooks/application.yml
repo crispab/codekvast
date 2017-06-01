@@ -46,13 +46,6 @@
     - "{{ codekvast_queue_path }}"
     - /var/log/codekvast
 
-  - name: Stop running service
-    service: name=codekvast state=stopped
-    ignore_errors: true
-
-  - name: Wait until service has stopped
-    wait_for: port=8080 state=stopped timeout=60
-
   - name: Install codekvast executable jar
     copy:
       src: ../../product/warehouse/build/libs/codekvast-warehouse-{{ codekvastVersion }}-all.jar
@@ -83,10 +76,10 @@
   - name: Wait until service has started
     wait_for: port=8080 state=started timeout=30
 
-  - name: Remove cruft
-    file: path={{ item }} state=absent
-    with_items:
-    - /var/log/codekvast.log
+#  - name: Remove cruft
+#    file: path={{ item }} state=absent
+#    with_items:
+#    - /var/log/codekvast.log
 
   handlers:
   - name: systemctl daemon-reload
