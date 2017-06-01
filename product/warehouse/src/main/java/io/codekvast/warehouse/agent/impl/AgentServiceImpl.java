@@ -39,6 +39,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.sql.Timestamp;
 import java.util.Map;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
@@ -65,15 +66,18 @@ public class AgentServiceImpl implements AgentService {
     @Override
     public GetConfigResponse1 getConfig(GetConfigRequest1 request) throws LicenseViolationException {
         CustomerData customerData = getCustomerData(request.getLicenseKey());
+        int liveAgents = countLiveAgents(customerData, request.getJvmUuid());
+
         PricePlan pp = customerData.getPricePlan();
+        String publishingEnabled = liveAgents > pp.getMaxNumberOfAgents() ? "enabled=false" : "enabled=true";
 
         return GetConfigResponse1
             .builder()
             .codeBasePublisherName("http")
-            .codeBasePublisherConfig("enabled=true") // TODO: enforce number of dynos
+            .codeBasePublisherConfig(publishingEnabled)
             .customerId(customerData.getCustomerId())
             .invocationDataPublisherName("http")
-            .invocationDataPublisherConfig("enabled=true") // TODO: enforce number of dynos
+            .invocationDataPublisherConfig(publishingEnabled)
             .configPollIntervalSeconds(pp.getPollIntervalSeconds())
             .configPollRetryIntervalSeconds(pp.getRetryIntervalSeconds())
             .codeBasePublisherCheckIntervalSeconds(pp.getPublishIntervalSeconds())
@@ -83,10 +87,47 @@ public class AgentServiceImpl implements AgentService {
             .build();
     }
 
+    private int countLiveAgents(CustomerData customerData, String jvmUuid) {
+
+        long customerId = customerData.getCustomerId();
+        long now = System.currentTimeMillis();
+
+        long nextExpectedPollMillis = now + (long) (1.5 * customerData.getPricePlan().getPollIntervalSeconds() * 1000L);
+
+        Timestamp nowTimestamp = new Timestamp(now);
+        Timestamp nextExpectedPollTimestamp = new Timestamp(nextExpectedPollMillis);
+
+        int updated = jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ? " +
+                                              "WHERE customerId = ? AND jvmUuid = ?",
+                                          nowTimestamp, nextExpectedPollTimestamp, customerId, jvmUuid);
+        if (updated == 0) {
+            log.info("The agent {}:{} has started", customerId, jvmUuid);
+
+            jdbcTemplate.update("INSERT INTO agent_state(customerId, jvmUuid, lastPolledAt, nextPollExpectedAt) " +
+                                    "VALUES (?, ?, ?, ?)",
+                                customerId, jvmUuid, nowTimestamp, nextExpectedPollTimestamp);
+        } else {
+            log.debug("The agent {}:{} has polled", customerId, jvmUuid);
+        }
+
+        Integer result = jdbcTemplate
+            .queryForObject("SELECT COUNT(1) FROM agent_state WHERE customerId = ? AND nextPollExpectedAt > ?", Integer.class, customerId,
+                            nowTimestamp);
+
+        String planName = customerData.getPlanName();
+        int maxNumberOfAgents = customerData.getPricePlan().getMaxNumberOfAgents();
+        if (result > maxNumberOfAgents) {
+            log.warn("Customer {} has {} live agents (max for price plan '{}' is {})", customerId, result, planName, maxNumberOfAgents);
+        } else {
+            log.debug("Customer {} has {} live agents (max for price plan '{}' is {})", customerId, result, planName, maxNumberOfAgents);
+        }
+        return result;
+    }
+
     @Override
     public File saveCodeBasePublication(@NonNull String licenseKey, String codeBaseFingerprint, InputStream inputStream)
         throws LicenseViolationException, IOException {
-        getCustomerData(licenseKey).getCustomerId();
+        getCustomerData(licenseKey);
 
         return doSaveInputStream(inputStream, "codebase-");
     }
@@ -94,7 +135,7 @@ public class AgentServiceImpl implements AgentService {
     @Override
     public File saveInvocationDataPublication(@NonNull String licenseKey, String codeBaseFingerprint, InputStream inputStream)
         throws LicenseViolationException, IOException {
-        getCustomerData(licenseKey).getCustomerId();
+        getCustomerData(licenseKey);
 
         return doSaveInputStream(inputStream, "invocations-");
     }

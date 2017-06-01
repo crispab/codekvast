@@ -1,3 +1,4 @@
+DELETE FROM agent_state;
 DELETE FROM invocations;
 DELETE FROM applications;
 DELETE FROM methods;

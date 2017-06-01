@@ -18,11 +18,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
@@ -51,6 +53,7 @@ public class AgentServiceImplTest {
         map.put("plan", "test");
 
         when(jdbcTemplate.queryForMap(anyString(), anyString())).thenReturn(map);
+        when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), anyString(), anyObject())).thenReturn(1);
     }
 
     @Test
