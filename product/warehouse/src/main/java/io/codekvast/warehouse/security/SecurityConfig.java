@@ -19,10 +19,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.warehouse.bootstrap;
+package io.codekvast.warehouse.security;
 
-import io.codekvast.warehouse.security.SecurityService;
-import io.codekvast.warehouse.webapp.WebappController;
+import io.codekvast.warehouse.bootstrap.CodekvastSettings;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -58,6 +57,8 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    public static final String REQUEST_MAPPING_WEBAPP_IS_DEMO_MODE = "/webapp/isDemoMode";
+
     private final UnauthorizedHandler unauthorizedHandler;
     private final SecurityService securityService;
     private final CodekvastSettings settings;
@@ -92,7 +93,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
 
                 // /webapp/** should require an authorized user
-                .antMatchers(HttpMethod.GET, WebappController.WEBAPP_IS_DEMO_MODE).permitAll()
+                .antMatchers(HttpMethod.GET, REQUEST_MAPPING_WEBAPP_IS_DEMO_MODE).permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/webapp/**").permitAll()
                 .antMatchers("/webapp/**").hasRole("USER")
 

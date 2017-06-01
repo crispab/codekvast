@@ -32,24 +32,27 @@ public class ConcurrentSetPerformanceTest {
 
     interface Strategy {
         void initialize(int numThreads);
+
         void add(String s);
 
         boolean contains(String s);
+
         void clear();
     }
 
     @Target(ElementType.TYPE)
     @Retention(RetentionPolicy.RUNTIME)
-    @interface NotThreadSafe {}
+    @interface NotThreadSafe {
+    }
 
     static class BlockingQueueStrategy implements Strategy {
-        private final Set<String> set = new HashSet<String>();
+        private final Set<String> set = new HashSet<>();
         private BlockingQueue<String> queue;
         private Thread consumer;
 
         @Override
         public void initialize(int numThreads) {
-            queue = new LinkedBlockingQueue<String>(); // new ArrayBlockingQueue<String>(numThreads);
+            queue = new LinkedBlockingQueue<>(); // new ArrayBlockingQueue<String>(numThreads);
             consumer = new Thread(new Runnable() {
 
                 @Override
@@ -77,8 +80,8 @@ public class ConcurrentSetPerformanceTest {
 
         @Override
         public boolean contains(String s) {
+            //noinspection StatementWithEmptyBody
             while (!queue.isEmpty()) {
-                ;
             }
             return set.contains(s);
         }
@@ -113,7 +116,7 @@ public class ConcurrentSetPerformanceTest {
                     return;
                 }
 
-                Set<String> modified = new HashSet<String>(current);
+                Set<String> modified = new HashSet<>(current);
                 modified.add(s);
                 if (ref.compareAndSet(current, modified)) {
                     return;
@@ -133,7 +136,7 @@ public class ConcurrentSetPerformanceTest {
     }
 
     static class ConcurrentSkipListStrategy implements Strategy {
-        private final Set<String> set = new ConcurrentSkipListSet<String>();
+        private final Set<String> set = new ConcurrentSkipListSet<>();
 
         @Override
         public void initialize(int numThreads) {
@@ -182,7 +185,7 @@ public class ConcurrentSetPerformanceTest {
 
     @NotThreadSafe
     static class UnsynchronizedHashSetStrategy implements Strategy {
-        private final Set<String> set = new HashSet<String>();
+        private final Set<String> set = new HashSet<>();
 
         @Override
         public void initialize(int numThreads) {
@@ -206,11 +209,11 @@ public class ConcurrentSetPerformanceTest {
     }
 
     private static final Strategy STRATEGIES[] = {
-            // new AtomicReferenceWrappedRegularHashSet(),
-            new ConcurrentSkipListStrategy(),
-            new SetFromConcurrentHashMapStrategy(),
-            new UnsynchronizedHashSetStrategy(),
-            new BlockingQueueStrategy()
+        // new AtomicReferenceWrappedRegularHashSet(),
+        new ConcurrentSkipListStrategy(),
+        new SetFromConcurrentHashMapStrategy(),
+        new UnsynchronizedHashSetStrategy(),
+        new BlockingQueueStrategy()
     };
 
     private static final Random RANDOM = new Random();
@@ -260,10 +263,10 @@ public class ConcurrentSetPerformanceTest {
 
     private final int numThreads;
 
-    private final List<Result> result = new ArrayList<Result>();
+    private final List<Result> result = new ArrayList<>();
 
-    private static final Map<String, Integer> sumRanks = new HashMap<String, Integer>();
-    private static final Map<String, Long> sumElapsed = new HashMap<String, Long>();
+    private static final Map<String, Integer> sumRanks = new HashMap<>();
+    private static final Map<String, Long> sumElapsed = new HashMap<>();
     private static final int cutoffThreads = 20;
     private static int numTestsWithMoreThanCutoffThreads;
 
@@ -292,7 +295,7 @@ public class ConcurrentSetPerformanceTest {
             return;
         }
 
-        SortedMap<Integer, String> ranking = new TreeMap<Integer, String>();
+        SortedMap<Integer, String> ranking = new TreeMap<>();
         for (Map.Entry<String, Integer> entry : sumRanks.entrySet()) {
 
             ranking.put(entry.getValue(), entry.getKey());
@@ -303,9 +306,9 @@ public class ConcurrentSetPerformanceTest {
         int rank = 1;
         for (Map.Entry<Integer, String> entry : ranking.entrySet()) {
             System.out
-                    .printf("#%d: %5.1f %17d %s%n", rank, (float) entry.getKey() / numTestsWithMoreThanCutoffThreads,
-                            sumElapsed.get(entry.getValue()),
-                            entry.getValue());
+                .printf("#%d: %5.1f %17d %s%n", rank, (float) entry.getKey() / numTestsWithMoreThanCutoffThreads,
+                        sumElapsed.get(entry.getValue()),
+                        entry.getValue());
             rank += 1;
         }
 
@@ -376,8 +379,8 @@ public class ConcurrentSetPerformanceTest {
                         // Maximize lock contention...
                         startingLine.await();
 
-                        for (int i = 0; i < RANDOM_STRINGS.length; i++) {
-                            strategy.add(RANDOM_STRINGS[i]);
+                        for (String s : RANDOM_STRINGS) {
+                            strategy.add(s);
                         }
                     } catch (InterruptedException ignored) {
                     } finally {

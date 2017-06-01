@@ -21,8 +21,6 @@
  */
 package io.codekvast.javaagent.appversion;
 
-import io.codekvast.javaagent.config.AgentConfig;
-
 import java.io.File;
 import java.util.Collection;
 
@@ -37,7 +35,7 @@ public interface AppVersionStrategy {
 
     /**
      * Can this strategy handle these args?
-     * @param args The white-space separated value from {@link AgentConfig#appVersion}
+     * @param args The white-space separated value from AgentConfig.appVersion
      * @return true if-and-only-if the strategy recognizes the args.
      */
     boolean canHandle(String[] args);
@@ -46,7 +44,7 @@ public interface AppVersionStrategy {
      * Use args for resolving the app version
      *
      * @param codeBases The locations of the code base.
-     * @param args The value of {@link AgentConfig#appVersion}
+     * @param args The value of AgentConfig.appVersion
      * @return The resolved application version.
      */
     String resolveAppVersion(Collection<File> codeBases, String[] args);

@@ -133,7 +133,7 @@ public class AgentConfig implements Serializable {
 
     public String getResolvedAppVersion() {
         if (resolvedAppVersion == null) {
-            resolvedAppVersion = new AppVersionResolver(this).resolveAppVersion();
+            resolvedAppVersion = new AppVersionResolver(this.getAppVersion(), this.getCodeBaseFiles()).resolveAppVersion();
         }
         return resolvedAppVersion;
     }

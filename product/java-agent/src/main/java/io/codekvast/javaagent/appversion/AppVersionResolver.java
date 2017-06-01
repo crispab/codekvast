@@ -21,20 +21,23 @@
  */
 package io.codekvast.javaagent.appversion;
 
-import io.codekvast.javaagent.config.AgentConfig;
 import lombok.extern.java.Log;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @Log
 public class AppVersionResolver {
 
     private final Collection<AppVersionStrategy> appVersionStrategies = new ArrayList<>();
-    private final AgentConfig config;
+    private final String version;
+    private final List<File> codeBaseFiles;
 
-    public AppVersionResolver(AgentConfig config) {
-        this.config = config;
+    public AppVersionResolver(String version, List<File> codeBaseFiles) {
+        this.version = version.trim();
+        this.codeBaseFiles = new ArrayList<>(codeBaseFiles);
 
         this.appVersionStrategies.add(new LiteralAppVersionStrategy());
         this.appVersionStrategies.add(new ManifestAppVersionStrategy());
@@ -42,12 +45,11 @@ public class AppVersionResolver {
     }
 
     public String resolveAppVersion() {
-        String version = config.getAppVersion().trim();
         String args[] = version.split("\\s+");
 
         for (AppVersionStrategy strategy : appVersionStrategies) {
             if (strategy.canHandle(args)) {
-                String resolvedVersion = strategy.resolveAppVersion(config.getCodeBaseFiles(), args);
+                String resolvedVersion = strategy.resolveAppVersion(codeBaseFiles, args);
                 log.fine(String.format("Resolved appVersion '%s' to '%s'", version, resolvedVersion));
                 return resolvedVersion;
             }

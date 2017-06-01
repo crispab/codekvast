@@ -22,6 +22,7 @@
 package io.codekvast.warehouse.webapp;
 
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
+import io.codekvast.warehouse.security.SecurityConfig;
 import io.codekvast.warehouse.security.WebappTokenProvider;
 import io.codekvast.warehouse.webapp.model.GetMethodsRequest1;
 import io.codekvast.warehouse.webapp.model.GetMethodsResponse1;
@@ -53,7 +54,6 @@ public class WebappController {
     private static final String WEBAPP_V1_METHODS = "/webapp/v1/methods";
     private static final String WEBAPP_V1_METHOD = "/webapp/v1/method/detail/{id}";
     private static final String WEBAPP_RENEW_AUTH_TOKEN = "/webapp/renewAuthToken";
-    public static final String WEBAPP_IS_DEMO_MODE = "/webapp/isDemoMode";
 
     private static final String X_CODEKVAST_AUTH_TOKEN = "X-Codekvast-Auth-Token";
 
@@ -117,7 +117,7 @@ public class WebappController {
                              .body("OK");
     }
 
-    @RequestMapping(method = GET, value = WEBAPP_IS_DEMO_MODE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(method = GET, value = SecurityConfig.REQUEST_MAPPING_WEBAPP_IS_DEMO_MODE, produces = MediaType.TEXT_PLAIN_VALUE)
     @CrossOrigin(origins = "http://localhost:8088")
     public ResponseEntity<String> isDemoMode() {
         log.trace("Is demo mode? {}", settings.isDemoMode());
