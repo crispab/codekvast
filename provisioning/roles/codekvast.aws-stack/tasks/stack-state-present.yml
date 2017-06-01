@@ -232,7 +232,7 @@
     zone: codekvast.io
   with_items: "{{ stack.cnames }}"
 
-- name: Define instance's CNAMEs
+- name: Define application instance's CNAMEs
   local_action:
     module: route53
     profile: codekvast # in ~/.boto
