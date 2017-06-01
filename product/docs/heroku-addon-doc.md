@@ -46,28 +46,15 @@ Continue with the procedures which follows to configure the Codekvast agent.
 heroku config:set JAVA_OPTS="-javaagent:codekvast/codekvast-javaagent-0.20.3.jar -Xbootclasspath/a:codekvast/codekvast-javaagent-0.20.3.jar"
 ```
 
-### If you use Gradle and Spring Boot
+### Spring Boot executable jars are currently not supported
 
-If you use the `spring-boot-gradle-plugin` to build an executable jar file, then you must edit `Procfile` so that it injects $JAVA_OPTS on the command line:
-```term
-web: env SERVER_PORT=$PORT java $JAVA_OPTS -jar build/libs/*.jar
-```
+The use of `spring-boot-gradle-plugin` for building an executable jar file is currently not supported.
 
-You must also edit codekvast.conf so that
-```properties
-codeBase = build/libs, build/classes/main
-```
+As a work-around you can apply the standard Gradle `application` plugin, and launch the app via the generated start script.
 
-or else Codekvast will not find your application's classes.
+A sample application that illustrates how to do this is available at [https://github.com/crispab/codekvast-spring-heroku](https://github.com/crispab/codekvast-spring-heroku).
 
-### Using Gradle dependencies
-
-It is possible to configure Gradle to download the Codekvast agent as a regular build-time dependency instead of adding it to Git.
-
-A sample Spring Boot application that uses Gradle for downloading codekvast-agent.jar at build time is available at [https://github.com/crispab/codekvast-spring-heroku](https://github.com/crispab/codekvast-spring-heroku).
-
-> Note
-> The Gradle build does not create codekvast.conf for you!
+The sample application also illustrates how to download the codekvast-javaagent by means of Gradle's dependency mechanism.
 
 ### Using with Java/Maven
 
