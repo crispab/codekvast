@@ -68,5 +68,12 @@ public interface AgentService {
                                        InputStream inputStream)
         throws LicenseViolationException, IOException;
 
-    long checkLicenseKeyAndGetCustomerId(@NonNull String licenseKey) throws LicenseViolationException;
+    /**
+     * Translates a licenseKey to customer data, which governs what the customer is licensed to do.
+     *
+     * @param licenseKey The licenseKey to check.
+     * @return A CustomerData object.
+     * @throws LicenseViolationException iff the licenseKey was invalid.
+     */
+    CustomerData getCustomerData(@NonNull String licenseKey) throws LicenseViolationException;
 }

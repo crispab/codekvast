@@ -38,7 +38,9 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import java.io.IOException;
 
+import static io.codekvast.javaagent.model.Endpoints.*;
 import static java.lang.String.format;
+import static org.springframework.http.MediaType.*;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
@@ -47,7 +49,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  * @author olle.hallin@crisp.se
  */
 @RestController
-@RequestMapping(method = POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(method = POST, consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
 @Slf4j
 public class AgentController {
 
@@ -76,7 +78,7 @@ public class AgentController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
 
-    @RequestMapping(value = Endpoints.AGENT_V1_POLL_CONFIG)
+    @RequestMapping(value = AGENT_V1_POLL_CONFIG)
     public GetConfigResponse1 getConfig1(@Valid @RequestBody GetConfigRequest1 request) {
         log.debug("Received {}", request);
 
@@ -86,12 +88,12 @@ public class AgentController {
         return response;
     }
 
-    @RequestMapping(value = Endpoints.AGENT_V1_UPLOAD_CODEBASE, method = POST,
-        consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(value = AGENT_V1_UPLOAD_CODEBASE, method = POST,
+        consumes = MULTIPART_FORM_DATA_VALUE, produces = TEXT_PLAIN_VALUE)
     public String uploadCodeBase1(
-        @RequestParam(Endpoints.AGENT_V1_LICENSE_KEY_PARAM) String licenseKey,
-        @RequestParam(Endpoints.AGENT_V1_FINGERPRINT_PARAM) String fingerprint,
-        @RequestParam(Endpoints.AGENT_V1_PUBLICATION_FILE_PARAM) MultipartFile file) throws IOException {
+        @RequestParam(AGENT_V1_LICENSE_KEY_PARAM) String licenseKey,
+        @RequestParam(AGENT_V1_FINGERPRINT_PARAM) String fingerprint,
+        @RequestParam(AGENT_V1_PUBLICATION_FILE_PARAM) MultipartFile file) throws IOException {
 
         log.debug("Received {} ({}) with licenseKey={}, fingerprint={}", file.getOriginalFilename(), humanReadableByteCount(file.getSize()),
                   licenseKey, fingerprint);
@@ -101,12 +103,12 @@ public class AgentController {
         return "OK";
     }
 
-    @RequestMapping(value = Endpoints.AGENT_V1_UPLOAD_INVOCATION_DATA, method = POST,
-        consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(value = AGENT_V1_UPLOAD_INVOCATION_DATA, method = POST,
+        consumes = MULTIPART_FORM_DATA_VALUE, produces = TEXT_PLAIN_VALUE)
     public String uploadInvocationData1(
-        @RequestParam(Endpoints.AGENT_V1_LICENSE_KEY_PARAM) String licenseKey,
-        @RequestParam(Endpoints.AGENT_V1_FINGERPRINT_PARAM) String fingerprint,
-        @RequestParam(Endpoints.AGENT_V1_PUBLICATION_FILE_PARAM) MultipartFile file) throws IOException {
+        @RequestParam(AGENT_V1_LICENSE_KEY_PARAM) String licenseKey,
+        @RequestParam(AGENT_V1_FINGERPRINT_PARAM) String fingerprint,
+        @RequestParam(AGENT_V1_PUBLICATION_FILE_PARAM) MultipartFile file) throws IOException {
 
         log.debug("Received {} ({}) with licenseKey={}", file.getOriginalFilename(), humanReadableByteCount(file.getSize()), licenseKey);
 

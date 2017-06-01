@@ -73,8 +73,6 @@ public class HerokuServiceImpl implements HerokuService {
         HerokuProvisionResponse response = HerokuProvisionResponse.builder()
                                                                   .id(request.getUuid())
                                                                   .config(config)
-                                                                  .message("Continue at https://docs.codekvast.io/configure-heroku-addon")
-                                                                  // TODO: Create https://docs.codekvast.io/configure-heroku-addon
                                                                   .build();
         log.debug("Returning {}", response);
         return response;

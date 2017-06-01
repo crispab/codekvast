@@ -3,6 +3,7 @@ package io.codekvast.warehouse.agent.impl;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.warehouse.agent.AgentService;
+import io.codekvast.warehouse.agent.CustomerData;
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
 import io.codekvast.warehouse.agent.LicenseViolationException;
 import org.junit.Before;
@@ -17,6 +18,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -42,7 +45,19 @@ public class AgentServiceImplTest {
         MockitoAnnotations.initMocks(this);
         settings.setQueuePath(temporaryFolder.getRoot());
         service = new AgentServiceImpl(settings, jdbcTemplate);
-        when(jdbcTemplate.queryForObject(anyString(), eq(Long.class), anyString())).thenReturn(1L);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", 1L);
+        map.put("plan", "test");
+
+        when(jdbcTemplate.queryForMap(anyString(), anyString())).thenReturn(map);
+    }
+
+    @Test
+    public void should_return_sensible_CustomerData() throws Exception {
+        CustomerData data = service.getCustomerData("key");
+        assertThat(data.getCustomerId(), is(1L));
+        assertThat(data.getPlanName(), is("test"));
     }
 
     @Test
@@ -58,7 +73,7 @@ public class AgentServiceImplTest {
 
     @Test(expected = LicenseViolationException.class)
     public void should_have_checked_licenseKey() throws Exception {
-        when(jdbcTemplate.queryForObject(anyString(), eq(Long.class), anyString())).thenThrow(new EmptyResultDataAccessException(0));
+        when(jdbcTemplate.queryForMap(anyString(), anyString())).thenThrow(new EmptyResultDataAccessException(0));
 
         service.saveCodeBasePublication("key", "fingerprint", null);
     }

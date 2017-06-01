@@ -24,7 +24,9 @@ package io.codekvast.warehouse.agent.impl;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.warehouse.agent.AgentService;
+import io.codekvast.warehouse.agent.CustomerData;
 import io.codekvast.warehouse.agent.LicenseViolationException;
+import io.codekvast.warehouse.agent.PricePlan;
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +39,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.Map;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
@@ -61,28 +64,29 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     public GetConfigResponse1 getConfig(GetConfigRequest1 request) throws LicenseViolationException {
-        long customerId = checkLicenseKeyAndGetCustomerId(request.getLicenseKey());
+        CustomerData customerData = getCustomerData(request.getLicenseKey());
+        PricePlan pp = customerData.getPricePlan();
 
-        // TODO: pick values from database
-        return GetConfigResponse1.builder()
-                                 .codeBasePublisherName("http")
-                                 .codeBasePublisherConfig("enabled=true")
-                                 .customerId(customerId)
-                                 .invocationDataPublisherName("http")
-                                 .invocationDataPublisherConfig("enabled=true")
-                                 .configPollIntervalSeconds(5)
-                                 .configPollRetryIntervalSeconds(5)
-                                 .codeBasePublisherCheckIntervalSeconds(5)
-                                 .codeBasePublisherRetryIntervalSeconds(5)
-                                 .invocationDataPublisherIntervalSeconds(5)
-                                 .invocationDataPublisherRetryIntervalSeconds(5)
-                                 .build();
+        return GetConfigResponse1
+            .builder()
+            .codeBasePublisherName("http")
+            .codeBasePublisherConfig("enabled=true") // TODO: enforce number of dynos
+            .customerId(customerData.getCustomerId())
+            .invocationDataPublisherName("http")
+            .invocationDataPublisherConfig("enabled=true") // TODO: enforce number of dynos
+            .configPollIntervalSeconds(pp.getPollIntervalSeconds())
+            .configPollRetryIntervalSeconds(pp.getRetryIntervalSeconds())
+            .codeBasePublisherCheckIntervalSeconds(pp.getPublishIntervalSeconds())
+            .codeBasePublisherRetryIntervalSeconds(pp.getRetryIntervalSeconds())
+            .invocationDataPublisherIntervalSeconds(pp.getPublishIntervalSeconds())
+            .invocationDataPublisherRetryIntervalSeconds(pp.getRetryIntervalSeconds())
+            .build();
     }
 
     @Override
     public File saveCodeBasePublication(@NonNull String licenseKey, String codeBaseFingerprint, InputStream inputStream)
         throws LicenseViolationException, IOException {
-        checkLicenseKeyAndGetCustomerId(licenseKey);
+        getCustomerData(licenseKey).getCustomerId();
 
         return doSaveInputStream(inputStream, "codebase-");
     }
@@ -90,18 +94,19 @@ public class AgentServiceImpl implements AgentService {
     @Override
     public File saveInvocationDataPublication(@NonNull String licenseKey, String codeBaseFingerprint, InputStream inputStream)
         throws LicenseViolationException, IOException {
-        checkLicenseKeyAndGetCustomerId(licenseKey);
+        getCustomerData(licenseKey).getCustomerId();
 
         return doSaveInputStream(inputStream, "invocations-");
     }
 
     @Override
-    public long checkLicenseKeyAndGetCustomerId(@NonNull String licenseKey) throws LicenseViolationException {
-
+    public CustomerData getCustomerData(String licenseKey) throws LicenseViolationException {
         try {
-            Long result = jdbcTemplate.queryForObject("SELECT id FROM customers WHERE licenseKey = ?", Long.class, licenseKey.trim());
-            log.debug("licenseKey '{}' belongs to customer {}", licenseKey, result);
-            return result;
+            Map<String, Object> result = jdbcTemplate.queryForMap("SELECT id, plan FROM customers WHERE licenseKey = ?", licenseKey.trim());
+            return CustomerData.builder()
+                               .customerId((Long) result.get("id"))
+                               .planName((String) result.get("plan"))
+                               .build();
         } catch (DataAccessException e) {
             throw new LicenseViolationException("Invalid license key: '" + licenseKey + "'");
         }
