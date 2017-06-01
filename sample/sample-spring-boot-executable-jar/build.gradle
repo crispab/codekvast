@@ -24,7 +24,6 @@ configurations {
     codekvastagent
 }
 
-
 dependencies {
     compileOnly 'org.projectlombok:lombok:1.16.16'
     compile 'org.springframework.boot:spring-boot-starter-web'
@@ -67,7 +66,10 @@ httpProxyPort = 4711
 
 processResources.dependsOn generateCodekvastConfig
 
-task launchBootRepackagedJar(type: Exec, dependsOn: [bootRepackage, generateCodekvastConfig, ":product:java-agent:shadowJar"] ) {
+task launchExecutableJar(type: Exec, dependsOn: [bootRepackage, generateCodekvastConfig, ":product:java-agent:shadowJar"] ) {
+    description "Launches the executable jar produced by bootRepackage"
+    group "Application"
+
     executable "java"
 
     // args "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"

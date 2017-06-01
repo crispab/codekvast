@@ -1,4 +1,4 @@
-package sample.springbootrepackaged;
+package sample.springboot.executable;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
