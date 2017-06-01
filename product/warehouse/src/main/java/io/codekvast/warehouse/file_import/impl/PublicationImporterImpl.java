@@ -38,7 +38,7 @@ import java.util.Set;
 /**
  * Importer for serialized publications.
  *
- * It deserializes the object and dispatches to the specialized importer.
+ * Deserialize the object and dispatch to the specialized importer.
  *
  * @author olle.hallin@crisp.se
  * @see CodeBasePublication

@@ -26,11 +26,7 @@ package io.codekvast.testsupport.docker;
  *
  * @author olle.hallin@crisp.se
  */
-public class ContainerNotReadyException extends Exception {
-
-    public ContainerNotReadyException(String message) {
-        super(message);
-    }
+class ContainerNotReadyException extends Exception {
 
     public ContainerNotReadyException(String message, Throwable cause) {
         super(message, cause);

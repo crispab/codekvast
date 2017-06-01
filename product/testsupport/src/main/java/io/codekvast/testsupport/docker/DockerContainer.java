@@ -146,7 +146,7 @@ public class DockerContainer extends ExternalResource {
         }
     }
 
-    public int getExternalPort(int internalPort) {
+    private int getExternalPort(int internalPort) {
         Integer port = externalPorts.get(internalPort);
         if (port == null) {
             throw new IllegalArgumentException("Unknown internal port: " + internalPort);

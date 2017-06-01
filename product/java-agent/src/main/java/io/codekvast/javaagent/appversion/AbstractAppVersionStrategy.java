@@ -29,9 +29,9 @@ import java.util.Set;
  * @author olle.hallin@crisp.se
  */
 abstract class AbstractAppVersionStrategy implements AppVersionStrategy {
-    private final Set<String> names = new HashSet<String>();
+    private final Set<String> names = new HashSet<>();
 
-    protected AbstractAppVersionStrategy(String... names) {
+    AbstractAppVersionStrategy(String... names) {
         Collections.addAll(this.names, names);
     }
 

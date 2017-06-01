@@ -22,7 +22,6 @@
 package io.codekvast.javaagent.publishing.impl;
 
 import io.codekvast.javaagent.codebase.CodeBase;
-import io.codekvast.javaagent.codebase.CodeBaseFingerprint;
 import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.model.Endpoints;
 import io.codekvast.javaagent.model.v1.CodeBasePublication;
@@ -82,14 +81,6 @@ public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
         } finally {
             FileUtils.safeDelete(file);
         }
-    }
-
-    @Override
-    boolean isCodeBasePublished(CodeBaseFingerprint fingerprint) {
-        // Will not implement this feature now.
-        // See https://trello.com/c/icZaxWSa
-
-        return false;
     }
 
     void doPost(File file, String url, String fingerprint) throws IOException {

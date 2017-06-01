@@ -26,7 +26,7 @@ package io.codekvast.testsupport.docker;
  *
  * @author olle.hallin@crisp.se
  */
-public interface ContainerReadyChecker {
+interface ContainerReadyChecker {
 
     /**
      * @return The internal port which is going to be used

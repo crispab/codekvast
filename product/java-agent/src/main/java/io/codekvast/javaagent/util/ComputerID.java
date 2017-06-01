@@ -51,13 +51,13 @@ public class ComputerID {
         return value;
     }
 
-    public static ComputerID compute() {
+    static ComputerID compute() {
         String value = computeComputerIdentity();
         return new ComputerID(value);
     }
 
     private static String computeComputerIdentity() {
-        Set<String> items = new TreeSet<String>();
+        Set<String> items = new TreeSet<>();
         addMacAddresses(items);
         addHostName(items);
         return Integer.toHexString(items.hashCode()).toLowerCase();
@@ -100,13 +100,10 @@ public class ComputerID {
         if (name.matches("docker[0-9]+$")) {
             return false;
         }
-        if (name.matches("veth[0-9a-f]+$")) {
-            return false;
-        }
-        return true;
+        return !name.matches("veth[0-9a-f]+$");
     }
 
-    private static String prettyPrintMacAddress(byte[] macAddress) throws SocketException {
+    private static String prettyPrintMacAddress(byte[] macAddress) {
         StringBuilder sb = new StringBuilder();
         if (macAddress != null) {
             for (byte b : macAddress) {

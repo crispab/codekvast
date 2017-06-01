@@ -22,7 +22,7 @@
 package io.codekvast.warehouse.security;
 
 /**
- * Addtional internal interface to the security service.
+ * Additional internal interface to the security service.
  *
  * @author olle.hallin@crisp.se
  */

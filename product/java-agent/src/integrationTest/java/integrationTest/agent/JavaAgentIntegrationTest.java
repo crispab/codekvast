@@ -40,22 +40,21 @@ public class JavaAgentIntegrationTest {
 
     private final Gson gson = new Gson();
 
-    private AgentConfig agentConfig;
     private File agentConfigFile;
 
     @Before
     public void setUp() throws Exception {
-        agentConfig = AgentConfigFactory.createTemplateConfig().toBuilder()
-                                        .serverUrl("http://localhost:" + wireMockRule.port())
-                                        .appName("SampleApp")
-                                        .appVersion("literal 1.0")
-                                        .aspectjOptions("-verbose -showWeaveInfo")
-                                        .packages("sample")
-                                        .codeBase("build/classes/integrationTest")
-                                        .bridgeAspectjMessagesToJUL(true)
-                                        .schedulerInitialDelayMillis(0)
-                                        .schedulerIntervalMillis(100)
-                                        .build();
+        AgentConfig agentConfig = AgentConfigFactory.createTemplateConfig().toBuilder()
+                                                    .serverUrl("http://localhost:" + wireMockRule.port())
+                                                    .appName("SampleApp")
+                                                    .appVersion("literal 1.0")
+                                                    .aspectjOptions("-verbose -showWeaveInfo")
+                                                    .packages("sample")
+                                                    .codeBase("build/classes/integrationTest")
+                                                    .bridgeAspectjMessagesToJUL(true)
+                                                    .schedulerInitialDelayMillis(0)
+                                                    .schedulerIntervalMillis(100)
+                                                    .build();
         agentConfigFile = FileUtils.serializeToFile(agentConfig, "codekvast", ".conf.ser");
         agentConfigFile.deleteOnExit();
     }

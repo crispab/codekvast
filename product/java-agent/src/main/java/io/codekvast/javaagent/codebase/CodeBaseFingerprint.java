@@ -61,7 +61,7 @@ public class CodeBaseFingerprint {
     public static class Builder {
         private final AgentConfig config;
 
-        private Set<File> files = new TreeSet<>();
+        private final Set<File> files = new TreeSet<>();
 
         Builder record(File file) {
             if (files.add(file)) {

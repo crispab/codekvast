@@ -33,6 +33,7 @@ import io.codekvast.javaagent.util.FileUtils;
 import lombok.extern.java.Log;
 import org.aspectj.bridge.Constants;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.lang.instrument.Instrumentation;
 import java.util.Collections;
@@ -74,6 +75,7 @@ public class CodekvastAgent {
     // AspectJ uses this system property for defining the list of names of load-time weaving config files to locate...
     private static final String ASPECTJ_WEAVER_CONFIGURATION = "org.aspectj.weaver.loadtime.configuration";
 
+    @Nullable
     private static Scheduler scheduler;
 
     private CodekvastAgent() {
@@ -224,6 +226,7 @@ public class CodekvastAgent {
 
             setContextClassLoader(null);
 
+            //noinspection InnerClassTooDeeplyNested,AnonymousInnerClass
             setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
 
                 @SuppressWarnings("UseOfSystemOutOrSystemErr")
@@ -237,12 +240,17 @@ public class CodekvastAgent {
 
         @Override
         public void run() {
-            //noinspection UseOfSystemOutOrSystemErr
             // Cannot use logger here, since logging could have been shut down already
+
+            //noinspection UseOfSystemOutOrSystemErr
             System.err.println(NAME + " is shutting down...");
             long startedAt = System.currentTimeMillis();
+
             initialize(null);
+
             long elapsed = System.currentTimeMillis() - startedAt;
+
+            //noinspection UseOfSystemOutOrSystemErr
             System.err.println(NAME + " shutdown completed in " + elapsed + " ms");
         }
     }

@@ -14,6 +14,7 @@ import java.util.Comparator;
  */
 public class TestDataGenerator {
 
+    @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private final ImportDAO importDao;
 
     @Inject

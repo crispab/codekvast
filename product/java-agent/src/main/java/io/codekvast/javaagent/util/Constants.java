@@ -21,6 +21,8 @@
  */
 package io.codekvast.javaagent.util;
 
+import lombok.experimental.UtilityClass;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.UUID;
@@ -28,6 +30,7 @@ import java.util.UUID;
 /**
  * @author olle.hallin@crisp.se
  */
+@UtilityClass
 public class Constants {
     public static final String AGENT_VERSION = getAgentVersion();
     public static final String COMPUTER_ID = ComputerID.compute().toString();

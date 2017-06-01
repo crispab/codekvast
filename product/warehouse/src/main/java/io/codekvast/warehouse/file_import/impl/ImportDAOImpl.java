@@ -26,7 +26,6 @@ import io.codekvast.javaagent.model.v1.CommonPublicationData;
 import io.codekvast.javaagent.model.v1.MethodSignature;
 import io.codekvast.javaagent.model.v1.SignatureStatus;
 import io.codekvast.warehouse.customer.CustomerService;
-import io.codekvast.warehouse.customer.LicenseViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;

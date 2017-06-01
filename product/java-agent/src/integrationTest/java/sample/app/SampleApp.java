@@ -5,6 +5,7 @@ import lombok.extern.java.Log;
 /**
  * @author olle.hallin@crisp.se
  */
+@SuppressWarnings("ALL")
 @Log
 public class SampleApp {
     private final int dummy;

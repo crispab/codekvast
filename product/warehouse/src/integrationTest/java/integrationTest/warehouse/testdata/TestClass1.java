@@ -6,7 +6,7 @@ import java.sql.SQLException;
 /**
  * @author olle.hallin@crisp.se
  */
-@SuppressWarnings("unused")
+@SuppressWarnings("ALL")
 public class TestClass1 {
     public Integer method1_0(String s1, int i2) throws IOException, SQLException {
         return 17;

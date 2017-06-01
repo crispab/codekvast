@@ -32,6 +32,7 @@ import static org.aspectj.bridge.IMessage.WEAVEINFO;
 /**
  * A bridge from AspectJ's IMessageHandler to java.util.logging (JUL)
  */
+@SuppressWarnings("MethodReturnAlwaysConstant")
 @Log(topic = "io.codekvast.aspectjweaver")
 public class AspectjMessageHandler implements IMessageHandler {
     public static final String LOGGER_NAME = "";

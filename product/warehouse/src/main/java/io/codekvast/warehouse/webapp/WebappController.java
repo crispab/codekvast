@@ -96,8 +96,8 @@ public class WebappController {
 
         Optional<MethodDescriptor1> result = webappService.getMethodById(methodId);
 
-        log.debug("{} method with id={} in {} ms", result.isPresent() ? "Found" : "Could not find", methodId,
-                  System.currentTimeMillis() - startedAt);
+        log.debug("{} method with id={} in {} ms", result.map(methodDescriptor1 -> "Found").orElse("Could not find"),
+                  methodId, System.currentTimeMillis() - startedAt);
 
         return result.map(method -> ResponseEntity.ok()
                                                   .header(X_CODEKVAST_AUTH_TOKEN, securityHandler.renewWebappToken())

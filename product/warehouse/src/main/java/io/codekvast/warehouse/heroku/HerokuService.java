@@ -32,25 +32,22 @@ public interface HerokuService {
      *
      * @param request The provisioning request sent by Heroku.
      * @return The response that Heroku will forward to the app developer.
-     * @throws HerokuException If failed to satisfy the request.
      */
-    HerokuProvisionResponse provision(HerokuProvisionRequest request) throws HerokuException;
+    HerokuProvisionResponse provision(HerokuProvisionRequest request);
 
     /**
      * Request to change plan.
      *
      * @param externalId The value of {@link HerokuProvisionResponse#id}.
      * @param request    The change plan request.
-     * @throws HerokuException If failed to deprovision, try again later.
      */
-    void changePlan(String externalId, HerokuChangePlanRequest request) throws HerokuException;
+    void changePlan(String externalId, HerokuChangePlanRequest request);
 
     /**
      * Deprovision Codekvast from one Heroku app.
      *
      * @param externalId The value of {@link HerokuProvisionResponse#id}.
-     * @throws HerokuException If failed to deprovision, try again later.
      */
-    void deprovision(String externalId) throws HerokuException;
+    void deprovision(String externalId);
 
 }

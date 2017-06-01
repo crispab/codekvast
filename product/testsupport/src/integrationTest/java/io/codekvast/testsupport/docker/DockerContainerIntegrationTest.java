@@ -4,7 +4,6 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.mariadb.jdbc.MariaDbDataSource;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -51,7 +50,7 @@ public class DockerContainerIntegrationTest {
         assertDataSourceIsReady(System.getProperty("my.jdbcUrl"));
     }
 
-    private void assertDataSourceIsReady(String jdbcUrl) throws IOException, SQLException {
+    private void assertDataSourceIsReady(String jdbcUrl) throws SQLException {
         MariaDbDataSource dataSource = new MariaDbDataSource(jdbcUrl);
         try (Connection connection = dataSource.getConnection("nisse", "hult");
              Statement st = connection.createStatement()) {

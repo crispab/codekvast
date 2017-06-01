@@ -23,7 +23,6 @@ package io.codekvast.warehouse.agent;
 
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
-import io.codekvast.warehouse.bootstrap.CodekvastSettings;
 import io.codekvast.warehouse.customer.LicenseViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -47,18 +46,17 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  *
  * @author olle.hallin@crisp.se
  */
+@SuppressWarnings("SameReturnValue")
 @RestController
 @RequestMapping(method = POST, consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
 @Slf4j
 public class AgentController {
 
     private final AgentService agentService;
-    private final CodekvastSettings settings;
 
     @Inject
-    public AgentController(AgentService agentService, CodekvastSettings settings) {
+    public AgentController(AgentService agentService) {
         this.agentService = agentService;
-        this.settings = settings;
     }
 
     @ExceptionHandler

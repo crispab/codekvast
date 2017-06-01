@@ -20,9 +20,9 @@
 -- THE SOFTWARE.
 --
 
---- Import file info --------------------------------
---- Used for making file import idempotent as well as providing some
---- statistics
+-- Import file info --------------------------------
+-- Used for making file import idempotent as well as providing some
+-- statistics
 CREATE TABLE import_file_info (
   id                         BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
   uuid                       VARCHAR(40)           NOT NULL UNIQUE,
@@ -37,7 +37,7 @@ CREATE TABLE import_file_info (
   importedFromEnvironment    VARCHAR(255)          NULL
 );
 
---- Applications --------------------------------
+-- Applications --------------------------------
 CREATE TABLE applications (
   id        BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
   name      VARCHAR(255)          NOT NULL,
@@ -47,7 +47,7 @@ CREATE TABLE applications (
   CONSTRAINT ix_application_identity UNIQUE (NAME, version)
 );
 
---- Methods --------------------------------
+-- Methods --------------------------------
 CREATE TABLE methods (
   id             BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
   visibility     VARCHAR(20)           NOT NULL,
@@ -66,7 +66,7 @@ CREATE TABLE methods (
   INDEX ix_method_package (packageName(255))
 );
 
---- JVMs --------------------------------
+-- JVMs --------------------------------
 CREATE TABLE jvms (
   id                         BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
   uuid                       VARCHAR(40)           NOT NULL UNIQUE,
@@ -83,7 +83,7 @@ CREATE TABLE jvms (
   tags                       VARCHAR(1000)         NOT NULL
 );
 
---- invocations --------------------------------
+-- invocations --------------------------------
 CREATE TABLE invocations (
   applicationId   BIGINT                         NOT NULL,
   methodId        BIGINT                         NOT NULL,

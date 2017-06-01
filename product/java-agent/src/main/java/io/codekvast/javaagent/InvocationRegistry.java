@@ -69,6 +69,7 @@ public class InvocationRegistry {
         }
     }
 
+    @SuppressWarnings("MethodReturnAlwaysConstant")
     public boolean isNullRegistry() {
         return false;
     }
@@ -111,6 +112,7 @@ public class InvocationRegistry {
         toggleInvocationsIndex();
 
         try {
+            //noinspection unchecked
             publisher.publishInvocationData(oldRecordingIntervalStartedAtMillis, invocations[oldIndex]);
         } finally {
             invocations[oldIndex].clear();
@@ -137,6 +139,7 @@ public class InvocationRegistry {
         }
     }
 
+    @SuppressWarnings("MethodReturnAlwaysConstant")
     private static class NullInvocationRegistry extends InvocationRegistry {
         private NullInvocationRegistry() {
             super();

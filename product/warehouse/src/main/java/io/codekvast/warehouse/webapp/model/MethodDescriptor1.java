@@ -117,7 +117,7 @@ public class MethodDescriptor1 {
     @SuppressWarnings("unused")
     public Set<String> getTags() {
         Set<String> result = new TreeSet<>();
-        collectedInEnvironments.stream().map(EnvironmentDescriptor1::getTags).forEach(tags -> result.addAll(tags));
+        collectedInEnvironments.stream().map(EnvironmentDescriptor1::getTags).forEach(result::addAll);
         return result;
     }
 }

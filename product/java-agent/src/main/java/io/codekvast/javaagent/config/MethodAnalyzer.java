@@ -158,49 +158,49 @@ public class MethodAnalyzer {
     }
 
     boolean isEquals(Method method) {
-        return !isStatic(method)
+        return isNonStatic(method)
                 && method.getName().equals("equals")
                 && method.getParameterTypes().length == 1
                 && method.getReturnType().equals(Boolean.TYPE);
     }
 
     boolean isHashCode(Method method) {
-        return !isStatic(method)
+        return isNonStatic(method)
                 && method.getName().equals("hashCode")
                 && method.getParameterTypes().length == 0
                 && method.getReturnType().equals(Integer.TYPE);
     }
 
     boolean isCompareTo(Method m) {
-        return !isStatic(m)
+        return isNonStatic(m)
                 && m.getName().equals("compareTo")
                 && m.getParameterTypes().length == 1
                 && m.getReturnType().equals(Integer.TYPE);
     }
 
     boolean isToString(Method method) {
-        return !isStatic(method)
+        return isNonStatic(method)
                 && method.getName().equals("toString")
                 && method.getParameterTypes().length == 0
                 && method.getReturnType().equals(String.class);
     }
 
     boolean isSetter(Method method) {
-        return !isStatic(method)
+        return isNonStatic(method)
                 && method.getName().startsWith("set")
                 && method.getParameterTypes().length == 1
                 && method.getReturnType().equals(Void.TYPE);
     }
 
     boolean isGetter(Method method) {
-        return !isStatic(method)
+        return isNonStatic(method)
                 && method.getName().startsWith("get")
                 && method.getParameterTypes().length == 0
                 && !method.getReturnType().equals(Void.TYPE);
     }
 
-    private boolean isStatic(Method method) {
-        return Modifier.isStatic(method.getModifiers());
+    private boolean isNonStatic(Method method) {
+        return !Modifier.isStatic(method.getModifiers());
     }
 
     @Override

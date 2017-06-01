@@ -3,7 +3,7 @@ package integrationTest.warehouse.testdata;
 /**
  * @author olle.hallin@crisp.se
  */
-@SuppressWarnings("unused")
+@SuppressWarnings("ALL")
 public class TestClass2 {
     public static void method2_3() {
     }

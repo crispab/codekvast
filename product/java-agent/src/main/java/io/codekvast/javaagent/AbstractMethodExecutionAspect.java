@@ -34,7 +34,7 @@ import org.aspectj.lang.annotation.Pointcut;
  * @author olle.hallin@crisp.se
  * @see CodekvastAgent
  */
-@SuppressWarnings("NoopMethodInAbstractClass")
+@SuppressWarnings({"NoopMethodInAbstractClass", "MissingAspectjAutoproxyInspection"})
 @Aspect
 public abstract class AbstractMethodExecutionAspect {
 
@@ -56,6 +56,7 @@ public abstract class AbstractMethodExecutionAspect {
     public void trivialMethodExecution() {
     }
 
+    @SuppressWarnings("Annotator")
     @Pointcut("execution(synthetic * *(..))")
     public void syntheticMethodExecution() {
     }

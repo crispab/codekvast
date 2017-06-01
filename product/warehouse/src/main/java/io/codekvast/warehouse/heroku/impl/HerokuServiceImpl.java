@@ -30,7 +30,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,18 +44,16 @@ public class HerokuServiceImpl implements HerokuService {
 
     private final CodekvastSettings settings;
     private final JdbcTemplate jdbcTemplate;
-    private final MessageDigest sha1;
 
     @Inject
     public HerokuServiceImpl(CodekvastSettings settings, JdbcTemplate jdbcTemplate) throws NoSuchAlgorithmException {
         this.settings = settings;
         this.jdbcTemplate = jdbcTemplate;
-        this.sha1 = MessageDigest.getInstance("SHA-1");
     }
 
     @Override
     @Transactional
-    public HerokuProvisionResponse provision(HerokuProvisionRequest request) throws HerokuException {
+    public HerokuProvisionResponse provision(HerokuProvisionRequest request) {
         log.debug("Handling {}", request);
 
         String licenseKey = UUID.randomUUID().toString().replaceAll("[-_]", "").toUpperCase();
@@ -78,7 +75,7 @@ public class HerokuServiceImpl implements HerokuService {
 
     @Override
     @Transactional
-    public void changePlan(String externalId, HerokuChangePlanRequest request) throws HerokuException {
+    public void changePlan(String externalId, HerokuChangePlanRequest request) {
         log.debug("Received {} for customers.externalId={}", request, externalId);
 
         Map<String, Object> customer;
@@ -110,7 +107,7 @@ public class HerokuServiceImpl implements HerokuService {
 
     @Override
     @Transactional
-    public void deprovision(String externalId) throws HerokuException {
+    public void deprovision(String externalId) {
         Long customerId;
         try {
             customerId = jdbcTemplate.queryForObject("SELECT id FROM customers WHERE externalId = ?", Long.class, externalId);
