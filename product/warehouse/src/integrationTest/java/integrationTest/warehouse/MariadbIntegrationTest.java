@@ -5,6 +5,9 @@ import io.codekvast.javaagent.model.v1.SignatureStatus;
 import io.codekvast.testsupport.docker.DockerContainer;
 import io.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
 import io.codekvast.warehouse.CodekvastWarehouse;
+import io.codekvast.warehouse.customer.CustomerData;
+import io.codekvast.warehouse.customer.CustomerService;
+import io.codekvast.warehouse.customer.LicenseViolationException;
 import io.codekvast.warehouse.webapp.WebappService;
 import io.codekvast.warehouse.webapp.model.GetMethodsRequest1;
 import io.codekvast.warehouse.webapp.model.MethodDescriptor1;
@@ -87,6 +90,9 @@ public class MariadbIntegrationTest {
 
 
     @Inject
+    private CustomerService customerService;
+
+    @Inject
     private WebappService webappService;
 
     @Inject
@@ -124,6 +130,28 @@ public class MariadbIntegrationTest {
 
         // then
         assertThat("Wrong number of invocations rows", countRowsInTable("invocations"), is(SignatureStatus.values().length));
+    }
+
+    @Test
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_getCustomerDataByCustomerId() throws Exception {
+        CustomerData customerData = customerService.getCustomerDataByCustomerId(1L);
+        assertThat(customerData.getCustomerId(), is(1L));
+        assertThat(customerData.getPlanName(), is("demo"));
+    }
+
+    @Test
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_getCustomerDataByLicenseKey() throws Exception {
+        CustomerData customerData = customerService.getCustomerDataByLicenseKey("");
+        assertThat(customerData.getCustomerId(), is(1L));
+        assertThat(customerData.getPlanName(), is("demo"));
+    }
+
+    @Test(expected = LicenseViolationException.class)
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_reject_invalid_licenseKey() throws Exception {
+        customerService.checkLicenseKey("undefined");
     }
 
     // TODO: add tests for CodeBasePublication import

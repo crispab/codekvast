@@ -23,8 +23,6 @@ package io.codekvast.warehouse.heroku;
 
 import lombok.*;
 
-import java.util.Map;
-
 /**
  * @author olle.hallin@crisp.se
  */

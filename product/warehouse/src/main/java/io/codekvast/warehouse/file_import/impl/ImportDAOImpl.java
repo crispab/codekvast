@@ -25,6 +25,8 @@ import io.codekvast.javaagent.model.v1.CodeBaseEntry;
 import io.codekvast.javaagent.model.v1.CommonPublicationData;
 import io.codekvast.javaagent.model.v1.MethodSignature;
 import io.codekvast.javaagent.model.v1.SignatureStatus;
+import io.codekvast.warehouse.customer.CustomerService;
+import io.codekvast.warehouse.customer.LicenseViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -46,10 +48,12 @@ import java.util.*;
 public class ImportDAOImpl implements ImportDAO {
 
     private final JdbcTemplate jdbcTemplate;
+    private final CustomerService customerService;
 
     @Inject
-    public ImportDAOImpl(JdbcTemplate jdbcTemplate) {
+    public ImportDAOImpl(JdbcTemplate jdbcTemplate, CustomerService customerService) {
         this.jdbcTemplate = jdbcTemplate;
+        this.customerService = customerService;
     }
 
     @Override
@@ -115,6 +119,8 @@ public class ImportDAOImpl implements ImportDAO {
         updateIncompleteMethods(customerId, publishedAtMillis, entries, incompleteMethods, existingMethods, invocationsNotFoundInCodeBase);
         ensureInitialInvocations(customerId, appId, jvmId, entries, existingMethods, existingInvocations);
         // TODO: update initial invocation status if different from entries*.status
+
+        customerService.assertDatabaseSize(customerId);
     }
 
     @Override
@@ -123,6 +129,8 @@ public class ImportDAOImpl implements ImportDAO {
         Set<Long> existingInvocations = getExistingInvocations(customerId, appId, jvmId);
 
         doImportInvocations(customerId, appId, jvmId, invokedAtMillis, invocations, existingMethods, existingInvocations);
+
+        customerService.assertDatabaseSize(customerId);
     }
 
     private void doImportInvocations(long customerId, long appId, long jvmId, long invokedAtMillis, Set<String> invokedSignatures,

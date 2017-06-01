@@ -51,9 +51,9 @@ public interface ImportDAO {
     long importJvm(CommonPublicationData commonData);
 
     /**
-     * Inserts missing rows into the database's methods and invocations tables.
-     * Does never update existing rows.
-     * @param customerId
+     * Inserts missing rows into the database's methods and invocations tables. Does never update existing rows.
+     *
+     * @param customerId        The customer ID
      * @param appId             The application ID returned by {@link #importApplication(CommonPublicationData)}
      * @param jvmId             The JVM ID returned by {@link #importJvm(CommonPublicationData)}
      * @param publishedAtMillis The timestamp the publication was published.
@@ -62,10 +62,9 @@ public interface ImportDAO {
     void importMethods(long customerId, long appId, long jvmId, long publishedAtMillis, Collection<CodeBaseEntry> entries);
 
     /**
-     * Inserts or updates rows into the invocations table.
-     * Existing rows are updated with the new interval.
+     * Inserts or updates rows into the invocations table. Existing rows are updated with the new interval.
      *
-     * @param customerId
+     * @param customerId      The customer ID
      * @param appId           The application ID returned by {@link #importApplication(CommonPublicationData)}
      * @param jvmId           The JVM ID returned by {@link #importJvm(CommonPublicationData)}
      * @param invokedAtMillis The start of the recording interval.

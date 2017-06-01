@@ -21,9 +21,6 @@
  */
 package io.codekvast.warehouse.security;
 
-import io.codekvast.warehouse.security.CustomerIdProvider;
-import io.codekvast.warehouse.security.WebappTokenProvider;
-
 /**
  * Addtional internal interface to the security service.
  *

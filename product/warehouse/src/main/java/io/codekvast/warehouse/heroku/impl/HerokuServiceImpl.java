@@ -36,8 +36,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static javax.xml.bind.DatatypeConverter.printHexBinary;
-
 /**
  * @author olle.hallin@crisp.se
  */

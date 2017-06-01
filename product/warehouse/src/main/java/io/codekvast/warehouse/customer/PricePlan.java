@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.warehouse.agent;
+package io.codekvast.warehouse.customer;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

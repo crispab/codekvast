@@ -24,13 +24,13 @@ package io.codekvast.warehouse.agent.impl;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.warehouse.agent.AgentService;
-import io.codekvast.warehouse.agent.CustomerData;
-import io.codekvast.warehouse.agent.LicenseViolationException;
-import io.codekvast.warehouse.agent.PricePlan;
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
+import io.codekvast.warehouse.customer.CustomerData;
+import io.codekvast.warehouse.customer.CustomerService;
+import io.codekvast.warehouse.customer.LicenseViolationException;
+import io.codekvast.warehouse.customer.PricePlan;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +40,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.sql.Timestamp;
-import java.util.Map;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
@@ -55,17 +54,19 @@ public class AgentServiceImpl implements AgentService {
 
     private final CodekvastSettings settings;
     private final JdbcTemplate jdbcTemplate;
-
+    private final CustomerService customerService;
 
     @Inject
-    public AgentServiceImpl(CodekvastSettings settings, JdbcTemplate jdbcTemplate) {
+    public AgentServiceImpl(CodekvastSettings settings, JdbcTemplate jdbcTemplate,
+                            CustomerService customerService) {
         this.settings = settings;
         this.jdbcTemplate = jdbcTemplate;
+        this.customerService = customerService;
     }
 
     @Override
     public GetConfigResponse1 getConfig(GetConfigRequest1 request) throws LicenseViolationException {
-        CustomerData customerData = getCustomerData(request.getLicenseKey());
+        CustomerData customerData = customerService.getCustomerDataByLicenseKey(request.getLicenseKey());
         int liveAgents = countLiveAgents(customerData, request.getJvmUuid());
 
         PricePlan pp = customerData.getPricePlan();
@@ -124,7 +125,7 @@ public class AgentServiceImpl implements AgentService {
     @Override
     public File saveCodeBasePublication(@NonNull String licenseKey, String codeBaseFingerprint, InputStream inputStream)
         throws LicenseViolationException, IOException {
-        getCustomerData(licenseKey);
+        customerService.checkLicenseKey(licenseKey);
 
         return doSaveInputStream(inputStream, "codebase-");
     }
@@ -132,22 +133,9 @@ public class AgentServiceImpl implements AgentService {
     @Override
     public File saveInvocationDataPublication(@NonNull String licenseKey, String codeBaseFingerprint, InputStream inputStream)
         throws LicenseViolationException, IOException {
-        getCustomerData(licenseKey);
+        customerService.checkLicenseKey(licenseKey);
 
         return doSaveInputStream(inputStream, "invocations-");
-    }
-
-    @Override
-    public CustomerData getCustomerData(String licenseKey) throws LicenseViolationException {
-        try {
-            Map<String, Object> result = jdbcTemplate.queryForMap("SELECT id, plan FROM customers WHERE licenseKey = ?", licenseKey.trim());
-            return CustomerData.builder()
-                               .customerId((Long) result.get("id"))
-                               .planName((String) result.get("plan"))
-                               .build();
-        } catch (DataAccessException e) {
-            throw new LicenseViolationException("Invalid license key: '" + licenseKey + "'");
-        }
     }
 
     private File doSaveInputStream(InputStream inputStream, String prefix) throws IOException {

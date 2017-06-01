@@ -19,21 +19,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.warehouse.agent;
-
-import lombok.Builder;
-import lombok.Value;
+package io.codekvast.warehouse.customer;
 
 /**
- * @author olle.hallin@crisp.se
+ * Thrown when a license violation has occurred.
  */
-@Value
-@Builder
-public class CustomerData {
-    private long customerId;
-    private String planName;
+public class LicenseViolationException extends RuntimeException {
 
-    public PricePlan getPricePlan() {
-        return PricePlan.valueOf(planName.toUpperCase());
+    public LicenseViolationException(String message) {
+        super(message);
     }
 }

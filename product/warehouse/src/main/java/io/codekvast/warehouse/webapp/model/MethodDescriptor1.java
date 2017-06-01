@@ -21,11 +21,11 @@
  */
 package io.codekvast.warehouse.webapp.model;
 
+import io.codekvast.javaagent.model.v1.SignatureStatus;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Singular;
 import lombok.Value;
-import io.codekvast.javaagent.model.v1.SignatureStatus;
 
 import java.util.Set;
 import java.util.SortedSet;
