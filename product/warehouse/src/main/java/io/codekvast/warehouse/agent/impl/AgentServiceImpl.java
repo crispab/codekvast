@@ -92,27 +92,24 @@ public class AgentServiceImpl implements AgentService {
         long customerId = customerData.getCustomerId();
         long now = System.currentTimeMillis();
 
-        long nextExpectedPollMillis = now + (long) (1.5 * customerData.getPricePlan().getPollIntervalSeconds() * 1000L);
-
         Timestamp nowTimestamp = new Timestamp(now);
-        Timestamp nextExpectedPollTimestamp = new Timestamp(nextExpectedPollMillis);
+        Timestamp nextExpectedPollTimestamp = new Timestamp(now + customerData.getPricePlan().getPollIntervalSeconds() * 1000L);
 
-        int updated = jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ? " +
-                                              "WHERE customerId = ? AND jvmUuid = ?",
-                                          nowTimestamp, nextExpectedPollTimestamp, customerId, jvmUuid);
+        int updated =
+            jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ? WHERE customerId = ? AND jvmUuid = ?",
+                                nowTimestamp, nextExpectedPollTimestamp, customerId, jvmUuid);
         if (updated == 0) {
             log.info("The agent {}:{} has started", customerId, jvmUuid);
 
-            jdbcTemplate.update("INSERT INTO agent_state(customerId, jvmUuid, lastPolledAt, nextPollExpectedAt) " +
-                                    "VALUES (?, ?, ?, ?)",
+            jdbcTemplate.update("INSERT INTO agent_state(customerId, jvmUuid, lastPolledAt, nextPollExpectedAt) VALUES (?, ?, ?, ?)",
                                 customerId, jvmUuid, nowTimestamp, nextExpectedPollTimestamp);
         } else {
             log.debug("The agent {}:{} has polled", customerId, jvmUuid);
         }
 
-        Integer result = jdbcTemplate
-            .queryForObject("SELECT COUNT(1) FROM agent_state WHERE customerId = ? AND nextPollExpectedAt > ?", Integer.class, customerId,
-                            nowTimestamp);
+        Timestamp cutoffTimestamp = new Timestamp(now - 10_000L);
+        Integer result = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM agent_state WHERE customerId = ? AND nextPollExpectedAt > ?",
+                                                     Integer.class, customerId, cutoffTimestamp);
 
         String planName = customerData.getPlanName();
         int maxNumberOfAgents = customerData.getPricePlan().getMaxNumberOfAgents();
