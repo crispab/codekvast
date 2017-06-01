@@ -154,6 +154,12 @@ public class MariadbIntegrationTest {
         customerService.checkLicenseKey("undefined");
     }
 
+    @Test
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_assertDatabaseSize() throws Exception {
+        customerService.assertDatabaseSize(1L);
+    }
+
     // TODO: add tests for CodeBasePublication import
 
     // TODO: add tests for InvocationDataPublication import
