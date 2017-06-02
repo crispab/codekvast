@@ -19,13 +19,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.javaagent.scheduler.impl;
+package io.codekvast.javaagent.scheduler;
 
 import com.google.gson.Gson;
 import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
-import io.codekvast.javaagent.scheduler.ConfigPoller;
 import io.codekvast.javaagent.util.Constants;
 import lombok.extern.java.Log;
 import okhttp3.MediaType;

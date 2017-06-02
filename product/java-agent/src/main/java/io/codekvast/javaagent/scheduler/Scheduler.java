@@ -53,30 +53,44 @@ public class Scheduler implements Runnable {
     private final CodeBasePublisherFactory codeBasePublisherFactory;
     private final InvocationDataPublisherFactory invocationDataPublisherFactory;
     private final ScheduledExecutorService executor;
+    private final SystemClock systemClock;
 
     // Mutable state
     private GetConfigResponse1 dynamicConfig;
-    private final SchedulerState pollState = new SchedulerState("configPoll").initialize(10, 10);
+    private final SchedulerState pollState;
 
-    private final SchedulerState codeBasePublisherState = new SchedulerState("codeBase").initialize(10, 10);
+    private final SchedulerState codeBasePublisherState;
     private CodeBasePublisher codeBasePublisher;
 
-    private final SchedulerState invocationDataPublisherState = new SchedulerState("invocationData").initialize(10, 10);
+    private final SchedulerState invocationDataPublisherState;
     private InvocationDataPublisher invocationDataPublisher;
 
     public Scheduler(AgentConfig config,
                      ConfigPoller configPoller,
                      CodeBasePublisherFactory codeBasePublisherFactory,
-                     InvocationDataPublisherFactory invocationDataPublisherFactory) {
+                     InvocationDataPublisherFactory invocationDataPublisherFactory,
+                     SystemClock systemClock) {
         this.config = config;
         this.configPoller = configPoller;
         this.codeBasePublisherFactory = codeBasePublisherFactory;
         this.invocationDataPublisherFactory = invocationDataPublisherFactory;
+        this.systemClock = systemClock;
+
+        this.pollState = new SchedulerState("configPoll", systemClock)
+            .initialize(10, 10);
+
+        this.codeBasePublisherState = new SchedulerState("codeBase", systemClock)
+            .initialize(10, 10);
+
+        this.invocationDataPublisherState = new SchedulerState("invocationData", systemClock)
+            .initialize(10, 10);
+
         this.executor = Executors.newScheduledThreadPool(1,
                                                          CodekvastThreadFactory.builder()
                                                                                .name("scheduler")
                                                                                .relativePriority(-1)
                                                                                .build());
+
     }
 
     /**
@@ -85,7 +99,8 @@ public class Scheduler implements Runnable {
      * @return this
      */
     public Scheduler start() {
-        executor.scheduleAtFixedRate(this, config.getSchedulerInitialDelayMillis(), config.getSchedulerIntervalMillis(), TimeUnit.MILLISECONDS);
+        executor
+            .scheduleAtFixedRate(this, config.getSchedulerInitialDelayMillis(), config.getSchedulerIntervalMillis(), TimeUnit.MILLISECONDS);
         log.info("Scheduler started; pulling dynamic config from " + config.getServerUrl());
         return this;
     }
@@ -94,7 +109,7 @@ public class Scheduler implements Runnable {
      * Shuts down the scheduler. Performs a last publishing before returning.
      */
     public void shutdown() {
-        long startedAt = System.currentTimeMillis();
+        long startedAt = systemClock.currentTimeMillis();
         synchronized (executor) {
 
             log.fine("Stopping scheduler");
@@ -119,7 +134,7 @@ public class Scheduler implements Runnable {
                 publishInvocationDataIfNeeded();
             }
         }
-        log.info(String.format("Scheduler stopped in %d ms", System.currentTimeMillis() - startedAt));
+        log.info(String.format("Scheduler stopped in %d ms", systemClock.currentTimeMillis() - startedAt));
     }
 
     @Override
@@ -165,7 +180,7 @@ public class Scheduler implements Runnable {
         String newName = dynamicConfig.getCodeBasePublisherName();
         if (codeBasePublisher == null || !newName.equals(codeBasePublisher.getName())) {
             codeBasePublisher = codeBasePublisherFactory.create(newName, config);
-            codeBasePublisherState.scheduleNext();
+            codeBasePublisherState.scheduleNow();
         }
         codeBasePublisher.configure(dynamicConfig.getCustomerId(), dynamicConfig.getCodeBasePublisherConfig());
     }
@@ -177,11 +192,14 @@ public class Scheduler implements Runnable {
         String newName = dynamicConfig.getInvocationDataPublisherName();
         if (invocationDataPublisher == null || !newName.equals(invocationDataPublisher.getName())) {
             invocationDataPublisher = invocationDataPublisherFactory.create(newName, config);
-            invocationDataPublisherState.scheduleNext();
+            invocationDataPublisherState.scheduleNow();
         }
 
         if (codeBasePublisher != null) {
             invocationDataPublisher.setCodeBaseFingerprint(codeBasePublisher.getCodeBaseFingerprint());
+            if (codeBasePublisher.getSequenceNumber() == 1 && invocationDataPublisher.getSequenceNumber() == 0) {
+                invocationDataPublisherState.scheduleNow();
+            }
         }
 
         invocationDataPublisher.configure(dynamicConfig.getCustomerId(), dynamicConfig.getInvocationDataPublisherConfig());
@@ -189,7 +207,7 @@ public class Scheduler implements Runnable {
 
     private void publishCodeBaseIfNeeded() {
         if (codeBasePublisherState.isDueTime() && dynamicConfig != null) {
-            log.fine("Checking if code base needs to be published...");
+            log.finer("Checking if code base needs to be published...");
 
             try {
                 codeBasePublisher.publishCodeBase();
@@ -203,7 +221,7 @@ public class Scheduler implements Runnable {
 
     private void publishInvocationDataIfNeeded() {
         if (invocationDataPublisherState.isDueTime() && dynamicConfig != null) {
-            log.fine("Checking if invocation data needs to be published...");
+            log.finer("Checking if invocation data needs to be published...");
 
             try {
                 InvocationRegistry.instance.publishInvocationData(invocationDataPublisher);
@@ -220,6 +238,7 @@ public class Scheduler implements Runnable {
     @Log
     static class SchedulerState {
         private final String name;
+        private final SystemClock systemClock;
 
         private long nextEventAtMillis;
         private int intervalSeconds;
@@ -246,12 +265,12 @@ public class Scheduler implements Runnable {
         }
 
         void scheduleNext() {
-            nextEventAtMillis = System.currentTimeMillis() + intervalSeconds * 1000L;
+            nextEventAtMillis = systemClock.currentTimeMillis() + intervalSeconds * 1000L;
             if (numFailures > 0) {
                 log.fine(name + " is exiting failure state after " + numFailures + " failures");
             }
             resetRetryCounter();
-            log.fine(name + " will execute next at " + new Date(nextEventAtMillis));
+            log.finer(name + " will execute next at " + new Date(nextEventAtMillis));
         }
 
         void scheduleNow() {
@@ -267,14 +286,14 @@ public class Scheduler implements Runnable {
             } else {
                 retryIntervalFactor = (int) Math.pow(2, Math.min(numFailures - backOffLimit + 1, 4));
             }
-            nextEventAtMillis = System.currentTimeMillis() + retryIntervalSeconds * retryIntervalFactor * 1000L;
+            nextEventAtMillis = systemClock.currentTimeMillis() + retryIntervalSeconds * retryIntervalFactor * 1000L;
             numFailures += 1;
 
             log.fine(name + " has failed " + numFailures + " times, will retry at " + new Date(nextEventAtMillis));
         }
 
         boolean isDueTime() {
-            return System.currentTimeMillis() >= nextEventAtMillis;
+            return systemClock.currentTimeMillis() >= nextEventAtMillis;
         }
     }
 }

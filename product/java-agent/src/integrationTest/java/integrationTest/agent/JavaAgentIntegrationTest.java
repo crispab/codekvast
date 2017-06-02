@@ -92,7 +92,7 @@ public class JavaAgentIntegrationTest {
                           GetConfigResponse1.builder()
                                             .codeBasePublisherName("http")
                                             .codeBasePublisherConfig("enabled=true")
-                                            .customerId(1)
+                                            .customerId(1L)
                                             .invocationDataPublisherName("http")
                                             .invocationDataPublisherConfig("enabled=true")
                                             .configPollIntervalSeconds(1)

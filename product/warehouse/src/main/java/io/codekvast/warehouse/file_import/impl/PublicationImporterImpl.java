@@ -23,6 +23,7 @@ package io.codekvast.warehouse.file_import.impl;
 
 import io.codekvast.javaagent.model.v1.CodeBasePublication;
 import io.codekvast.javaagent.model.v1.InvocationDataPublication;
+import io.codekvast.warehouse.customer.LicenseViolationException;
 import io.codekvast.warehouse.file_import.CodeBaseImporter;
 import io.codekvast.warehouse.file_import.InvocationDataImporter;
 import io.codekvast.warehouse.file_import.PublicationImporter;
@@ -71,6 +72,12 @@ public class PublicationImporterImpl implements PublicationImporter {
 
             return !isValidObject(object) || handlePublication(object);
 
+        } catch (LicenseViolationException e) {
+            log.warn("Ignoring " + file + ": " + e);
+
+            // Prevent the file from being processed again.
+            // The agent will keep retrying uploading new publication files.
+            return true;
         } catch (ClassNotFoundException | IOException e) {
             log.error("Cannot import " + file, e);
         }

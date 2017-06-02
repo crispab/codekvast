@@ -6,9 +6,8 @@ import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author olle.hallin@crisp.se
@@ -33,7 +32,7 @@ public class ConfigPollerImplTest {
         GetConfigResponse1 response1 = GetConfigResponse1.sample();
         String json = gson.toJson(response1);
 
-        assertThat(json, containsString("\"customerId\":-1"));
+        assertThat(json, containsString("\"customerId\":1"));
 
         GetConfigResponse1 fromJson = gson.fromJson(json, GetConfigResponse1.class);
         assertThat(fromJson, is(response1));

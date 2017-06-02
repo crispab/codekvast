@@ -74,16 +74,16 @@ public class AgentServiceImpl implements AgentService {
 
         return GetConfigResponse1
             .builder()
-            .codeBasePublisherName("http")
+            .codeBasePublisherCheckIntervalSeconds(pp.getPublishIntervalSeconds())
             .codeBasePublisherConfig(publishingEnabled)
-            .customerId(customerData.getCustomerId())
-            .invocationDataPublisherName("http")
-            .invocationDataPublisherConfig(publishingEnabled)
+            .codeBasePublisherName("http")
+            .codeBasePublisherRetryIntervalSeconds(pp.getRetryIntervalSeconds())
             .configPollIntervalSeconds(pp.getPollIntervalSeconds())
             .configPollRetryIntervalSeconds(pp.getRetryIntervalSeconds())
-            .codeBasePublisherCheckIntervalSeconds(pp.getPublishIntervalSeconds())
-            .codeBasePublisherRetryIntervalSeconds(pp.getRetryIntervalSeconds())
+            .customerId(customerData.getCustomerId())
+            .invocationDataPublisherConfig(publishingEnabled)
             .invocationDataPublisherIntervalSeconds(pp.getPublishIntervalSeconds())
+            .invocationDataPublisherName("http")
             .invocationDataPublisherRetryIntervalSeconds(pp.getRetryIntervalSeconds())
             .build();
     }

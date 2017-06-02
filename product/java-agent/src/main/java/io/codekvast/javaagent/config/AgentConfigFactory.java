@@ -34,7 +34,7 @@ import java.util.Properties;
  */
 public class AgentConfigFactory {
 
-    private static final boolean DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_JUL = true;
+    private static final boolean DEFAULT_BRIDGE_ASPECTJ_LOGGING_TO_JUL = false;
     private static final String DEFAULT_ASPECTJ_OPTIONS = "";
     private static final String DEFAULT_ENVIRONMENT = "";
     private static final String DEFAULT_METHOD_VISIBILITY = SignatureUtils.PROTECTED;

@@ -319,7 +319,7 @@ See also {aspectj-ltw-config}.
 See <<about-bridgeAspectjMessages>>
 |*true* or *false*.
 |
-|true
+|false
 
 |serverUrl
 |Where is the Codekvast Server?

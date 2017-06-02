@@ -39,19 +39,20 @@ public class GetConfigResponse1 {
     /**
      * What customerId should I use when publishing data?
      */
-    private long customerId;
+    @NonNull
+    private final Long customerId;
 
     /**
      * How often shall the server be polled for dynamic config?
      */
-    @Builder.Default
-    private int configPollIntervalSeconds = 600;
+    @NonNull
+    private final Integer configPollIntervalSeconds;
 
     /**
      * How fast shall a failed config poll be retried?
      */
-    @Builder.Default
-    private int configPollRetryIntervalSeconds = 600;
+    @NonNull
+    private final Integer configPollRetryIntervalSeconds;
 
     /**
      * The name of the code base publisher to use.
@@ -73,17 +74,15 @@ public class GetConfigResponse1 {
 
     /**
      * How often shall the codebase be re-scanned for changes?
-     * Defaults to 600 seconds.
      */
-    @Builder.Default
-    private int codeBasePublisherCheckIntervalSeconds = 600;
+    @NonNull
+    private final Integer codeBasePublisherCheckIntervalSeconds;
 
     /**
      * How often shall a failed codebase publishing be retried?
-     * Defaults to 600 seconds.
      */
-    @Builder.Default
-    private int codeBasePublisherRetryIntervalSeconds = 600;
+    @NonNull
+    private final Integer codeBasePublisherRetryIntervalSeconds;
 
     /**
      * The name of the invocation data publisher to use.
@@ -105,25 +104,29 @@ public class GetConfigResponse1 {
 
     /**
      * How often shall the invocation data be published?
-     * Defaults to 3600 seconds.
      */
-    @Builder.Default
-    private int invocationDataPublisherIntervalSeconds = 3600;
+    @NonNull
+    private final Integer invocationDataPublisherIntervalSeconds;
 
     /**
      * How often shall a failed invocation data publishing be retried?
-     * Defaults to 600 seconds.
      */
-    @Builder.Default
-    private int invocationDataPublisherRetryIntervalSeconds = 600;
+    @NonNull
+    private final Integer invocationDataPublisherRetryIntervalSeconds;
 
     public static GetConfigResponse1 sample() {
         return builder()
-            .customerId(-1)
-            .codeBasePublisherConfig("codeBasePublisherConfig")
-            .codeBasePublisherName("codeBasePublisherName")
-            .invocationDataPublisherConfig("invocationDataPublisherConfig")
-            .invocationDataPublisherName("invocationDataPublisherName")
+            .customerId(1L)
+            .configPollIntervalSeconds(60)
+            .configPollRetryIntervalSeconds(60)
+            .codeBasePublisherConfig("enabled=true")
+            .codeBasePublisherName("no-op")
+            .codeBasePublisherCheckIntervalSeconds(60)
+            .codeBasePublisherRetryIntervalSeconds(60)
+            .invocationDataPublisherConfig("enabled=true")
+            .invocationDataPublisherName("no-op")
+            .invocationDataPublisherIntervalSeconds(60)
+            .invocationDataPublisherRetryIntervalSeconds(60)
             .build();
     }
 }

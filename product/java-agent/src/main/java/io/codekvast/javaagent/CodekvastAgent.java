@@ -28,7 +28,8 @@ import io.codekvast.javaagent.config.MethodAnalyzer;
 import io.codekvast.javaagent.publishing.impl.CodeBasePublisherFactoryImpl;
 import io.codekvast.javaagent.publishing.impl.InvocationDataPublisherFactoryImpl;
 import io.codekvast.javaagent.scheduler.Scheduler;
-import io.codekvast.javaagent.scheduler.impl.ConfigPollerImpl;
+import io.codekvast.javaagent.scheduler.ConfigPollerImpl;
+import io.codekvast.javaagent.scheduler.SystemClockImpl;
 import io.codekvast.javaagent.util.FileUtils;
 import lombok.extern.java.Log;
 import org.aspectj.bridge.Constants;
@@ -126,7 +127,8 @@ public class CodekvastAgent {
         scheduler = new Scheduler(config,
                                   new ConfigPollerImpl(config),
                                   new CodeBasePublisherFactoryImpl(),
-                                  new InvocationDataPublisherFactoryImpl())
+                                  new InvocationDataPublisherFactoryImpl(),
+                                  new SystemClockImpl())
             .start();
 
         Runtime.getRuntime().addShutdownHook(new MyShutdownHook());
