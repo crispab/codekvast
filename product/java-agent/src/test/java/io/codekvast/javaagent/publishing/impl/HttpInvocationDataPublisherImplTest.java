@@ -24,6 +24,7 @@ public class HttpInvocationDataPublisherImplTest {
         .createSampleAgentConfig().toBuilder().appName("appName").appVersion("appVersion").build();
 
     private File uploadedFile;
+    private int uploadedPublicationSize;
 
     private final HttpInvocationDataPublisherImpl publisher = new TestableHttpInvocationDataPublisherImpl();
 
@@ -37,18 +38,21 @@ public class HttpInvocationDataPublisherImplTest {
         assertThat(uploadedFile.getName(), startsWith("invocations-appname-appversion-"));
         assertThat(uploadedFile.getName(), endsWith(".ser"));
         assertThat(uploadedFile.exists(), is(false));
+
+        assertThat(uploadedPublicationSize, is(invocations.size()));
     }
 
     private class TestableHttpInvocationDataPublisherImpl extends HttpInvocationDataPublisherImpl {
 
-        public TestableHttpInvocationDataPublisherImpl() {
+        TestableHttpInvocationDataPublisherImpl() {
             super(HttpInvocationDataPublisherImplTest.this.config);
         }
 
         @Override
-        void doPost(File file, String url, String fingerprint) throws IOException {
-            super.doPost(file, url, fingerprint);
+        void doPost(File file, String url, String fingerprint, int publicationSize) throws IOException {
+            super.doPost(file, url, fingerprint, publicationSize);
             uploadedFile = file;
+            uploadedPublicationSize = publicationSize;
         }
 
         @Override

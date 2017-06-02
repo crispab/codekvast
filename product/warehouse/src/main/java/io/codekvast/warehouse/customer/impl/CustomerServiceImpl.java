@@ -78,8 +78,8 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void assertPublicationSize(String licenseKey, long publicationSize) throws LicenseViolationException {
-        doAssertPublicationSize(getCustomerDataByLicenseKey(licenseKey), publicationSize);
+    public void assertPublicationSize(String licenseKey, int publicationSize) throws LicenseViolationException {
+        doAssertNumberOfMethods(getCustomerDataByLicenseKey(licenseKey), publicationSize);
     }
 
     @Override
@@ -87,12 +87,12 @@ public class CustomerServiceImpl implements CustomerService {
         CustomerData customerData = getCustomerDataByCustomerId(customerId);
         long numberOfMethods = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM methods WHERE customerId = ?", Long.class, customerId);
 
-        log.debug("Customer {} has {} methods in plan '{}'", customerId, numberOfMethods, customerData.getPlanName());
-
-        doAssertPublicationSize(customerData, numberOfMethods);
+        doAssertNumberOfMethods(customerData, numberOfMethods);
     }
 
-    private void doAssertPublicationSize(CustomerData customerData, long numberOfMethods) {
+    private void doAssertNumberOfMethods(CustomerData customerData, long numberOfMethods) {
+        log.debug("Asserting {} methods for {}", numberOfMethods, customerData);
+
         PricePlan pp = customerData.getPricePlan();
         if (numberOfMethods > pp.getMaxMethods()) {
             throw new LicenseViolationException(

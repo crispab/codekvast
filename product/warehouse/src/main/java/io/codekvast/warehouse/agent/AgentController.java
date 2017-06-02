@@ -90,7 +90,7 @@ public class AgentController {
     public String uploadCodeBase1(
         @RequestParam(PARAM_LICENSE_KEY) String licenseKey,
         @RequestParam(PARAM_FINGERPRINT) String fingerprint,
-        @RequestParam(PARAM_PUBLICATION_SIZE) Long publicationSize,
+        @RequestParam(PARAM_PUBLICATION_SIZE) Integer publicationSize,
         @RequestParam(PARAM_PUBLICATION_FILE) MultipartFile file) throws IOException {
 
         log.debug("Received {} ({} methods, {}) with licenseKey={}, fingerprint={}", file.getOriginalFilename(),
@@ -106,7 +106,7 @@ public class AgentController {
     public String uploadInvocationData1(
         @RequestParam(PARAM_LICENSE_KEY) String licenseKey,
         @RequestParam(PARAM_FINGERPRINT) String fingerprint,
-        @RequestParam(PARAM_PUBLICATION_SIZE) Long publicationSize,
+        @RequestParam(PARAM_PUBLICATION_SIZE) Integer publicationSize,
         @RequestParam(PARAM_PUBLICATION_FILE) MultipartFile file) throws IOException {
 
         log.debug("Received {} ({} methods, {}) with licenseKey={}, fingerprint={}", file.getOriginalFilename(),

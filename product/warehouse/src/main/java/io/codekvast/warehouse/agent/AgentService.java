@@ -54,7 +54,7 @@ public interface AgentService {
      * @param inputStream         The data input stream.  @return The resulting file or null of the code base was already uploaded.
      * @throws LicenseViolationException If invalid license or license violations
      */
-    File saveCodeBasePublication(String licenseKey, String codeBaseFingerprint, long publicationSize, InputStream inputStream)
+    File saveCodeBasePublication(String licenseKey, String codeBaseFingerprint, int publicationSize, InputStream inputStream)
         throws LicenseViolationException, IOException;
 
     /**
@@ -66,6 +66,6 @@ public interface AgentService {
      * @param inputStream         The data input stream.  @return The resulting file or null if the invocation data was already uploaded.
      * @throws LicenseViolationException If invalid license or license violations
      */
-    File saveInvocationDataPublication(String licenseKey, String codeBaseFingerprint, long publicationSize, InputStream inputStream)
+    File saveInvocationDataPublication(String licenseKey, String codeBaseFingerprint, int publicationSize, InputStream inputStream)
         throws LicenseViolationException, IOException;
 }

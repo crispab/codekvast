@@ -33,9 +33,7 @@ import okhttp3.*;
 import java.io.File;
 import java.io.IOException;
 
-import static io.codekvast.javaagent.model.Endpoints.Agent.PARAM_FINGERPRINT;
-import static io.codekvast.javaagent.model.Endpoints.Agent.PARAM_LICENSE_KEY;
-import static io.codekvast.javaagent.model.Endpoints.Agent.PARAM_PUBLICATION_FILE;
+import static io.codekvast.javaagent.model.Endpoints.Agent.*;
 
 /**
  * A HTTP implementation of CodeBasePublisher.
@@ -75,7 +73,7 @@ public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
             CodeBasePublication publication = codeBase.getCodeBasePublication(getCustomerId(), this.getSequenceNumber());
             file = FileUtils.serializeToFile(publication, getConfig().getFilenamePrefix("codebase-"), ".ser");
 
-            doPost(file, url, codeBase.getFingerprint().getSha256());
+            doPost(file, url, codeBase.getFingerprint().getSha256(), publication.getEntries().size());
 
             log.fine(String.format("Uploaded %d methods (%s) to %s", publication.getEntries().size(),
                                     LogUtil.humanReadableByteCount(file.length()), url));
@@ -86,11 +84,12 @@ public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
         }
     }
 
-    void doPost(File file, String url, String fingerprint) throws IOException {
+    void doPost(File file, String url, String fingerprint, int publicationSize) throws IOException {
         RequestBody requestBody = new MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart(PARAM_LICENSE_KEY, getConfig().getLicenseKey())
             .addFormDataPart(PARAM_FINGERPRINT, fingerprint)
+            .addFormDataPart(PARAM_PUBLICATION_SIZE, String.valueOf(publicationSize))
             .addFormDataPart(PARAM_PUBLICATION_FILE, file.getName(),
                              RequestBody.create(APPLICATION_OCTET_STREAM, file))
             .build();

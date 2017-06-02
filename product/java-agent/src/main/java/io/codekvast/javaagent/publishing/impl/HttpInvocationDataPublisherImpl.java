@@ -33,9 +33,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
-import static io.codekvast.javaagent.model.Endpoints.Agent.PARAM_FINGERPRINT;
-import static io.codekvast.javaagent.model.Endpoints.Agent.PARAM_LICENSE_KEY;
-import static io.codekvast.javaagent.model.Endpoints.Agent.PARAM_PUBLICATION_FILE;
+import static io.codekvast.javaagent.model.Endpoints.Agent.*;
 
 /**
  * A HTTP implementation of InvocationDataPublisher.
@@ -76,7 +74,7 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
             file = FileUtils.serializeToFile(publication,
                                              getConfig().getFilenamePrefix("invocations-"), ".ser");
 
-            doPost(file, url, getCodeBaseFingerprint().getSha256());
+            doPost(file, url, getCodeBaseFingerprint().getSha256(), publication.getInvocations().size());
 
             log.fine(String.format("Uploaded %d invocations (%s) to %s", publication.getInvocations().size(),
                                     LogUtil.humanReadableByteCount(file.length()), url));
@@ -88,11 +86,12 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
 
     }
 
-    void doPost(File file, String url, String fingerprint) throws IOException {
+    void doPost(File file, String url, String fingerprint, int publicationSize) throws IOException {
         RequestBody requestBody = new MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart(PARAM_LICENSE_KEY, getConfig().getLicenseKey())
             .addFormDataPart(PARAM_FINGERPRINT, fingerprint)
+            .addFormDataPart(PARAM_PUBLICATION_SIZE, String.valueOf(publicationSize))
             .addFormDataPart(PARAM_PUBLICATION_FILE, file.getName(),
                              RequestBody.create(APPLICATION_OCTET_STREAM, file))
             .build();

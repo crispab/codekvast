@@ -106,7 +106,7 @@ public class AgentControllerTest {
     public void should_accept_upload_codebase_publication_when_valid_license() throws Exception {
         String licenseKey = "licenseKey";
         String fingerprint = "fingerprint";
-        long publicationSize = 10000L;
+        int publicationSize = 10000;
         String originalFilename = "codekvast-codebase-9128371293719273.ser";
 
         MockMultipartFile publicationFile =
@@ -130,7 +130,7 @@ public class AgentControllerTest {
     public void should_accept_upload_invocation_data_publication_when_valid_license() throws Exception {
         String licenseKey = "licenseKey";
         String fingerprint = "fingerprint";
-        long publicationSize = 10000L;
+        int publicationSize = 10000;
         String originalFilename = "codekvast-invocations-9128371293719273.ser";
 
         MockMultipartFile multipartFile =

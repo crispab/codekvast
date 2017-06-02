@@ -55,6 +55,6 @@ public class CustomerServiceImplTest {
     public void should_reject_too_big_codeBasePublication() throws Exception {
         when(jdbcTemplate.queryForObject(anyString(), eq(String.class), eq(1L))).thenReturn("test");
 
-        service.assertPublicationSize("", 100_000L);
+        service.assertPublicationSize("", 100_000);
     }
 }

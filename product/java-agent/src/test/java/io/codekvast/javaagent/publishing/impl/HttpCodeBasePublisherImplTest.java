@@ -3,6 +3,8 @@ package io.codekvast.javaagent.publishing.impl;
 import io.codekvast.javaagent.codebase.CodeBase;
 import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.config.AgentConfigFactory;
+import io.codekvast.javaagent.model.v1.MethodSignature;
+import io.codekvast.javaagent.model.v1.SignatureStatus;
 import okhttp3.*;
 import org.junit.Test;
 
@@ -24,11 +26,13 @@ public class HttpCodeBasePublisherImplTest {
     private final HttpCodeBasePublisherImpl publisher = new TestableHttpCodeBasePublisherImpl();
 
     private File uploadedFile;
+    private int uploadedPublicationSize;
 
     @Test
     public void should_create_and_upload_file() throws Exception {
         // given
-        assertThat(publisher.getCodeBaseFingerprint(), nullValue());
+        codeBase.getSignatures().put("key", MethodSignature.createSampleMethodSignature());
+        codeBase.getStatuses().put("key", SignatureStatus.NOT_INVOKED);
 
         // when
         publisher.doPublishCodeBase(codeBase);
@@ -38,6 +42,8 @@ public class HttpCodeBasePublisherImplTest {
         assertThat(uploadedFile.getName(), startsWith("codebase-appname-appversion-"));
         assertThat(uploadedFile.getName(), endsWith(".ser"));
         assertThat(uploadedFile.exists(), is(false));
+
+        assertThat(uploadedPublicationSize, is(1));
     }
 
     @SuppressWarnings("ClassTooDeepInInheritanceTree")
@@ -48,9 +54,10 @@ public class HttpCodeBasePublisherImplTest {
         }
 
         @Override
-        void doPost(File file, String url, String fingerprint) throws IOException {
-            super.doPost(file, url, fingerprint);
+        void doPost(File file, String url, String fingerprint, int publicationSize) throws IOException {
+            super.doPost(file, url, fingerprint, publicationSize);
             uploadedFile = file;
+            uploadedPublicationSize = publicationSize;
         }
 
         @Override

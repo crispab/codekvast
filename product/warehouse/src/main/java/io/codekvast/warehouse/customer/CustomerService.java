@@ -53,7 +53,7 @@ public interface CustomerService {
      * @param publicationSize The size of the publication.
      * @throws LicenseViolationException iff the license key is invalid
      */
-    void assertPublicationSize(String licenseKey, long publicationSize) throws LicenseViolationException;
+    void assertPublicationSize(String licenseKey, int publicationSize) throws LicenseViolationException;
 
     /**
      * Checks that the database does not contain too many methods for a certain customer.
