@@ -36,12 +36,7 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import java.io.IOException;
 
-import static io.codekvast.javaagent.model.Endpoints.Agent.PARAM_FINGERPRINT;
-import static io.codekvast.javaagent.model.Endpoints.Agent.PARAM_LICENSE_KEY;
-import static io.codekvast.javaagent.model.Endpoints.Agent.PARAM_PUBLICATION_FILE;
-import static io.codekvast.javaagent.model.Endpoints.Agent.V1_POLL_CONFIG;
-import static io.codekvast.javaagent.model.Endpoints.Agent.V1_UPLOAD_CODEBASE;
-import static io.codekvast.javaagent.model.Endpoints.Agent.V1_UPLOAD_INVOCATION_DATA;
+import static io.codekvast.javaagent.model.Endpoints.Agent.*;
 import static java.lang.String.format;
 import static org.springframework.http.MediaType.*;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -95,12 +90,13 @@ public class AgentController {
     public String uploadCodeBase1(
         @RequestParam(PARAM_LICENSE_KEY) String licenseKey,
         @RequestParam(PARAM_FINGERPRINT) String fingerprint,
+        @RequestParam(PARAM_PUBLICATION_SIZE) Long publicationSize,
         @RequestParam(PARAM_PUBLICATION_FILE) MultipartFile file) throws IOException {
 
-        log.debug("Received {} ({}) with licenseKey={}, fingerprint={}", file.getOriginalFilename(), humanReadableByteCount(file.getSize()),
-                  licenseKey, fingerprint);
+        log.debug("Received {} ({} methods, {}) with licenseKey={}, fingerprint={}", file.getOriginalFilename(),
+                  humanReadableByteCount(file.getSize()), publicationSize, licenseKey, fingerprint);
 
-        agentService.saveCodeBasePublication(licenseKey, fingerprint, file.getInputStream());
+        agentService.saveCodeBasePublication(licenseKey, fingerprint, publicationSize, file.getInputStream());
 
         return "OK";
     }
@@ -110,11 +106,13 @@ public class AgentController {
     public String uploadInvocationData1(
         @RequestParam(PARAM_LICENSE_KEY) String licenseKey,
         @RequestParam(PARAM_FINGERPRINT) String fingerprint,
+        @RequestParam(PARAM_PUBLICATION_SIZE) Long publicationSize,
         @RequestParam(PARAM_PUBLICATION_FILE) MultipartFile file) throws IOException {
 
-        log.debug("Received {} ({}) with licenseKey={}", file.getOriginalFilename(), humanReadableByteCount(file.getSize()), licenseKey);
+        log.debug("Received {} ({} methods, {}) with licenseKey={}, fingerprint={}", file.getOriginalFilename(),
+                  humanReadableByteCount(file.getSize()), publicationSize, licenseKey, fingerprint);
 
-        agentService.saveInvocationDataPublication(licenseKey, fingerprint, file.getInputStream());
+        agentService.saveInvocationDataPublication(licenseKey, fingerprint, publicationSize, file.getInputStream());
 
         return "OK";
     }

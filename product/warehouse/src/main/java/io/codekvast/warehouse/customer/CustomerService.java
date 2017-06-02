@@ -47,12 +47,13 @@ public interface CustomerService {
     CustomerData getCustomerDataByCustomerId(long customerId) throws LicenseViolationException;
 
     /**
-     * Validates a license key
+     * Validates a received publication before accepting it.
      *
      * @param licenseKey The license key to check
+     * @param publicationSize The size of the publication.
      * @throws LicenseViolationException iff the license key is invalid
      */
-    void checkLicenseKey(String licenseKey) throws LicenseViolationException;
+    void assertPublicationSize(String licenseKey, long publicationSize) throws LicenseViolationException;
 
     /**
      * Checks that the database does not contain too many methods for a certain customer.

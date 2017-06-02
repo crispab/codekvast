@@ -34,8 +34,9 @@ public interface Endpoints {
         String V1_UPLOAD_CODEBASE = "/javaagent/v1/uploadCodeBase";
         String V1_UPLOAD_INVOCATION_DATA = "/javaagent/v1/uploadInvocationData";
 
-        String PARAM_PUBLICATION_FILE = "publicationFile";
-        String PARAM_LICENSE_KEY = "licenseKey";
         String PARAM_FINGERPRINT = "fingerprint";
+        String PARAM_LICENSE_KEY = "licenseKey";
+        String PARAM_PUBLICATION_SIZE = "numMethods";
+        String PARAM_PUBLICATION_FILE = "publicationFile";
     }
 }

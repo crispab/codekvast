@@ -150,8 +150,20 @@ public class MariadbIntegrationTest {
 
     @Test(expected = LicenseViolationException.class)
     @Sql(scripts = "/sql/base-data.sql")
-    public void should_reject_invalid_licenseKey() throws Exception {
-        customerService.checkLicenseKey("undefined");
+    public void should_reject_publication_invalid_licenseKey() throws Exception {
+        customerService.assertPublicationSize("undefined", 10L);
+    }
+
+    @Test(expected = LicenseViolationException.class)
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_reject_publication_too_large() throws Exception {
+        customerService.assertPublicationSize("", 100_000L);
+    }
+
+    @Test
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_accept_publication() throws Exception {
+        customerService.assertPublicationSize("", 10L);
     }
 
     @Test

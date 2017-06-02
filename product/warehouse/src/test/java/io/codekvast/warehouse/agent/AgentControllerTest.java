@@ -15,12 +15,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.io.InputStream;
 
-import static io.codekvast.javaagent.model.Endpoints.Agent.PARAM_FINGERPRINT;
-import static io.codekvast.javaagent.model.Endpoints.Agent.PARAM_LICENSE_KEY;
-import static io.codekvast.javaagent.model.Endpoints.Agent.PARAM_PUBLICATION_FILE;
-import static io.codekvast.javaagent.model.Endpoints.Agent.V1_POLL_CONFIG;
-import static io.codekvast.javaagent.model.Endpoints.Agent.V1_UPLOAD_CODEBASE;
-import static io.codekvast.javaagent.model.Endpoints.Agent.V1_UPLOAD_INVOCATION_DATA;
+import static io.codekvast.javaagent.model.Endpoints.Agent.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
@@ -111,6 +106,7 @@ public class AgentControllerTest {
     public void should_accept_upload_codebase_publication_when_valid_license() throws Exception {
         String licenseKey = "licenseKey";
         String fingerprint = "fingerprint";
+        long publicationSize = 10000L;
         String originalFilename = "codekvast-codebase-9128371293719273.ser";
 
         MockMultipartFile publicationFile =
@@ -122,17 +118,19 @@ public class AgentControllerTest {
         mockMvc.perform(fileUpload(V1_UPLOAD_CODEBASE)
                             .file(publicationFile)
                             .param(PARAM_LICENSE_KEY, licenseKey)
-                            .param(PARAM_FINGERPRINT, fingerprint))
+                            .param(PARAM_FINGERPRINT, fingerprint)
+                            .param(PARAM_PUBLICATION_SIZE, publicationSize + ""))
                .andExpect(status().isOk())
                .andExpect(content().string("OK"));
 
-        verify(agentService).saveCodeBasePublication(eq(licenseKey), eq(fingerprint), any(InputStream.class));
+        verify(agentService).saveCodeBasePublication(eq(licenseKey), eq(fingerprint), eq(publicationSize), any(InputStream.class));
     }
 
     @Test
     public void should_accept_upload_invocation_data_publication_when_valid_license() throws Exception {
         String licenseKey = "licenseKey";
         String fingerprint = "fingerprint";
+        long publicationSize = 10000L;
         String originalFilename = "codekvast-invocations-9128371293719273.ser";
 
         MockMultipartFile multipartFile =
@@ -144,10 +142,11 @@ public class AgentControllerTest {
         mockMvc.perform(fileUpload(V1_UPLOAD_INVOCATION_DATA)
                             .file(multipartFile)
                             .param(PARAM_LICENSE_KEY, licenseKey)
-                            .param(PARAM_FINGERPRINT, fingerprint))
+                            .param(PARAM_FINGERPRINT, fingerprint)
+                            .param(PARAM_PUBLICATION_SIZE, publicationSize + ""))
                .andExpect(status().isOk())
                .andExpect(content().string("OK"));
 
-        verify(agentService).saveInvocationDataPublication(eq(licenseKey), eq(fingerprint), any(InputStream.class));
+        verify(agentService).saveInvocationDataPublication(eq(licenseKey), eq(fingerprint), eq(publicationSize), any(InputStream.class));
     }
 }

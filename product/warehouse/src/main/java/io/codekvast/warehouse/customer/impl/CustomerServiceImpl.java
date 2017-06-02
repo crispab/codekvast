@@ -78,8 +78,8 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void checkLicenseKey(String licenseKey) throws LicenseViolationException {
-        getCustomerDataByLicenseKey(licenseKey);
+    public void assertPublicationSize(String licenseKey, long publicationSize) throws LicenseViolationException {
+        doAssertPublicationSize(getCustomerDataByLicenseKey(licenseKey), publicationSize);
     }
 
     @Override
@@ -89,9 +89,12 @@ public class CustomerServiceImpl implements CustomerService {
 
         log.debug("Customer {} has {} methods in plan '{}'", customerId, numberOfMethods, customerData.getPlanName());
 
+        doAssertPublicationSize(customerData, numberOfMethods);
+    }
+
+    private void doAssertPublicationSize(CustomerData customerData, long numberOfMethods) {
         PricePlan pp = customerData.getPricePlan();
         if (numberOfMethods > pp.getMaxMethods()) {
-
             throw new LicenseViolationException(
                 String.format("Too many methods: %d. The plan '%s' has a limit of %d methods",
                               numberOfMethods, customerData.getPlanName(), pp.getMaxMethods()));

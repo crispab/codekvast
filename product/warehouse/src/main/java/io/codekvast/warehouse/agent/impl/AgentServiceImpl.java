@@ -123,17 +123,17 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
-    public File saveCodeBasePublication(@NonNull String licenseKey, String codeBaseFingerprint, InputStream inputStream)
+    public File saveCodeBasePublication(@NonNull String licenseKey, String codeBaseFingerprint, long publicationSize, InputStream inputStream)
         throws LicenseViolationException, IOException {
-        customerService.checkLicenseKey(licenseKey);
+        customerService.assertPublicationSize(licenseKey, publicationSize);
 
         return doSaveInputStream(inputStream, "codebase-");
     }
 
     @Override
-    public File saveInvocationDataPublication(@NonNull String licenseKey, String codeBaseFingerprint, InputStream inputStream)
+    public File saveInvocationDataPublication(@NonNull String licenseKey, String codeBaseFingerprint, long publicationSize, InputStream inputStream)
         throws LicenseViolationException, IOException {
-        customerService.checkLicenseKey(licenseKey);
+        customerService.assertPublicationSize(licenseKey, publicationSize);
 
         return doSaveInputStream(inputStream, "invocations-");
     }
