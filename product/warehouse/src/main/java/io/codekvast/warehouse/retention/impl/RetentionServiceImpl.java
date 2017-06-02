@@ -77,6 +77,11 @@ public class RetentionServiceImpl implements RetentionService {
         int sum = deleted;
         if (deleted > 0) {
 
+            // MariaDB do not support DELETE FROM xxx WHERE NOT EXISTS(SELECT * FROM xxx, yyy WHERE...)
+            // So we must do it in steps:
+            // 1) select all ids for which there are no child rows in the invocations table
+            // 2) Delete the child-less parent rows
+
             List<Integer> ids = jdbcTemplate.queryForList(
                 "SELECT id FROM jvms j WHERE customerId = ? AND NOT EXISTS(SELECT i.customerId FROM invocations i WHERE i.jvmId = j.id)",
                 Integer.class, customerId);
