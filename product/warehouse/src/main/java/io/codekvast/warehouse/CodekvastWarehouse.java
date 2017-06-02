@@ -34,7 +34,6 @@ import java.io.IOException;
  * @author olle.hallin@crisp.se
  */
 @SpringBootApplication
-@EnableScheduling
 @ComponentScan(basePackages = "io.codekvast")
 public class CodekvastWarehouse {
 
