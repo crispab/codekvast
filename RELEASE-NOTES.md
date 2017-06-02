@@ -1,5 +1,7 @@
 # Codekvast Release Notes
 
+## 0.21.1
+
 ## 0.21.0
 1. Implemented price plan enforcements.
 1. **NOTE:** Backwards incompatible API change in AgentController.

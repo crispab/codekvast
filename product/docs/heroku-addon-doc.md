@@ -37,13 +37,13 @@ Continue with the procedures which follows to configure the Codekvast agent.
 
 ### Manual configuration
 
-1. Download [codekvast-agent-0.20.3.zip](https://dl.bintray.com/crisp/codekvast/0.20.3/codekvast-agent-0.20.3.zip) and unzip it onto the root of your project. It will create a sample `codekvast.conf` as well as a `codekvast/` directory that contains the Java agent.
+1. Download [codekvast-agent-0.21.0.zip](https://dl.bintray.com/crisp/codekvast/0.21.0/codekvast-agent-0.21.0.zip) and unzip it onto the root of your project. It will create a sample `codekvast.conf` as well as a `codekvast/` directory that contains the Java agent.
 
 1. Edit `codekvast.conf` to suit your needs. You should not change the value of serverUrl or licenseKey, since they are injected from the Heroku environment.
 
 1. Change the environment variable `JAVA_OPTS`:
 ```term
-heroku config:set JAVA_OPTS="-javaagent:codekvast/codekvast-javaagent-0.20.3.jar -Xbootclasspath/a:codekvast/codekvast-javaagent-0.20.3.jar"
+heroku config:set JAVA_OPTS="-javaagent:codekvast/codekvast-javaagent-0.21.0.jar -Xbootclasspath/a:codekvast/codekvast-javaagent-0.21.0.jar"
 ```
 
 ### Spring Boot executable jars are currently not supported
