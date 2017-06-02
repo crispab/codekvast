@@ -31,6 +31,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -88,6 +90,20 @@ public class CustomerServiceImpl implements CustomerService {
         long numberOfMethods = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM methods WHERE customerId = ?", Long.class, customerId);
 
         doAssertNumberOfMethods(customerData, numberOfMethods);
+    }
+
+    @Override
+    public Collection<CustomerData> getAllCustomers() {
+
+        List<CustomerData> result = jdbcTemplate
+            .query("SELECT id, plan FROM customers",
+                   (rs, rowNum) -> CustomerData.builder()
+                                               .customerId(rs.getLong(1))
+                                               .planName(rs.getString(2))
+                                               .build());
+
+        log.debug("Found {} customers", result.size());
+        return result;
     }
 
     private void doAssertNumberOfMethods(CustomerData customerData, long numberOfMethods) {

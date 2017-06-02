@@ -23,6 +23,8 @@ package io.codekvast.warehouse.customer;
 
 import lombok.NonNull;
 
+import java.util.Collection;
+
 /**
  * @author olle.hallin@crisp.se
  */
@@ -49,7 +51,7 @@ public interface CustomerService {
     /**
      * Validates a received publication before accepting it.
      *
-     * @param licenseKey The license key to check
+     * @param licenseKey      The license key to check
      * @param publicationSize The size of the publication.
      * @throws LicenseViolationException iff the license key is invalid
      */
@@ -61,4 +63,11 @@ public interface CustomerService {
      * @param customerId The customer ID
      */
     void assertDatabaseSize(long customerId) throws LicenseViolationException;
+
+    /**
+     * Query the database for all customers.
+     *
+     * @return A list of CustomerData objects.
+     */
+    Collection<CustomerData> getAllCustomers();
 }
