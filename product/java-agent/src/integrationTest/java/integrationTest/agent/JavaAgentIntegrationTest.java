@@ -22,9 +22,10 @@ import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static io.codekvast.javaagent.model.Endpoints.Agent.V1_POLL_CONFIG;
+import static io.codekvast.javaagent.model.Endpoints.Agent.V1_UPLOAD_CODEBASE;
+import static io.codekvast.javaagent.model.Endpoints.Agent.V1_UPLOAD_INVOCATION_DATA;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
@@ -86,7 +87,7 @@ public class JavaAgentIntegrationTest {
     @Test
     public void should_collect_data_when_valid_config_specified() throws Exception {
         // given
-        givenThat(post(Endpoints.AGENT_V1_POLL_CONFIG)
+        givenThat(post(V1_POLL_CONFIG)
                       .willReturn(okJson(gson.toJson(
                           GetConfigResponse1.builder()
                                             .codeBasePublisherName("http")
@@ -102,8 +103,8 @@ public class JavaAgentIntegrationTest {
                                             .invocationDataPublisherRetryIntervalSeconds(1)
                                             .build()))));
 
-        givenThat(post(Endpoints.AGENT_V1_UPLOAD_CODEBASE).willReturn(ok()));
-        givenThat(post(Endpoints.AGENT_V1_UPLOAD_INVOCATION_DATA).willReturn(ok()));
+        givenThat(post(V1_UPLOAD_CODEBASE).willReturn(ok()));
+        givenThat(post(V1_UPLOAD_INVOCATION_DATA).willReturn(ok()));
 
         List<String> command = buildJavaCommand(agentConfigFile.getAbsolutePath());
 
@@ -119,9 +120,9 @@ public class JavaAgentIntegrationTest {
         assertThat(stdout, containsString("Join point 'method-execution(void sample.app.SampleApp.main(java.lang.String[]))"));
         assertThat(stdout, containsString("Codekvast shutdown completed in "));
 
-        verify(postRequestedFor(urlEqualTo(Endpoints.AGENT_V1_POLL_CONFIG)));
-        verify(postRequestedFor(urlEqualTo(Endpoints.AGENT_V1_UPLOAD_CODEBASE)));
-        verify(postRequestedFor(urlEqualTo(Endpoints.AGENT_V1_UPLOAD_INVOCATION_DATA)));
+        verify(postRequestedFor(urlEqualTo(V1_POLL_CONFIG)));
+        verify(postRequestedFor(urlEqualTo(V1_UPLOAD_CODEBASE)));
+        verify(postRequestedFor(urlEqualTo(V1_UPLOAD_INVOCATION_DATA)));
 
         assertThat(stdout, not(containsString("error")));
         assertThat(stdout, not(containsString("[SEVERE]")));

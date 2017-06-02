@@ -22,7 +22,6 @@
 package io.codekvast.javaagent.config;
 
 import io.codekvast.javaagent.appversion.AppVersionResolver;
-import io.codekvast.javaagent.model.Endpoints;
 import io.codekvast.javaagent.model.v1.CommonPublicationData;
 import io.codekvast.javaagent.util.ConfigUtils;
 import io.codekvast.javaagent.util.Constants;
@@ -35,6 +34,10 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import static io.codekvast.javaagent.model.Endpoints.Agent.V1_POLL_CONFIG;
+import static io.codekvast.javaagent.model.Endpoints.Agent.V1_UPLOAD_CODEBASE;
+import static io.codekvast.javaagent.model.Endpoints.Agent.V1_UPLOAD_INVOCATION_DATA;
 
 /**
  * Encapsulates the configuration that is used by the Codekvast agent.
@@ -120,15 +123,15 @@ public class AgentConfig implements Serializable {
     }
 
     public String getPollConfigRequestEndpoint() {
-        return String.format("%s%s", serverUrl, Endpoints.AGENT_V1_POLL_CONFIG);
+        return String.format("%s%s", serverUrl, V1_POLL_CONFIG);
     }
 
     public String getCodeBaseUploadEndpoint() {
-        return String.format("%s%s", serverUrl, Endpoints.AGENT_V1_UPLOAD_CODEBASE);
+        return String.format("%s%s", serverUrl, V1_UPLOAD_CODEBASE);
     }
 
     public String getInvocationDataUploadEndpoint() {
-        return String.format("%s%s", serverUrl, Endpoints.AGENT_V1_UPLOAD_INVOCATION_DATA);
+        return String.format("%s%s", serverUrl, V1_UPLOAD_INVOCATION_DATA);
     }
 
     public String getResolvedAppVersion() {

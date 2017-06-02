@@ -23,7 +23,6 @@ package io.codekvast.javaagent.publishing.impl;
 
 import io.codekvast.javaagent.codebase.CodeBase;
 import io.codekvast.javaagent.config.AgentConfig;
-import io.codekvast.javaagent.model.Endpoints;
 import io.codekvast.javaagent.model.v1.CodeBasePublication;
 import io.codekvast.javaagent.publishing.CodekvastPublishingException;
 import io.codekvast.javaagent.util.FileUtils;
@@ -33,6 +32,10 @@ import okhttp3.*;
 
 import java.io.File;
 import java.io.IOException;
+
+import static io.codekvast.javaagent.model.Endpoints.Agent.PARAM_FINGERPRINT;
+import static io.codekvast.javaagent.model.Endpoints.Agent.PARAM_LICENSE_KEY;
+import static io.codekvast.javaagent.model.Endpoints.Agent.PARAM_PUBLICATION_FILE;
 
 /**
  * A HTTP implementation of CodeBasePublisher.
@@ -86,9 +89,9 @@ public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
     void doPost(File file, String url, String fingerprint) throws IOException {
         RequestBody requestBody = new MultipartBody.Builder()
             .setType(MultipartBody.FORM)
-            .addFormDataPart(Endpoints.AGENT_V1_LICENSE_KEY_PARAM, getConfig().getLicenseKey())
-            .addFormDataPart(Endpoints.AGENT_V1_FINGERPRINT_PARAM, fingerprint)
-            .addFormDataPart(Endpoints.AGENT_V1_PUBLICATION_FILE_PARAM, file.getName(),
+            .addFormDataPart(PARAM_LICENSE_KEY, getConfig().getLicenseKey())
+            .addFormDataPart(PARAM_FINGERPRINT, fingerprint)
+            .addFormDataPart(PARAM_PUBLICATION_FILE, file.getName(),
                              RequestBody.create(APPLICATION_OCTET_STREAM, file))
             .build();
 

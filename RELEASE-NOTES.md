@@ -1,5 +1,9 @@
 # Codekvast Release Notes
 
+## 0.21.0
+1. Implemented price plan enforcements.
+1. Backwards incompatible API change in AgentController.
+
 ## 0.20.3
 1. Fixed a OkHttp Response leak in java-agent
 

@@ -22,16 +22,20 @@
 package io.codekvast.javaagent.model;
 
 /**
- * Definition ov the HTTP endpoints offered by the Codekvast server's AgentController
+ * Definition ov the HTTP endpoints and parameters offered by the Codekvast server's AgentController
  *
  * @author olle.hallin@crisp.se
  */
+@SuppressWarnings({"MarkerInterface","InnerClassTooDeeplyNested"})
 public interface Endpoints {
-    String AGENT_V1_POLL_CONFIG = "/javaagent/v1/pollConfig";
-    String AGENT_V1_UPLOAD_CODEBASE = "/javaagent/v1/uploadCodeBase";
-    String AGENT_V1_UPLOAD_INVOCATION_DATA = "/javaagent/v1/uploadInvocationData";
 
-    String AGENT_V1_PUBLICATION_FILE_PARAM = "publicationFile";
-    String AGENT_V1_LICENSE_KEY_PARAM = "licenseKey";
-    String AGENT_V1_FINGERPRINT_PARAM = "fingerprint";
+    interface Agent {
+        String V1_POLL_CONFIG = "/javaagent/v1/pollConfig";
+        String V1_UPLOAD_CODEBASE = "/javaagent/v1/uploadCodeBase";
+        String V1_UPLOAD_INVOCATION_DATA = "/javaagent/v1/uploadInvocationData";
+
+        String PARAM_PUBLICATION_FILE = "publicationFile";
+        String PARAM_LICENSE_KEY = "licenseKey";
+        String PARAM_FINGERPRINT = "fingerprint";
+    }
 }
