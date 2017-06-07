@@ -18,7 +18,7 @@ public class CustomerDataTest {
                                                 .source("bar")
                                                 .planName("DemO")
                                                 .build();
-        assertThat(customerData.toString(), is("CustomerData(customerId=17, customerName=foo, source=bar, planName=DemO)"));
+        assertThat(customerData.toString(), is("CustomerData(customerId=17, customerName=foo, planName=DemO, source=bar)"));
     }
 
     @Test

@@ -33,6 +33,7 @@ public class CustomerServiceImplTest {
         map.put("id", 1L);
         map.put("name", "name");
         map.put("plan", "test");
+        map.put("source", "source");
 
         when(jdbcTemplate.queryForMap(anyString(), anyString())).thenReturn(map);
     }
