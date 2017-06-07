@@ -99,7 +99,8 @@ public class HerokuResourceController {
     private void validateCredentials(String auth) throws AuthenticationException {
         log.debug("auth={}", auth);
 
-        // The password is also defined in src/heroku/addon-manifest.json which has been uploaded to Heroku.
+        // The password is defined in <rootDir>/provisioning/vars/secrets.yml, and it has been pushed to Heroku by means
+        // of <rootDir>/provisioning/push-addon-manifest-to-heroku.sh
 
         String credentials = "codekvast:" + settings.getHerokuApiPassword();
         String expected = "Basic " + DatatypeConverter.printBase64Binary(credentials.getBytes());
