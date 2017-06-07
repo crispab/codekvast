@@ -102,6 +102,13 @@
       to_port: 3306
       group_name: "codekvast-{{ stack.customer }}-{{ stack.env }}-backend"
 
+- name: curl http://whatismyip.akamai.com/
+  uri:
+    url: http://whatismyip.akamai.com/
+    return_content: yes
+  register: my_ip
+  changed_when: false
+
 - name: Create management security group
   local_action:
     module: ec2_group
@@ -111,11 +118,16 @@
     state: "{{ stack.state }}"
     name: "codekvast-{{ stack.customer }}-{{ stack.env }}-management"
     description: "Codekvast management access"
+    purge_rules: false
     rules:
     - proto: tcp
       from_port: 22
       to_port: 22
-      cidr_ip: 0.0.0.0/0
+      cidr_ip: "{{ my_ip.content }}/32"
+    - proto: tcp
+      from_port: 3306
+      to_port: 3306
+      cidr_ip: "{{ my_ip.content }}/32"
 
 - set_fact:
     role_tag_database:
@@ -230,15 +242,30 @@
     ttl: 600
     type: CNAME
     zone: codekvast.io
-  with_items: "{{ stack.cnames }}"
+  with_items: "{{ stack.app_cnames }}"
 
-- name: Define application instance's CNAMEs
+- name: Define database instances' CNAMEs
   local_action:
     module: route53
     profile: codekvast # in ~/.boto
     command: create
     overwrite: yes
-    record: "{{ stack.cnames[0] }}{{ '%02d'|format(item.0) }}.codekvast.io"
+    record: "{{ stack.db_cname }}{{ '%02d'|format(item.0) }}.codekvast.io"
+    value: "{{ item.1.public_dns_name }}"
+    ttl: 600
+    type: CNAME
+    zone: codekvast.io
+  with_indexed_items: "{{ ec2database.tagged_instances }}"
+  loop_control:
+    label: "{{ item.1.public_dns_name }}"
+
+- name: Define application instances' CNAMEs
+  local_action:
+    module: route53
+    profile: codekvast # in ~/.boto
+    command: create
+    overwrite: yes
+    record: "{{ stack.app_cnames[0] }}{{ '%02d'|format(item.0) }}.codekvast.io"
     value: "{{ item.1.public_dns_name }}"
     ttl: 600
     type: CNAME
@@ -254,7 +281,6 @@
     profile: codekvast
     name: "{{ s3_database_backup_bucket }}"
     tags: "{{ aws_common_tags }}"
-
 
 - name: Wait for OpenSSH on EC2 instances
   local_action:

@@ -3,8 +3,8 @@
 aws_region: eu-central-1
 
 aws_stacks:
-- {customer: default, env: prod,    cidr_base: "10.0", state: present, cnames: ['api', 'app'], backend_count: 2}
-- {customer: default, env: staging, cidr_base: "10.1", state: present, cnames: ['api-staging', 'app-staging'], backend_count: 2}
+- {customer: default, env: prod,    cidr_base: "10.0", state: present, app_cnames: ['api', 'app'], db_cname: 'db', backend_count: 2}
+- {customer: default, env: staging, cidr_base: "10.1", state: present, app_cnames: ['api-staging', 'app-staging'], db_cname: 'db-staging', backend_count: 2}
 
 # TODO: this value should be constructed from aws_stacks[x].cnames[0]
 codekvast_server_name: api.codekvast.io
