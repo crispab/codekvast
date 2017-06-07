@@ -32,8 +32,6 @@ import lombok.Value;
 @Builder
 public class WebappCredentials {
 
-    public enum SignOnSource {HEROKU}
-
     @NonNull
     private final String externalId;
     @NonNull
@@ -41,5 +39,5 @@ public class WebappCredentials {
     @NonNull
     private final String email;
     @NonNull
-    private final SignOnSource source;
+    private final String source;
 }

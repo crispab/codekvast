@@ -33,6 +33,7 @@ import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeTrue;
 
@@ -185,6 +186,42 @@ public class MariadbIntegrationTest {
         assertThat(customerData.getCustomerId(), is(1L));
         assertThat(customerData.getCustomerName(), is("Demo"));
         assertThat(customerData.getPlanName(), is("demo"));
+    }
+
+    @Test
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_handle_add_delete_customer() {
+        String licenseKey = customerService.addCustomer(CustomerService.AddCustomerRequest
+                                                            .builder()
+                                                            .source("test")
+                                                            .externalId("externalId")
+                                                            .name("customerName")
+                                                            .plan("test")
+                                                            .build());
+
+        assertThat(licenseKey, notNullValue());
+
+        customerService.deleteCustomerByExternalId("externalId");
+    }
+
+    @Test
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_handle_register_login_twice() {
+
+        // given
+        CustomerData customerData = CustomerData.builder()
+                                                .customerId(1L)
+                                                .customerName("Demo")
+                                                .planName("test")
+                                                .source("test")
+                                                .build();
+
+        // when
+        customerService.registerLogin(customerData, "email", "source1");
+        customerService.registerLogin(customerData, "email", "source2");
+
+        // then
+        assertThat(countRowsInTable("users"), is(1));
     }
 
     @Test(expected = AuthenticationCredentialsNotFoundException.class)

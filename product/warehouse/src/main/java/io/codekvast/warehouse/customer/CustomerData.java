@@ -40,6 +40,9 @@ public class CustomerData {
     @NonNull
     private String planName;
 
+    @NonNull
+    private String source;
+
     public PricePlan getPricePlan() {
         return PricePlan.valueOf(planName.toUpperCase());
     }

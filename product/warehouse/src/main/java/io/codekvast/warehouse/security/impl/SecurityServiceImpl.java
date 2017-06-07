@@ -99,7 +99,7 @@ public class SecurityServiceImpl implements SecurityService {
                   .setExpiration(Date.from(Instant.now().plusSeconds(settings.getWebappJwtExpirationSeconds())))
                   .claim(JWT_CLAIM_CUSTOMER_NAME, credentials.getCustomerName())
                   .claim(JWT_CLAIM_EMAIL, credentials.getEmail())
-                  .claim(JWT_CLAIM_SOURCE, credentials.getSource().name())
+                  .claim(JWT_CLAIM_SOURCE, credentials.getSource())
                   .signWith(signatureAlgorithm, jwtSecret)
                   .compact();
     }
@@ -115,20 +115,15 @@ public class SecurityServiceImpl implements SecurityService {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token.substring(pos));
 
-            String externalId = claims.getBody().getId();
-            Long customerId = Long.valueOf(claims.getBody().getSubject());
-            String customerName = claims.getBody().get(JWT_CLAIM_CUSTOMER_NAME, String.class);
-            String email = claims.getBody().get(JWT_CLAIM_EMAIL, String.class);
-            WebappCredentials.SignOnSource source =
-                WebappCredentials.SignOnSource.valueOf(claims.getBody().get(JWT_CLAIM_SOURCE, String.class));
-            return new PreAuthenticatedAuthenticationToken(customerId,
-                                                           WebappCredentials.builder()
-                                                                            .externalId(externalId)
-                                                                            .customerName(customerName)
-                                                                            .email(email)
-                                                                            .source(source)
-                                                                            .build(),
-                                                           USER_AUTHORITY);
+            return new PreAuthenticatedAuthenticationToken(
+                Long.valueOf(claims.getBody().getSubject()),
+                WebappCredentials.builder()
+                                 .externalId(claims.getBody().getId())
+                                 .customerName(claims.getBody().get(JWT_CLAIM_CUSTOMER_NAME, String.class))
+                                 .email(claims.getBody().get(JWT_CLAIM_EMAIL, String.class))
+                                 .source(claims.getBody().get(JWT_CLAIM_SOURCE, String.class))
+                                 .build(),
+                USER_AUTHORITY);
         } catch (Exception e) {
             log.debug("Failed to authenticate token: " + e);
             return null;

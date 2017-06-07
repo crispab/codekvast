@@ -21,7 +21,9 @@
  */
 package io.codekvast.warehouse.customer;
 
+import lombok.Builder;
 import lombok.NonNull;
+import lombok.Value;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 
 import java.util.Collection;
@@ -80,4 +82,52 @@ public interface CustomerService {
      * @return A list of CustomerData objects.
      */
     Collection<CustomerData> getAllCustomers();
+
+    /**
+     * Register that a user has logged in.
+     *
+     * @param customerData The customer data
+     * @param email        The user's email address.
+     * @param source       The login source (e.g., "heroku")
+     */
+    void registerLogin(CustomerData customerData, String email, String source);
+
+    /**
+     * Adds a new customer
+     *
+     * @param request The add customer request data
+     * @return A unique license key
+     */
+    String addCustomer(AddCustomerRequest request);
+
+    /**
+     * Change plan for an existing customer
+     *
+     * @param externalId The external customer ID.
+     * @param newPlan    The name of the new plan.
+     */
+    void changePlanForExternalId(String externalId, String newPlan);
+
+    /**
+     * Deletes a customer
+     * @param externalId The external id
+     */
+    void deleteCustomerByExternalId(String externalId);
+
+    @Value
+    @Builder
+    class AddCustomerRequest {
+
+        @NonNull
+        String source;
+
+        @NonNull
+        String externalId;
+
+        @NonNull
+        String name;
+
+        @NonNull
+        String plan;
+    }
 }

@@ -31,11 +31,13 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author olle.hallin@crisp.se
@@ -44,7 +46,7 @@ import java.util.Map;
 @Slf4j
 public class CustomerServiceImpl implements CustomerService {
 
-    private static final String SELECT_CLAUSE = "SELECT id, name, plan FROM customers ";
+    private static final String SELECT_CLAUSE = "SELECT id, name, source, plan FROM customers ";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -54,6 +56,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CustomerData getCustomerDataByLicenseKey(@NonNull String licenseKey) throws AuthenticationCredentialsNotFoundException {
         try {
             return getCustomerData("WHERE licenseKey = ?", licenseKey);
@@ -63,6 +66,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CustomerData getCustomerDataByCustomerId(long customerId) throws AuthenticationCredentialsNotFoundException {
         try {
             return getCustomerData("WHERE id = ?", customerId);
@@ -72,6 +76,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CustomerData getCustomerDataByExternalId(@NonNull String externalId) throws AuthenticationCredentialsNotFoundException {
         try {
             return getCustomerData("WHERE externalId = ?", externalId);
@@ -81,11 +86,13 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void assertPublicationSize(String licenseKey, int publicationSize) throws LicenseViolationException {
         doAssertNumberOfMethods(getCustomerDataByLicenseKey(licenseKey), publicationSize);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void assertDatabaseSize(long customerId) throws LicenseViolationException {
         CustomerData customerData = getCustomerDataByCustomerId(customerId);
         long numberOfMethods = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM methods WHERE customerId = ?", Long.class, customerId);
@@ -94,6 +101,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Collection<CustomerData> getAllCustomers() {
 
         List<CustomerData> result = jdbcTemplate
@@ -101,11 +109,90 @@ public class CustomerServiceImpl implements CustomerService {
                    (rs, rowNum) -> CustomerData.builder()
                                                .customerId(rs.getLong(1))
                                                .customerName(rs.getString(2))
-                                               .planName(rs.getString(3))
+                                               .source(rs.getString(3))
+                                               .planName(rs.getString(4))
                                                .build());
 
         log.debug("Found {} customers", result.size());
         return result;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void registerLogin(CustomerData customerData, String email, String source) {
+        int updated = jdbcTemplate.update("UPDATE users SET lastLoginSource = ?, numberOfLogins = numberOfLogins + 1 " +
+                                              "WHERE customerId = ? AND email = ?",
+                                          source, customerData.getCustomerId(), email);
+        if (updated > 0) {
+            log.debug("Updated user {}:{}:{}", customerData.getCustomerId(), source, email);
+        } else {
+            jdbcTemplate.update("INSERT INTO users(customerId, email, lastLoginSource, numberOfLogins) " +
+                                    "VALUES(?, ?, ?, ?)",
+                                customerData.getCustomerId(), email, source, 1);
+            log.debug("Added user {}:{}:{}", customerData.getCustomerId(), source, email);
+        }
+        log.info("Logged in {}, email={}", customerData, email);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public String addCustomer(AddCustomerRequest request) {
+        String licenseKey = UUID.randomUUID().toString().replaceAll("[-_]", "").toUpperCase();
+
+        jdbcTemplate.update("INSERT INTO customers(source, externalId, name, licenseKey, plan) VALUES(?, ?, ?, ?, ?)",
+                            request.getSource(), request.getExternalId(), request.getName(), licenseKey, request.getPlan());
+        log.info("Created {} with licenseKey {}", request, licenseKey);
+        return licenseKey;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void changePlanForExternalId(@NonNull String externalId, @NonNull String newPlan) {
+        CustomerData customerData = getCustomerDataByExternalId(externalId);
+
+        if (newPlan.equals(customerData.getPlanName())) {
+            log.info("{} is already on plan '{}'", customerData, newPlan);
+            return;
+        }
+
+        int count = jdbcTemplate.update("UPDATE customers SET plan = ? WHERE externalId = ?",
+                                        newPlan, externalId);
+
+        if (count == 0) {
+            log.warn("Failed to change plan for {} to '{}'", customerData, newPlan);
+        } else {
+            log.info("Changed plan for {} to '{}'", customerData, newPlan);
+
+            // TODO: adjust to new plan
+        }
+
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteCustomerByExternalId(String externalId) {
+        CustomerData customerData = getCustomerDataByExternalId(externalId);
+
+        long customerId = customerData.getCustomerId();
+
+        int count = jdbcTemplate.update("DELETE FROM invocations WHERE customerId = ?", customerId);
+        log.debug("Deleted {} invocation rows", count);
+
+        count = jdbcTemplate.update("DELETE FROM methods WHERE customerId = ?", customerId);
+        log.debug("Deleted {} method rows", count);
+
+        count = jdbcTemplate.update("DELETE FROM jvms WHERE customerId = ?", customerId);
+        log.debug("Deleted {} method rows", count);
+
+        count = jdbcTemplate.update("DELETE FROM applications WHERE customerId = ?", customerId);
+        log.debug("Deleted {} application rows", count);
+
+        count = jdbcTemplate.update("DELETE FROM users WHERE customerId = ?", customerId);
+        log.debug("Deleted {} user rows", count);
+
+        count = jdbcTemplate.update("DELETE FROM customers WHERE id = ?", customerId);
+        log.debug("Deleted {} customer rows", count);
+
     }
 
     private CustomerData getCustomerData(String where_clause, Object identifier) {
@@ -114,6 +201,7 @@ public class CustomerServiceImpl implements CustomerService {
         return CustomerData.builder()
                            .customerId((Long) result.get("id"))
                            .customerName((String) result.get("name"))
+                           .source((String) result.get("source"))
                            .planName((String) result.get("plan"))
                            .build();
     }
