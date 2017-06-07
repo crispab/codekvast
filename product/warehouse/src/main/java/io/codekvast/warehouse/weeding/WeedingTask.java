@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.warehouse.retention;
+package io.codekvast.warehouse.weeding;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -28,23 +28,23 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 /**
- * Periodically performs data retention, i.e., removes data according to customers' price plans.
+ * Periodically performs data weeding, i.e., remove redundant data that does not affect what a customer sees.
  *
  * @author olle.hallin@crisp.se
  */
 @Component
 @Slf4j
-public class RetentionTask {
+public class WeedingTask {
 
-    private final RetentionService retentionService;
+    private final WeedingService weedingService;
 
     @Inject
-    public RetentionTask(RetentionService retentionService) {
-        this.retentionService = retentionService;
+    public WeedingTask(WeedingService weedingService) {
+        this.weedingService = weedingService;
     }
 
     /**
-     * Scheduled task that invokes the data retention service.
+     * Scheduled task that invokes the data weeding service.
      */
     @Scheduled(
         initialDelayString = "${codekvast.dataRetentionInitialDelaySeconds}000",
@@ -54,7 +54,7 @@ public class RetentionTask {
         Thread.currentThread().setName("Codekvast Data Retention");
         try {
             log.info("Performing data retention");
-            retentionService.performDataRetention();
+            weedingService.performDataWeeding();
         } finally {
             Thread.currentThread().setName(oldThreadName);
         }

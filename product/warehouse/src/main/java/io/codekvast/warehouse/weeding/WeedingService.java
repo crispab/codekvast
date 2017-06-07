@@ -19,9 +19,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package io.codekvast.warehouse.weeding;
+
 /**
- * Contains classes dealing with data retention.
- *
  * @author olle.hallin@crisp.se
  */
-package io.codekvast.warehouse.retention;
+public interface WeedingService {
+    /**
+     * Performs data weeding. It removes redundant data from the database, to keep it from growing unboundedly.
+     */
+    void performDataWeeding();
+}
