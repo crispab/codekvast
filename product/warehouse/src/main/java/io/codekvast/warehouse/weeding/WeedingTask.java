@@ -47,8 +47,8 @@ public class WeedingTask {
      * Scheduled task that invokes the data weeding service.
      */
     @Scheduled(
-        initialDelayString = "${codekvast.dataRetentionInitialDelaySeconds}000",
-        fixedDelayString = "${codekvast.dataRetentionIntervalSeconds}000")
+        initialDelayString = "${codekvast.dataWeedingInitialDelaySeconds}000",
+        fixedDelayString = "${codekvast.dataWeedingIntervalSeconds}000")
     public void performDataRetention() {
         String oldThreadName = Thread.currentThread().getName();
         Thread.currentThread().setName("Codekvast Data Retention");
