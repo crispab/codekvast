@@ -7,7 +7,7 @@ import {isNullOrUndefined} from 'util';
 @Injectable()
 export class StateService {
 
-    private readonly AUTH_DATA = 'authData';
+    private readonly AUTH_DATA = 'codekvast.authData';
 
     private state = {};
     private demoMode = true;
