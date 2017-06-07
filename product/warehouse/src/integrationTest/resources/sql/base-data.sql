@@ -8,7 +8,7 @@ DELETE FROM price_plans;
 
 INSERT INTO price_plans (name) VALUES ('test'), ('demo');
 
-INSERT INTO customers(id, name, plan, licenseKey) VALUES(1, 'Demo', 'demo', '');
+INSERT INTO customers(id, externalId, name, plan, licenseKey) VALUES(1, 'external-1', 'Demo', 'demo', '');
 
 INSERT INTO applications (id, customerId, name, version) VALUES
   (11, 1, 'app1', 'v1'),

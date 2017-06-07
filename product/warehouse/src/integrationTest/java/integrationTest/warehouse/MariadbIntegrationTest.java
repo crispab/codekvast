@@ -135,41 +135,79 @@ public class MariadbIntegrationTest {
 
     @Test
     @Sql(scripts = "/sql/base-data.sql")
-    public void should_getCustomerDataByCustomerId() throws Exception {
+    public void should_accept_valid_getCustomerDataByCustomerId() {
         CustomerData customerData = customerService.getCustomerDataByCustomerId(1L);
         assertThat(customerData.getCustomerId(), is(1L));
-        assertThat(customerData.getPlanName(), is("demo"));
-    }
-
-    @Test
-    @Sql(scripts = "/sql/base-data.sql")
-    public void should_getCustomerDataByLicenseKey() throws Exception {
-        CustomerData customerData = customerService.getCustomerDataByLicenseKey("");
-        assertThat(customerData.getCustomerId(), is(1L));
+        assertThat(customerData.getCustomerName(), is("Demo"));
         assertThat(customerData.getPlanName(), is("demo"));
     }
 
     @Test(expected = AuthenticationCredentialsNotFoundException.class)
     @Sql(scripts = "/sql/base-data.sql")
-    public void should_reject_publication_invalid_licenseKey() throws Exception {
+    public void should_reject_invalid_getCustomerDataByCustomerId() {
+        CustomerData customerData = customerService.getCustomerDataByCustomerId(0L);
+        assertThat(customerData.getCustomerId(), is(1L));
+        assertThat(customerData.getCustomerName(), is("Demo"));
+        assertThat(customerData.getPlanName(), is("demo"));
+    }
+
+    @Test
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_accept_valid_getCustomerDataByLicenseKey() {
+        CustomerData customerData = customerService.getCustomerDataByLicenseKey("");
+        assertThat(customerData.getCustomerId(), is(1L));
+        assertThat(customerData.getCustomerName(), is("Demo"));
+        assertThat(customerData.getPlanName(), is("demo"));
+    }
+
+    @Test(expected = AuthenticationCredentialsNotFoundException.class)
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_reject_invalid_getCustomerDataByLicenseKey() {
+        CustomerData customerData = customerService.getCustomerDataByLicenseKey("undefined");
+        assertThat(customerData.getCustomerId(), is(1L));
+        assertThat(customerData.getCustomerName(), is("Demo"));
+        assertThat(customerData.getPlanName(), is("demo"));
+    }
+
+    @Test
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_accept_valid_getCustomerDataByExternalId() {
+        CustomerData customerData = customerService.getCustomerDataByExternalId("external-1");
+        assertThat(customerData.getCustomerId(), is(1L));
+        assertThat(customerData.getCustomerName(), is("Demo"));
+        assertThat(customerData.getPlanName(), is("demo"));
+    }
+
+    @Test(expected = AuthenticationCredentialsNotFoundException.class)
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_reject_invalid_getCustomerDataByExternalId() {
+        CustomerData customerData = customerService.getCustomerDataByExternalId("undefined");
+        assertThat(customerData.getCustomerId(), is(1L));
+        assertThat(customerData.getCustomerName(), is("Demo"));
+        assertThat(customerData.getPlanName(), is("demo"));
+    }
+
+    @Test(expected = AuthenticationCredentialsNotFoundException.class)
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_reject_publication_invalid_licenseKey() {
         customerService.assertPublicationSize("undefined", 10);
     }
 
     @Test(expected = LicenseViolationException.class)
     @Sql(scripts = "/sql/base-data.sql")
-    public void should_reject_publication_too_large() throws Exception {
+    public void should_reject_publication_too_large() {
         customerService.assertPublicationSize("", 100_000);
     }
 
     @Test
     @Sql(scripts = "/sql/base-data.sql")
-    public void should_accept_publication() throws Exception {
+    public void should_accept_publication() {
         customerService.assertPublicationSize("", 10);
     }
 
     @Test
     @Sql(scripts = "/sql/base-data.sql")
-    public void should_assertDatabaseSize() throws Exception {
+    public void should_assertDatabaseSize() {
         customerService.assertDatabaseSize(1L);
     }
 
@@ -178,7 +216,7 @@ public class MariadbIntegrationTest {
     // TODO: add tests for InvocationDataPublication import
 
     @Test
-    public void should_query_by_IDEA_signature_correctly() throws Exception {
+    public void should_query_by_IDEA_signature_correctly() {
         // given
 
         // when
@@ -187,7 +225,7 @@ public class MariadbIntegrationTest {
     }
 
     @Test
-    public void should_query_by_signature_suffix_correctly() throws Exception {
+    public void should_query_by_signature_suffix_correctly() {
         // given
 
         // when find substring
@@ -196,7 +234,7 @@ public class MariadbIntegrationTest {
     }
 
     @Test
-    public void should_query_by_signature_not_normalize_but_no_match() throws Exception {
+    public void should_query_by_signature_not_normalize_but_no_match() {
         // given
 
         // when find by signature
@@ -205,7 +243,7 @@ public class MariadbIntegrationTest {
     }
 
     @Test
-    public void should_query_signatures_and_respect_max_results() throws Exception {
+    public void should_query_signatures_and_respect_max_results() {
         // given
 
         // when
@@ -214,7 +252,7 @@ public class MariadbIntegrationTest {
     }
 
     @Test(expected = ConstraintViolationException.class)
-    public void should_throw_when_querying_signature_with_too_short_signature() throws Exception {
+    public void should_throw_when_querying_signature_with_too_short_signature() {
         // given
 
         // when query with too short signature
@@ -222,7 +260,7 @@ public class MariadbIntegrationTest {
     }
 
     @Test
-    public void should_query_unknown_signature_correctly() throws Exception {
+    public void should_query_unknown_signature_correctly() {
         // given
 
         // when find exact signature
@@ -234,7 +272,7 @@ public class MariadbIntegrationTest {
     }
 
     @Test
-    public void should_query_by_known_id() throws Exception {
+    public void should_query_by_known_id() {
         // given
         // generateQueryTestData();
 
@@ -248,7 +286,7 @@ public class MariadbIntegrationTest {
     }
 
     @Test
-    public void should_query_by_unknown_id() throws Exception {
+    public void should_query_by_unknown_id() {
         // given
         // generateQueryTestData();
 
