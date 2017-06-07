@@ -5,7 +5,6 @@ import {TitleCasePipe} from '@angular/common';
 import {Title} from '@angular/platform-browser';
 import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/map';
-import {LoginState} from './model/login-state';
 import {StateService} from './services/state.service';
 import {WarehouseService} from './services/warehouse.service';
 
@@ -29,7 +28,7 @@ export class AppComponent implements OnInit {
             .subscribe(url => {
                 let feature = this.titleCasePipe.transform(url.substr(1));
                 this.titleService.setTitle('Codekvast ' + feature);
-                this.warehouseService.isDemoMode().subscribe(demoMode => this.stateService.demoMode = demoMode);
+                this.warehouseService.isDemoMode().subscribe(demoMode => this.stateService.setDemoMode(demoMode));
             });
 
     }
@@ -43,15 +42,6 @@ export class AppComponent implements OnInit {
     }
 
     getLoginState() {
-        if (this.stateService.demoMode) {
-            return 'Demo mode';
-        }
-
-        if (this.stateService.isLoggedIn()) {
-            let loginState = this.stateService.getState(LoginState.KEY, () => new LoginState());
-            return `Logged in as ${loginState.email} / ${loginState.customerName}`
-        }
-
-        return 'Not logged in';
+        return this.stateService.getLoginState();
     }
 }

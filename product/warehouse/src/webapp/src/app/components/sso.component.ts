@@ -1,7 +1,6 @@
 import {ActivatedRoute, Router} from '@angular/router';
 import {Component, OnInit} from '@angular/core';
 import {StateService} from '../services/state.service';
-import {LoginState} from '../model/login-state';
 
 @Component({
     selector: 'ck-sso',
@@ -15,8 +14,6 @@ export class SsoComponent implements OnInit {
 
     ngOnInit(): void {
         let token = this.route.snapshot.params['token'];
-        this.stateService.setAuthToken(token);
-
         let parts = token.split('\.');
         if (parts.length === 3) {
             // header = parts[0]
@@ -38,10 +35,7 @@ export class SsoComponent implements OnInit {
                 Boomerang.reset();
             }
 
-            let loginState = this.stateService.getState(LoginState.KEY, () => new LoginState());
-            loginState.customerId = payload.sub;
-            loginState.customerName = payload.customerName;
-            loginState.email = payload.email;
+            this.stateService.setLoggedInAs(token, payload.sub, payload.customerName, payload.email);
         }
         // noinspection JSIgnoredPromiseFromCall
         this.router.navigate(['']);

@@ -9,6 +9,6 @@ export class IsLoggedIn implements CanActivate {
     }
 
     canActivate() {
-        return this.stateService.demoMode || this.stateService.isLoggedIn();
+        return this.stateService.isDemoMode() || this.stateService.isLoggedIn();
     }
 }

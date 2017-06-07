@@ -85,13 +85,13 @@ export class WarehouseService {
     }
 
     private replaceAuthToken(res: any) {
-        return this.stateService.setAuthToken(res.headers.get(this.AUTH_TOKEN_HEADER));
+        return this.stateService.replaceAuthToken(res.headers.get(this.AUTH_TOKEN_HEADER));
     }
 
     private handleErrors(res: any) {
         console.log('Error=%o', res);
         if (res.status === 401) {
-            this.stateService.setAuthToken(null);
+            this.stateService.setLoggedOut();
             // TODO: handle status 401 Unauthorized
         }
         // noinspection JSIgnoredPromiseFromCall
