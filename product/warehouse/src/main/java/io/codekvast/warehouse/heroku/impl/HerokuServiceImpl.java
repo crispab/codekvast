@@ -57,7 +57,7 @@ public class HerokuServiceImpl implements HerokuService {
 
         String licenseKey = customerService.addCustomer(CustomerService.AddCustomerRequest
                                                             .builder()
-                                                            .source("heroku")
+                                                            .source(CustomerService.Source.HEROKU)
                                                             .externalId(request.getUuid())
                                                             .name(request.getHeroku_id())
                                                             .plan(request.getPlan())

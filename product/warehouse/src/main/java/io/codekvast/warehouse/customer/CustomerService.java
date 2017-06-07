@@ -33,6 +33,10 @@ import java.util.Collection;
  */
 public interface CustomerService {
 
+    interface Source {
+        String HEROKU = "heroku";
+    }
+
     /**
      * Translates a licenseKey to customer data.
      *

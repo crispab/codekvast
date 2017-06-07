@@ -105,7 +105,7 @@ public class SsoController {
 
         CustomerData customerData = customerService.getCustomerDataByExternalId(externalId);
 
-        customerService.registerLogin(customerData, email, "heroku");
+        customerService.registerLogin(customerData, email, CustomerService.Source.HEROKU);
 
         return webappTokenProvider.createWebappToken(
             customerData.getCustomerId(),
