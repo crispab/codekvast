@@ -25,9 +25,11 @@ import io.codekvast.warehouse.customer.CustomerData;
 import io.codekvast.warehouse.customer.CustomerService;
 import io.codekvast.warehouse.customer.LicenseViolationException;
 import io.codekvast.warehouse.customer.PricePlan;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -42,6 +44,8 @@ import java.util.Map;
 @Slf4j
 public class CustomerServiceImpl implements CustomerService {
 
+    private static final String SELECT_CLAUSE = "SELECT id, name, plan FROM customers ";
+
     private final JdbcTemplate jdbcTemplate;
 
     @Inject
@@ -50,32 +54,29 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerData getCustomerDataByLicenseKey(String licenseKey) throws LicenseViolationException {
+    public CustomerData getCustomerDataByLicenseKey(@NonNull String licenseKey) throws AuthenticationCredentialsNotFoundException {
         try {
-            Map<String, Object> result = jdbcTemplate.queryForMap("SELECT id, plan FROM customers WHERE licenseKey = ?", licenseKey.trim());
-
-            return CustomerData.builder()
-                               .customerId((Long) result.get("id"))
-                               .planName((String) result.get("plan"))
-                               .build();
-
+            return getCustomerData("WHERE licenseKey = ?", licenseKey);
         } catch (DataAccessException e) {
-            throw new LicenseViolationException("Invalid license key: '" + licenseKey + "'");
+            throw new AuthenticationCredentialsNotFoundException("Invalid license key: '" + licenseKey + "'");
         }
     }
 
     @Override
-    public CustomerData getCustomerDataByCustomerId(long customerId) throws LicenseViolationException {
+    public CustomerData getCustomerDataByCustomerId(long customerId) throws AuthenticationCredentialsNotFoundException {
         try {
-            String planName = jdbcTemplate.queryForObject("SELECT plan FROM customers WHERE id = ?", String.class, customerId);
-
-            return CustomerData.builder()
-                               .customerId(customerId)
-                               .planName(planName)
-                               .build();
-
+            return getCustomerData("WHERE id = ?", customerId);
         } catch (DataAccessException e) {
-            throw new LicenseViolationException("Invalid customerId: " + customerId);
+            throw new AuthenticationCredentialsNotFoundException("Invalid customerId: " + customerId);
+        }
+    }
+
+    @Override
+    public CustomerData getCustomerDataByExternalId(@NonNull String externalId) throws AuthenticationCredentialsNotFoundException {
+        try {
+            return getCustomerData("WHERE externalId = ?", externalId);
+        } catch (DataAccessException e) {
+            throw new AuthenticationCredentialsNotFoundException("Invalid externalId: " + externalId);
         }
     }
 
@@ -96,14 +97,25 @@ public class CustomerServiceImpl implements CustomerService {
     public Collection<CustomerData> getAllCustomers() {
 
         List<CustomerData> result = jdbcTemplate
-            .query("SELECT id, plan FROM customers",
+            .query(SELECT_CLAUSE,
                    (rs, rowNum) -> CustomerData.builder()
                                                .customerId(rs.getLong(1))
-                                               .planName(rs.getString(2))
+                                               .customerName(rs.getString(2))
+                                               .planName(rs.getString(3))
                                                .build());
 
         log.debug("Found {} customers", result.size());
         return result;
+    }
+
+    private CustomerData getCustomerData(String where_clause, Object identifier) {
+        Map<String, Object> result = jdbcTemplate.queryForMap(SELECT_CLAUSE + where_clause, identifier);
+
+        return CustomerData.builder()
+                           .customerId((Long) result.get("id"))
+                           .customerName((String) result.get("name"))
+                           .planName((String) result.get("plan"))
+                           .build();
     }
 
     private void doAssertNumberOfMethods(CustomerData customerData, long numberOfMethods) {

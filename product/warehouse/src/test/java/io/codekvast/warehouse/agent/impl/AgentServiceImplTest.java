@@ -50,7 +50,7 @@ public class AgentServiceImplTest {
 
         when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), anyString(), anyObject())).thenReturn(1);
 
-        when(customerService.getCustomerDataByLicenseKey(anyString())).thenReturn(CustomerData.builder().customerId(1).planName("test").build());
+        when(customerService.getCustomerDataByLicenseKey(anyString())).thenReturn(CustomerData.builder().customerId(1L).customerName("name").planName("test").build());
     }
 
     @Test

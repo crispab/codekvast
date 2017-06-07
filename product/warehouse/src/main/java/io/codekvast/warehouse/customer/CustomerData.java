@@ -22,6 +22,7 @@
 package io.codekvast.warehouse.customer;
 
 import lombok.Builder;
+import lombok.NonNull;
 import lombok.Value;
 
 /**
@@ -30,7 +31,13 @@ import lombok.Value;
 @Value
 @Builder
 public class CustomerData {
-    private long customerId;
+    @NonNull
+    private Long customerId;
+
+    @NonNull
+    private String customerName;
+
+    @NonNull
     private String planName;
 
     public PricePlan getPricePlan() {

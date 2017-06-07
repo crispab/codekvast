@@ -18,6 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
@@ -148,7 +149,7 @@ public class MariadbIntegrationTest {
         assertThat(customerData.getPlanName(), is("demo"));
     }
 
-    @Test(expected = LicenseViolationException.class)
+    @Test(expected = AuthenticationCredentialsNotFoundException.class)
     @Sql(scripts = "/sql/base-data.sql")
     public void should_reject_publication_invalid_licenseKey() throws Exception {
         customerService.assertPublicationSize("undefined", 10);

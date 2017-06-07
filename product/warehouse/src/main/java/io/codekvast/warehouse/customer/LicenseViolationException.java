@@ -21,10 +21,12 @@
  */
 package io.codekvast.warehouse.customer;
 
+import org.springframework.security.core.AuthenticationException;
+
 /**
  * Thrown when a license violation has occurred.
  */
-public class LicenseViolationException extends RuntimeException {
+public class LicenseViolationException extends AuthenticationException {
 
     public LicenseViolationException(String message) {
         super(message);

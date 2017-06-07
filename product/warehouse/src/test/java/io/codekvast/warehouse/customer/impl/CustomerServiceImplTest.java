@@ -31,6 +31,7 @@ public class CustomerServiceImplTest {
 
         Map<String, Object> map = new HashMap<>();
         map.put("id", 1L);
+        map.put("name", "name");
         map.put("plan", "test");
 
         when(jdbcTemplate.queryForMap(anyString(), anyString())).thenReturn(map);

@@ -22,6 +22,7 @@
 package io.codekvast.warehouse.customer;
 
 import lombok.NonNull;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 
 import java.util.Collection;
 
@@ -31,22 +32,31 @@ import java.util.Collection;
 public interface CustomerService {
 
     /**
-     * Translates a licenseKey to customer data, which governs what the customer is licensed to do.
+     * Translates a licenseKey to customer data.
      *
-     * @param licenseKey The licenseKey to check.
+     * @param licenseKey The licenseKey to translate.
      * @return A CustomerData object.
-     * @throws LicenseViolationException iff the licenseKey was invalid.
+     * @throws org.springframework.security.authentication.AuthenticationCredentialsNotFoundException iff the licenseKey was invalid.
      */
-    CustomerData getCustomerDataByLicenseKey(@NonNull String licenseKey) throws LicenseViolationException;
+    CustomerData getCustomerDataByLicenseKey(@NonNull String licenseKey) throws AuthenticationCredentialsNotFoundException;
 
     /**
-     * Translates a customerId to customer data, which governs what the customer is licensed to do.
+     * Translates an externalId to customer data.
      *
-     * @param customerId The customer ID
+     * @param externalId The externalId to translate.
      * @return A CustomerData object.
-     * @throws LicenseViolationException iff the licenseKey was invalid.
+     * @throws AuthenticationCredentialsNotFoundException iff the externalId was invalid.
      */
-    CustomerData getCustomerDataByCustomerId(long customerId) throws LicenseViolationException;
+    CustomerData getCustomerDataByExternalId(@NonNull String externalId) throws AuthenticationCredentialsNotFoundException;
+
+    /**
+     * Translates a customerId to customer data.
+     *
+     * @param customerId The customer ID to translate.
+     * @return A CustomerData object.
+     * @throws AuthenticationCredentialsNotFoundException iff the customerId was invalid.
+     */
+    CustomerData getCustomerDataByCustomerId(long customerId) throws AuthenticationCredentialsNotFoundException;
 
     /**
      * Validates a received publication before accepting it.

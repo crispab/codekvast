@@ -1,12 +1,12 @@
 package io.codekvast.warehouse.security;
 
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
+import io.codekvast.warehouse.customer.CustomerService;
 import io.codekvast.warehouse.security.impl.SecurityServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -19,14 +19,14 @@ public class SsoControllerTest {
     private CodekvastSettings settings = new CodekvastSettings();
 
     @Mock
-    private JdbcTemplate jdbcTemplate;
+    private CustomerService customerService;
 
     private SsoController controller;
 
     @Before
     public void beforeTest() throws Exception {
         MockitoAnnotations.initMocks(this);
-        controller = new SsoController(settings, jdbcTemplate, new SecurityServiceImpl(settings));
+        controller = new SsoController(settings, new SecurityServiceImpl(settings), customerService);
     }
 
 

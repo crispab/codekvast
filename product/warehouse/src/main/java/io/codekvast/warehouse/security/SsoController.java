@@ -22,14 +22,13 @@
 package io.codekvast.warehouse.security;
 
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
+import io.codekvast.warehouse.customer.CustomerData;
+import io.codekvast.warehouse.customer.CustomerService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.www.NonceExpiredException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -39,7 +38,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.inject.Inject;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Map;
 
 import static javax.xml.bind.DatatypeConverter.printHexBinary;
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
@@ -53,16 +51,16 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 public class SsoController {
 
     private final CodekvastSettings settings;
-    private final JdbcTemplate jdbcTemplate;
     private final MessageDigest sha1;
     private final WebappTokenProvider webappTokenProvider;
+    private final CustomerService customerService;
 
     @Inject
-    public SsoController(CodekvastSettings settings, JdbcTemplate jdbcTemplate,
-                         WebappTokenProvider webappTokenProvider) throws NoSuchAlgorithmException {
+    public SsoController(CodekvastSettings settings, WebappTokenProvider webappTokenProvider, CustomerService customerService)
+        throws NoSuchAlgorithmException {
         this.settings = settings;
-        this.jdbcTemplate = jdbcTemplate;
         this.webappTokenProvider = webappTokenProvider;
+        this.customerService = customerService;
         this.sha1 = MessageDigest.getInstance("SHA-1");
     }
 
@@ -87,7 +85,8 @@ public class SsoController {
         return "redirect:/sso/" + jwt + "/" + navData;
     }
 
-    private String doHerokuSingleSignOn(String externalId, long timestampSeconds, String token, String email) throws AuthenticationException {
+    private String doHerokuSingleSignOn(String externalId, long timestampSeconds, String token, String email)
+        throws AuthenticationException {
         String expectedToken = makeHerokuSsoToken(externalId, timestampSeconds);
         log.debug("id={}, token={}, timestamp={}, expectedToken={}", externalId, token, timestampSeconds, expectedToken);
 
@@ -104,23 +103,17 @@ public class SsoController {
             throw new BadCredentialsException("Invalid token");
         }
 
-        try {
-            Map<String, Object> row = jdbcTemplate.queryForMap("SELECT id, name FROM customers WHERE externalId = ?", externalId);
+        CustomerData customerData = customerService.getCustomerDataByExternalId(externalId);
 
-            Long customerId = (Long) row.get("id");
-            String customerName = (String) row.get("name");
-            log.info("Logged in customerId={}, email={}", customerId, email);
-            return webappTokenProvider.createWebappToken(
-                customerId,
-                WebappCredentials.builder()
-                                 .externalId(externalId)
-                                 .customerName(customerName)
-                                 .email(email)
-                                 .source(WebappCredentials.SignOnSource.HEROKU)
-                                 .build());
-        } catch (IncorrectResultSizeDataAccessException e) {
-            throw new UsernameNotFoundException("Invalid id");
-        }
+        log.info("Logged in {}, email={}", customerData, email);
+        return webappTokenProvider.createWebappToken(
+            customerData.getCustomerId(),
+            WebappCredentials.builder()
+                             .externalId(externalId)
+                             .customerName(customerData.getCustomerName())
+                             .email(email)
+                             .source(WebappCredentials.SignOnSource.HEROKU)
+                             .build());
     }
 
     String makeHerokuSsoToken(String externalId, long timestampSeconds) {

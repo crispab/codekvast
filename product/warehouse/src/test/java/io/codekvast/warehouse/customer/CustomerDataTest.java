@@ -12,19 +12,19 @@ public class CustomerDataTest {
 
     @Test
     public void should_have_decent_toString() throws Exception {
-        CustomerData customerData = CustomerData.builder().customerId(17L).planName("DemO").build();
-        assertThat(customerData.toString(), is("CustomerData(customerId=17, planName=DemO)"));
+        CustomerData customerData = CustomerData.builder().customerId(17L).customerName("foobar").planName("DemO").build();
+        assertThat(customerData.toString(), is("CustomerData(customerId=17, customerName=foobar, planName=DemO)"));
     }
 
     @Test
     public void should_normalize_planName() throws Exception {
-        CustomerData customerData = CustomerData.builder().customerId(17L).planName("dEMo").build();
+        CustomerData customerData = CustomerData.builder().customerId(17L).customerName("foobar").planName("dEMo").build();
         assertThat(customerData.getPricePlan(), is(PricePlan.DEMO));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void should_reject_invalid_planName() throws Exception {
-        CustomerData customerData = CustomerData.builder().customerId(17L).planName("Invalid").build();
+        CustomerData customerData = CustomerData.builder().customerId(17L).customerName("foobar").planName("Invalid").build();
         customerData.getPricePlan();
     }
 }
