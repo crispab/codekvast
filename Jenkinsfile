@@ -8,7 +8,7 @@ node {
                     checkout scm
                     sh """
                     printenv | sort
-                    sudo tools/real-clean-workspace.sh
+                    # tools/real-clean-workspace.sh
                     """
                 }
 
