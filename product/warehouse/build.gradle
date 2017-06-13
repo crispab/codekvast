@@ -15,7 +15,6 @@ mainClassName = 'io.codekvast.warehouse.CodekvastWarehouse'
 
 apply from: "$projectDir/src/main/build.gradle"
 apply from: "$projectDir/src/webapp/build.gradle"
-apply from: "$projectDir/src/docker/build.gradle"
 apply from: "$projectDir/src/heroku/build.gradle"
 apply from: "$projectDir/src/integrationTest/build.gradle"
 apply from: "$projectDir/src/systemTest/build.gradle"

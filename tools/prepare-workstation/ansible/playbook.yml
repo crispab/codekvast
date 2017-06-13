@@ -3,14 +3,10 @@
   connection: local
   become: yes
 
-  vars:
-  - docker_compose_version: 1.11.2
-  - docker_machine_version: 0.10.0
-
   roles:
   - {role: franklinkim.docker, tags: [docker, docker-engine]}
   
   post_tasks:
   - {include: tasks/compilers.yml, tags: compilers}
-  - {include: tasks/docker.yml, tags: [docker, docker-compose, docker-machine]}
+  - {include: tasks/docker.yml, tags: docker}
   - {include: tasks/yarn.yml, tags: yarn}

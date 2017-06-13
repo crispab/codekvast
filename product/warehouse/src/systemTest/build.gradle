@@ -1,3 +1,9 @@
+import groovy.sql.Sql
+
+import java.sql.Driver
+import java.sql.DriverManager
+import java.sql.SQLNonTransientConnectionException
+
 // --- End-to-end system test -----------------------------------------------------------------------------------
 
 testSets {
@@ -10,6 +16,7 @@ check.dependsOn systemTest
 configurations {
     chromeDriver
     // geckoDriver
+    jdbc
 }
 
 def seleniumVersion = '3.4.0'
@@ -31,68 +38,102 @@ dependencies {
 
     chromeDriver 'com.github.igor-suhorukov:chromedriver:2.27:linux64@bin'
     // geckoDriver '???'
+    jdbc mariadbDriver
 }
 
 task startSystemTestEnvironment {
-    description 'docker-compose up'
+    description 'Starts the system test environment'
     group 'System test'
-    dependsOn systemTestClasses, buildDockerImage
+    dependsOn systemTestClasses
 
-    inputs.dir file("build/docker")
     inputs.dir file("src/systemTest")
     outputs.dir file("build/reports/systemTest")
     outputs.dir file("build/test-results/systemTest")
 
     doLast {
-        def forceRecreate = System.getenv('LEAVE_SYSTEM_TEST_ENVIRONMENT_RUNNING') == null ? "--force-recreate" : ""
-        workDir.mkdirs()
-        executeDockerCompose("up -d $forceRecreate")
-        def endpoint = executeDockerCompose("port app 8080")
-        if (endpoint == "") {
-            throw new IllegalStateException("Failed to execute 'docker-compose up'")
+        def command = 'docker pull mariadb:10'
+        logger.lifecycle(command)
+        assert command.execute().waitFor() == 0
+
+        def jdbcPort = allocateFreePort()
+        command = 'docker run -d --restart=unless-stopped ' +
+            "--name codekvast_systest_$jdbcPort " +
+            "-p $jdbcPort:3306 " +
+            '-e MYSQL_ROOT_PASSWORD=root ' +
+            '-e MYSQL_DATABASE=codekvast ' +
+            '-e MYSQL_USER=codekvast ' +
+            '-e MYSQL_PASSWORD=codekvast ' +
+            '-e TERM=xterm-256color ' +
+            'mariadb:10 ' +
+            '--character-set-server=utf8 ' +
+            '--collation-server=utf8_general_ci ' +
+            '--default-storage-engine=innodb '
+        logger.lifecycle(command)
+        assert command.execute().waitFor() == 0
+
+        def jdbcUrl = "jdbc:mariadb://localhost:$jdbcPort/codekvast"
+        logger.lifecycle("jdbcUrl={}", jdbcUrl)
+
+        waitForDatabaseReady(jdbcUrl)
+
+        project.ext.systemTestPort = allocateFreePort()
+        command = "java -jar $buildDir/libs/codekvast-warehouse-${codekvastVersion}-all.jar --server.port=${systemTestPort} --spring.datasource.url=$jdbcUrl"
+
+        launchAppAndWaitForReady(command)
+    }
+}
+
+int allocateFreePort() {
+    ServerSocket socket = null
+    try {
+        socket = new ServerSocket(0)
+        return socket.getLocalPort()
+    } finally {
+        socket.close()
+    }
+}
+
+def waitForDatabaseReady(jdbcUrl) {
+    URLClassLoader loader = GroovyObject.class.classLoader
+    configurations.jdbc.each { File file ->
+        loader.addURL(file.toURI().toURL())
+    }
+    Class driver = loader.loadClass('org.mariadb.jdbc.Driver')
+    Driver instance = driver.newInstance()
+    DriverManager.registerDriver(instance)
+
+    int attempt = 1
+    while (attempt <= 60) {
+        try {
+            logger.lifecycle("Waiting for {} #{}", jdbcUrl, attempt)
+            def sql = Sql.newInstance(jdbcUrl, 'codekvast', 'codekvast')
+
+            sql.eachRow('SHOW TABLES') { row ->
+                logger.lifecycle("row={}", row[0])
+            }
+            return
+        } catch (SQLNonTransientConnectionException e) {
+            logger.debug("Exception=" + e)
+
+            attempt += 1
+            sleep(1000)
         }
-        waitForAppReady()
     }
 }
 
 task stopSystemTestEnvironment {
-    description 'docker-compose stop'
+    description 'Stop system test environment'
     group 'System test'
-    doLast {
-        executeDockerCompose("stop")
-    }
-}
 
-task downSystemTestEnvironment {
-    description 'docker-compose down'
-    group 'System test'
     doLast {
-        executeDockerCompose("down -v")
-        delete workDir
-    }
-}
-clean.dependsOn downSystemTestEnvironment
-
-task psSystemTestEnvironment {
-    description 'docker-compose ps'
-    group 'System test'
-    doLast {
-        logger.lifecycle executeDockerCompose("ps")
-    }
-}
-
-task logsSystemTestEnvironment {
-    description 'docker-compose logs'
-    group 'System test'
-    doLast {
-        executeDockerCompose("logs")
+        file("src/systemTest/stop-system-test-environment.sh").absolutePath.execute()
     }
 }
 
 systemTest {
-    description 'Runs end-to-end tests against Codekvast Warehouse in a Docker container'
+    description 'Runs end-to-end tests against Codekvast Warehouse with MariaDB in a Docker container'
     group 'System test'
-    dependsOn frontendInstall, startSystemTestEnvironment
+    dependsOn frontendInstall, bootRepackage, startSystemTestEnvironment
     shouldRunAfter integrationTest
 
     inputs.files startSystemTestEnvironment.inputs.files
@@ -107,7 +148,7 @@ systemTest {
     }
 
     doFirst {
-        def endpoint = executeDockerCompose("port app 8080")
+        def endpoint = "http://localhost:${project.systemTestPort}"
         logger.lifecycle("Running system tests against http://{}", endpoint)
 
         "chmod +x ${configurations.chromeDriver.asPath}".execute().waitFor()
@@ -132,68 +173,34 @@ systemTest {
     }
 
     doLast {
-        if (failures == 0 && System.getenv('LEAVE_SYSTEM_TEST_ENVIRONMENT_RUNNING') == null) {
-            logger.lifecycle("Removing system test environment")
-            executeDockerCompose("down -v")
-        }
+        // stop system test environment
     }
 }
 
-String executeDockerCompose(String args) {
-    def queueDir = new File(workDir, "queue")
-    queueDir.mkdirs()
+def launchAppAndWaitForReady(String command) {
+    logger.lifecycle(command)
+    def process = command.execute()
+    sleep 5000
 
-    def logDir = new File(workDir, "log")
-    logDir.mkdirs()
+    int attempt = 1
 
-    def databaseDir = new File(workDir, "database")
-    databaseDir.mkdirs()
+    while (attempt <= 60) {
+        assert process.isAlive()
 
-    def command = "src/docker/codekvast-warehouse.sh $args"
-    def process = command.execute([
-            "WAREHOUSE_VERSION=$codekvastDisplayVersion",
-            "WAREHOUSE_CONTAINER_PREFIX=warehousesystest",
-            "WAREHOUSE_PORT=0",
-            "WAREHOUSE_RESTART_POLICY='on-failure:10'",
-            "WAREHOUSE_QUEUE_DIR=$queueDir",
-            "WAREHOUSE_LOG_DIR=$logDir",
-            "WAREHOUSE_DATABASE_DIR=$databaseDir"
-    ], projectDir)
-    def rc = process.waitFor()
-    def stderr = process.err.text.trim()
-    def stdout = process.in.text.trim()
-    if (rc != 0) {
-        throw new IllegalStateException("Failed to execute docker-compose $args: $stderr")
-    }
-    logger.info("Result of {}: {}", command, stdout)
-    return stdout
-}
-
-def waitForAppReady() {
-    int numberOfAttempts = 60
-    int remainingAttempts = numberOfAttempts
-    def lastUrl = ""
-    while (true) {
-        def url = "http://${executeDockerCompose("port app 8080")}"
-        if (url != lastUrl) {
-            logger.lifecycle("Waiting for {} to respond", url)
-        } else {
-            logger.debug("Waiting for {} to respond", url)
-        }
-        lastUrl = url
+        def url = "http://localhost:${project.systemTestPort}"
+        logger.lifecycle("Waiting for {} #{}", url, attempt)
 
         try {
             def text = new URL(url).text
             return
         } catch (ignored) {
-            logger.debug("Failed to get {}, will try {} more times.", url, remainingAttempts)
+            logger.debug("Failed to get {}, will try {} more times.", url, 60 - attempt)
         }
-        remainingAttempts -= 1
-        if (remainingAttempts == 0) {
-            throw new IllegalStateException(url + " did not respond within " + numberOfAttempts + " seconds")
-        }
+        attempt += 1
         sleep(1000)
     }
+    throw new IllegalStateException(url + " did not respond within 60 seconds")
 }
 
 check.dependsOn systemTest
+

@@ -8,7 +8,6 @@ declare GRADLEW=./gradlew
 declare GRADLE_PROPERTIES=$HOME/.gradle/gradle.properties
 declare CODEKVAST_VERSION=$(grep codekvastVersion gradle.properties | egrep --only-matching '[0-9.]+')
 declare GIT_HASH=$(git rev-parse --short HEAD)
-declare WAREHOUSE_IMAGE_NAME=$(grep codekvastWarehouseImageName gradle.properties | sed 's/.*[:=]//g' | tr -d [:blank:])
 
 echo "Checking that we have Bintray credentials..."
 if [ -n "$BINTRAY_USER" -a -n "$BINTRAY_KEY" ]; then
@@ -52,12 +51,6 @@ git status --porcelain --branch | egrep --quiet '^## master\.\.\.origin/master$'
     exit 2
 }
 
-echo "Checking that we are logged in to Docker Hub..."
-docker info 2>/dev/null |egrep --quiet "^Username: " || {
-    echo "Not logged in to Docker"
-    exit 3
-}
-
 echo -n "Everything looks fine.
 About to build and publish $CODEKVAST_VERSION-$GIT_HASH
 Are you sure [N/y]? "
@@ -82,6 +75,3 @@ ${GRADLEW} --console=plain :product:dist:bintrayUpload
 
 echo "Uploading codekvast-agent-${CODEKVAST_VERSION}.jar to jcenter..."
 ${GRADLEW} --console=plain :product:java-agent:bintrayUpload
-
-echo "Pushing $WAREHOUSE_IMAGE_NAME to Docker Hub..."
-tools/push-to-docker-hub.sh ${WAREHOUSE_IMAGE_NAME} ${CODEKVAST_VERSION} ${GIT_HASH}

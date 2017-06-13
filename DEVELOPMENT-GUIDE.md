@@ -6,7 +6,7 @@ The following stack is used when developing Codekvast (in alphabetical order):
 
 1. Angular 4
 1. AspectJ (in Load-Time Weaving mode)
-1. Docker 1.10.3+ and Docker Compose 1.6.2+ (For running MariaDB and Codekvast Warehouse)
+1. Docker 1.10.3+ (For running MariaDB)
 1. Github
 1. git-crypt
 1. Gradle 
@@ -84,11 +84,11 @@ The Codekvast Warehouse web UI is developed with TypeScript and Angular 4. Twitt
 
 npm and yarn are used for managing the frontend development environment. Webpack is used as frontend bundler.
     
-### Docker Engine & Docker Compose
+### Docker Engine
 
-Docker Engine 1.10 or later and Docker Compose 1.6 or later is required for Codekvast Warehouse.
+Docker Engine 1.10 or later is required for Codekvast Warehouse.
 
-Install [Docker Engine 1.10.3+](https://docs.docker.com/engine/installation/) and [Docker Compose 1.6.2+](https://docs.docker.com/compose/install/) using
+Install [Docker Engine 1.10.3+](https://docs.docker.com/engine/installation/) using
 the official instructions.
 
 ### Inkscape
@@ -111,9 +111,9 @@ The pipeline is defined by `Jenkinsfile`.
 To access http://jenkins.crisp.se you need to be either a Member or an Outside collaborator of https://github.com/orgs/crispab/people.
 
 ## Software publishing
-Codekvast binaries are published to Bintray and to Docker Hub.
+Codekvast binaries are published to Bintray.
 
-You execute the publishing to both Bintray and Docker Hub by executing `tools/ship-it.sh` in the root of the project.
+You execute the publishing to Bintray by executing `tools/ship-it.sh` in the root of the project.
 
 Preconditions:
 
@@ -127,7 +127,6 @@ Preconditions:
     `bintrayKey=my-bintray-key`
     
 1. `my-bintray-user` must be member of the Crisp organisation at Bintray.
-1. Logged in to Docker Hub and member of the crisp organisation.
 
 ### IDE
 
@@ -183,7 +182,7 @@ All of the non-trivial code is covered with unit tests.
 
 Some tricky integrations are covered by proper integration tests where the external part is executing in Docker containers managed by the tests. 
 
-There is also a smoke test that launches MariaDB and Codekvast Warehouse by means of Docker Compose, and executes some Web Driver tests.
+There is also a smoke test that launches MariaDB and Codekvast Warehouse, and executes some Web Driver tests.
 This is just a smoke test though.
 
 To assist manual e2e tests, there is a number of sample apps that are managed by Gradle. They are configured to start with the latest

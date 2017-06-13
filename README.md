@@ -30,13 +30,11 @@ you can exclude certain time critical packages from collection.
 
 Codekvast is released under the MIT license.
 
-### Pre-built binaries and Docker Compose recipes
+### Pre-built binaries
 
-Pre-built binaries, a User Manual and Docker Compose files are available for download from [Codekvast at Bintray](https://bintray.com/crisp/codekvast/distributions/view#files)
+Pre-built binaries, and the User Manual are available for download from [Codekvast at Bintray](https://bintray.com/crisp/codekvast/distributions/view#files)
 
 * codekvast-agent-x.x.x.zip contains the *Codekvast Agent*.
-
-* codekvast-warehouse.sh is a Docker Compose script that runs Codekvast Warehouse and MariaDB as Docker images (pulled from Docker Hub).
 
 * CodekvastUserManual.html is a complete User Manual for all three components. It contains installation and configuration guides.
 

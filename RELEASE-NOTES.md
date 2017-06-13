@@ -1,6 +1,7 @@
 # Codekvast Release Notes
 
 ## 0.21.1
+1. Removed support for building a Docker image for Codekvast Warehouse. 
 
 ## 0.21.0
 1. Implemented price plan enforcements.

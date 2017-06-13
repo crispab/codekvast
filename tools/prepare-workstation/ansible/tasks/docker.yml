@@ -2,35 +2,5 @@
 - name: Install docker-cleanup in /etc/cron.daily
   template: src=docker-cleanup dest=/etc/cron.daily owner=root group=root mode=a=rx
 
-- name: Check installed version of docker-compose
-  command: docker-compose --version
-  register: installed_version
-  ignore_errors: yes
-  failed_when: false
-  changed_when: false
-
-- name: Install docker-compose
-  when: installed_version.stdout is not defined or installed_version.stdout.find(docker_compose_version) == -1
-  get_url:
-    url: https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}
-    dest: /usr/local/bin/docker-compose
-    force: yes
-    mode: a=rx
-
-- name: Check installed version of docker-machine
-  command: docker-machine --version
-  register: installed_version
-  ignore_errors: yes
-  failed_when: false
-  changed_when: false
-
-- name: Install docker-machine
-  when: installed_version.stdout is not defined or installed_version.stdout.find(docker_machine_version) == -1
-  get_url:
-    url: https://github.com/docker/machine/releases/download/v{{ docker_machine_version }}/docker-machine-{{ ansible_system }}-{{ ansible_architecture }}
-    dest: /usr/local/bin/docker-machine
-    force: yes
-    mode: a=rx
-
 - name: Add user to docker group
   user: name={{ actual_username }} groups=docker append=yes

@@ -53,7 +53,6 @@ task bintrayStage(type: Sync) {
         include 'CodekvastUserManual.html'
         rename { "CodekvastUserManual-${codekvastVersion}.html" }
     }
-    from file("$rootDir/product/warehouse/src/docker/codekvast-warehouse.sh")
     from file("$rootDir/RELEASE-NOTES.md")
 
     into "$buildDir/bintrayStage"
