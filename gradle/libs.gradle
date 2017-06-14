@@ -1,6 +1,6 @@
 ext {
     aspectjVersion = '1.8.10'
-    jacksonVersion = '2.8.8'
+    jacksonVersion = '2.8.9'
     springBootVersion = '1.5.4.RELEASE'
     springfoxVersion = '2.7.0'
 
