@@ -12,16 +12,13 @@ distributions {
                 expand(project.properties)
             }
 
-            from(tasks.getByPath(':product:java-agent:javaagents')) {
+            from([
+                tasks.getByPath(':product:java-agent:javaagents'),
+                file("$rootDir/RELEASE-NOTES.md"),
+                file("$rootDir/LICENSE"),
+            ]) {
                 into "/codekvast"
             }
-
-            from(tasks.getByPath(':product:docs:asciidoctor')) {
-                into "/codekvast"
-                include 'CodekvastUserManual.html'
-                rename { "CodekvastUserManual-${codekvastVersion}.html" }
-            }
-
         }
     }
 
@@ -40,7 +37,7 @@ distributions {
                 exclude 'images/**'
             }
             from file("$rootDir/RELEASE-NOTES.md")
-            from file('$rootDir/LICENSE')
+            from file("$rootDir/LICENSE")
         }
     }
 

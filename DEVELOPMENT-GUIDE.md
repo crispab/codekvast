@@ -28,8 +28,6 @@ The product itself lives under `product/`.
 
 Sample projects to use when testing Codekvast lives under `sample/`.
 
-GitHub pages (i.e., http://www.codekvast.io) lives under the Git branch `gh-pages`.
-
 Development tools live under `tools/`.
 
 Provisioning scripts live under `provisioning/`.
@@ -38,6 +36,10 @@ Provisioning scripts live under `provisioning/`.
 
 Authorized developers are enabled to unlock the repo by adding their public GPG keys.
 See `man git-crypt`, `git-crypt help add-gpg-user` and `git-crypt help unlock`.
+
+## Web site
+
+Web pages (i.e., http://www.codekvast.io) lives in the Git repo `https://github.com/crispab/codekvast-site`.
 
 ## Development environment
 
