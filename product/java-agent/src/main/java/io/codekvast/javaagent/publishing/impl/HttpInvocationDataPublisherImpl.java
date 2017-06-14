@@ -76,7 +76,7 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
 
             doPost(file, url, getCodeBaseFingerprint().getSha256(), publication.getInvocations().size());
 
-            log.fine(String.format("Uploaded %d invocations (%s) to %s", publication.getInvocations().size(),
+            log.info(String.format("Codekvast uploaded %d invocations (%s) to %s", publication.getInvocations().size(),
                                     LogUtil.humanReadableByteCount(file.length()), url));
         } catch (Exception e) {
             throw new CodekvastPublishingException("Cannot upload invocation data to " + url, e);

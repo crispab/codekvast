@@ -75,7 +75,7 @@ public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
 
             doPost(file, url, codeBase.getFingerprint().getSha256(), publication.getEntries().size());
 
-            log.fine(String.format("Uploaded %d methods (%s) to %s", publication.getEntries().size(),
+            log.info(String.format("Codekvast uploaded %d methods (%s) to %s", publication.getEntries().size(),
                                     LogUtil.humanReadableByteCount(file.length()), url));
         } catch (IOException e) {
             throw new CodekvastPublishingException("Cannot upload code base to " + url, e);

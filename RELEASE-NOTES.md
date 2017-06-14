@@ -2,6 +2,7 @@
 
 ## 0.21.1
 1. Removed support for building a Docker image for Codekvast Warehouse. 
+1. Adjusted logging to make it easier do document what to look for when starting the agent.
 
 ## 0.21.0
 1. Implemented price plan enforcements.
