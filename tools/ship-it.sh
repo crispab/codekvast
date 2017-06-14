@@ -64,7 +64,7 @@ tools/real-clean-workspace.sh
 tools/build-it.sh --console=plain --no-daemon --no-build-cache --max-workers=1 build
 
 echo "Creating Git tag ${CODEKVAST_VERSION}"
-git tag -m "Version ${CODEKVAST_VERSION}" ${CODEKVAST_VERSION}
+git tag --force --message="Version ${CODEKVAST_VERSION}" ${CODEKVAST_VERSION}
 git push --tags
 
 # Continue after errors
