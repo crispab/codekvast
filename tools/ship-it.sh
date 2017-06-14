@@ -65,7 +65,7 @@ tools/build-it.sh --console=plain --no-daemon --no-build-cache --max-workers=1 b
 
 echo "Creating Git tag ${CODEKVAST_VERSION}"
 git tag --force --message="Version ${CODEKVAST_VERSION}" ${CODEKVAST_VERSION}
-git push --tags
+git push --force --tags
 
 # Continue after errors
 set +e
