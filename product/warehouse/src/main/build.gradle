@@ -45,11 +45,51 @@ flyway {
 }
 
 //--- Run & bootRun -----------------------------------------------------------------------------------------------------
+
+// configurations {
+//     codekvastagent
+// }
+//
+// dependencies {
+//     runtime aspectjWeaver
+//     codekvastagent project(path: ":product:java-agent", configuration: 'shadow')
+// }
+//
+// task generateCodekvastConfig {
+//     group "Build"
+//     description "Generates a codekvast.conf for test"
+//
+//     def configFile = file("$buildDir/codekvast.conf")
+//
+//     inputs.file file("build.gradle")
+//     outputs.file configFile
+//
+//     doLast {
+//         configFile.parentFile.mkdirs()
+//         configFile.text = """# Run Codekvast against Sample App
+// appName = $archivesBaseName
+// appVersion = literal $codekvastVersion
+// # aspectjOptions = -verbose -showWeaveInfo
+// codeBase = ${file("build/install/${archivesBaseName}/lib/")}
+// methodVisibility = all
+// packages = io.codekvast
+// """
+//     }
+// }
+//
+// processResources.dependsOn generateCodekvastConfig
+
+
 run {
     group "Backend Development"
+    // dependsOn startMariadb, ":product:warehouse:frontendBuild", installDist, generateCodekvastConfig, ':product:java-agent:shadowJar'
     dependsOn startMariadb, ":product:warehouse:frontendBuild"
 
-    jvmArgs = ['-ea']
+    jvmArgs = [
+        '-ea',
+        // "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath",
+    ]
+
     args = ["--logging.file=$buildDir/log/${applicationName}.log",
             '--codekvast.queuePathPollIntervalSeconds=10',
             '--codekvast.herokuCodekvastUrl=http://localhost:8080',

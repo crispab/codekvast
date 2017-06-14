@@ -49,11 +49,10 @@ public class WeedingTask {
     @Scheduled(
         initialDelayString = "${codekvast.dataWeedingInitialDelaySeconds}000",
         fixedDelayString = "${codekvast.dataWeedingIntervalSeconds}000")
-    public void performDataRetention() {
+    public void performDataWeeding() {
         String oldThreadName = Thread.currentThread().getName();
-        Thread.currentThread().setName("Codekvast Data Retention");
+        Thread.currentThread().setName("Codekvast Data Weeder");
         try {
-            log.info("Performing data retention");
             weedingService.performDataWeeding();
         } finally {
             Thread.currentThread().setName(oldThreadName);

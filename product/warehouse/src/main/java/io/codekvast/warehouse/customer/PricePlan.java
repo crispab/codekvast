@@ -35,17 +35,15 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum PricePlan {
-    DEMO(25_000, 1, 5, 5, 5, 5, true),
-    TEST(10_000, 3, 14, 7200, 600, 60, false);
+    DEMO(25_000, 1, 5, 5, 5, true),
+    TEST(2_500, 3, 7200, 600, 60, false);
 
     private final int maxMethods;
     private final int maxNumberOfAgents;
-    private final int retentionDays;
     private final int publishIntervalSeconds;
     private final int pollIntervalSeconds;
     private final int retryIntervalSeconds;
 
-    // An internal plan is not visible at Heroku, and hence not selectable to ordinary customers.
+    // An internal plan is not visible at Heroku, and hence not selectable by ordinary customers.
     private final boolean internal;
-
 }
