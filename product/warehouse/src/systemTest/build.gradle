@@ -9,19 +9,19 @@ import java.sql.SQLNonTransientConnectionException
 testSets {
     systemTest
 }
-
-systemTest.dependsOn test, frontendTest
 check.dependsOn systemTest
 
 configurations {
     chromeDriver
-    // geckoDriver
     jdbc
+    // geckoDriver
 }
 
-def seleniumVersion = '3.4.0'
-ext.workDir = file("$buildDir/tmp/systemTest")
+ext.systemTestJdbcPort = allocateFreePort()
+ext.systemTestAppPort = allocateFreePort()
+ext.systemTestEndpointFile = file("build/systemTestEndpoint.txt")
 
+def seleniumVersion = '3.4.0'
 dependencies {
     systemTestCompileOnly lombok
 
@@ -44,21 +44,22 @@ dependencies {
 task startSystemTestEnvironment {
     description 'Starts the system test environment'
     group 'System test'
-    dependsOn systemTestClasses
+    dependsOn bootRepackage
 
-    inputs.dir file("src/systemTest")
-    outputs.dir file("build/reports/systemTest")
-    outputs.dir file("build/test-results/systemTest")
+    inputs.files bootRepackage.outputs.files
+    outputs.file systemTestEndpointFile
 
     doLast {
+        logger.lifecycle("Stopping previous system test environments (if any)...")
+        doStopSystemTestEnvironment(true)
+
         def command = 'docker pull mariadb:10'
         logger.lifecycle(command)
         assert command.execute().waitFor() == 0
 
-        def jdbcPort = allocateFreePort()
         command = 'docker run -d --restart=unless-stopped ' +
-            "--name codekvast_systest_$jdbcPort " +
-            "-p $jdbcPort:3306 " +
+            "--name codekvast_systest_$systemTestJdbcPort " +
+            "-p $systemTestJdbcPort:3306 " +
             '-e MYSQL_ROOT_PASSWORD=root ' +
             '-e MYSQL_DATABASE=codekvast ' +
             '-e MYSQL_USER=codekvast ' +
@@ -71,15 +72,18 @@ task startSystemTestEnvironment {
         logger.lifecycle(command)
         assert command.execute().waitFor() == 0
 
-        def jdbcUrl = "jdbc:mariadb://localhost:$jdbcPort/codekvast"
-        logger.lifecycle("jdbcUrl={}", jdbcUrl)
+        def jdbcUrl = "jdbc:mariadb://localhost:$systemTestJdbcPort/codekvast"
+        logger.info("jdbcUrl={}", jdbcUrl)
 
         waitForDatabaseReady(jdbcUrl)
 
-        project.ext.systemTestPort = allocateFreePort()
-        command = "java -jar $buildDir/libs/codekvast-warehouse-${codekvastVersion}-all.jar --server.port=${systemTestPort} --spring.datasource.url=$jdbcUrl"
+        command = "java " +
+            "-jar ${bootRepackage.outputs.files.asPath} " +
+            "--server.port=${systemTestAppPort} " +
+            "--spring.datasource.url=$jdbcUrl"
 
         launchAppAndWaitForReady(command)
+        systemTestEndpointFile.text = getSystemTestEndpoint()
     }
 }
 
@@ -102,14 +106,15 @@ def waitForDatabaseReady(jdbcUrl) {
     Driver instance = driver.newInstance()
     DriverManager.registerDriver(instance)
 
+    logger.lifecycle("Waiting for {} to become ready...", jdbcUrl)
     int attempt = 1
     while (attempt <= 60) {
         try {
-            logger.lifecycle("Waiting for {} #{}", jdbcUrl, attempt)
+            logger.info("Waiting for {} #{}", jdbcUrl, attempt)
             def sql = Sql.newInstance(jdbcUrl, 'codekvast', 'codekvast')
 
             sql.eachRow('SHOW TABLES') { row ->
-                logger.lifecycle("row={}", row[0])
+                logger.debug("row={}", row[0])
             }
             return
         } catch (SQLNonTransientConnectionException e) {
@@ -126,19 +131,43 @@ task stopSystemTestEnvironment {
     group 'System test'
 
     doLast {
-        file("src/systemTest/stop-system-test-environment.sh").absolutePath.execute()
+        doStopSystemTestEnvironment(true)
+    }
+}
+
+private doStopSystemTestEnvironment(boolean deleteEndpointsFile) {
+    file("src/systemTest/stop-system-test-environment.sh").absolutePath.execute()
+    if (deleteEndpointsFile) {
+        delete systemTestEndpointFile
+    }
+}
+
+task psSystemTestEnvironment {
+    description 'Shows the system test environment'
+    group 'System test'
+    doLast {
+        def endpoint = getSystemTestEndpoint()
+
+        logger.lifecycle("{}", endpoint)
+        if (endpoint.isEmpty()) {
+            // Remove any dangling MariaDB containers too...
+            doStopSystemTestEnvironment(true)
+        } else {
+            systemTestEndpointFile.text = endpoint
+        }
     }
 }
 
 systemTest {
     description 'Runs end-to-end tests against Codekvast Warehouse with MariaDB in a Docker container'
     group 'System test'
-    dependsOn frontendInstall, bootRepackage, startSystemTestEnvironment
-    shouldRunAfter integrationTest
+    dependsOn test, frontendTest, integrationTest, systemTestClasses, startSystemTestEnvironment
 
-    inputs.files startSystemTestEnvironment.inputs.files
-    outputs.files startSystemTestEnvironment.outputs.files
+    inputs.dir file("src/systemTest")
+    inputs.file systemTestEndpointFile
 
+    outputs.dir file("build/reports/systemTest")
+    outputs.dir file("build/test-results/systemTest")
 
     def failures = 0
 
@@ -147,9 +176,10 @@ systemTest {
         failures += result.failedTestCount
     }
 
+
     doFirst {
-        def endpoint = "http://localhost:${project.systemTestPort}"
-        logger.lifecycle("Running system tests against http://{}", endpoint)
+        def endpoint = getSystemTestEndpoint()
+        logger.lifecycle("Running system tests against {}", endpoint)
 
         "chmod +x ${configurations.chromeDriver.asPath}".execute().waitFor()
 
@@ -166,14 +196,18 @@ systemTest {
         // systemProperty "webdriver.gecko.driver", configurations.geckoDriver.asPath
 
         systemProperty "geb.build.reportsDir", "$reportsDir/systemTest/dumps"
-        systemProperty 'geb.build.baseUrl', "http://$endpoint"
+        systemProperty 'geb.build.baseUrl', endpoint
 
         systemProperty 'expectedCodekvastVersion', codekvastDisplayVersion
         environment['CODEKVAST_VERSION'] = codekvastDisplayVersion
     }
 
     doLast {
-        // stop system test environment
+        if (failures == 0) {
+            doStopSystemTestEnvironment(false)
+        } else {
+            logger.info("Since there were failures, the system test environment is still running at {} running", endpoint)
+        }
     }
 }
 
@@ -183,24 +217,29 @@ def launchAppAndWaitForReady(String command) {
     sleep 5000
 
     int attempt = 1
+    int maxAttempts = 30
+    def endpoint = getSystemTestEndpoint()
+    logger.lifecycle("Waiting for {} to become ready...", endpoint)
 
-    while (attempt <= 60) {
+    while (attempt <= maxAttempts) {
         assert process.isAlive()
 
-        def url = "http://localhost:${project.systemTestPort}"
-        logger.lifecycle("Waiting for {} #{}", url, attempt)
+        logger.info("Waiting for {} #{}", endpoint, attempt)
 
         try {
-            def text = new URL(url).text
+            def text = new URL(endpoint).text
+            sleep 2000
             return
-        } catch (ignored) {
-            logger.debug("Failed to get {}, will try {} more times.", url, 60 - attempt)
+        } catch (e) {
+            logger.debug("Got {} when getting {}, will try {} more times.", e, endpoint, maxAttempts - attempt)
         }
         attempt += 1
         sleep(1000)
     }
-    throw new IllegalStateException(url + " did not respond within 60 seconds")
+    throw new IllegalStateException(endpoint + " did not respond within " + maxAttempts + " seconds")
 }
 
-check.dependsOn systemTest
+private String getSystemTestEndpoint() {
+    return file("src/systemTest/get-system-test-endpoint.sh").absolutePath.execute().in.text.trim()
+}
 
