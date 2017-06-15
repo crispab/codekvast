@@ -1,5 +1,8 @@
 # Codekvast Release Notes
 
+## 0.21.2
+1. Upgraded to Angular 4.2.2
+
 ## 0.21.1
 1. Removed support for building a Docker image for Codekvast Warehouse. 
 1. Adjusted logging to make it easier do document what to look for when starting the agent.

@@ -1,6 +1,6 @@
 {
   "name": "codekvast-warehouse",
-  "version": "0.21.0",
+  "version": "0.21.2",
   "description": "The web interface for Codekvast Warehouse",
   "private": true,
   "scripts": {
