@@ -10,6 +10,7 @@ import io.codekvast.javaagent.config.AgentConfigFactory;
 import io.codekvast.javaagent.model.v1.CodeBaseEntry;
 import io.codekvast.javaagent.model.v1.SignatureStatus;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -102,12 +103,21 @@ public class CodeBaseScannerTest {
 
     @Test
     public void should_handle_spring_boot_executable_jar() throws Exception {
-        codeBase = new CodeBase(AgentConfigFactory
-                                    .createSampleAgentConfig().toBuilder()
-                                    .codeBase(new File(SPRING_BOOT_EXECUTABLE_JAR_DIR).getAbsolutePath())
-                                    .packages("sample.springboot, sample.lib")
-                                    .build());
-        int numClasses = scanner.scanSignatures(codeBase);
+        int numClasses = scanner.scanSignatures(new CodeBase(AgentConfigFactory
+                                                                 .createSampleAgentConfig().toBuilder()
+                                                                 .codeBase(new File(SPRING_BOOT_EXECUTABLE_JAR_DIR).getAbsolutePath())
+                                                                 .packages("sample.springboot, sample.lib")
+                                                                 .build()));
         assertThat(numClasses, is(4 + 7 + 1));
+    }
+
+    @Test
+    @Ignore("Default disabled")
+    public void stability_test() throws Exception {
+        for (int i = 0; i < 10_000; i++) {
+            System.out.printf("Stability test #%05d%n", i);
+            should_handle_exploded_classes_dir();
+            should_handle_spring_boot_executable_jar();
+        }
     }
 }

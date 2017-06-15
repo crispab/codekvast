@@ -101,7 +101,7 @@ public class CodeBaseScanner {
         JarFile springBootExecutableJar = getSpringBootExecutableJar(codeBase);
         if (springBootExecutableJar != null) {
             explodedDir = Files.createTempDir();
-            URL[] urls = explodeExecutableJar(springBootExecutableJar, explodedDir);
+            URL[] urls = explodeSpringBootExecutableJar(springBootExecutableJar, explodedDir);
             classLoader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader());
         } else {
             classLoader = new URLClassLoader(codeBase.getUrls(), ClassLoader.getSystemClassLoader());
@@ -132,7 +132,7 @@ public class CodeBaseScanner {
         return null;
     }
 
-    private URL[] explodeExecutableJar(JarFile jarFile, File destDir) {
+    private URL[] explodeSpringBootExecutableJar(JarFile jarFile, File destDir) {
         long startedAt = System.currentTimeMillis();
         List<URL> result = new ArrayList<>();
 
@@ -151,7 +151,7 @@ public class CodeBaseScanner {
                     // Just adding destFile.toURI().toURL() does not work, since the trailing '/' will
                     // be stripped.
                     //
-                    // The java.net.URLClassLoader distinguishes a directory from a jar by the trailing slash.
+                    // The java.net.URLClassLoader distinguishes a directory containing classes from a jar by the trailing slash.
                     //
                     String uri = "file:" + destFile + File.separator;
                     result.add(new URL(uri));
@@ -186,6 +186,7 @@ public class CodeBaseScanner {
     private void copy(InputStream inputStream, File toFile) throws IOException {
         try(InputStream is = new BufferedInputStream(inputStream);
             OutputStream os = new BufferedOutputStream(new FileOutputStream(toFile))) {
+
             byte[] buffer = new byte[1000];
             int len;
             while ((len = is.read(buffer)) > 0) {
@@ -324,6 +325,7 @@ public class CodeBaseScanner {
 
         @Override
         public void close() {
+            classInfos.clear();
             delete(explodedDir);
         }
 
