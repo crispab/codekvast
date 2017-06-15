@@ -88,18 +88,20 @@ public class CodeBase {
 
         urls = new ArrayList<>();
         CodeBaseFingerprint.Builder builder = CodeBaseFingerprint.builder(config);
-        for (File codeBaseFile : codeBaseFiles) {
-            if (codeBaseFile.isDirectory()) {
-                addUrl(codeBaseFile);
-                traverse(builder, codeBaseFile.listFiles());
-            } else if (codeBaseFile.getName().endsWith(".jar")) {
-                builder.record(codeBaseFile);
-                addUrl(codeBaseFile);
-            } else if (codeBaseFile.getName().endsWith(".war")) {
-                builder.record(codeBaseFile);
+        for (File file : codeBaseFiles) {
+            if (file.isDirectory()) {
+                if (containsAnyClassFile(file)) {
+                    addUrl(file);
+                }
+                traverse(builder, file.listFiles());
+            } else if (file.getName().endsWith(".jar")) {
+                builder.record(file);
+                addUrl(file);
+            } else if (file.getName().endsWith(".war")) {
+                builder.record(file);
                 needsExploding = true;
-            } else if (codeBaseFile.getName().endsWith(".ear")) {
-                builder.record(codeBaseFile);
+            } else if (file.getName().endsWith(".ear")) {
+                builder.record(file);
                 needsExploding = true;
             }
         }
@@ -107,7 +109,7 @@ public class CodeBase {
         CodeBaseFingerprint result = builder.build();
 
         log.fine(String.format("Made fingerprint of %d files at %s in %d ms, fingerprint=%s", result.getNumFiles(), codeBaseFiles,
-                                System.currentTimeMillis() - startedAt, result));
+                               System.currentTimeMillis() - startedAt, result));
         return result;
     }
 
@@ -115,6 +117,18 @@ public class CodeBase {
     private void addUrl(File file) {
         log.finest("Adding URL " + file);
         urls.add(file.toURI().toURL());
+    }
+
+    private boolean containsAnyClassFile(File dir) {
+        for (File file : dir.listFiles()) {
+            if (file.isFile() && file.getName().endsWith(".class")) {
+                return true;
+            }
+            if (file.isDirectory()) {
+                return containsAnyClassFile(file);
+            }
+        }
+        return false;
     }
 
     private void traverse(CodeBaseFingerprint.Builder builder, File[] files) {
@@ -186,5 +200,4 @@ public class CodeBase {
             .strangeSignatures(SignatureUtils.getStrangeSignatureMap())
             .build();
     }
-
 }

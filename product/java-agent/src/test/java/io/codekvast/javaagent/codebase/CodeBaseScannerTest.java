@@ -10,6 +10,7 @@ import io.codekvast.javaagent.config.AgentConfigFactory;
 import io.codekvast.javaagent.model.v1.CodeBaseEntry;
 import io.codekvast.javaagent.model.v1.SignatureStatus;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -28,25 +29,23 @@ public class CodeBaseScannerTest {
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     private static final String TEST_CLASSES_DIR = "build/classes/test";
+    private static final String SPRING_BOOT_EXECUTABLE_JAR_DIR = "src/test/resources/sample-spring-boot-executable-jar";
 
     private final CodeBaseScanner scanner = new CodeBaseScanner();
     private CodeBase codeBase;
 
     @Before
-    public void before() throws Exception {
-        codeBase = getCodeBase(TEST_CLASSES_DIR);
-    }
-
-    private CodeBase getCodeBase(String codeBase) {
-        return new CodeBase(AgentConfigFactory.createSampleAgentConfig().toBuilder()
-                                              .codeBase(new File(codeBase).getAbsolutePath())
-                                              .packages(ScannerTest1.class.getPackage().getName())
-                                              .excludePackages(ExcludedScannerTest5.class.getPackage().getName())
-                                              .build());
+    public void beforeTest() throws Exception {
+        codeBase = new CodeBase(AgentConfigFactory
+                                    .createSampleAgentConfig().toBuilder()
+                                    .codeBase(new File(TEST_CLASSES_DIR).getAbsolutePath())
+                                    .packages(ScannerTest1.class.getPackage().getName())
+                                    .excludePackages(ExcludedScannerTest5.class.getPackage().getName())
+                                    .build());
     }
 
     @Test
-    public void testScanCodeBaseForDirectoryWithMyClassFiles() throws URISyntaxException {
+    public void should_handle_exploded_classes_dir() throws URISyntaxException {
         int numClasses = scanner.scanSignatures(codeBase);
         assertThat(numClasses, is(9));
 
@@ -69,7 +68,7 @@ public class CodeBaseScannerTest {
     }
 
     @Test
-    public void testFindBaseMethodForScannerTest2() throws URISyntaxException {
+    public void should_find_base_methods_of_ScannerTest2() throws URISyntaxException {
         scanner.findTrackedMethods(codeBase, ImmutableSet.of("io."), ImmutableSet.of("acme."), ScannerTest2.class);
 
         assertThat(codeBase.getSignatures().size(), is(1));
@@ -79,7 +78,7 @@ public class CodeBaseScannerTest {
     }
 
     @Test
-    public void testFindBaseMethodForScannerTest3() throws URISyntaxException {
+    public void should_find_base_methods_of_ScannerTest3() throws URISyntaxException {
         scanner.findTrackedMethods(codeBase, ImmutableSet.of("io."), ImmutableSet.of("acme."), ScannerTest3.class);
 
         assertThat(codeBase.getSignatures().size(), is(1));
@@ -91,15 +90,26 @@ public class CodeBaseScannerTest {
     }
 
     @Test
-    public void testFindBaseMethodForScannerTest4() throws URISyntaxException {
+    public void should_find_base_methods_of_ScannerTest4() throws URISyntaxException {
         scanner.findTrackedMethods(codeBase, ImmutableSet.of("io."), ImmutableSet.of("acme."), ScannerTest4.class);
         assertThat(codeBase.getSignatures().size(), is(11));
     }
 
     @Test
-    public void testFindConstructorsForScannerTest4() throws URISyntaxException {
+    public void should_find_constructors_of_ScannerTest4() throws URISyntaxException {
         scanner.findTrackedConstructors(codeBase, ScannerTest4.class);
         assertThat(codeBase.getSignatures().size(), is(3));
     }
 
+    @Test
+    public void should_handle_spring_boot_executable_jar() throws Exception {
+        codeBase = new CodeBase(AgentConfigFactory
+                                    .createSampleAgentConfig().toBuilder()
+                                    .codeBase(new File(SPRING_BOOT_EXECUTABLE_JAR_DIR).getAbsolutePath())
+                                    .packages("sample")
+                                    .excludePackages("sample-app")
+                                    .build());
+        int numClasses = scanner.scanSignatures(codeBase);
+        assertThat(numClasses, is(9));
+    }
 }
