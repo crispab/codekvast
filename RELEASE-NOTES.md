@@ -1,6 +1,7 @@
 # Codekvast Release Notes
 
 ## 0.21.2
+1. Added support for Spring Boot executable jars
 1. Upgraded to Angular 4.2.2
 
 ## 0.21.1

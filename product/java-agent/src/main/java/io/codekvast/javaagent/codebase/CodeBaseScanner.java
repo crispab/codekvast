@@ -106,6 +106,7 @@ public class CodeBaseScanner {
         } else {
             classLoader = new URLClassLoader(codeBase.getUrls(), ClassLoader.getSystemClassLoader());
         }
+
         return ScanResult.builder()
                          .explodedDir(explodedDir)
                          .classInfos(
@@ -132,7 +133,9 @@ public class CodeBaseScanner {
     }
 
     private URL[] explodeExecutableJar(JarFile jarFile, File destDir) {
+        long startedAt = System.currentTimeMillis();
         List<URL> result = new ArrayList<>();
+
         try {
             Attributes attributes = jarFile.getManifest().getMainAttributes();
             String classesDir = attributes.getValue("Spring-Boot-Classes");
@@ -144,12 +147,20 @@ public class CodeBaseScanner {
                 String name = jarEntry.getName();
                 File destFile = new File(destDir + File.separator + name);
                 if (name.equals(classesDir)) {
-                    destFile = new File(destDir + File.separator + name + File.separator);
-                    result.add(destFile.toURI().toURL());
+                    //
+                    // Just adding destFile.toURI().toURL() does not work, since the trailing '/' will
+                    // be stripped.
+                    //
+                    // The java.net.URLClassLoader distinguishes a directory from a jar by the trailing slash.
+                    //
+                    String uri = "file:" + destFile + File.separator;
+                    result.add(new URL(uri));
                 }
+
                 if (name.startsWith(libDir) && name.endsWith(".jar")) {
                     result.add(destFile.toURI().toURL());
                 }
+
                 if (!name.startsWith("BOOT-INF/")) {
                     // Ignore spring boot loader itself
                     continue;
@@ -158,14 +169,29 @@ public class CodeBaseScanner {
                 if (jarEntry.isDirectory()) {
                     destFile.mkdir();
                 } else {
-                    java.nio.file.Files.copy(jarFile.getInputStream(jarEntry), destFile.toPath());
+                    copy(jarFile.getInputStream(jarEntry), destFile);
                 }
             }
             jarFile.close();
         } catch (IOException e) {
             log.severe("Cannot explode " + jarFile + ": " + e);
         }
+
+        long elapsed = System.currentTimeMillis() - startedAt;
+        log.info("Exploded Spring Boot executable jar in " + elapsed + " ms");
+
         return result.toArray(new URL[result.size()]);
+    }
+
+    private void copy(InputStream inputStream, File toFile) throws IOException {
+        try(InputStream is = new BufferedInputStream(inputStream);
+            OutputStream os = new BufferedOutputStream(new FileOutputStream(toFile))) {
+            byte[] buffer = new byte[1000];
+            int len;
+            while ((len = is.read(buffer)) > 0) {
+                os.write(buffer, 0, len);
+            }
+        }
     }
 
     private Set<ClassPath.ClassInfo> getRecognizedClasses(ClassLoader classLoader, Set<String> packages) {

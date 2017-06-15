@@ -10,7 +10,6 @@ import io.codekvast.javaagent.config.AgentConfigFactory;
 import io.codekvast.javaagent.model.v1.CodeBaseEntry;
 import io.codekvast.javaagent.model.v1.SignatureStatus;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -106,10 +105,9 @@ public class CodeBaseScannerTest {
         codeBase = new CodeBase(AgentConfigFactory
                                     .createSampleAgentConfig().toBuilder()
                                     .codeBase(new File(SPRING_BOOT_EXECUTABLE_JAR_DIR).getAbsolutePath())
-                                    .packages("sample")
-                                    .excludePackages("sample-app")
+                                    .packages("sample.springboot, sample.lib")
                                     .build());
         int numClasses = scanner.scanSignatures(codeBase);
-        assertThat(numClasses, is(9));
+        assertThat(numClasses, is(4 + 7 + 1));
     }
 }
