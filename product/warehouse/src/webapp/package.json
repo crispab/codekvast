@@ -4,7 +4,7 @@
   "description": "The web interface for Codekvast Warehouse",
   "private": true,
   "scripts": {
-    "build": "webpack --config config/webpack.prod.js",
+    "build": "webpack --config config/webpack.prod.js --display-optimization-bailout",
     "build:q": "webpack --config config/webpack.dev.js --progress",
     "clean": "rimraf dist; find src -name '*.js' -delete; find src -name '*.js.map' -delete",
     "lint": "tslint ./src/**/*.ts -t verbose",
@@ -65,7 +65,7 @@
     "tslint": "5.4.3",
     "typescript": "2.3.4",
     "typings": "2.1.1",
-    "webpack": "2.6.1",
+    "webpack": "3.0.0",
     "webpack-dev-server": "2.4.5",
     "webpack-merge": "4.1.0"
   }
