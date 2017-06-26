@@ -2,51 +2,51 @@
 # yarn lockfile v1
 
 
-"@angular/common@4.2.2":
-  version "4.2.2"
-  resolved "https://registry.yarnpkg.com/@angular/common/-/common-4.2.2.tgz#7c07c46897d5854271240790130077dc83a0a775"
+"@angular/common@4.2.4":
+  version "4.2.4"
+  resolved "https://registry.yarnpkg.com/@angular/common/-/common-4.2.4.tgz#9b7ee0e692ab03191a7cd9af331d0f492d3cefeb"
   dependencies:
     tslib "^1.7.1"
 
-"@angular/compiler@4.2.2":
-  version "4.2.2"
-  resolved "https://registry.yarnpkg.com/@angular/compiler/-/compiler-4.2.2.tgz#10c168f8a156397f07ae6ef83a0911e01ed264f8"
+"@angular/compiler@4.2.4":
+  version "4.2.4"
+  resolved "https://registry.yarnpkg.com/@angular/compiler/-/compiler-4.2.4.tgz#7936a87b2d483abcef840b868c1fcf67221c4914"
   dependencies:
     tslib "^1.7.1"
 
-"@angular/core@4.2.2":
-  version "4.2.2"
-  resolved "https://registry.yarnpkg.com/@angular/core/-/core-4.2.2.tgz#af5587dda275935868709d8c186e2dc2a1d70a00"
+"@angular/core@4.2.4":
+  version "4.2.4"
+  resolved "https://registry.yarnpkg.com/@angular/core/-/core-4.2.4.tgz#e8df7a8dd5de5a327784dfc35b5da6344281cf1b"
   dependencies:
     tslib "^1.7.1"
 
-"@angular/forms@4.2.2":
-  version "4.2.2"
-  resolved "https://registry.yarnpkg.com/@angular/forms/-/forms-4.2.2.tgz#5c960ad2960a0ae2999fc474560d73e910d118a0"
+"@angular/forms@4.2.4":
+  version "4.2.4"
+  resolved "https://registry.yarnpkg.com/@angular/forms/-/forms-4.2.4.tgz#ae09755332ea463f561df01aac2bd369e5d35dc9"
   dependencies:
     tslib "^1.7.1"
 
-"@angular/http@4.2.2":
-  version "4.2.2"
-  resolved "https://registry.yarnpkg.com/@angular/http/-/http-4.2.2.tgz#e9f977f7b0ecec4d58ecdfc56d5706d8295848b2"
+"@angular/http@4.2.4":
+  version "4.2.4"
+  resolved "https://registry.yarnpkg.com/@angular/http/-/http-4.2.4.tgz#ed039c0d53a587d24575f4cabfd1db8e7f1e3f8b"
   dependencies:
     tslib "^1.7.1"
 
-"@angular/platform-browser-dynamic@4.2.2":
-  version "4.2.2"
-  resolved "https://registry.yarnpkg.com/@angular/platform-browser-dynamic/-/platform-browser-dynamic-4.2.2.tgz#00f4b8d1ce415f432bcc5ab2bb90b0b069036287"
+"@angular/platform-browser-dynamic@4.2.4":
+  version "4.2.4"
+  resolved "https://registry.yarnpkg.com/@angular/platform-browser-dynamic/-/platform-browser-dynamic-4.2.4.tgz#5190fda79425ae49a49224985614c9780a370761"
   dependencies:
     tslib "^1.7.1"
 
-"@angular/platform-browser@4.2.2":
-  version "4.2.2"
-  resolved "https://registry.yarnpkg.com/@angular/platform-browser/-/platform-browser-4.2.2.tgz#e7e1ea32d1069ff960429076f3f0882965b620f3"
+"@angular/platform-browser@4.2.4":
+  version "4.2.4"
+  resolved "https://registry.yarnpkg.com/@angular/platform-browser/-/platform-browser-4.2.4.tgz#00a44dcb2fd777b54bc17c1ce734aa18fe9fd039"
   dependencies:
     tslib "^1.7.1"
 
-"@angular/router@4.2.2":
-  version "4.2.2"
-  resolved "https://registry.yarnpkg.com/@angular/router/-/router-4.2.2.tgz#2f2d202c92dbe3828d5a3d2fd2c3737c0cb6a587"
+"@angular/router@4.2.4":
+  version "4.2.4"
+  resolved "https://registry.yarnpkg.com/@angular/router/-/router-4.2.4.tgz#2f193f3a36da19b11a08c9b40e391bd8fde59c56"
   dependencies:
     tslib "^1.7.1"
 
@@ -2046,9 +2046,9 @@ html-minifier@^3.0.1, html-minifier@^3.2.3:
     relateurl "0.2.x"
     uglify-js "~2.8.22"
 
-html-webpack-plugin@2.28.0:
-  version "2.28.0"
-  resolved "https://registry.yarnpkg.com/html-webpack-plugin/-/html-webpack-plugin-2.28.0.tgz#2e7863b57e5fd48fe263303e2ffc934c3064d009"
+html-webpack-plugin@2.29.0:
+  version "2.29.0"
+  resolved "https://registry.yarnpkg.com/html-webpack-plugin/-/html-webpack-plugin-2.29.0.tgz#e987f421853d3b6938c8c4c8171842e5fd17af23"
   dependencies:
     bluebird "^3.4.7"
     html-minifier "^3.2.3"
@@ -2448,9 +2448,9 @@ istanbul@0.4.5, istanbul@^0.4.0:
     which "^1.1.1"
     wordwrap "^1.0.0"
 
-jasmine-core@2.6.3:
-  version "2.6.3"
-  resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-2.6.3.tgz#45072950e4a42b1e322fe55c001100a465d77815"
+jasmine-core@2.6.4:
+  version "2.6.4"
+  resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-2.6.4.tgz#dec926cd0a9fa287fb6db5c755fa487e74cecac5"
 
 jodid25519@^1.0.0:
   version "1.0.2"
@@ -2555,9 +2555,9 @@ jsprim@^1.2.2:
     json-schema "0.2.3"
     verror "1.3.6"
 
-karma-chrome-launcher@2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/karma-chrome-launcher/-/karma-chrome-launcher-2.1.1.tgz#216879c68ac04d8d5140e99619ba04b59afd46cf"
+karma-chrome-launcher@2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/karma-chrome-launcher/-/karma-chrome-launcher-2.2.0.tgz#cf1b9d07136cc18fe239327d24654c3dbc368acf"
   dependencies:
     fs-access "^1.0.0"
     which "^1.2.1"
@@ -4175,9 +4175,9 @@ ripemd160@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/ripemd160/-/ripemd160-1.0.1.tgz#93a4bbd4942bc574b69a8fa57c71de10ecca7d6e"
 
-rxjs@5.4.0:
-  version "5.4.0"
-  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-5.4.0.tgz#a7db14ab157f9d7aac6a56e655e7a3860d39bf26"
+rxjs@5.4.1:
+  version "5.4.1"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-5.4.1.tgz#b62f757f279445d265a18a58fb0a70dc90e91626"
   dependencies:
     symbol-observable "^1.0.1"
 
@@ -4706,9 +4706,9 @@ trim-right@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/trim-right/-/trim-right-1.0.1.tgz#cb2e1203067e0c8de1f614094b9fe45704ea6003"
 
-ts-loader@2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/ts-loader/-/ts-loader-2.1.0.tgz#5a8efcc5c72c06fc49d69bad69c85617c6194f77"
+ts-loader@2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/ts-loader/-/ts-loader-2.2.0.tgz#e5fd8f29b967c4fb42abc76396aa8127a1e49924"
   dependencies:
     colors "^1.0.3"
     enhanced-resolve "^3.0.0"
