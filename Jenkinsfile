@@ -100,7 +100,7 @@ node {
                         maximumInstructionCoverage: '50',
                         minimumInstructionCoverage: '40',
                         maximumLineCoverage: '80',
-                        minimumLineCoverage: '70',
+                        minimumLineCoverage: '65',
                         maximumMethodCoverage: '70',
                         minimumMethodCoverage: '60',
                         ])
