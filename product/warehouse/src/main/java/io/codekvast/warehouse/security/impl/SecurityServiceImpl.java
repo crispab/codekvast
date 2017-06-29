@@ -22,6 +22,8 @@
 package io.codekvast.warehouse.security.impl;
 
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
+import io.codekvast.warehouse.customer.CustomerService;
+import io.codekvast.warehouse.customer.CustomerService.InteractiveActivity;
 import io.codekvast.warehouse.security.SecurityService;
 import io.codekvast.warehouse.security.WebappCredentials;
 import io.jsonwebtoken.Claims;
@@ -59,12 +61,14 @@ public class SecurityServiceImpl implements SecurityService {
     private static final String BEARER_ = "Bearer ";
 
     private final CodekvastSettings settings;
+    private final CustomerService customerService;
     private final byte[] jwtSecret;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS512;
 
     @Inject
-    public SecurityServiceImpl(CodekvastSettings settings) throws UnsupportedEncodingException {
+    public SecurityServiceImpl(CodekvastSettings settings, CustomerService customerService) throws UnsupportedEncodingException {
         this.settings = settings;
+        this.customerService = customerService;
         String secret = settings.getWebappJwtSecret();
         if (secret == null) {
             secret = "";
@@ -136,8 +140,14 @@ public class SecurityServiceImpl implements SecurityService {
         if (auth instanceof PreAuthenticatedAuthenticationToken) {
             log.debug("Authenticated");
             Long customerId = (Long) auth.getPrincipal();
+
             //noinspection CastToConcreteClass
             WebappCredentials credentials = (WebappCredentials) auth.getCredentials();
+
+            customerService.registerInteractiveActivity(InteractiveActivity.builder()
+                                                                           .customerId(customerId)
+                                                                           .email(credentials.getEmail())
+                                                                           .build());
 
             return createWebappToken(customerId, credentials);
         }

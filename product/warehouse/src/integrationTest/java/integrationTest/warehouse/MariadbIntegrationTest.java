@@ -7,6 +7,8 @@ import io.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
 import io.codekvast.warehouse.CodekvastWarehouse;
 import io.codekvast.warehouse.customer.CustomerData;
 import io.codekvast.warehouse.customer.CustomerService;
+import io.codekvast.warehouse.customer.CustomerService.InteractiveActivity;
+import io.codekvast.warehouse.customer.CustomerService.LoginRequest;
 import io.codekvast.warehouse.customer.LicenseViolationException;
 import io.codekvast.warehouse.webapp.WebappService;
 import io.codekvast.warehouse.webapp.model.GetMethodsRequest1;
@@ -31,9 +33,7 @@ import javax.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeTrue;
 
@@ -209,17 +209,41 @@ public class MariadbIntegrationTest {
     public void should_handle_register_login_twice() {
 
         // given
-        CustomerData customerData = CustomerData.builder()
-                                                .customerId(1L)
-                                                .customerName("Demo")
-                                                .planName("test")
-                                                .source("test")
-                                                .build();
 
         // when
-        customerService.registerLogin(customerData, "email", "source1");
-        customerService.registerLogin(customerData, "email", "source2");
+        customerService.registerLogin(LoginRequest.builder()
+                                                  .customerId(1L)
+                                                  .source("source1")
+                                                  .email("email")
+                                                  .build());
 
+        customerService.registerLogin(LoginRequest.builder()
+                                                  .customerId(1L)
+                                                  .source("source2")
+                                                  .email("email")
+                                                  .build());
+
+        // then
+        assertThat(countRowsInTable("users"), is(1));
+    }
+
+    @Test
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_register_interactive_activity() {
+
+        // given
+
+        // when
+        customerService.registerLogin(LoginRequest.builder()
+                                                  .customerId(1L)
+                                                  .source("source1")
+                                                  .email("email")
+                                                  .build());
+
+        customerService.registerInteractiveActivity(InteractiveActivity.builder()
+                                                                       .customerId(1L)
+                                                                       .email("email")
+                                                                       .build());
         // then
         assertThat(countRowsInTable("users"), is(1));
     }

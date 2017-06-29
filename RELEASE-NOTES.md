@@ -2,6 +2,7 @@
 
 ## 0.21.3
 1. Upgraded to Angular 4.2.4 and Webpack 3.0.0
+1. Added column users.lastActivityAt
 
 ## 0.21.2
 1. Added support for Spring Boot executable jars

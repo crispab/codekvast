@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -119,19 +120,34 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void registerLogin(CustomerData customerData, String email, String source) {
-        int updated = jdbcTemplate.update("UPDATE users SET lastLoginSource = ?, numberOfLogins = numberOfLogins + 1 " +
+    public void registerLogin(LoginRequest request) {
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+
+        int updated = jdbcTemplate.update("UPDATE users SET lastLoginAt = ?, lastActivityAt = ?, lastLoginSource = ?, numberOfLogins = numberOfLogins + 1 " +
                                               "WHERE customerId = ? AND email = ?",
-                                          source, customerData.getCustomerId(), email);
+                                          now, now, request.getSource(), request.getCustomerId(), request.getEmail());
         if (updated > 0) {
-            log.debug("Updated user {}:{}:{}", customerData.getCustomerId(), source, email);
+            log.debug("Updated user {}", request);
         } else {
-            jdbcTemplate.update("INSERT INTO users(customerId, email, lastLoginSource, numberOfLogins) " +
-                                    "VALUES(?, ?, ?, ?)",
-                                customerData.getCustomerId(), email, source, 1);
-            log.debug("Added user {}:{}:{}", customerData.getCustomerId(), source, email);
+            jdbcTemplate.update("INSERT INTO users(customerId, email, firstLoginAt, lastLoginAt, lastActivityAt, lastLoginSource, numberOfLogins) " +
+                                    "VALUES(?, ?, ?, ?, ?, ?, ?)",
+                                request.getCustomerId(), request.getEmail(), now, now, now, request.getSource(), 1);
+            log.debug("Added user {}", request);
         }
-        log.info("Logged in {}, email={}", customerData, email);
+        log.info("Logged in {}", request);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void registerInteractiveActivity(InteractiveActivity activity) {
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        int count = jdbcTemplate.update("UPDATE users SET lastActivityAt = ? WHERE customerId = ? AND email = ? ",
+                                        now, activity.getCustomerId(), activity.getEmail());
+        if (count == 0) {
+            log.warn("Database inconsistency: Cannot register interactive activity for {}", activity);
+        } else {
+            log.debug("Processed {}", activity);
+        }
     }
 
     @Override
@@ -175,24 +191,18 @@ public class CustomerServiceImpl implements CustomerService {
 
         long customerId = customerData.getCustomerId();
 
-        int count = jdbcTemplate.update("DELETE FROM invocations WHERE customerId = ?", customerId);
-        log.debug("Deleted {} invocation rows", count);
+        deleteFromTable("invocations", customerId);
+        deleteFromTable("methods", customerId);
+        deleteFromTable("jvms", customerId);
+        deleteFromTable("applications", customerId);
+        deleteFromTable("users", customerId);
+        deleteFromTable("customers", customerId);
+    }
 
-        count = jdbcTemplate.update("DELETE FROM methods WHERE customerId = ?", customerId);
-        log.debug("Deleted {} method rows", count);
-
-        count = jdbcTemplate.update("DELETE FROM jvms WHERE customerId = ?", customerId);
-        log.debug("Deleted {} method rows", count);
-
-        count = jdbcTemplate.update("DELETE FROM applications WHERE customerId = ?", customerId);
-        log.debug("Deleted {} application rows", count);
-
-        count = jdbcTemplate.update("DELETE FROM users WHERE customerId = ?", customerId);
-        log.debug("Deleted {} user rows", count);
-
-        count = jdbcTemplate.update("DELETE FROM customers WHERE id = ?", customerId);
-        log.debug("Deleted {} customer rows", count);
-
+    private void deleteFromTable(final String table, long customerId) {
+        String column = table.equals("customers") ? "id" : "customerId";
+        int count = jdbcTemplate.update("DELETE FROM " + table + " WHERE " + column + " = ?", customerId);
+        log.debug("Deleted {} {}", count, table);
     }
 
     private CustomerData getCustomerData(String where_clause, Object identifier) {

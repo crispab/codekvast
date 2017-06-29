@@ -90,11 +90,9 @@ public interface CustomerService {
     /**
      * Register that a user has logged in.
      *
-     * @param customerData The customer data
-     * @param email        The user's email address.
-     * @param source       The login source (e.g., "heroku")
+     * @param request The login request
      */
-    void registerLogin(CustomerData customerData, String email, String source);
+    void registerLogin(LoginRequest request);
 
     /**
      * Adds a new customer
@@ -118,10 +116,18 @@ public interface CustomerService {
      */
     void deleteCustomerByExternalId(String externalId);
 
+    /**
+     * Register that this user has been using the warehouse interactively.
+     * @param activity The activity to register
+     */
+    void registerInteractiveActivity(InteractiveActivity activity);
+
+    /**
+     * Parameter object for {@link #addCustomer(AddCustomerRequest)}
+     */
     @Value
     @Builder
     class AddCustomerRequest {
-
         @NonNull
         String source;
 
@@ -134,4 +140,34 @@ public interface CustomerService {
         @NonNull
         String plan;
     }
+
+    /**
+     * Parameter object for {@link #registerLogin(LoginRequest)}
+     */
+    @Value
+    @Builder
+    class LoginRequest {
+        @NonNull
+        Long customerId;
+
+        @NonNull
+        String email;
+
+        @NonNull
+        String source;
+    }
+
+    /**
+     * Parameter object for {@link #registerInteractiveActivity(InteractiveActivity)}
+     */
+    @Value
+    @Builder
+    class InteractiveActivity {
+        @NonNull
+        Long customerId;
+
+        @NonNull
+        String email;
+    }
+
 }
