@@ -10,6 +10,7 @@ import {HomeComponent} from './pages/home/home.component';
 import {HttpModule} from '@angular/http';
 import {InvocationStatusPipe} from './pipes/invocation-status.pipe';
 import {LOCALE_ID, NgModule} from '@angular/core';
+import {LoggedOutComponent} from './pages/logged-out/logged-out.component';
 import {MethodDetailComponent} from './pages/methods/method-detail.component';
 import {MethodsComponent} from './pages/methods/methods.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
@@ -33,6 +34,7 @@ import {IsLoggedIn} from './guards/is-logged-in';
         CollectionStatusComponent,
         HomeComponent,
         InvocationStatusPipe,
+        LoggedOutComponent,
         MethodDetailComponent,
         MethodsComponent,
         ReportGeneratorComponent,

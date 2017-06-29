@@ -37,19 +37,22 @@ export class StateService {
         return !!authData;
     }
 
-    setLoggedInAs(token: string, customerId: number, customerName: string, email: string) {
-        console.log('Setting auth token %o', token);
+    setLoggedInAs(token: string, customerId: number, customerName: string, email: string, source: string, sourceApp: string) {
         if (token) {
-            localStorage.setItem(this.AUTH_DATA, JSON.stringify({
+            let data = {
                 token: token,
                 customerId: customerId,
                 customerName: customerName,
-                email: email
-            }));
+                email: email,
+                source: source,
+                sourceApp: sourceApp
+            };
+            console.log('Setting login data %o', data);
+            localStorage.setItem(this.AUTH_DATA, JSON.stringify(data));
         } else {
+            console.log('Removing login data');
             localStorage.removeItem(this.AUTH_DATA);
         }
-
     }
 
     replaceAuthToken(token: string) {
@@ -59,7 +62,7 @@ export class StateService {
             authData.token = token;
             localStorage.setItem(this.AUTH_DATA, JSON.stringify(authData));
         } else {
-            this.setLoggedInAs(token, undefined, undefined, undefined);
+            this.setLoggedInAs(token, undefined, undefined, undefined, undefined, undefined);
         }
     }
 
@@ -67,7 +70,7 @@ export class StateService {
         localStorage.removeItem(this.AUTH_DATA);
     }
 
-    getLoginState() {
+    getLoginStateString() {
         if (this.demoMode) {
             return 'Demo mode';
         }
@@ -76,11 +79,28 @@ export class StateService {
 
         if (authDataJson) {
             let authData = JSON.parse(authDataJson);
-
             return `Logged in as ${authData.email} / ${authData.customerName}`
         }
 
         return 'Not logged in';
+    }
+
+    getLoginState() {
+        if (this.demoMode) {
+            return null;
+        }
+        let authDataJson = localStorage.getItem(this.AUTH_DATA);
+
+        if (authDataJson) {
+            let authData = JSON.parse(authDataJson);
+            return {
+                email: authData.email,
+                source: authData.source,
+                sourceApp: authData.sourceApp
+            }
+        }
+
+        return null;
     }
 
 }

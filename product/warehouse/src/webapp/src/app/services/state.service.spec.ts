@@ -19,12 +19,14 @@ describe('StateService', () => {
     });
 
     it('Should say "Demo mode" when in demo mode', () => {
-        expect(stateService.getLoginState()).toBe('Demo mode');
+        expect(stateService.getLoginStateString()).toBe('Demo mode');
+        expect(stateService.getLoginState()).toBe(null);
     });
 
     it('Should say "Not logged in" when not in demo mode and not logged in', () => {
         stateService.setDemoMode(false);
-        expect(stateService.getLoginState()).toBe('Not logged in');
+        expect(stateService.getLoginStateString()).toBe('Not logged in');
+        expect(stateService.getLoginState()).toBe(null);
     });
 
     it('Should not be logged in by default', () => {
@@ -41,25 +43,37 @@ describe('StateService', () => {
 
         expect(stateService.isLoggedIn()).toBe(true);
         expect(stateService.getAuthToken()).toBe('newToken');
-        expect(stateService.getLoginState()).toBe('Logged in as undefined / undefined');
+        expect(stateService.getLoginStateString()).toBe('Logged in as undefined / undefined');
+        expect(stateService.getLoginState())
+            .toEqual({
+                email: undefined,
+                source: undefined,
+                sourceApp: undefined
+            });
     });
 
     it('Should accept setLoggedInAs()', () => {
         stateService.setDemoMode(false);
-        stateService.setLoggedInAs('token', 17, 'customerName', 'email');
+        stateService.setLoggedInAs('token', 17, 'customerName', 'email', 'heroku', 'my-heroku-app');
         expect(stateService.isLoggedIn()).toBe(true);
         expect(stateService.getAuthToken()).toBe('token');
-        expect(stateService.getLoginState()).toBe('Logged in as email / customerName');
+        expect(stateService.getLoginStateString()).toBe('Logged in as email / customerName');
+        expect(stateService.getLoginState())
+            .toEqual({
+                email: 'email',
+                source: 'heroku',
+                sourceApp: 'my-heroku-app'
+            });
     });
 
     it('Should accept setLoggedOut()', () => {
         stateService.setDemoMode(false);
-        stateService.setLoggedInAs('token', 17, 'customerName', 'email');
+        stateService.setLoggedInAs('token', 17, 'customerName', 'email', 'heroku', 'my-heroku-app');
         expect(stateService.isLoggedIn()).toBe(true);
 
         stateService.setLoggedOut();
 
         expect(stateService.getAuthToken()).toBeNull();
-        expect(stateService.getLoginState()).toBe('Not logged in');
+        expect(stateService.getLoginStateString()).toBe('Not logged in');
     });
 });

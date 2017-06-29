@@ -107,7 +107,7 @@ public class SsoController {
 
         customerService.registerLogin(CustomerService.LoginRequest.builder()
                                                                   .customerId(customerData.getCustomerId())
-                                                                  .source(CustomerService.Source.HEROKU)
+                                                                  .source(customerData.getSource())
                                                                   .email(email)
                                                                   .build());
 

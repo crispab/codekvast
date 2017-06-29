@@ -22,20 +22,21 @@ export class SsoComponent implements OnInit {
             // signature = parts[2]
 
             let Boomerang = window['Boomerang'];
+            let sourceApp = 'unknown';
             if (payload.source === 'heroku') {
                 let navData = this.route.snapshot.params['navData'];
                 let args = JSON.parse(atob(navData));
                 console.log('navData=%o', args);
-                let app = args.app || args.appname;
+                sourceApp = args.app || args.appname;
                 Boomerang.init({
-                    app: app,
+                    app: sourceApp,
                     addon: 'codekvast'
                 });
             } else {
                 Boomerang.reset();
             }
 
-            this.stateService.setLoggedInAs(token, payload.sub, payload.customerName, payload.email);
+            this.stateService.setLoggedInAs(token, payload.sub, payload.customerName, payload.email, payload.source, sourceApp);
         }
         // noinspection JSIgnoredPromiseFromCall
         this.router.navigate(['']);

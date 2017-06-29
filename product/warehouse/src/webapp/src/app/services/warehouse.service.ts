@@ -90,12 +90,20 @@ export class WarehouseService {
 
     private handleErrors(res: any) {
         console.log('Error=%o', res);
+
+        let nextRoute = [''];
+
         if (res.status === 401) {
+            if (this.stateService.isLoggedIn()) {
+                // Bearer token time-out
+                let loginState = this.stateService.getLoginState();
+                nextRoute = ['/logged-out', loginState.source, loginState.sourceApp || 'unknown'];
+            }
             this.stateService.setLoggedOut();
-            // TODO: handle status 401 Unauthorized
         }
+
         // noinspection JSIgnoredPromiseFromCall
-        this.router.navigate(['']);
+        this.router.navigate(nextRoute);
     }
 
 }

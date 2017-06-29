@@ -1,0 +1,13 @@
+<div class="container">
+    <div class="jumbotron">
+        <h1 class="display-4">Your session has expired.</h1>
+        <div *ngIf="source === 'heroku'">
+            <p class="lead">Do <code>heroku addons:open codekvast</code> or visit the
+                <a href="https://dashboard.heroku.com/apps/{{ sourceApp }}">Heroku Dashboard</a> and click on the add-on Codekvast to start
+                            a new session. </p>
+        </div>
+        <div *ngIf="source === 'demo'">
+            <p class="lead">Do <code>kensa sso demo</code> in a terminal to start a new session. </p>
+        </div>
+    </div>
+</div>

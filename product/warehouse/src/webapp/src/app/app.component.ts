@@ -42,6 +42,6 @@ export class AppComponent implements OnInit {
     }
 
     getLoginState() {
-        return this.stateService.getLoginState();
+        return this.stateService.getLoginStateString();
     }
 }
