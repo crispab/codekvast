@@ -13,7 +13,8 @@
 
   vars:
     dns_records:
-    - { name: 'www.codekvast.io', value: crispab.github.io, owner: olle }
+    - { name: 'codekvast.io', type: A, alias: True, alias_zone_id: 'Z21DNDUVLTQW6Q', value: s3-website.eu-central-1.amazonaws.com, owner: olle }
+    - { name: 'www.codekvast.io', type: A, alias: True, alias_zone_id: 'Z21DNDUVLTQW6Q', value: s3-website.eu-central-1.amazonaws.com, owner: olle }
 
   tasks:
   - name: Create static DNS records
@@ -27,6 +28,8 @@
       ttl: "{{ item.ttl | default('7200') }}"
       type: "{{ item.type | default('CNAME') }}"
       value: "{{ item.value }}"
+      alias: "{{ item.alias | default(False) }}"
+      alias_hosted_zone_id: "{{ item.alias_zone_id | default(None) }}"
     with_items: "{{ dns_records }}"
     loop_control:
       label: "{{ item.name }}"
