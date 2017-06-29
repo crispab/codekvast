@@ -81,6 +81,8 @@ module.exports = {
                 CODEKVAST_VERSION: process.env.CODEKVAST_VERSION || 'dev'
             }
         })
+
+        // TODO: add favicons-webpack-plugin
     ]
 };
 
