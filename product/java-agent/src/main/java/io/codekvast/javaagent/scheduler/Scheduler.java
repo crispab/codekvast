@@ -123,13 +123,9 @@ public class Scheduler implements Runnable {
             if (dynamicConfig != null) {
                 // We have done at least one successful config poll
 
-                // Make sure the last invocation data is published...
-                if (invocationDataPublisher.getCodeBaseFingerprint() == null) {
-                    // CodeBasePublisher has not executed yet
-                    codeBasePublisherState.scheduleNow();
-                    publishCodeBaseIfNeeded();
-                    invocationDataPublisher.setCodeBaseFingerprint(codeBasePublisher.getCodeBaseFingerprint());
-                }
+                codeBasePublisherState.scheduleNow();
+                publishCodeBaseIfNeeded();
+
                 invocationDataPublisherState.scheduleNow();
                 publishInvocationDataIfNeeded();
             }
@@ -222,6 +218,11 @@ public class Scheduler implements Runnable {
     private void publishInvocationDataIfNeeded() {
         if (invocationDataPublisherState.isDueTime() && dynamicConfig != null) {
             log.finer("Checking if invocation data needs to be published...");
+
+            if (codeBasePublisher.getCodeBaseFingerprint() != null && invocationDataPublisher.getCodeBaseFingerprint() == null) {
+                log.finer("Enabled a fast first invocation data publishing");
+                invocationDataPublisher.setCodeBaseFingerprint(codeBasePublisher.getCodeBaseFingerprint());
+            }
 
             try {
                 InvocationRegistry.instance.publishInvocationData(invocationDataPublisher);

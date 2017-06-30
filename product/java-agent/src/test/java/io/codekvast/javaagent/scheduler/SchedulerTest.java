@@ -103,28 +103,6 @@ public class SchedulerTest {
     }
 
     @Test
-    public void should_handle_shutdown_after_first_poll_but_before_first_publishing() throws Exception {
-        // given
-        when(configPollerMock.doPoll()).thenReturn(
-            configResponse
-                .toBuilder()
-                .codeBasePublisherCheckIntervalSeconds(1000)
-                .invocationDataPublisherIntervalSeconds(1000)
-                .build());
-
-        // when
-        scheduler.run();
-        scheduler.shutdown();
-
-        // then
-        verify(configPollerMock, times(1)).doPoll();
-        verifyNoMoreInteractions(configPollerMock);
-
-        assertThat(codeBasePublisher.getSequenceNumber(), is(1));
-        assertThat(invocationDataPublisher.getSequenceNumber(), is(1));
-    }
-
-    @Test
     public void should_do_first_publishing_soon_after_start() throws Exception {
         // given
         long now = System.currentTimeMillis();
@@ -141,10 +119,14 @@ public class SchedulerTest {
         when(systemClockMock.currentTimeMillis()).thenReturn(now);
         scheduler.run();
         verify(configPollerMock, times(1)).doPoll();
+        assertThat(codeBasePublisher.getSequenceNumber(), is(1));
+        assertThat(invocationDataPublisher.getSequenceNumber(), is(1));
 
         when(systemClockMock.currentTimeMillis()).thenReturn(now + 2_000L);
         scheduler.run();
         verify(configPollerMock, times(1)).doPoll();
+        assertThat(codeBasePublisher.getSequenceNumber(), is(1));
+        assertThat(invocationDataPublisher.getSequenceNumber(), is(1));
 
         when(systemClockMock.currentTimeMillis()).thenReturn(now + 10_000L);
         scheduler.run();

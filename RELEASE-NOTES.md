@@ -6,6 +6,7 @@
 1. Now redirects to /logged-out after webapp session has expired
 1. Now redirects to /not-logged-in when an unauthenticated user clicks a link that requires login
 1. Bug fix: now deprovision works.
+1. Bug fix: the first invocation data is now uploaded very soon after start
 
 ## 0.21.2
 1. Added support for Spring Boot executable jars
