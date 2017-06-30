@@ -35,3 +35,7 @@ VALUES
   (2, 1, 'uuid2', 'public', 'com.foobar', 'com.foobar.excluded', 'computerId', 'hostname', 'version', 'tag1=t1,tag2=t2'),
   (3, 1, 'uuid3', 'public', 'com.foobar', 'com.foobar.excluded', 'computerId', 'hostname', 'version', 'tag1=t1,tag2=t2'),
   (4, 1, 'uuid4', 'public', 'com.foobar', 'com.foobar.excluded', 'computerId', 'hostname', 'version', 'tag1=t1,tag2=t2');
+
+INSERT INTO agent_state(customerId, jvmUuid) VALUES(1, "jvmUuid");
+
+INSERT INTO users(customerId, email, lastLoginSource, numberOfLogins) VALUES(1, "email", "source", 1);

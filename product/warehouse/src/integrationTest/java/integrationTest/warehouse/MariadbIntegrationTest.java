@@ -199,9 +199,28 @@ public class MariadbIntegrationTest {
                                                             .plan("test")
                                                             .build());
 
+        Long count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM customers WHERE externalId = ?", Long.class, "externalId");
+
+        assertThat(count, is(1L));
+
         assertThat(licenseKey, notNullValue());
 
         customerService.deleteCustomerByExternalId("externalId");
+
+        count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM customers WHERE externalId = ?", Long.class, "externalId");
+        assertThat(count, is(0L));
+    }
+
+    @Test
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_handle_delete_customer() {
+        Long count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM customers", Long.class);
+        assertThat(count, is(1L));
+
+        customerService.deleteCustomerByExternalId("external-1");
+
+        count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM customers", Long.class);
+        assertThat(count, is(0L));
     }
 
     @Test

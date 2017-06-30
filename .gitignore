@@ -36,3 +36,4 @@ product/warehouse/src/webapp/dist/
 *.retry
 .build-cache/
 !**.java
+out/
