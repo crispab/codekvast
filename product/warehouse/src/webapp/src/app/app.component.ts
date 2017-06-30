@@ -44,4 +44,12 @@ export class AppComponent implements OnInit {
     getLoginState() {
         return this.stateService.getLoginStateString();
     }
+
+    topNavClasses() {
+        let demoMode = this.stateService.isDemoMode();
+        return {
+            'integration-menu-heroku': !demoMode,
+            container: true
+        }
+    }
 }
