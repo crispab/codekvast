@@ -3,6 +3,8 @@
 ## 0.21.3
 1. Upgraded to Angular 4.2.4 and Webpack 3.0.0
 1. Added column users.lastActivityAt
+1. Now redirects to /logged-out after webapp session has expired
+1. Now redirects to /not-logged-in when an unauthenticated user clicks a link that requires login
 
 ## 0.21.2
 1. Added support for Spring Boot executable jars

@@ -2,7 +2,7 @@ import {AuthTokenRenewer} from './guards/auth-token-renewer';
 import {CollectionStatusComponent} from './pages/collection-status/collection-status.component';
 import {HomeComponent} from './pages/home/home.component';
 import {IsLoggedIn} from './guards/is-logged-in';
-import {LoggedOutComponent} from './pages/logged-out/logged-out.component';
+import {LoggedOutComponent} from './pages/auth/logged-out.component';
 import {MethodDetailComponent} from './pages/methods/method-detail.component';
 import {MethodsComponent} from './pages/methods/methods.component';
 import {NgModule} from '@angular/core';
@@ -10,6 +10,7 @@ import {ReportGeneratorComponent} from './pages/report-generator/report-generato
 import {RouterModule, Routes} from '@angular/router';
 import {SsoComponent} from './components/sso.component';
 import {VoteResultComponent} from './pages/vote-result/vote-result.component';
+import {NotLoggedInComponent} from './pages/auth/not-logged-in.component';
 
 const routes: Routes = [
     {
@@ -31,6 +32,9 @@ const routes: Routes = [
         path: 'method/:id',
         component: MethodDetailComponent,
         canActivate: [IsLoggedIn, AuthTokenRenewer]
+    }, {
+        path: 'not-logged-in',
+        component: NotLoggedInComponent
     }, {
         path: 'sso/:token/:navData',
         component: SsoComponent
