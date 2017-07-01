@@ -1,5 +1,10 @@
 # Codekvast Release Notes
 
+## 0.21.4
+1. Upgraded to Angular 4.2.5
+1. Upgraded to Gradle 4.0
+1. Upgraded Gradle plugins
+
 ## 0.21.3
 1. Upgraded to Angular 4.2.4 and Webpack 3.0.0
 1. Added column users.lastActivityAt
