@@ -9,10 +9,10 @@ dependencies {
     classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.4'
     classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
     classpath 'com.ofg:uptodate-gradle-plugin:1.6.3'
-    classpath 'gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.13.1'
+    classpath 'gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.14.0'
     classpath 'org.ajoberstar:grgit:1.8.0'
     classpath 'org.flywaydb:flyway-gradle-plugin:3.1'
     classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.5.4.RELEASE'
-    classpath 'gradle.plugin.org.unbroken-dome.gradle-plugins:gradle-testsets-plugin:1.3.2'
-    classpath 'org.mariadb.jdbc:mariadb-java-client:2.0.2'
+    classpath 'org.unbroken-dome.gradle-plugins:gradle-testsets-plugin:1.4.1'
+    classpath 'org.mariadb.jdbc:mariadb-java-client:2.0.3'
 }
