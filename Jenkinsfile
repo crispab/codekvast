@@ -13,12 +13,12 @@ node {
                 }
 
                 stage('Compile Java') {
-                    sh "./gradlew classes testClasses integrationTestClasses systemTestClasses"
+                    sh "./gradlew --console=plain classes testClasses integrationTestClasses systemTestClasses"
                 }
 
                 stage('Java unit test') {
                     try {
-                        sh './gradlew test'
+                        sh './gradlew --console=plain test'
                     } finally {
                         // Prevent junit publisher to fail if Gradle has skipped the test
                         sh "find . -name '*.xml' | grep '/build/test-results/test/' | xargs touch"
@@ -28,7 +28,7 @@ node {
 
                 stage('TypeScript unit test') {
                     try {
-                        sh './gradlew frontendTest'
+                        sh './gradlew --console=plain frontendTest'
                     } finally {
                         // Prevent junit publisher to fail if Gradle has skipped the test
                         sh "find . -name '*.xml' | grep '/build/test-results/frontendTest/' | xargs touch"
@@ -45,7 +45,7 @@ node {
 
                 stage('Integration test') {
                     try {
-                        sh './gradlew integrationTest'
+                        sh './gradlew --console=plain integrationTest'
                     } finally {
                         // Prevent junit publisher to fail if Gradle has skipped the test
                         sh "find . -name '*.xml' | grep '/build/test-results/integrationTest/' | xargs touch"
@@ -55,7 +55,7 @@ node {
 
                 stage('System test') {
                     try {
-                        sh './gradlew systemTest'
+                        sh './gradlew --console=plain systemTest'
                     } finally {
                         // Prevent junit publisher to fail if Gradle has skipped the test
                         sh "find . -name '*.xml' | grep '/build/test-results/systemTest/' | xargs touch"
@@ -64,7 +64,7 @@ node {
                 }
 
                 stage('Documentation & reports') {
-                    sh './gradlew -Dorg.gradle.configureondemand=false :product:docs:build :product:aggregateJavadoc'
+                    sh './gradlew --console=plain -Dorg.gradle.configureondemand=false :product:docs:build :product:aggregateJavadoc'
 
                     publishHTML([allowMissing: true,
                         alwaysLinkToLastBuild: true,
