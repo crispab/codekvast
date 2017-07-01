@@ -51,7 +51,7 @@ public class JavaAgentIntegrationTest {
                                                     .appVersion("literal 1.0")
                                                     .aspectjOptions("-verbose -showWeaveInfo")
                                                     .packages("sample")
-                                                    .codeBase("build/classes/integrationTest")
+                                                    .codeBase("build/classes/java/integrationTest")
                                                     .bridgeAspectjMessagesToJUL(true)
                                                     .schedulerInitialDelayMillis(0)
                                                     .schedulerIntervalMillis(100)

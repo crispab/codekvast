@@ -28,7 +28,7 @@ public class CodeBaseScannerTest {
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-    private static final String TEST_CLASSES_DIR = "build/classes/test";
+    private static final String TEST_CLASSES_DIR = "build/classes/java/test";
     private static final String SPRING_BOOT_EXECUTABLE_JAR_DIR = "src/test/resources/sample-spring-boot-executable-jar";
 
     private final CodeBaseScanner scanner = new CodeBaseScanner();
