@@ -15,7 +15,7 @@ public class CodeBaseTest {
 
     private static final String SAMPLE_APP_LIB = "src/test/resources/sample-app/lib";
     private static final String SAMPLE_APP_JAR = SAMPLE_APP_LIB + "/sample-app.jar";
-    private static final String CLASSES_ONLY_DIR = "build/classes/main";
+    private static final String CLASSES_ONLY_DIR = "build/classes/java/main";
 
     private CodeBase codeBase;
 
