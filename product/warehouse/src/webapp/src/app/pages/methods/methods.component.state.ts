@@ -1,9 +1,9 @@
 /**
  * The state for MethodsComponent.
  */
-import {MethodData} from '../../model/MethodData';
+import {MethodData} from '../../model/methods/MethodData';
 import {MethodsComponent} from './methods.component';
-import {Method} from '../../model/Method';
+import {Method} from '../../model/methods/Method';
 import {WarehouseService} from '../../services/warehouse.service';
 
 export class MethodsComponentState {

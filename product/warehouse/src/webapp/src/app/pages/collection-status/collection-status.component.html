@@ -1,8 +1,54 @@
 <div class="container">
-    <div class="jumbotron">
-        <h1 class="display-4">Status</h1>
-        <p class="lead">This page will show an overview of the collection process, so that one can judge the trustworthiness of the collected data.</p>
+    <h2>Status</h2>
+    <div class="d-flex flex-row align-items-start justify-content-between">
 
-        <ck-vote-for [feature]="'status'"></ck-vote-for>
+        <div *ngIf="data">
+            <table class="col-10 table table-striped table-bordered">
+                <tr>
+                    <th colspan="3">Plan {{ data.pricePlan }} Limits</th>
+                </tr>
+                <tr>
+                    <td>Number of agents (max={{ data.maxNumberOfAgents }}):</td>
+                    <td class="text-right">{{ data.numLiveAgents }}</td>
+                    <td [ngClass]="percentClasses(data.numLiveAgents, data.maxNumberOfAgents)">{{ percentOf(data.numLiveAgents,
+                                                                                               data.maxNumberOfAgents) }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Number of methods (max={{ data.maxNumberOfMethods }}):</td>
+                    <td class="text-right">{{ data.numMethods }}</td>
+                    <td [ngClass]="percentClasses(data.numMethods, data.maxNumberOfMethods)">{{ percentOf(data.numMethods,
+                                                                                             data.maxNumberOfMethods) }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Collected since ({{ maxCollectedDays() }}):</td>
+                    <td class="text-right">{{ data.collectedSinceMillis | ckAge:settings.dateFormat }}</td>
+                    <td class="text-right">{{ collectedDaysPercent() }}</td>
+                </tr>
+                <tr>
+                    <td>Collection resolution:</td>
+                    <td class="text-right">{{ collectionResolution() }}</td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+        <ck-settings-editor></ck-settings-editor>
+    </div>
+
+    <div class="d-flex flex-row">
+        <button (click)="refresh()"><i class="fa fa-refresh mr-2" aria-hidden="true"></i>Refresh</button>
+
+        <div *ngIf="data">
+            <small class="ml-2 col-form-label form-text text-muted">{{ data.timestamp | date:'short' }}: Refreshed status in {{
+                                                                    data.queryTimeMillis }} ms
+            </small>
+        </div>
+
+        <div *ngIf="errorMessage">
+            <small class="ml-2 col-form-label form-text text-muted" title="{{ errorMessage }}">{{ communicationFailure() }}
+            </small>
+        </div>
+
     </div>
 </div>

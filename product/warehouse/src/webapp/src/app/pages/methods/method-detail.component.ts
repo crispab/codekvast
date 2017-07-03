@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Params} from '@angular/router';
 import {DatePipe, Location} from '@angular/common';
 import {WarehouseService} from '../../services/warehouse.service';
-import {Method} from '../../model/Method';
+import {Method} from '../../model/methods/Method';
 import {AgePipe} from '../../pipes/age.pipe';
 import {StateService} from '../../services/state.service';
 import {Settings} from '../../components/settings.model';

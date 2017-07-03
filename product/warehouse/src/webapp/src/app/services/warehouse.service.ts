@@ -1,20 +1,22 @@
 import {ConfigService} from './config.service';
 import {Headers, Http} from '@angular/http';
 import {Injectable} from '@angular/core';
-import {MethodData} from '../model/MethodData';
-import {Method} from '../model/Method';
+import {MethodData} from '../model/methods/MethodData';
+import {Method} from '../model/methods/Method';
 import {Observable} from 'rxjs/Observable';
 import '../../rxjs-operators';
 import {isNumber} from 'util';
 import {StateService} from './state.service';
 import {Router} from '@angular/router';
 import 'rxjs/add/observable/of';
+import {StatusData} from '../model/status/StatusData';
 
 @Injectable()
 export class WarehouseService {
 
     readonly METHODS_URL = '/webapp/v1/methods';
     readonly METHOD_BY_ID_URL = '/webapp/v1/method/detail/';
+    readonly STATUS_URL = '/webapp/v1/status';
     readonly RENEW_AUTH_TOKEN_URL = '/webapp/renewAuthToken';
     readonly IS_DEMO_MODE_URL = '/webapp/isDemoMode';
     readonly AUTH_TOKEN_HEADER = 'X-Codekvast-Auth-Token';
@@ -51,6 +53,19 @@ export class WarehouseService {
 
     getMethodById(id: number): Observable<Method> {
         const url = this.constructGetMethodByIdUrl(id);
+        console.log('url=%s', url);
+        return this.http.get(url, {headers: this.getHeaders()})
+                   .do(res => this.replaceAuthToken(res), res => this.handleErrors(res))
+                   .map(res => res.json());
+    }
+
+    getStatus(): Observable<StatusData> {
+        // if (this.configService.getVersion() === 'dev') {
+        //     console.log('Returning a canned response');
+        //     return new Observable<StatusData>(subscriber => subscriber.next(require('../test/canned/v1/StatusData.json')));
+        // }
+
+        const url = this.configService.getApiPrefix() + this.STATUS_URL;
         console.log('url=%s', url);
         return this.http.get(url, {headers: this.getHeaders()})
                    .do(res => this.replaceAuthToken(res), res => this.handleErrors(res))

@@ -76,7 +76,7 @@
                     <th (click)="state.sortByAge()" class="age-column">
                         Last Invoked <i [ngClass]="state.headerIconClassesAge()" aria-hidden="true"></i>
                     </th>
-                    <td class="row-icon-column"><i class="fa fa-ellipsis-h invisible"></i></td>
+                    <td class="row-icon-column"><i class="fa fa-ellipsis-h invisible" aria-hidden="true"></i></td>
                 </tr>
                 </thead>
 
@@ -90,7 +90,7 @@
                         {{ method.lastInvokedAtMillis | ckAge:settings.dateFormat }}
                     </td>
                     <td class="icon-column">
-                        <i [ngClass]="state.rowIconClasses(method.id)"></i>
+                        <i [ngClass]="state.rowIconClasses(method.id)" aria-hidden="true"></i>
                     </td>
                 </tr>
                 </tbody>

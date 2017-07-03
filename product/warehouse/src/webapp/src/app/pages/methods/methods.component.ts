@@ -6,7 +6,7 @@ import {Router} from '@angular/router';
 import {StateService} from '../../services/state.service';
 import {MethodsComponentState} from './methods.component.state';
 import {Settings} from '../../components/settings.model';
-import {Method} from '../../model/Method';
+import {Method} from '../../model/methods/Method';
 
 @Component({
     selector: 'ck-methods',

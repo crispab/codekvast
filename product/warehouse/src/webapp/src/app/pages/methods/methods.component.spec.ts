@@ -5,8 +5,8 @@ import {MethodsComponent} from './methods.component';
 import {AppModule} from '../../app.module';
 import {WarehouseService} from '../../services/warehouse.service';
 import {ConfigService} from '../../services/config.service';
-import {MethodData} from '../../model/MethodData';
-import {Method} from '../../model/Method';
+import {MethodData} from '../../model/methods/MethodData';
+import {Method} from '../../model/methods/Method';
 import {StateService} from '../../services/state.service';
 
 let component: MethodsComponent;
