@@ -33,6 +33,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -65,30 +66,29 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public GetConfigResponse1 getConfig(GetConfigRequest1 request) throws LicenseViolationException {
         CustomerData customerData = customerService.getCustomerDataByLicenseKey(request.getLicenseKey());
-        int liveAgents = countLiveAgents(customerData, request.getJvmUuid());
-
+        boolean isAgentEnabled = updateAgentState(customerData, request.getJvmUuid());
+        String publisherConfig = isAgentEnabled ? "enabled=true" : "enabled=false";
         PricePlan pp = customerData.getPricePlan();
-        String publishingEnabled = liveAgents > pp.getMaxNumberOfAgents() ? "enabled=false" : "enabled=true";
-
         return GetConfigResponse1
             .builder()
             .codeBasePublisherCheckIntervalSeconds(pp.getPublishIntervalSeconds())
-            .codeBasePublisherConfig(publishingEnabled)
+            .codeBasePublisherConfig(publisherConfig)
             .codeBasePublisherName("http")
             .codeBasePublisherRetryIntervalSeconds(pp.getRetryIntervalSeconds())
             .configPollIntervalSeconds(pp.getPollIntervalSeconds())
             .configPollRetryIntervalSeconds(pp.getRetryIntervalSeconds())
             .customerId(customerData.getCustomerId())
-            .invocationDataPublisherConfig(publishingEnabled)
+            .invocationDataPublisherConfig(publisherConfig)
             .invocationDataPublisherIntervalSeconds(pp.getPublishIntervalSeconds())
             .invocationDataPublisherName("http")
             .invocationDataPublisherRetryIntervalSeconds(pp.getRetryIntervalSeconds())
             .build();
     }
 
-    private int countLiveAgents(CustomerData customerData, String jvmUuid) {
+    private boolean updateAgentState(CustomerData customerData, String jvmUuid) {
 
         long customerId = customerData.getCustomerId();
         long now = System.currentTimeMillis();
@@ -102,24 +102,27 @@ public class AgentServiceImpl implements AgentService {
         if (updated == 0) {
             log.info("The agent {}:{} has started", customerId, jvmUuid);
 
-            jdbcTemplate.update("INSERT INTO agent_state(customerId, jvmUuid, lastPolledAt, nextPollExpectedAt) VALUES (?, ?, ?, ?)",
-                                customerId, jvmUuid, nowTimestamp, nextExpectedPollTimestamp);
+            jdbcTemplate.update("INSERT INTO agent_state(customerId, jvmUuid, lastPolledAt, nextPollExpectedAt, enabled) VALUES (?, ?, ?, ?, ?)",
+                                customerId, jvmUuid, nowTimestamp, nextExpectedPollTimestamp, Boolean.TRUE);
         } else {
             log.debug("The agent {}:{} has polled", customerId, jvmUuid);
         }
 
         Timestamp cutoffTimestamp = new Timestamp(now - 10_000L);
-        Integer result = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM agent_state WHERE customerId = ? AND nextPollExpectedAt > ?",
+        Integer numLiveAgents = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM agent_state WHERE customerId = ? AND nextPollExpectedAt > ?",
                                                      Integer.class, customerId, cutoffTimestamp);
 
         String planName = customerData.getPlanName();
         int maxNumberOfAgents = customerData.getPricePlan().getMaxNumberOfAgents();
-        if (result > maxNumberOfAgents) {
-            log.warn("Customer {} has {} live agents (max for price plan '{}' is {})", customerId, result, planName, maxNumberOfAgents);
+        boolean enabled = numLiveAgents <= maxNumberOfAgents;
+        if (!enabled) {
+            log.warn("Customer {} has {} live agents (max for price plan '{}' is {})", customerId, numLiveAgents, planName, maxNumberOfAgents);
         } else {
-            log.debug("Customer {} has {} live agents (max for price plan '{}' is {})", customerId, result, planName, maxNumberOfAgents);
+            log.debug("Customer {} has {} live agents (max for price plan '{}' is {})", customerId, numLiveAgents, planName, maxNumberOfAgents);
         }
-        return result;
+
+        jdbcTemplate.update("UPDATE agent_state SET enabled = ? WHERE jvmUuid = ?", enabled, jvmUuid);
+        return enabled;
     }
 
     @Override

@@ -21,26 +21,26 @@
 --
 
 ALTER TABLE invocations
-  CHANGE COLUMN status status ENUM ('NOT_INVOKED',
-                                    'EXACT_MATCH',
-                                    'INVOKED',
-                                    'FOUND_IN_PARENT_CLASS',
-                                    'NOT_FOUND_IN_CODE_BASE',
-                                    'EXCLUDED_BY_PACKAGE_NAME',
-                                    'EXCLUDED_BY_VISIBILITY',
-                                    'EXCLUDED_SINCE_TRIVIAL') NOT NULL
-COMMENT 'Same values as SignatureStatus';
+  MODIFY COLUMN status ENUM ('NOT_INVOKED',
+                             'EXACT_MATCH',
+                             'INVOKED',
+                             'FOUND_IN_PARENT_CLASS',
+                             'NOT_FOUND_IN_CODE_BASE',
+                             'EXCLUDED_BY_PACKAGE_NAME',
+                             'EXCLUDED_BY_VISIBILITY',
+                             'EXCLUDED_SINCE_TRIVIAL') NOT NULL
+  COMMENT 'Same values as SignatureStatus';
 
-UPDATE invocations SET status = 'INVOKED' WHERE status = 'EXACT_MATCH';
+UPDATE invocations
+SET status = 'INVOKED'
+WHERE status = 'EXACT_MATCH';
 
 ALTER TABLE invocations
-  CHANGE COLUMN status status ENUM ('NOT_INVOKED',
-                                    'INVOKED',
-                                    'FOUND_IN_PARENT_CLASS',
-                                    'NOT_FOUND_IN_CODE_BASE',
-                                    'EXCLUDED_BY_PACKAGE_NAME',
-                                    'EXCLUDED_BY_VISIBILITY',
-                                    'EXCLUDED_SINCE_TRIVIAL') NOT NULL
-COMMENT 'Same values as SignatureStatus';
-
-
+  MODIFY COLUMN status ENUM ('NOT_INVOKED',
+                             'INVOKED',
+                             'FOUND_IN_PARENT_CLASS',
+                             'NOT_FOUND_IN_CODE_BASE',
+                             'EXCLUDED_BY_PACKAGE_NAME',
+                             'EXCLUDED_BY_VISIBILITY',
+                             'EXCLUDED_SINCE_TRIVIAL') NOT NULL
+  COMMENT 'Same values as SignatureStatus';

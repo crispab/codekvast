@@ -32,7 +32,7 @@ SET source = 'heroku'
 WHERE id <> 1;
 
 ALTER TABLE customers
-  CHANGE COLUMN source source VARCHAR(20) NOT NULL;
+  MODIFY COLUMN source VARCHAR(20) NOT NULL;
 
 CREATE TABLE users (
   id              BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,

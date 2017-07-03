@@ -22,12 +22,15 @@
 package io.codekvast.warehouse.webapp.impl;
 
 import io.codekvast.javaagent.model.v1.SignatureStatus;
+import io.codekvast.warehouse.customer.CustomerData;
+import io.codekvast.warehouse.customer.CustomerService;
+import io.codekvast.warehouse.customer.PricePlan;
 import io.codekvast.warehouse.security.CustomerIdProvider;
 import io.codekvast.warehouse.webapp.WebappService;
-import io.codekvast.warehouse.webapp.model.methods.ApplicationDescriptor1;
-import io.codekvast.warehouse.webapp.model.methods.EnvironmentDescriptor1;
-import io.codekvast.warehouse.webapp.model.methods.GetMethodsRequest1;
-import io.codekvast.warehouse.webapp.model.methods.MethodDescriptor1;
+import io.codekvast.warehouse.webapp.model.methods.*;
+import io.codekvast.warehouse.webapp.model.status.AgentDescriptor1;
+import io.codekvast.warehouse.webapp.model.status.GetStatusResponse1;
+import io.codekvast.warehouse.webapp.model.status.UserDescriptor1;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +45,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.*;
 
 /**
@@ -54,16 +59,20 @@ public class WebappServiceImpl implements WebappService {
 
     private final JdbcTemplate jdbcTemplate;
     private final CustomerIdProvider customerIdProvider;
+    private final CustomerService customerService;
 
     @Inject
-    public WebappServiceImpl(JdbcTemplate jdbcTemplate, CustomerIdProvider customerIdProvider) {
+    public WebappServiceImpl(JdbcTemplate jdbcTemplate, CustomerIdProvider customerIdProvider,
+                             CustomerService customerService) {
         this.jdbcTemplate = jdbcTemplate;
         this.customerIdProvider = customerIdProvider;
+        this.customerService = customerService;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<MethodDescriptor1> getMethods(@Valid GetMethodsRequest1 request) {
+    public GetMethodsResponse1 getMethods(@Valid GetMethodsRequest1 request) {
+        long startedAt = System.currentTimeMillis();
 
         MethodDescriptorRowCallbackHandler rowCallbackHandler =
             new MethodDescriptorRowCallbackHandler("m.signature LIKE ?", request.getMaxResults());
@@ -71,16 +80,134 @@ public class WebappServiceImpl implements WebappService {
         jdbcTemplate.query(rowCallbackHandler.getSelectStatement(), rowCallbackHandler, customerIdProvider.getCustomerId(),
                            request.getNormalizedSignature());
 
-        return rowCallbackHandler.getResult();
+        List<MethodDescriptor1> methods = rowCallbackHandler.getResult();
+
+        return GetMethodsResponse1.builder()
+                                  .timestamp(startedAt)
+                                  .request(request)
+                                  .numMethods(methods.size())
+                                  .methods(methods)
+                                  .queryTimeMillis(System.currentTimeMillis() - startedAt)
+                                  .build();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<MethodDescriptor1> getMethodById(@NotNull Long methodId) {
         MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler("m.id = ?", 1);
 
         jdbcTemplate.query(rowCallbackHandler.getSelectStatement(), rowCallbackHandler, customerIdProvider.getCustomerId(), methodId);
 
         return rowCallbackHandler.getResult().stream().findFirst();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public GetStatusResponse1 getStatus() {
+        long startedAt = System.currentTimeMillis();
+
+        Long customerId = customerIdProvider.getCustomerId();
+        CustomerData customerData = customerService.getCustomerDataByCustomerId(customerId);
+
+        PricePlan pp = customerData.getPricePlan();
+        List<AgentDescriptor1> agents = getAgents(customerId, pp.getPublishIntervalSeconds());
+        List<UserDescriptor1> users = getUsers(customerId);
+
+        long now = System.currentTimeMillis();
+        Long collectedSinceMillis = agents.stream().map(AgentDescriptor1::getStartedAtMillis).reduce(Long::min).orElse(now);
+
+        int dayInMillis = 24 * 60 * 60 * 1000;
+        int collectedDays = Math.toIntExact((now - collectedSinceMillis) / dayInMillis);
+
+        return GetStatusResponse1.builder()
+                                 // query stuff
+                                 .timestamp(startedAt)
+                                 .queryTimeMillis(System.currentTimeMillis() - startedAt)
+
+                                 // price plan stuff
+                                 .pricePlan(pp.name())
+                                 .collectionResolutionSeconds(pp.getPublishIntervalSeconds())
+                                 .maxCollectionPeriodDays(-1) // TODO: pick from PricePlan
+                                 .maxNumberOfAgents(pp.getMaxNumberOfAgents())
+                                 .maxNumberOfMethods(pp.getMaxMethods())
+
+                                 // actual values
+                                 .collectedSinceMillis(collectedSinceMillis)
+                                 .collectedDays(collectedDays)
+                                 .numMethods(customerService.countMethods(customerId))
+                                 .numAgents(agents.size())
+                                 .numLiveAgents((int) agents.stream().filter(AgentDescriptor1::isAgentAlive).count())
+                                 .numLiveEnabledAgents((int) agents.stream().filter(AgentDescriptor1::isAgentLiveAndEnabled).count())
+
+                                 // details
+                                 .agents(agents)
+                                 .users(users)
+                                 .build();
+    }
+
+    private List<UserDescriptor1> getUsers(Long customerId) {
+        List<UserDescriptor1> result = new ArrayList<>();
+
+        jdbcTemplate.query(
+            "SELECT email, firstLoginAt, lastLoginAt, lastActivityAt, numberOfLogins, lastLoginSource " +
+                "FROM users WHERE customerId = ? ORDER BY email ",
+            rs -> {
+                result.add(
+                    UserDescriptor1.builder()
+                                   .email(rs.getString("email"))
+                                   .firstLoginAtMillis(rs.getTimestamp("firstLoginAt").getTime())
+                                   .lastLoginAtMillis(rs.getTimestamp("lastLoginAt").getTime())
+                                   .lastActivityAtMillis(rs.getTimestamp("lastActivityAt").getTime())
+                                   .numberOfLogins(rs.getInt("numberOfLogins"))
+                                   .lastLoginSource(rs.getString("lastLoginSource"))
+                                   .build());
+            }, customerId);
+        return result;
+    }
+
+    private List<AgentDescriptor1> getAgents(Long customerId, int publishIntervalSeconds) {
+        List<AgentDescriptor1> result = new ArrayList<>();
+
+        jdbcTemplate.query(
+            "SELECT agent_state.enabled, agent_state.lastPolledAt, agent_state.nextPollExpectedAt, " +
+                "jvms.startedAt, jvms.publishedAt, jvms.methodVisibility, jvms.packages, jvms.excludePackages, " +
+                "jvms.agentVersion, jvms.environment, jvms.tags, " +
+                "applications.name AS appName, applications.version AS appVersion " +
+                "FROM agent_state, jvms, applications " +
+                "WHERE jvms.customerId = ? " +
+                "AND jvms.uuid = agent_state.jvmUuid " +
+                "AND jvms.applicationId = applications.id " +
+                "ORDER BY jvms.id ",
+
+            rs -> {
+                Timestamp now = Timestamp.from(Instant.now());
+                Timestamp lastPolledAt = rs.getTimestamp("lastPolledAt");
+                Timestamp nextPollExpectedAt = rs.getTimestamp("nextPollExpectedAt");
+                Timestamp publishedAt = rs.getTimestamp("publishedAt");
+                boolean isAlive = nextPollExpectedAt.after(now);
+                Instant nextPublicationExpectedAt = publishedAt.toInstant().plusSeconds(publishIntervalSeconds);
+
+                result.add(
+                    AgentDescriptor1.builder()
+                                    .agentAlive(isAlive)
+                                    .agentLiveAndEnabled(isAlive && rs.getBoolean("enabled"))
+                                    .agentVersion(rs.getString("agentVersion"))
+                                    .appName(rs.getString("appName"))
+                                    .appVersion(rs.getString("appVersion"))
+                                    .environment(rs.getString("environment"))
+                                    .excludePackages(rs.getString("excludePackages"))
+                                    .methodVisibility(rs.getString("methodVisibility"))
+                                    .nextPublicationExpectedAtMillis(nextPublicationExpectedAt.toEpochMilli())
+                                    .nextPollExpectedAtMillis(nextPollExpectedAt.getTime())
+                                    .packages(rs.getString("packages"))
+                                    .pollReceivedAtMillis(lastPolledAt.getTime())
+                                    .publishedAtMillis(publishedAt.getTime())
+                                    .startedAtMillis(rs.getTimestamp("startedAt").getTime())
+                                    .tags(rs.getString("tags"))
+                                    .build());
+            }, customerId);
+
+        return result;
     }
 
     private class MethodDescriptorRowCallbackHandler implements RowCallbackHandler {

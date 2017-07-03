@@ -80,7 +80,7 @@ public class ImportDAOImpl implements ImportDAO {
     }
 
     @Override
-    public long importJvm(CommonPublicationData data) {
+    public long importJvm(CommonPublicationData data, long applicationId) {
 
         long customerId = data.getCustomerId();
         Timestamp publishedAt = new Timestamp(data.getPublishedAtMillis());
@@ -91,10 +91,11 @@ public class ImportDAOImpl implements ImportDAO {
             log.trace("Updated JVM {}", data.getJvmUuid());
         } else {
             jdbcTemplate.update(
-                "INSERT INTO jvms(customerId, uuid, startedAt, publishedAt, methodVisibility, packages, excludePackages, " +
+                "INSERT INTO jvms(customerId, applicationId, uuid, startedAt, publishedAt, methodVisibility, packages, excludePackages, " +
                     "environment, computerId, hostname, agentVersion, tags) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                customerId, data.getJvmUuid(), new Timestamp(data.getJvmStartedAtMillis()), publishedAt, data.getMethodVisibility(),
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                customerId, applicationId, data.getJvmUuid(), new Timestamp(data.getJvmStartedAtMillis()), publishedAt,
+                data.getMethodVisibility(),
                 data.getPackages(), data.getExcludePackages(), data.getEnvironment(), data.getComputerId(), data.getHostname(),
                 data.getAgentVersion(), data.getTags());
             log.trace("Inserted jvm {} {} started at {}", customerId, data.getJvmUuid(),
@@ -184,7 +185,8 @@ public class ImportDAOImpl implements ImportDAO {
                               customerId, appId, jvmId));
     }
 
-    private void importNewMethods(long customerId, long publishedAtMillis, Collection<CodeBaseEntry> entries, Map<String, Long> existingMethods) {
+    private void importNewMethods(long customerId, long publishedAtMillis, Collection<CodeBaseEntry> entries,
+                                  Map<String, Long> existingMethods) {
         long startedAtMillis = System.currentTimeMillis();
         int count = 0;
         for (CodeBaseEntry entry : entries) {
@@ -197,7 +199,8 @@ public class ImportDAOImpl implements ImportDAO {
         log.debug("Imported {} methods in {} ms", count, System.currentTimeMillis() - startedAtMillis);
     }
 
-    private void updateIncompleteMethods(long customerId, long publishedAtMillis, Collection<CodeBaseEntry> entries, Set<String> incompleteMethods,
+    private void updateIncompleteMethods(long customerId, long publishedAtMillis, Collection<CodeBaseEntry> entries,
+                                         Set<String> incompleteMethods,
                                          Map<String, Long> existingMethods, Set<Long> incompleteInvocations) {
         long startedAtMillis = System.currentTimeMillis();
         int count = 0;
@@ -244,11 +247,12 @@ public class ImportDAOImpl implements ImportDAO {
         @Override
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 
-            PreparedStatement ps = con.prepareStatement("INSERT INTO methods(customerId, visibility, signature, createdAt, declaringType, " +
-                                                            "exceptionTypes, methodName, modifiers, packageName, parameterTypes, " +
-                                                            "returnType) " +
-                                                            "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                                                        Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps =
+                con.prepareStatement("INSERT INTO methods(customerId, visibility, signature, createdAt, declaringType, " +
+                                         "exceptionTypes, methodName, modifiers, packageName, parameterTypes, " +
+                                         "returnType) " +
+                                         "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                                     Statement.RETURN_GENERATED_KEYS);
             MethodSignature method = entry.getMethodSignature();
             int column = 0;
             ps.setLong(++column, customerId);
@@ -310,8 +314,9 @@ public class ImportDAOImpl implements ImportDAO {
         @Override
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
             PreparedStatement ps =
-                con.prepareStatement("INSERT INTO invocations(customerId, applicationId, jvmId, methodId, status, invokedAtMillis, invocationCount) " +
-                                         "VALUES(?, ?, ?, ?, ?, ?, ?)");
+                con.prepareStatement(
+                    "INSERT INTO invocations(customerId, applicationId, jvmId, methodId, status, invokedAtMillis, invocationCount) " +
+                        "VALUES(?, ?, ?, ?, ?, ?, ?)");
             int column = 0;
             ps.setLong(++column, customerId);
             ps.setLong(++column, appId);

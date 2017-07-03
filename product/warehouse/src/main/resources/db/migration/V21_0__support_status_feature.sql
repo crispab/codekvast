@@ -20,13 +20,25 @@
 -- THE SOFTWARE.
 --
 
-ALTER TABLE import_file_info
-  CHANGE COLUMN importedFromDaemonHostname daemonHostname VARCHAR(80) NOT NULL
-  AFTER daemonVcsId;
+ALTER TABLE agent_state
+  ADD COLUMN enabled BOOLEAN
+  AFTER timestamp;
 
-ALTER TABLE import_file_info
-  CHANGE COLUMN importedFromEnvironment environment VARCHAR(255) NULL
-  AFTER daemonHostname;
+UPDATE agent_state
+SET enabled = TRUE;
+
+ALTER TABLE agent_state
+  MODIFY COLUMN enabled BOOLEAN NOT NULL;
 
 ALTER TABLE jvms
-  MODIFY COLUMN collectorHostName VARCHAR(255) NOT NULL;
+  ADD COLUMN applicationId BIGINT NULL
+  AFTER customerId;
+
+UPDATE jvms
+SET applicationId = (SELECT DISTINCT applicationId FROM invocations i WHERE i.jvmId = id);
+
+DELETE FROM jvms WHERE applicationId IS NULL;
+
+ALTER TABLE jvms
+  MODIFY COLUMN applicationId BIGINT NOT NULL,
+  ADD CONSTRAINT ix_jvm_applicationId FOREIGN KEY (applicationId) REFERENCES applications (id)

@@ -45,10 +45,11 @@ public interface ImportDAO {
     /**
      * Inserts or updates a row in the jvms table.
      *
-     * @param commonData The JVM data
+     * @param commonData    The JVM data
+     * @param applicationId The value returned from {@link #importApplication(CommonPublicationData)}
      * @return The primary key of the inserted or updated jvms row.
      */
-    long importJvm(CommonPublicationData commonData);
+    long importJvm(CommonPublicationData commonData, long applicationId);
 
     /**
      * Inserts missing rows into the database's methods and invocations tables. Does never update existing rows.

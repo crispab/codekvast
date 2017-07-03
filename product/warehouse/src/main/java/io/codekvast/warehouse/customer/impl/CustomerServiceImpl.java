@@ -96,9 +96,16 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional(readOnly = true)
     public void assertDatabaseSize(long customerId) throws LicenseViolationException {
         CustomerData customerData = getCustomerDataByCustomerId(customerId);
-        long numberOfMethods = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM methods WHERE customerId = ?", Long.class, customerId);
+        long numberOfMethods = countMethods(customerId);
 
         doAssertNumberOfMethods(customerData, numberOfMethods);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public int countMethods(long customerId) {
+        Long count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM methods WHERE customerId = ?", Long.class, customerId);
+        return Math.toIntExact(count);
     }
 
     @Override

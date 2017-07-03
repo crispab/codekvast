@@ -81,6 +81,13 @@ public interface CustomerService {
     void assertDatabaseSize(long customerId) throws LicenseViolationException;
 
     /**
+     * Counts the number of methods this customer has.
+     * @param customerId The customer id
+     * @return The number of methods that belong to this customer
+     */
+    int countMethods(long customerId);
+
+    /**
      * Query the database for all customers.
      *
      * @return A list of CustomerData objects.

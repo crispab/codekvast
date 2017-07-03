@@ -126,19 +126,10 @@ public class WebappController {
     }
 
     private GetMethodsResponse1 doGetMethods(String signature, Integer maxResults) {
-        long startedAt = System.currentTimeMillis();
-
         GetMethodsRequest1 request = GetMethodsRequest1.defaults().toBuilder().signature(signature).maxResults(maxResults).build();
 
-        List<MethodDescriptor1> methods = webappService.getMethods(request);
+        GetMethodsResponse1 response = webappService.getMethods(request);
 
-        GetMethodsResponse1 response = GetMethodsResponse1.builder()
-                                                          .timestamp(startedAt)
-                                                          .request(request)
-                                                          .numMethods(methods.size())
-                                                          .methods(methods)
-                                                          .queryTimeMillis(System.currentTimeMillis() - startedAt)
-                                                          .build();
         log.debug("Response: {}", response);
         return response;
     }

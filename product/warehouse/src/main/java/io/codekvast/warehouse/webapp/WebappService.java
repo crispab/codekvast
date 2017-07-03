@@ -22,11 +22,12 @@
 package io.codekvast.warehouse.webapp;
 
 import io.codekvast.warehouse.webapp.model.methods.GetMethodsRequest1;
+import io.codekvast.warehouse.webapp.model.methods.GetMethodsResponse1;
 import io.codekvast.warehouse.webapp.model.methods.MethodDescriptor1;
+import io.codekvast.warehouse.webapp.model.status.GetStatusResponse1;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -41,27 +42,31 @@ public interface WebappService {
     boolean DEFAULT_ONLY_TRULY_DEAD_METHODS = false;
     boolean DEFAULT_NORMALIZE_SIGNATURE = true;
 
-
     /**
      * Retrieve information about a set of methods.
      *
-     * Use case:
-     * <ol>
-     * <li>In IDEA: Right-click a method name -&gt; Copy Reference (Ctrl-Alt-Shift-C)</li>
-     * <li>In Codekvast Warehouse web UI: paste into the search field (Ctrl-V)</li>
-     * </ol>
+     * Use case: <ol> <li>In IDEA: Right-click a method name -&gt; Copy Reference (Ctrl-Alt-Shift-C)</li> <li>In Codekvast Warehouse web UI:
+     * paste into the search field (Ctrl-V)</li> </ol>
      *
-     * @param request    The request parameters.
-     * @return A list of matching methods. Does never return null.
+     * @param request The request parameters.
+     * @return A response object. Does never return null.
      */
     @NotNull
-    List<MethodDescriptor1> getMethods(@Valid GetMethodsRequest1 request);
+    GetMethodsResponse1 getMethods(@Valid GetMethodsRequest1 request);
 
     /**
      * Retrieve information about a particular method.
      *
-     * @param methodId   The primary key of the method.
+     * @param methodId The primary key of the method.
      * @return an optional MethodDescriptor1. Does never return null.
      */
     Optional<MethodDescriptor1> getMethodById(@NotNull Long methodId);
+
+    /**
+     * Retrieve status for the authenticated customer.
+     *
+     * @return A status object.
+     */
+    @NotNull
+    GetStatusResponse1 getStatus();
 }
