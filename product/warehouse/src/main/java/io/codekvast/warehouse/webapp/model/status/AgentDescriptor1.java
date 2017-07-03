@@ -33,6 +33,9 @@ import lombok.Value;
 public class AgentDescriptor1 {
 
     @NonNull
+    private final Long id;
+
+    @NonNull
     private final String appName;
 
     @NonNull

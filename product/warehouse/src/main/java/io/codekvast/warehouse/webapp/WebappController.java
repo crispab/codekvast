@@ -27,6 +27,7 @@ import io.codekvast.warehouse.security.WebappTokenProvider;
 import io.codekvast.warehouse.webapp.model.methods.GetMethodsRequest1;
 import io.codekvast.warehouse.webapp.model.methods.GetMethodsResponse1;
 import io.codekvast.warehouse.webapp.model.methods.MethodDescriptor1;
+import io.codekvast.warehouse.webapp.model.status.GetStatusResponse1;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -48,11 +48,13 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
  */
 @RestController
 @RequestMapping(produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@CrossOrigin(origins = "http://localhost:8088")
 @Slf4j
 public class WebappController {
 
     private static final String WEBAPP_V1_METHODS = "/webapp/v1/methods";
     private static final String WEBAPP_V1_METHOD = "/webapp/v1/method/detail/{id}";
+    private static final String WEBAPP_V1_STATUS = "/webapp/v1/status";
     private static final String WEBAPP_RENEW_AUTH_TOKEN = "/webapp/renewAuthToken";
 
     private static final String X_CODEKVAST_AUTH_TOKEN = "X-Codekvast-Auth-Token";
@@ -78,8 +80,7 @@ public class WebappController {
         return ResponseEntity.badRequest().body(violations.toString());
     }
 
-    @RequestMapping(method = GET, value = WEBAPP_V1_METHODS)
-    @CrossOrigin(origins = "http://localhost:8088")
+    @RequestMapping(method = GET, path = WEBAPP_V1_METHODS)
     public ResponseEntity<GetMethodsResponse1> getMethods1(@RequestParam(value = "signature", defaultValue = "%") String signature,
                                                            @RequestParam(name = "maxResults", defaultValue = WebappService
                                                                .DEFAULT_MAX_RESULTS_STR)
@@ -89,8 +90,7 @@ public class WebappController {
                              .body(doGetMethods(signature, maxResults));
     }
 
-    @RequestMapping(method = GET, value = WEBAPP_V1_METHOD)
-    @CrossOrigin(origins = "http://localhost:8088")
+    @RequestMapping(method = GET, path = WEBAPP_V1_METHOD)
     public ResponseEntity<MethodDescriptor1> getMethod1(@PathVariable(value = "id") Long methodId) {
         long startedAt = System.currentTimeMillis();
 
@@ -107,8 +107,14 @@ public class WebappController {
                                                     .build());
     }
 
-    @RequestMapping(method = GET, value = WEBAPP_RENEW_AUTH_TOKEN, produces = MediaType.TEXT_PLAIN_VALUE)
-    @CrossOrigin(origins = "http://localhost:8088")
+    @RequestMapping(method = GET, path = WEBAPP_V1_STATUS)
+    public ResponseEntity<GetStatusResponse1> getStatus1() {
+        return ResponseEntity.ok()
+                             .header(X_CODEKVAST_AUTH_TOKEN, securityHandler.renewWebappToken())
+                             .body(webappService.getStatus());
+    }
+
+    @RequestMapping(method = GET, path = WEBAPP_RENEW_AUTH_TOKEN, produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> renewAuthToken() {
         log.debug("Renewing auth token for {}", SecurityContextHolder.getContext().getAuthentication());
 
@@ -118,7 +124,6 @@ public class WebappController {
     }
 
     @RequestMapping(method = GET, value = SecurityConfig.REQUEST_MAPPING_WEBAPP_IS_DEMO_MODE, produces = MediaType.TEXT_PLAIN_VALUE)
-    @CrossOrigin(origins = "http://localhost:8088")
     public ResponseEntity<String> isDemoMode() {
         log.trace("Is demo mode? {}", settings.isDemoMode());
 

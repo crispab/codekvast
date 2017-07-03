@@ -438,6 +438,7 @@ public class MariadbIntegrationTest {
                                                                  .appVersion("v1")
                                                                  .environment("env1")
                                                                  .excludePackages("com.foobar.excluded1")
+                                                                 .id(1L)
                                                                  .methodVisibility("public")
                                                                  .nextPollExpectedAtMillis(cutMillis(inOneMinute))
                                                                  .nextPublicationExpectedAtMillis(

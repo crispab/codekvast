@@ -170,7 +170,7 @@ public class WebappServiceImpl implements WebappService {
 
         jdbcTemplate.query(
             "SELECT agent_state.enabled, agent_state.lastPolledAt, agent_state.nextPollExpectedAt, " +
-                "jvms.startedAt, jvms.publishedAt, jvms.methodVisibility, jvms.packages, jvms.excludePackages, " +
+                "jvms.id AS jvmId, jvms.startedAt, jvms.publishedAt, jvms.methodVisibility, jvms.packages, jvms.excludePackages, " +
                 "jvms.agentVersion, jvms.environment, jvms.tags, " +
                 "applications.name AS appName, applications.version AS appVersion " +
                 "FROM agent_state, jvms, applications " +
@@ -180,11 +180,10 @@ public class WebappServiceImpl implements WebappService {
                 "ORDER BY jvms.id ",
 
             rs -> {
-                Timestamp now = Timestamp.from(Instant.now());
                 Timestamp lastPolledAt = rs.getTimestamp("lastPolledAt");
                 Timestamp nextPollExpectedAt = rs.getTimestamp("nextPollExpectedAt");
                 Timestamp publishedAt = rs.getTimestamp("publishedAt");
-                boolean isAlive = nextPollExpectedAt.after(now);
+                boolean isAlive = nextPollExpectedAt.after(Timestamp.from(Instant.now().minusSeconds(60)));
                 Instant nextPublicationExpectedAt = publishedAt.toInstant().plusSeconds(publishIntervalSeconds);
 
                 result.add(
@@ -196,6 +195,7 @@ public class WebappServiceImpl implements WebappService {
                                     .appVersion(rs.getString("appVersion"))
                                     .environment(rs.getString("environment"))
                                     .excludePackages(rs.getString("excludePackages"))
+                                    .id(rs.getLong("jvmId"))
                                     .methodVisibility(rs.getString("methodVisibility"))
                                     .nextPublicationExpectedAtMillis(nextPublicationExpectedAt.toEpochMilli())
                                     .nextPollExpectedAtMillis(nextPollExpectedAt.getTime())
