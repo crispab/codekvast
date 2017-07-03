@@ -20,8 +20,8 @@
  * THE SOFTWARE.
  */
 /**
- * The API model objects.
+ * The API model objects related to the Methods feature.
  *
  * @author olle.hallin@crisp.se
  */
-package io.codekvast.warehouse.webapp.model;
+package io.codekvast.warehouse.webapp.model.methods;

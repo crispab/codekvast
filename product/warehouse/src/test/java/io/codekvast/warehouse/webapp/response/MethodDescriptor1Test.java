@@ -1,10 +1,10 @@
 package io.codekvast.warehouse.webapp.response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.codekvast.warehouse.webapp.model.ApplicationDescriptor1;
-import io.codekvast.warehouse.webapp.model.EnvironmentDescriptor1;
+import io.codekvast.warehouse.webapp.model.methods.ApplicationDescriptor1;
+import io.codekvast.warehouse.webapp.model.methods.EnvironmentDescriptor1;
 import org.junit.Test;
-import io.codekvast.warehouse.webapp.model.MethodDescriptor1;
+import io.codekvast.warehouse.webapp.model.methods.MethodDescriptor1;
 
 import static io.codekvast.javaagent.model.v1.SignatureStatus.INVOKED;
 import static io.codekvast.javaagent.model.v1.SignatureStatus.EXCLUDED_BY_PACKAGE_NAME;

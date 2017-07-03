@@ -21,8 +21,8 @@
  */
 package io.codekvast.warehouse.webapp;
 
-import io.codekvast.warehouse.webapp.model.GetMethodsRequest1;
-import io.codekvast.warehouse.webapp.model.MethodDescriptor1;
+import io.codekvast.warehouse.webapp.model.methods.GetMethodsRequest1;
+import io.codekvast.warehouse.webapp.model.methods.MethodDescriptor1;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;

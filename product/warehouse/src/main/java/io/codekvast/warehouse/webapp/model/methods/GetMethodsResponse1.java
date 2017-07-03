@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.warehouse.webapp.model;
+package io.codekvast.warehouse.webapp.model.methods;
 
 import lombok.Builder;
 import lombok.ToString;
