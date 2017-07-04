@@ -19,24 +19,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.javaagent.model;
-
 /**
- * Definition of the HTTP endpoints and parameters offered by the Codekvast server's AgentController
+ * Implementations of the Agent REST API.
  *
  * @author olle.hallin@crisp.se
  */
-@SuppressWarnings({"MarkerInterface","InnerClassTooDeeplyNested"})
-public interface Endpoints {
-
-    interface Agent {
-        String V1_POLL_CONFIG = "/javaagent/v1/pollConfig";
-        String V1_UPLOAD_CODEBASE = "/javaagent/v1/uploadCodeBase";
-        String V1_UPLOAD_INVOCATION_DATA = "/javaagent/v1/uploadInvocationData";
-
-        String PARAM_FINGERPRINT = "fingerprint";
-        String PARAM_LICENSE_KEY = "licenseKey";
-        String PARAM_PUBLICATION_SIZE = "numMethods";
-        String PARAM_PUBLICATION_FILE = "publicationFile";
-    }
-}
+package io.codekvast.warehouse.agent.impl;
