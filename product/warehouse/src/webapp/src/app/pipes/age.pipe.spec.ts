@@ -13,6 +13,15 @@ function getPastDate(days: number, hours: number, minutes: number, seconds: numb
     return new Date(now - days * dayMillis - hours * hourMillis - minutes * minuteMillis - seconds * secondMillis);
 }
 
+function getFutureDate(days: number, hours: number, minutes: number, seconds: number): Date {
+    let secondMillis = 1000;
+    let minuteMillis = 60 * secondMillis;
+    let hourMillis = 60 * minuteMillis;
+    let dayMillis = 24 * hourMillis;
+    let now = new Date().getTime();
+    return new Date(now + days * dayMillis + hours * hourMillis + minutes * minuteMillis + seconds * secondMillis);
+}
+
 describe('AgePipe', () => {
 
     beforeEach(() => {
@@ -49,6 +58,10 @@ describe('AgePipe', () => {
 
     it('Should transform getPastDate(0, 0, 36, 12) to "36m 12s"', () => {
         expect(pipe.transform(getPastDate(0, 0, 36, 12), 'age')).toBe('36m 12s');
+    });
+
+    it('Should transform getFutureDate(0, 0, 36, 12) to "in 36m 12s"', () => {
+        expect(pipe.transform(getFutureDate(0, 0, 36, 12), 'age')).toBe('in 36m 12s');
     });
 
     it('Should throw error for non-dates and non-integers', () => {

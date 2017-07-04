@@ -2,53 +2,76 @@
     <h2>Status</h2>
     <div class="d-flex flex-row align-items-start justify-content-between">
 
-        <div *ngIf="data">
+        <div *ngIf="state.data">
             <table class="col-10 table table-striped table-bordered">
                 <tr>
-                    <th colspan="3">Plan {{ data.pricePlan }} Limits</th>
+                    <th colspan="2">Plan {{ state.data.pricePlan }} Limits</th>
                 </tr>
                 <tr>
-                    <td>Number of agents (max={{ data.maxNumberOfAgents }}):</td>
-                    <td class="text-right">{{ data.numLiveAgents }}</td>
-                    <td [ngClass]="percentClasses(data.numLiveAgents, data.maxNumberOfAgents)">{{ percentOf(data.numLiveAgents,
-                                                                                               data.maxNumberOfAgents) }}
+                    <td class="w-50">Number of agents (max={{ state.data.maxNumberOfAgents }}):</td>
+                    <td class="w-50">
+                        <ngb-progressbar [showValue]="false"
+                                         [type]="progressBarType(state.data.numLiveAgents, state.data.maxNumberOfAgents)"
+                                         [value]="state.data.numLiveAgents"
+                                         [max]="state.data.maxNumberOfAgents">
+                            {{ agentsProgressValue() }}
+                        </ngb-progressbar>
                     </td>
                 </tr>
                 <tr>
-                    <td>Number of methods (max={{ data.maxNumberOfMethods }}):</td>
-                    <td class="text-right">{{ data.numMethods }}</td>
-                    <td [ngClass]="percentClasses(data.numMethods, data.maxNumberOfMethods)">{{ percentOf(data.numMethods,
-                                                                                             data.maxNumberOfMethods) }}
+                    <td>Number of methods (max={{ state.data.maxNumberOfMethods }}):</td>
+                    <td>
+                        <ngb-progressbar [showValue]="false"
+                                         [type]="progressBarType(state.data.numMethods, state.data.maxNumberOfMethods)"
+                                         [value]="state.data.numMethods"
+                                         [max]="state.data.maxNumberOfMethods">
+                            {{state.data.numMethods}}
+                        </ngb-progressbar>
                     </td>
                 </tr>
                 <tr>
-                    <td>Collected since ({{ maxCollectedDays() }}):</td>
-                    <td class="text-right">{{ data.collectedSinceMillis | ckAge:settings.dateFormat }}</td>
-                    <td class="text-right">{{ collectedDaysPercent() }}</td>
+                    <td>Collected since:</td>
+                    <td>{{ state.data.collectedSinceMillis | ckAge:settings.dateFormat }}</td>
+                </tr>
+                <tr *ngIf="isTrialPeriod()">
+                    <td>Trial period {{ state.data.maxCollectionPeriodDays}} days ends:</td>
+                    <td>
+                        {{ trialPeriodEndDate() | ckAge:settings.dateFormat }}
+                        <ngb-progressbar [showValue]="false"
+                                         [type]="progressBarType(state.data.collectedDays, state.data.maxCollectionPeriodDays)"
+                                         [value]="state.data.collectedDays"
+                                         [max]="state.data.maxCollectionPeriodDays">
+                            {{ trialPeriodProgress() }}%
+                        </ngb-progressbar>
+                    </td>
                 </tr>
                 <tr>
                     <td>Collection resolution:</td>
-                    <td class="text-right">{{ collectionResolution() }}</td>
-                    <td></td>
+                    <td>{{ collectionResolution() }}</td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        Auto-refresh every {{ state.refreshIntervalSeconds }}s
+                        <button class="ml-2" (click)="state.toggleAutoRefresh()">
+                            <i [ngClass]="state.toggleAutoRefreshButtonClasses()" aria-hidden="true"></i>{{ state.autoRefreshButtonText() }}
+                        </button>
+
+                        <button class="ml-5" (click)="state.refreshNow()"><i class="fa fa-refresh mr-2" aria-hidden="true"></i>Refresh now</button>
+
+                        <div *ngIf="state.data">
+                            <small class="ml-2 col-form-label form-text text-muted">{{ state.data.timestamp | date:'short' }}: Refreshed status in {{
+                                                                                    state.data.queryTimeMillis }} ms
+                            </small>
+                        </div>
+
+                        <div *ngIf="state.errorMessage">
+                            <small class="ml-2 col-form-label form-text text-muted" title="{{ state.errorMessage }}">{{ communicationFailure() }}
+                            </small>
+                        </div>
+                    </td>
                 </tr>
             </table>
         </div>
         <ck-settings-editor></ck-settings-editor>
-    </div>
-
-    <div class="d-flex flex-row">
-        <button (click)="refresh()"><i class="fa fa-refresh mr-2" aria-hidden="true"></i>Refresh</button>
-
-        <div *ngIf="data">
-            <small class="ml-2 col-form-label form-text text-muted">{{ data.timestamp | date:'short' }}: Refreshed status in {{
-                                                                    data.queryTimeMillis }} ms
-            </small>
-        </div>
-
-        <div *ngIf="errorMessage">
-            <small class="ml-2 col-form-label form-text text-muted" title="{{ errorMessage }}">{{ communicationFailure() }}
-            </small>
-        </div>
-
     </div>
 </div>

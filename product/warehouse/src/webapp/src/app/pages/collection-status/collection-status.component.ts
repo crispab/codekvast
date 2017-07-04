@@ -1,10 +1,10 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {WarehouseService} from '../../services/warehouse.service';
-import {StatusData} from '../../model/status/StatusData';
 import {Settings} from '../../components/settings.model';
 import {StateService} from '../../services/state.service';
 import {AgePipe} from '../../pipes/age.pipe';
 import {DatePipe} from '@angular/common';
+import {CollectionStatusComponentState} from './collection-status.component.state';
 
 @Component({
     selector: 'ck-collection-status',
@@ -12,64 +12,61 @@ import {DatePipe} from '@angular/common';
     providers: [AgePipe, DatePipe]
 })
 
-export class CollectionStatusComponent implements OnInit {
-    data: StatusData;
-    errorMessage: string;
+export class CollectionStatusComponent implements OnInit, OnDestroy {
     settings: Settings;
+    state: CollectionStatusComponentState;
 
     constructor(private stateService: StateService, private warehouse: WarehouseService, private agePipe: AgePipe) {
     }
 
     ngOnInit(): void {
         this.settings = this.stateService.getState(Settings.KEY, () => new Settings());
-        this.refresh();
+        this.state = this.stateService.getState(CollectionStatusComponentState.KEY,
+            () => new CollectionStatusComponentState(this.agePipe, this.warehouse));
+        this.state.init();
     }
 
-    refresh() {
-        this.warehouse
-            .getStatus()
-            .subscribe(data => {
-                this.data = data;
-                this.errorMessage = undefined;
-                // this.data.maxCollectionPeriodDays = 30;
-            }, error => {
-                this.data = undefined;
-                this.errorMessage = error.statusText ? error.statusText : error;
-            }, () => console.log('getStatus() complete'));
-    }
-
-    communicationFailure() {
-        let now = this.agePipe.transform(new Date(), 'shortTime');
-        return now + ': Communication failure'
-    }
-
-    percentOf(num: number, maxNum: number) {
-        return Math.round(num * 100 / maxNum) + '%'
-    }
-
-    maxCollectedDays() {
-        return this.data.maxCollectionPeriodDays < 0 ? 'no collection limit' : 'max=' + this.data.maxCollectionPeriodDays;
-    }
-
-    collectedDaysPercent() {
-        return this.data.maxCollectionPeriodDays < 0 ? '' : this.percentOf(this.data.collectedDays, this.data.maxCollectionPeriodDays);
+    ngOnDestroy(): void {
+        this.state.destroy();
     }
 
     collectionResolution() {
-        return this.agePipe.transform(new Date().getTime() - this.data.collectionResolutionSeconds * 1000, 'age');
+        return this.agePipe.transform(new Date().getTime() - this.state.data.collectionResolutionSeconds * 1000, 'age');
     }
 
-    percentClasses(num: number, maxNum: number) {
+    progressBarType(num: number, maxNum: number) {
         let percent = Math.round(num * 100 / maxNum);
-        let overflow = percent > 100;
-        let warning = percent >= 90 && percent <= 100;
-
-        return {
-            'text-right': true,
-            'bg-danger': overflow,
-            'bg-warning': warning,
-            'text-white': overflow || warning
+        if (percent > 100) {
+            return 'danger';
         }
+        if (percent > 90) {
+            return 'warning';
+        }
+        if (percent > 50) {
+            return 'info';
+        }
+        return 'success';
     }
 
+    agentsProgressValue() {
+        if (this.state.data.numLiveEnabledAgents === this.state.data.numLiveAgents) {
+            return this.state.data.numLiveEnabledAgents + ' agents';
+        }
+        let disabled = this.state.data.numLiveAgents - this.state.data.numLiveEnabledAgents;
+        return `${this.state.data.numLiveAgents} agents (${disabled} disabled)`
+    }
+
+    isTrialPeriod() {
+        return this.state.data.maxCollectionPeriodDays > 0;
+    }
+
+    trialPeriodProgress() {
+        return Math.round(this.state.data.collectedDays * 100 / this.state.data.maxCollectionPeriodDays);
+    }
+
+    trialPeriodEndDate() {
+        let daysInMillis = 24 * 60 * 60 * 1000;
+        let result = new Date(this.state.data.collectedSinceMillis + this.state.data.maxCollectionPeriodDays * daysInMillis);
+        return result;
+    }
 }
