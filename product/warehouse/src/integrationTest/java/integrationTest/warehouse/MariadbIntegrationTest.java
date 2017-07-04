@@ -2,9 +2,12 @@ package integrationTest.warehouse;
 
 import integrationTest.warehouse.testdata.TestDataGenerator;
 import io.codekvast.javaagent.model.v1.SignatureStatus;
+import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
+import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.testsupport.docker.DockerContainer;
 import io.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
 import io.codekvast.warehouse.CodekvastWarehouse;
+import io.codekvast.warehouse.agent.AgentService;
 import io.codekvast.warehouse.customer.CustomerData;
 import io.codekvast.warehouse.customer.CustomerService;
 import io.codekvast.warehouse.customer.CustomerService.InteractiveActivity;
@@ -42,6 +45,7 @@ import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.HOURS;
+import static java.time.temporal.ChronoUnit.MINUTES;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeTrue;
@@ -105,6 +109,9 @@ public class MariadbIntegrationTest {
 
     @Inject
     private WebappService webappService;
+
+    @Inject
+    private AgentService agentService;
 
     @Inject
     private TestDataGenerator testDataGenerator;
@@ -388,33 +395,59 @@ public class MariadbIntegrationTest {
         assertThat(result.isPresent(), is(false));
     }
 
+
+    @Test
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_getConfig_for_enabled_agent() {
+        // given
+        new Timestamps().invoke();
+
+        // when
+        GetConfigResponse1 response = agentService.getConfig(
+            GetConfigRequest1.sample().toBuilder()
+                             .jvmUuid("uuid1")
+                             .licenseKey("")
+                             .startedAtMillis(Instant.now().minus(2, HOURS).toEpochMilli())
+                             .build());
+
+        // then
+        assertConfigPollResponse(response, "enabled=true");
+
+        // Assert all dead agents are marked as disabled as well
+        assertAgentEnabled("uuid1", TRUE);
+        assertAgentEnabled("uuid2", FALSE);
+        assertAgentEnabled("uuid3", FALSE);
+        assertAgentEnabled("uuid4", FALSE);
+    }
+
+    @Test
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_getConfig_for_disabled_agent() {
+        // given
+        new Timestamps().invoke();
+
+        // when
+        GetConfigResponse1 response = agentService.getConfig(
+            GetConfigRequest1.sample().toBuilder()
+                             .jvmUuid("uuid2")
+                             .licenseKey("")
+                             .startedAtMillis(Instant.now().minus(2, HOURS).toEpochMilli())
+                             .build());
+
+        // then
+        assertConfigPollResponse(response, "enabled=false");
+
+        assertAgentEnabled("uuid1", TRUE);
+        assertAgentEnabled("uuid2", FALSE);
+        assertAgentEnabled("uuid3", FALSE);
+        assertAgentEnabled("uuid4", FALSE);
+    }
+
     @Test
     @Sql(scripts = "/sql/base-data.sql")
     public void should_getStatus_correctly() {
         // given
-        // Set the timestamps from Java. It's impossible to write time-zone agnostic code in a static sql script invoked by @Sql.
-
-        Instant now = Instant.now();
-        Timestamp moreThanThreeDaysAgo = Timestamp.from(now.minus(3, DAYS).minus(5, HOURS));
-        Timestamp tenMinutesAgo = Timestamp.from(now.minusSeconds(600));
-        Timestamp oneMinuteAgo = Timestamp.from(now.minusSeconds(60));
-        Timestamp inOneMinute = Timestamp.from(now.plusSeconds(60));
-        Timestamp inOneMinutePlusPublishingInterval = Timestamp.from(now.plusSeconds(PricePlan.DEMO.getPublishIntervalSeconds() - 60));
-
-        jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, enabled = ? WHERE jvmUuid = ? ",
-                            tenMinutesAgo, inOneMinute, TRUE, "uuid1");
-
-        jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, enabled = ? WHERE jvmUuid = ? ",
-                            tenMinutesAgo, inOneMinute, FALSE, "uuid2");
-
-        jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, enabled = ? WHERE jvmUuid = ? ",
-                            tenMinutesAgo, oneMinuteAgo, TRUE, "uuid3");
-
-        jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, enabled = ? WHERE jvmUuid = ? ",
-                            tenMinutesAgo, oneMinuteAgo, FALSE, "uuid4");
-
-        jdbcTemplate.update("UPDATE jvms SET startedAt = ?, publishedAt = ?", tenMinutesAgo, oneMinuteAgo);
-        jdbcTemplate.update("UPDATE jvms SET startedAt = ? WHERE uuid = ?", moreThanThreeDaysAgo, "uuid1");
+        Timestamps timestamps = new Timestamps().invoke();
 
         // when
         GetStatusResponse1 status = webappService.getStatus();
@@ -440,22 +473,44 @@ public class MariadbIntegrationTest {
                                                                  .excludePackages("com.foobar.excluded1")
                                                                  .id(1L)
                                                                  .methodVisibility("public")
-                                                                 .nextPollExpectedAtMillis(cutMillis(inOneMinute))
-                                                                 .nextPublicationExpectedAtMillis(
-                                                                     cutMillis(inOneMinutePlusPublishingInterval))
+                                                                 .nextPollExpectedAtMillis(cutMillis(timestamps.plusOneMinute))
+                                                                 .nextPublicationExpectedAtMillis(cutMillis(
+                                                                     Timestamp.from(timestamps.minusTwoMinutes.toInstant().plusSeconds(
+                                                                         PricePlan.DEMO.getPublishIntervalSeconds()))))
                                                                  .packages("com.foobar1")
-                                                                 .pollReceivedAtMillis(cutMillis(tenMinutesAgo))
-                                                                 .publishedAtMillis(cutMillis(oneMinuteAgo))
-                                                                 .startedAtMillis(cutMillis(moreThanThreeDaysAgo))
+                                                                 .pollReceivedAtMillis(cutMillis(timestamps.minusTenMinutes))
+                                                                 .publishedAtMillis(cutMillis(timestamps.minusTwoMinutes))
+                                                                 .startedAtMillis(cutMillis(timestamps.minusThreeDaysPlus))
                                                                  .tags("tag1=t1,tag2=t2")
                                                                  .build()));
 
         assertThat(status.getNumMethods(), is(10));
 
-        assertThat(status.getCollectedSinceMillis(), is(cutMillis(moreThanThreeDaysAgo)));
+        assertThat(status.getCollectedSinceMillis(), is(cutMillis(timestamps.minusThreeDaysPlus)));
         assertThat(status.getCollectedDays(), is(3));
 
         assertThat(status.getUsers(), hasSize(2));
+    }
+
+    private void assertAgentEnabled(String jvmUuid, Boolean expectedEnabled) {
+        Boolean enabled = jdbcTemplate.queryForObject("SELECT enabled FROM agent_state WHERE jvmUuid = ? ", Boolean.class, jvmUuid);
+        assertThat(enabled, is(expectedEnabled));
+    }
+
+    private void assertConfigPollResponse(GetConfigResponse1 response, String publisherConfig) {
+        PricePlan pp = PricePlan.DEMO;
+        assertThat(response, is(GetConfigResponse1.sample().toBuilder()
+                                                  .codeBasePublisherCheckIntervalSeconds(pp.getPublishIntervalSeconds())
+                                                  .codeBasePublisherConfig(publisherConfig)
+                                                  .codeBasePublisherName("http")
+                                                  .codeBasePublisherRetryIntervalSeconds(pp.getRetryIntervalSeconds())
+                                                  .configPollIntervalSeconds(pp.getPollIntervalSeconds())
+                                                  .configPollRetryIntervalSeconds(pp.getRetryIntervalSeconds())
+                                                  .invocationDataPublisherConfig(publisherConfig)
+                                                  .invocationDataPublisherIntervalSeconds(pp.getPublishIntervalSeconds())
+                                                  .invocationDataPublisherName("http")
+                                                  .invocationDataPublisherRetryIntervalSeconds(pp.getRetryIntervalSeconds())
+                                                  .build()));
     }
 
     private long cutMillis(Timestamp timestamp) {
@@ -464,5 +519,38 @@ public class MariadbIntegrationTest {
 
     private int countRowsInTable(String tableName) {
         return JdbcTestUtils.countRowsInTable(jdbcTemplate, tableName);
+    }
+
+    private class Timestamps {
+        Timestamp minusThreeDaysPlus;
+        Timestamp minusTenMinutes;
+        Timestamp minusTwoMinutes;
+        Timestamp plusOneMinute;
+
+        Timestamps invoke() {
+            // Set the timestamps from Java. It's impossible to write time-zone agnostic code in a static sql script invoked by @Sql.
+
+            Instant now = Instant.now();
+            minusThreeDaysPlus = Timestamp.from(now.minus(3, DAYS).minus(5, HOURS));
+            minusTenMinutes = Timestamp.from(now.minus(10, MINUTES));
+            minusTwoMinutes = Timestamp.from(now.minus(2, MINUTES));
+            plusOneMinute = Timestamp.from(now.plus(1, MINUTES));
+
+            jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, enabled = ? WHERE jvmUuid = ? ",
+                                minusTenMinutes, plusOneMinute, TRUE, "uuid1");
+
+            jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, enabled = ? WHERE jvmUuid = ? ",
+                                minusTenMinutes, plusOneMinute, FALSE, "uuid2");
+
+            jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, enabled = ? WHERE jvmUuid = ? ",
+                                minusTenMinutes, minusTwoMinutes, TRUE, "uuid3");
+
+            jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ?, enabled = ? WHERE jvmUuid = ? ",
+                                minusTenMinutes, minusTwoMinutes, FALSE, "uuid4");
+
+            jdbcTemplate.update("UPDATE jvms SET startedAt = ?, publishedAt = ?", minusTenMinutes, minusTwoMinutes);
+            jdbcTemplate.update("UPDATE jvms SET startedAt = ? WHERE uuid = ?", minusThreeDaysPlus, "uuid1");
+            return this;
+        }
     }
 }

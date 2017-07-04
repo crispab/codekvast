@@ -48,8 +48,6 @@ public class AgentServiceImplTest {
         settings.setQueuePath(temporaryFolder.getRoot());
         service = new AgentServiceImpl(settings, jdbcTemplate, customerService);
 
-        when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), anyString(), anyObject())).thenReturn(1);
-
         when(customerService.getCustomerDataByLicenseKey(anyString())).thenReturn(
             CustomerData.builder()
                         .customerId(1L)
@@ -61,8 +59,13 @@ public class AgentServiceImplTest {
 
     @Test
     public void should_return_enabled_publishers_when_below_agent_limit() throws Exception {
+        // given
+        when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), anyString(), anyObject(), anyString())).thenReturn(1);
+
+        // when
         GetConfigResponse1 response = service.getConfig(request);
 
+        // then
         assertThat(response.getCodeBasePublisherName(), is("http"));
         assertThat(response.getCodeBasePublisherConfig(), is("enabled=true"));
 
@@ -72,9 +75,13 @@ public class AgentServiceImplTest {
 
     @Test
     public void should_return_disabled_publishers_when_above_agent_limit() throws Exception {
-        when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), anyString(), anyObject())).thenReturn(10);
+        // given
+        when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), anyString(), anyObject(), anyString())).thenReturn(10);
+
+        // when
         GetConfigResponse1 response = service.getConfig(request);
 
+        // then
         assertThat(response.getCodeBasePublisherName(), is("http"));
         assertThat(response.getCodeBasePublisherConfig(), is("enabled=false"));
 
@@ -84,21 +91,26 @@ public class AgentServiceImplTest {
 
     @Test(expected = LicenseViolationException.class)
     public void should_have_checked_licenseKey() throws Exception {
+        // given
         int publicationSize = 4711;
         doThrow(new LicenseViolationException("stub")).when(customerService).assertPublicationSize(anyString(), eq(publicationSize));
 
+        // when
         service.saveCodeBasePublication("key", "fingerprint", publicationSize, null);
     }
 
     @Test
     public void should_save_uploaded_codebase_no_license() throws Exception {
+        // given
         String contents = "Dummy Code Base Publication";
 
+        // when
         File resultingFile = service.saveCodeBasePublication("key",
                                                              "fingerprint",
                                                              1000,
                                                              new ByteArrayInputStream(contents.getBytes()));
 
+        // then
         assertThat(resultingFile, notNullValue());
         assertThat(resultingFile.getName(), startsWith("codebase-"));
         assertThat(resultingFile.getName(), endsWith(".ser"));

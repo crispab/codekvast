@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.sql.Timestamp;
+import java.time.Instant;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
@@ -69,7 +70,9 @@ public class AgentServiceImpl implements AgentService {
     @Transactional(rollbackFor = Exception.class)
     public GetConfigResponse1 getConfig(GetConfigRequest1 request) throws LicenseViolationException {
         CustomerData customerData = customerService.getCustomerDataByLicenseKey(request.getLicenseKey());
+
         boolean isAgentEnabled = updateAgentState(customerData, request.getJvmUuid());
+
         String publisherConfig = isAgentEnabled ? "enabled=true" : "enabled=false";
         PricePlan pp = customerData.getPricePlan();
         return GetConfigResponse1
@@ -91,34 +94,44 @@ public class AgentServiceImpl implements AgentService {
     private boolean updateAgentState(CustomerData customerData, String jvmUuid) {
 
         long customerId = customerData.getCustomerId();
-        long now = System.currentTimeMillis();
+        Instant now = Instant.now();
 
-        Timestamp nowTimestamp = new Timestamp(now);
-        Timestamp nextExpectedPollTimestamp = new Timestamp(now + customerData.getPricePlan().getPollIntervalSeconds() * 1000L);
+        // Disable all dead agents
+        int updated = jdbcTemplate.update("UPDATE agent_state SET enabled = FALSE " +
+                                              "WHERE customerId = ? AND nextPollExpectedAt < ? AND enabled = TRUE ",
+                                          customerId, Timestamp.from(now.minusSeconds(60)));
+        if (updated > 0) {
+            log.info("Disabled {} dead agents for {}", updated, customerData);
+        }
 
-        int updated =
+        Timestamp nextExpectedPollTimestamp = Timestamp.from(now.plusSeconds(customerData.getPricePlan().getPollIntervalSeconds()));
+        updated =
             jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ? WHERE customerId = ? AND jvmUuid = ?",
-                                nowTimestamp, nextExpectedPollTimestamp, customerId, jvmUuid);
+                                Timestamp.from(now), nextExpectedPollTimestamp, customerId, jvmUuid);
         if (updated == 0) {
             log.info("The agent {}:{} has started", customerId, jvmUuid);
 
-            jdbcTemplate.update("INSERT INTO agent_state(customerId, jvmUuid, lastPolledAt, nextPollExpectedAt, enabled) VALUES (?, ?, ?, ?, ?)",
-                                customerId, jvmUuid, nowTimestamp, nextExpectedPollTimestamp, Boolean.TRUE);
+            jdbcTemplate
+                .update("INSERT INTO agent_state(customerId, jvmUuid, lastPolledAt, nextPollExpectedAt, enabled) VALUES (?, ?, ?, ?, ?)",
+                        customerId, jvmUuid, Timestamp.from(now), nextExpectedPollTimestamp, Boolean.TRUE);
         } else {
             log.debug("The agent {}:{} has polled", customerId, jvmUuid);
         }
 
-        Timestamp cutoffTimestamp = new Timestamp(now - 10_000L);
-        Integer numLiveAgents = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM agent_state WHERE customerId = ? AND nextPollExpectedAt > ?",
-                                                     Integer.class, customerId, cutoffTimestamp);
+        Integer numOtherEnabledLiveAgents =
+            jdbcTemplate.queryForObject("SELECT COUNT(1) FROM agent_state " +
+                                          "WHERE enabled = TRUE AND customerId = ? AND nextPollExpectedAt >= ? AND jvmUuid != ? ",
+                                      Integer.class, customerId, Timestamp.from(now.minusSeconds(10)), jvmUuid);
 
         String planName = customerData.getPlanName();
         int maxNumberOfAgents = customerData.getPricePlan().getMaxNumberOfAgents();
-        boolean enabled = numLiveAgents <= maxNumberOfAgents;
+        boolean enabled = numOtherEnabledLiveAgents < maxNumberOfAgents;
         if (!enabled) {
-            log.warn("Customer {} has {} live agents (max for price plan '{}' is {})", customerId, numLiveAgents, planName, maxNumberOfAgents);
+            log.warn("Customer {} has already {} live agents (max for price plan '{}' is {})", customerId, numOtherEnabledLiveAgents, planName,
+                     maxNumberOfAgents);
         } else {
-            log.debug("Customer {} has {} live agents (max for price plan '{}' is {})", customerId, numLiveAgents, planName, maxNumberOfAgents);
+            log.debug("Customer {} now has {} live agents (max for price plan '{}' is {})", customerId, numOtherEnabledLiveAgents + 1, planName,
+                      maxNumberOfAgents);
         }
 
         jdbcTemplate.update("UPDATE agent_state SET enabled = ? WHERE jvmUuid = ?", enabled, jvmUuid);
@@ -126,7 +139,8 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
-    public File saveCodeBasePublication(@NonNull String licenseKey, String codeBaseFingerprint, int publicationSize, InputStream inputStream)
+    public File saveCodeBasePublication(@NonNull String licenseKey, String codeBaseFingerprint, int publicationSize,
+                                        InputStream inputStream)
         throws LicenseViolationException, IOException {
         customerService.assertPublicationSize(licenseKey, publicationSize);
 
@@ -134,7 +148,8 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
-    public File saveInvocationDataPublication(@NonNull String licenseKey, String codeBaseFingerprint, int publicationSize, InputStream inputStream)
+    public File saveInvocationDataPublication(@NonNull String licenseKey, String codeBaseFingerprint, int publicationSize,
+                                              InputStream inputStream)
         throws LicenseViolationException, IOException {
         customerService.assertPublicationSize(licenseKey, publicationSize);
 
