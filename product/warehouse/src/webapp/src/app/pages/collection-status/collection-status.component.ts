@@ -10,6 +10,7 @@ import {Agent} from '../../model/status/Agent';
 @Component({
     selector: 'ck-collection-status',
     template: require('./collection-status.component.html'),
+    styles: [require('./collection-status.component.css')],
     providers: [AgePipe, DatePipe]
 })
 

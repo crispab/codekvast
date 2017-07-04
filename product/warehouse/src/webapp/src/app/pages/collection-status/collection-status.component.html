@@ -51,52 +51,77 @@
         </div>
         <div class="d-flex flex-column">
             <ck-settings-editor></ck-settings-editor>
-            <div>
-                Auto-refresh every
-                <input type="number"
+            <div class="input-group">
+                <span class="input-group-addon">Auto-refresh every</span>
+                <input class="form-control"
+                       id="refreshInterval"
+                       type="number"
                        min="10"
                        max="3600"
-                       size="4"
                        [(ngModel)]="state.refreshIntervalSeconds"
-                       (change)="state.updateRefreshTimer()"/>&nbsp;s
-                <button class="ml-2" (click)="state.toggleAutoRefresh()">
-                    <i [ngClass]="state.toggleAutoRefreshButtonClasses()" aria-hidden="true"></i>{{ state.autoRefreshButtonText() }}
-                </button>
+                       (change)="state.updateRefreshTimer()"/>
+                <span class="input-group-addon">s</span>
+                <span class="input-group-btn">
+                    <button id="autoRefreshButton" class="btn" (click)="state.toggleAutoRefresh()">
+                        <i [ngClass]="state.toggleAutoRefreshButtonClasses()" aria-hidden="true"></i>{{ state.autoRefreshButtonText() }}
+                    </button>
+                </span>
+            </div>
+            <div *ngIf="state.data">
+                <small class="ml-2 col-form-label form-text text-muted">{{ state.data.timestamp | ckAge:settings.dateFormat }} Refreshed
+                                                                        status in {{ state.data.queryTimeMillis }} ms
+                </small>
+            </div>
 
-                <button class="ml-3" (click)="state.refreshNow()"><i class="fa fa-refresh mr-2" aria-hidden="true"></i>Refresh now</button>
-
-                <div *ngIf="state.data">
-                    <small class="ml-2 col-form-label form-text text-muted">{{ state.data.timestamp | date:'medium' }} Refreshed status in
-                                                                            {{ state.data.queryTimeMillis }} ms
-                    </small>
-                </div>
-
-                <div *ngIf="state.errorMessage">
-                    <small class="ml-2 col-form-label form-text text-muted" title="{{ state.errorMessage }}">{{ communicationFailure() }}
-                    </small>
-                </div>
+            <div *ngIf="state.errorMessage">
+                <small class="ml-2 col-form-label form-text text-muted" title="{{ state.errorMessage }}">{{ communicationFailure() }}
+                </small>
             </div>
         </div>
     </div>
 
-    <h4>Agents</h4>
-    <input id="showTerminatedAgents" type="checkbox" [(ngModel)]="state.showTerminatedAgents"><label class="ml-1" for="showTerminatedAgents">Show terminated agents</label>
-    <table class="table table-striped table-bordered">
-        <tr>
-            <th>Application</th>
-            <th>Agent version</th>
-            <th>Started at</th>
-            <th>Data received at</th>
-            <th>Next expected at</th>
-            <th>Comments</th>
-        </tr>
-        <tr *ngFor="let agent of state.getFilteredAgents()">
-            <td>{{ agent.appName }} {{ agent.appVersion}}</td>
-            <td>{{ agent.agentVersion }}</td>
-            <td>{{ agent.startedAtMillis  | ckAge:settings.dateFormat }}</td>
-            <td>{{ agent.publishedAtMillis | ckAge:settings.dateFormat }}</td>
-            <td><span [ngClass]="agentExpectedAtClasses(agent)">{{ agent.nextPublicationExpectedAtMillis | ckAge:settings.dateFormat }}</span></td>
-            <td>{{ getComments(agent) }}</td>
-        </tr>
-    </table>
+    <div *ngIf="state.data">
+        <h4>Agents</h4>
+        <input id="showTerminatedAgents" type="checkbox" [(ngModel)]="state.showTerminatedAgents">
+        <label class="ml-1" for="showTerminatedAgents">Show terminated agents</label>
+        <table class="table table-striped table-bordered">
+            <tr>
+                <th>Application</th>
+                <th>Agent version</th>
+                <th>Started at</th>
+                <th>Data received at</th>
+                <th>Next expected at</th>
+                <th>Comments</th>
+            </tr>
+            <tr *ngFor="let agent of state.getFilteredAgents()">
+                <td>{{ agent.appName }} {{ agent.appVersion}}</td>
+                <td>{{ agent.agentVersion }}</td>
+                <td>{{ agent.startedAtMillis | ckAge:settings.dateFormat }}</td>
+                <td>{{ agent.publishedAtMillis | ckAge:settings.dateFormat }}</td>
+                <td>
+                    <span [ngClass]="agentExpectedAtClasses(agent)">{{ agent.nextPublicationExpectedAtMillis | ckAge:settings.dateFormat }}</span>
+                </td>
+                <td>{{ getComments(agent) }}</td>
+            </tr>
+        </table>
+        <h4>Users</h4>
+        <table class="table table-striped table-bordered">
+            <tr>
+                <th>Email</th>
+                <th>Source</th>
+                <th>Number of logins</th>
+                <th>First login at</th>
+                <th>Last login at</th>
+                <th>Last activity at</th>
+            </tr>
+            <tr *ngFor="let user of state.data.users">
+                <td>{{ user.email }}</td>
+                <td>{{ user.lastLoginSource }}</td>
+                <td class="text-right">{{ user.numberOfLogins }}</td>
+                <td>{{ user.firstLoginAtMillis | ckAge:settings.dateFormat }}</td>
+                <td>{{ user.lastLoginAtMillis | ckAge:settings.dateFormat }}</td>
+                <td>{{ user.lastActivityAtMillis | ckAge:settings.dateFormat}}</td>
+            </tr>
+        </table>
+    </div>
 </div>

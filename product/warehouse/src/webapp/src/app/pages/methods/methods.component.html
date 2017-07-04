@@ -43,7 +43,7 @@
                         </button>
 
                         <div *ngIf="state.data">
-                            <small class="ml-2 col-form-label form-text text-muted">{{ state.data.timestamp | date:'short' }}: Found {{
+                            <small class="ml-2 col-form-label form-text text-muted">{{ state.data.timestamp | ckAge:settings.dateFormat }}: Found {{
                                                                                     state.data.numMethods }} methods in {{
                                                                                     state.data.queryTimeMillis }} ms
                             </small>

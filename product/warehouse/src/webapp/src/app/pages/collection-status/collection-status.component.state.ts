@@ -95,7 +95,10 @@ export class CollectionStatusComponentState {
     }
 
     getFilteredAgents() {
-        return this.data.agents.filter(a => this.showTerminatedAgents || a.agentAlive);
+        if (this.data.agents) {
+            return this.data.agents.filter(a => this.showTerminatedAgents || a.agentAlive);
+        }
+        return null;
     }
 
 
