@@ -20,5 +20,8 @@ fi
 echo "Building..."
 ${GRADLEW} ${GRADLE_OPTS} ${tasks}
 
+echo "Generating aggregated javadoc..."
+${GRADLEW} ${GRADLE_OPTS} :product:aggregateJavadoc
+
 echo "Generating coverage report..."
 ${GRADLEW} ${GRADLE_OPTS} coverageReport

@@ -14,6 +14,7 @@ import java.net.SocketAddress;
 import java.net.URISyntaxException;
 
 import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public class AgentConfigTest {
@@ -128,5 +129,11 @@ public class AgentConfigTest {
         AgentConfig config = AgentConfigFactory.createTemplateConfig();
         assertThat(config.getSchedulerInitialDelayMillis(), not(is(0)));
         assertThat(config.getSchedulerIntervalMillis(), not(is(0)));
+    }
+
+    @Test
+    public void should_return_commonPublicationData() throws Exception {
+        AgentConfig config = AgentConfigFactory.createTemplateConfig();
+        assertNotNull(config.commonPublicationData());
     }
 }

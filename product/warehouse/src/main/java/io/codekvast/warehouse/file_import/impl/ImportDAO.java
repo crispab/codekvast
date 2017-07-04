@@ -56,7 +56,7 @@ public interface ImportDAO {
      *
      * @param customerId        The customer ID
      * @param appId             The application ID returned by {@link #importApplication(CommonPublicationData)}
-     * @param jvmId             The JVM ID returned by {@link #importJvm(CommonPublicationData)}
+     * @param jvmId             The JVM ID returned by {@link #importJvm(CommonPublicationData, long)}
      * @param publishedAtMillis The timestamp the publication was published.
      * @param entries           The collection of code base entries to store.
      */
@@ -67,7 +67,7 @@ public interface ImportDAO {
      *
      * @param customerId      The customer ID
      * @param appId           The application ID returned by {@link #importApplication(CommonPublicationData)}
-     * @param jvmId           The JVM ID returned by {@link #importJvm(CommonPublicationData)}
+     * @param jvmId           The JVM ID returned by {@link #importJvm(CommonPublicationData, long)}
      * @param invokedAtMillis The start of the recording interval.
      * @param invocations     The set of signatures that were invoked in this recording interval.
      */

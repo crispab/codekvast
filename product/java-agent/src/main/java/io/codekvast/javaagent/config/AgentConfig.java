@@ -166,7 +166,7 @@ public class AgentConfig implements Serializable {
         return result.toLowerCase().replaceAll("[^a-z0-9._+-]", "");
     }
 
-    public CommonPublicationData.CommonPublicationDataBuilder commonPublicationDataBuilder() {
+    public CommonPublicationData commonPublicationData() {
         return CommonPublicationData
             .builder()
             .appName(getAppName())
@@ -181,7 +181,11 @@ public class AgentConfig implements Serializable {
             .methodVisibility(getMethodVisibility())
             .packages(getNormalizedPackages().toString())
             .publishedAtMillis(System.currentTimeMillis())
-            .tags(getTags());
+            .tags(getTags())
+
+            .codeBaseFingerprint("to-be-replaced")
+
+            .build();
 
     }
 

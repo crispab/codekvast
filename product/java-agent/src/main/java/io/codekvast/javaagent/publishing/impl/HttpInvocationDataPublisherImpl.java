@@ -113,7 +113,7 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
     private InvocationDataPublication createPublication(long customerId, long recordingIntervalStartedAtMillis, Set<String> invocations) {
 
         return InvocationDataPublication.builder()
-                                        .commonData(getConfig().commonPublicationDataBuilder()
+                                        .commonData(getConfig().commonPublicationData().toBuilder()
                                                                .codeBaseFingerprint(getCodeBaseFingerprint().getSha256())
                                                                .customerId(customerId)
                                                                .sequenceNumber(this.getSequenceNumber())
