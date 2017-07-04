@@ -16,6 +16,6 @@ ext {
         "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
     ]
     logback = 'ch.qos.logback:logback-classic:1.2.3'
-    lombok = 'org.projectlombok:lombok:1.16.16'
+    lombok = 'org.projectlombok:lombok:1.16.18'
     mariadbDriver = 'org.mariadb.jdbc:mariadb-java-client:2.0.3'
 }
