@@ -62,8 +62,8 @@
                        (change)="state.updateRefreshTimer()"/>
                 <span class="input-group-addon">s</span>
                 <span class="input-group-btn">
-                    <button id="autoRefreshButton" class="btn" (click)="state.toggleAutoRefresh()">
-                        <i [ngClass]="state.toggleAutoRefreshButtonClasses()" aria-hidden="true"></i>{{ state.autoRefreshButtonText() }}
+                    <button class="btn" (click)="state.toggleAutoRefresh()" title="{{state.autoRefreshButtonText()}}">
+                        <i [ngClass]="state.toggleAutoRefreshButtonClasses()" aria-hidden="true"></i>
                     </button>
                 </span>
             </div>

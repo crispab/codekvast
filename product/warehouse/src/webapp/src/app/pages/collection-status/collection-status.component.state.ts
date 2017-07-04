@@ -31,7 +31,6 @@ export class CollectionStatusComponentState {
 
     toggleAutoRefreshButtonClasses() {
         return {
-            'mr-2': true,
             'fa': true,
             'fa-pause': this.autoRefresh,
             'fa-play': !this.autoRefresh,
@@ -48,7 +47,7 @@ export class CollectionStatusComponentState {
     }
 
     autoRefreshButtonText() {
-        return this.autoRefresh ? 'Pause' : 'Resume';
+        return this.autoRefresh ? 'Pause auto-refresh' : 'Resume auto-refresh';
     }
 
     private startAutoRefresh() {
