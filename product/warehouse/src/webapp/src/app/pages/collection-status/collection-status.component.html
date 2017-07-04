@@ -49,29 +49,30 @@
                     <td>Collection resolution:</td>
                     <td>{{ collectionResolution() }}</td>
                 </tr>
-                <tr>
-                    <td colspan="2">
-                        Auto-refresh every {{ state.refreshIntervalSeconds }}s
-                        <button class="ml-2" (click)="state.toggleAutoRefresh()">
-                            <i [ngClass]="state.toggleAutoRefreshButtonClasses()" aria-hidden="true"></i>{{ state.autoRefreshButtonText() }}
-                        </button>
-
-                        <button class="ml-5" (click)="state.refreshNow()"><i class="fa fa-refresh mr-2" aria-hidden="true"></i>Refresh now</button>
-
-                        <div *ngIf="state.data">
-                            <small class="ml-2 col-form-label form-text text-muted">{{ state.data.timestamp | date:'short' }}: Refreshed status in {{
-                                                                                    state.data.queryTimeMillis }} ms
-                            </small>
-                        </div>
-
-                        <div *ngIf="state.errorMessage">
-                            <small class="ml-2 col-form-label form-text text-muted" title="{{ state.errorMessage }}">{{ communicationFailure() }}
-                            </small>
-                        </div>
-                    </td>
-                </tr>
             </table>
         </div>
+        <div class="d-flex flex-column align-items-start justify-content-between">
         <ck-settings-editor></ck-settings-editor>
+        <div>
+            Auto-refresh every
+            <input type="number" min="10" max="3600" size="4" [(ngModel)]="state.refreshIntervalSeconds" (change)="state.updateRefreshTimer()"/>&nbsp;s
+            <button class="ml-2" (click)="state.toggleAutoRefresh()">
+                <i [ngClass]="state.toggleAutoRefreshButtonClasses()" aria-hidden="true"></i>{{ state.autoRefreshButtonText() }}
+            </button>
+
+            <button class="ml-3" (click)="state.refreshNow()"><i class="fa fa-refresh mr-2" aria-hidden="true"></i>Refresh now</button>
+
+            <div *ngIf="state.data">
+                <small class="ml-2 col-form-label form-text text-muted">{{ state.data.timestamp | date:'short' }}: Refreshed status in {{
+                                                                        state.data.queryTimeMillis }} ms
+                </small>
+            </div>
+
+            <div *ngIf="state.errorMessage">
+                <small class="ml-2 col-form-label form-text text-muted" title="{{ state.errorMessage }}">{{ communicationFailure() }}
+                </small>
+            </div>
+        </div>
+        </div>
     </div>
 </div>

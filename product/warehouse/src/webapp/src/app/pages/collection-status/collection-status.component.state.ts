@@ -52,7 +52,7 @@ export class CollectionStatusComponentState {
 
     private startAutoRefresh() {
         let timer = TimerObservable.create(0, this.refreshIntervalSeconds * 1000);
-        this.timerSubscription = timer.subscribe( (tick: number) => {
+        this.timerSubscription = timer.subscribe((tick: number) => {
             console.log('Doing auto-refresh #%o', tick);
             this.refreshNow();
         });
@@ -60,6 +60,15 @@ export class CollectionStatusComponentState {
 
     private stopAutoRefresh() {
         this.timerSubscription.unsubscribe();
+    }
+
+    updateRefreshTimer() {
+        this.refreshIntervalSeconds = Math.max(10, this.refreshIntervalSeconds);
+        console.log('New refreshIntervalSeconds: %o', this.refreshIntervalSeconds);
+        if (this.autoRefresh) {
+            this.stopAutoRefresh();
+            this.startAutoRefresh();
+        }
     }
 
     refreshNow() {
@@ -70,8 +79,8 @@ export class CollectionStatusComponentState {
                 this.errorMessage = undefined;
 
                 // TODO remove after debugging
-                this.data.collectedDays = 29;
-                this.data.maxCollectionPeriodDays = 30;
+                // this.data.collectedDays = 29;
+                // this.data.maxCollectionPeriodDays = 30;
                 // end
             }, error => {
                 this.data = undefined;
