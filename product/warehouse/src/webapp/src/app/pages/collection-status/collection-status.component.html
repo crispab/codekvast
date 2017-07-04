@@ -49,7 +49,7 @@
                 </tr>
             </table>
         </div>
-        <div class="d-flex flex-column align-items-start justify-content-between">
+        <div class="d-flex flex-column">
             <ck-settings-editor></ck-settings-editor>
             <div>
                 Auto-refresh every
@@ -78,22 +78,24 @@
             </div>
         </div>
     </div>
+
     <h4>Agents</h4>
+    <input id="showTerminatedAgents" type="checkbox" [(ngModel)]="state.showTerminatedAgents"><label class="ml-1" for="showTerminatedAgents">Show terminated agents</label>
     <table class="table table-striped table-bordered">
         <tr>
             <th>Application</th>
             <th>Agent version</th>
             <th>Started at</th>
-            <th>Data expected at</th>
             <th>Data received at</th>
+            <th>Next expected at</th>
             <th>Comments</th>
         </tr>
-        <tr *ngFor="let agent of getLiveAgents()">
+        <tr *ngFor="let agent of state.getFilteredAgents()">
             <td>{{ agent.appName }} {{ agent.appVersion}}</td>
             <td>{{ agent.agentVersion }}</td>
             <td>{{ agent.startedAtMillis  | ckAge:settings.dateFormat }}</td>
-            <td [ngClass]="agentExpectedAtClasses(agent)">{{ agent.nextPublicationExpectedAtMillis | ckAge:settings.dateFormat }}</td>
             <td>{{ agent.publishedAtMillis | ckAge:settings.dateFormat }}</td>
+            <td><span [ngClass]="agentExpectedAtClasses(agent)">{{ agent.nextPublicationExpectedAtMillis | ckAge:settings.dateFormat }}</span></td>
             <td>{{ getComments(agent) }}</td>
         </tr>
     </table>

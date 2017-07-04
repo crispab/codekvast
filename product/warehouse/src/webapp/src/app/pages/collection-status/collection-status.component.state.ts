@@ -10,6 +10,7 @@ export class CollectionStatusComponentState {
     data: StatusData;
     errorMessage: string;
     autoRefresh = true;
+    showTerminatedAgents = false;
     refreshIntervalSeconds = 60;
     private timerSubscription: Subscription;
 
@@ -92,5 +93,10 @@ export class CollectionStatusComponentState {
         let now = this.agePipe.transform(new Date(), 'shortTime');
         return now + ': Communication failure'
     }
+
+    getFilteredAgents() {
+        return this.data.agents.filter(a => this.showTerminatedAgents || a.agentAlive);
+    }
+
 
 }

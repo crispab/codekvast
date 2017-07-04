@@ -7,6 +7,24 @@
                     <input class="form-check-input"
                            type="radio"
                            name="dateFormat"
+                           value="medium"
+                           [(ngModel)]="settings.dateFormat">
+                    {{ settings.sampleTimestamp | ckAge:'medium' }} </label>
+            </div>
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input"
+                           type="radio"
+                           name="dateFormat"
+                           value="y-MM-dd HH:mm:ss"
+                           [(ngModel)]="settings.dateFormat">
+                    {{ settings.sampleTimestamp | ckAge:'y-MM-dd HH:mm:ss' }} </label>
+            </div>
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input"
+                           type="radio"
+                           name="dateFormat"
                            value="short"
                            [(ngModel)]="settings.dateFormat">
                     {{ settings.sampleTimestamp | ckAge:'short' }} </label>

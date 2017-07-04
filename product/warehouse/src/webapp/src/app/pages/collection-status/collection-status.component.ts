@@ -71,13 +71,11 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
         return result;
     }
 
-    getLiveAgents() {
-        return this.state.data.agents.filter(a => a.agentAlive);
-    }
-
     agentExpectedAtClasses(agent: Agent) {
-        let overdue = agent.nextPublicationExpectedAtMillis < new Date().getTime() - 30000;
+        let invisible = !agent.agentAlive;
+        let overdue = !invisible && agent.nextPublicationExpectedAtMillis < new Date().getTime() - 30000;
         return {
+            'invisible' : invisible,
             'bg-warning': overdue,
             'text-white': overdue
         };
@@ -86,10 +84,13 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
     getComments(agent: Agent) {
         console.log('Calculating comments for %o', agent);
 
-        let result = '';
-        if (!agent.agentLiveAndEnabled) {
-            result = 'suspended';
+        if (!agent.agentAlive) {
+            return 'terminated';
         }
-        return result;
+
+        if (!agent.agentLiveAndEnabled) {
+            return 'suspended';
+        }
+        return '';
     }
 }
