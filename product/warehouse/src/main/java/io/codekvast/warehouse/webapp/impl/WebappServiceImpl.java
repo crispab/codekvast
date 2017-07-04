@@ -184,7 +184,7 @@ public class WebappServiceImpl implements WebappService {
                 Timestamp nextPollExpectedAt = rs.getTimestamp("nextPollExpectedAt");
                 Timestamp publishedAt = rs.getTimestamp("publishedAt");
                 boolean isAlive = nextPollExpectedAt.after(Timestamp.from(Instant.now().minusSeconds(60)));
-                Instant nextPublicationExpectedAt = publishedAt.toInstant().plusSeconds(publishIntervalSeconds);
+                Instant nextPublicationExpectedAt = lastPolledAt.toInstant().plusSeconds(publishIntervalSeconds);
 
                 result.add(
                     AgentDescriptor1.builder()

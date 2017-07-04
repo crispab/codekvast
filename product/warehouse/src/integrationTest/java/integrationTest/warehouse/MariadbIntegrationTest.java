@@ -475,7 +475,7 @@ public class MariadbIntegrationTest {
                                                                  .methodVisibility("public")
                                                                  .nextPollExpectedAtMillis(cutMillis(timestamps.plusOneMinute))
                                                                  .nextPublicationExpectedAtMillis(cutMillis(
-                                                                     Timestamp.from(timestamps.minusTwoMinutes.toInstant().plusSeconds(
+                                                                     Timestamp.from(timestamps.minusTenMinutes.toInstant().plusSeconds(
                                                                          PricePlan.DEMO.getPublishIntervalSeconds()))))
                                                                  .packages("com.foobar1")
                                                                  .pollReceivedAtMillis(cutMillis(timestamps.minusTenMinutes))

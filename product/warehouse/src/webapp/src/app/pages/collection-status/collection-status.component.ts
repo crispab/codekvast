@@ -5,6 +5,7 @@ import {StateService} from '../../services/state.service';
 import {AgePipe} from '../../pipes/age.pipe';
 import {DatePipe} from '@angular/common';
 import {CollectionStatusComponentState} from './collection-status.component.state';
+import {Agent} from '../../model/status/Agent';
 
 @Component({
     selector: 'ck-collection-status',
@@ -67,6 +68,28 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
     trialPeriodEndDate() {
         let daysInMillis = 24 * 60 * 60 * 1000;
         let result = new Date(this.state.data.collectedSinceMillis + this.state.data.maxCollectionPeriodDays * daysInMillis);
+        return result;
+    }
+
+    getLiveAgents() {
+        return this.state.data.agents.filter(a => a.agentAlive);
+    }
+
+    agentExpectedAtClasses(agent: Agent) {
+        let overdue = agent.nextPublicationExpectedAtMillis < new Date().getTime() - 30000;
+        return {
+            'bg-warning': overdue,
+            'text-white': overdue
+        };
+    }
+
+    getComments(agent: Agent) {
+        console.log('Calculating comments for %o', agent);
+
+        let result = '';
+        if (!agent.agentLiveAndEnabled) {
+            result = 'suspended';
+        }
         return result;
     }
 }

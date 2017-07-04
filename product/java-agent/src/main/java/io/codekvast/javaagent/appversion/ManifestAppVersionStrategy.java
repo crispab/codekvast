@@ -113,7 +113,10 @@ public class ManifestAppVersionStrategy extends AbstractAppVersionStrategy {
         }
 
         File result = url == null ? null : new File(url.toURI());
-        if (result == null || !result.canRead()) {
+        if (result == null) {
+            throw new IOException("Cannot find " + jarUri);
+        }
+        if (!result.canRead()) {
             throw new IOException("Cannot read " + jarUri);
         }
         return result;

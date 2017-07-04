@@ -15,69 +15,76 @@ public class ManifestAppVersionStrategyTest {
     private static final String VALID_JAR_1_7_7 = "src/test/resources/sample-app/lib/slf4j-api-1.7.7.jar";
     private static final String EXPECTED_VERSION = "1.7.7";
 
-    private final Collection<File> VALID_URIS;
-    private final Collection<File> INVALID_URIS;
+    private final Collection<File> VALID_PATHS;
+    private final Collection<File> INVALID_PATHS;
 
     private final AppVersionStrategy strategy = new ManifestAppVersionStrategy();
 
     public ManifestAppVersionStrategyTest() throws URISyntaxException {
-        VALID_URIS = Arrays.asList(new File(System.getProperty("user.dir") + File.separator + "src/test/resources"));
-        INVALID_URIS = Arrays.asList(new File(System.getProperty("user.dir") + File.separator + "src/test/resourcesXXX"));
+        VALID_PATHS = Arrays.asList(new File(System.getProperty("user.dir") + File.separator + "src/test/resources"));
+        INVALID_PATHS = Arrays.asList(new File(System.getProperty("user.dir") + File.separator + "src/test/resourcesXXX"));
     }
 
     @Test
-    public void testResolveWhen_validJarFile() throws Exception {
+    public void should_resolve_when_valid_jar_name() throws Exception {
         String args[] = {"manifest", VALID_JAR_1_7_7};
 
-        assertThat(strategy.resolveAppVersion(VALID_URIS, args), is(EXPECTED_VERSION));
+        assertThat(strategy.resolveAppVersion(VALID_PATHS, args), is(EXPECTED_VERSION));
     }
 
     @Test
-    public void testResolveWhen_invalidJarFile() throws Exception {
+    public void should_not_resolve_when_invalid_jar_name() throws Exception {
         String args[] = {"manifest", VALID_JAR_1_7_7 + "XXX"};
 
-        assertThat(strategy.resolveAppVersion(VALID_URIS, args), is(AppVersionStrategy.UNKNOWN_VERSION));
+        assertThat(strategy.resolveAppVersion(VALID_PATHS, args), is(AppVersionStrategy.UNKNOWN_VERSION));
     }
 
     @Test
-    public void testResolveWhen_validJarFile_butInvalidAttribute() throws Exception {
+    public void should_resolve_when_valid_jar_name_but_invalid_attribute() throws Exception {
         String args[] = {"manifest", "src/test/resources/sample-app/lib/slf4j-api-1.7.7.jar", "foobar"};
 
-        assertThat(strategy.resolveAppVersion(VALID_URIS, args), is(EXPECTED_VERSION));
+        assertThat(strategy.resolveAppVersion(VALID_PATHS, args), is(EXPECTED_VERSION));
     }
 
     @Test
-    public void testResolveWhen_validJarURI() throws Exception {
+    public void should_resolve_when_valid_jar_URI() throws Exception {
         String args[] = {"manifest", new File(System.getProperty("user.dir") + File.separator + VALID_JAR_1_7_7).toURI().toString()};
 
-        assertThat(strategy.resolveAppVersion(VALID_URIS, args), is(EXPECTED_VERSION));
+        assertThat(strategy.resolveAppVersion(VALID_PATHS, args), is(EXPECTED_VERSION));
     }
 
     @Test
-    public void testResolveWhen_validCodeBase_and_validRegexp() throws Exception {
-        String args[] = {"manifest", "slf4j-api.*"};
+    public void should_resolve_when_valid_codeBase_and_valid_regexp() throws Exception {
+        String args[] = {"manifest", "slf4j-api.*\\.jar$"};
 
-        assertThat(strategy.resolveAppVersion(VALID_URIS, args), is(EXPECTED_VERSION));
+        assertThat(strategy.resolveAppVersion(VALID_PATHS, args), is(EXPECTED_VERSION));
     }
 
     @Test
-    public void testResolveWhen_validCodeBase_and_validRegexp_and_invalidAttribute() throws Exception {
+    public void should_resolve_when_valid_codeBase_and_valid_naive_regexp() throws Exception {
+        String args[] = {"manifest", "slf4j-api.*.jar"};
+
+        assertThat(strategy.resolveAppVersion(VALID_PATHS, args), is(EXPECTED_VERSION));
+    }
+
+    @Test
+    public void should_resolve_when_valid_codeBase_and_valid_regexp_and_invalid_attribute() throws Exception {
         String args[] = {"manifest", "slf4j-api.*", "foobar"};
 
-        assertThat(strategy.resolveAppVersion(VALID_URIS, args), is(EXPECTED_VERSION));
+        assertThat(strategy.resolveAppVersion(VALID_PATHS, args), is(EXPECTED_VERSION));
     }
 
     @Test
-    public void testResolveWhen_validCodeBase_and_validRegexp_and_nonstandardAttribute() throws Exception {
+    public void should_resolve_when_valid_codeBase_and_valid_regexp_and_nonstandard_attribute() throws Exception {
         String args[] = {"manifest", "slf4j-api.*", "implementation-title"};
 
-        assertThat(strategy.resolveAppVersion(VALID_URIS, args), is("slf4j-api"));
+        assertThat(strategy.resolveAppVersion(VALID_PATHS, args), is("slf4j-api"));
     }
 
     @Test
-    public void testResolveWhen_invalidCodeBase_and_validRegexp() throws Exception {
+    public void should_not_resolve_when_invalid_codeBase_and_valid_regexp() throws Exception {
         String args[] = {"manifest", "slf4j-api.*"};
 
-        assertThat(strategy.resolveAppVersion(INVALID_URIS, args), is(AppVersionStrategy.UNKNOWN_VERSION));
+        assertThat(strategy.resolveAppVersion(INVALID_PATHS, args), is(AppVersionStrategy.UNKNOWN_VERSION));
     }
 }
