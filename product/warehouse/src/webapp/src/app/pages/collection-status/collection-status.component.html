@@ -11,8 +11,7 @@
                         {{ agentsProgressValue() }}<br>
                         <ngb-progressbar [showValue]="true"
                                          [type]="progressBarType(state.data.numLiveAgents, state.data.maxNumberOfAgents)"
-                                         [value]="state.data.numLiveAgents"
-                                         [max]="state.data.maxNumberOfAgents">
+                                         [value]="toPercent(state.data.numLiveAgents, state.data.maxNumberOfAgents)">
                         </ngb-progressbar>
                     </td>
                 </tr>
@@ -22,7 +21,7 @@
                         {{state.data.numMethods}}<br>
                         <ngb-progressbar [showValue]="true"
                                          [type]="progressBarType(state.data.numMethods, state.data.maxNumberOfMethods)"
-                                         [value]="numMethodsPercent()">
+                                         [value]="toPercent(state.data.numMethods, state.data.maxNumberOfMethods)">
 
                         </ngb-progressbar>
                     </td>
@@ -34,12 +33,11 @@
                 <tr *ngIf="isTrialPeriod()">
                     <td>Trial period {{ state.data.maxCollectionPeriodDays}} days ends:</td>
                     <td>
-                        {{ trialPeriodEndDate() | ckAge:settings.dateFormat }}
-                        <ngb-progressbar [showValue]="false"
+                        {{ trialPeriodEndDate() | ckAge:settings.dateFormat }}<br>
+                        <ngb-progressbar [showValue]="true"
                                          [type]="progressBarType(state.data.collectedDays, state.data.maxCollectionPeriodDays)"
-                                         [value]="state.data.collectedDays"
-                                         [max]="state.data.maxCollectionPeriodDays">
-                            {{ trialPeriodProgress() }}%
+                                         [value]="toPercent(state.data.collectedDays, state.data.maxCollectionPeriodDays)">
+
                         </ngb-progressbar>
                     </td>
                 </tr>
@@ -99,7 +97,7 @@
                 <td>{{ agent.startedAtMillis | ckAge:settings.dateFormat }}</td>
                 <td>{{ agent.publishedAtMillis | ckAge:settings.dateFormat }}</td>
                 <td>
-                    <span [ngClass]="agentExpectedAtClasses(agent)">{{ agent.nextPublicationExpectedAtMillis | ckAge:settings.dateFormat }}</span>
+                    <span [ngClass]="agentUploadExpectedAtClasses(agent)">{{ agent.nextPublicationExpectedAtMillis | ckAge:settings.dateFormat }}</span>
                 </td>
                 <td>{{ getComments(agent) }}</td>
             </tr>

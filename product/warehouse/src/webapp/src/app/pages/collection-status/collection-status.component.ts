@@ -35,8 +35,12 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
         return this.agePipe.transform(new Date().getTime() - this.state.data.collectionResolutionSeconds * 1000, 'age');
     }
 
+    toPercent(num: number, maxNum: number) {
+        return Math.round(num * 100 / maxNum);
+    }
+
     progressBarType(num: number, maxNum: number) {
-        let percent = Math.round(num * 100 / maxNum);
+        let percent = this.toPercent(num, maxNum);
         if (percent > 100) {
             return 'danger';
         }
@@ -54,25 +58,16 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
         return `${this.state.data.numLiveAgents} agents (${disabled} suspended)`
     }
 
-    numMethodsPercent() {
-        return Math.round(this.state.data.numMethods * 100 / this.state.data.maxNumberOfMethods);
-    }
-
     isTrialPeriod() {
         return this.state.data.maxCollectionPeriodDays > 0;
     }
 
-    trialPeriodProgress() {
-        return Math.round(this.state.data.collectedDays * 100 / this.state.data.maxCollectionPeriodDays);
-    }
-
     trialPeriodEndDate() {
         let daysInMillis = 24 * 60 * 60 * 1000;
-        let result = new Date(this.state.data.collectedSinceMillis + this.state.data.maxCollectionPeriodDays * daysInMillis);
-        return result;
+        return new Date(this.state.data.collectedSinceMillis + this.state.data.maxCollectionPeriodDays * daysInMillis);
     }
 
-    agentExpectedAtClasses(agent: Agent) {
+    agentUploadExpectedAtClasses(agent: Agent) {
         let invisible = !agent.agentAlive;
         let overdue = !invisible && agent.nextPublicationExpectedAtMillis < new Date().getTime() - 30000;
         return {
