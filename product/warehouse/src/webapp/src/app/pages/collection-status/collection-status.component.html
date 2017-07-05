@@ -8,22 +8,22 @@
                 <tr>
                     <td class="w-50">Number of agents (max={{ state.data.maxNumberOfAgents }}):</td>
                     <td class="w-50">
-                        <ngb-progressbar [showValue]="false"
+                        {{ agentsProgressValue() }}<br>
+                        <ngb-progressbar [showValue]="true"
                                          [type]="progressBarType(state.data.numLiveAgents, state.data.maxNumberOfAgents)"
                                          [value]="state.data.numLiveAgents"
                                          [max]="state.data.maxNumberOfAgents">
-                            {{ agentsProgressValue() }}
                         </ngb-progressbar>
                     </td>
                 </tr>
                 <tr>
                     <td>Number of methods (max={{ state.data.maxNumberOfMethods }}):</td>
                     <td>
-                        <ngb-progressbar [showValue]="false"
+                        {{state.data.numMethods}}<br>
+                        <ngb-progressbar [showValue]="true"
                                          [type]="progressBarType(state.data.numMethods, state.data.maxNumberOfMethods)"
-                                         [value]="state.data.numMethods"
-                                         [max]="state.data.maxNumberOfMethods">
-                            {{state.data.numMethods}}
+                                         [value]="numMethodsPercent()">
+
                         </ngb-progressbar>
                     </td>
                 </tr>

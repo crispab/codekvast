@@ -43,10 +43,7 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
         if (percent > 90) {
             return 'warning';
         }
-        if (percent > 50) {
-            return 'info';
-        }
-        return 'success';
+        return 'info';
     }
 
     agentsProgressValue() {
@@ -54,7 +51,11 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
             return this.state.data.numLiveEnabledAgents + ' agents';
         }
         let disabled = this.state.data.numLiveAgents - this.state.data.numLiveEnabledAgents;
-        return `${this.state.data.numLiveAgents} agents (${disabled} disabled)`
+        return `${this.state.data.numLiveAgents} agents (${disabled} suspended)`
+    }
+
+    numMethodsPercent() {
+        return Math.round(this.state.data.numMethods * 100 / this.state.data.maxNumberOfMethods);
     }
 
     isTrialPeriod() {
@@ -75,7 +76,7 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
         let invisible = !agent.agentAlive;
         let overdue = !invisible && agent.nextPublicationExpectedAtMillis < new Date().getTime() - 30000;
         return {
-            'invisible' : invisible,
+            'invisible': invisible,
             'bg-warning': overdue,
             'text-white': overdue
         };
