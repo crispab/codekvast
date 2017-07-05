@@ -70,7 +70,7 @@ module.exports = {
             ],
             devServer: 'http://localhost:8088',
             googleAnalytics: {
-                trackingId: 'UA-97240168-1',
+                trackingId: 'UA-97240168-3',
                 pageViewOnLoad: true
             },
             mobile: true,
