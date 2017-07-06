@@ -75,7 +75,7 @@ export class WarehouseService {
     ping(): Observable<boolean> {
         if (this.stateService.getAuthToken() !== null) {
             return this.http.get(this.configService.getApiPrefix() + this.RENEW_AUTH_TOKEN_URL, {headers: this.getHeaders()})
-                       .do(res => console.log('ping: %o', res))
+                       .do(res => console.log('ping: %o', res), () => console.log('Failed to ping'))
                        .do(res => this.replaceAuthToken(res), res => this.handleErrors(res))
                        .map(() => true);
         }
