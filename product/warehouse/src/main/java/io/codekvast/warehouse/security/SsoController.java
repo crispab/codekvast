@@ -72,15 +72,15 @@ public class SsoController {
 
     @RequestMapping(path = "/heroku/sso/", method = POST, consumes = APPLICATION_FORM_URLENCODED_VALUE)
     public String doHerokuSingleSignOn(
-        @RequestParam("id") String id,
-        @RequestParam("timestamp") long timestamp,
+        @RequestParam("id") String externalId,
+        @RequestParam("timestamp") long timestampSeconds,
         @RequestParam("token") String token,
         @RequestParam("nav-data") String navData,
         @RequestParam("email") String email) throws AuthenticationException {
 
-        log.debug("id={}, nav-data={}", id, navData);
+        log.debug("externalId={}, nav-data={}", externalId, navData);
 
-        String jwt = doHerokuSingleSignOn(id, timestamp, token, email);
+        String jwt = doHerokuSingleSignOn(externalId, timestampSeconds, token, email);
 
         return "redirect:/sso/" + jwt + "/" + navData;
     }
