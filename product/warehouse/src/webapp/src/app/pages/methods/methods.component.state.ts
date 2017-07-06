@@ -18,7 +18,6 @@ export class MethodsComponentState {
     selectedMethod: Method;
 
     constructor(private warehouse: WarehouseService) {
-        console.log('Created MethodsComponentState')
     }
 
     private sortBy(column: string) {
@@ -27,7 +26,6 @@ export class MethodsComponentState {
         } else {
             this.sortColumn = column;
         }
-        console.log(`Sorting by ${this.sortColumn}, ascending=${this.sortAscending}`);
     }
 
     private getHeaderIconClassesFor(column: string) {
@@ -92,9 +90,7 @@ export class MethodsComponentState {
                 if (this.data.methods.length === 1) {
                     this.selectMethod(this.data.methods[0]);
                 } else if (this.selectedMethod) {
-                    console.log('Trying to find %o', this.selectedMethod);
                     let previouslySelected = this.data.methods.find(m => m.id === this.selectedMethod.id);
-                    console.log('Previously selected: %o', previouslySelected);
                     this.selectMethod(previouslySelected);
                 } else {
                     this.selectMethod(null);
@@ -103,7 +99,7 @@ export class MethodsComponentState {
                 this.data = undefined;
                 this.errorMessage = error.statusText ? error.statusText : error;
                 this.selectMethod(null);
-            }, () => console.log('getMethods() complete'));
+            });
     }
 
     selectMethod(m: Method) {

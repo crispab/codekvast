@@ -85,7 +85,7 @@ export class CollectionStatusComponentState {
             }, error => {
                 this.data = undefined;
                 this.errorMessage = error.statusText ? error.statusText : error;
-            }, () => console.log('getStatus() complete'));
+            });
     }
 
     communicationFailure() {

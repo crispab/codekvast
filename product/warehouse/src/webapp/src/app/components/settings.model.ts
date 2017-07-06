@@ -10,10 +10,5 @@ export class Settings {
     readonly sampleTimestamp = new Date().getTime() - 37 * oneDayInMillis - 13 * oneHourInMillis;
 
     dateFormat = 'short';
-
-    constructor() {
-        console.log('Created Settings')
-    }
-
 }
 

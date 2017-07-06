@@ -31,7 +31,6 @@ export class WarehouseService {
         }
 
         const url: string = this.constructGetMethodsUrl(signature, maxResults);
-        console.log('url=%s', url);
         return this.http.get(url, {headers: this.getHeaders()})
                    .do(res => this.replaceAuthToken(res), res => this.handleErrors(res))
                    .map(res => res.json());
@@ -53,7 +52,6 @@ export class WarehouseService {
 
     getMethodById(id: number): Observable<Method> {
         const url = this.constructGetMethodByIdUrl(id);
-        console.log('url=%s', url);
         return this.http.get(url, {headers: this.getHeaders()})
                    .do(res => this.replaceAuthToken(res), res => this.handleErrors(res))
                    .map(res => res.json());
@@ -66,7 +64,6 @@ export class WarehouseService {
         // }
 
         const url = this.configService.getApiPrefix() + this.STATUS_URL;
-        console.log('url=%s', url);
         return this.http.get(url, {headers: this.getHeaders()})
                    .do(res => this.replaceAuthToken(res), res => this.handleErrors(res))
                    .map(res => res.json());
@@ -75,7 +72,7 @@ export class WarehouseService {
     ping(): Observable<boolean> {
         if (this.stateService.getAuthToken() !== null) {
             return this.http.get(this.configService.getApiPrefix() + this.RENEW_AUTH_TOKEN_URL, {headers: this.getHeaders()})
-                       .do(res => console.log('ping: %o', res), () => console.log('Failed to ping'))
+                       // .do(res => console.log('ping: %o', res), () => console.log('Failed to ping'))
                        .do(res => this.replaceAuthToken(res), res => this.handleErrors(res))
                        .map(() => true);
         }
@@ -84,7 +81,7 @@ export class WarehouseService {
 
     isDemoMode(): Observable<boolean> {
         return this.http.get(this.configService.getApiPrefix() + this.IS_DEMO_MODE_URL)
-                   .do(res => console.log('isDemoMode: %o', res))
+                   // .do(res => console.log('isDemoMode: %o', res))
                    .map(res => res.text() === 'true');
     }
 

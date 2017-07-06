@@ -34,7 +34,7 @@ export class MethodDetailComponent implements OnInit {
                 console.error('Cannot get method details: %o', error);
                 this.method = undefined;
                 this.errorMessage = error.statusText ? error.statusText : error;
-            }, () => console.log(`getMethodById() complete`));
+            });
     }
 
     goBack(): void {

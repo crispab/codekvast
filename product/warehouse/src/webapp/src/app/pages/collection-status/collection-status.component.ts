@@ -78,8 +78,6 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
     }
 
     getComments(agent: Agent) {
-        console.log('Calculating comments for %o', agent);
-
         if (!agent.agentAlive) {
             return 'terminated';
         }

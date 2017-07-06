@@ -18,15 +18,14 @@ export class SsoComponent implements OnInit {
         if (parts.length === 3) {
             // header = parts[0]
             let payload = JSON.parse(atob(parts[1]));
-            console.log('payload=%o', payload);
             // signature = parts[2]
 
             let Boomerang = window['Boomerang'];
             let sourceApp = 'unknown';
             if (payload.source === 'heroku') {
                 let navData = this.route.snapshot.params['navData'];
+                console.log('navData=%o', navData);
                 let args = JSON.parse(atob(navData));
-                console.log('navData=%o', args);
                 sourceApp = args.app || args.appname;
                 Boomerang.init({
                     app: sourceApp,

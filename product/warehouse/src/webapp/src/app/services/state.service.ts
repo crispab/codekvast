@@ -47,7 +47,7 @@ export class StateService {
                 source: source,
                 sourceApp: sourceApp
             };
-            console.log('Setting login data %o', data);
+            console.log('Setting login data');
             localStorage.setItem(this.AUTH_DATA, JSON.stringify(data));
         } else {
             console.log('Removing login data');
@@ -60,6 +60,7 @@ export class StateService {
         if (authDataJson) {
             let authData = JSON.parse(authDataJson);
             authData.token = token;
+            console.log('Updating login data');
             localStorage.setItem(this.AUTH_DATA, JSON.stringify(authData));
         } else {
             this.setLoggedInAs(token, undefined, undefined, undefined, undefined, undefined);
@@ -67,6 +68,7 @@ export class StateService {
     }
 
     setLoggedOut() {
+        console.log('Removing login data');
         localStorage.removeItem(this.AUTH_DATA);
     }
 

@@ -46,7 +46,6 @@ export class AgePipe implements PipeTransform {
         let age = new Date().getTime() - value;
         let result = '';
         if (age < 0) {
-            console.log('Date %o is in the future', new Date(value));
             result = 'in ';
             age = -age;
         }
