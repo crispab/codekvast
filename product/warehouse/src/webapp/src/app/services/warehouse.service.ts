@@ -112,7 +112,9 @@ export class WarehouseService {
             if (this.stateService.isLoggedIn()) {
                 // Bearer token time-out
                 let loginState = this.stateService.getLoginState();
-                nextRoute = ['/logged-out', loginState.source, loginState.sourceApp || 'unknown'];
+                let source = loginState ? loginState.source : null;
+                let sourceApp = loginState ? loginState.sourceApp : null;
+                nextRoute = ['/logged-out', source || 'unknown', sourceApp || 'unknown'];
             }
             this.stateService.setLoggedOut();
         }
