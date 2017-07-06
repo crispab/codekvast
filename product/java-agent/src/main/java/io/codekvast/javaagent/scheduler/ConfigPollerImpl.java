@@ -64,12 +64,12 @@ public class ConfigPollerImpl implements ConfigPoller {
     public GetConfigResponse1 doPoll() throws Exception {
         GetConfigRequest1 request = expandRequestTemplate();
 
-        log.fine(String.format("Posting %s to %s", request, config.getPollConfigRequestEndpoint()));
+        logger.fine(String.format("Posting %s to %s", request, config.getPollConfigRequestEndpoint()));
 
         GetConfigResponse1 response =
             gson.fromJson(doHttpPost(gson.toJson(request)), GetConfigResponse1.class);
 
-        log.fine("Received " + response + " in response");
+        logger.fine("Received " + response + " in response");
         return response;
     }
 

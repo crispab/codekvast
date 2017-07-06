@@ -131,14 +131,14 @@ public class CodekvastSettings {
 
         //noinspection UseOfSystemOutOrSystemErr
         System.out.printf("%s v%s (%s) started%s%n", applicationName, displayVersion, commitDate, demoMode);
-        log.info("{} v{} ({}) starts{}", applicationName, displayVersion, commitDate, demoMode);
+        logger.info("{} v{} ({}) starts{}", applicationName, displayVersion, commitDate, demoMode);
     }
 
     @PreDestroy
     public void logShutdown() {
         //noinspection UseOfSystemOutOrSystemErr
         System.out.printf("%s v%s (%s) shuts down%n", applicationName, displayVersion, commitDate);
-        log.info("{} v{} ({}) shuts down", applicationName, displayVersion, commitDate);
+        logger.info("{} v{} ({}) shuts down", applicationName, displayVersion, commitDate);
     }
 
 }

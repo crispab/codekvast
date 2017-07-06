@@ -16,7 +16,7 @@ class TimedInterceptor implements MethodInterceptor {
         try {
             return invocation.proceed();
         } finally {
-            log.debug("Elapsed: {}, method: {}", System.currentTimeMillis() - startedAt, invocation.getMethod());
+            logger.debug("Elapsed: {}, method: {}", System.currentTimeMillis() - startedAt, invocation.getMethod());
         }
     }
 }

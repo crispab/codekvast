@@ -60,7 +60,7 @@ public class CodeBaseScanner {
      */
     public int scanSignatures(CodeBase codeBase) {
         long startedAt = System.currentTimeMillis();
-        log.fine("Scanning " + codeBase);
+        logger.fine("Scanning " + codeBase);
         int result = 0;
 
         try (ScanResult scanResult = scanCodeBase(codeBase)) {
@@ -75,17 +75,17 @@ public class CodeBaseScanner {
                     findTrackedMethods(codeBase, packages, excludePackages, clazz);
                     result += 1;
                 } catch (Throwable t) {
-                    log.warning("Cannot analyze " + classInfo + ": " + t);
+                    logger.warning("Cannot analyze " + classInfo + ": " + t);
                 }
             }
         }
 
         if (codeBase.isEmpty()) {
-            log.warning(String.format("%s does not contain any classes within packages %s.'", codeBase,
+            logger.warning(String.format("%s does not contain any classes within packages %s.'", codeBase,
                                       codeBase.getConfig().getNormalizedPackages()));
         }
 
-        log.info(String.format("Scanned %s with package prefix %s in %d ms, found %d methods in %d classes.",
+        logger.info(String.format("Scanned %s with package prefix %s in %d ms, found %d methods in %d classes.",
                                codeBase.getFingerprint(),
                                codeBase.getConfig().getNormalizedPackages(),
                                System.currentTimeMillis() - startedAt,
@@ -127,7 +127,7 @@ public class CodeBaseScanner {
                 return jarFile;
             }
         } catch (IOException e) {
-            log.fine("Cannot analyze " + url);
+            logger.fine("Cannot analyze " + url);
         }
         return null;
     }
@@ -174,11 +174,11 @@ public class CodeBaseScanner {
             }
             jarFile.close();
         } catch (IOException e) {
-            log.severe("Cannot explode " + jarFile + ": " + e);
+            logger.severe("Cannot explode " + jarFile + ": " + e);
         }
 
         long elapsed = System.currentTimeMillis() - startedAt;
-        log.info("Exploded Spring Boot executable jar in " + elapsed + " ms");
+        logger.info("Exploded Spring Boot executable jar in " + elapsed + " ms");
 
         return result.toArray(new URL[result.size()]);
     }
@@ -208,18 +208,18 @@ public class CodeBaseScanner {
                 }
             }
         } catch (IOException e) {
-            log.severe("Cannot create ClassPath: " + e);
+            logger.severe("Cannot create ClassPath: " + e);
         }
         return result;
     }
 
     void findTrackedConstructors(CodeBase codeBase, Class<?> clazz) {
         if (clazz.isInterface()) {
-            log.finest("Ignoring interface " + clazz);
+            logger.finest("Ignoring interface " + clazz);
             return;
         }
 
-        log.finest("Analyzing " + clazz);
+        logger.finest("Analyzing " + clazz);
         MethodAnalyzer methodAnalyzer = codeBase.getConfig().getMethodAnalyzer();
         try {
             Constructor[] declaredConstructors = clazz.getDeclaredConstructors();
@@ -234,17 +234,17 @@ public class CodeBaseScanner {
                 findTrackedConstructors(codeBase, innerClass);
             }
         } catch (NoClassDefFoundError e) {
-            log.warning(String.format("Cannot analyze %s: %s", clazz, e.toString()));
+            logger.warning(String.format("Cannot analyze %s: %s", clazz, e.toString()));
         }
     }
 
     void findTrackedMethods(CodeBase codeBase, Set<String> packages, Set<String> excludePackages, Class<?> clazz) {
         if (clazz.isInterface()) {
-            log.finest("Ignoring interface " + clazz);
+            logger.finest("Ignoring interface " + clazz);
             return;
         }
 
-        log.finest("Analyzing " + clazz);
+        logger.finest("Analyzing " + clazz);
         MethodAnalyzer methodAnalyzer = codeBase.getConfig().getMethodAnalyzer();
         try {
             Method[] declaredMethods = clazz.getDeclaredMethods();
@@ -274,7 +274,7 @@ public class CodeBaseScanner {
                 findTrackedMethods(codeBase, packages, excludePackages, innerClass);
             }
         } catch (NoClassDefFoundError e) {
-            log.warning(String.format("Cannot analyze %s: %s", clazz, e.toString()));
+            logger.warning(String.format("Cannot analyze %s: %s", clazz, e.toString()));
         }
     }
 

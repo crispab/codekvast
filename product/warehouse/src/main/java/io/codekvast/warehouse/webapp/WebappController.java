@@ -96,7 +96,7 @@ public class WebappController {
 
         Optional<MethodDescriptor1> result = webappService.getMethodById(methodId);
 
-        log.debug("{} method with id={} in {} ms", result.map(methodDescriptor1 -> "Found").orElse("Could not find"),
+        logger.debug("{} method with id={} in {} ms", result.map(methodDescriptor1 -> "Found").orElse("Could not find"),
                   methodId, System.currentTimeMillis() - startedAt);
 
         return result.map(method -> ResponseEntity.ok()
@@ -116,7 +116,7 @@ public class WebappController {
 
     @RequestMapping(method = GET, path = WEBAPP_RENEW_AUTH_TOKEN, produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> renewAuthToken() {
-        log.debug("Renewing auth token for {}", SecurityContextHolder.getContext().getAuthentication());
+        logger.debug("Renewing auth token for {}", SecurityContextHolder.getContext().getAuthentication());
 
         return ResponseEntity.ok()
                              .header(X_CODEKVAST_AUTH_TOKEN, securityHandler.renewWebappToken())
@@ -125,7 +125,7 @@ public class WebappController {
 
     @RequestMapping(method = GET, value = SecurityConfig.REQUEST_MAPPING_WEBAPP_IS_DEMO_MODE, produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> isDemoMode() {
-        log.trace("Is demo mode? {}", settings.isDemoMode());
+        logger.trace("Is demo mode? {}", settings.isDemoMode());
 
         return ResponseEntity.ok(Boolean.toString(settings.isDemoMode()));
     }
@@ -135,7 +135,7 @@ public class WebappController {
 
         GetMethodsResponse1 response = webappService.getMethods(request);
 
-        log.debug("Response: {}", response);
+        logger.debug("Response: {}", response);
         return response;
     }
 

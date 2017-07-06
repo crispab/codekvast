@@ -55,70 +55,70 @@ public class AgentConfigLocator {
     public static File locateConfig() {
         File file = tryLocation(System.getProperty(SYSPROP_CONFIG));
         if (file != null) {
-            log.info("Found " + file);
+            logger.info("Found " + file);
             return file;
         }
 
         file = tryLocation(System.getenv(ENVVAR_CODEKVAST_CONFIG));
         if (file != null) {
-            log.info("Found " + file);
+            logger.info("Found " + file);
             return file;
         }
 
         file = tryLocation(".");
         if (file != null) {
-            log.info("Found " + file);
+            logger.info("Found " + file);
             return file;
         }
 
         file = tryLocation("./conf");
         if (file != null) {
-            log.info("Found " + file);
+            logger.info("Found " + file);
             return file;
         }
 
         file = tryLocation(constructLocation(System.getProperty(SYSPROP_CATALINA_HOME), "conf"));
         if (file != null) {
-            log.info("Found " + file);
+            logger.info("Found " + file);
             return file;
         }
 
         file = tryLocation(constructLocation(System.getenv(ENVVAR_CATALINA_HOME), "conf"));
         if (file != null) {
-            log.info("Found " + file);
+            logger.info("Found " + file);
             return file;
         }
 
         file = tryLocation(constructLocation(System.getProperty(SYSPROP_CATALINA_BASE), "conf"));
         if (file != null) {
-            log.info("Found " + file);
+            logger.info("Found " + file);
             return file;
         }
 
         file = tryLocation(constructLocation(System.getenv(ENVVAR_CATALINA_BASE), "conf"));
         if (file != null) {
-            log.info("Found " + file);
+            logger.info("Found " + file);
             return file;
         }
 
         file = tryLocation(constructLocation(System.getenv(ENVVAR_HOME), ".config"));
         if (file != null) {
-            log.info("Found " + file);
+            logger.info("Found " + file);
             return file;
         }
 
         file = tryLocation("/etc/codekvast");
         if (file != null) {
-            log.info("Found " + file);
+            logger.info("Found " + file);
             return file;
         }
 
         file = tryLocation("/etc");
         if (file != null) {
-            log.info("Found " + file);
+            logger.info("Found " + file);
             return file;
         }
-        log.warning("No configuration file found, Codekvast will not start.");
+        logger.warning("No configuration file found, Codekvast will not start.");
         return null;
     }
 
@@ -132,13 +132,13 @@ public class AgentConfigLocator {
         }
 
         File file = new File(location);
-        log.fine("Examining " + file);
+        logger.fine("Examining " + file);
         if (file.isFile()) {
             return file;
         }
 
         file = new File(location, "codekvast.conf");
-        log.fine("Looking for " + file);
+        logger.fine("Looking for " + file);
         if (file.canRead()) {
             return file;
         }

@@ -69,7 +69,7 @@ public class SignatureUtils {
 
     private static List<Pattern> readByteCodePatternsFrom(String resourceName) {
         List<Pattern> result = new ArrayList<>();
-        log.finer("Reading byte code patterns from " + resourceName);
+        logger.finer("Reading byte code patterns from " + resourceName);
         try {
             LineNumberReader reader = new LineNumberReader(
                 new BufferedReader(
@@ -82,7 +82,7 @@ public class SignatureUtils {
                 }
             }
         } catch (Exception e) {
-            log.severe("Cannot read " + resourceName);
+            logger.severe("Cannot read " + resourceName);
         }
         return result;
     }
@@ -91,7 +91,7 @@ public class SignatureUtils {
         try {
             result.add(Pattern.compile(pattern));
         } catch (PatternSyntaxException e) {
-            log.severe(String.format("Illegal regexp syntax in %s:%s: %s", fileName, lineNumber, e.toString()));
+            logger.severe(String.format("Illegal regexp syntax in %s:%s: %s", fileName, lineNumber, e.toString()));
         }
     }
 
@@ -122,14 +122,14 @@ public class SignatureUtils {
                     logBadPattern(pattern);
                 } else {
                     result = matcher.group(1) + "." + matcher.group(2) + matcher.group(3);
-                    log.finer(String.format("Normalized %s to %s", signature, result));
+                    logger.finer(String.format("Normalized %s to %s", signature, result));
                     break;
                 }
             }
         }
 
         if (isStrangeSignature(result)) {
-            log.warning(String.format("Could not normalize %s: %s", signature, result));
+            logger.warning(String.format("Could not normalize %s: %s", signature, result));
         }
         return result;
     }
@@ -141,7 +141,7 @@ public class SignatureUtils {
 
     private void logBadPattern(Pattern pattern) {
         if (loggedBadPatterns.add(pattern)) {
-            log.severe(String.format("Expected exactly 3 capturing groups in regexp '%s', ignored.", pattern));
+            logger.severe(String.format("Expected exactly 3 capturing groups in regexp '%s', ignored.", pattern));
         }
     }
 

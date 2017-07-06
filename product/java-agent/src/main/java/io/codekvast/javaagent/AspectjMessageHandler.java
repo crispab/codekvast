@@ -43,24 +43,24 @@ public class AspectjMessageHandler implements IMessageHandler {
 
             String m = message.getMessage();
             if (!m.contains("not weaving") || !m.contains("codekvast")) {
-                log.fine(m);
+                logger.fine(m);
             }
             return true;
         }
         if (message.isInfo()) {
-            log.info(message.getMessage());
+            logger.info(message.getMessage());
             return true;
         }
         if (message.isWarning()) {
-            log.warning(message.getMessage());
+            logger.warning(message.getMessage());
             return true;
         }
         if (message.isError()) {
-            log.severe(message.getMessage());
+            logger.severe(message.getMessage());
             return true;
         }
         if (message.getKind() == WEAVEINFO) {
-            log.info(message.getMessage());
+            logger.info(message.getMessage());
             return true;
         }
         return false;

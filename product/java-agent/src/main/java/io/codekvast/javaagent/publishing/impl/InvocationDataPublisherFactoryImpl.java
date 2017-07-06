@@ -51,7 +51,7 @@ public class InvocationDataPublisherFactoryImpl implements InvocationDataPublish
             return new HttpInvocationDataPublisherImpl(config);
         }
 
-        log.warning(
+        logger.warning(
             String.format("Unrecognized invocation data publisher name: '%s', will use %s", name, NoOpInvocationDataPublisherImpl.NAME));
         return new NoOpInvocationDataPublisherImpl(config);
     }

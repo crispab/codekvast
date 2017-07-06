@@ -19,8 +19,8 @@ public class SampleApp {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        log.info("2+2=" + new SampleApp().add(2, 2));
+        logger.info("2+2=" + new SampleApp().add(2, 2));
         Thread.sleep(1_500L);
-        log.info("Exit");
+        logger.info("Exit");
     }
 }

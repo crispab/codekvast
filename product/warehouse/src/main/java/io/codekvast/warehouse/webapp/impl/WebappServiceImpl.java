@@ -254,7 +254,7 @@ public class WebappServiceImpl implements WebappService {
 
             if (!queryState.isSameMethod(id)) {
                 // The query is sorted on methodId
-                log.trace("Found method {}:{}", id, signature);
+                logger.trace("Found method {}:{}", id, signature);
                 queryState.addTo(result);
                 queryState = new QueryState(id, this.maxResults);
             }
@@ -339,7 +339,7 @@ public class WebappServiceImpl implements WebappService {
 
         void addTo(List<MethodDescriptor1> result) {
             if (builder != null && result.size() < maxResults) {
-                log.trace("Adding method {} to result ({} result set rows)", methodId, rows);
+                logger.trace("Adding method {} to result ({} result set rows)", methodId, rows);
                 builder.occursInApplications(new TreeSet<>(applications.values()));
                 builder.collectedInEnvironments(new TreeSet<>(environments.values()));
                 result.add(builder.build());

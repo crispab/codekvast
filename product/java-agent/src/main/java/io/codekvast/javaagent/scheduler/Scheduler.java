@@ -101,7 +101,7 @@ public class Scheduler implements Runnable {
     public Scheduler start() {
         executor
             .scheduleAtFixedRate(this, config.getSchedulerInitialDelayMillis(), config.getSchedulerIntervalMillis(), TimeUnit.MILLISECONDS);
-        log.info("Scheduler started; pulling dynamic config from " + config.getServerUrl());
+        logger.info("Scheduler started; pulling dynamic config from " + config.getServerUrl());
         return this;
     }
 
@@ -112,12 +112,12 @@ public class Scheduler implements Runnable {
         long startedAt = systemClock.currentTimeMillis();
         synchronized (executor) {
 
-            log.fine("Stopping scheduler");
+            logger.fine("Stopping scheduler");
             executor.shutdown();
             try {
                 executor.awaitTermination(10, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
-                log.fine("Stop interrupted");
+                logger.fine("Stop interrupted");
             }
 
             if (dynamicConfig != null) {
@@ -130,14 +130,14 @@ public class Scheduler implements Runnable {
                 publishInvocationDataIfNeeded();
             }
         }
-        log.info(String.format("Scheduler stopped in %d ms", systemClock.currentTimeMillis() - startedAt));
+        logger.info(String.format("Scheduler stopped in %d ms", systemClock.currentTimeMillis() - startedAt));
     }
 
     @Override
     public void run() {
         synchronized (executor) {
             if (executor.isShutdown()) {
-                log.fine("Scheduler is shutting down");
+                logger.fine("Scheduler is shutting down");
                 return;
             }
 
@@ -163,7 +163,7 @@ public class Scheduler implements Runnable {
                 pollState.updateIntervals(dynamicConfig.getConfigPollIntervalSeconds(), dynamicConfig.getConfigPollRetryIntervalSeconds());
                 pollState.scheduleNext();
             } catch (Exception e) {
-                LogUtil.logException(log, "Failed to poll " + config.getPollConfigRequestEndpoint(), e);
+                LogUtil.logException(logger, "Failed to poll " + config.getPollConfigRequestEndpoint(), e);
                 pollState.scheduleRetry();
             }
         }
@@ -203,13 +203,13 @@ public class Scheduler implements Runnable {
 
     private void publishCodeBaseIfNeeded() {
         if (codeBasePublisherState.isDueTime() && dynamicConfig != null) {
-            log.finer("Checking if code base needs to be published...");
+            logger.finer("Checking if code base needs to be published...");
 
             try {
                 codeBasePublisher.publishCodeBase();
                 codeBasePublisherState.scheduleNext();
             } catch (Exception e) {
-                LogUtil.logException(log, "Failed to publish code base", e);
+                LogUtil.logException(logger, "Failed to publish code base", e);
                 codeBasePublisherState.scheduleRetry();
             }
         }
@@ -217,10 +217,10 @@ public class Scheduler implements Runnable {
 
     private void publishInvocationDataIfNeeded() {
         if (invocationDataPublisherState.isDueTime() && dynamicConfig != null) {
-            log.finer("Checking if invocation data needs to be published...");
+            logger.finer("Checking if invocation data needs to be published...");
 
             if (codeBasePublisher.getCodeBaseFingerprint() != null && invocationDataPublisher.getCodeBaseFingerprint() == null) {
-                log.finer("Enabled a fast first invocation data publishing");
+                logger.finer("Enabled a fast first invocation data publishing");
                 invocationDataPublisher.setCodeBaseFingerprint(codeBasePublisher.getCodeBaseFingerprint());
             }
 
@@ -228,7 +228,7 @@ public class Scheduler implements Runnable {
                 InvocationRegistry.instance.publishInvocationData(invocationDataPublisher);
                 invocationDataPublisherState.scheduleNext();
             } catch (Exception e) {
-                LogUtil.logException(log, "Failed to publish invocation data", e);
+                LogUtil.logException(logger, "Failed to publish invocation data", e);
                 invocationDataPublisherState.scheduleRetry();
             }
         }
@@ -268,15 +268,15 @@ public class Scheduler implements Runnable {
         void scheduleNext() {
             nextEventAtMillis = systemClock.currentTimeMillis() + intervalSeconds * 1000L;
             if (numFailures > 0) {
-                log.fine(name + " is exiting failure state after " + numFailures + " failures");
+                logger.fine(name + " is exiting failure state after " + numFailures + " failures");
             }
             resetRetryCounter();
-            log.finer(name + " will execute next at " + new Date(nextEventAtMillis));
+            logger.finer(name + " will execute next at " + new Date(nextEventAtMillis));
         }
 
         void scheduleNow() {
             nextEventAtMillis = 0L;
-            log.fine(name + " will execute now");
+            logger.fine(name + " will execute now");
         }
 
         void scheduleRetry() {
@@ -290,7 +290,7 @@ public class Scheduler implements Runnable {
             nextEventAtMillis = systemClock.currentTimeMillis() + retryIntervalSeconds * retryIntervalFactor * 1000L;
             numFailures += 1;
 
-            log.fine(name + " has failed " + numFailures + " times, will retry at " + new Date(nextEventAtMillis));
+            logger.fine(name + " has failed " + numFailures + " times, will retry at " + new Date(nextEventAtMillis));
         }
 
         boolean isDueTime() {

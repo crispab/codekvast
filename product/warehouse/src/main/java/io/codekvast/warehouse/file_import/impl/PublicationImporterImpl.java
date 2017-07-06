@@ -68,18 +68,18 @@ public class PublicationImporterImpl implements PublicationImporter {
 
             long startedAt = System.currentTimeMillis();
             Object object = ois.readObject();
-            log.debug("Deserialized a {} in {} ms", object.getClass().getSimpleName(), System.currentTimeMillis() - startedAt);
+            logger.debug("Deserialized a {} in {} ms", object.getClass().getSimpleName(), System.currentTimeMillis() - startedAt);
 
             return !isValidObject(object) || handlePublication(object);
 
         } catch (LicenseViolationException e) {
-            log.warn("Ignoring " + file + ": " + e);
+            logger.warn("Ignoring " + file + ": " + e);
 
             // Prevent the file from being processed again.
             // The agent will keep retrying uploading new publication files.
             return true;
         } catch (ClassNotFoundException | IOException e) {
-            log.error("Cannot import " + file, e);
+            logger.error("Cannot import " + file, e);
         }
         return false;
     }
@@ -94,14 +94,14 @@ public class PublicationImporterImpl implements PublicationImporter {
             return invocationDataImporter.importPublication((InvocationDataPublication) object);
         }
 
-        log.warn("Don't know how to handle {}", object.getClass().getSimpleName());
+        logger.warn("Don't know how to handle {}", object.getClass().getSimpleName());
         return false;
     }
 
     private boolean isValidObject(Object object) {
         Set<ConstraintViolation<Object>> violations = validator.validate(object);
         for (ConstraintViolation<Object> v : violations) {
-            log.error("Invalid {}: {}={}: {}", object.getClass().getSimpleName(), v.getPropertyPath(),
+            logger.error("Invalid {}: {}={}: {}", object.getClass().getSimpleName(), v.getPropertyPath(),
                       v.getInvalidValue(), v.getMessage());
         }
         return violations.isEmpty();

@@ -101,7 +101,7 @@ public class AgentServiceImpl implements AgentService {
                                               "WHERE customerId = ? AND nextPollExpectedAt < ? AND enabled = TRUE ",
                                           customerId, Timestamp.from(now.minusSeconds(60)));
         if (updated > 0) {
-            log.info("Disabled {} dead agents for {}", updated, customerData);
+            logger.info("Disabled {} dead agents for {}", updated, customerData);
         }
 
         Timestamp nextExpectedPollTimestamp = Timestamp.from(now.plusSeconds(customerData.getPricePlan().getPollIntervalSeconds()));
@@ -109,13 +109,13 @@ public class AgentServiceImpl implements AgentService {
             jdbcTemplate.update("UPDATE agent_state SET lastPolledAt = ?, nextPollExpectedAt = ? WHERE customerId = ? AND jvmUuid = ?",
                                 Timestamp.from(now), nextExpectedPollTimestamp, customerId, jvmUuid);
         if (updated == 0) {
-            log.info("The agent {}:{} has started", customerId, jvmUuid);
+            logger.info("The agent {}:{} has started", customerId, jvmUuid);
 
             jdbcTemplate
                 .update("INSERT INTO agent_state(customerId, jvmUuid, lastPolledAt, nextPollExpectedAt, enabled) VALUES (?, ?, ?, ?, ?)",
                         customerId, jvmUuid, Timestamp.from(now), nextExpectedPollTimestamp, Boolean.TRUE);
         } else {
-            log.debug("The agent {}:{} has polled", customerId, jvmUuid);
+            logger.debug("The agent {}:{} has polled", customerId, jvmUuid);
         }
 
         Integer numOtherEnabledLiveAgents =
@@ -127,10 +127,10 @@ public class AgentServiceImpl implements AgentService {
         int maxNumberOfAgents = customerData.getPricePlan().getMaxNumberOfAgents();
         boolean enabled = numOtherEnabledLiveAgents < maxNumberOfAgents;
         if (!enabled) {
-            log.warn("Customer {} has already {} live agents (max for price plan '{}' is {})", customerId, numOtherEnabledLiveAgents, planName,
+            logger.warn("Customer {} has already {} live agents (max for price plan '{}' is {})", customerId, numOtherEnabledLiveAgents, planName,
                      maxNumberOfAgents);
         } else {
-            log.debug("Customer {} now has {} live agents (max for price plan '{}' is {})", customerId, numOtherEnabledLiveAgents + 1, planName,
+            logger.debug("Customer {} now has {} live agents (max for price plan '{}' is {})", customerId, numOtherEnabledLiveAgents + 1, planName,
                       maxNumberOfAgents);
         }
 
@@ -162,18 +162,18 @@ public class AgentServiceImpl implements AgentService {
         File result = File.createTempFile(prefix, ".ser", settings.getQueuePath());
         Files.copy(inputStream, result.toPath(), REPLACE_EXISTING);
 
-        log.debug("Saved uploaded publication to {}", result);
+        logger.debug("Saved uploaded publication to {}", result);
         return result;
     }
 
     private void createDirectory(File queuePath) throws IOException {
         if (!queuePath.isDirectory()) {
-            log.debug("Creating {}", settings.getQueuePath());
+            logger.debug("Creating {}", settings.getQueuePath());
             settings.getQueuePath().mkdirs();
             if (!settings.getQueuePath().isDirectory()) {
                 throw new IOException("Could not create import directory");
             }
-            log.info("Created {}", queuePath);
+            logger.info("Created {}", queuePath);
         }
     }
 

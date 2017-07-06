@@ -51,7 +51,7 @@ public class CodeBasePublisherFactoryImpl implements CodeBasePublisherFactory {
             return new HttpCodeBasePublisherImpl(config);
         }
 
-        log.warning(String.format("Unrecognized code base publisher name: '%s', will use %s", name, NoOpCodeBasePublisherImpl.NAME));
+        logger.warning(String.format("Unrecognized code base publisher name: '%s', will use %s", name, NoOpCodeBasePublisherImpl.NAME));
         return new NoOpCodeBasePublisherImpl(config);
     }
 

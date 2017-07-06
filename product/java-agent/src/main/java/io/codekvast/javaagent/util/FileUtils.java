@@ -89,10 +89,10 @@ public final class FileUtils {
         try {
             File parentDir = file.getParentFile();
             if (parentDir != null && !parentDir.isDirectory()) {
-                log.fine("Creating " + parentDir);
+                logger.fine("Creating " + parentDir);
                 parentDir.mkdirs();
                 if (!parentDir.isDirectory()) {
-                    log.warning("Failed to create " + parentDir);
+                    logger.warning("Failed to create " + parentDir);
                 }
             }
             writer = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(file)), UTF_8);
@@ -127,7 +127,7 @@ public final class FileUtils {
         try (ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(file)))) {
             oos.writeObject(object);
         }
-        log.fine(String.format("Serialized %s in %d ms", object.getClass().getSimpleName(), System.currentTimeMillis() - startedAt));
+        logger.fine(String.format("Serialized %s in %d ms", object.getClass().getSimpleName(), System.currentTimeMillis() - startedAt));
         return file;
     }
 

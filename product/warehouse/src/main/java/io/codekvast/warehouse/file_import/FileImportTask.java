@@ -47,7 +47,7 @@ public class FileImportTask {
         this.codekvastSettings = codekvastSettings;
         this.publicationImporter = publicationImporter;
 
-        log.info("Looking for files in {} every {} seconds", codekvastSettings.getQueuePath(),
+        logger.info("Looking for files in {} every {} seconds", codekvastSettings.getQueuePath(),
                  codekvastSettings.getQueuePathPollIntervalSeconds());
     }
 
@@ -58,7 +58,7 @@ public class FileImportTask {
         String oldThreadName = Thread.currentThread().getName();
         Thread.currentThread().setName("Codekvast FileImport");
         try {
-            log.trace("Looking for files to import in {}", codekvastSettings.getQueuePath());
+            logger.trace("Looking for files to import in {}", codekvastSettings.getQueuePath());
             walkDirectory(codekvastSettings.getQueuePath());
         } finally {
             Thread.currentThread().setName(oldThreadName);
@@ -78,7 +78,7 @@ public class FileImportTask {
                             deleteFile(file);
                         }
                     } else {
-                        log.debug("Ignoring {}", file);
+                        logger.debug("Ignoring {}", file);
                     }
                 }
             }
@@ -88,9 +88,9 @@ public class FileImportTask {
     private void deleteFile(File file) {
         boolean deleted = file.delete();
         if (deleted) {
-            log.info("Deleted {}", file);
+            logger.info("Deleted {}", file);
         } else {
-            log.warn("Could not delete {}", file);
+            logger.warn("Could not delete {}", file);
         }
     }
 

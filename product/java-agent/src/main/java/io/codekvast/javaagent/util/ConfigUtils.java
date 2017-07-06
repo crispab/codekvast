@@ -100,7 +100,7 @@ public final class ConfigUtils {
                 String prefix = key1 != null ? "\\$\\{" : "\\$";
                 String suffix = key1 != null ? "\\}" : "";
                 replacement = String.format("%s%s%s", prefix, key, suffix);
-                log.warning("Unrecognized variable: " + replacement.replace("\\", ""));
+                logger.warning("Unrecognized variable: " + replacement.replace("\\", ""));
             }
 
             matcher.appendReplacement(sb, replacement);

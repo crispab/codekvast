@@ -27,8 +27,8 @@ import io.codekvast.javaagent.config.AgentConfigLocator;
 import io.codekvast.javaagent.config.MethodAnalyzer;
 import io.codekvast.javaagent.publishing.impl.CodeBasePublisherFactoryImpl;
 import io.codekvast.javaagent.publishing.impl.InvocationDataPublisherFactoryImpl;
-import io.codekvast.javaagent.scheduler.Scheduler;
 import io.codekvast.javaagent.scheduler.ConfigPollerImpl;
+import io.codekvast.javaagent.scheduler.Scheduler;
 import io.codekvast.javaagent.scheduler.SystemClockImpl;
 import io.codekvast.javaagent.util.FileUtils;
 import lombok.extern.java.Log;
@@ -133,7 +133,7 @@ public class CodekvastAgent {
 
         Runtime.getRuntime().addShutdownHook(new MyShutdownHook());
 
-        log.info(String.format("%s is ready to detect used code in %s %s within %s.", NAME, config.getAppName(),
+        logger.info(String.format("%s is ready to detect used code in %s %s within %s.", NAME, config.getAppName(),
                                config.getResolvedAppVersion(), getPrettyPackages(config)));
     }
 
@@ -152,9 +152,9 @@ public class CodekvastAgent {
                                    Constants.AOP_AJC_XML + ";" +
                                    Constants.AOP_OSGI_XML);
 
-            log.fine(ASPECTJ_WEAVER_CONFIGURATION + "=" + System.getProperty(ASPECTJ_WEAVER_CONFIGURATION));
+            logger.fine(ASPECTJ_WEAVER_CONFIGURATION + "=" + System.getProperty(ASPECTJ_WEAVER_CONFIGURATION));
         } catch (ClassNotFoundException e) {
-            log.warning("Not using AspectJ load-time weaving.");
+            logger.warning("Not using AspectJ load-time weaving.");
         }
     }
 
@@ -189,7 +189,7 @@ public class CodekvastAgent {
             getIncludeExcludeElements("include", config.getNormalizedPackages()),
             getIncludeExcludeElements("exclude", config.getNormalizedExcludePackages(),
                                       "io.codekvast.javaagent", "ck"));
-        log.finest("aop.xml=" + xml);
+        logger.finest("aop.xml=" + xml);
         File file = config.getAspectFile();
         FileUtils.writeToFile(xml, file);
         return "file:" + file.getAbsolutePath();

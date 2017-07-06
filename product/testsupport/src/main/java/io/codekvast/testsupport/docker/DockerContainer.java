@@ -75,7 +75,7 @@ public class DockerContainer extends ExternalResource {
             }
 
             containerId = executeCommand(runCommand);
-            log.debug("Container started, id={}", containerId);
+            logger.debug("Container started, id={}", containerId);
 
             for (String port : ports) {
                 String[] parts = port.split(":");
@@ -88,17 +88,17 @@ public class DockerContainer extends ExternalResource {
                     parts = executeCommand("docker port " + containerId + " " + internalPort).split(":");
                     externalPort = parts[1].trim();
                 }
-                log.debug("Internal port {} is mapped to {}", internalPort, externalPort);
+                logger.debug("Internal port {} is mapped to {}", internalPort, externalPort);
                 externalPorts.put(internalPort, Integer.valueOf(externalPort));
             }
 
-            log.info("Started container {} using ports (internal=external) {}", containerId, externalPorts);
+            logger.info("Started container {} using ports (internal=external) {}", containerId, externalPorts);
 
             if (readyChecker != null) {
                 waitUntilReady();
             }
         } catch (Exception e) {
-            log.error("Cannot execute '" + runCommand + "'", e);
+            logger.error("Cannot execute '" + runCommand + "'", e);
         }
     }
 
@@ -113,7 +113,7 @@ public class DockerContainer extends ExternalResource {
                 readyChecker.check(getExternalPort(readyChecker.getInternalPort()));
                 return;
             } catch (Exception e) {
-                log.debug("{} is not yet ready, attempt #{}", imageName, attempt);
+                logger.debug("{} is not yet ready, attempt #{}", imageName, attempt);
             }
 
             try {
@@ -129,18 +129,18 @@ public class DockerContainer extends ExternalResource {
     protected void after() {
         if (isRunning()) {
             if (leaveContainerRunning) {
-                log.info("Leaving {} running; id={}", imageName, containerId);
+                logger.info("Leaving {} running; id={}", imageName, containerId);
                 return;
             }
 
             try {
-                log.info("Stopping container {} ...", containerId);
+                logger.info("Stopping container {} ...", containerId);
                 executeCommand("docker stop " + containerId);
 
-                log.info("Removing container {} ...", containerId);
+                logger.info("Removing container {} ...", containerId);
                 executeCommand("docker rm " + containerId);
             } catch (Exception e) {
-                log.error("Cannot stop and/or remove docker container", e);
+                logger.error("Cannot stop and/or remove docker container", e);
             }
 
         }

@@ -65,23 +65,23 @@ public class AgentController {
         for (ConstraintViolation<?> violation : e.getConstraintViolations()) {
             violations.append(violation.getMessage()).append("\n");
         }
-        log.warn("Invalid request: {}", violations);
+        logger.warn("Invalid request: {}", violations);
         return ResponseEntity.badRequest().body(violations.toString());
     }
 
     @ExceptionHandler
     public ResponseEntity<String> onLicenseViolationException(LicenseViolationException e) {
-        log.warn("Rejected request: {}", e.getMessage());
+        logger.warn("Rejected request: {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
 
     @RequestMapping(value = V1_POLL_CONFIG)
     public GetConfigResponse1 getConfig1(@Valid @RequestBody GetConfigRequest1 request) {
-        log.debug("Received {}", request);
+        logger.debug("Received {}", request);
 
         GetConfigResponse1 response = agentService.getConfig(request);
 
-        log.debug("Responds with {}", response);
+        logger.debug("Responds with {}", response);
         return response;
     }
 
@@ -93,7 +93,7 @@ public class AgentController {
         @RequestParam(PARAM_PUBLICATION_SIZE) Integer publicationSize,
         @RequestParam(PARAM_PUBLICATION_FILE) MultipartFile file) throws IOException {
 
-        log.debug("Received {} ({} methods, {}) with licenseKey={}, fingerprint={}", file.getOriginalFilename(),
+        logger.debug("Received {} ({} methods, {}) with licenseKey={}, fingerprint={}", file.getOriginalFilename(),
                   humanReadableByteCount(file.getSize()), publicationSize, licenseKey, fingerprint);
 
         agentService.saveCodeBasePublication(licenseKey, fingerprint, publicationSize, file.getInputStream());
@@ -109,7 +109,7 @@ public class AgentController {
         @RequestParam(PARAM_PUBLICATION_SIZE) Integer publicationSize,
         @RequestParam(PARAM_PUBLICATION_FILE) MultipartFile file) throws IOException {
 
-        log.debug("Received {} ({} methods, {}) with licenseKey={}, fingerprint={}", file.getOriginalFilename(),
+        logger.debug("Received {} ({} methods, {}) with licenseKey={}, fingerprint={}", file.getOriginalFilename(),
                   humanReadableByteCount(file.getSize()), publicationSize, licenseKey, fingerprint);
 
         agentService.saveInvocationDataPublication(licenseKey, fingerprint, publicationSize, file.getInputStream());

@@ -37,7 +37,7 @@ import java.util.logging.Logger;
 public abstract class AbstractPublisher implements Publisher {
 
     private final AgentConfig config;
-    protected final Logger log;
+    protected final Logger logger;
 
     @Setter
     private boolean enabled;
@@ -46,8 +46,8 @@ public abstract class AbstractPublisher implements Publisher {
 
     private int sequenceNumber;
 
-    AbstractPublisher(Logger log, AgentConfig config) {
-        this.log = log;
+    AbstractPublisher(Logger logger, AgentConfig config) {
+        this.logger = logger;
         this.config = config;
     }
 
@@ -55,7 +55,7 @@ public abstract class AbstractPublisher implements Publisher {
     public void configure(long customerId, String keyValuePairs) {
         if (customerId != this.customerId) {
             this.customerId = customerId;
-            log.fine("Using customerId " + customerId);
+            logger.fine("Using customerId " + customerId);
         }
 
         String[] pairs = keyValuePairs.split(";");
@@ -63,12 +63,12 @@ public abstract class AbstractPublisher implements Publisher {
         for (String pair : pairs) {
             pair = pair.trim();
             if (!pair.isEmpty()) {
-                log.finest("Analyzing " + pair);
+                logger.finest("Analyzing " + pair);
                 String[] parts = pair.split("=");
                 if (parts.length == 2) {
                     setValue(parts[0].trim(), parts[1].trim());
                 } else {
-                    log.warning("Illegal key-value pair: " + pair);
+                    logger.warning("Illegal key-value pair: " + pair);
                 }
             }
         }
@@ -79,15 +79,15 @@ public abstract class AbstractPublisher implements Publisher {
             boolean newValue = Boolean.valueOf(value);
             boolean oldValue = this.enabled;
             if (oldValue != newValue) {
-                log.fine(String.format("Setting %s=%s, was=%s", key, newValue, this.enabled));
+                logger.fine(String.format("Setting %s=%s, was=%s", key, newValue, this.enabled));
                 this.enabled = newValue;
             }
         } else {
             boolean recognized = doSetValue(key, value);
             if (recognized) {
-                log.fine(String.format("Setting %s=%s", key, value));
+                logger.fine(String.format("Setting %s=%s", key, value));
             } else {
-                log.warning(String.format("Unrecognized key-value pair: %s=%s", key, value));
+                logger.warning(String.format("Unrecognized key-value pair: %s=%s", key, value));
             }
         }
     }

@@ -121,7 +121,7 @@ public class CustomerServiceImpl implements CustomerService {
                                                .planName(rs.getString(4))
                                                .build());
 
-        log.debug("Found {} customers", result.size());
+        logger.debug("Found {} customers", result.size());
         return result;
     }
 
@@ -134,14 +134,14 @@ public class CustomerServiceImpl implements CustomerService {
                                               "WHERE customerId = ? AND email = ?",
                                           now, now, request.getSource(), request.getCustomerId(), request.getEmail());
         if (updated > 0) {
-            log.debug("Updated user {}", request);
+            logger.debug("Updated user {}", request);
         } else {
             jdbcTemplate.update("INSERT INTO users(customerId, email, firstLoginAt, lastLoginAt, lastActivityAt, lastLoginSource, numberOfLogins) " +
                                     "VALUES(?, ?, ?, ?, ?, ?, ?)",
                                 request.getCustomerId(), request.getEmail(), now, now, now, request.getSource(), 1);
-            log.debug("Added user {}", request);
+            logger.debug("Added user {}", request);
         }
-        log.info("Logged in {}", request);
+        logger.info("Logged in {}", request);
     }
 
     @Override
@@ -151,9 +151,9 @@ public class CustomerServiceImpl implements CustomerService {
         int count = jdbcTemplate.update("UPDATE users SET lastActivityAt = ? WHERE customerId = ? AND email = ? ",
                                         now, activity.getCustomerId(), activity.getEmail());
         if (count == 0) {
-            log.warn("Database inconsistency: Cannot register interactive activity for {}", activity);
+            logger.warn("Database inconsistency: Cannot register interactive activity for {}", activity);
         } else {
-            log.debug("Processed {}", activity);
+            logger.debug("Processed {}", activity);
         }
     }
 
@@ -164,7 +164,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         jdbcTemplate.update("INSERT INTO customers(source, externalId, name, licenseKey, plan) VALUES(?, ?, ?, ?, ?)",
                             request.getSource(), request.getExternalId(), request.getName(), licenseKey, request.getPlan());
-        log.info("Created {} with licenseKey {}", request, licenseKey);
+        logger.info("Created {} with licenseKey {}", request, licenseKey);
         return licenseKey;
     }
 
@@ -174,7 +174,7 @@ public class CustomerServiceImpl implements CustomerService {
         CustomerData customerData = getCustomerDataByExternalId(externalId);
 
         if (newPlan.equals(customerData.getPlanName())) {
-            log.info("{} is already on plan '{}'", customerData, newPlan);
+            logger.info("{} is already on plan '{}'", customerData, newPlan);
             return;
         }
 
@@ -182,9 +182,9 @@ public class CustomerServiceImpl implements CustomerService {
                                         newPlan, externalId);
 
         if (count == 0) {
-            log.warn("Failed to change plan for {} to '{}'", customerData, newPlan);
+            logger.warn("Failed to change plan for {} to '{}'", customerData, newPlan);
         } else {
-            log.info("Changed plan for {} to '{}'", customerData, newPlan);
+            logger.info("Changed plan for {} to '{}'", customerData, newPlan);
 
             // TODO: adjust to new plan
         }
@@ -210,7 +210,7 @@ public class CustomerServiceImpl implements CustomerService {
     private void deleteFromTable(final String table, long customerId) {
         String column = table.equals("customers") ? "id" : "customerId";
         int count = jdbcTemplate.update("DELETE FROM " + table + " WHERE " + column + " = ?", customerId);
-        log.debug("Deleted {} {}", count, table);
+        logger.debug("Deleted {} {}", count, table);
     }
 
     private CustomerData getCustomerData(String where_clause, Object identifier) {
@@ -225,7 +225,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     private void doAssertNumberOfMethods(CustomerData customerData, long numberOfMethods) {
-        log.debug("Asserting {} methods for {}", numberOfMethods, customerData);
+        logger.debug("Asserting {} methods for {}", numberOfMethods, customerData);
 
         PricePlan pp = customerData.getPricePlan();
         if (numberOfMethods > pp.getMaxMethods()) {

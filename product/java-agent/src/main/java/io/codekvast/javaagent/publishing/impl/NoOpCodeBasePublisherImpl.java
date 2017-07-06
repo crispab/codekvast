@@ -34,7 +34,7 @@ public class NoOpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
     public static final String NAME = "no-op";
 
     public NoOpCodeBasePublisherImpl(AgentConfig config) {
-        super(log, config);
+        super(logger, config);
     }
 
     @Override

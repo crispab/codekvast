@@ -66,7 +66,7 @@ public class SsoController {
 
     @ExceptionHandler
     public ResponseEntity<String> onAuthenticationException(AuthenticationException e) {
-        log.warn("Invalid SSO attempt");
+        logger.warn("Invalid SSO attempt");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
@@ -78,7 +78,7 @@ public class SsoController {
         @RequestParam("nav-data") String navData,
         @RequestParam("email") String email) throws AuthenticationException {
 
-        log.debug("externalId={}, nav-data={}", externalId, navData);
+        logger.debug("externalId={}, nav-data={}", externalId, navData);
 
         String jwt = doHerokuSingleSignOn(externalId, timestampSeconds, token, email);
 
@@ -88,7 +88,7 @@ public class SsoController {
     private String doHerokuSingleSignOn(String externalId, long timestampSeconds, String token, String email)
         throws AuthenticationException {
         String expectedToken = makeHerokuSsoToken(externalId, timestampSeconds);
-        log.debug("id={}, token={}, timestamp={}, expectedToken={}", externalId, token, timestampSeconds, expectedToken);
+        logger.debug("id={}, token={}, timestamp={}, expectedToken={}", externalId, token, timestampSeconds, expectedToken);
 
         long nowSeconds = System.currentTimeMillis() / 1000L;
         if (timestampSeconds > nowSeconds + 60) {

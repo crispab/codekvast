@@ -55,7 +55,7 @@ public abstract class AbstractInvocationDataPublisher extends AbstractPublisher 
         if (isEnabled() && getCodeBaseFingerprint() != null) {
             incrementSequenceNumber();
 
-            log.fine("Publishing invocation data #" + this.getSequenceNumber());
+            logger.fine("Publishing invocation data #" + this.getSequenceNumber());
 
             doPublishInvocationData(recordingIntervalStartedAtMillis, normalizeSignatures(invocations));
         }

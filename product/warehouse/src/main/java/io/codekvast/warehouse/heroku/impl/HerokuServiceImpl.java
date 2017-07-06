@@ -53,7 +53,7 @@ public class HerokuServiceImpl implements HerokuService {
 
     @Override
     public HerokuProvisionResponse provision(HerokuProvisionRequest request) {
-        log.debug("Handling {}", request);
+        logger.debug("Handling {}", request);
 
         String licenseKey = customerService.addCustomer(CustomerService.AddCustomerRequest
                                                             .builder()
@@ -71,13 +71,13 @@ public class HerokuServiceImpl implements HerokuService {
                                                                   .id(request.getUuid())
                                                                   .config(config)
                                                                   .build();
-        log.debug("Returning {}", response);
+        logger.debug("Returning {}", response);
         return response;
     }
 
     @Override
     public void changePlan(String externalId, HerokuChangePlanRequest request) {
-        log.debug("Received {} for customers.externalId={}", request, externalId);
+        logger.debug("Received {} for customers.externalId={}", request, externalId);
 
         customerService.changePlanForExternalId(externalId, request.getPlan());
     }

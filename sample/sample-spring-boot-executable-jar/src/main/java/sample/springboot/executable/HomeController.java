@@ -24,7 +24,7 @@ public class HomeController {
 
     @RequestMapping(value = "/", method = GET)
     String home()  {
-        log.info("Welcome home.");
+        logger.info("Welcome home.");
         return "/home.html";
     }
 

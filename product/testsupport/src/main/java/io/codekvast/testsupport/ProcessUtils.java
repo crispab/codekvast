@@ -38,7 +38,7 @@ import java.util.List;
 public class ProcessUtils {
 
     public static String executeCommand(List<String> command) throws RuntimeException, IOException, InterruptedException {
-        log.debug("Attempting to execute '{}' ...", command);
+        logger.debug("Attempting to execute '{}' ...", command);
         Process process = new ProcessBuilder().command(command).redirectErrorStream(true).start();
         int exitCode = process.waitFor();
         String output = collectProcessOutput(process.getInputStream());
@@ -50,7 +50,7 @@ public class ProcessUtils {
     }
 
     public static String executeCommand(String command) throws RuntimeException, IOException, InterruptedException {
-        log.debug("Attempting to execute '{}' ...", command);
+        logger.debug("Attempting to execute '{}' ...", command);
         Process process = Runtime.getRuntime().exec(command);
         int exitCode = process.waitFor();
         if (exitCode != 0) {

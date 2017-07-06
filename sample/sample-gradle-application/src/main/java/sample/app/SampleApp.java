@@ -71,7 +71,7 @@ public class SampleApp {
         for (int i = 0; i < count; i++) {
             sum += untracked.foo();
         }
-        log.debug("Make sure the entire loop is not bypassed by the JIT compiler... {}", sum);
+        logger.debug("Make sure the entire loop is not bypassed by the JIT compiler... {}", sum);
         return System.currentTimeMillis() - startedAt;
     }
 
@@ -82,7 +82,7 @@ public class SampleApp {
         for (int i = 0; i < count; i++) {
             sum += untracked.fooLogged();
         }
-        log.debug("Make sure the entire loop is not bypassed by the JIT compiler... {}", sum);
+        logger.debug("Make sure the entire loop is not bypassed by the JIT compiler... {}", sum);
         return System.currentTimeMillis() - startedAt;
     }
 
@@ -94,7 +94,7 @@ public class SampleApp {
         for (int i = 0; i < count; i++) {
             sum += tracked.publicMethod();
         }
-        log.debug("Make sure the entire loop is not bypassed by the JIT compiler... {}", sum);
+        logger.debug("Make sure the entire loop is not bypassed by the JIT compiler... {}", sum);
         return System.currentTimeMillis() - startedAt;
     }
 

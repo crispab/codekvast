@@ -58,16 +58,16 @@ public class FilenameAppVersionStrategy extends AbstractAppVersionStrategy {
                     return version;
                 }
             }
-            log.severe(String.format("Cannot resolve %s %s: pattern not matched", args[0], args[1]));
+            logger.severe(String.format("Cannot resolve %s %s: pattern not matched", args[0], args[1]));
         } catch (PatternSyntaxException e) {
-            log.severe(String.format("Cannot resolve %s %s: illegal syntax for %s", args[0], args[1], Pattern.class.getName()));
+            logger.severe(String.format("Cannot resolve %s %s: illegal syntax for %s", args[0], args[1], Pattern.class.getName()));
         }
         return UNKNOWN_VERSION;
     }
 
     private String search(File dir, Pattern pattern) {
         if (!dir.isDirectory()) {
-            log.warning(dir + " is not a directory");
+            logger.warning(dir + " is not a directory");
             return null;
         }
 
@@ -79,7 +79,7 @@ public class FilenameAppVersionStrategy extends AbstractAppVersionStrategy {
                     Matcher matcher = pattern.matcher(file.getName());
                     if (matcher.matches()) {
                         String version = matcher.group(matcher.groupCount());
-                        log.fine(String.format("Found version '%s' in %s", version, file));
+                        logger.fine(String.format("Found version '%s' in %s", version, file));
                         return version;
                     }
                 }

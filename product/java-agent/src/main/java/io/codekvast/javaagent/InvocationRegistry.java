@@ -132,7 +132,7 @@ public class InvocationRegistry {
                 try {
                     invocations[currentInvocationIndex].add(queue.take());
                 } catch (InterruptedException e) {
-                    log.fine("Interrupted");
+                    logger.fine("Interrupted");
                     return;
                 }
             }

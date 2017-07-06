@@ -56,7 +56,7 @@ public class HerokuResourceController {
 
     @ExceptionHandler
     public ResponseEntity<String> onAuthenticationException(AuthenticationException e) {
-        log.warn("Invalid credentials");
+        logger.warn("Invalid credentials");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
@@ -64,7 +64,7 @@ public class HerokuResourceController {
     public ResponseEntity<HerokuProvisionResponse> provision(@Valid @RequestBody HerokuProvisionRequest request,
                                                              @RequestHeader("Authorization") String auth)
         throws HerokuException {
-        log.debug("request={}", request);
+        logger.debug("request={}", request);
 
         validateCredentials(auth);
 
@@ -75,7 +75,7 @@ public class HerokuResourceController {
     public ResponseEntity<String> changePlan(@PathVariable("id") String id,
                                              @Valid @RequestBody HerokuChangePlanRequest request,
                                              @RequestHeader(AUTHORIZATION) String auth) throws HerokuException {
-        log.debug("id={}, request={}", id, request);
+        logger.debug("id={}, request={}", id, request);
 
         validateCredentials(auth);
 
@@ -87,7 +87,7 @@ public class HerokuResourceController {
     @RequestMapping(path = "/heroku/resources/{id}", method = DELETE)
     public ResponseEntity<String> deprovision(@PathVariable("id") String id,
                                               @RequestHeader(AUTHORIZATION) String auth) throws HerokuException {
-        log.debug("id={}", id);
+        logger.debug("id={}", id);
 
         validateCredentials(auth);
 
@@ -97,7 +97,7 @@ public class HerokuResourceController {
     }
 
     private void validateCredentials(String auth) throws AuthenticationException {
-        log.debug("auth={}", auth);
+        logger.debug("auth={}", auth);
 
         // The password is defined in <rootDir>/provisioning/vars/secrets.yml, and it has been pushed to Heroku by means
         // of <rootDir>/provisioning/push-addon-manifest-to-heroku.sh

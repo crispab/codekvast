@@ -129,7 +129,7 @@ public class SecurityServiceImpl implements SecurityService {
                                  .build(),
                 USER_AUTHORITY);
         } catch (Exception e) {
-            log.debug("Failed to authenticate token: " + e);
+            logger.debug("Failed to authenticate token: " + e);
             return null;
         }
     }
@@ -138,7 +138,7 @@ public class SecurityServiceImpl implements SecurityService {
     public String renewWebappToken() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth instanceof PreAuthenticatedAuthenticationToken) {
-            log.debug("Authenticated");
+            logger.debug("Authenticated");
             Long customerId = (Long) auth.getPrincipal();
 
             //noinspection CastToConcreteClass

@@ -50,12 +50,12 @@ public class AppVersionResolver {
         for (AppVersionStrategy strategy : appVersionStrategies) {
             if (strategy.canHandle(args)) {
                 String resolvedVersion = strategy.resolveAppVersion(codeBaseFiles, args);
-                log.fine(String.format("Resolved appVersion '%s' to '%s'", version, resolvedVersion));
+                logger.fine(String.format("Resolved appVersion '%s' to '%s'", version, resolvedVersion));
                 return resolvedVersion;
             }
         }
 
-        log.fine(String.format("Cannot resolve appVersion '%s', using it as-is", version));
+        logger.fine(String.format("Cannot resolve appVersion '%s', using it as-is", version));
         return version;
     }
 

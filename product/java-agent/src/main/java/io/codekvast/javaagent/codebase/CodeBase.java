@@ -108,14 +108,14 @@ public class CodeBase {
 
         CodeBaseFingerprint result = builder.build();
 
-        log.fine(String.format("Made fingerprint of %d files at %s in %d ms, fingerprint=%s", result.getNumFiles(), codeBaseFiles,
+        logger.fine(String.format("Made fingerprint of %d files at %s in %d ms, fingerprint=%s", result.getNumFiles(), codeBaseFiles,
                                System.currentTimeMillis() - startedAt, result));
         return result;
     }
 
     @SneakyThrows(MalformedURLException.class)
     private void addUrl(File file) {
-        log.finest("Adding URL " + file);
+        logger.finest("Adding URL " + file);
         urls.add(file.toURI().toURL());
     }
 
@@ -152,11 +152,11 @@ public class CodeBase {
 
         if (declaringNormalizedSignature != null) {
             if (!declaringNormalizedSignature.equals(thisNormalizedSignature) && thisNormalizedSignature != null) {
-                log.finest(
+                logger.finest(
                     String.format("  Adding %s -> %s to overridden signatures", thisNormalizedSignature, declaringNormalizedSignature));
                 overriddenSignatures.put(thisNormalizedSignature, declaringNormalizedSignature);
             } else if (signatures.put(declaringNormalizedSignature, declaringSignature) == null) {
-                log.finest("  Found " + declaringNormalizedSignature);
+                logger.finest("  Found " + declaringNormalizedSignature);
             }
             statuses.put(declaringNormalizedSignature, status);
         }

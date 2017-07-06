@@ -18,9 +18,9 @@ public class SampleSpringBootApp {
     private static void checkIfLoadedBySpringLoader() {
         try {
             Class.forName("org.springframework.boot.loader.JarLauncher");
-            log.info("Loaded by Spring Boot Loader");
+            logger.info("Loaded by Spring Boot Loader");
         } catch (ClassNotFoundException e) {
-            log.info("Not loaded by Spring Boot Loader");
+            logger.info("Not loaded by Spring Boot Loader");
         }
     }
 }

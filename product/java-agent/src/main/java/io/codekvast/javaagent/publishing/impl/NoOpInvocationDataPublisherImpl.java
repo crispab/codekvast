@@ -35,7 +35,7 @@ public class NoOpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
     static final String NAME = "no-op";
 
     public NoOpInvocationDataPublisherImpl(AgentConfig config) {
-        super(log, config);
+        super(logger, config);
     }
 
     @Override

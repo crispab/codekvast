@@ -17,7 +17,7 @@ public class UntrackedClass {
     }
 
     public int fooLogged() {
-        log.trace("Invoked fooLogged() #{}", count);
+        logger.trace("Invoked fooLogged() #{}", count);
         return count++;
     }
 }

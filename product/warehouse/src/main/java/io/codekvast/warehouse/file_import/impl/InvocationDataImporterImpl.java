@@ -47,7 +47,7 @@ public class InvocationDataImporterImpl implements InvocationDataImporter {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean importPublication(InvocationDataPublication publication) {
-        log.debug("Importing {}", publication);
+        logger.debug("Importing {}", publication);
 
         CommonPublicationData commonData = publication.getCommonData();
         long customerId = commonData.getCustomerId();

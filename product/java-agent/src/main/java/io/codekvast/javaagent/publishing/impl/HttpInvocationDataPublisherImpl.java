@@ -50,7 +50,7 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
     private static final MediaType APPLICATION_OCTET_STREAM = MediaType.parse("application/octet-stream");
 
     HttpInvocationDataPublisherImpl(AgentConfig config) {
-        super(log, config);
+        super(logger, config);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
 
             doPost(file, url, getCodeBaseFingerprint().getSha256(), publication.getInvocations().size());
 
-            log.info(String.format("Codekvast uploaded %d invocations (%s) to %s", publication.getInvocations().size(),
+            logger.info(String.format("Codekvast uploaded %d invocations (%s) to %s", publication.getInvocations().size(),
                                     LogUtil.humanReadableByteCount(file.length()), url));
         } catch (Exception e) {
             throw new CodekvastPublishingException("Cannot upload invocation data to " + url, e);

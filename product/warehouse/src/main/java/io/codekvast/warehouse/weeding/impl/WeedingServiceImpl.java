@@ -40,11 +40,11 @@ public class WeedingServiceImpl implements WeedingService {
     @Transactional
     public void performDataWeeding() {
         Instant startedAt = Instant.now();
-        log.debug("Performing data weeding");
+        logger.debug("Performing data weeding");
 
         // TODO: implement performDataWeeding()
 
-        log.info("Data weeding done in {}", Duration.between(startedAt, Instant.now()));
+        logger.info("Data weeding done in {}", Duration.between(startedAt, Instant.now()));
     }
 
 }

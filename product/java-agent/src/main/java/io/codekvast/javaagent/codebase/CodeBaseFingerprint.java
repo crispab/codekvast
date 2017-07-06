@@ -65,9 +65,9 @@ public class CodeBaseFingerprint {
 
         Builder record(File file) {
             if (files.add(file)) {
-                log.finest("Recorded " + file);
+                logger.finest("Recorded " + file);
             } else {
-                log.fine("Ignored duplicate file " + file);
+                logger.fine("Ignored duplicate file " + file);
             }
             return this;
         }
