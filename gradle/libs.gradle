@@ -1,6 +1,6 @@
 ext {
     aspectjVersion = '1.8.10'
-    jacksonVersion = '2.8.9'
+    jacksonVersion = '2.9.0'
     springBootVersion = '1.5.6.RELEASE'
     springfoxVersion = '2.7.0'
 
@@ -17,5 +17,5 @@ ext {
     ]
     logback = 'ch.qos.logback:logback-classic:1.2.3'
     lombok = 'org.projectlombok:lombok:1.16.18'
-    mariadbDriver = 'org.mariadb.jdbc:mariadb-java-client:2.0.3'
+    mariadbDriver = 'org.mariadb.jdbc:mariadb-java-client:2.1.0'
 }

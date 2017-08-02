@@ -31,6 +31,8 @@ dependencies {
 
     // Regular dependencies
     compile project(':product:agent-model')
+    compile "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
+    compile "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
     compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
     compile 'javax.inject:javax.inject:1'
     compile 'org.flywaydb:flyway-core'
