@@ -15,6 +15,8 @@ import {WarehouseService} from './services/warehouse.service';
 })
 export class AppComponent implements OnInit {
 
+    private showHerokuIntegrationMenu = false;
+
     constructor(private configService: ConfigService, private stateService: StateService, private titleService: Title,
                 private router: Router, private titleCasePipe: TitleCasePipe, private warehouseService: WarehouseService) {
     }
@@ -29,6 +31,25 @@ export class AppComponent implements OnInit {
                 this.warehouseService.isDemoMode().subscribe(demoMode => this.stateService.setDemoMode(demoMode));
             });
 
+
+        this.stateService.getAuthData()
+            .do(authData => console.log('AppComponent: authData=%o', authData))
+            .subscribe(authData => {
+                if (authData && authData.source === 'heroku') {
+                    this.showHerokuIntegrationMenu = true;
+                }
+
+                let Boomerang = window['Boomerang'];
+
+                if (this.showHerokuIntegrationMenu) {
+                    Boomerang.init({
+                        app: authData.sourceApp,
+                        addon: 'codekvast'
+                    });
+                } else {
+                    Boomerang.reset();
+                }
+            });
     }
 
     getApiPrefix(): String {
@@ -40,13 +61,12 @@ export class AppComponent implements OnInit {
     }
 
     getLoginState() {
-        return this.stateService.getLoginStateString();
+        return this.stateService.getLoginState();
     }
 
     topNavClasses() {
-        let demoMode = this.stateService.isDemoMode();
         return {
-            'integration-menu-heroku': !demoMode,
+            'integration-menu-heroku': this.showHerokuIntegrationMenu,
             container: true
         }
     }

@@ -22,7 +22,7 @@ const routes: Routes = [
         component: HomeComponent,
         canActivate: [AuthTokenRenewer]
     }, {
-        path: 'logged-out/:source/:sourceApp',
+        path: 'logged-out',
         component: LoggedOutComponent
     }, {
         path: 'methods',

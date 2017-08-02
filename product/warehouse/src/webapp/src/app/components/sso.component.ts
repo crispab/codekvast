@@ -20,19 +20,12 @@ export class SsoComponent implements OnInit {
             let payload = JSON.parse(atob(parts[1]));
             // signature = parts[2]
 
-            let Boomerang = window['Boomerang'];
             let sourceApp = 'unknown';
             if (payload.source === 'heroku') {
                 let navData = this.route.snapshot.params['navData'];
                 console.log('navData=%o', navData);
                 let args = JSON.parse(atob(navData));
                 sourceApp = args.app || args.appname;
-                Boomerang.init({
-                    app: sourceApp,
-                    addon: 'codekvast'
-                });
-            } else {
-                Boomerang.reset();
             }
 
             this.stateService.setLoggedInAs(token, payload.sub, payload.customerName, payload.email, payload.source, sourceApp);
