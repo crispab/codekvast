@@ -4,11 +4,9 @@ import {Injectable} from '@angular/core';
 import {MethodData} from '../model/methods/MethodData';
 import {Method} from '../model/methods/Method';
 import {Observable} from 'rxjs/Observable';
-import '../../rxjs-operators';
 import {isNumber} from 'util';
 import {StateService} from './state.service';
 import {Router} from '@angular/router';
-import 'rxjs/add/observable/of';
 import {StatusData} from '../model/status/StatusData';
 
 @Injectable()

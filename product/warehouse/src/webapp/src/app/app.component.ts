@@ -3,8 +3,6 @@ import {ConfigService} from './services/config.service';
 import {NavigationEnd, Router} from '@angular/router';
 import {TitleCasePipe} from '@angular/common';
 import {Title} from '@angular/platform-browser';
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/map';
 import {StateService} from './services/state.service';
 import {WarehouseService} from './services/warehouse.service';
 
