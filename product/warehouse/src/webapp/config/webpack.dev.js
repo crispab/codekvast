@@ -1,5 +1,6 @@
 process.env.CODEKVAST_API = 'http://localhost:8080';
 process.env.CODEKVAST_VERSION = 'dev';
+process.env.ENV = 'development';
 
 var webpackMerge = require('webpack-merge');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');

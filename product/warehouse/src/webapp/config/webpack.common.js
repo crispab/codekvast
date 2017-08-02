@@ -46,7 +46,9 @@ module.exports = {
 
     plugins: [
         new webpack.EnvironmentPlugin([
-            'CODEKVAST_VERSION'
+            'CODEKVAST_API',
+            'CODEKVAST_VERSION',
+            'ENV'
         ]),
 
         new webpack.optimize.CommonsChunkPlugin({
