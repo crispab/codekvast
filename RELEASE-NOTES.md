@@ -2,7 +2,8 @@
 
 ## 0.21.4
 1. Implemented Status page in Codekvast Warehouse.
-1. Upgraded to Angular 4.2.5.
+1. Upgraded to Angular 4.3.2.
+1. Upgraded to Spring Boot 1.5.6, Jackson 2.9.0.
 1. Upgraded to Gradle 4.0.
 1. Upgraded Gradle plugins.
 
