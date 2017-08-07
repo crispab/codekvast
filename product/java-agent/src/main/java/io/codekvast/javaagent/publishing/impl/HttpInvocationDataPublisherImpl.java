@@ -67,6 +67,11 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
     void doPublishInvocationData(long recordingIntervalStartedAtMillis, Set<String> invocations)
         throws CodekvastPublishingException {
 
+        if (invocations.isEmpty()) {
+            logger.info("No invocations to publish");
+            return;
+        }
+
         String url = getConfig().getInvocationDataUploadEndpoint();
         File file = null;
         try {
@@ -83,7 +88,6 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
         } finally {
             FileUtils.safeDelete(file);
         }
-
     }
 
     void doPost(File file, String url, String fingerprint, int publicationSize) throws IOException {

@@ -6,6 +6,7 @@
 1. Upgraded to Spring Boot 1.5.6, Jackson 2.9.0.
 1. Upgraded to Gradle 4.0.
 1. Upgraded Gradle plugins.
+1. Codekvast Agent avoids publishing empty invocation sets.
 
 ## 0.21.3
 1. Upgraded to Angular 4.2.4 and Webpack 3.0.0

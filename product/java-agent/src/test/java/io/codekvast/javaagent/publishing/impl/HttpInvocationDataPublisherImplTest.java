@@ -29,7 +29,7 @@ public class HttpInvocationDataPublisherImplTest {
     private final HttpInvocationDataPublisherImpl publisher = new TestableHttpInvocationDataPublisherImpl();
 
     @Test
-    public void should_create_and_upload_file() throws Exception {
+    public void should_create_and_upload_file_when_invocations_exist() throws Exception {
         Set<String> invocations = new HashSet<>(Arrays.asList("a", "b", "c"));
         publisher.setCodeBaseFingerprint(CodeBaseFingerprint.builder(config).build());
         publisher.doPublishInvocationData(System.currentTimeMillis(), invocations);
@@ -40,6 +40,16 @@ public class HttpInvocationDataPublisherImplTest {
         assertThat(uploadedFile.exists(), is(false));
 
         assertThat(uploadedPublicationSize, is(invocations.size()));
+    }
+
+    @Test
+    public void should_not_create_and_upload_file_when_no_invocations_exist() throws Exception {
+        Set<String> invocations = new HashSet<>();
+        publisher.setCodeBaseFingerprint(CodeBaseFingerprint.builder(config).build());
+        publisher.doPublishInvocationData(System.currentTimeMillis(), invocations);
+
+        assertThat(uploadedFile, nullValue());
+        assertThat(uploadedPublicationSize, is(0));
     }
 
     private class TestableHttpInvocationDataPublisherImpl extends HttpInvocationDataPublisherImpl {
