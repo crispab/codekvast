@@ -68,7 +68,7 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
         throws CodekvastPublishingException {
 
         if (invocations.isEmpty()) {
-            logger.info("No invocations to publish");
+            logger.info("Codekvast detected no invocations to publish");
             return;
         }
 

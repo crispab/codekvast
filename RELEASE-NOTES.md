@@ -1,6 +1,7 @@
 # Codekvast Release Notes
 
 ## 0.21.5
+1. Cosmetic change of logging in codekvast-agent.
 
 ## 0.21.4
 1. Implemented Status page in Codekvast Warehouse.
