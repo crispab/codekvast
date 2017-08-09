@@ -30,7 +30,7 @@ export class WarehouseService {
 
         const url: string = this.constructGetMethodsUrl(signature, maxResults);
         return this.http.get(url, {headers: this.getHeaders()})
-                   .do(res => this.replaceAuthToken(res), res => this.handleErrors(res))
+                   .do(res => this.replaceAuthToken(res))
                    .map(res => res.json());
     }
 
@@ -51,7 +51,7 @@ export class WarehouseService {
     getMethodById(id: number): Observable<Method> {
         const url = this.constructGetMethodByIdUrl(id);
         return this.http.get(url, {headers: this.getHeaders()})
-                   .do(res => this.replaceAuthToken(res), res => this.handleErrors(res))
+                   .do(res => this.replaceAuthToken(res))
                    .map(res => res.json());
     }
 
@@ -63,7 +63,7 @@ export class WarehouseService {
 
         const url = this.configService.getApiPrefix() + this.STATUS_URL;
         return this.http.get(url, {headers: this.getHeaders()})
-                   .do(res => this.replaceAuthToken(res), res => this.handleErrors(res))
+                   .do(res => this.replaceAuthToken(res))
                    .map(res => res.json());
     }
 

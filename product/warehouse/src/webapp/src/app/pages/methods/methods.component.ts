@@ -31,7 +31,7 @@ export class MethodsComponent implements OnInit {
     }
 
     communicationFailure() {
-        let now = this.agePipe.transform(new Date(), 'shortTime');
+        let now = this.agePipe.transform(new Date(), this.settings.dateFormat);
         return now + ': Communication failure'
     }
 

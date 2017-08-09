@@ -72,7 +72,7 @@
             </div>
 
             <div *ngIf="state.errorMessage">
-                <small class="ml-2 col-form-label form-text text-muted" title="{{ state.errorMessage }}">{{ communicationFailure() }}
+                <small class="ml-2 col-form-label form-text text-muted" title="{{ state.errorMessage }}">{{ state.communicationFailure() }}
                 </small>
             </div>
         </div>

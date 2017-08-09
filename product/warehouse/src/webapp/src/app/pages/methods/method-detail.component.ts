@@ -20,7 +20,7 @@ export class MethodDetailComponent implements OnInit {
     settings: Settings;
 
     constructor(private route: ActivatedRoute, private location: Location, private stateService: StateService,
-                private warehouse: WarehouseService) {
+                private warehouse: WarehouseService, private agePipe: AgePipe) {
     }
 
     ngOnInit(): void {
@@ -43,5 +43,10 @@ export class MethodDetailComponent implements OnInit {
 
     hasInconsistentTracking() {
         return Method.hasInconsistentTracking(this.method);
+    }
+
+    communicationFailure() {
+        let now = this.agePipe.transform(new Date(), this.settings.dateFormat);
+        return now + ': Communication failure'
     }
 }
