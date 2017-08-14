@@ -56,10 +56,10 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
 
     agentsProgressValue() {
         if (this.state.data.numLiveEnabledAgents === this.state.data.numLiveAgents) {
-            return this.state.data.numLiveEnabledAgents + ' agents';
+            return `${this.state.data.numLiveEnabledAgents} ${this.getAgentsLabel()}`;
         }
         let disabled = this.state.data.numLiveAgents - this.state.data.numLiveEnabledAgents;
-        return `${this.state.data.numLiveAgents} agents (${disabled} suspended)`
+        return `${this.state.data.numLiveAgents} ${this.getAgentsLabel()} (${disabled} suspended)`
     }
 
     isTrialPeriod() {
