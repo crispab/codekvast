@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {WarehouseService} from '../../services/warehouse.service';
 import {Settings} from '../../components/settings.model';
-import {StateService} from '../../services/state.service';
+import {AuthData, StateService} from '../../services/state.service';
 import {AgePipe} from '../../pipes/age.pipe';
 import {DatePipe} from '@angular/common';
 import {CollectionStatusComponentState} from './collection-status.component.state';
@@ -16,6 +16,7 @@ import {Agent} from '../../model/status/Agent';
 export class CollectionStatusComponent implements OnInit, OnDestroy {
     settings: Settings;
     state: CollectionStatusComponentState;
+    agentsLabel = 'agents';
 
     constructor(private stateService: StateService, private warehouse: WarehouseService, private agePipe: AgePipe) {
     }
@@ -25,6 +26,9 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
         this.state = this.stateService.getState(CollectionStatusComponentState.KEY,
             () => new CollectionStatusComponentState(this.agePipe, this.warehouse));
         this.state.init();
+        this.stateService.getAuthData().subscribe((ad: AuthData) => {
+            this.agentsLabel = ad && ad.source === 'heroku' ? 'dynos' : 'agents';
+        })
     }
 
     ngOnDestroy(): void {
@@ -86,5 +90,9 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
             return 'suspended';
         }
         return '';
+    }
+
+    getAgentsLabel() {
+        return this.agentsLabel;
     }
 }
