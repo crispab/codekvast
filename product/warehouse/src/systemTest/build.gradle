@@ -36,7 +36,7 @@ dependencies {
     systemTestRuntime "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
     systemTestRuntime "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
 
-    chromeDriver 'com.github.igor-suhorukov:chromedriver:2.27:linux64@bin'
+    chromeDriver 'com.github.igor-suhorukov:chromedriver:2.31:linux64@bin'
     // geckoDriver '???'
     jdbc mariadbDriver
 }
