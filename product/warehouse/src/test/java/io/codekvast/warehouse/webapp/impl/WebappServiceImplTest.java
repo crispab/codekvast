@@ -3,6 +3,7 @@ package io.codekvast.warehouse.webapp.impl;
 import io.codekvast.warehouse.customer.CustomerData;
 import io.codekvast.warehouse.customer.CustomerService;
 import io.codekvast.warehouse.customer.PricePlan;
+import io.codekvast.warehouse.customer.PricePlanDefaults;
 import io.codekvast.warehouse.security.CustomerIdProvider;
 import io.codekvast.warehouse.webapp.WebappService;
 import io.codekvast.warehouse.webapp.model.status.GetStatusResponse1;
@@ -48,7 +49,7 @@ public class WebappServiceImplTest {
         CustomerData customerData = CustomerData.builder()
                                                 .customerId(1L)
                                                 .customerName("customerName")
-                                                .planName(PricePlan.TEST.name())
+                                                .pricePlan(PricePlan.of(PricePlanDefaults.DEMO))
                                                 .source("source")
                                                 .build();
         when(customerService.getCustomerDataByCustomerId(eq(1L))).thenReturn(customerData);

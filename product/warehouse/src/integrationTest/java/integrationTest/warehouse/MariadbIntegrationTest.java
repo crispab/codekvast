@@ -8,12 +8,9 @@ import io.codekvast.testsupport.docker.DockerContainer;
 import io.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
 import io.codekvast.warehouse.CodekvastWarehouse;
 import io.codekvast.warehouse.agent.AgentService;
-import io.codekvast.warehouse.customer.CustomerData;
-import io.codekvast.warehouse.customer.CustomerService;
+import io.codekvast.warehouse.customer.*;
 import io.codekvast.warehouse.customer.CustomerService.InteractiveActivity;
 import io.codekvast.warehouse.customer.CustomerService.LoginRequest;
-import io.codekvast.warehouse.customer.LicenseViolationException;
-import io.codekvast.warehouse.customer.PricePlan;
 import io.codekvast.warehouse.webapp.WebappService;
 import io.codekvast.warehouse.webapp.model.methods.GetMethodsRequest1;
 import io.codekvast.warehouse.webapp.model.methods.GetMethodsResponse1;
@@ -156,7 +153,7 @@ public class MariadbIntegrationTest {
         CustomerData customerData = customerService.getCustomerDataByCustomerId(1L);
         assertThat(customerData.getCustomerId(), is(1L));
         assertThat(customerData.getCustomerName(), is("Demo"));
-        assertThat(customerData.getPlanName(), is("demo"));
+        assertThat(customerData.getPricePlan().getName(), is("demo"));
     }
 
     @Test(expected = AuthenticationCredentialsNotFoundException.class)
@@ -165,7 +162,7 @@ public class MariadbIntegrationTest {
         CustomerData customerData = customerService.getCustomerDataByCustomerId(0L);
         assertThat(customerData.getCustomerId(), is(1L));
         assertThat(customerData.getCustomerName(), is("Demo"));
-        assertThat(customerData.getPlanName(), is("demo"));
+        assertThat(customerData.getPricePlan().getName(), is("demo"));
     }
 
     @Test
@@ -174,7 +171,7 @@ public class MariadbIntegrationTest {
         CustomerData customerData = customerService.getCustomerDataByLicenseKey("");
         assertThat(customerData.getCustomerId(), is(1L));
         assertThat(customerData.getCustomerName(), is("Demo"));
-        assertThat(customerData.getPlanName(), is("demo"));
+        assertThat(customerData.getPricePlan().getName(), is("demo"));
     }
 
     @Test(expected = AuthenticationCredentialsNotFoundException.class)
@@ -183,7 +180,7 @@ public class MariadbIntegrationTest {
         CustomerData customerData = customerService.getCustomerDataByLicenseKey("undefined");
         assertThat(customerData.getCustomerId(), is(1L));
         assertThat(customerData.getCustomerName(), is("Demo"));
-        assertThat(customerData.getPlanName(), is("demo"));
+        assertThat(customerData.getPricePlan().getName(), is("demo"));
     }
 
     @Test
@@ -192,7 +189,7 @@ public class MariadbIntegrationTest {
         CustomerData customerData = customerService.getCustomerDataByExternalId("external-1");
         assertThat(customerData.getCustomerId(), is(1L));
         assertThat(customerData.getCustomerName(), is("Demo"));
-        assertThat(customerData.getPlanName(), is("demo"));
+        assertThat(customerData.getPricePlan().getName(), is("demo"));
     }
 
     @Test(expected = AuthenticationCredentialsNotFoundException.class)
@@ -201,7 +198,7 @@ public class MariadbIntegrationTest {
         CustomerData customerData = customerService.getCustomerDataByExternalId("undefined");
         assertThat(customerData.getCustomerId(), is(1L));
         assertThat(customerData.getCustomerName(), is("Demo"));
-        assertThat(customerData.getPlanName(), is("demo"));
+        assertThat(customerData.getPricePlan().getName(), is("demo"));
     }
 
     @Test
@@ -454,10 +451,10 @@ public class MariadbIntegrationTest {
 
         // then
         assertThat(status.getPricePlan(), is("DEMO"));
-        assertThat(status.getCollectionResolutionSeconds(), is(PricePlan.DEMO.getPublishIntervalSeconds()));
-        assertThat(status.getMaxNumberOfAgents(), is(PricePlan.DEMO.getMaxNumberOfAgents()));
-        assertThat(status.getMaxCollectionPeriodDays(), is(-1)); // TODO: pick from PricePlan
-        assertThat(status.getMaxNumberOfMethods(), is(PricePlan.DEMO.getMaxMethods()));
+        assertThat(status.getCollectionResolutionSeconds(), is(PricePlanDefaults.DEMO.getPublishIntervalSeconds()));
+        assertThat(status.getMaxNumberOfAgents(), is(PricePlanDefaults.DEMO.getMaxNumberOfAgents()));
+        assertThat(status.getMaxCollectionPeriodDays(), is(PricePlanDefaults.DEMO.getMaxCollectionPeriodDays()));
+        assertThat(status.getMaxNumberOfMethods(), is(PricePlanDefaults.DEMO.getMaxMethods()));
 
         assertThat(status.getNumAgents(), is(4));
         assertThat(status.getNumLiveAgents(), is(2));
@@ -476,7 +473,7 @@ public class MariadbIntegrationTest {
                                                                  .nextPollExpectedAtMillis(cutMillis(timestamps.plusOneMinute))
                                                                  .nextPublicationExpectedAtMillis(cutMillis(
                                                                      Timestamp.from(timestamps.minusTenMinutes.toInstant().plusSeconds(
-                                                                         PricePlan.DEMO.getPublishIntervalSeconds()))))
+                                                                         PricePlanDefaults.DEMO.getPublishIntervalSeconds()))))
                                                                  .packages("com.foobar1")
                                                                  .pollReceivedAtMillis(cutMillis(timestamps.minusTenMinutes))
                                                                  .publishedAtMillis(cutMillis(timestamps.minusTwoMinutes))
@@ -498,7 +495,7 @@ public class MariadbIntegrationTest {
     }
 
     private void assertConfigPollResponse(GetConfigResponse1 response, String publisherConfig) {
-        PricePlan pp = PricePlan.DEMO;
+        PricePlanDefaults pp = PricePlanDefaults.DEMO;
         assertThat(response, is(GetConfigResponse1.sample().toBuilder()
                                                   .codeBasePublisherCheckIntervalSeconds(pp.getPublishIntervalSeconds())
                                                   .codeBasePublisherConfig(publisherConfig)

@@ -21,10 +21,7 @@
  */
 package io.codekvast.warehouse.customer.impl;
 
-import io.codekvast.warehouse.customer.CustomerData;
-import io.codekvast.warehouse.customer.CustomerService;
-import io.codekvast.warehouse.customer.LicenseViolationException;
-import io.codekvast.warehouse.customer.PricePlan;
+import io.codekvast.warehouse.customer.*;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
@@ -35,8 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.sql.Timestamp;
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -47,7 +42,21 @@ import java.util.UUID;
 @Slf4j
 public class CustomerServiceImpl implements CustomerService {
 
-    private static final String SELECT_CLAUSE = "SELECT id, name, source, plan FROM customers ";
+    private static final String SELECT_CLAUSE = "SELECT\n" +
+        "    c.id,\n" +
+        "    c.name,\n" +
+        "    c.source,\n" +
+        "    c.plan,\n" +
+        "    pp.createdBy,\n" +
+        "    pp.note,\n" +
+        "    pp.maxMethods,\n" +
+        "    pp.maxNumberOfAgents,\n" +
+        "    pp.publishIntervalSeconds,\n" +
+        "    pp.pollIntervalSeconds,\n" +
+        "    pp.retryIntervalSeconds\n" +
+        "    pp.maxCollectionPeriodDays\n" +
+        "FROM customers c\n" +
+        "    LEFT JOIN price_plan_overrides pp ON pp.customerId = c.id ";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -60,7 +69,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional(readOnly = true)
     public CustomerData getCustomerDataByLicenseKey(@NonNull String licenseKey) throws AuthenticationCredentialsNotFoundException {
         try {
-            return getCustomerData("WHERE licenseKey = ?", licenseKey);
+            return getCustomerData("AND licenseKey = ?", licenseKey);
         } catch (DataAccessException e) {
             throw new AuthenticationCredentialsNotFoundException("Invalid license key: '" + licenseKey + "'");
         }
@@ -70,7 +79,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional(readOnly = true)
     public CustomerData getCustomerDataByCustomerId(long customerId) throws AuthenticationCredentialsNotFoundException {
         try {
-            return getCustomerData("WHERE id = ?", customerId);
+            return getCustomerData("AND id = ?", customerId);
         } catch (DataAccessException e) {
             throw new AuthenticationCredentialsNotFoundException("Invalid customerId: " + customerId);
         }
@@ -80,7 +89,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional(readOnly = true)
     public CustomerData getCustomerDataByExternalId(@NonNull String externalId) throws AuthenticationCredentialsNotFoundException {
         try {
-            return getCustomerData("WHERE externalId = ?", externalId);
+            return getCustomerData("AND externalId = ?", externalId);
         } catch (DataAccessException e) {
             throw new AuthenticationCredentialsNotFoundException("Invalid externalId: " + externalId);
         }
@@ -109,36 +118,21 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public Collection<CustomerData> getAllCustomers() {
-
-        List<CustomerData> result = jdbcTemplate
-            .query(SELECT_CLAUSE,
-                   (rs, rowNum) -> CustomerData.builder()
-                                               .customerId(rs.getLong(1))
-                                               .customerName(rs.getString(2))
-                                               .source(rs.getString(3))
-                                               .planName(rs.getString(4))
-                                               .build());
-
-        logger.debug("Found {} customers", result.size());
-        return result;
-    }
-
-    @Override
     @Transactional(rollbackFor = Exception.class)
     public void registerLogin(LoginRequest request) {
         Timestamp now = new Timestamp(System.currentTimeMillis());
 
-        int updated = jdbcTemplate.update("UPDATE users SET lastLoginAt = ?, lastActivityAt = ?, lastLoginSource = ?, numberOfLogins = numberOfLogins + 1 " +
-                                              "WHERE customerId = ? AND email = ?",
-                                          now, now, request.getSource(), request.getCustomerId(), request.getEmail());
+        int updated = jdbcTemplate
+            .update("UPDATE users SET lastLoginAt = ?, lastActivityAt = ?, lastLoginSource = ?, numberOfLogins = numberOfLogins + 1 " +
+                        "WHERE customerId = ? AND email = ?",
+                    now, now, request.getSource(), request.getCustomerId(), request.getEmail());
         if (updated > 0) {
             logger.debug("Updated user {}", request);
         } else {
-            jdbcTemplate.update("INSERT INTO users(customerId, email, firstLoginAt, lastLoginAt, lastActivityAt, lastLoginSource, numberOfLogins) " +
-                                    "VALUES(?, ?, ?, ?, ?, ?, ?)",
-                                request.getCustomerId(), request.getEmail(), now, now, now, request.getSource(), 1);
+            jdbcTemplate.update(
+                "INSERT INTO users(customerId, email, firstLoginAt, lastLoginAt, lastActivityAt, lastLoginSource, numberOfLogins) " +
+                    "VALUES(?, ?, ?, ?, ?, ?, ?)",
+                request.getCustomerId(), request.getEmail(), now, now, now, request.getSource(), 1);
             logger.debug("Added user {}", request);
         }
         logger.info("Logged in {}", request);
@@ -173,7 +167,7 @@ public class CustomerServiceImpl implements CustomerService {
     public void changePlanForExternalId(@NonNull String externalId, @NonNull String newPlan) {
         CustomerData customerData = getCustomerDataByExternalId(externalId);
 
-        if (newPlan.equals(customerData.getPlanName())) {
+        if (newPlan.equals(customerData.getPricePlan().getName())) {
             logger.info("{} is already on plan '{}'", customerData, newPlan);
             return;
         }
@@ -185,6 +179,11 @@ public class CustomerServiceImpl implements CustomerService {
             logger.warn("Failed to change plan for {} to '{}'", customerData, newPlan);
         } else {
             logger.info("Changed plan for {} to '{}'", customerData, newPlan);
+
+            count = jdbcTemplate.update("DELETE FROM price_plan_overrides WHERE customerId = ?", customerData.getCustomerId());
+            if (count > 0) {
+                logger.warn("Removed price plan override for {}", customerData);
+            }
 
             // TODO: adjust to new plan
         }
@@ -204,6 +203,7 @@ public class CustomerServiceImpl implements CustomerService {
         deleteFromTable("applications", customerId);
         deleteFromTable("users", customerId);
         deleteFromTable("agent_state", customerId);
+        deleteFromTable("price_plan_overrides", customerId);
         deleteFromTable("customers", customerId);
     }
 
@@ -216,11 +216,29 @@ public class CustomerServiceImpl implements CustomerService {
     private CustomerData getCustomerData(String where_clause, Object identifier) {
         Map<String, Object> result = jdbcTemplate.queryForMap(SELECT_CLAUSE + where_clause, identifier);
 
+        String planName = (String) result.get("plan");
+        PricePlanDefaults ppd = PricePlanDefaults.valueOf(planName);
+
         return CustomerData.builder()
                            .customerId((Long) result.get("id"))
                            .customerName((String) result.get("name"))
                            .source((String) result.get("source"))
-                           .planName((String) result.get("plan"))
+                           .pricePlan(
+                               PricePlan.builder()
+                                        .name(planName)
+                                        .overrideBy((String) result.get("createdBy"))
+                                        .note((String) result.get("note"))
+                                        .maxMethods((Integer) result.getOrDefault("maxMethods", ppd.getMaxMethods()))
+                                        .maxNumberOfAgents((Integer) result.getOrDefault("maxNumberOfAgents", ppd.getMaxNumberOfAgents()))
+                                        .pollIntervalSeconds(
+                                            (Integer) result.getOrDefault("pollIntervalSeconds", ppd.getPollIntervalSeconds()))
+                                        .publishIntervalSeconds(
+                                            (Integer) result.getOrDefault("publishIntervalSeconds", ppd.getPublishIntervalSeconds()))
+                                        .retryIntervalSeconds(
+                                            (Integer) result.getOrDefault("retryIntervalSeconds", ppd.getRetryIntervalSeconds()))
+                                        .maxCollectionPeriodDays(
+                                            (Integer) result.getOrDefault("maxCollectionPeriodDays", ppd.getMaxCollectionPeriodDays()))
+                                        .build())
                            .build();
     }
 
@@ -231,7 +249,7 @@ public class CustomerServiceImpl implements CustomerService {
         if (numberOfMethods > pp.getMaxMethods()) {
             throw new LicenseViolationException(
                 String.format("Too many methods: %d. The plan '%s' has a limit of %d methods",
-                              numberOfMethods, customerData.getPlanName(), pp.getMaxMethods()));
+                              numberOfMethods, customerData.getPricePlan().getName(), pp.getMaxMethods()));
         }
     }
 

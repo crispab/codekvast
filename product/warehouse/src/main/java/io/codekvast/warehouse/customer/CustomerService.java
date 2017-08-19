@@ -88,13 +88,6 @@ public interface CustomerService {
     int countMethods(long customerId);
 
     /**
-     * Query the database for all customers.
-     *
-     * @return A list of CustomerData objects.
-     */
-    Collection<CustomerData> getAllCustomers();
-
-    /**
      * Register that a user has logged in.
      *
      * @param request The login request

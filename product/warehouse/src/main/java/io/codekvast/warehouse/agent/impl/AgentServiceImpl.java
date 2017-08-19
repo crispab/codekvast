@@ -123,7 +123,7 @@ public class AgentServiceImpl implements AgentService {
                                           "WHERE enabled = TRUE AND customerId = ? AND nextPollExpectedAt >= ? AND jvmUuid != ? ",
                                       Integer.class, customerId, Timestamp.from(now.minusSeconds(10)), jvmUuid);
 
-        String planName = customerData.getPlanName();
+        String planName = customerData.getPricePlan().getName();
         int maxNumberOfAgents = customerData.getPricePlan().getMaxNumberOfAgents();
         boolean enabled = numOtherEnabledLiveAgents < maxNumberOfAgents;
         if (!enabled) {

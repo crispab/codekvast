@@ -3,10 +3,8 @@ package io.codekvast.warehouse.agent.impl;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.warehouse.agent.AgentService;
-import io.codekvast.warehouse.customer.CustomerData;
+import io.codekvast.warehouse.customer.*;
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
-import io.codekvast.warehouse.customer.CustomerService;
-import io.codekvast.warehouse.customer.LicenseViolationException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -53,7 +51,7 @@ public class AgentServiceImplTest {
                         .customerId(1L)
                         .customerName("name")
                         .source("source")
-                        .planName("test")
+                        .pricePlan(PricePlan.of(PricePlanDefaults.TEST))
                         .build());
     }
 

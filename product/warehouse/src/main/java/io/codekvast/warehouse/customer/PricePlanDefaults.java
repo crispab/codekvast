@@ -21,25 +21,27 @@
  */
 package io.codekvast.warehouse.customer;
 
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
+ * Default values for all defined price plans. Corresponds 1-to-1 to rows in the table price_plans.
+ *
+ * The price plans are also defined at Heroku (except for those marked as internal).
+ *
  * @author olle.hallin@crisp.se
+ * @see "https://addons.heroku.com/provider/addons/codekvast/plans"
  */
-@Value
-@Builder
-public class CustomerData {
-    @NonNull
-    private Long customerId;
+@Getter
+@RequiredArgsConstructor
+public enum PricePlanDefaults {
+    DEMO(25_000, 1, 5, 5, 5, -1),
+    TEST(2_500, 3, 7200, 600, 60, 30);
 
-    @NonNull
-    private String customerName;
-
-    @NonNull
-    private String source;
-
-    @NonNull
-    private PricePlan pricePlan;
+    private final int maxMethods;
+    private final int maxNumberOfAgents;
+    private final int publishIntervalSeconds;
+    private final int pollIntervalSeconds;
+    private final int retryIntervalSeconds;
+    private final int maxCollectionPeriodDays;
 }

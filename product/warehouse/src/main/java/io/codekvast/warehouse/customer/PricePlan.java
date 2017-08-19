@@ -21,29 +21,50 @@
  */
 package io.codekvast.warehouse.customer;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Value;
 
 /**
- * All defined price plans. Corresponds 1-to-1 to rows in the table price_plans.
+ * The resolved price plan. Contains values from the table price_plan_overrides.
+ *
+ * Missing row or null column values is defaulted by picking values from {@link PricePlanDefaults}.
  *
  * The price plans are also defined at Heroku (except for those marked as internal).
  *
  * @author olle.hallin@crisp.se
  * @see "https://addons.heroku.com/provider/addons/codekvast/plans"
  */
-@Getter
-@RequiredArgsConstructor
-public enum PricePlan {
-    DEMO(25_000, 1, 5, 5, 5, true),
-    TEST(2_500, 3, 7200, 600, 60, false);
+@Value
+@Builder
+public class PricePlan {
 
+    @NonNull
+    private final String name;
+
+    // These fields will be null unless there is a row in price_plan_overrides
+    private final String overrideBy;
+    private final String note;
+
+    // These are the effective values to use
     private final int maxMethods;
     private final int maxNumberOfAgents;
     private final int publishIntervalSeconds;
     private final int pollIntervalSeconds;
     private final int retryIntervalSeconds;
+    private final int maxCollectionPeriodDays;
 
-    // An internal plan is not visible at Heroku, and hence not selectable by ordinary customers.
-    private final boolean internal;
+    public static PricePlan of(PricePlanDefaults ppd) {
+        return PricePlan.builder()
+                        .name(ppd.name())
+                        .overrideBy(null)
+                        .note(null)
+                        .maxMethods(ppd.getMaxMethods())
+                        .maxNumberOfAgents(ppd.getMaxNumberOfAgents())
+                        .publishIntervalSeconds(ppd.getPublishIntervalSeconds())
+                        .pollIntervalSeconds(ppd.getPollIntervalSeconds())
+                        .retryIntervalSeconds(ppd.getRetryIntervalSeconds())
+                        .maxCollectionPeriodDays(ppd.getMaxCollectionPeriodDays())
+                        .build();
+    }
 }

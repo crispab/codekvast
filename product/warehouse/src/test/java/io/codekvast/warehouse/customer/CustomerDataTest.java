@@ -16,30 +16,9 @@ public class CustomerDataTest {
                                                 .customerId(17L)
                                                 .customerName("foo")
                                                 .source("bar")
-                                                .planName("DemO")
+                                                .pricePlan(PricePlan.of(PricePlanDefaults.DEMO))
                                                 .build();
-        assertThat(customerData.toString(), is("CustomerData(customerId=17, customerName=foo, planName=DemO, source=bar)"));
+        assertThat(customerData.toString(), is("CustomerData(customerId=17, customerName=foo, source=bar, pricePlan=PricePlan(name=DEMO, overrideBy=null, note=null, maxMethods=25000, maxNumberOfAgents=1, publishIntervalSeconds=5, pollIntervalSeconds=5, retryIntervalSeconds=5, maxCollectionPeriodDays=-1))"));
     }
 
-    @Test
-    public void should_normalize_planName() throws Exception {
-        CustomerData customerData = CustomerData.builder()
-                                                .customerId(17L)
-                                                .customerName("foo")
-                                                .source("bar")
-                                                .planName("dEMo")
-                                                .build();
-        assertThat(customerData.getPricePlan(), is(PricePlan.DEMO));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void should_reject_invalid_planName() throws Exception {
-        CustomerData customerData = CustomerData.builder()
-                                                .customerId(17L)
-                                                .customerName("foo")
-                                                .source("bar")
-                                                .planName("Invalid")
-                                                .build();
-        customerData.getPricePlan();
-    }
 }

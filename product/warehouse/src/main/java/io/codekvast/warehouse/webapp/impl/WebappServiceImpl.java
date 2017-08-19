@@ -125,7 +125,7 @@ public class WebappServiceImpl implements WebappService {
                                  .queryTimeMillis(System.currentTimeMillis() - startedAt)
 
                                  // price plan stuff
-                                 .pricePlan(pp.name())
+                                 .pricePlan(pp.getName())
                                  .collectionResolutionSeconds(pp.getPublishIntervalSeconds())
                                  .maxCollectionPeriodDays(-1) // TODO: pick from PricePlan
                                  .maxNumberOfAgents(pp.getMaxNumberOfAgents())

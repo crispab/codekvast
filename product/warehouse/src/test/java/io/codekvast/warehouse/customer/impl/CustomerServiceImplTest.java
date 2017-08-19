@@ -42,7 +42,7 @@ public class CustomerServiceImplTest {
     public void should_return_sensible_CustomerData() throws Exception {
         CustomerData data = service.getCustomerDataByLicenseKey("key");
         assertThat(data.getCustomerId(), is(1L));
-        assertThat(data.getPlanName(), is("test"));
+        assertThat(data.getPricePlan().getName(), is("TEST"));
     }
 
     @Test(expected = LicenseViolationException.class)
