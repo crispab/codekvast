@@ -153,16 +153,13 @@ public class MariadbIntegrationTest {
         CustomerData customerData = customerService.getCustomerDataByCustomerId(1L);
         assertThat(customerData.getCustomerId(), is(1L));
         assertThat(customerData.getCustomerName(), is("Demo"));
-        assertThat(customerData.getPricePlan().getName(), is("demo"));
+        assertThat(customerData.getPricePlan().getName(), is("DEMO"));
     }
 
     @Test(expected = AuthenticationCredentialsNotFoundException.class)
     @Sql(scripts = "/sql/base-data.sql")
     public void should_reject_invalid_getCustomerDataByCustomerId() {
-        CustomerData customerData = customerService.getCustomerDataByCustomerId(0L);
-        assertThat(customerData.getCustomerId(), is(1L));
-        assertThat(customerData.getCustomerName(), is("Demo"));
-        assertThat(customerData.getPricePlan().getName(), is("demo"));
+        customerService.getCustomerDataByCustomerId(0L);
     }
 
     @Test
@@ -171,34 +168,37 @@ public class MariadbIntegrationTest {
         CustomerData customerData = customerService.getCustomerDataByLicenseKey("");
         assertThat(customerData.getCustomerId(), is(1L));
         assertThat(customerData.getCustomerName(), is("Demo"));
-        assertThat(customerData.getPricePlan().getName(), is("demo"));
+        assertThat(customerData.getPricePlan().getName(), is("DEMO"));
     }
 
     @Test(expected = AuthenticationCredentialsNotFoundException.class)
     @Sql(scripts = "/sql/base-data.sql")
     public void should_reject_invalid_getCustomerDataByLicenseKey() {
-        CustomerData customerData = customerService.getCustomerDataByLicenseKey("undefined");
-        assertThat(customerData.getCustomerId(), is(1L));
-        assertThat(customerData.getCustomerName(), is("Demo"));
-        assertThat(customerData.getPricePlan().getName(), is("demo"));
+        customerService.getCustomerDataByLicenseKey("undefined");
     }
 
     @Test
     @Sql(scripts = "/sql/base-data.sql")
-    public void should_accept_valid_getCustomerDataByExternalId() {
+    public void should_accept_valid_getCustomerDataByExternalId_with_pricePlanOverride() {
         CustomerData customerData = customerService.getCustomerDataByExternalId("external-1");
         assertThat(customerData.getCustomerId(), is(1L));
         assertThat(customerData.getCustomerName(), is("Demo"));
-        assertThat(customerData.getPricePlan().getName(), is("demo"));
+        assertThat(customerData.getPricePlan().getName(), is("DEMO"));
+        assertThat(customerData.getPricePlan().getOverrideBy(), is("integration test"));
+    }
+
+    @Test
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_accept_valid_getCustomerDataByExternalId_without_pricePlanOverride() {
+        CustomerData customerData = customerService.getCustomerDataByExternalId("external-2");
+        assertThat(customerData.getCustomerId(), is(2L));
+        assertThat(customerData.getPricePlan().getOverrideBy(), nullValue());
     }
 
     @Test(expected = AuthenticationCredentialsNotFoundException.class)
     @Sql(scripts = "/sql/base-data.sql")
     public void should_reject_invalid_getCustomerDataByExternalId() {
-        CustomerData customerData = customerService.getCustomerDataByExternalId("undefined");
-        assertThat(customerData.getCustomerId(), is(1L));
-        assertThat(customerData.getCustomerName(), is("Demo"));
-        assertThat(customerData.getPricePlan().getName(), is("demo"));
+        customerService.getCustomerDataByExternalId("undefined");
     }
 
     @Test
@@ -228,12 +228,12 @@ public class MariadbIntegrationTest {
     @Sql(scripts = "/sql/base-data.sql")
     public void should_handle_delete_customer() {
         Long count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM customers", Long.class);
-        assertThat(count, is(1L));
+        assertThat(count, is(2L));
 
         customerService.deleteCustomerByExternalId("external-1");
 
         count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM customers", Long.class);
-        assertThat(count, is(0L));
+        assertThat(count, is(1L));
     }
 
     @Test
@@ -454,7 +454,7 @@ public class MariadbIntegrationTest {
         assertThat(status.getCollectionResolutionSeconds(), is(PricePlanDefaults.DEMO.getPublishIntervalSeconds()));
         assertThat(status.getMaxNumberOfAgents(), is(PricePlanDefaults.DEMO.getMaxNumberOfAgents()));
         assertThat(status.getMaxCollectionPeriodDays(), is(PricePlanDefaults.DEMO.getMaxCollectionPeriodDays()));
-        assertThat(status.getMaxNumberOfMethods(), is(PricePlanDefaults.DEMO.getMaxMethods()));
+        assertThat(status.getMaxNumberOfMethods(), is(100));
 
         assertThat(status.getNumAgents(), is(4));
         assertThat(status.getNumLiveAgents(), is(2));

@@ -44,4 +44,8 @@ public enum PricePlanDefaults {
     private final int pollIntervalSeconds;
     private final int retryIntervalSeconds;
     private final int maxCollectionPeriodDays;
+
+    public static PricePlanDefaults fromDatabaseName(String planName) {
+        return PricePlanDefaults.valueOf(planName.toUpperCase());
+    }
 }

@@ -4,12 +4,17 @@ DELETE FROM invocations;
 DELETE FROM methods;
 DELETE FROM jvms;
 DELETE FROM applications;
+DELETE FROM price_plan_overrides;
 DELETE FROM customers;
 DELETE FROM price_plans;
 
 INSERT INTO price_plans (name) VALUES ('test'), ('demo');
 
-INSERT INTO customers(id, source, externalId, name, plan, licenseKey) VALUES(1, 'test', 'external-1', 'Demo', 'demo', '');
+INSERT INTO customers (id, source, externalId, name, plan, licenseKey) VALUES (1, 'test', 'external-1', 'Demo', 'demo', '');
+INSERT INTO customers (id, source, externalId, name, plan, licenseKey) VALUES (2, 'test', 'external-2', 'Demo', 'demo', 'licenseKey2');
+
+INSERT INTO price_plan_overrides (id, customerId, createdAt, createdBy, updatedAt, note, maxMethods)
+VALUES (1, 1, NOW(), 'integration test', NOW(), 'Inserted by base-data.sql', 100);
 
 INSERT INTO applications (id, customerId, name, version) VALUES
   (11, 1, 'app1', 'v1'),
@@ -32,9 +37,12 @@ INSERT INTO methods (id, customerId, visibility, signature) VALUES
 INSERT INTO jvms (id, customerId, applicationId, uuid, methodVisibility, packages, excludePackages,
                   computerId, hostname, agentVersion, tags, environment)
 VALUES
-  (1, 1, 11, 'uuid1', 'public', 'com.foobar1', 'com.foobar.excluded1', 'computerId1', 'hostname1', 'agentVersion1', 'tag1=t1,tag2=t2', 'env1'),
-  (2, 1, 12, 'uuid2', 'protected', 'com.foobar2', 'com.foobar.excluded2', 'computerId2', 'hostname2', 'agentVersion2', 'tag1=t1,tag2=t2', 'env2'),
-  (3, 1, 21, 'uuid3', 'package-private', 'com.foobar3', 'com.foobar.excluded3', 'computerId3', 'hostname3', 'agentVersion3', 'tag1=t1,tag2=t2', 'env3'),
+  (1, 1, 11, 'uuid1', 'public', 'com.foobar1', 'com.foobar.excluded1', 'computerId1', 'hostname1', 'agentVersion1', 'tag1=t1,tag2=t2',
+   'env1'),
+  (2, 1, 12, 'uuid2', 'protected', 'com.foobar2', 'com.foobar.excluded2', 'computerId2', 'hostname2', 'agentVersion2', 'tag1=t1,tag2=t2',
+   'env2'),
+  (3, 1, 21, 'uuid3', 'package-private', 'com.foobar3', 'com.foobar.excluded3', 'computerId3', 'hostname3', 'agentVersion3',
+      'tag1=t1,tag2=t2', 'env3'),
   (4, 1, 22, 'uuid4', 'private', 'com.foobar4', NULL, 'computerId4', 'hostname4', 'agentVersion4', 'tag1=t1,tag2=t2', 'env4');
 
 INSERT INTO agent_state (customerId, jvmUuid, enabled)

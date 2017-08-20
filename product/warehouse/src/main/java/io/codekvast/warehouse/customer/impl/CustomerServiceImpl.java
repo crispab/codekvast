@@ -42,21 +42,12 @@ import java.util.UUID;
 @Slf4j
 public class CustomerServiceImpl implements CustomerService {
 
-    private static final String SELECT_CLAUSE = "SELECT\n" +
-        "    c.id,\n" +
-        "    c.name,\n" +
-        "    c.source,\n" +
-        "    c.plan,\n" +
-        "    pp.createdBy,\n" +
-        "    pp.note,\n" +
-        "    pp.maxMethods,\n" +
-        "    pp.maxNumberOfAgents,\n" +
-        "    pp.publishIntervalSeconds,\n" +
-        "    pp.pollIntervalSeconds,\n" +
-        "    pp.retryIntervalSeconds\n" +
-        "    pp.maxCollectionPeriodDays\n" +
-        "FROM customers c\n" +
-        "    LEFT JOIN price_plan_overrides pp ON pp.customerId = c.id ";
+    private static final String SELECT_CLAUSE = "SELECT" +
+        "c.id, c.name, c.source, c.plan," +
+        "pp.createdBy, pp.note, pp.maxMethods, pp.maxNumberOfAgents, pp.publishIntervalSeconds, pp.pollIntervalSeconds, " +
+        "pp.retryIntervalSeconds, pp.maxCollectionPeriodDays " +
+        "FROM customers c LEFT JOIN price_plan_overrides pp ON pp.customerId = c.id " +
+        "WHERE ";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -69,7 +60,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional(readOnly = true)
     public CustomerData getCustomerDataByLicenseKey(@NonNull String licenseKey) throws AuthenticationCredentialsNotFoundException {
         try {
-            return getCustomerData("AND licenseKey = ?", licenseKey);
+            return getCustomerData("c.licenseKey = ?", licenseKey);
         } catch (DataAccessException e) {
             throw new AuthenticationCredentialsNotFoundException("Invalid license key: '" + licenseKey + "'");
         }
@@ -79,7 +70,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional(readOnly = true)
     public CustomerData getCustomerDataByCustomerId(long customerId) throws AuthenticationCredentialsNotFoundException {
         try {
-            return getCustomerData("AND id = ?", customerId);
+            return getCustomerData("c.id = ?", customerId);
         } catch (DataAccessException e) {
             throw new AuthenticationCredentialsNotFoundException("Invalid customerId: " + customerId);
         }
@@ -89,7 +80,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional(readOnly = true)
     public CustomerData getCustomerDataByExternalId(@NonNull String externalId) throws AuthenticationCredentialsNotFoundException {
         try {
-            return getCustomerData("AND externalId = ?", externalId);
+            return getCustomerData("c.externalId = ?", externalId);
         } catch (DataAccessException e) {
             throw new AuthenticationCredentialsNotFoundException("Invalid externalId: " + externalId);
         }
@@ -213,11 +204,11 @@ public class CustomerServiceImpl implements CustomerService {
         logger.debug("Deleted {} {}", count, table);
     }
 
-    private CustomerData getCustomerData(String where_clause, Object identifier) {
+    private CustomerData getCustomerData(String where_clause, java.io.Serializable identifier) {
         Map<String, Object> result = jdbcTemplate.queryForMap(SELECT_CLAUSE + where_clause, identifier);
 
         String planName = (String) result.get("plan");
-        PricePlanDefaults ppd = PricePlanDefaults.valueOf(planName);
+        PricePlanDefaults ppd = PricePlanDefaults.fromDatabaseName(planName);
 
         return CustomerData.builder()
                            .customerId((Long) result.get("id"))
@@ -225,21 +216,26 @@ public class CustomerServiceImpl implements CustomerService {
                            .source((String) result.get("source"))
                            .pricePlan(
                                PricePlan.builder()
-                                        .name(planName)
+                                        .name(ppd.name())
                                         .overrideBy((String) result.get("createdBy"))
                                         .note((String) result.get("note"))
-                                        .maxMethods((Integer) result.getOrDefault("maxMethods", ppd.getMaxMethods()))
-                                        .maxNumberOfAgents((Integer) result.getOrDefault("maxNumberOfAgents", ppd.getMaxNumberOfAgents()))
-                                        .pollIntervalSeconds(
-                                            (Integer) result.getOrDefault("pollIntervalSeconds", ppd.getPollIntervalSeconds()))
+                                        .maxMethods(getOrDefault(result, "maxMethods", ppd.getMaxMethods()))
+                                        .maxNumberOfAgents(getOrDefault(result, "maxNumberOfAgents", ppd.getMaxNumberOfAgents()))
+                                        .pollIntervalSeconds(getOrDefault(result, "pollIntervalSeconds", ppd.getPollIntervalSeconds()))
                                         .publishIntervalSeconds(
-                                            (Integer) result.getOrDefault("publishIntervalSeconds", ppd.getPublishIntervalSeconds()))
-                                        .retryIntervalSeconds(
-                                            (Integer) result.getOrDefault("retryIntervalSeconds", ppd.getRetryIntervalSeconds()))
+                                            getOrDefault(result, "publishIntervalSeconds", ppd.getPublishIntervalSeconds()))
+                                        .retryIntervalSeconds(getOrDefault(result, "retryIntervalSeconds", ppd.getRetryIntervalSeconds()))
                                         .maxCollectionPeriodDays(
-                                            (Integer) result.getOrDefault("maxCollectionPeriodDays", ppd.getMaxCollectionPeriodDays()))
+                                            getOrDefault(result, "maxCollectionPeriodDays", ppd.getMaxCollectionPeriodDays()))
                                         .build())
                            .build();
+    }
+
+    private <T> T getOrDefault(Map<String, Object> result, String key, T defaultValue) {
+        @SuppressWarnings("unchecked")
+        T value = (T) result.get(key);
+
+        return value != null ? value : defaultValue;
     }
 
     private void doAssertNumberOfMethods(CustomerData customerData, long numberOfMethods) {

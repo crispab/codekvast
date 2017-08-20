@@ -127,7 +127,7 @@ public class WebappServiceImpl implements WebappService {
                                  // price plan stuff
                                  .pricePlan(pp.getName())
                                  .collectionResolutionSeconds(pp.getPublishIntervalSeconds())
-                                 .maxCollectionPeriodDays(-1) // TODO: pick from PricePlan
+                                 .maxCollectionPeriodDays(pp.getMaxCollectionPeriodDays())
                                  .maxNumberOfAgents(pp.getMaxNumberOfAgents())
                                  .maxNumberOfMethods(pp.getMaxMethods())
 

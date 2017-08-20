@@ -46,10 +46,11 @@ public class WebappServiceImplTest {
         // given
         when(customerIdProvider.getCustomerId()).thenReturn(1L);
 
+        PricePlanDefaults ppd = PricePlanDefaults.TEST;
         CustomerData customerData = CustomerData.builder()
                                                 .customerId(1L)
                                                 .customerName("customerName")
-                                                .pricePlan(PricePlan.of(PricePlanDefaults.DEMO))
+                                                .pricePlan(PricePlan.of(ppd))
                                                 .source("source")
                                                 .build();
         when(customerService.getCustomerDataByCustomerId(eq(1L))).thenReturn(customerData);
@@ -61,6 +62,9 @@ public class WebappServiceImplTest {
         // then
         assertNotNull(status);
         assertThat(status.getPricePlan(), is("TEST"));
+        assertThat(status.getMaxNumberOfAgents(), is(ppd.getMaxNumberOfAgents()));
+        assertThat(status.getMaxNumberOfMethods(), is(ppd.getMaxMethods()));
+        assertThat(status.getMaxCollectionPeriodDays(), is(ppd.getMaxCollectionPeriodDays()));
         assertThat(status.getNumMethods(), is(1000));
         assertThat(status.getNumAgents(), is(0));
 
