@@ -42,10 +42,10 @@ import java.util.UUID;
 @Slf4j
 public class CustomerServiceImpl implements CustomerService {
 
-    private static final String SELECT_CLAUSE = "SELECT" +
-        "c.id, c.name, c.source, c.plan," +
-        "pp.createdBy, pp.note, pp.maxMethods, pp.maxNumberOfAgents, pp.publishIntervalSeconds, pp.pollIntervalSeconds, " +
-        "pp.retryIntervalSeconds, pp.maxCollectionPeriodDays " +
+    private static final String SELECT_CLAUSE = "SELECT " +
+        " c.id, c.name, c.source, c.plan, " +
+        " pp.createdBy, pp.note, pp.maxMethods, pp.maxNumberOfAgents, pp.publishIntervalSeconds, pp.pollIntervalSeconds, " +
+        " pp.retryIntervalSeconds, pp.maxCollectionPeriodDays " +
         "FROM customers c LEFT JOIN price_plan_overrides pp ON pp.customerId = c.id " +
         "WHERE ";
 
