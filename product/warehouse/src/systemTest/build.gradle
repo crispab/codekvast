@@ -21,7 +21,7 @@ ext.systemTestJdbcPort = allocateFreePort()
 ext.systemTestAppPort = allocateFreePort()
 ext.systemTestEndpointFile = file("build/systemTestEndpoint.txt")
 
-def seleniumVersion = '3.4.0'
+def seleniumVersion = '3.5.1'
 dependencies {
     systemTestCompileOnly lombok
 
