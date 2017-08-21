@@ -25,6 +25,8 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
+import java.time.Instant;
+
 /**
  * @author olle.hallin@crisp.se
  */
@@ -42,4 +44,8 @@ public class CustomerData {
 
     @NonNull
     private PricePlan pricePlan;
+
+    private Instant collectionStartedAt;
+
+    private Instant trialPeriodEndsAt;
 }
