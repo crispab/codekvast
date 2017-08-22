@@ -124,8 +124,8 @@ node {
 }
 
 def prettyDuration(java.time.Duration d) {
-    // Transform e.g., "PT3M42S" to "3m 42s"
-    d.toString().replaceFirst("^PT", "").replaceAll("([A-Z])", "\$1 ").toLowerCase()
+    // Transform e.g., "PT3M42.8934S" to "3m 42s"
+    d.toString().replaceFirst("^PT", "").replaceAll("([A-Z])", "\$1 ").replaceAll("\\.[0-9]+", "").toLowerCase()
 }
 
 def slackNotification(color, message, startedAt) {
