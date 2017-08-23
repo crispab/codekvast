@@ -194,8 +194,7 @@ public class CustomerServiceImpl implements CustomerService {
             return;
         }
 
-        int count = jdbcTemplate.update("UPDATE customers SET plan = ? WHERE externalId = ?",
-                                        newPlan, externalId);
+        int count = jdbcTemplate.update("UPDATE customers SET plan = ? WHERE externalId = ?", newPlan, externalId);
 
         if (count == 0) {
             logger.warn("Failed to change plan for {} to '{}'", customerData, newPlan);
@@ -204,12 +203,9 @@ public class CustomerServiceImpl implements CustomerService {
 
             count = jdbcTemplate.update("DELETE FROM price_plan_overrides WHERE customerId = ?", customerData.getCustomerId());
             if (count > 0) {
-                logger.warn("Removed price plan override for {}", customerData);
+                logger.warn("Removed price plan override, new effective price plan is {}", PricePlanDefaults.fromDatabaseName(newPlan));
             }
-
-            // TODO: adjust to new plan
         }
-
     }
 
     @Override
