@@ -365,7 +365,8 @@ public class ImportDAOImpl implements ImportDAO {
         @Override
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
             PreparedStatement ps =
-                con.prepareStatement("INSERT INTO methods(customerId, visibility, signature, createdAt) VALUES (?, ?, ?, ?)");
+                con.prepareStatement("INSERT INTO methods(customerId, visibility, signature, createdAt) VALUES (?, ?, ?, ?)",
+                                     Statement.RETURN_GENERATED_KEYS);
             int column = 0;
             ps.setLong(++column, customerId);
             ps.setString(++column, "");
