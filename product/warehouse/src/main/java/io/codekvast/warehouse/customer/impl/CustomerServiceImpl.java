@@ -112,7 +112,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public CustomerData registerAgentDataPublication(CustomerData customerData, Instant publishedAt) {
         final CustomerData result;
 
