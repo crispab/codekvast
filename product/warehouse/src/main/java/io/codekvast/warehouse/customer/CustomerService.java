@@ -26,7 +26,7 @@ import lombok.NonNull;
 import lombok.Value;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 
-import java.util.Collection;
+import java.time.Instant;
 
 /**
  * @author olle.hallin@crisp.se
@@ -82,10 +82,23 @@ public interface CustomerService {
 
     /**
      * Counts the number of methods this customer has.
+     *
      * @param customerId The customer id
      * @return The number of methods that belong to this customer
      */
     int countMethods(long customerId);
+
+    /**
+     * Register that an agent has published data.
+     *
+     * It might result in the start of a trial period, if this is the first time and the customer has a price plan with a limitation on
+     * maxCollectionDays.
+     *
+     * @param customerData The customer's data
+     * @param publishedAt  The instant the data was published.
+     * @return An updated customerData should there have been any changes. Does never return null.
+     */
+    CustomerData registerAgentDataPublication(CustomerData customerData, Instant publishedAt);
 
     /**
      * Register that a user has logged in.
@@ -112,12 +125,14 @@ public interface CustomerService {
 
     /**
      * Deletes a customer
+     *
      * @param externalId The external id
      */
     void deleteCustomerByExternalId(String externalId);
 
     /**
      * Register that this user has been using the warehouse interactively.
+     *
      * @param activity The activity to register
      */
     void registerInteractiveActivity(InteractiveActivity activity);

@@ -28,10 +28,12 @@ import lombok.Value;
 import java.time.Instant;
 
 /**
+ * Data that describes a customer.
+ *
  * @author olle.hallin@crisp.se
  */
 @Value
-@Builder
+@Builder(toBuilder = true)
 public class CustomerData {
     @NonNull
     private Long customerId;
@@ -48,4 +50,8 @@ public class CustomerData {
     private Instant collectionStartedAt;
 
     private Instant trialPeriodEndsAt;
+
+    public boolean isTrialPeriodExpired(Instant now) {
+        return trialPeriodEndsAt != null && trialPeriodEndsAt.isBefore(now);
+    }
 }

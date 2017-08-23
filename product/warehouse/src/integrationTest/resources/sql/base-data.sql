@@ -12,6 +12,7 @@ INSERT INTO price_plans (name) VALUES ('test'), ('demo');
 
 INSERT INTO customers (id, source, externalId, name, plan, licenseKey) VALUES (1, 'test', 'external-1', 'Demo', 'demo', '');
 INSERT INTO customers (id, source, externalId, name, plan, licenseKey) VALUES (2, 'test', 'external-2', 'Demo', 'demo', 'licenseKey2');
+INSERT INTO customers (id, source, externalId, name, plan, licenseKey, collectionStartedAt, trialPeriodEndsAt) VALUES (3, 'test', 'external-3', 'Demo', 'demo', 'licenseKey3', '2017-08-21T16:21:19', '2017-09-21T16:21:19');
 
 INSERT INTO price_plan_overrides (id, customerId, createdAt, createdBy, updatedAt, note, maxMethods)
 VALUES (1, 1, NOW(), 'integration test', NOW(), 'Inserted by base-data.sql', 100);

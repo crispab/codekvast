@@ -193,6 +193,16 @@ public class MariadbIntegrationTest {
         CustomerData customerData = customerService.getCustomerDataByExternalId("external-2");
         assertThat(customerData.getCustomerId(), is(2L));
         assertThat(customerData.getPricePlan().getOverrideBy(), nullValue());
+        assertThat(customerData.isTrialPeriodExpired(Instant.now()), is(false));
+    }
+
+    @Test
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_accept_valid_getCustomerDataByExternalId_trialPeriodExpired() {
+        Instant now = Instant.parse("2017-09-21T16:21:19Z").plus(1, DAYS); // see base-data.sql
+        CustomerData customerData = customerService.getCustomerDataByExternalId("external-3");
+        assertThat(customerData.getCustomerId(), is(3L));
+        assertThat(customerData.isTrialPeriodExpired(now), is(true));
     }
 
     @Test(expected = AuthenticationCredentialsNotFoundException.class)
@@ -228,12 +238,12 @@ public class MariadbIntegrationTest {
     @Sql(scripts = "/sql/base-data.sql")
     public void should_handle_delete_customer() {
         Long count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM customers", Long.class);
-        assertThat(count, is(2L));
+        assertThat(count, is(3L));
 
         customerService.deleteCustomerByExternalId("external-1");
 
         count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM customers", Long.class);
-        assertThat(count, is(1L));
+        assertThat(count, is(2L));
     }
 
     @Test

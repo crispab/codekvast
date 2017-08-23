@@ -96,7 +96,7 @@ public class AgentServiceImpl implements AgentService {
         long customerId = customerData.getCustomerId();
         Instant now = Instant.now();
 
-        // Disable all dead agents
+        // Disable all agents that have been dead for more than 60 seconds...
         int updated = jdbcTemplate.update("UPDATE agent_state SET enabled = FALSE " +
                                               "WHERE customerId = ? AND nextPollExpectedAt < ? AND enabled = TRUE ",
                                           customerId, Timestamp.from(now.minusSeconds(60)));
@@ -135,6 +135,11 @@ public class AgentServiceImpl implements AgentService {
         }
 
         jdbcTemplate.update("UPDATE agent_state SET enabled = ? WHERE jvmUuid = ?", enabled, jvmUuid);
+        CustomerData cd = customerService.registerAgentDataPublication(customerData, now);
+        if (cd.isTrialPeriodExpired(now)) {
+            logger.info("Trial period expired for {}", cd);
+            enabled = false;
+        }
         return enabled;
     }
 

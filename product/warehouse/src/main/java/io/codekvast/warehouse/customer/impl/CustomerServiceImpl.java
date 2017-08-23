@@ -32,8 +32,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 /**
  * @author olle.hallin@crisp.se
@@ -43,7 +46,7 @@ import java.util.UUID;
 public class CustomerServiceImpl implements CustomerService {
 
     private static final String SELECT_CLAUSE = "SELECT " +
-        " c.id, c.name, c.source, c.plan, " +
+        " c.id, c.name, c.source, c.plan, c.collectionStartedAt, c.trialPeriodEndsAt, " +
         " pp.createdBy, pp.note, pp.maxMethods, pp.maxNumberOfAgents, pp.publishIntervalSeconds, pp.pollIntervalSeconds, " +
         " pp.retryIntervalSeconds, pp.maxCollectionPeriodDays " +
         "FROM customers c LEFT JOIN price_plan_overrides pp ON pp.customerId = c.id " +
@@ -106,6 +109,31 @@ public class CustomerServiceImpl implements CustomerService {
     public int countMethods(long customerId) {
         Long count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM methods WHERE customerId = ?", Long.class, customerId);
         return Math.toIntExact(count);
+    }
+
+    @Override
+    @Transactional
+    public CustomerData registerAgentDataPublication(CustomerData customerData, Instant publishedAt) {
+        CustomerData result = customerData;
+        if (customerData.getPricePlan().getMaxCollectionPeriodDays() > 0 && customerData.getTrialPeriodEndsAt() == null) {
+            result = customerData.toBuilder()
+                                 .collectionStartedAt(publishedAt)
+                                 .trialPeriodEndsAt(publishedAt.plus(customerData.getPricePlan().getMaxCollectionPeriodDays(), DAYS))
+                                 .build();
+
+
+            int updated = jdbcTemplate.update("UPDATE customers SET collectionStartedAt = ?, trialPeriodEndsAt = ? WHERE customerId = ? ",
+                                             Timestamp.from(result.getCollectionStartedAt()),
+                                             Timestamp.from(result.getTrialPeriodEndsAt()),
+                                             customerData.getCustomerId());
+
+            if (updated <= 0) {
+                logger.warn("Failed to start trial period for {}", result);
+            } else {
+                logger.info("Started trial period for {}", result);
+            }
+        }
+        return result;
     }
 
     @Override
@@ -208,12 +236,16 @@ public class CustomerServiceImpl implements CustomerService {
         Map<String, Object> result = jdbcTemplate.queryForMap(SELECT_CLAUSE + where_clause, identifier);
 
         String planName = (String) result.get("plan");
+        Timestamp collectionStartedAt = (Timestamp) result.get("collectionStartedAt");
+        Timestamp trialPeriodEndsAt = (Timestamp) result.get("trialPeriodEndsAt");
         PricePlanDefaults ppd = PricePlanDefaults.fromDatabaseName(planName);
 
         return CustomerData.builder()
                            .customerId((Long) result.get("id"))
                            .customerName((String) result.get("name"))
                            .source((String) result.get("source"))
+                           .collectionStartedAt(collectionStartedAt != null ? Instant.ofEpochMilli(collectionStartedAt.getTime()) : null)
+                           .trialPeriodEndsAt(trialPeriodEndsAt != null ? Instant.ofEpochMilli(trialPeriodEndsAt.getTime()) : null)
                            .pricePlan(
                                PricePlan.builder()
                                         .name(ppd.name())

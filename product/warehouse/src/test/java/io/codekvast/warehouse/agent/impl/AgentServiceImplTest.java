@@ -6,7 +6,6 @@ import io.codekvast.warehouse.agent.AgentService;
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
 import io.codekvast.warehouse.customer.*;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -23,6 +22,7 @@ import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
@@ -86,7 +86,6 @@ public class AgentServiceImplTest {
     }
 
     @Test
-    @Ignore("Trial Period Not Yet Implemented")
     public void should_return_disabled_publishers_when_below_agent_limit_after_trial_period_has_expired() throws Exception {
         // given
         Instant now = Instant.now();
@@ -160,15 +159,17 @@ public class AgentServiceImplTest {
     }
 
     private void setupCustomerData(Instant collectionStartedAt, Instant trialPeriodEndsAt) {
-        when(customerService.getCustomerDataByLicenseKey(anyString())).thenReturn(
-            CustomerData.builder()
-                        .customerId(1L)
-                        .customerName("name")
-                        .source("source")
-                        .pricePlan(PricePlan.of(PricePlanDefaults.TEST))
-                        .collectionStartedAt(collectionStartedAt)
-                        .trialPeriodEndsAt(trialPeriodEndsAt)
-                        .build());
+        CustomerData customerData = CustomerData.builder()
+                                         .customerId(1L)
+                                         .customerName("name")
+                                         .source("source")
+                                         .pricePlan(PricePlan.of(PricePlanDefaults.TEST))
+                                         .collectionStartedAt(collectionStartedAt)
+                                         .trialPeriodEndsAt(trialPeriodEndsAt)
+                                         .build();
+
+        when(customerService.getCustomerDataByLicenseKey(anyString())).thenReturn(customerData);
+        when(customerService.registerAgentDataPublication(any(CustomerData.class), any(Instant.class))).thenReturn(customerData);
     }
 
 }
