@@ -3,6 +3,7 @@
 ## 0.21.5
 1. Cosmetic change of logging in codekvast-agent.
 1. Improved handling of communication failures in Codekvast Warehouse.
+1. Added support for trial periods.
 
 ## 0.21.4
 1. Implemented Status page in Codekvast Warehouse.

@@ -115,6 +115,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional
     public CustomerData registerAgentDataPublication(CustomerData customerData, Instant publishedAt) {
         CustomerData result = customerData;
+
         if (customerData.getPricePlan().getMaxCollectionPeriodDays() > 0 && customerData.getTrialPeriodEndsAt() == null) {
             result = customerData.toBuilder()
                                  .collectionStartedAt(publishedAt)
@@ -122,10 +123,12 @@ public class CustomerServiceImpl implements CustomerService {
                                  .build();
 
 
-            int updated = jdbcTemplate.update("UPDATE customers SET collectionStartedAt = ?, trialPeriodEndsAt = ? WHERE customerId = ? ",
-                                             Timestamp.from(result.getCollectionStartedAt()),
-                                             Timestamp.from(result.getTrialPeriodEndsAt()),
-                                             customerData.getCustomerId());
+            int updated = jdbcTemplate.update("UPDATE customers SET updatedAt = ?, collectionStartedAt = ?, trialPeriodEndsAt = ? " +
+                                                  "WHERE id = ? ",
+                                              Timestamp.from(Instant.now()),
+                                              Timestamp.from(result.getCollectionStartedAt()),
+                                              Timestamp.from(result.getTrialPeriodEndsAt()),
+                                              customerData.getCustomerId());
 
             if (updated <= 0) {
                 logger.warn("Failed to start trial period for {}", result);

@@ -8,9 +8,12 @@ import io.codekvast.testsupport.docker.DockerContainer;
 import io.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
 import io.codekvast.warehouse.CodekvastWarehouse;
 import io.codekvast.warehouse.agent.AgentService;
-import io.codekvast.warehouse.customer.*;
+import io.codekvast.warehouse.customer.CustomerData;
+import io.codekvast.warehouse.customer.CustomerService;
 import io.codekvast.warehouse.customer.CustomerService.InteractiveActivity;
 import io.codekvast.warehouse.customer.CustomerService.LoginRequest;
+import io.codekvast.warehouse.customer.LicenseViolationException;
+import io.codekvast.warehouse.customer.PricePlanDefaults;
 import io.codekvast.warehouse.webapp.WebappService;
 import io.codekvast.warehouse.webapp.model.methods.GetMethodsRequest1;
 import io.codekvast.warehouse.webapp.model.methods.GetMethodsResponse1;
@@ -40,9 +43,7 @@ import java.util.Optional;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static java.time.temporal.ChronoUnit.DAYS;
-import static java.time.temporal.ChronoUnit.HOURS;
-import static java.time.temporal.ChronoUnit.MINUTES;
+import static java.time.temporal.ChronoUnit.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeTrue;
@@ -315,6 +316,31 @@ public class MariadbIntegrationTest {
     public void should_assertDatabaseSize() {
         customerService.assertDatabaseSize(1L);
     }
+
+    @Test
+    @Sql(scripts = "/sql/base-data.sql")
+    public void should_start_trial_period_at_first_agent_publishing() {
+        // given
+        Instant now = Instant.now();
+        jdbcTemplate.update("UPDATE customers SET plan = 'test', collectionStartedAt = NULL, trialPeriodEndsAt = NULL WHERE id = 1");
+        CustomerData customerData = customerService.getCustomerDataByCustomerId(1L);
+
+        assertThat(customerData.getPricePlan().getMaxCollectionPeriodDays(), is(PricePlanDefaults.TEST.getMaxCollectionPeriodDays()));
+        assertThat(customerData.getCollectionStartedAt(), is(nullValue()));
+        assertThat(customerData.getTrialPeriodEndsAt(), is(nullValue()));
+        assertThat(customerData.isTrialPeriodExpired(now), is(false));
+
+        // when
+        customerData = customerService.registerAgentDataPublication(customerData, now);
+
+        // then
+        assertThat(customerData.getCollectionStartedAt(), is(now));
+        int days = customerData.getPricePlan().getMaxCollectionPeriodDays();
+        assertThat(customerData.getTrialPeriodEndsAt(), is(now.plus(days, DAYS)));
+        assertThat(customerData.isTrialPeriodExpired(now.plus(days - 1, DAYS)), is(false));
+        assertThat(customerData.isTrialPeriodExpired(now.plus(days + 1, DAYS)), is(true));
+    }
+
 
     // TODO: add tests for CodeBasePublication import
 
