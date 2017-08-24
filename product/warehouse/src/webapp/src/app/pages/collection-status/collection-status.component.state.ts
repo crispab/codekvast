@@ -78,10 +78,6 @@ export class CollectionStatusComponentState {
                 this.data = data;
                 this.errorMessage = undefined;
 
-                // TODO remove after debugging
-                // this.data.collectedDays = 29;
-                // this.data.maxCollectionPeriodDays = 30;
-                // end
             }, error => {
                 this.data = undefined;
                 this.errorMessage = error.statusText ? error.statusText : error;

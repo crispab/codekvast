@@ -6,7 +6,6 @@
     <option name="ALTERNATIVE_JRE_PATH" />
     <additionalParameters>
       <param>
-        <option name="enabled" value="true" />
         <option name="name" value="codekvast.webapp-jwt-secret" />
         <option name="value" value="secret" />
       </param>

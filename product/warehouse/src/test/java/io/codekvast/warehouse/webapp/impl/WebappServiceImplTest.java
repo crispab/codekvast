@@ -13,7 +13,12 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.time.Instant;
+
+import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.MILLIS;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.eq;
@@ -42,16 +47,21 @@ public class WebappServiceImplTest {
     }
 
     @Test
-    public void should_getStatus() throws Exception {
+    public void should_getStatus_inside_trial_period() throws Exception {
         // given
         when(customerIdProvider.getCustomerId()).thenReturn(1L);
 
         PricePlanDefaults ppd = PricePlanDefaults.TEST;
+        Instant now = Instant.now();
+        Instant collectionStartedAt = now.minus(3, DAYS);
+        Instant trialPeriodEndsAt = now.plus(3, DAYS);
         CustomerData customerData = CustomerData.builder()
                                                 .customerId(1L)
                                                 .customerName("customerName")
                                                 .pricePlan(PricePlan.of(ppd))
                                                 .source("source")
+                                                .collectionStartedAt(collectionStartedAt)
+                                                .trialPeriodEndsAt(trialPeriodEndsAt)
                                                 .build();
         when(customerService.getCustomerDataByCustomerId(eq(1L))).thenReturn(customerData);
         when(customerService.countMethods(eq(1L))).thenReturn(1000);
@@ -62,9 +72,12 @@ public class WebappServiceImplTest {
         // then
         assertNotNull(status);
         assertThat(status.getPricePlan(), is("TEST"));
+        assertThat(status.getCollectedSinceMillis(), is(collectionStartedAt.toEpochMilli()));
+        assertThat(status.getTrialPeriodEndsAtMillis(), is(trialPeriodEndsAt.toEpochMilli()));
+        assertThat(status.getTrialPeriodPercent(), is(50));
+        assertThat(status.getTrialPeriodExpired(), is(false));
         assertThat(status.getMaxNumberOfAgents(), is(ppd.getMaxNumberOfAgents()));
         assertThat(status.getMaxNumberOfMethods(), is(ppd.getMaxMethods()));
-        assertThat(status.getMaxCollectionPeriodDays(), is(ppd.getMaxCollectionPeriodDays()));
         assertThat(status.getNumMethods(), is(1000));
         assertThat(status.getNumAgents(), is(0));
 
@@ -75,5 +88,64 @@ public class WebappServiceImplTest {
         verify(customerIdProvider).getCustomerId();
 
         verifyNoMoreInteractions(customerService, customerIdProvider);
+    }
+
+    @Test
+    public void should_getStatus_after_trial_period() throws Exception {
+        // given
+        when(customerIdProvider.getCustomerId()).thenReturn(1L);
+
+        PricePlanDefaults ppd = PricePlanDefaults.TEST;
+        Instant now = Instant.now();
+        Instant collectionStartedAt = now.minus(3, DAYS);
+        Instant trialPeriodEndsAt = now.minus(1, MILLIS);
+        CustomerData customerData = CustomerData.builder()
+                                                .customerId(1L)
+                                                .customerName("customerName")
+                                                .pricePlan(PricePlan.of(ppd))
+                                                .source("source")
+                                                .collectionStartedAt(collectionStartedAt)
+                                                .trialPeriodEndsAt(trialPeriodEndsAt)
+                                                .build();
+        when(customerService.getCustomerDataByCustomerId(eq(1L))).thenReturn(customerData);
+        when(customerService.countMethods(eq(1L))).thenReturn(1000);
+
+        // when
+        GetStatusResponse1 status = webappService.getStatus();
+
+        // then
+        assertNotNull(status);
+        assertThat(status.getCollectedSinceMillis(), is(collectionStartedAt.toEpochMilli()));
+        assertThat(status.getTrialPeriodEndsAtMillis(), is(trialPeriodEndsAt.toEpochMilli()));
+        assertThat(status.getTrialPeriodPercent(), is(100));
+        assertThat(status.getTrialPeriodExpired(), is(true));
+    }
+
+    @Test
+    public void should_getStatus_not_started_no_trial_period() throws Exception {
+        // given
+        when(customerIdProvider.getCustomerId()).thenReturn(1L);
+
+        PricePlanDefaults ppd = PricePlanDefaults.TEST;
+        CustomerData customerData = CustomerData.builder()
+                                                .customerId(1L)
+                                                .customerName("customerName")
+                                                .pricePlan(PricePlan.of(ppd))
+                                                .source("source")
+                                                .collectionStartedAt(null)
+                                                .trialPeriodEndsAt(null)
+                                                .build();
+        when(customerService.getCustomerDataByCustomerId(eq(1L))).thenReturn(customerData);
+        when(customerService.countMethods(eq(1L))).thenReturn(1000);
+
+        // when
+        GetStatusResponse1 status = webappService.getStatus();
+
+        // then
+        assertNotNull(status);
+        assertThat(status.getCollectedSinceMillis(), is(nullValue()));
+        assertThat(status.getTrialPeriodEndsAtMillis(), is(nullValue()));
+        assertThat(status.getTrialPeriodPercent(), is(nullValue()));
+        assertThat(status.getTrialPeriodExpired(), is(false));
     }
 }

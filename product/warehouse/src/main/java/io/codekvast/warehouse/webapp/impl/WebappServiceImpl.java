@@ -46,6 +46,7 @@ import javax.validation.constraints.NotNull;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 
@@ -113,11 +114,19 @@ public class WebappServiceImpl implements WebappService {
         List<AgentDescriptor1> agents = getAgents(customerId, pp.getPublishIntervalSeconds());
         List<UserDescriptor1> users = getUsers(customerId);
 
-        long now = System.currentTimeMillis();
-        Long collectedSinceMillis = agents.stream().map(AgentDescriptor1::getStartedAtMillis).reduce(Long::min).orElse(now);
+        Instant now = Instant.now();
+        Instant collectionStartedAt = customerData.getCollectionStartedAt();
+        Instant trialPeriodEndsAt = customerData.getTrialPeriodEndsAt();
+        Duration trialPeriodDuration =
+            collectionStartedAt == null || trialPeriodEndsAt == null ? null : Duration.between(collectionStartedAt, trialPeriodEndsAt);
+        Duration trialPeriodProgress = trialPeriodDuration == null ? null : Duration.between(collectionStartedAt, now);
 
-        int dayInMillis = 24 * 60 * 60 * 1000;
-        int collectedDays = Math.toIntExact((now - collectedSinceMillis) / dayInMillis);
+        Integer trialPeriodPercent = trialPeriodProgress == null ? null :
+            Math.min(100, Math.toIntExact(trialPeriodProgress.toMillis() * 100L / trialPeriodDuration.toMillis()));
+
+        long dayInMillis = 24 * 60 * 60 * 1000L;
+        Integer collectedDays =
+            collectionStartedAt == null ? null : Math.toIntExact(Duration.between(collectionStartedAt, now).toMillis() / dayInMillis);
 
         return GetStatusResponse1.builder()
                                  // query stuff
@@ -127,12 +136,14 @@ public class WebappServiceImpl implements WebappService {
                                  // price plan stuff
                                  .pricePlan(pp.getName())
                                  .collectionResolutionSeconds(pp.getPublishIntervalSeconds())
-                                 .maxCollectionPeriodDays(pp.getMaxCollectionPeriodDays())
                                  .maxNumberOfAgents(pp.getMaxNumberOfAgents())
                                  .maxNumberOfMethods(pp.getMaxMethods())
 
                                  // actual values
-                                 .collectedSinceMillis(collectedSinceMillis)
+                                 .collectedSinceMillis(collectionStartedAt == null ? null : collectionStartedAt.toEpochMilli())
+                                 .trialPeriodEndsAtMillis(trialPeriodEndsAt == null ? null : trialPeriodEndsAt.toEpochMilli())
+                                 .trialPeriodExpired(customerData.isTrialPeriodExpired(now))
+                                 .trialPeriodPercent(trialPeriodPercent)
                                  .collectedDays(collectedDays)
                                  .numMethods(customerService.countMethods(customerId))
                                  .numAgents(agents.size())
@@ -183,7 +194,8 @@ public class WebappServiceImpl implements WebappService {
                 Timestamp lastPolledAt = rs.getTimestamp("lastPolledAt");
                 Timestamp nextPollExpectedAt = rs.getTimestamp("nextPollExpectedAt");
                 Timestamp publishedAt = rs.getTimestamp("publishedAt");
-                boolean isAlive = nextPollExpectedAt.after(Timestamp.from(Instant.now().minusSeconds(60)));
+                boolean isAlive =
+                    nextPollExpectedAt == null ? false : nextPollExpectedAt.after(Timestamp.from(Instant.now().minusSeconds(60)));
                 Instant nextPublicationExpectedAt = lastPolledAt.toInstant().plusSeconds(publishIntervalSeconds);
 
                 result.add(

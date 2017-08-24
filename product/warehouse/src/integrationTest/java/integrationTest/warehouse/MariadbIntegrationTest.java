@@ -489,7 +489,6 @@ public class MariadbIntegrationTest {
         assertThat(status.getPricePlan(), is("DEMO"));
         assertThat(status.getCollectionResolutionSeconds(), is(PricePlanDefaults.DEMO.getPublishIntervalSeconds()));
         assertThat(status.getMaxNumberOfAgents(), is(PricePlanDefaults.DEMO.getMaxNumberOfAgents()));
-        assertThat(status.getMaxCollectionPeriodDays(), is(PricePlanDefaults.DEMO.getMaxCollectionPeriodDays()));
         assertThat(status.getMaxNumberOfMethods(), is(100));
 
         assertThat(status.getNumAgents(), is(4));
@@ -519,8 +518,8 @@ public class MariadbIntegrationTest {
 
         assertThat(status.getNumMethods(), is(10));
 
-        assertThat(status.getCollectedSinceMillis(), is(cutMillis(timestamps.minusThreeDaysPlus)));
-        assertThat(status.getCollectedDays(), is(3));
+        assertThat(status.getCollectedSinceMillis(), is(nullValue()));
+        assertThat(status.getCollectedDays(), is(nullValue()));
 
         assertThat(status.getUsers(), hasSize(2));
     }

@@ -11,12 +11,15 @@ export class StatusData {
     collectionResolutionSeconds: number;
     maxNumberOfAgents: number;
     maxNumberOfMethods: number;
-    maxCollectionPeriodDays: number;
+    trialPeriodEndsAtMillis: number;
 
     // actual values
     numMethods: number;
     collectedSinceMillis: number;
     collectedDays: number;
+    trialPeriodPercent: number;
+    trialPeriodExpired: boolean;
+
     numAgents: number;
     numLiveAgents: number;
     numLiveEnabledAgents: number;

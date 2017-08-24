@@ -73,14 +73,23 @@ public class GetStatusResponse1 {
     @NonNull
     private final Integer maxNumberOfMethods;
 
+    //--- actual values ---------------------------------------------
     /**
-     * How many days of collection does the price plan permit?
-     * -1 if no limit.
+     * At which instant will the trial period end? Null if not in a trial period.
+     */
+    private final Long trialPeriodEndsAtMillis;
+
+    /**
+     * What percentage of the trial period has been used? Null if not in a trial period.
+     */
+    private final Integer trialPeriodPercent;
+
+    /**
+     * Is there a trial period, and if so, has it expired?
      */
     @NonNull
-    private final Integer maxCollectionPeriodDays;
+    private final Boolean trialPeriodExpired;
 
-    //--- actual values ---------------------------------------------
     /**
      * How many methods does this customer have?
      */
@@ -88,15 +97,15 @@ public class GetStatusResponse1 {
     private final Integer numMethods;
 
     /**
-     * Since when have this customer been using Codekvast?
+     * At which instant was the first data received?
+     * Null if no data yet has been collected.
      */
-    @NonNull
     private final Long collectedSinceMillis;
 
     /**
      * How long has this customer been using Codekvast?
+     * Null if no data yet has been collected.
      */
-    @NonNull
     private final Integer collectedDays;
 
     /**

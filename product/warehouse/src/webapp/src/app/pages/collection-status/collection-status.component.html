@@ -10,17 +10,15 @@
                     <td class="w-50">
                         {{ agentsProgressValue() }}<br>
                         <ngb-progressbar [showValue]="true"
-                                         [type]="progressBarType(state.data.numLiveAgents, state.data.maxNumberOfAgents)"
-                                         [value]="toPercent(state.data.numLiveAgents, state.data.maxNumberOfAgents)">
-                        </ngb-progressbar>
+                                         [type]="progressBarType2(state.data.numLiveAgents, state.data.maxNumberOfAgents)"
+                                         [value]="toPercent(state.data.numLiveAgents, state.data.maxNumberOfAgents)"></ngb-progressbar>
                     </td>
                 </tr>
                 <tr>
                     <td>Number of methods (max={{ state.data.maxNumberOfMethods }}):</td>
                     <td>
                         {{state.data.numMethods}}<br>
-                        <ngb-progressbar [showValue]="true"
-                                         [type]="progressBarType(state.data.numMethods, state.data.maxNumberOfMethods)"
+                        <ngb-progressbar [showValue]="true" [type]="progressBarType2(state.data.numMethods, state.data.maxNumberOfMethods)"
                                          [value]="toPercent(state.data.numMethods, state.data.maxNumberOfMethods)">
 
                         </ngb-progressbar>
@@ -30,14 +28,14 @@
                     <td>Collected since:</td>
                     <td>{{ state.data.collectedSinceMillis | ckAge:settings.dateFormat }}</td>
                 </tr>
-                <tr *ngIf="isTrialPeriod()">
-                    <td>Trial period {{ state.data.maxCollectionPeriodDays}} days ends:</td>
+                <tr *ngIf="state.data.trialPeriodEndsAtMillis">
+                    <td>Trial period ends:</td>
                     <td>
-                        {{ trialPeriodEndDate() | ckAge:settings.dateFormat }}<br>
-                        <ngb-progressbar [showValue]="true"
-                                         [type]="progressBarType(state.data.collectedDays, state.data.maxCollectionPeriodDays)"
-                                         [value]="toPercent(state.data.collectedDays, state.data.maxCollectionPeriodDays)">
-
+                        {{ state.data.trialPeriodEndsAtMillis | ckAge:settings.dateFormat }}<br>
+                        <ngb-progressbar [showValue]="false"
+                                         [type]="progressBarType(state.data.trialPeriodPercent)"
+                                         [value]="state.data.trialPeriodPercent">
+                            {{ trialPeriodProgressText(state.data.trialPeriodPercent) }}
                         </ngb-progressbar>
                     </td>
                 </tr>

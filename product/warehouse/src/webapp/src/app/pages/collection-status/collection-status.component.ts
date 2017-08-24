@@ -43,9 +43,14 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
         return Math.round(num * 100 / maxNum);
     }
 
-    progressBarType(num: number, maxNum: number) {
+
+    progressBarType2(num: number, maxNum: number) {
         let percent = this.toPercent(num, maxNum);
-        if (percent > 100) {
+        return this.progressBarType(percent);
+    }
+
+    progressBarType(percent: number) {
+        if (percent >= 100) {
             return 'danger';
         }
         if (percent > 90) {
@@ -54,21 +59,16 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
         return 'info';
     }
 
+    trialPeriodProgressText(percent: number) {
+        return percent < 100 ? `${percent}%` : 'Expired';
+    }
+
     agentsProgressValue() {
         if (this.state.data.numLiveEnabledAgents === this.state.data.numLiveAgents) {
             return `${this.state.data.numLiveEnabledAgents} ${this.getAgentsLabel()}`;
         }
         let disabled = this.state.data.numLiveAgents - this.state.data.numLiveEnabledAgents;
         return `${this.state.data.numLiveAgents} ${this.getAgentsLabel()} (${disabled} suspended)`
-    }
-
-    isTrialPeriod() {
-        return this.state.data.maxCollectionPeriodDays > 0;
-    }
-
-    trialPeriodEndDate() {
-        let daysInMillis = 24 * 60 * 60 * 1000;
-        return new Date(this.state.data.collectedSinceMillis + this.state.data.maxCollectionPeriodDays * daysInMillis);
     }
 
     agentUploadExpectedAtClasses(agent: Agent) {
