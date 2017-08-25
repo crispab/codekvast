@@ -11,6 +11,7 @@
 !/.idea/typescript-compiler.xml
 /.idea/artifacts/
 /.idea/dataSources/
+/.idea/dataSources.local.xml
 /.idea/dictionaries/
 /.idea/libraries/
 /.idea/*.ids
