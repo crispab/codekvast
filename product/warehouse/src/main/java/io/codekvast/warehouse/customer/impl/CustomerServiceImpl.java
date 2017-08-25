@@ -48,7 +48,7 @@ public class CustomerServiceImpl implements CustomerService {
     private static final String SELECT_CLAUSE = "SELECT " +
         " c.id, c.name, c.source, c.plan, c.collectionStartedAt, c.trialPeriodEndsAt, " +
         " pp.createdBy, pp.note, pp.maxMethods, pp.maxNumberOfAgents, pp.publishIntervalSeconds, pp.pollIntervalSeconds, " +
-        " pp.retryIntervalSeconds, pp.maxCollectionPeriodDays " +
+        " pp.retryIntervalSeconds " +
         "FROM customers c LEFT JOIN price_plan_overrides pp ON pp.customerId = c.id " +
         "WHERE ";
 
@@ -256,8 +256,7 @@ public class CustomerServiceImpl implements CustomerService {
                                         .publishIntervalSeconds(
                                             getOrDefault(result, "publishIntervalSeconds", ppd.getPublishIntervalSeconds()))
                                         .retryIntervalSeconds(getOrDefault(result, "retryIntervalSeconds", ppd.getRetryIntervalSeconds()))
-                                        .maxCollectionPeriodDays(
-                                            getOrDefault(result, "maxCollectionPeriodDays", ppd.getMaxCollectionPeriodDays()))
+                                        .maxCollectionPeriodDays(ppd.getMaxCollectionPeriodDays())
                                         .build())
                            .build();
     }
