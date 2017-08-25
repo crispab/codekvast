@@ -114,27 +114,53 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional
     public CustomerData registerAgentDataPublication(CustomerData customerData, Instant publishedAt) {
-        CustomerData result = customerData;
+        final CustomerData result;
 
-        if (customerData.getPricePlan().getMaxCollectionPeriodDays() > 0 && customerData.getTrialPeriodEndsAt() == null) {
-            result = customerData.toBuilder()
-                                 .collectionStartedAt(publishedAt)
-                                 .trialPeriodEndsAt(publishedAt.plus(customerData.getPricePlan().getMaxCollectionPeriodDays(), DAYS))
-                                 .build();
+        if (customerData.getPricePlan().getMaxCollectionPeriodDays() > 0
+            && customerData.getTrialPeriodEndsAt() == null) {
+            result = startTrialPeriod(customerData, publishedAt);
+        } else if (customerData.getCollectionStartedAt() == null) {
+            result = recordCollectionStarted(customerData, publishedAt);
+        } else {
+            result = customerData;
+        }
+        return result;
+    }
 
+    private CustomerData startTrialPeriod(CustomerData customerData, Instant instant) {
+        CustomerData result = customerData.toBuilder()
+                                          .collectionStartedAt(instant)
+                                          .trialPeriodEndsAt(instant.plus(customerData.getPricePlan().getMaxCollectionPeriodDays(), DAYS))
+                                          .build();
 
-            int updated = jdbcTemplate.update("UPDATE customers SET updatedAt = ?, collectionStartedAt = ?, trialPeriodEndsAt = ? " +
-                                                  "WHERE id = ? ",
-                                              Timestamp.from(Instant.now()),
-                                              Timestamp.from(result.getCollectionStartedAt()),
-                                              Timestamp.from(result.getTrialPeriodEndsAt()),
-                                              customerData.getCustomerId());
+        int updated = jdbcTemplate.update("UPDATE customers SET updatedAt = ?, collectionStartedAt = ?, trialPeriodEndsAt = ? " +
+                                              "WHERE id = ? ",
+                                          Timestamp.from(Instant.now()),
+                                          Timestamp.from(result.getCollectionStartedAt()),
+                                          Timestamp.from(result.getTrialPeriodEndsAt()),
+                                          customerData.getCustomerId());
 
-            if (updated <= 0) {
-                logger.warn("Failed to start trial period for {}", result);
-            } else {
-                logger.info("Started trial period for {}", result);
-            }
+        if (updated <= 0) {
+            logger.warn("Failed to start trial period for {}", result);
+        } else {
+            logger.info("Started trial period for {}", result);
+        }
+        return result;
+    }
+
+    private CustomerData recordCollectionStarted(CustomerData customerData, Instant instant) {
+        CustomerData result = customerData.toBuilder().collectionStartedAt(instant).build();
+
+        int updated = jdbcTemplate.update("UPDATE customers SET updatedAt = ?, collectionStartedAt = ? " +
+                                              "WHERE id = ? ",
+                                          Timestamp.from(Instant.now()),
+                                          Timestamp.from(result.getCollectionStartedAt()),
+                                          customerData.getCustomerId());
+
+        if (updated <= 0) {
+            logger.warn("Failed to record collection started for {}", result);
+        } else {
+            logger.info("Collection started for {}", result);
         }
         return result;
     }
