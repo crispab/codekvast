@@ -45,13 +45,6 @@ import static java.time.temporal.ChronoUnit.DAYS;
 @Slf4j
 public class CustomerServiceImpl implements CustomerService {
 
-    private static final String SELECT_CLAUSE = "SELECT " +
-        " c.id, c.name, c.source, c.plan, c.collectionStartedAt, c.trialPeriodEndsAt, " +
-        " pp.createdBy, pp.note, pp.maxMethods, pp.maxNumberOfAgents, pp.publishIntervalSeconds, pp.pollIntervalSeconds, " +
-        " pp.retryIntervalSeconds " +
-        "FROM customers c LEFT JOIN price_plan_overrides pp ON pp.customerId = c.id " +
-        "WHERE ";
-
     private final JdbcTemplate jdbcTemplate;
 
     @Inject
@@ -258,7 +251,14 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     private CustomerData getCustomerData(String where_clause, java.io.Serializable identifier) {
-        Map<String, Object> result = jdbcTemplate.queryForMap(SELECT_CLAUSE + where_clause, identifier);
+        Map<String, Object> result = jdbcTemplate.queryForMap("SELECT " +
+                                                                  " c.id, c.name, c.source, c.plan, c.collectionStartedAt, c" +
+                                                                  ".trialPeriodEndsAt, " +
+                                                                  " pp.createdBy, pp.note, pp.maxMethods, pp.maxNumberOfAgents, pp" +
+                                                                  ".publishIntervalSeconds, pp.pollIntervalSeconds, " +
+                                                                  " pp.retryIntervalSeconds " +
+                                                                  "FROM customers c LEFT JOIN price_plan_overrides pp ON pp.customerId = c.id " +
+                                                                  "WHERE " + where_clause, identifier);
 
         String planName = (String) result.get("plan");
         Timestamp collectionStartedAt = (Timestamp) result.get("collectionStartedAt");
