@@ -6,6 +6,8 @@ import {Title} from '@angular/platform-browser';
 import {StateService} from './services/state.service';
 import {WarehouseService} from './services/warehouse.service';
 
+declare let ga: any;
+
 @Component({
     selector: '#app',
     template: require('./app.component.html'),
@@ -25,6 +27,15 @@ export class AppComponent implements OnInit {
         this.router.events
             .filter(event => event instanceof NavigationEnd)
             .map(event => (event as NavigationEnd).urlAfterRedirects)
+            .do(url => {
+                if (typeof ga === 'function') {
+                    // ga is loaded asynchronously
+
+                    console.log(`Sending ${url} to GA`);
+                    ga('set', 'page', url);
+                    ga('send', 'pageview');
+                }
+            })
             .subscribe(url => {
                 let feature = this.titleCasePipe.transform(url.substr(1));
                 this.titleService.setTitle('Codekvast ' + feature);
