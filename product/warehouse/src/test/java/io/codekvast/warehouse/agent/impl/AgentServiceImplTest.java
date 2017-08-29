@@ -47,7 +47,7 @@ public class AgentServiceImplTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         settings.setQueuePath(temporaryFolder.getRoot());
-        service = new AgentServiceImpl(settings, jdbcTemplate, customerService);
+        service = new AgentServiceImpl(settings, jdbcTemplate, customerService, 60);
         setupCustomerData(null, null);
     }
 

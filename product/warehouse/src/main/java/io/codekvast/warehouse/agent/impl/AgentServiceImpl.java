@@ -31,6 +31,7 @@ import io.codekvast.warehouse.customer.LicenseViolationException;
 import io.codekvast.warehouse.customer.PricePlan;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,13 +58,17 @@ public class AgentServiceImpl implements AgentService {
     private final CodekvastSettings settings;
     private final JdbcTemplate jdbcTemplate;
     private final CustomerService customerService;
+    private final Integer fileImportIntervalSeconds;
 
     @Inject
     public AgentServiceImpl(CodekvastSettings settings, JdbcTemplate jdbcTemplate,
-                            CustomerService customerService) {
+                            CustomerService customerService,
+                            @Value("${codekvast.fileImportIntervalSeconds}")
+                                Integer fileImportIntervalSeconds) {
         this.settings = settings;
         this.jdbcTemplate = jdbcTemplate;
         this.customerService = customerService;
+        this.fileImportIntervalSeconds = fileImportIntervalSeconds;
     }
 
     @Override
@@ -96,10 +101,10 @@ public class AgentServiceImpl implements AgentService {
         long customerId = customerData.getCustomerId();
         Instant now = Instant.now();
 
-        // Disable all agents that have been dead for more than 60 seconds...
+        // Disable all agents that have been dead for more than two file import intervals...
         int updated = jdbcTemplate.update("UPDATE agent_state SET enabled = FALSE " +
                                               "WHERE customerId = ? AND nextPollExpectedAt < ? AND enabled = TRUE ",
-                                          customerId, Timestamp.from(now.minusSeconds(60)));
+                                          customerId, Timestamp.from(now.minusSeconds(fileImportIntervalSeconds * 2)));
         if (updated > 0) {
             logger.info("Disabled {} dead agents for {}", updated, customerData);
         }

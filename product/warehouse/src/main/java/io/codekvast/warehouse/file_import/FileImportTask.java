@@ -52,8 +52,8 @@ public class FileImportTask {
     }
 
     @Scheduled(
-        initialDelayString = "${codekvast.queuePathPollInitialDelaySeconds}000",
-        fixedDelayString = "${codekvast.queuePathPollIntervalSeconds}000")
+        initialDelayString = "${codekvast.fileImportInitialDelaySeconds}000",
+        fixedDelayString = "${codekvast.fileImportIntervalSeconds}000")
     public void importPublicationFiles() {
         String oldThreadName = Thread.currentThread().getName();
         Thread.currentThread().setName("Codekvast FileImport");
