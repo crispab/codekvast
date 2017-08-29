@@ -13,6 +13,10 @@
         <option name="name" value="codekvast.webapp-jwt-expiration-seconds" />
         <option name="value" value="15" />
       </param>
+      <param>
+        <option name="name" value="server.port" />
+        <option name="value" value="9080" />
+      </param>
     </additionalParameters>
     <module name="warehouse_main" />
     <envs />
