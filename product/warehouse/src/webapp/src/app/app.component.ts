@@ -6,8 +6,6 @@ import {Title} from '@angular/platform-browser';
 import {StateService} from './services/state.service';
 import {WarehouseService} from './services/warehouse.service';
 
-declare let ga: any;
-
 @Component({
     selector: '#app',
     template: require('./app.component.html'),
@@ -30,6 +28,8 @@ export class AppComponent implements OnInit {
             .filter(event => event instanceof NavigationEnd)
             .map(event => (event as NavigationEnd).urlAfterRedirects)
             .do(url => {
+                let ga = window['ga'];
+
                 if (!this.googleAnalyticsInitialized) {
                     console.log('Initializing GoogleAnalytics');
                     ga('create', this.googleAnalyticsId, 'auto');
