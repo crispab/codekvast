@@ -5,3 +5,9 @@
 .use-case {
     font-style: italic;
 }
+
+.use-case p {
+    margin-bottom: .2em;
+    display: list-item;
+    list-style: circle;
+}
