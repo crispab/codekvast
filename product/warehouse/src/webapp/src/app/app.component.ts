@@ -18,6 +18,8 @@ declare let ga: any;
 export class AppComponent implements OnInit {
 
     private showHerokuIntegrationMenu = false;
+    private googleAnalyticsInitialized = false;
+    private readonly googleAnalyticsId = 'UA-97240168-3';
 
     constructor(private configService: ConfigService, private stateService: StateService, private titleService: Title,
                 private router: Router, private titleCasePipe: TitleCasePipe, private warehouseService: WarehouseService) {
@@ -28,13 +30,15 @@ export class AppComponent implements OnInit {
             .filter(event => event instanceof NavigationEnd)
             .map(event => (event as NavigationEnd).urlAfterRedirects)
             .do(url => {
-                if (typeof ga === 'function') {
-                    // ga is loaded asynchronously
-
-                    console.log(`Sending ${url} to GA`);
-                    ga('set', 'page', url);
-                    ga('send', 'pageview');
+                if (!this.googleAnalyticsInitialized) {
+                    console.log('Initializing GoogleAnalytics');
+                    ga('create', this.googleAnalyticsId, 'auto');
+                    this.googleAnalyticsInitialized = true;
                 }
+
+                console.log(`Sending ${url} to GoogleAnalytics`);
+                ga('set', 'page', url);
+                ga('send', 'pageview');
             })
             .subscribe(url => {
                 let feature = this.titleCasePipe.transform(url.substr(1));
