@@ -5,6 +5,8 @@
 1. Improved handling of communication failures in Codekvast Warehouse.
 1. Added support for trial periods.
 1. Bug fix in Warehouse when importing incomplete methods.
+1. Bug fix in Warehouse: ga('send', 'pageview') after navigation events.
+1. Upgraded to Selenium 3.5.3, mockito-core 2.9.0.
 
 ## 0.21.4
 1. Implemented Status page in Codekvast Warehouse.
