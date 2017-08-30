@@ -10,6 +10,7 @@ task frontendInstall(type: Exec) {
 
     inputs.file file('src/webapp/package.json')
     inputs.file file('src/webapp/typings.json')
+    outputs.file file('src/webapp/yarn.lock')
     outputs.dir file('src/webapp/node_modules')
     outputs.dir file('src/webapp/typings')
 }

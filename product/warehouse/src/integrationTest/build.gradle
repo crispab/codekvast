@@ -4,7 +4,7 @@ testSets {
     integrationTest
 }
 
-integrationTest.dependsOn test
+integrationTest.mustRunAfter test
 check.dependsOn integrationTest
 
 dependencies {
