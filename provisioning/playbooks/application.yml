@@ -20,7 +20,7 @@
     codekvast_queue_path: /var/codekvast/queue
     codekvast_queue_pollIntervalSeconds: 30
     codekvast_webapp_jwtExpirationSeconds: 1800
-    codekvast_heroku_codekvast_url: https://{{ codekvast_server_name }}
+    codekvast_herokuCodekvastUrl: https://{{ codekvast_server_name }}
     codekvastVersion: "{{ lookup('ini', 'codekvastVersion type=properties file=../../gradle.properties') }}"
 
   tasks:

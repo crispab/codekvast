@@ -41,7 +41,7 @@ import java.io.File;
 @ConfigurationProperties(prefix = "codekvast")
 @Data
 @Slf4j
-@ToString(exclude = {"herokuApiPassword", "herokuApiSsoSalt", "webappJwtSecret"})
+@ToString(exclude = {"herokuApiPassword", "herokuApiSsoSalt", "webappJwtSecret", "slackWebHookToken"})
 public class CodekvastSettings {
 
     /**
@@ -109,6 +109,16 @@ public class CodekvastSettings {
      * How long shall a webapp authentication token live?
      */
     private Long webappJwtExpirationSeconds = 1800L;
+
+    /**
+     * Which is the Slack Incoming Webhook URL?
+     */
+    private String slackWebHookUrl;
+
+    /**
+     * Which is the token to use when posting to slackWebHookUrl?
+     */
+    private String slackWebHookToken;
 
     /**
      * @return true iff the webapp should be secured with a JWT token
