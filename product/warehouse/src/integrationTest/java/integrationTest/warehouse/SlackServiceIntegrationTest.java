@@ -13,6 +13,10 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
+ * A manual integration test.
+ *
+ * It is normally disabled, since we don't want to install the Slack webhook integration token into Jenkins.
+ *
  * @author olle.hallin@crisp.se
  */
 public class SlackServiceIntegrationTest {
@@ -33,6 +37,7 @@ public class SlackServiceIntegrationTest {
     }
 
     @Test
+    @Ignore("Requires git-crypt")
     public void should_have_wired_context_correctly() throws Exception {
         assertThat(slackService, not(nullValue()));
         assertThat(settings, not(nullValue()));
@@ -41,6 +46,7 @@ public class SlackServiceIntegrationTest {
     }
 
     @Test
+    @Ignore("Requires git-crypt")
     public void slack_service_should_be_enabled() throws Exception {
         assertThat(slackService.isEnabled(), is(true));
     }
