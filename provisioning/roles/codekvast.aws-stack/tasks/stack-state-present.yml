@@ -259,6 +259,18 @@
   loop_control:
     label: "{{ item.1.public_dns_name }}"
 
+- name: Tag application instances with their CNAMEs
+  local_action:
+    module: ec2_tag
+    region: "{{ aws_region }}"
+    profile: codekvast # in ~/.boto
+    resource: "{{ item.1.id }}"
+    tags:
+      CNAME: "{{ stack.db_cname }}{{ '%02d'|format(item.0) }}.codekvast.io"
+  with_indexed_items: "{{ ec2database.tagged_instances }}"
+  loop_control:
+    label: "{{ item.1.public_dns_name }}"
+
 - name: Define application instances' CNAMEs
   local_action:
     module: route53
@@ -270,6 +282,18 @@
     ttl: 600
     type: CNAME
     zone: codekvast.io
+  with_indexed_items: "{{ ec2backends.tagged_instances }}"
+  loop_control:
+    label: "{{ item.1.public_dns_name }}"
+
+- name: Tag application instances with their CNAMEs
+  local_action:
+    module: ec2_tag
+    region: "{{ aws_region }}"
+    profile: codekvast # in ~/.boto
+    resource: "{{ item.1.id }}"
+    tags:
+      CNAME: "{{ stack.app_cnames[0] }}{{ '%02d'|format(item.0) }}.codekvast.io"
   with_indexed_items: "{{ ec2backends.tagged_instances }}"
   loop_control:
     label: "{{ item.1.public_dns_name }}"
