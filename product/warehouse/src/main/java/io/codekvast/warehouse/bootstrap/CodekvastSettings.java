@@ -121,6 +121,11 @@ public class CodekvastSettings {
     private String slackWebHookToken;
 
     /**
+     * What is my server's DNS CNAME?
+     */
+    private String dnsCname;
+
+    /**
      * @return true iff the webapp should be secured with a JWT token
      */
     public boolean isDemoMode() {
