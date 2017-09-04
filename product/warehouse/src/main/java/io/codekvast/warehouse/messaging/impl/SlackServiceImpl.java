@@ -56,13 +56,13 @@ public class SlackServiceImpl implements SlackService, ApplicationListener<Appli
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
         sendNotification(
-            String.format("%s %s in %s has started", settings.getApplicationName(), settings.getDisplayVersion(), settings.getDnsCname()),
-            Channel.BUILDS);
+            String.format("%s %s in https://%s has started", settings.getApplicationName(), settings.getDisplayVersion(),
+                          settings.getDnsCname()), Channel.BUILDS);
     }
 
     @PreDestroy
     public void notifyShutdown() {
-        sendNotification(String.format("%s %s in %s is stopping", settings.getApplicationName(), settings.getDisplayVersion(),
+        sendNotification(String.format("%s %s in https://%s is stopping", settings.getApplicationName(), settings.getDisplayVersion(),
                                        settings.getDnsCname()), Channel.BUILDS);
     }
 
