@@ -8,6 +8,7 @@
 1. Bug fix in Warehouse: ga('send', 'pageview') after navigation events.
 1. Upgraded to Selenium 3.5.3, mockito-core 2.9.0.
 1. Redesigned Warehouse /home; made it more compact.
+1. Added Slack integration in CustomerServiceImpl.
 
 ## 0.21.4
 1. Implemented Status page in Codekvast Warehouse.
