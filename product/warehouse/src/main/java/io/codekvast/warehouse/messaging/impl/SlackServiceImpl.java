@@ -25,6 +25,7 @@ import com.github.seratch.jslack.Slack;
 import com.github.seratch.jslack.api.webhook.Payload;
 import io.codekvast.warehouse.bootstrap.CodekvastSettings;
 import io.codekvast.warehouse.messaging.SlackService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -32,52 +33,37 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PreDestroy;
-import javax.inject.Inject;
 import java.io.IOException;
 
 /**
  * @author olle.hallin@crisp.se
  */
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class SlackServiceImpl implements SlackService, ApplicationListener<ApplicationReadyEvent> {
 
     private final CodekvastSettings settings;
     private final Slack slack = Slack.getInstance();
 
-    @Inject
-    public SlackServiceImpl(CodekvastSettings settings) {
-        this.settings = settings;
-    }
-
     @Override
     @Async
-    public void sendNotification(String text) {
-        doSendPayload(Payload.builder().text(text).build());
-    }
-
-    @Override
-    @Async
-    public void sendNotification(String text, String channel) {
-        doSendPayload(Payload.builder().text(text).channel(channel).build());
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return getSlackWebhookUrl(settings) != null;
+    public void sendNotification(String text, Channel channel) {
+        String ch = channel.name().toLowerCase().replace("_", "-");
+        doSendPayload(Payload.builder().text(text).channel(ch).build());
     }
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
         sendNotification(
             String.format("%s %s in %s has started", settings.getApplicationName(), settings.getDisplayVersion(), settings.getDnsCname()),
-            "builds");
+            Channel.BUILDS);
     }
 
     @PreDestroy
     public void notifyShutdown() {
         sendNotification(String.format("%s %s in %s is stopping", settings.getApplicationName(), settings.getDisplayVersion(),
-                                       settings.getDnsCname()), "builds");
+                                       settings.getDnsCname()), Channel.BUILDS);
     }
 
     private void doSendPayload(Payload payload) {

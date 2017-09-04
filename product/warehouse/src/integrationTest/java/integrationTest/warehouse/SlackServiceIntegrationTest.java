@@ -46,14 +46,8 @@ public class SlackServiceIntegrationTest {
     }
 
     @Test
-    @Ignore("Requires git-crypt")
-    public void slack_service_should_be_enabled() throws Exception {
-        assertThat(slackService.isEnabled(), is(true));
-    }
-
-    @Test
     @Ignore("Sends stuff to codekvast.slack.com")
     public void should_send_to_slack() throws Exception {
-        slackService.sendNotification("_Hello, World!_ says `" + getClass().getName() + "`", "integration-test");
+        slackService.sendNotification("_Hello, World!_ says `" + getClass().getName() + "`", SlackService.Channel.BUILDS);
     }
 }

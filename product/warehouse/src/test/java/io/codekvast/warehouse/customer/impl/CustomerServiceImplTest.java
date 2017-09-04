@@ -3,6 +3,7 @@ package io.codekvast.warehouse.customer.impl;
 import io.codekvast.warehouse.customer.CustomerData;
 import io.codekvast.warehouse.customer.CustomerService;
 import io.codekvast.warehouse.customer.LicenseViolationException;
+import io.codekvast.warehouse.messaging.SlackService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -14,7 +15,8 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 
 public class CustomerServiceImplTest {
@@ -22,12 +24,15 @@ public class CustomerServiceImplTest {
     @Mock
     private JdbcTemplate jdbcTemplate;
 
+    @Mock
+    private SlackService slackService;
+
     private CustomerService service;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        service = new CustomerServiceImpl(jdbcTemplate);
+        service = new CustomerServiceImpl(jdbcTemplate, slackService);
 
         Map<String, Object> map = new HashMap<>();
         map.put("id", 1L);

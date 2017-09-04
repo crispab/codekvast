@@ -22,7 +22,9 @@
 package io.codekvast.warehouse.customer.impl;
 
 import io.codekvast.warehouse.customer.*;
+import io.codekvast.warehouse.messaging.SlackService;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -30,7 +32,6 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Map;
@@ -42,15 +43,12 @@ import static java.time.temporal.ChronoUnit.DAYS;
  * @author olle.hallin@crisp.se
  */
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class CustomerServiceImpl implements CustomerService {
 
     private final JdbcTemplate jdbcTemplate;
-
-    @Inject
-    public CustomerServiceImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private final SlackService slackService;
 
     @Override
     @Transactional(readOnly = true)
@@ -136,6 +134,10 @@ public class CustomerServiceImpl implements CustomerService {
         if (updated <= 0) {
             logger.warn("Failed to start trial period for {}", result);
         } else {
+            slackService.sendNotification(
+                String.format("Trial period started for `%s`, ends at %s", result, result.getTrialPeriodEndsAt()),
+
+                SlackService.Channel.BUSINESS_EVENTS);
             logger.info("Started trial period for {}", result);
         }
         return result;
@@ -200,6 +202,7 @@ public class CustomerServiceImpl implements CustomerService {
         jdbcTemplate.update("INSERT INTO customers(source, externalId, name, licenseKey, plan) VALUES(?, ?, ?, ?, ?)",
                             request.getSource(), request.getExternalId(), request.getName(), licenseKey, request.getPlan());
         logger.info("Created {} with licenseKey {}", request, licenseKey);
+        slackService.sendNotification(String.format("Handled `" + request + "`"), SlackService.Channel.BUSINESS_EVENTS);
         return licenseKey;
     }
 
@@ -219,10 +222,15 @@ public class CustomerServiceImpl implements CustomerService {
             logger.warn("Failed to change plan for {} to '{}'", customerData, newPlan);
         } else {
             logger.info("Changed plan for {} to '{}'", customerData, newPlan);
+            slackService.sendNotification(String.format("Changed plan for `%s` to '%s'", customerData, newPlan),
+                                          SlackService.Channel.BUSINESS_EVENTS);
 
             count = jdbcTemplate.update("DELETE FROM price_plan_overrides WHERE customerId = ?", customerData.getCustomerId());
             if (count > 0) {
-                logger.warn("Removed price plan override, new effective price plan is {}", PricePlanDefaults.fromDatabaseName(newPlan));
+                PricePlanDefaults ppd = PricePlanDefaults.fromDatabaseName(newPlan);
+                logger.warn("Removed price plan override, new effective price plan is {}", ppd);
+                slackService.sendNotification("Removed price plan override, new effective price plan is `" + ppd + "`",
+                                              SlackService.Channel.BUSINESS_EVENTS);
             }
         }
     }
@@ -242,6 +250,9 @@ public class CustomerServiceImpl implements CustomerService {
         deleteFromTable("agent_state", customerId);
         deleteFromTable("price_plan_overrides", customerId);
         deleteFromTable("customers", customerId);
+
+        logger.info("Deleted customer {}", customerData);
+        slackService.sendNotification("Deleted `" + customerData + "`", SlackService.Channel.BUSINESS_EVENTS);
     }
 
     private void deleteFromTable(final String table, long customerId) {
@@ -257,7 +268,8 @@ public class CustomerServiceImpl implements CustomerService {
                                                                   " pp.createdBy, pp.note, pp.maxMethods, pp.maxNumberOfAgents, pp" +
                                                                   ".publishIntervalSeconds, pp.pollIntervalSeconds, " +
                                                                   " pp.retryIntervalSeconds " +
-                                                                  "FROM customers c LEFT JOIN price_plan_overrides pp ON pp.customerId = c.id " +
+                                                                  "FROM customers c LEFT JOIN price_plan_overrides pp ON pp.customerId = " +
+                                                                  "c.id " +
                                                                   "WHERE " + where_clause, identifier);
 
         String planName = (String) result.get("plan");

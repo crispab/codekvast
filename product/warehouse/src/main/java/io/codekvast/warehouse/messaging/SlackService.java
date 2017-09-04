@@ -25,9 +25,7 @@ package io.codekvast.warehouse.messaging;
  * @author olle.hallin@crisp.se
  */
 public interface SlackService {
-    void sendNotification(String text);
+    enum Channel {BUILDS, BUSINESS_EVENTS}
 
-    void sendNotification(String text, String channel);
-
-    boolean isEnabled();
+    void sendNotification(String text, Channel channel);
 }
