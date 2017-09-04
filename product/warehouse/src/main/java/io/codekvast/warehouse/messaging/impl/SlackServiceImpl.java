@@ -69,12 +69,15 @@ public class SlackServiceImpl implements SlackService, ApplicationListener<Appli
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        sendNotification(String.format("%s %s started", settings.getApplicationName(), settings.getDisplayVersion()), "builds");
+        sendNotification(
+            String.format("%s %s in %s has started", settings.getApplicationName(), settings.getDisplayVersion(), settings.getDnsCname()),
+            "builds");
     }
 
     @PreDestroy
     public void notifyShutdown() {
-        sendNotification(String.format("%s %s is stopping", settings.getApplicationName(), settings.getDisplayVersion()), "builds");
+        sendNotification(String.format("%s %s in %s is stopping", settings.getApplicationName(), settings.getDisplayVersion(),
+                                       settings.getDnsCname()), "builds");
     }
 
     private void doSendPayload(Payload payload) {
