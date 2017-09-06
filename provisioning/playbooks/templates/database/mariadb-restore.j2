@@ -19,11 +19,16 @@ if [ ! -f $backupFile ]; then
     exit 2
 fi
 
-echo -n "About to restore database from $backupFile. Continue? [y/N] "; read answer
-if [ "$answer" != "y" ]; then
+declare answer=$2
+if [ -z "$answer" ]; then
+    echo -n "About to restore database from $backupFile. Continue? [y/N] "; read answer
+fi
+if [ "$answer" != "y" -a "$answer" != "--yes" ]; then
     echo "Nothing done."
     exit 0
 fi
+
+echo "Here we go..."
 
 declare tmpDir=$(mktemp --directory --tmpdir mariadb.XXXXXXXX)
 trap "rm -fr $tmpDir" EXIT

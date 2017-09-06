@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #---------------------------------------------------------------------------------------------------
-# Deploys Codekvast to the production environment
+# Dumps the production database to S3 and restores it to staging
 #---------------------------------------------------------------------------------------------------
 
 for f in ~/.boto ~/.ssh/codekvast-amazon.pem; do
@@ -11,4 +11,5 @@ for f in ~/.boto ~/.ssh/codekvast-amazon.pem; do
 done
 
 cd $(dirname $0)
-ansible-playbook --private-key ~/.ssh/codekvast-amazon.pem playbooks/application.yml --limit tag_Env_prod $*
+ansible-playbook --private-key ~/.ssh/codekvast-amazon.pem playbooks/copy-database-from-prod-to-staging.yml
+

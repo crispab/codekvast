@@ -4,7 +4,7 @@
 #---------------------------------------------------------------------------------------------------
 
 for f in ~/.boto ~/.ssh/codekvast-amazon.pem; do
-    if [ ! -f $f ]; then
+    if [ ! -f ${f} ]; then
         echo "Missing required file: $f" 1>&2
         exit 1
     fi
