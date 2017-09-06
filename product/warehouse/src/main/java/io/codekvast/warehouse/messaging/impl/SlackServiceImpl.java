@@ -49,24 +49,28 @@ public class SlackServiceImpl implements SlackService, ApplicationListener<Appli
     @Override
     @Async
     public void sendNotification(String text, Channel channel) {
-        String ch = channel.name().toLowerCase().replace("_", "-");
-        doSendPayload(Payload.builder().text(text).channel(ch).build());
+        doSend(text, channel);
     }
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        sendNotification(
+        doSend(
             String.format("%s %s in %s has started", settings.getApplicationName(), settings.getDisplayVersion(), settings.getDnsCname()),
             Channel.BUILDS);
+
     }
 
     @PreDestroy
     public void notifyShutdown() {
-        sendNotification(String.format("%s %s in %s is stopping", settings.getApplicationName(), settings.getDisplayVersion(),
-                                       settings.getDnsCname()), Channel.BUILDS);
+        doSend(
+            String.format("%s %s in %s is stopping", settings.getApplicationName(), settings.getDisplayVersion(), settings.getDnsCname()),
+            Channel.BUILDS);
     }
 
-    private void doSendPayload(Payload payload) {
+    private void doSend(String text, Channel channel) {
+        String ch = channel.name().toLowerCase().replace("_", "-");
+        Payload payload = Payload.builder().text(text).channel(ch).build();
+
         String url = getSlackWebhookUrl(settings);
         if (url != null) {
             try {

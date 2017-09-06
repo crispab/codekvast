@@ -11,5 +11,6 @@ for f in ~/.boto ~/.ssh/codekvast-amazon.pem; do
 done
 
 cd $(dirname $0)
-ansible-playbook --private-key ~/.ssh/codekvast-amazon.pem playbooks/servers.yml --tags application $*
+ansible-playbook --private-key ~/.ssh/codekvast-amazon.pem playbooks/servers.yml --tags application --limit tag_Env_staging $*
+ansible-playbook --private-key ~/.ssh/codekvast-amazon.pem playbooks/servers.yml --tags application --limit tag_Env_prod $*
 
