@@ -23,8 +23,8 @@
 
   tasks:
 
-  - name: "Fetching {{ s3_bucket }}/{{ tarball }}"
+  - name: "Fetching {{ s3_bucket }}/{{ tarball }} to {{ ec2_tag_CNAME }}:{{ mysql_backup_dir }}"
     shell: "s3cmd --config=/root/s3cfg --force get {{ s3_bucket }}/{{ tarball }} {{ mysql_backup_dir }}"
 
-  - name: "Restoring {{ mysql_backup_dir }}/{{ tarball }}..."
+  - name: "Restoring {{ mysql_backup_dir }}/{{ tarball }} in {{ ec2_tag_CNAME }}"
     shell: "/root/mariadb-restore {{ mysql_backup_dir }}/{{ tarball }} --yes"
