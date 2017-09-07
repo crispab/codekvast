@@ -13,9 +13,6 @@
         <option name="HTML_INLINE_ELEMENTS" value="a,abbr,acronym,b,basefont,bdo,big,br,cite,cite,code,dfn,em,font,i,img,kbd,label,q,s,samp,select,strike,strong,sub,sup,tt,u,var" />
         <option name="FORMATTER_TAGS_ENABLED" value="true" />
         <option name="WRAP_COMMENTS" value="true" />
-        <MarkdownNavigatorCodeStyleSettings>
-          <option name="RIGHT_MARGIN" value="72" />
-        </MarkdownNavigatorCodeStyleSettings>
         <Properties>
           <option name="SPACES_AROUND_KEY_VALUE_DELIMITER" value="true" />
         </Properties>

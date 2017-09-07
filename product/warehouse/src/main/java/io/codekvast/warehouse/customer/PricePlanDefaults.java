@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 /**
  * Default values for all defined price plans. Corresponds 1-to-1 to rows in the table price_plans.
  *
- * The price plans are also defined at Heroku (except for those marked as internal).
+ * The price plans are also defined at Heroku (except for DEMO).
  *
  * @author olle.hallin@crisp.se
  * @see "https://addons.heroku.com/provider/addons/codekvast/plans"
