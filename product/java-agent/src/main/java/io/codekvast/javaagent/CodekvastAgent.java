@@ -47,7 +47,7 @@ import java.util.Set;
  * <p>
  * Invocation: Add the following options to the Java command line:
  * <pre><code>
- *    -javaagent:/path/to/codekvast-agent-n.n.jar -Xbootclasspath/a:/path/to/codekvast-agent-n.n.jar
+ *    -javaagent:/path/to/codekvast-agent-n.n.jar
  * </code></pre>
  * <p>
  * CodekvastAgent could also be initialized from a statically woven aspect.
@@ -68,6 +68,7 @@ import java.util.Set;
  *
  * @author olle.hallin@crisp.se
  */
+@SuppressWarnings("unused")
 @Log
 public class CodekvastAgent {
 

@@ -75,8 +75,13 @@ task launchExecutableJar(type: Exec, dependsOn: [bootRepackage, generateCodekvas
     // args "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
 
     args "-javaagent:${configurations.codekvastagent.asPath}"
-    args "-Xbootclasspath/a:${configurations.codekvastagent.asPath}"
     args "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath"
 
     args "-jar", "build/libs/${archivesBaseName}-${version}.jar"
+}
+
+task run {
+    description "Alias for launchExecutableJar"
+    group "Application"
+    dependsOn launchExecutableJar
 }

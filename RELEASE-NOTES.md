@@ -1,12 +1,13 @@
 # Codekvast Release Notes
 
 ## 0.21.5
-1. Cosmetic change of logging in codekvast-agent.
+1. Added Boot-Class-Path to codekvast-agent's MANIFEST.MF (eliminates the need for -Xbootclasspath/a:codekvast-agent-x.x.jar)
 1. Improved handling of communication failures in Codekvast Warehouse.
 1. Added support for trial periods.
+1. Increased maxMethods to 25.000 in TEST price plan.
 1. Bug fix in Warehouse when importing incomplete methods.
 1. Bug fix in Warehouse: ga('send', 'pageview') after navigation events.
-1. Upgraded to Selenium 3.5.3, mockito-core 2.9.0.
+1. Upgraded to Spring Boot 1.5.7
 1. Redesigned Warehouse /home; made it more compact.
 1. Added Slack integration in CustomerServiceImpl.
 
