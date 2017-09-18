@@ -4,7 +4,7 @@ After=syslog.target
 
 [Service]
 User=codekvast
-ExecStart=/opt/codekvast/codekvast-warehouse-{{ codekvastVersion }}-all.jar
+ExecStart=/opt/codekvast/codekvast-dashboard-{{ codekvastVersion }}-all.jar
 SuccessExitStatus=143
 TimeoutSec=30
 Restart=on-failure

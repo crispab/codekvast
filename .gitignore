@@ -46,7 +46,7 @@ build/
 codekvast.iws
 node_modules/
 out/
-product/warehouse/src/webapp/dist/
+product/dashboard/src/webapp/dist/
 target/
 tools/downloaded/
 typings/

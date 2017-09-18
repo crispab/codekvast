@@ -37,7 +37,7 @@ node {
                         publishHTML([allowMissing: true,
                             alwaysLinkToLastBuild: true,
                             keepAll: true,
-                            reportDir: 'product/warehouse/build/reports/frontend-coverage',
+                            reportDir: 'product/dashboard/build/reports/frontend-coverage',
                             reportFiles: 'index.html',
                             reportName: 'Frontend Coverage Report'])
                     }

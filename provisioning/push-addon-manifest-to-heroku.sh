@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 #------------------------------------------------------------------------------
-# Pushes ../product/warehouse/src/heroku/addon-manifest.json to Heroku after
+# Pushes ../product/dashboard/src/heroku/addon-manifest.json to Heroku after
 # inserting the correct secrets.
 #------------------------------------------------------------------------------
 
 cd $(dirname $0)
 
-declare addonManifest=../product/warehouse/src/heroku/addon-manifest.json
+declare addonManifest=../product/dashboard/src/heroku/addon-manifest.json
 declare secrets=playbooks/vars/secrets.yml
 
 if [ ! -f ${addonManifest} ]; then

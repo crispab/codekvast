@@ -10,5 +10,5 @@ echo "Java:" | tee ${REPORT_FILE}
 ../gradlew uptodate --max-workers=1 | egrep "^'" | sort -u | tr -d "'" | tee -a ${REPORT_FILE}
 
 echo -e "\nJavaScript:" | tee -a ${REPORT_FILE}
-cd warehouse/src/webapp
+cd dashboard/src/webapp
 npm outdated --depth=0 | tee -a ${REPORT_FILE}

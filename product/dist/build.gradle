@@ -22,13 +22,13 @@ distributions {
         }
     }
 
-    warehouse {
-        baseName = "codekvast-warehouse-$codekvastVersion"
+    dashboard {
+        baseName = "codekvast-dashboard-$codekvastVersion"
         contents {
-            from tasks.getByPath(':product:warehouse:bootRepackage'), {
-                rename { 'codekvast-warehouse.jar' }
+            from tasks.getByPath(':product:dashboard:bootRepackage'), {
+                rename { 'codekvast-dashboard.jar' }
             }
-            from tasks.getByPath(':product:warehouse:processResources'), {
+            from tasks.getByPath(':product:dashboard:processResources'), {
                 include 'exposed-application.properties'
                 rename { 'application.properties' }
             }
@@ -45,7 +45,7 @@ distributions {
 
 task bintrayStage(type: Sync) {
     from agentDistZip
-    from warehouseDistZip
+    from dashboardDistZip
     from tasks.getByPath(':product:docs:asciidoctor'), {
         include 'CodekvastUserManual.html'
         rename { "CodekvastUserManual-${codekvastVersion}.html" }

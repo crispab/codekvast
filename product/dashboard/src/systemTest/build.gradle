@@ -1,0 +1,245 @@
+import groovy.sql.Sql
+
+import java.sql.Driver
+import java.sql.DriverManager
+import java.sql.SQLNonTransientConnectionException
+
+// --- End-to-end system test -----------------------------------------------------------------------------------
+
+testSets {
+    systemTest
+}
+check.dependsOn systemTest
+
+configurations {
+    chromeDriver
+    jdbc
+    // geckoDriver
+}
+
+ext.systemTestJdbcPort = allocateFreePort()
+ext.systemTestAppPort = allocateFreePort()
+ext.systemTestEndpointFile = file("build/systemTestEndpoint.txt")
+
+def seleniumVersion = '3.5.3'
+dependencies {
+    systemTestCompileOnly lombok
+
+    systemTestCompile project(':product:testsupport')
+    systemTestCompile 'org.gebish:geb-spock:1.1.1'
+    systemTestCompile 'org.spockframework:spock-core:1.1-groovy-2.4'
+    systemTestCompile "org.seleniumhq.selenium:selenium-api:$seleniumVersion"
+
+    systemTestRuntime "com.codeborne:phantomjsdriver:1.4.3"
+    systemTestRuntime "org.seleniumhq.selenium:selenium-remote-driver:$seleniumVersion"
+    systemTestRuntime "org.seleniumhq.selenium:selenium-chrome-driver:$seleniumVersion"
+    systemTestRuntime "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
+    systemTestRuntime "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
+
+    chromeDriver 'com.github.igor-suhorukov:chromedriver:2.31:linux64@bin'
+    // geckoDriver '???'
+    jdbc mariadbDriver
+}
+
+task startSystemTestEnvironment {
+    description 'Starts the system test environment'
+    group 'System test'
+    dependsOn bootRepackage
+
+    inputs.files bootRepackage.outputs.files
+    outputs.file systemTestEndpointFile
+
+    doLast {
+        logger.lifecycle("Stopping previous system test environments (if any)...")
+        doStopSystemTestEnvironment(true)
+
+        def command = 'docker pull mariadb:10'
+        logger.lifecycle(command)
+        assert command.execute().waitFor() == 0
+
+        command = 'docker run -d --restart=unless-stopped ' +
+            "--name codekvast_systest_$systemTestJdbcPort " +
+            "-p $systemTestJdbcPort:3306 " +
+            '-e MYSQL_ROOT_PASSWORD=root ' +
+            '-e MYSQL_DATABASE=codekvast ' +
+            '-e MYSQL_USER=codekvast ' +
+            '-e MYSQL_PASSWORD=codekvast ' +
+            '-e TERM=xterm-256color ' +
+            'mariadb:10 ' +
+            '--character-set-server=utf8 ' +
+            '--collation-server=utf8_general_ci ' +
+            '--default-storage-engine=innodb '
+        logger.lifecycle(command)
+        assert command.execute().waitFor() == 0
+
+        def jdbcUrl = "jdbc:mariadb://localhost:$systemTestJdbcPort/codekvast"
+        logger.info("jdbcUrl={}", jdbcUrl)
+
+        waitForDatabaseReady(jdbcUrl)
+
+        command = "java " +
+            "-jar ${bootRepackage.outputs.files.asPath} " +
+            "--server.port=${systemTestAppPort} " +
+            "--spring.datasource.url=$jdbcUrl"
+
+        launchAppAndWaitForReady(command)
+        systemTestEndpointFile.text = getSystemTestEndpoint()
+    }
+}
+
+int allocateFreePort() {
+    ServerSocket socket = null
+    try {
+        socket = new ServerSocket(0)
+        return socket.getLocalPort()
+    } finally {
+        socket.close()
+    }
+}
+
+def waitForDatabaseReady(jdbcUrl) {
+    URLClassLoader loader = GroovyObject.class.classLoader
+    configurations.jdbc.each { File file ->
+        loader.addURL(file.toURI().toURL())
+    }
+    Class driver = loader.loadClass('org.mariadb.jdbc.Driver')
+    Driver instance = driver.newInstance()
+    DriverManager.registerDriver(instance)
+
+    logger.lifecycle("Waiting for {} to become ready...", jdbcUrl)
+    int attempt = 1
+    while (attempt <= 60) {
+        try {
+            logger.info("Waiting for {} #{}", jdbcUrl, attempt)
+            def sql = Sql.newInstance(jdbcUrl, 'codekvast', 'codekvast')
+
+            sql.eachRow('SHOW TABLES') { row ->
+                logger.debug("row={}", row[0])
+            }
+            return
+        } catch (SQLNonTransientConnectionException e) {
+            logger.debug("Exception=" + e)
+
+            attempt += 1
+            sleep(1000)
+        }
+    }
+}
+
+task stopSystemTestEnvironment {
+    description 'Stop system test environment'
+    group 'System test'
+
+    doLast {
+        doStopSystemTestEnvironment(true)
+    }
+}
+
+private doStopSystemTestEnvironment(boolean deleteEndpointsFile) {
+    file("src/systemTest/stop-system-test-environment.sh").absolutePath.execute()
+    if (deleteEndpointsFile) {
+        delete systemTestEndpointFile
+    }
+}
+
+task psSystemTestEnvironment {
+    description 'Shows the system test environment'
+    group 'System test'
+    doLast {
+        def endpoint = getSystemTestEndpoint()
+
+        logger.lifecycle("{}", endpoint)
+        if (endpoint.isEmpty()) {
+            // Remove any dangling MariaDB containers too...
+            doStopSystemTestEnvironment(true)
+        } else {
+            systemTestEndpointFile.text = endpoint
+        }
+    }
+}
+
+systemTest {
+    description 'Runs end-to-end tests against Codekvast Dashboard with MariaDB in a Docker container'
+    group 'System test'
+    dependsOn test, frontendTest, integrationTest, systemTestClasses, startSystemTestEnvironment
+
+    inputs.dir file("src/systemTest")
+    inputs.file systemTestEndpointFile
+
+    outputs.dir file("build/reports/systemTest")
+    outputs.dir file("build/test-results/systemTest")
+
+    def failures = 0
+
+    afterTest { descriptor, result ->
+        logger.debug("test={}, result={}", descriptor, result)
+        failures += result.failedTestCount
+    }
+
+
+    doFirst {
+        def endpoint = getSystemTestEndpoint()
+        logger.lifecycle("Running system tests against {}", endpoint)
+
+        "chmod +x ${configurations.chromeDriver.asPath}".execute().waitFor()
+
+        // PhantomJS
+        systemProperty "geb.driver", "org.openqa.selenium.phantomjs.PhantomJSDriver"
+
+        // Chrome
+        // TODO: switch from PhantomJS to headless Chrome
+        // systemProperty "geb.driver", "org.openqa.selenium.chrome.ChromeDriver"
+        // systemProperty "webdriver.chrome.driver", configurations.chromeDriver.asPath
+
+        // Firefox
+        // systemProperty "geb.driver", "org.openqa.selenium.firefox.FirefoxDriver"
+        // systemProperty "webdriver.gecko.driver", configurations.geckoDriver.asPath
+
+        systemProperty "geb.build.reportsDir", "$reportsDir/systemTest/dumps"
+        systemProperty 'geb.build.baseUrl', endpoint
+
+        systemProperty 'expectedCodekvastVersion', codekvastDisplayVersion
+        environment['CODEKVAST_VERSION'] = codekvastDisplayVersion
+    }
+
+    doLast {
+        if (failures == 0) {
+            doStopSystemTestEnvironment(false)
+        } else {
+            logger.info("Since there were failures, the system test environment is still running at {} running", endpoint)
+        }
+    }
+}
+
+def launchAppAndWaitForReady(String command) {
+    logger.lifecycle(command)
+    def process = command.execute()
+    sleep 5000
+
+    int attempt = 1
+    int maxAttempts = 30
+    def endpoint = getSystemTestEndpoint()
+    logger.lifecycle("Waiting for {} to become ready...", endpoint)
+
+    while (attempt <= maxAttempts) {
+        assert process.isAlive()
+
+        logger.info("Waiting for {} #{}", endpoint, attempt)
+
+        try {
+            def text = new URL(endpoint).text
+            sleep 2000
+            return
+        } catch (e) {
+            logger.debug("Got {} when getting {}, will try {} more times.", e, endpoint, maxAttempts - attempt)
+        }
+        attempt += 1
+        sleep(1000)
+    }
+    throw new IllegalStateException(endpoint + " did not respond within " + maxAttempts + " seconds")
+}
+
+private String getSystemTestEndpoint() {
+    return file("src/systemTest/get-system-test-endpoint.sh").absolutePath.execute().in.text.trim()
+}
+

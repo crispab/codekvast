@@ -23,8 +23,8 @@ our findings.
 
 1. Modify the application so that interesting method invocations are recorded.
 2. Produce an inventory of _all_ interesting methods, that _potentially_ can be invoked in production.
-3. When the app is deployed, upload the inventory to the warehouse.
-4. In production, periodically upload actual method invocations to the warehouse.
+3. When the app is deployed, upload the inventory to the dashboard.
+4. In production, periodically upload actual method invocations to the dashboard.
 
 == Current solution
 The current solution works like this:
@@ -33,8 +33,8 @@ The current solution works like this:
 The collector uses `/etc/codekvast.conf` for preparing an aspect that is woven into the application by `aspectjweaver.jar` at load-time (Load-Time Weaving, LTW)
 2. The Codekvast Daemon is a stand-alone Java app that is deployed in all the production servers.
 It has access to all the application binaries deployed to that server.
-3. Codekvast Daemon uploads the inventory to the warehouse each time it detects that a new version of the app has been started.
-4. The daemon uploads execution data to the warehouse every time it detects that the collector has created a new data file in the local file system.
+3. Codekvast Daemon uploads the inventory to the dashboard each time it detects that a new version of the app has been started.
+4. The daemon uploads execution data to the dashboard every time it detects that the collector has created a new data file in the local file system.
 
 === What may be problems
 
@@ -70,13 +70,13 @@ The plugins should:
 1. Read it's configuration from `pom.xml` or `build.gradle`.
 2. Pre-process the produced application artifact (war, executable jar) and weave the Codekvast collector into relevant classes
 3. Post-process the produced application artifact and produce an inventory file.
-4. Upload the inventory file to the Codekvast warehouse-as-a-service.
+4. Upload the inventory file to the Codekvast dashboard-as-a-service.
 
 If we do it like this, no daemon is needed.
 No modification to the start script will be needed, since the Codekvast collector does not use
 Load-Time Weaving (LTW) anymore.
 
-The last goal - periodically uploading invocation data to the warehouse - can be done directly by the collector.
+The last goal - periodically uploading invocation data to the dashboard - can be done directly by the collector.
 
 === SWOT analysis for a build-time solution
 
@@ -91,7 +91,7 @@ The last goal - periodically uploading invocation data to the warehouse - can be
 
 * Requires that the product is built with Maven or Gradle.
 * The builds will take longer.
-* The collector will be more complicated. It should stream data directly to the Codekvast Warehouse. This can be a problem
+* The collector will be more complicated. It should stream data directly to the Codekvast Dashboard. This can be a problem
 in certain organisations. In Heroku it will not be a problem however.
 
 ==== Opportunities

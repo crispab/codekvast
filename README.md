@@ -14,9 +14,9 @@ private* or *private* visibility. They can never know what potential callers the
  
 This is where Codekvast can help. Codekvast *records when your methods are invoked in production*.
 
-The collector periodically sends the recorded data as well as an inventory of *all* methods to the **Codekvast Warehouse**.
+The collector periodically sends the recorded data as well as an inventory of *all* methods to the **Codekvast Dashboard**.
  
-By using the web interface offered Codekvast Warehouse, you can find out whether a certain method, class or package is safe to remove or not.
+By using the web interface offered Codekvast Dashboard, you can find out whether a certain method, class or package is safe to remove or not.
 
 *Codekvast collects the data. You then combine that with your domain knowledge to make informed decisions about what is truly dead code
 that safely could be deleted.*

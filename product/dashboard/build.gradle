@@ -1,0 +1,67 @@
+apply from: "$rootDir/gradle/java-8.gradle"
+apply from: "$rootDir/gradle/license.gradle"
+apply plugin: 'application'
+apply plugin: 'flyway'
+apply plugin: 'org.unbroken-dome.test-sets'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'groovy'
+
+description = 'The Codekvast dashboard'
+applicationName = 'codekvast-dashboard'
+archivesBaseName = 'codekvast-dashboard'
+version = codekvastVersion
+group = 'crisp'
+mainClassName = 'io.codekvast.dashboard.CodekvastDashboard'
+
+apply from: "$projectDir/src/main/build.gradle"
+apply from: "$projectDir/src/webapp/build.gradle"
+apply from: "$projectDir/src/heroku/build.gradle"
+apply from: "$projectDir/src/integrationTest/build.gradle"
+apply from: "$projectDir/src/systemTest/build.gradle"
+
+configurations.compile {
+    exclude module: 'spring-boot-starter-tomcat'
+    exclude module: 'tomcat-jdbc'
+}
+
+dependencies {
+    // Annotation processors
+    compileOnly lombok
+    compileOnly 'org.springframework.boot:spring-boot-configuration-processor'
+
+    // Regular dependencies
+    compile project(':product:agent-model')
+    compile "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
+    compile "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
+    compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+    compile 'javax.inject:javax.inject:1'
+    compile 'org.flywaydb:flyway-core'
+    compile 'org.springframework.boot:spring-boot-devtools'
+    compile 'org.springframework.boot:spring-boot-starter-jdbc'
+    compile 'org.springframework.boot:spring-boot-starter-logging'
+    compile 'org.springframework.boot:spring-boot-starter-web'
+    compile 'org.springframework.boot:spring-boot-starter-undertow'
+    compile 'org.springframework.boot:spring-boot-starter-security'
+    compile 'io.jsonwebtoken:jjwt:0.7.0'
+    compile "io.springfox:springfox-swagger2:${springfoxVersion}"
+    compile 'com.github.seratch:jslack:1.0.12'
+
+    runtime 'com.zaxxer:HikariCP'
+    runtime 'org.springframework.boot:spring-boot-starter-actuator'
+    runtime "io.springfox:springfox-swagger-ui:${springfoxVersion}"
+
+    runtime mariadbDriver
+
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+}
+
+processResources {
+    from 'src/main/resources', {
+        include '*application*.properties'
+        expand(project.properties)
+    }
+    from 'src/main/resources', {
+        exclude '*application*.properties'
+    }
+    filteringCharset = 'UTF-8'
+}

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="JavaScriptLibraryMappings">
-    <file url="file://$PROJECT_DIR$/product/warehouse/src/webapp" libraries="{master/product/warehouse/src/webapp/node_modules}" />
+    <file url="file://$PROJECT_DIR$/product/dashboard/src/webapp" libraries="{$PROJECT_DIR$/product/dashboard/src/webapp/node_modules}" />
   </component>
 </project>

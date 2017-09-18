@@ -13,7 +13,7 @@ The following stack is used when developing Codekvast (in alphabetical order):
 1. Inkscape (SVG graphics)
 1. Java 8
 1. Lombok
-1. MariaDB 10+ (Codekvast Warehouse)
+1. MariaDB 10+ (Codekvast Dashboard)
 1. NodeJS
 1. Node Package Manager (npm)
 1. PhantomJS
@@ -82,13 +82,13 @@ Put this into your `/etc/profile.d/phantomjs.sh` or your `$HOME/.profile` or sim
     
 ### TypeScript
 
-The Codekvast Warehouse web UI is developed with TypeScript and Angular 4. Twitter Bootstrap is used as CSS framework.
+The Codekvast Dashboard web UI is developed with TypeScript and Angular 4. Twitter Bootstrap is used as CSS framework.
 
 npm and yarn are used for managing the frontend development environment. Webpack is used as frontend bundler.
     
 ### Docker Engine
 
-Docker Engine 1.10 or later is required for Codekvast Warehouse.
+Docker Engine 1.10 or later is required for Codekvast Dashboard development.
 
 Install [Docker Engine 1.10.3+](https://docs.docker.com/engine/installation/) using
 the official instructions.
@@ -184,7 +184,7 @@ All of the non-trivial code is covered with unit tests.
 
 Some tricky integrations are covered by proper integration tests where the external part is executing in Docker containers managed by the tests. 
 
-There is also a smoke test that launches MariaDB and Codekvast Warehouse, and executes some Web Driver tests.
+There is also a smoke test that launches MariaDB and Codekvast Dashboard, and executes some Web Driver tests.
 This is just a smoke test though.
 
 To assist manual e2e tests, there is a number of sample apps that are managed by Gradle. They are configured to start with the latest
@@ -195,27 +195,27 @@ Codekvast collector attached.
 The following procedure can be used for demo purposes and also when doing development with live data flowing.
 
 1. Launch 4 terminal windows
-1. In terminal #1 do `./gradlew :product:warehouse:bootRun`.
-This will start Codekvast Warehouse that will consume the data files uploaded by the instrumented apps.
+1. In terminal #1 do `./gradlew :product:dashboard:bootRun`.
+This will start Codekvast Dashboard that will consume the data files uploaded by the instrumented apps.
 1. In terminal #2 do `./gradlew :sample:jenkins1:run`. This will download and start one version of Jenkins with Codekvast attached.
 1. In terminal #3 do `./gradlew :sample:jenkins2:run`. This will download and start another version of Jenkins with Codekvast attached.
 1. In terminal #4 do `./gradlew :sample:sample-gradle-application:run`. This will launch the short-lived `sample.app.SampleApp` with Codekvast attached. The SampleApp is handy when
 you want to correlate source code to the data that is collected by Codekvast.
-1. Open a web browser at http://localhost:8080. It will show the warehouse web interface wher e you can inspect the collected data.
+1. Open a web browser at http://localhost:8080. It will show the dashboard web interface wher e you can inspect the collected data.
 
-### How to do rapid development of the warehouse web app
+### How to do rapid development of the dashboard web app
 
 In addition to the above do this:
 
 1. Launch a terminal window
-1. `cd product/warehouse/src/webapp`
+1. `cd product/dashboard/src/webapp`
 1. `npm start`. It will start an embedded web server on port 8088.
 It reloads changes to the webapp automatically. It will also refresh the browser automatically.
 1. Open the web browser at http://localhost:8088
 
-### Canned REST responses for off-line warehouse webapp development
+### Canned REST responses for off-line dashboard webapp development
 
-When running the warehouse webapp from `npm start` there is a number of canned REST responses available.
+When running the dashboard webapp from `npm start` there is a number of canned REST responses available.
 This makes it possible to develop the webapp with nothing else than `npm start` running.
 
 The canned responses are really handy when doing frontend development, where live data is strictly not necessary.
@@ -226,15 +226,15 @@ In the Methods page, the canned response is delivered from disk by searching for
  
 #### Updating the canned responses
 
-Canned responses has to be re-captured every time the warehouse REST API has been changed.
+Canned responses has to be re-captured every time the dashboard REST API has been changed.
 
 The canned response for `/webapp/v1/methods` is captured by executing
 
-    curl -X GET --header 'Accept: application/json' 'http://localhost:8080/webapp/v1/methods?signature=%25&maxResults=100'|jq . > product/warehouse/src/webapp/src/app/test/canned/v1/MethodData.json
-    git add product/warehouse/src/webapp/src/app/test/canned/v1/MethodData.json
+    curl -X GET --header 'Accept: application/json' 'http://localhost:8080/webapp/v1/methods?signature=%25&maxResults=100'|jq . > product/dashboard/src/webapp/src/app/test/canned/v1/MethodData.json
+    git add product/dashboard/src/webapp/src/app/test/canned/v1/MethodData.json
     
-from the root directory while `./gradlew :product:warehouse:bootRun` is running.
-When doing the capture, make sure that data from the three above mentioned sample apps is stored in the warehouse.
+from the root directory while `./gradlew :product:dashboard:bootRun` is running.
+When doing the capture, make sure that data from the three above mentioned sample apps is stored in the dashboard.
 
 (The JSON response is piped through `jq .` to make it more pretty for the human eye.)
 
