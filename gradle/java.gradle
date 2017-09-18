@@ -74,6 +74,7 @@ task coverageReport(type: JacocoReport) {
 }
 build.dependsOn coverageReport
 
+// TODO: Run javadoc on delomboked code
 javadoc {
     title  "Codekvast version $codekvastDisplayVersion"
     failOnError = false
