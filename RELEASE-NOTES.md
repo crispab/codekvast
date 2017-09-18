@@ -1,5 +1,8 @@
 # Codekvast Release Notes
 
+## 0.21.6
+1. Upgraded to Angular 4.4.1
+
 ## 0.21.5
 1. Added Boot-Class-Path to codekvast-agent's MANIFEST.MF (eliminates the need for -Xbootclasspath/a:codekvast-agent-x.x.jar)
 1. Improved handling of communication failures in Codekvast Warehouse.
