@@ -3,6 +3,7 @@
 ## 0.21.6
 1. Upgraded to Angular 4.4.1
 1. Renamed Codekvast Warehouse to Codekvast Dashboard
+1. codekvast-javaagent now ignores Scala-generated methods (traits).
 
 ## 0.21.5
 1. Added Boot-Class-Path to codekvast-agent's MANIFEST.MF (eliminates the need for -Xbootclasspath/a:codekvast-agent-x.x.jar)

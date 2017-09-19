@@ -15,9 +15,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static io.codekvast.javaagent.util.SignatureUtils.*;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 @SuppressWarnings("ALL")
@@ -59,6 +57,18 @@ public class SignatureUtilsTest {
                     assertThat(String.format("Could not normalize%n%n   %s%n%n result is%n%n   %s%n", signature, normalized),
                                SignatureUtils.isStrangeSignature(normalized), is(false));
                 }
+            }
+        }
+    }
+
+    @Test
+    public void should_ignore_scala_traits() throws URISyntaxException, IOException {
+        List<String> signatures =
+            Files.readLines(new File(getClass().getResource("/play2-app/signatures1.dat").toURI()), Charset.forName("UTF-8"));
+        for (String signature : signatures) {
+            String normalized = SignatureUtils.normalizeSignature(signature);
+            if (normalized != null) {
+                assertThat(normalized, not(containsString("..")));
             }
         }
     }
