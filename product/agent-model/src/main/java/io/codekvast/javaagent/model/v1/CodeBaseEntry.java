@@ -59,4 +59,13 @@ public class CodeBaseEntry implements Serializable {
      */
     @NonNull
     private final String signature;
+
+    public static CodeBaseEntry sampleCodeBaseEntry() {
+        return builder()
+            .methodSignature(MethodSignature.createSampleMethodSignature())
+            .signature("signature1()")
+            .signatureStatus(SignatureStatus.NOT_INVOKED)
+            .visibility("public")
+            .build();
+    }
 }

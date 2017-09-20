@@ -25,6 +25,7 @@ import io.codekvast.javaagent.model.v1.CodeBaseEntry;
 import io.codekvast.javaagent.model.v1.CommonPublicationData;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -72,4 +73,14 @@ public interface ImportDAO {
      * @param invocations     The set of signatures that were invoked in this recording interval.
      */
     void importInvocations(long customerId, long appId, long jvmId, long invokedAtMillis, Set<String> invocations);
+
+    /**
+     * Inserts rows in the strange_signatures table
+     *
+     * @param customerId        The customer ID
+     * @param appId             The application ID returned by {@link #importApplication(CommonPublicationData)}
+     * @param jvmId             The JVM ID returned by {@link #importJvm(CommonPublicationData, long)}
+     * @param strangeSignatures A Map with the raw signature as key, and the normalized signature as value
+     */
+    void importStrangeSignatures(long customerId, long appId, long jvmId, Map<String, String> strangeSignatures);
 }

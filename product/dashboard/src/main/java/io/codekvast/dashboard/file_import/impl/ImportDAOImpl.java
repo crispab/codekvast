@@ -34,7 +34,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.sql.*;
 import java.time.Instant;
 import java.util.*;
@@ -43,17 +42,12 @@ import java.util.*;
  * @author olle.hallin@crisp.se
  */
 @Component
+@RequiredArgsConstructor
 @Slf4j
 public class ImportDAOImpl implements ImportDAO {
 
     private final JdbcTemplate jdbcTemplate;
     private final CustomerService customerService;
-
-    @Inject
-    public ImportDAOImpl(JdbcTemplate jdbcTemplate, CustomerService customerService) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.customerService = customerService;
-    }
 
     @Override
     public long importApplication(CommonPublicationData data) {
@@ -99,7 +93,7 @@ public class ImportDAOImpl implements ImportDAO {
                 data.getPackages(), data.getExcludePackages(), data.getEnvironment(), data.getComputerId(), data.getHostname(),
                 data.getAgentVersion(), data.getTags());
             logger.trace("Inserted jvm {} {} started at {}", customerId, data.getJvmUuid(),
-                      Instant.ofEpochMilli(data.getJvmStartedAtMillis()));
+                         Instant.ofEpochMilli(data.getJvmStartedAtMillis()));
         }
 
         Long result = jdbcTemplate.queryForObject("SELECT id FROM jvms WHERE uuid = ?", Long.class, data.getJvmUuid());
@@ -131,6 +125,20 @@ public class ImportDAOImpl implements ImportDAO {
         doImportInvocations(customerId, appId, jvmId, invokedAtMillis, invocations, existingMethods, existingInvocations);
 
         customerService.assertDatabaseSize(customerId);
+    }
+
+    @Override
+    public void importStrangeSignatures(long customerId, long appId, long jvmId, Map<String, String> strangeSignatures) {
+        int insertedRows = 0;
+        for (Map.Entry<String, String> entry : strangeSignatures.entrySet()) {
+            int updated = jdbcTemplate.update(
+                "INSERT INTO strange_signatures(customerId, applicationId, jvmId, rawSignature, normalizedSignature) VALUE (?, ?, ?, ?, ?)",
+                customerId, appId, jvmId, entry.getKey(), entry.getValue());
+            insertedRows += updated;
+        }
+        if (insertedRows > 0) {
+            logger.info("Stored {} strange signatures for customer:appId:jvmId {}:{}:{}", insertedRows, customerId, appId, jvmId);
+        }
     }
 
     private void doImportInvocations(long customerId, long appId, long jvmId, long invokedAtMillis, Set<String> invokedSignatures,

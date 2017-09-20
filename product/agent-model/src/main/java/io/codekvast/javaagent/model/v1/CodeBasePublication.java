@@ -50,8 +50,10 @@ public class CodeBasePublication implements Serializable {
     private Map<String, String> overriddenSignatures;
 
     /**
-     * "strange" signatures, i.e., signatures with unnatural names that indicate that they are synthesized at runtime by some
+     * "strange" signatures, i.e., signatures with unnatural names that indicate that they are synthesized either by a compiler or at
+     * runtime by some
      * byte-code library.
+     *
      * key: strangeSignature
      * value: normalized strange signature
      */
@@ -60,6 +62,8 @@ public class CodeBasePublication implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("CodeBasePublication{commonData=%s, entries.size()=%d}", commonData, entries.size());
+        return String
+            .format("CodeBasePublication{commonData=%s, entries.size()=%d, strangeSignatures.size()=%d}", commonData, entries.size(),
+                    strangeSignatures.size());
     }
 }

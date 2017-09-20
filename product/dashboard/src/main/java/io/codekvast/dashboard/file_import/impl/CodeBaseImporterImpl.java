@@ -24,25 +24,20 @@ package io.codekvast.dashboard.file_import.impl;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.javaagent.model.v1.CodeBasePublication;
 import io.codekvast.javaagent.model.v1.CommonPublicationData;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.inject.Inject;
 
 /**
  * @author olle.hallin@crisp.se
  */
 @Component
+@RequiredArgsConstructor
 @Slf4j
 public class CodeBaseImporterImpl implements CodeBaseImporter {
 
     private final ImportDAO importDAO;
-
-    @Inject
-    public CodeBaseImporterImpl(ImportDAO importDAO) {
-        this.importDAO = importDAO;
-    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -54,6 +49,7 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
         long appId = importDAO.importApplication(data);
         long jvmId = importDAO.importJvm(data, appId);
         importDAO.importMethods(customerId, appId, jvmId, publication.getCommonData().getPublishedAtMillis(), publication.getEntries());
+        importDAO.importStrangeSignatures(customerId, appId, jvmId, publication.getStrangeSignatures());
         return true;
     }
 }

@@ -243,6 +243,7 @@ public class CustomerServiceImpl implements CustomerService {
         long customerId = customerData.getCustomerId();
 
         deleteFromTable("invocations", customerId);
+        deleteFromTable("strange_signatures", customerId);
         deleteFromTable("methods", customerId);
         deleteFromTable("jvms", customerId);
         deleteFromTable("applications", customerId);

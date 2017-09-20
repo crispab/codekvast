@@ -9,12 +9,16 @@ import io.codekvast.dashboard.customer.CustomerService.InteractiveActivity;
 import io.codekvast.dashboard.customer.CustomerService.LoginRequest;
 import io.codekvast.dashboard.customer.LicenseViolationException;
 import io.codekvast.dashboard.customer.PricePlanDefaults;
+import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.webapp.WebappService;
 import io.codekvast.dashboard.webapp.model.methods.GetMethodsRequest1;
 import io.codekvast.dashboard.webapp.model.methods.GetMethodsResponse1;
 import io.codekvast.dashboard.webapp.model.methods.MethodDescriptor1;
 import io.codekvast.dashboard.webapp.model.status.AgentDescriptor1;
 import io.codekvast.dashboard.webapp.model.status.GetStatusResponse1;
+import io.codekvast.javaagent.model.v1.CodeBaseEntry;
+import io.codekvast.javaagent.model.v1.CodeBasePublication;
+import io.codekvast.javaagent.model.v1.CommonPublicationData;
 import io.codekvast.javaagent.model.v1.SignatureStatus;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
@@ -39,6 +43,8 @@ import javax.inject.Inject;
 import javax.validation.ConstraintViolationException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 import static java.lang.Boolean.FALSE;
@@ -112,15 +118,18 @@ public class MariadbIntegrationTest {
     private AgentService agentService;
 
     @Inject
+    private CodeBaseImporter codeBaseImporter;
+
+    @Inject
     private TestDataGenerator testDataGenerator;
 
     @Before
-    public void beforeTest() throws Exception {
+    public void beforeTest() {
         assumeTrue(mariadb.isRunning());
     }
 
     @Test
-    public void should_have_applied_all_flyway_migrations_to_an_empty_database() throws Exception {
+    public void should_have_applied_all_flyway_migrations_to_an_empty_database() {
         // given
 
         // when
@@ -132,7 +141,7 @@ public class MariadbIntegrationTest {
 
     @Test
     @Sql(scripts = "/sql/base-data.sql")
-    public void should_store_all_signature_status_enum_values_correctly() throws Exception {
+    public void should_store_all_signature_status_enum_values_correctly() {
         // given
 
         // when
@@ -341,46 +350,20 @@ public class MariadbIntegrationTest {
         assertThat(customerData.isTrialPeriodExpired(now.plus(days + 1, DAYS)), is(true));
     }
 
-
-    // TODO: add tests for CodeBasePublication import
+    @Test
+    public void should_import_codeBasePublication() {
+        //@formatter:off
+        CodeBasePublication publication = CodeBasePublication.builder()
+            .commonData(CommonPublicationData.sampleCommonPublicationData())
+            .entries(Arrays.asList(CodeBaseEntry.sampleCodeBaseEntry()))
+            .overriddenSignatures(Collections.singletonMap("signature", "overriddenBySignature"))
+            .strangeSignatures(Collections.singletonMap("rawStrangeSignature", "normalizedStrangeSignature"))
+            .build();
+        //@formatter:on
+        codeBaseImporter.importPublication(publication);
+    }
 
     // TODO: add tests for InvocationDataPublication import
-
-    @Test
-    public void should_query_by_IDEA_signature_correctly() {
-        // given
-
-        // when
-
-        // then
-    }
-
-    @Test
-    public void should_query_by_signature_suffix_correctly() {
-        // given
-
-        // when find substring
-
-        // then
-    }
-
-    @Test
-    public void should_query_by_signature_not_normalize_but_no_match() {
-        // given
-
-        // when find by signature
-
-        // then
-    }
-
-    @Test
-    public void should_query_signatures_and_respect_max_results() {
-        // given
-
-        // when
-
-        // then
-    }
 
     @Test(expected = ConstraintViolationException.class)
     public void should_throw_when_querying_signature_with_too_short_signature() {

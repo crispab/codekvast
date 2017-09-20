@@ -108,4 +108,25 @@ public class CommonPublicationData implements Serializable {
             publishedAtMillis);
     }
 
+    public static CommonPublicationData sampleCommonPublicationData() {
+        return builder()
+            .agentVersion("agentVersion")
+            .appName("appName")
+            .appVersion("appVersion")
+            .codeBaseFingerprint("codeBaseFingerprint")
+            .computerId("computerId")
+            .customerId(1L)
+            .environment("environment")
+            .excludePackages("excludePackages")
+            .hostname("hostname")
+            .jvmStartedAtMillis(System.currentTimeMillis())
+            .jvmUuid("jvmUuid")
+            .methodVisibility("methodVisibility")
+            .packages("packages")
+            .publishedAtMillis(System.currentTimeMillis())
+            .sequenceNumber(1)
+            .tags("tags")
+            .build();
+    }
+
 }
