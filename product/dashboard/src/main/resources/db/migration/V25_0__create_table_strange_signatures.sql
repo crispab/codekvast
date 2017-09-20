@@ -26,7 +26,7 @@ CREATE TABLE strange_signatures (
   applicationId       BIGINT                NOT NULL,
   jvmId               BIGINT                NOT NULL,
   rawSignature        TEXT                  NOT NULL,
-  normalizedSignature TEXT                  NOT NULL,
+  normalizedSignature TEXT                  NULL,
 
   CONSTRAINT ix_strangeSignatures_customerId FOREIGN KEY (customerId) REFERENCES customers (id),
   CONSTRAINT ix_strangeSignatures_applicationId FOREIGN KEY (applicationId) REFERENCES applications (id),
