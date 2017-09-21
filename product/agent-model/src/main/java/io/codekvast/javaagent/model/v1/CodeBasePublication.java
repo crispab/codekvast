@@ -63,7 +63,8 @@ public class CodeBasePublication implements Serializable {
     @Override
     public String toString() {
         return String
-            .format("CodeBasePublication{commonData=%s, entries.size()=%d, strangeSignatures.size()=%d}", commonData, entries.size(),
+            .format("%s(commonData=%s, entries.size()=%d, strangeSignatures.size()=%d)", this.getClass().getSimpleName(), commonData,
+                    entries.size(),
                     strangeSignatures.size());
     }
 }

@@ -100,7 +100,8 @@ public class CommonPublicationData implements Serializable {
     @Override
     public String toString() {
         return String.format(
-            "CommonPublicationData{customerId=%1$d, appName='%2$s', appVersion='%3$s', hostname='%4$s', publishedAt=%5$tF:%5$tT%5$tz}",
+            "%s(customerId=%1$d, appName='%2$s', appVersion='%3$s', hostname='%4$s', publishedAt=%5$tF:%5$tT%5$tz)",
+            this.getClass().getSimpleName(),
             customerId,
             appName,
             appVersion,
