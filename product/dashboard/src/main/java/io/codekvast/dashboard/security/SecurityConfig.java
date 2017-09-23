@@ -72,7 +72,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public AuthenticationTokenFilter authenticationTokenFilter() throws Exception {
+    public AuthenticationTokenFilter authenticationTokenFilter() {
         return new AuthenticationTokenFilter();
     }
 

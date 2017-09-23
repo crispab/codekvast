@@ -33,7 +33,7 @@ import java.sql.Connection;
 @SuppressWarnings("UnusedDeclaration")
 public class V1_0__DummyJavaMigration implements JdbcMigration {
     @Override
-    public void migrate(Connection connection) throws Exception {
+    public void migrate(Connection connection) {
         // NOTHING HERE!
     }
 }

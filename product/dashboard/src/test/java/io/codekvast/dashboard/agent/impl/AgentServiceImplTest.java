@@ -126,7 +126,7 @@ public class AgentServiceImplTest {
         doThrow(new LicenseViolationException("stub")).when(customerService).assertPublicationSize(anyString(), eq(publicationSize));
 
         // when
-        service.saveCodeBasePublication("key", "fingerprint", publicationSize, null);
+        service.saveCodeBasePublication("key", publicationSize, null);
     }
 
     @Test
@@ -136,7 +136,6 @@ public class AgentServiceImplTest {
 
         // when
         File resultingFile = service.saveCodeBasePublication("key",
-                                                             "fingerprint",
                                                              1000,
                                                              new ByteArrayInputStream(contents.getBytes()));
 
@@ -150,12 +149,12 @@ public class AgentServiceImplTest {
 
     @Test(expected = NullPointerException.class)
     public void should_reject_null_codebase_licenseKey() throws Exception {
-        service.saveCodeBasePublication(null, "fingerprint", 0, null);
+        service.saveCodeBasePublication(null, 0, null);
     }
 
     @Test(expected = NullPointerException.class)
     public void should_reject_null_invocation_data_licenseKey() throws Exception {
-        service.saveInvocationDataPublication(null, "fingerprint", 0, null);
+        service.saveInvocationDataPublication(null, 0, null);
     }
 
     private void setupCustomerData(Instant collectionStartedAt, Instant trialPeriodEndsAt) {

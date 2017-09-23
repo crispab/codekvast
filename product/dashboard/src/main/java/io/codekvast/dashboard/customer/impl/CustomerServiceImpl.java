@@ -202,7 +202,7 @@ public class CustomerServiceImpl implements CustomerService {
         jdbcTemplate.update("INSERT INTO customers(source, externalId, name, licenseKey, plan) VALUES(?, ?, ?, ?, ?)",
                             request.getSource(), request.getExternalId(), request.getName(), licenseKey, request.getPlan());
         logger.info("Created {} with licenseKey {}", request, licenseKey);
-        slackService.sendNotification(String.format("Handled `" + request + "`"), SlackService.Channel.BUSINESS_EVENTS);
+        slackService.sendNotification(String.format("Handled `%s`", request), SlackService.Channel.BUSINESS_EVENTS);
         return licenseKey;
     }
 

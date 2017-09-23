@@ -28,6 +28,7 @@ import lombok.Value;
 /**
  * @author olle.hallin@crisp.se
  */
+@SuppressWarnings("ClassWithTooManyFields")
 @Value
 @Builder
 public class AgentDescriptor1 {

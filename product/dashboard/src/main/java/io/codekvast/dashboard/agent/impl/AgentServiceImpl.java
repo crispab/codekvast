@@ -149,7 +149,7 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
-    public File saveCodeBasePublication(@NonNull String licenseKey, String codeBaseFingerprint, int publicationSize,
+    public File saveCodeBasePublication(@NonNull String licenseKey, int publicationSize,
                                         InputStream inputStream)
         throws LicenseViolationException, IOException {
         customerService.assertPublicationSize(licenseKey, publicationSize);
@@ -158,7 +158,7 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
-    public File saveInvocationDataPublication(@NonNull String licenseKey, String codeBaseFingerprint, int publicationSize,
+    public File saveInvocationDataPublication(@NonNull String licenseKey, int publicationSize,
                                               InputStream inputStream)
         throws LicenseViolationException, IOException {
         customerService.assertPublicationSize(licenseKey, publicationSize);

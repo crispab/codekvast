@@ -32,6 +32,7 @@ import java.util.List;
  *
  * @author olle.hallin@crisp.se
  */
+@SuppressWarnings({"ClassWithTooManyFields", "ClassWithTooManyMethods"})
 @Value
 @Builder
 public class GetStatusResponse1 {

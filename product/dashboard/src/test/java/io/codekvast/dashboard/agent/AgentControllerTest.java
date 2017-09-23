@@ -123,7 +123,7 @@ public class AgentControllerTest {
                .andExpect(status().isOk())
                .andExpect(content().string("OK"));
 
-        verify(agentService).saveCodeBasePublication(eq(licenseKey), eq(fingerprint), eq(publicationSize), any(InputStream.class));
+        verify(agentService).saveCodeBasePublication(eq(licenseKey), eq(publicationSize), any(InputStream.class));
     }
 
     @Test
@@ -147,6 +147,6 @@ public class AgentControllerTest {
                .andExpect(status().isOk())
                .andExpect(content().string("OK"));
 
-        verify(agentService).saveInvocationDataPublication(eq(licenseKey), eq(fingerprint), eq(publicationSize), any(InputStream.class));
+        verify(agentService).saveInvocationDataPublication(eq(licenseKey), eq(publicationSize), any(InputStream.class));
     }
 }

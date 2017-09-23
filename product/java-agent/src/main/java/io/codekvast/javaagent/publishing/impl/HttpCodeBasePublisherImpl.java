@@ -54,11 +54,6 @@ public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
     }
 
     @Override
-    boolean doSetValue(String key, String value) {
-        return false;
-    }
-
-    @Override
     public void doPublishCodeBase(CodeBase codeBase) throws CodekvastPublishingException {
         String url = getConfig().getCodeBaseUploadEndpoint();
 

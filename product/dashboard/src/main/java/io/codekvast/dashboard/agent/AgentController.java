@@ -96,7 +96,7 @@ public class AgentController {
         logger.debug("Received {} ({} methods, {}) with licenseKey={}, fingerprint={}", file.getOriginalFilename(),
                   humanReadableByteCount(file.getSize()), publicationSize, licenseKey, fingerprint);
 
-        agentService.saveCodeBasePublication(licenseKey, fingerprint, publicationSize, file.getInputStream());
+        agentService.saveCodeBasePublication(licenseKey, publicationSize, file.getInputStream());
 
         return "OK";
     }
@@ -112,7 +112,7 @@ public class AgentController {
         logger.debug("Received {} ({} invocations, {}) with licenseKey={}, fingerprint={}", file.getOriginalFilename(),
                      humanReadableByteCount(file.getSize()), publicationSize, licenseKey, fingerprint);
 
-        agentService.saveInvocationDataPublication(licenseKey, fingerprint, publicationSize, file.getInputStream());
+        agentService.saveInvocationDataPublication(licenseKey, publicationSize, file.getInputStream());
 
         return "OK";
     }

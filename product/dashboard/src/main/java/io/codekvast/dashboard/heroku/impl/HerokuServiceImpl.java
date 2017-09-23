@@ -31,7 +31,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,7 +45,7 @@ public class HerokuServiceImpl implements HerokuService {
     private final CustomerService customerService;
 
     @Inject
-    public HerokuServiceImpl(CodekvastSettings settings, CustomerService customerService) throws NoSuchAlgorithmException {
+    public HerokuServiceImpl(CodekvastSettings settings, CustomerService customerService) {
         this.settings = settings;
         this.customerService = customerService;
     }

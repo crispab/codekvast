@@ -20,10 +20,10 @@ public class SampleApp {
     }
 
     @SneakyThrows(InterruptedException.class)
-    public void run() {
+    private void run() {
         System.out.printf("Hello, World! from %s%n%n", getClass().getName());
-        tryToLoadClass("io.codekvast.javaagent.CodekvastAgent", true);
-        tryToLoadClass("org.aspectj.weaver.loadtime.Agent", true);
+        tryToLoadClass("io.codekvast.javaagent.CodekvastAgent");
+        tryToLoadClass("org.aspectj.weaver.loadtime.Agent");
 
         measureMethodCallTrackingOverhead();
 
@@ -98,22 +98,16 @@ public class SampleApp {
         return System.currentTimeMillis() - startedAt;
     }
 
-    private void tryToLoadClass(String className, boolean shouldBeAvailable) {
+    private void tryToLoadClass(String className) {
         try {
             Class.forName(className);
 
-            String verdict = shouldBeAvailable ? "GOOD:" : "BAD: ";
-            String result = shouldBeAvailable
-                    ? "is unavoidable."
-                    : "has leaked into my class path from -javaagent:codekvast-agent.jar";
-            System.out.printf("%s %s can load class %s, which %s%n", verdict, SampleApp.class.getName(), className, result);
+            String result = "is unavoidable.";
+            System.out.printf("GOOD:, %s can load class %s, which %s%n", SampleApp.class.getName(), className, result);
         } catch (ClassNotFoundException e) {
 
-            String verdict = shouldBeAvailable ? "BAD: " : "GOOD:";
-            String result = shouldBeAvailable
-                    ? ", which indicates that codekvast-agent is not enabled!"
-                    : ". We don't want codekvast-agent internals to leak into the application.";
-            System.out.printf("%s %s cannot load class %s%s%n", verdict, SampleApp.class.getName(), className, result);
+            String result = ", which indicates that codekvast-agent is not enabled!";
+            System.out.printf("BAD:  %s cannot load class %s%s%n", SampleApp.class.getName(), className, result);
         }
     }
 

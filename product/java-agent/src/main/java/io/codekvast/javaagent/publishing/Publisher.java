@@ -24,6 +24,7 @@ package io.codekvast.javaagent.publishing;
 /**
  * @author olle.hallin@crisp.se
  */
+@SuppressWarnings("MethodReturnAlwaysConstant")
 public interface Publisher {
     /**
      * What is the nick-name of this publisher implementation.

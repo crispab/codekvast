@@ -26,7 +26,7 @@ package io.codekvast.dashboard.weeding;
  */
 public interface WeedingService {
     /**
-     * Performs data weeding. It removes redundant data from the database, to keep it from growing unboundedly.
+     * Performs data weeding. It removes redundant data from the database, to keep it from growing unbounded.
      */
     void performDataWeeding();
 }

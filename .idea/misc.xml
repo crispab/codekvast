@@ -25,6 +25,9 @@
       <item index="14" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.RequestMapping" />
       <item index="15" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.RestController" />
     </list>
+    <pattern value="io.codekvast.javaagent.AbstractMethodExecutionAspect" method="methodExecution" />
+    <pattern value="io.codekvast.javaagent.AbstractMethodExecutionAspect" method="trivialMethodExecution" />
+    <pattern value="io.codekvast.javaagent.AbstractMethodExecutionAspect" method="syntheticMethodExecution" />
   </component>
   <component name="FrameworkDetectionExcludesConfiguration">
     <file type="JRUBY" url="file://$PROJECT_DIR$/tools/prepare-workstation/ansible/roles/franklinkim.docker/Vagrantfile" />
@@ -82,8 +85,5 @@
   </component>
   <component name="SuppressionsComponent">
     <option name="suppComments" value="[]" />
-  </component>
-  <component name="WebPackConfiguration">
-    <option name="path" value="$PROJECT_DIR$/webpack.config.js" />
   </component>
 </project>

@@ -28,7 +28,7 @@ package io.codekvast.testsupport.docker;
  */
 class ContainerNotReadyException extends Exception {
 
-    public ContainerNotReadyException(String message, Throwable cause) {
+    ContainerNotReadyException(String message, Throwable cause) {
         super(message, cause);
     }
 

@@ -10,6 +10,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @Controller
 @RequestMapping(method = GET)
 @Slf4j
+@SuppressWarnings("SameReturnValue")
 public class HomeController {
 
     private final ButtonOneService buttonOneService;

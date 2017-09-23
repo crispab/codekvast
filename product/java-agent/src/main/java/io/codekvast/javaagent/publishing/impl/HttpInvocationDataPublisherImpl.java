@@ -27,12 +27,8 @@ import io.codekvast.javaagent.publishing.CodekvastPublishingException;
 import io.codekvast.javaagent.util.FileUtils;
 import io.codekvast.javaagent.util.LogUtil;
 import lombok.extern.java.Log;
-import okhttp3.MediaType;
-import okhttp3.Request;
-import okhttp3.Response;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Set;
 
 /**
@@ -47,8 +43,6 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
 
     static final String NAME = "http";
 
-    private static final MediaType APPLICATION_OCTET_STREAM = MediaType.parse("application/octet-stream");
-
     HttpInvocationDataPublisherImpl(AgentConfig config) {
         super(logger, config);
     }
@@ -56,11 +50,6 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
     @Override
     public String getName() {
         return NAME;
-    }
-
-    @Override
-    boolean doSetValue(String key, String value) {
-        return false;
     }
 
     @Override
@@ -88,11 +77,6 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
         } finally {
             FileUtils.safeDelete(file);
         }
-    }
-
-    // Make it possible to subclass in tests
-    Response executeRequest(Request request) throws IOException {
-        return getConfig().getHttpClient().newCall(request).execute();
     }
 
     private InvocationDataPublication createPublication(long customerId, long recordingIntervalStartedAtMillis, Set<String> invocations) {

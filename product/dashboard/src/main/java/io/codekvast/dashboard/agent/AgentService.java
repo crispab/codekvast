@@ -49,27 +49,25 @@ public interface AgentService {
      * Save an uploaded {@link CodeBasePublication} into the import area where it will be processed by another thread.
      *
      * @param licenseKey          The javaagent's licenseKey.
-     * @param codeBaseFingerprint Is the CodeBaseFingerprint's SHA-256 value for the code base.
      * @param publicationSize     The size of the publication. Used for price plan enforcement.
      * @param inputStream         The data input stream.  @return The resulting file or null of the code base was already uploaded.
      * @return the resulting file in the queue directory.
      * @throws LicenseViolationException If invalid license or license violations.
      * @throws IOException               If failure to create the file.
      */
-    File saveCodeBasePublication(String licenseKey, String codeBaseFingerprint, int publicationSize, InputStream inputStream)
+    File saveCodeBasePublication(String licenseKey, int publicationSize, InputStream inputStream)
         throws LicenseViolationException, IOException;
 
     /**
      * Save an uploaded {@link InvocationDataPublication} into the import area where it will be processed by another thread.
      *
      * @param licenseKey          The javaagent's licenseKey.
-     * @param codeBaseFingerprint Is the associated code base's CodeBaseFingerprint's SHA-256 value.
      * @param publicationSize     The size of the publication. Used for price plan enforcement.
      * @param inputStream         The data input stream.  @return The resulting file or null if the invocation data was already uploaded.
      * @return the resulting file in the queue directory.
      * @throws LicenseViolationException If invalid license or license violations
      * @throws IOException               If failure to create the file.
      */
-    File saveInvocationDataPublication(String licenseKey, String codeBaseFingerprint, int publicationSize, InputStream inputStream)
+    File saveInvocationDataPublication(String licenseKey, int publicationSize, InputStream inputStream)
         throws LicenseViolationException, IOException;
 }

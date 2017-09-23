@@ -25,8 +25,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
-import java.io.IOException;
-
 /**
  * The Spring Boot main for codekvast-dashboard,
  *
@@ -36,7 +34,7 @@ import java.io.IOException;
 @ComponentScan(basePackages = "io.codekvast")
 public class CodekvastDashboard {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         new SpringApplication(CodekvastDashboard.class).run(args);
     }
 

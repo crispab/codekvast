@@ -32,7 +32,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.xml.bind.DatatypeConverter;
-import java.security.NoSuchAlgorithmException;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
@@ -49,7 +48,7 @@ public class HerokuResourceController {
     private final HerokuService herokuService;
 
     @Inject
-    public HerokuResourceController(CodekvastSettings settings, HerokuService herokuService) throws NoSuchAlgorithmException {
+    public HerokuResourceController(CodekvastSettings settings, HerokuService herokuService) {
         this.settings = settings;
         this.herokuService = herokuService;
     }
@@ -62,8 +61,7 @@ public class HerokuResourceController {
 
     @RequestMapping(path = "/heroku/resources", method = POST, consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<HerokuProvisionResponse> provision(@Valid @RequestBody HerokuProvisionRequest request,
-                                                             @RequestHeader("Authorization") String auth)
-        throws HerokuException {
+                                                             @RequestHeader("Authorization") String auth) {
         logger.debug("request={}", request);
 
         validateCredentials(auth);
@@ -74,7 +72,7 @@ public class HerokuResourceController {
     @RequestMapping(path = "/heroku/resources/{id}", method = PUT)
     public ResponseEntity<String> changePlan(@PathVariable("id") String id,
                                              @Valid @RequestBody HerokuChangePlanRequest request,
-                                             @RequestHeader(AUTHORIZATION) String auth) throws HerokuException {
+                                             @RequestHeader(AUTHORIZATION) String auth) {
         logger.debug("id={}, request={}", id, request);
 
         validateCredentials(auth);
@@ -86,7 +84,7 @@ public class HerokuResourceController {
 
     @RequestMapping(path = "/heroku/resources/{id}", method = DELETE)
     public ResponseEntity<String> deprovision(@PathVariable("id") String id,
-                                              @RequestHeader(AUTHORIZATION) String auth) throws HerokuException {
+                                              @RequestHeader(AUTHORIZATION) String auth) {
         logger.debug("id={}", id);
 
         validateCredentials(auth);

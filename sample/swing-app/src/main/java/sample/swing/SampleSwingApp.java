@@ -33,7 +33,7 @@ public class SampleSwingApp extends JFrame {
         SampleSwingPanel newContentPane = new SampleSwingPanel();
         newContentPane.setOpaque(true);
         setContentPane(newContentPane);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         pack();
         setVisible(true);
     }

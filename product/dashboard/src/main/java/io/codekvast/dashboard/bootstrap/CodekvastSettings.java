@@ -36,7 +36,7 @@ import java.io.File;
  *
  * @author olle.hallin@crisp.se
  */
-@SuppressWarnings({"ClassWithTooManyFields", "ClassWithTooManyMethods"})
+@SuppressWarnings({"ClassWithTooManyFields", "ClassWithTooManyMethods", "OverlyComplexClass"})
 @Component("codekvastSettings")
 @ConfigurationProperties(prefix = "codekvast")
 @Data

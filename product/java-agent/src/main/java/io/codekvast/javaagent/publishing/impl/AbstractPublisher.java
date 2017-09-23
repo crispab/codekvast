@@ -103,13 +103,16 @@ public abstract class AbstractPublisher implements Publisher {
     }
 
     /**
-     * Implement in concrete subclasses to handle private configuration settings.
+     * Override in concrete subclasses to handle private configuration settings.
      *
      * @param key   The name of the parameter.
      * @param value The value of the parameter.
      * @return true iff the key was recognized.
      */
-    abstract boolean doSetValue(String key, String value);
+    @SuppressWarnings("SameReturnValue")
+    boolean doSetValue(String key, String value) {
+        return false;
+    }
 
     void doPost(File file, String url, String fingerprint, int publicationSize) throws IOException {
         RequestBody requestBody = new MultipartBody.Builder()

@@ -6,13 +6,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 class SampleSwingPanel extends JPanel implements ActionListener {
-    private int newNodeSuffix = 1;
-    private static String ADD_COMMAND = "add";
-    private static String REMOVE_COMMAND = "remove";
-    private static String CLEAR_COMMAND = "clear";
+    private static final String ADD_COMMAND = "add";
+    private static final String REMOVE_COMMAND = "remove";
+    private static final String CLEAR_COMMAND = "clear";
     private final JTextArea textArea;
 
-    public SampleSwingPanel() {
+    SampleSwingPanel() {
         super(new BorderLayout());
 
         //Create the components.

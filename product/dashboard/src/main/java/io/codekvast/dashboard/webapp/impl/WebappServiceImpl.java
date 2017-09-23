@@ -195,7 +195,7 @@ public class WebappServiceImpl implements WebappService {
                 Timestamp nextPollExpectedAt = rs.getTimestamp("nextPollExpectedAt");
                 Timestamp publishedAt = rs.getTimestamp("publishedAt");
                 boolean isAlive =
-                    nextPollExpectedAt == null ? false : nextPollExpectedAt.after(Timestamp.from(Instant.now().minusSeconds(60)));
+                    nextPollExpectedAt != null && nextPollExpectedAt.after(Timestamp.from(Instant.now().minusSeconds(60)));
                 Instant nextPublicationExpectedAt = lastPolledAt.toInstant().plusSeconds(publishIntervalSeconds);
 
                 result.add(
@@ -377,7 +377,7 @@ public class WebappServiceImpl implements WebappService {
             return this.toString().compareTo(that.toString());
         }
 
-        public static ApplicationId of(ApplicationDescriptor1 applicationDescriptor) {
+        static ApplicationId of(ApplicationDescriptor1 applicationDescriptor) {
             return new ApplicationId(applicationDescriptor.getName(), applicationDescriptor.getVersion());
         }
     }

@@ -119,7 +119,7 @@ public class InvocationRegistry {
         }
     }
 
-    private void toggleInvocationsIndex() {
+    private synchronized void toggleInvocationsIndex() {
         recordingIntervalStartedAtMillis = System.currentTimeMillis();
         currentInvocationIndex = currentInvocationIndex == 0 ? 1 : 0;
     }

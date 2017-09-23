@@ -86,12 +86,4 @@ public enum SignatureStatus implements Serializable {
      */
     private final boolean tracked;
 
-    public static SignatureStatus fromOrdinal(int ordinal) {
-        for (SignatureStatus status : values()) {
-            if (status.ordinal() == ordinal) {
-                return status;
-            }
-        }
-        throw new IllegalArgumentException("Illegal ordinal for a " + SignatureStatus.class.getSimpleName() + ": " + ordinal);
-    }
 }

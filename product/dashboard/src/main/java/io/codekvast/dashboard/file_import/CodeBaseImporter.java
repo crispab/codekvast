@@ -34,5 +34,6 @@ public interface CodeBaseImporter {
      * @param publication The publication to import.
      * @return true iff the publication was handled
      */
+    @SuppressWarnings("SameReturnValue")
     boolean importPublication(CodeBasePublication publication);
 }

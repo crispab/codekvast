@@ -29,6 +29,7 @@ import java.util.Set;
 /**
  * @author olle.hallin@crisp.se
  */
+@SuppressWarnings("MethodReturnAlwaysConstant")
 @Log
 public class NoOpInvocationDataPublisherImpl extends AbstractInvocationDataPublisher {
 
@@ -41,12 +42,6 @@ public class NoOpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
     @Override
     public String getName() {
         return NAME;
-    }
-
-    @Override
-    boolean doSetValue(String key, String value) {
-        // Nothing here
-        return false;
     }
 
     @Override
