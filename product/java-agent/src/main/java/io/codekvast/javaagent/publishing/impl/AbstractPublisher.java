@@ -25,8 +25,13 @@ import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.publishing.Publisher;
 import lombok.Getter;
 import lombok.Setter;
+import okhttp3.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.logging.Logger;
+
+import static io.codekvast.javaagent.model.Endpoints.Agent.*;
 
 /**
  * Abstract base class for publishers.
@@ -36,6 +41,7 @@ import java.util.logging.Logger;
 @Getter
 public abstract class AbstractPublisher implements Publisher {
 
+    private static final MediaType APPLICATION_OCTET_STREAM = MediaType.parse("application/octet-stream");
     private final AgentConfig config;
     protected final Logger logger;
 
@@ -104,4 +110,27 @@ public abstract class AbstractPublisher implements Publisher {
      * @return true iff the key was recognized.
      */
     abstract boolean doSetValue(String key, String value);
+
+    void doPost(File file, String url, String fingerprint, int publicationSize) throws IOException {
+        RequestBody requestBody = new MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart(PARAM_LICENSE_KEY, getConfig().getLicenseKey())
+            .addFormDataPart(PARAM_FINGERPRINT, fingerprint)
+            .addFormDataPart(PARAM_PUBLICATION_SIZE, String.valueOf(publicationSize))
+            .addFormDataPart(PARAM_PUBLICATION_FILE, file.getName(),
+                             RequestBody.create(APPLICATION_OCTET_STREAM, file))
+            .build();
+
+        Request request = new Request.Builder().url(url).post(requestBody).build();
+        try (Response response = executeRequest(request)) {
+            if (!response.isSuccessful()) {
+                throw new IOException(response.body().string());
+            }
+        }
+    }
+
+    // Make it simple to subclass and override in tests...
+    Response executeRequest(Request request) throws IOException {
+        return getConfig().getHttpClient().newCall(request).execute();
+    }
 }

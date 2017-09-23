@@ -38,4 +38,9 @@ abstract class AbstractAppVersionStrategy implements AppVersionStrategy {
     boolean recognizes(String name) {
         return name != null && names.contains(name.toLowerCase().trim());
     }
+
+    @Override
+    public boolean canHandle(String[] args) {
+        return args != null && args.length == 2 && recognizes(args[0]);
+    }
 }

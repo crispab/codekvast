@@ -109,8 +109,8 @@ public class AgentController {
         @RequestParam(PARAM_PUBLICATION_SIZE) Integer publicationSize,
         @RequestParam(PARAM_PUBLICATION_FILE) MultipartFile file) throws IOException {
 
-        logger.debug("Received {} ({} methods, {}) with licenseKey={}, fingerprint={}", file.getOriginalFilename(),
-                  humanReadableByteCount(file.getSize()), publicationSize, licenseKey, fingerprint);
+        logger.debug("Received {} ({} invocations, {}) with licenseKey={}, fingerprint={}", file.getOriginalFilename(),
+                     humanReadableByteCount(file.getSize()), publicationSize, licenseKey, fingerprint);
 
         agentService.saveInvocationDataPublication(licenseKey, fingerprint, publicationSize, file.getInputStream());
 

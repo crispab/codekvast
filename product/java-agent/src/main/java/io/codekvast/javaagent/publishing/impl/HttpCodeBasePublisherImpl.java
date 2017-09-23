@@ -28,12 +28,9 @@ import io.codekvast.javaagent.publishing.CodekvastPublishingException;
 import io.codekvast.javaagent.util.FileUtils;
 import io.codekvast.javaagent.util.LogUtil;
 import lombok.extern.java.Log;
-import okhttp3.*;
 
 import java.io.File;
 import java.io.IOException;
-
-import static io.codekvast.javaagent.model.Endpoints.Agent.*;
 
 /**
  * A HTTP implementation of CodeBasePublisher.
@@ -46,8 +43,6 @@ import static io.codekvast.javaagent.model.Endpoints.Agent.*;
 public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
 
     static final String NAME = "http";
-
-    private static final MediaType APPLICATION_OCTET_STREAM = MediaType.parse("application/octet-stream");
 
     HttpCodeBasePublisherImpl(AgentConfig config) {
         super(logger, config);
@@ -82,29 +77,6 @@ public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
         } finally {
             FileUtils.safeDelete(file);
         }
-    }
-
-    void doPost(File file, String url, String fingerprint, int publicationSize) throws IOException {
-        RequestBody requestBody = new MultipartBody.Builder()
-            .setType(MultipartBody.FORM)
-            .addFormDataPart(PARAM_LICENSE_KEY, getConfig().getLicenseKey())
-            .addFormDataPart(PARAM_FINGERPRINT, fingerprint)
-            .addFormDataPart(PARAM_PUBLICATION_SIZE, String.valueOf(publicationSize))
-            .addFormDataPart(PARAM_PUBLICATION_FILE, file.getName(),
-                             RequestBody.create(APPLICATION_OCTET_STREAM, file))
-            .build();
-
-        Request request = new Request.Builder().url(url).post(requestBody).build();
-        try (Response response = executeRequest(request)) {
-            if (!response.isSuccessful()) {
-                throw new IOException(response.body().string());
-            }
-        }
-    }
-
-    // Make it simple to subclass and override in tests...
-    Response executeRequest(Request request) throws IOException {
-        return getConfig().getHttpClient().newCall(request).execute();
     }
 
 }
