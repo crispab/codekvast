@@ -61,7 +61,7 @@ public class HerokuResourceController {
 
     @RequestMapping(path = "/heroku/resources", method = POST, consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<HerokuProvisionResponse> provision(@Valid @RequestBody HerokuProvisionRequest request,
-                                                             @RequestHeader("Authorization") String auth) {
+                                                             @RequestHeader(AUTHORIZATION) String auth) {
         logger.debug("request={}", request);
 
         validateCredentials(auth);
