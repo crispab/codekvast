@@ -1,5 +1,4 @@
 import java.nio.charset.Charset
-import java.time.Instant
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
@@ -36,7 +35,7 @@ dependencies {
     testCompile testFrameworks
 
     integrationTestCompile project(":product:testsupport")
-    integrationTestCompile "com.github.tomakehurst:wiremock:2.8.0"
+    integrationTestCompile "com.github.tomakehurst:wiremock:2.9.0"
     integrationTestRuntime logback
 
     jacocoagent 'org.jacoco:org.jacoco.agent:0.7.9:runtime@jar'
@@ -50,10 +49,11 @@ shadowJar {
     classifier = ''
 
     inputs.file file('build.gradle')
+    inputs.files jar.outputs.files
+    outputs.file file("build/libs/${archivesBaseName}-${codekvastVersion}.jar")
 
     manifest {
         attributes(
-            "Built-Date": Instant.now(),
             "Can-Redefine-Classes": true,
             "Created-By": "Hallin Information Technology AB",
             "Implementation-Title": archivesBaseName,
@@ -92,7 +92,9 @@ task verifyShadowJar {
     group "Verification"
     description "Verifies that the shadow collector jar is correctly relocated to avoid class conflicts"
 
+    def timestampFile = file("$buildDir/verifyShadowJar.timestamp")
     inputs.files shadowJar.outputs.files
+    outputs.file timestampFile
 
     doLast {
         def shadowJarFile = file(shadowJar.outputs.files.asPath)
@@ -112,6 +114,8 @@ task verifyShadowJar {
         }
 
         assert shadowJarFile.length() < 6_000_000 // bytes, it is currently approx. 5.3 MB
+        timestampFile.parentFile.mkdirs()
+        timestampFile.text = "${java.time.Instant.now()}\n"
     }
 }
 check.dependsOn verifyShadowJar
@@ -122,7 +126,12 @@ test {
 
 integrationTest {
     dependsOn verifyShadowJar
+    shouldRunAfter test
+
+    inputs.file file("build.gradle")
     inputs.files shadowJar.outputs.files
+    inputs.files sourceSets.integrationTest.output
+    outputs.files "build/test-results/integrationTest"
 
     systemProperty 'integrationTest.codekvastAgent', shadowJar.outputs.files.asPath
     systemProperty 'integrationTest.jacocoAgent', "${configurations.jacocoagent.asPath}=destfile=build/jacoco/integrationTest2.exec,output=file,dumponexit=true"
