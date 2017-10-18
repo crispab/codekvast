@@ -21,7 +21,7 @@ task frontendTest(type: Exec) {
     dependsOn frontendInstall
     mustRunAfter test
 
-    def timestampFile = file("$buildDir/frontendTest.timestamp")
+    def timestampFile = file("$buildDir/${name}.timestamp")
 
     inputs.file 'src/webapp/package.json'
     inputs.file 'src/webapp/tsconfig.json'
@@ -48,7 +48,7 @@ task frontendLint(type: Exec) {
     dependsOn frontendInstall
     mustRunAfter test
 
-    def timestampFile = file("$buildDir/frontendLint.timestamp")
+    def timestampFile = file("$buildDir/${name}.timestamp")
 
     inputs.file 'src/webapp/package.json'
     inputs.file 'src/webapp/tsconfig.json'

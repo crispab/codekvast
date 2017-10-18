@@ -92,7 +92,7 @@ task verifyShadowJar {
     group "Verification"
     description "Verifies that the shadow collector jar is correctly relocated to avoid class conflicts"
 
-    def timestampFile = file("$buildDir/verifyShadowJar.timestamp")
+    def timestampFile = file("$buildDir/${name}.timestamp")
     inputs.files shadowJar.outputs.files
     outputs.file timestampFile
 
