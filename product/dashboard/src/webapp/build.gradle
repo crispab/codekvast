@@ -80,7 +80,7 @@ task frontendStart(type: Exec) {
     args 'start'
 }
 
-task frontendBuild(type: Exec) {
+task frontendWebpack(type: Exec) {
     description "Builds the frontend webpack bundles for production"
     group "Frontend Development"
     dependsOn frontendTest
@@ -113,11 +113,11 @@ task frontendClean(type: Exec) {
 clean.dependsOn frontendClean
 
 jar {
-    dependsOn frontendBuild
+    dependsOn frontendWebpack
 
     // Spring Boot automatically serves static content from static/**
 
-    // Output from frontendBuild
+    // Output from frontendWebpack
     into('static') {
         from('src/webapp/dist') {
             exclude '**/*.css.map'

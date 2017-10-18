@@ -82,8 +82,8 @@ flyway {
 
 run {
     group "Backend Development"
-    // dependsOn startMariadb, ":product:dashboard:frontendBuild", installDist, generateCodekvastConfig, ':product:java-agent:shadowJar'
-    dependsOn startMariadb, ":product:dashboard:frontendBuild"
+    // dependsOn startMariadb, ":product:dashboard:frontendWebpack", installDist, generateCodekvastConfig, ':product:java-agent:shadowJar'
+    dependsOn startMariadb, ":product:dashboard:frontendWebpack"
 
     jvmArgs = [
         '-ea',
@@ -123,5 +123,5 @@ springBoot {
 bootRepackage {
     // Set a classifier, or else gradle distZip will overwrite the repackaged jar...
     classifier = 'all'
-    dependsOn ":product:dashboard:frontendBuild"
+    dependsOn ":product:dashboard:frontendWebpack"
 }

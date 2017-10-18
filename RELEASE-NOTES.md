@@ -3,6 +3,7 @@
 ## 0.21.6
 1. Upgraded to Angular 4.4.4, Typescript 3.5.3.
 1. Upgraded to aspectjweaver 1.8.11.
+1. Upgraded to Spring Boot 1.5.8
 1. Renamed Codekvast Warehouse to Codekvast Dashboard.
 
 ## 0.21.5
