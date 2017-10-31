@@ -28,6 +28,7 @@ import io.codekvast.dashboard.file_import.PublicationImporter;
 import io.codekvast.javaagent.model.v1.CodeBasePublication1;
 import io.codekvast.javaagent.model.v1.InvocationDataPublication1;
 import io.codekvast.javaagent.model.v2.CodeBasePublication2;
+import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +46,8 @@ import java.util.Set;
  * @author olle.hallin@crisp.se
  * @see CodeBasePublication1
  * @see InvocationDataPublication1
+ * @see CodeBasePublication2
+ * @see InvocationDataPublication2
  */
 @Service
 @Slf4j
@@ -96,7 +99,11 @@ public class PublicationImporterImpl implements PublicationImporter {
         }
 
         if (object instanceof InvocationDataPublication1) {
-            return invocationDataImporter.importPublication((InvocationDataPublication1) object);
+            return invocationDataImporter.importPublication(InvocationDataPublication2.fromV1Format((InvocationDataPublication1) object));
+        }
+
+        if (object instanceof InvocationDataPublication2) {
+            return invocationDataImporter.importPublication((InvocationDataPublication2) object);
         }
 
         logger.warn("Don't know how to handle {}", object.getClass().getSimpleName());

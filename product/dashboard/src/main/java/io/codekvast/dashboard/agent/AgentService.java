@@ -26,6 +26,8 @@ import io.codekvast.javaagent.model.v1.CodeBasePublication1;
 import io.codekvast.javaagent.model.v1.InvocationDataPublication1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
+import io.codekvast.javaagent.model.v2.CodeBasePublication2;
+import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,7 +48,8 @@ public interface AgentService {
     GetConfigResponse1 getConfig(GetConfigRequest1 request) throws LicenseViolationException;
 
     /**
-     * Save an uploaded {@link CodeBasePublication1} into the import area where it will be processed by another thread.
+     * Save an uploaded {@link CodeBasePublication1} or {@link CodeBasePublication2} into the import area where it will be processed by
+     * another thread.
      *
      * @param licenseKey          The javaagent's licenseKey.
      * @param publicationSize     The size of the publication. Used for price plan enforcement.
@@ -59,7 +62,8 @@ public interface AgentService {
         throws LicenseViolationException, IOException;
 
     /**
-     * Save an uploaded {@link InvocationDataPublication1} into the import area where it will be processed by another thread.
+     * Save an uploaded {@link InvocationDataPublication1} or {@link InvocationDataPublication2} into the import area where it will be
+     * processed by another thread.
      *
      * @param licenseKey          The javaagent's licenseKey.
      * @param publicationSize     The size of the publication. Used for price plan enforcement.

@@ -21,11 +21,10 @@
  */
 package io.codekvast.dashboard.file_import.impl;
 
-import io.codekvast.javaagent.model.v1.CommonPublicationData1;
 import io.codekvast.javaagent.model.v2.CodeBaseEntry2;
+import io.codekvast.javaagent.model.v2.CommonPublicationData2;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -41,46 +40,38 @@ public interface ImportDAO {
      * @param commonData The application data
      * @return The primary key of the inserted or updated applications row.
      */
-    long importApplication(CommonPublicationData1 commonData);
+    long importApplication(CommonPublicationData2 commonData);
 
     /**
      * Inserts or updates a row in the jvms table.
      *
      * @param commonData    The JVM data
-     * @param applicationId The value returned from {@link #importApplication(CommonPublicationData1)}
+     * @param applicationId The value returned from {@link #importApplication(CommonPublicationData2)}
      * @return The primary key of the inserted or updated jvms row.
      */
-    long importJvm(CommonPublicationData1 commonData, long applicationId);
+    long importJvm(CommonPublicationData2 commonData, long applicationId);
 
     /**
      * Inserts missing rows into the database's methods and invocations tables. Does never update existing rows.
      *
+     * @param data              The common publication data
      * @param customerId        The customer ID
-     * @param appId             The application ID returned by {@link #importApplication(CommonPublicationData1)}
-     * @param jvmId             The JVM ID returned by {@link #importJvm(CommonPublicationData1, long)}
+     * @param appId             The application ID returned by {@link #importApplication(CommonPublicationData2)}
+     * @param jvmId             The JVM ID returned by {@link #importJvm(CommonPublicationData2, long)}
      * @param publishedAtMillis The timestamp the publication was published.
      * @param entries           The collection of code base entries to store.
      */
-    void importMethods(long customerId, long appId, long jvmId, long publishedAtMillis, Collection<CodeBaseEntry2> entries);
+    void importMethods(CommonPublicationData2 data, long customerId, long appId, long jvmId,
+                       long publishedAtMillis, Collection<CodeBaseEntry2> entries);
 
     /**
      * Inserts or updates rows into the invocations table. Existing rows are updated with the new interval.
      *
      * @param customerId      The customer ID
-     * @param appId           The application ID returned by {@link #importApplication(CommonPublicationData1)}
-     * @param jvmId           The JVM ID returned by {@link #importJvm(CommonPublicationData1, long)}
+     * @param appId           The application ID returned by {@link #importApplication(CommonPublicationData2)}
+     * @param jvmId           The JVM ID returned by {@link #importJvm(CommonPublicationData2, long)}
      * @param invokedAtMillis The start of the recording interval.
      * @param invocations     The set of signatures that were invoked in this recording interval.
      */
     void importInvocations(long customerId, long appId, long jvmId, long invokedAtMillis, Set<String> invocations);
-
-    /**
-     * Inserts rows in the strange_signatures table
-     *
-     * @param customerId        The customer ID
-     * @param appId             The application ID returned by {@link #importApplication(CommonPublicationData1)}
-     * @param jvmId             The JVM ID returned by {@link #importJvm(CommonPublicationData1, long)}
-     * @param strangeSignatures A Map with the raw signature as key, and the normalized signature as value
-     */
-    void importStrangeSignatures(long customerId, long appId, long jvmId, Map<String, String> strangeSignatures);
 }

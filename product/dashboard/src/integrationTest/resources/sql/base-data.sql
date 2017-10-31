@@ -58,7 +58,3 @@ VALUES
   (1, 'email1', 'source1', 1, NOW(), NOW(), NOW()),
   (1, 'email2', 'source2', 2, NOW(), NOW(), NOW());
 
-INSERT INTO strange_signatures (id, customerId, applicationId, jvmId, rawSignature, normalizedSignature)
-VALUES
-  (1, 1, 11, 1, 'rawSignature1', 'normalizedSignature1'),
-  (2, 1, 11, 2, 'rawSignature2', 'normalizedSignature2');

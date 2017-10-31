@@ -22,10 +22,10 @@
 package io.codekvast.dashboard.file_import.impl;
 
 import io.codekvast.dashboard.customer.CustomerService;
-import io.codekvast.javaagent.model.v1.CommonPublicationData1;
 import io.codekvast.javaagent.model.v1.MethodSignature1;
 import io.codekvast.javaagent.model.v1.SignatureStatus1;
 import io.codekvast.javaagent.model.v2.CodeBaseEntry2;
+import io.codekvast.javaagent.model.v2.CommonPublicationData2;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -38,6 +38,8 @@ import java.sql.*;
 import java.time.Instant;
 import java.util.*;
 
+import static java.util.Optional.ofNullable;
+
 /**
  * @author olle.hallin@crisp.se
  */
@@ -46,11 +48,15 @@ import java.util.*;
 @Slf4j
 public class ImportDAOImpl implements ImportDAO {
 
+    private static final String VISIBILITY_PRIVATE = "private";
+    private static final String VISIBILITY_PACKAGE_PRIVATE = "package-private";
+    private static final String PROTECTED = "protected";
+    private static final String VISIBILITY_PUBLIC = "public";
     private final JdbcTemplate jdbcTemplate;
     private final CustomerService customerService;
 
     @Override
-    public long importApplication(CommonPublicationData1 data) {
+    public long importApplication(CommonPublicationData2 data) {
         long customerId = data.getCustomerId();
         String name = data.getAppName();
         String version = data.getAppVersion();
@@ -74,7 +80,7 @@ public class ImportDAOImpl implements ImportDAO {
     }
 
     @Override
-    public long importJvm(CommonPublicationData1 data, long applicationId) {
+    public long importJvm(CommonPublicationData2 data, long applicationId) {
 
         long customerId = data.getCustomerId();
         Timestamp publishedAt = new Timestamp(data.getPublishedAtMillis());
@@ -90,7 +96,8 @@ public class ImportDAOImpl implements ImportDAO {
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 customerId, applicationId, data.getJvmUuid(), new Timestamp(data.getJvmStartedAtMillis()), publishedAt,
                 data.getMethodVisibility(),
-                data.getPackages(), data.getExcludePackages(), data.getEnvironment(), data.getComputerId(), data.getHostname(),
+                data.getPackages().toString(), data.getExcludePackages().toString(), data.getEnvironment(), data.getComputerId(),
+                data.getHostname(),
                 data.getAgentVersion(), data.getTags());
             logger.trace("Inserted jvm {} {} started at {}", customerId, data.getJvmUuid(),
                          Instant.ofEpochMilli(data.getJvmStartedAtMillis()));
@@ -103,7 +110,8 @@ public class ImportDAOImpl implements ImportDAO {
     }
 
     @Override
-    public void importMethods(long customerId, long appId, long jvmId, long publishedAtMillis, Collection<CodeBaseEntry2> entries) {
+    public void importMethods(CommonPublicationData2 data, long customerId, long appId, long jvmId,
+                              long publishedAtMillis, Collection<CodeBaseEntry2> entries) {
         Map<String, Long> existingMethods = getExistingMethods(customerId);
         Set<String> incompleteMethods = getIncompleteMethods(customerId);
         Set<Long> invocationsNotFoundInCodeBase = getInvocationsNotFoundInCodeBase(customerId);
@@ -111,7 +119,7 @@ public class ImportDAOImpl implements ImportDAO {
 
         importNewMethods(customerId, publishedAtMillis, entries, existingMethods);
         updateIncompleteMethods(customerId, publishedAtMillis, entries, incompleteMethods, existingMethods, invocationsNotFoundInCodeBase);
-        ensureInitialInvocations(customerId, appId, jvmId, entries, existingMethods, existingInvocations);
+        ensureInitialInvocations(data, customerId, appId, jvmId, entries, existingMethods, existingInvocations);
 
         customerService.assertDatabaseSize(customerId);
     }
@@ -124,20 +132,6 @@ public class ImportDAOImpl implements ImportDAO {
         doImportInvocations(customerId, appId, jvmId, invokedAtMillis, invocations, existingMethods, existingInvocations);
 
         customerService.assertDatabaseSize(customerId);
-    }
-
-    @Override
-    public void importStrangeSignatures(long customerId, long appId, long jvmId, Map<String, String> strangeSignatures) {
-        int insertedRows = 0;
-        for (Map.Entry<String, String> entry : strangeSignatures.entrySet()) {
-            int updated = jdbcTemplate.update(
-                "INSERT INTO strange_signatures(customerId, applicationId, jvmId, rawSignature, normalizedSignature) VALUE (?, ?, ?, ?, ?)",
-                customerId, appId, jvmId, entry.getKey(), entry.getValue());
-            insertedRows += updated;
-        }
-        if (insertedRows > 0) {
-            logger.info("Stored {} strange signatures for customer:appId:jvmId {}:{}:{}", insertedRows, customerId, appId, jvmId);
-        }
     }
 
     private void doImportInvocations(long customerId, long appId, long jvmId, long invokedAtMillis, Set<String> invokedSignatures,
@@ -224,7 +218,8 @@ public class ImportDAOImpl implements ImportDAO {
         logger.debug("Updated {} incomplete methods in {} ms", count, System.currentTimeMillis() - startedAtMillis);
     }
 
-    private void ensureInitialInvocations(long customerId, long appId, long jvmId, Collection<CodeBaseEntry2> entries,
+    private void ensureInitialInvocations(CommonPublicationData2 data, long customerId, long appId,
+                                          long jvmId, Collection<CodeBaseEntry2> entries,
                                           Map<String, Long> existingMethods, Set<Long> existingInvocations) {
         long startedAtMillis = System.currentTimeMillis();
         int importCount = 0;
@@ -232,13 +227,69 @@ public class ImportDAOImpl implements ImportDAO {
         for (CodeBaseEntry2 entry : entries) {
             long methodId = existingMethods.get(entry.getSignature());
             if (!existingInvocations.contains(methodId)) {
-                jdbcTemplate.update(new InsertInvocationStatement(customerId, appId, jvmId, methodId, SignatureStatus1.NOT_INVOKED,
+                SignatureStatus1 initialStatus = calculateInitialStatus(data, entry);
+                jdbcTemplate.update(new InsertInvocationStatement(customerId, appId, jvmId, methodId, initialStatus,
                                                                   0L, 0L));
                 existingInvocations.add(methodId);
                 importCount += 1;
             }
         }
         logger.debug("Imported {} invocations in {} ms", importCount, System.currentTimeMillis() - startedAtMillis);
+    }
+
+    private SignatureStatus1 calculateInitialStatus(CommonPublicationData2 data, CodeBaseEntry2 entry) {
+        for (String pkg : data.getExcludePackages()) {
+            if (entry.getMethodSignature().getPackageName().startsWith(pkg)) {
+                return SignatureStatus1.EXCLUDED_BY_PACKAGE_NAME;
+            }
+        }
+
+        return ofNullable(getExcludeByVisibility(data.getMethodVisibility(), entry)).orElse(getExcludeByTriviality(entry));
+    }
+
+    private SignatureStatus1 getExcludeByTriviality(CodeBaseEntry2 entry) {
+        String name = entry.getMethodSignature().getMethodName();
+        String parameterTypes = entry.getMethodSignature().getParameterTypes().trim();
+
+        boolean noParameters = parameterTypes.isEmpty();
+        boolean singleParameter = !parameterTypes.isEmpty() && !parameterTypes.contains(",");
+
+        if (name.equals("hashCode") && noParameters) {
+            return SignatureStatus1.EXCLUDED_SINCE_TRIVIAL;
+        }
+        if (name.equals("equals") && singleParameter) {
+            return SignatureStatus1.EXCLUDED_SINCE_TRIVIAL;
+        }
+        if (name.equals("compareTo") && singleParameter) {
+            return SignatureStatus1.EXCLUDED_SINCE_TRIVIAL;
+        }
+        if (name.equals("toString") && noParameters) {
+            return SignatureStatus1.EXCLUDED_SINCE_TRIVIAL;
+        }
+        if (name.startsWith("get") && noParameters) {
+            return SignatureStatus1.EXCLUDED_SINCE_TRIVIAL;
+        }
+        if (name.startsWith("set") && singleParameter) {
+            return SignatureStatus1.EXCLUDED_SINCE_TRIVIAL;
+        }
+
+        return SignatureStatus1.NOT_INVOKED;
+    }
+
+    SignatureStatus1 getExcludeByVisibility(String methodVisibility, CodeBaseEntry2 entry) {
+        String v = entry.getVisibility();
+        switch (methodVisibility) {
+        case VISIBILITY_PRIVATE:
+            return null;
+        case VISIBILITY_PACKAGE_PRIVATE:
+            return v.equals(VISIBILITY_PUBLIC) || v.equals(PROTECTED) || v.equals(VISIBILITY_PACKAGE_PRIVATE) ? null :
+                SignatureStatus1.EXCLUDED_BY_VISIBILITY;
+        case PROTECTED:
+            return v.equals(VISIBILITY_PUBLIC) || v.equals(PROTECTED) ? null : SignatureStatus1.EXCLUDED_BY_VISIBILITY;
+        case VISIBILITY_PUBLIC:
+            return v.equals(VISIBILITY_PUBLIC) ? null : SignatureStatus1.EXCLUDED_BY_VISIBILITY;
+        }
+        return null;
     }
 
     private Long doInsertRow(PreparedStatementCreator psc) {

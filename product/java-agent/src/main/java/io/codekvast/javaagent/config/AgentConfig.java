@@ -22,7 +22,7 @@
 package io.codekvast.javaagent.config;
 
 import io.codekvast.javaagent.appversion.AppVersionResolver;
-import io.codekvast.javaagent.model.v1.CommonPublicationData1;
+import io.codekvast.javaagent.model.v2.CommonPublicationData2;
 import io.codekvast.javaagent.util.ConfigUtils;
 import io.codekvast.javaagent.util.Constants;
 import lombok.*;
@@ -129,7 +129,7 @@ public class AgentConfig implements Serializable {
     }
 
     public String getInvocationDataUploadEndpoint() {
-        return String.format("%s%s", serverUrl, V1_UPLOAD_INVOCATION_DATA);
+        return String.format("%s%s", serverUrl, V2_UPLOAD_INVOCATION_DATA);
     }
 
     public String getResolvedAppVersion() {
@@ -164,20 +164,20 @@ public class AgentConfig implements Serializable {
         return result.toLowerCase().replaceAll("[^a-z0-9._+-]", "");
     }
 
-    public CommonPublicationData1 commonPublicationData() {
-        return CommonPublicationData1
+    public CommonPublicationData2 commonPublicationData() {
+        return CommonPublicationData2
             .builder()
             .appName(getAppName())
             .appVersion(getResolvedAppVersion())
             .agentVersion(Constants.AGENT_VERSION)
             .computerId(Constants.COMPUTER_ID)
             .environment(getEnvironment())
-            .excludePackages(getNormalizedExcludePackages().toString())
+            .excludePackages(getNormalizedExcludePackages())
             .hostname(Constants.HOST_NAME)
             .jvmStartedAtMillis(Constants.JVM_STARTED_AT_MILLIS)
             .jvmUuid(Constants.JVM_UUID)
-            .methodVisibility(getMethodVisibility())
-            .packages(getNormalizedPackages().toString())
+            .methodVisibility(getNormalizedMethodVisibility())
+            .packages(getNormalizedPackages())
             .publishedAtMillis(System.currentTimeMillis())
             .tags(getTags())
 
@@ -185,6 +185,10 @@ public class AgentConfig implements Serializable {
 
             .build();
 
+    }
+
+    private String getNormalizedMethodVisibility() {
+        return getMethodAnalyzer().toString();
     }
 
     AgentConfig validate() {

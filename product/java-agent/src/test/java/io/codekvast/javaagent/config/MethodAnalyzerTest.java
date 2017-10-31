@@ -14,7 +14,6 @@ import org.junit.runners.Parameterized.Parameters;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.lang.reflect.Modifier;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -27,7 +26,7 @@ import static org.junit.Assert.fail;
  */
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
 @RunWith(Parameterized.class)
-public class MethodAnalyzerVisibilityTest {
+public class MethodAnalyzerTest {
 
     @Parameters(name = "{index}: {0}")
     public static Object[][] data() {
@@ -90,13 +89,13 @@ public class MethodAnalyzerVisibilityTest {
     };
 
     @Before
-    public void beforeTest() throws Exception {
+    public void beforeTest() {
         savedSystemErr = System.err;
         System.setErr(new PrintStream(capturedSystemErr));
     }
 
     @After
-    public void afterTest() throws Exception {
+    public void afterTest() {
         System.setErr(savedSystemErr);
         System.err.print(capturedSystemErr.toString());
     }
@@ -108,14 +107,6 @@ public class MethodAnalyzerVisibilityTest {
         assertThat("Should select protected", filter.selectsProtectedMethods(), is(selectsProtected));
         assertThat("Should select package private", filter.selectsPackagePrivateMethods(), is(selectsPackagePrivate));
         assertThat("Should select private", filter.selectsPrivateMethods(), is(selectsPrivate));
-
-        assertThat("Should include public", filter.shouldIncludeByModifiers(Modifier.SYNCHRONIZED | Modifier.PUBLIC), is(selectsPublic));
-        assertThat("Should include protected", filter.shouldIncludeByModifiers(Modifier.SYNCHRONIZED | Modifier.PROTECTED),
-                   is(selectsProtected));
-        assertThat("Should include package private", filter.shouldIncludeByModifiers(Modifier.SYNCHRONIZED), is(selectsPackagePrivate));
-        assertThat("Should include static package private", filter.shouldIncludeByModifiers(Modifier.STATIC),
-                   is(selectsPackagePrivate));
-        assertThat("Should include private", filter.shouldIncludeByModifiers(Modifier.SYNCHRONIZED | Modifier.PRIVATE), is(selectsPrivate));
 
         assertThat("Should normalize toString()", filter.toString(), is(expectedToString));
     }

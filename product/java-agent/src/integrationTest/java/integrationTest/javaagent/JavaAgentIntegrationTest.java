@@ -101,7 +101,7 @@ public class JavaAgentIntegrationTest {
                                             .build()))));
 
         givenThat(post(V2_UPLOAD_CODEBASE).willReturn(ok()));
-        givenThat(post(V1_UPLOAD_INVOCATION_DATA).willReturn(ok()));
+        givenThat(post(V2_UPLOAD_INVOCATION_DATA).willReturn(ok()));
 
         List<String> command = buildJavaCommand(agentConfigFile.getAbsolutePath());
 
@@ -119,7 +119,7 @@ public class JavaAgentIntegrationTest {
 
         verify(postRequestedFor(urlEqualTo(V1_POLL_CONFIG)));
         verify(postRequestedFor(urlEqualTo(V2_UPLOAD_CODEBASE)));
-        verify(postRequestedFor(urlEqualTo(V1_UPLOAD_INVOCATION_DATA)));
+        verify(postRequestedFor(urlEqualTo(V2_UPLOAD_INVOCATION_DATA)));
 
         assertThat(stdout, not(containsString("error")));
         assertThat(stdout, not(containsString("[SEVERE]")));

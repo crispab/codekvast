@@ -25,7 +25,7 @@ public class CodeBasePublication2Test {
                                                         .strangeSignatures(Collections.singletonMap("key2", "value2"))
                                                         .build();
         CodeBasePublication2 pub2 = CodeBasePublication2.fromV1Format(pub1);
-        assertThat(pub2.getCommonData(), is(pub1.getCommonData()));
+        assertThat(pub2.getCommonData(), is(CommonPublicationData2.sampleCommonPublicationData()));
         assertThat(pub2.getEntries(), hasItems(CodeBaseEntry2.sampleCodeBaseEntry()));
     }
 }

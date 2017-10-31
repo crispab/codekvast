@@ -19,13 +19,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.javaagent.model.v1;
+package io.codekvast.javaagent.model.v2;
 
+import io.codekvast.javaagent.model.v1.CommonPublicationData1;
 import lombok.*;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.util.Arrays.asList;
 
 /**
  * @author olle.hallin@crisp.se
@@ -36,7 +41,7 @@ import java.io.Serializable;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Setter(AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
-public class CommonPublicationData1 implements Serializable {
+public class CommonPublicationData2 implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Min(value = 1, message = "customerId must be a positive number")
@@ -66,8 +71,7 @@ public class CommonPublicationData1 implements Serializable {
     private String environment;
 
     @NonNull
-    @Size(min = 1)
-    private String excludePackages;
+    private List<String> excludePackages;
 
     @NonNull
     @Size(min = 1)
@@ -85,8 +89,7 @@ public class CommonPublicationData1 implements Serializable {
     private String methodVisibility;
 
     @NonNull
-    @Size(min = 1)
-    private String packages;
+    private List<String> packages;
 
     @Min(1_490_000_000_000L)
     private long publishedAtMillis;
@@ -109,7 +112,41 @@ public class CommonPublicationData1 implements Serializable {
             publishedAtMillis);
     }
 
-    public static CommonPublicationData1 sampleCommonPublicationData() {
+    public static CommonPublicationData2 fromV1format(CommonPublicationData1 data1) {
+        return CommonPublicationData2.builder()
+                                     .agentVersion(data1.getAgentVersion())
+                                     .appName(data1.getAppName())
+                                     .appVersion(data1.getAppVersion())
+                                     .codeBaseFingerprint(data1.getCodeBaseFingerprint())
+                                     .computerId(data1.getComputerId())
+                                     .customerId(data1.getCustomerId())
+                                     .environment(data1.getEnvironment())
+                                     .excludePackages(toList(data1.getExcludePackages()))
+                                     .hostname(data1.getHostname())
+                                     .jvmStartedAtMillis(data1.getJvmStartedAtMillis())
+                                     .jvmUuid(data1.getJvmUuid())
+                                     .methodVisibility(data1.getMethodVisibility())
+                                     .packages(toList(data1.getPackages()))
+                                     .publishedAtMillis(data1.getPublishedAtMillis())
+                                     .sequenceNumber(data1.getSequenceNumber())
+                                     .tags(data1.getTags())
+                                     .build();
+    }
+
+    private static List<String> toList(String commaSeparatedList) {
+        String parts[] = commaSeparatedList.split(",");
+        List<String> result = new ArrayList<>();
+        for (String part : parts) {
+            String s = part.trim();
+            if (!s.isEmpty()) {
+                result.add(s);
+            }
+        }
+
+        return result;
+    }
+
+    public static CommonPublicationData2 sampleCommonPublicationData() {
         return builder()
             .agentVersion("agentVersion")
             .appName("appName")
@@ -118,12 +155,12 @@ public class CommonPublicationData1 implements Serializable {
             .computerId("computerId")
             .customerId(1L)
             .environment("environment")
-            .excludePackages("excludePackages1, excludePackages2")
+            .excludePackages(asList("excludePackages1", "excludePackages2"))
             .hostname("hostname")
             .jvmStartedAtMillis(1509461136162L)
             .jvmUuid("jvmUuid")
             .methodVisibility("methodVisibility")
-            .packages("packages1, packages2")
+            .packages(asList("packages1", "packages2"))
             .publishedAtMillis(1509461136162L)
             .sequenceNumber(1)
             .tags("tags")

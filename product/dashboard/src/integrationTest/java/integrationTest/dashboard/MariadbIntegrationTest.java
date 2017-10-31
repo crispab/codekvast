@@ -17,11 +17,16 @@ import io.codekvast.dashboard.webapp.model.methods.GetMethodsResponse1;
 import io.codekvast.dashboard.webapp.model.methods.MethodDescriptor1;
 import io.codekvast.dashboard.webapp.model.status.AgentDescriptor1;
 import io.codekvast.dashboard.webapp.model.status.GetStatusResponse1;
-import io.codekvast.javaagent.model.v1.*;
+import io.codekvast.javaagent.model.v1.CodeBaseEntry1;
+import io.codekvast.javaagent.model.v1.CodeBasePublication1;
+import io.codekvast.javaagent.model.v1.CommonPublicationData1;
+import io.codekvast.javaagent.model.v1.SignatureStatus1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.javaagent.model.v2.CodeBaseEntry2;
 import io.codekvast.javaagent.model.v2.CodeBasePublication2;
+import io.codekvast.javaagent.model.v2.CommonPublicationData2;
+import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
 import io.codekvast.testsupport.docker.DockerContainer;
 import io.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
 import org.flywaydb.core.Flyway;
@@ -371,7 +376,7 @@ public class MariadbIntegrationTest {
     public void should_import_codeBasePublication2() {
         //@formatter:off
         CodeBasePublication2 publication = CodeBasePublication2.builder()
-            .commonData(CommonPublicationData1.sampleCommonPublicationData())
+            .commonData(CommonPublicationData2.sampleCommonPublicationData())
             .entries(Arrays.asList(CodeBaseEntry2.sampleCodeBaseEntry()))
             .build();
         //@formatter:on
@@ -382,8 +387,8 @@ public class MariadbIntegrationTest {
     @Test
     public void should_import_invocationDataPublication() {
         //@formatter:off
-        InvocationDataPublication1 publication = InvocationDataPublication1.builder()
-            .commonData(CommonPublicationData1.sampleCommonPublicationData())
+        InvocationDataPublication2 publication = InvocationDataPublication2.builder()
+            .commonData(CommonPublicationData2.sampleCommonPublicationData())
             .recordingIntervalStartedAtMillis(System.currentTimeMillis())
             .invocations(Collections.singleton("signature"))
             .build();

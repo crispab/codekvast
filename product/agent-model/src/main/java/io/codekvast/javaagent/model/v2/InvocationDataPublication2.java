@@ -21,17 +21,15 @@
  */
 package io.codekvast.javaagent.model.v2;
 
-import io.codekvast.javaagent.model.v1.CodeBaseEntry1;
-import io.codekvast.javaagent.model.v1.CodeBasePublication1;
+import io.codekvast.javaagent.model.v1.InvocationDataPublication1;
 import lombok.*;
 
+import javax.validation.constraints.Min;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 /**
- * Output of the CodeBasePublisher implementations.
+ * Output of the InvocationDataPublisher implementations.
  *
  * @author olle.hallin@crisp.se
  */
@@ -40,31 +38,30 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Setter(AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
-public class CodeBasePublication2 implements Serializable {
+public class InvocationDataPublication2 implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @NonNull
     private CommonPublicationData2 commonData;
 
     @NonNull
-    private Collection<CodeBaseEntry2> entries;
+    private Set<String> invocations;
+
+    @Min(1_490_000_000_000L)
+    private long recordingIntervalStartedAtMillis;
 
     @Override
     public String toString() {
-        return String.format("%s(commonData=%s, entries.size()=%d)",
-                             this.getClass().getSimpleName(), commonData, entries.size());
+        return String.format(
+            "InvocationDataPublication1{commonData=%1$s, invocations.size()=%2$d, recordingIntervalStartedAt=%3$tF:%3$tT%3$tz}",
+            commonData, invocations.size(), recordingIntervalStartedAtMillis);
     }
 
-    public static CodeBasePublication2 fromV1Format(CodeBasePublication1 publication1) {
-
-        List<CodeBaseEntry2> entries2 = new ArrayList<>();
-        for (CodeBaseEntry1 entry1 : publication1.getEntries()) {
-            entries2.add(CodeBaseEntry2.fromV1Format(entry1));
-        }
-
-        return CodeBasePublication2.builder()
-                                   .commonData(CommonPublicationData2.fromV1format(publication1.getCommonData()))
-                                   .entries(entries2)
-                                   .build();
+    public static InvocationDataPublication2 fromV1Format(InvocationDataPublication1 pub1) {
+        return InvocationDataPublication2.builder()
+                                         .commonData(CommonPublicationData2.fromV1format(pub1.getCommonData()))
+                                         .invocations(pub1.getInvocations())
+                                         .recordingIntervalStartedAtMillis(pub1.getRecordingIntervalStartedAtMillis())
+                                         .build();
     }
 }
