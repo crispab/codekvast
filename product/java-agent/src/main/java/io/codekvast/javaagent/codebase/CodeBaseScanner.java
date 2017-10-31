@@ -23,9 +23,7 @@ package io.codekvast.javaagent.codebase;
 
 import com.google.common.io.Files;
 import com.google.common.reflect.ClassPath;
-import io.codekvast.javaagent.config.MethodAnalyzer;
 import io.codekvast.javaagent.model.v1.MethodSignature1;
-import io.codekvast.javaagent.model.v1.SignatureStatus1;
 import io.codekvast.javaagent.util.SignatureUtils;
 import lombok.Builder;
 import lombok.Value;
@@ -65,14 +63,11 @@ public class CodeBaseScanner {
 
         try (ScanResult scanResult = scanCodeBase(codeBase)) {
 
-            Set<String> packages = new HashSet<>(codeBase.getConfig().getNormalizedPackages());
-            Set<String> excludePackages = new HashSet<>(codeBase.getConfig().getNormalizedExcludePackages());
-
             for (ClassPath.ClassInfo classInfo : scanResult.getClassInfos()) {
                 try {
                     Class<?> clazz = classInfo.load();
-                    findTrackedConstructors(codeBase, clazz);
-                    findTrackedMethods(codeBase, packages, excludePackages, clazz);
+                    findConstructors(codeBase, clazz);
+                    findMethods(codeBase, clazz, codeBase.getConfig().getNormalizedPackages());
                     result += 1;
                 } catch (Throwable t) {
                     logger.warning("Cannot analyze " + classInfo + ": " + t);
@@ -109,8 +104,7 @@ public class CodeBaseScanner {
 
         return ScanResult.builder()
                          .explodedDir(explodedDir)
-                         .classInfos(
-                             getRecognizedClasses(classLoader, new HashSet<>(codeBase.getConfig().getNormalizedPackages())))
+                         .classInfos(getRecognizedClasses(classLoader, codeBase.getConfig().getNormalizedPackages()))
                          .build();
     }
 
@@ -195,14 +189,14 @@ public class CodeBaseScanner {
         }
     }
 
-    private Set<ClassPath.ClassInfo> getRecognizedClasses(ClassLoader classLoader, Set<String> packages) {
+    private Set<ClassPath.ClassInfo> getRecognizedClasses(ClassLoader classLoader, List<String> packages) {
         Set<ClassPath.ClassInfo> result = new HashSet<>();
         try {
             ClassPath classPath = ClassPath.from(classLoader);
             for (ClassPath.ClassInfo classInfo : classPath.getAllClasses()) {
-                String name = classInfo.getPackageName();
+                String packageName = classInfo.getPackageName();
                 for (String aPackage : packages) {
-                    if (name.startsWith(aPackage)) {
+                    if (packageName.startsWith(aPackage)) {
                         result.add(classInfo);
                     }
                 }
@@ -213,108 +207,60 @@ public class CodeBaseScanner {
         return result;
     }
 
-    void findTrackedConstructors(CodeBase codeBase, Class<?> clazz) {
+    void findConstructors(CodeBase codeBase, Class<?> clazz) {
         if (clazz.isInterface()) {
             logger.finest("Ignoring interface " + clazz);
             return;
         }
 
         logger.finest("Analyzing " + clazz);
-        MethodAnalyzer methodAnalyzer = codeBase.getConfig().getMethodAnalyzer();
         try {
             Constructor[] declaredConstructors = clazz.getDeclaredConstructors();
 
             for (Constructor constructor : declaredConstructors) {
-                SignatureStatus1 status = methodAnalyzer.apply(constructor);
                 MethodSignature1 thisSignature = SignatureUtils.makeConstructorSignature(clazz, constructor);
-                codeBase.addSignature(thisSignature, thisSignature, status);
+                codeBase.addSignature(thisSignature);
             }
 
             for (Class<?> innerClass : clazz.getDeclaredClasses()) {
-                findTrackedConstructors(codeBase, innerClass);
+                findConstructors(codeBase, innerClass);
             }
         } catch (NoClassDefFoundError e) {
             logger.warning(String.format("Cannot analyze %s: %s", clazz, e.toString()));
         }
     }
 
-    void findTrackedMethods(CodeBase codeBase, Set<String> packages, Set<String> excludePackages, Class<?> clazz) {
+    void findMethods(CodeBase codeBase, Class<?> clazz, List<String> packages) {
         if (clazz.isInterface()) {
             logger.finest("Ignoring interface " + clazz);
             return;
         }
 
         logger.finest("Analyzing " + clazz);
-        MethodAnalyzer methodAnalyzer = codeBase.getConfig().getMethodAnalyzer();
         try {
             Method[] declaredMethods = clazz.getDeclaredMethods();
-            Method[] methods = clazz.getMethods();
-            Method[] allMethods = new Method[declaredMethods.length + methods.length];
-            System.arraycopy(declaredMethods, 0, allMethods, 0, declaredMethods.length);
-            System.arraycopy(methods, 0, allMethods, declaredMethods.length, methods.length);
+            for (Method method : declaredMethods) {
+                boolean ignored = true;
+                MethodSignature1 signature = SignatureUtils.makeMethodSignature(clazz, method);
 
-            for (Method method : allMethods) {
-                SignatureStatus1 status = methodAnalyzer.apply(method);
-
-                // Some AOP frameworks (e.g., Guice) push methods from a base class down to subclasses created in runtime.
-                // We need to map those back to the original declaring signature, or else the original declared method will look unused.
-
-                MethodSignature1 thisSignature = SignatureUtils.makeMethodSignature(clazz, method);
-
-                MethodSignature1 declaringSignature = SignatureUtils
-                    .makeMethodSignature(findDeclaringClass(method.getDeclaringClass(), method, packages), method);
-
-                if (shouldExcludeSignature(declaringSignature, excludePackages)) {
-                    status = SignatureStatus1.EXCLUDED_BY_PACKAGE_NAME;
+                String declaringPackage = method.getDeclaringClass().getPackage().getName();
+                for (String pkg : packages) {
+                    if (declaringPackage.startsWith(pkg)) {
+                        codeBase.addSignature(signature);
+                        ignored = false;
+                    }
                 }
-                codeBase.addSignature(thisSignature, declaringSignature, status);
+                if (ignored) {
+                    logger.finest("Ignored " + signature);
+                }
             }
 
             for (Class<?> innerClass : clazz.getDeclaredClasses()) {
-                findTrackedMethods(codeBase, packages, excludePackages, innerClass);
+                findMethods(codeBase, innerClass, packages);
             }
         } catch (NoClassDefFoundError e) {
             logger.warning(String.format("Cannot analyze %s: %s", clazz, e.toString()));
         }
-    }
-
-    private boolean shouldExcludeSignature(MethodSignature1 signature, Set<String> excludePackages) {
-        if (signature != null) {
-            String pkg = signature.getPackageName();
-            for (String excludePackage : excludePackages) {
-                if (pkg.startsWith(excludePackage)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private Class findDeclaringClass(Class<?> clazz, Method method, Set<String> packages) {
-        if (clazz == null) {
-            return null;
-        }
-        String pkg = clazz.getPackage().getName();
-
-        boolean found = false;
-        for (String prefix : packages) {
-            if (pkg.startsWith(prefix)) {
-                found = true;
-                break;
-            }
-        }
-
-        if (!found) {
-            return null;
-        }
-
-        try {
-            //noinspection ConfusingArgumentToVarargsMethod
-            clazz.getDeclaredMethod(method.getName(), method.getParameterTypes());
-            return clazz;
-        } catch (NoSuchMethodException ignore) {
-        }
-        return findDeclaringClass(clazz.getSuperclass(), method, packages);
     }
 
     @Value

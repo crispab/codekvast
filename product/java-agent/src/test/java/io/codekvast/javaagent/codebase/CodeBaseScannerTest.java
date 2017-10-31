@@ -1,14 +1,12 @@
 package io.codekvast.javaagent.codebase;
 
-import com.google.common.collect.ImmutableSet;
 import io.codekvast.javaagent.codebase.scannertest.ScannerTest1;
 import io.codekvast.javaagent.codebase.scannertest.ScannerTest2;
 import io.codekvast.javaagent.codebase.scannertest.ScannerTest3;
 import io.codekvast.javaagent.codebase.scannertest.ScannerTest4;
 import io.codekvast.javaagent.codebase.scannertest.excluded.ExcludedScannerTest5;
 import io.codekvast.javaagent.config.AgentConfigFactory;
-import io.codekvast.javaagent.model.v1.CodeBaseEntry1;
-import io.codekvast.javaagent.model.v1.SignatureStatus1;
+import io.codekvast.javaagent.model.v2.CodeBaseEntry2;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -16,11 +14,10 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
-import java.net.URISyntaxException;
 import java.util.Collection;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 public class CodeBaseScannerTest {
@@ -35,7 +32,7 @@ public class CodeBaseScannerTest {
     private CodeBase codeBase;
 
     @Before
-    public void beforeTest() throws Exception {
+    public void beforeTest() {
         codeBase = new CodeBase(AgentConfigFactory
                                     .createSampleAgentConfig().toBuilder()
                                     .codeBase(new File(TEST_CLASSES_DIR).getAbsolutePath())
@@ -45,64 +42,46 @@ public class CodeBaseScannerTest {
     }
 
     @Test
-    public void should_handle_exploded_classes_dir() throws URISyntaxException {
+    public void should_handle_exploded_classes_dir() {
         int numClasses = scanner.scanSignatures(codeBase);
         assertThat(numClasses, is(9));
 
-        Collection<CodeBaseEntry1> entries = codeBase.getEntries();
+        Collection<CodeBaseEntry2> entries = codeBase.getEntries();
         assertThat(entries, notNullValue());
-        assertThat(entries.size(), is(25));
-        assertThat(countBySignatureStatus(entries, SignatureStatus1.EXCLUDED_BY_PACKAGE_NAME), is(1));
-        assertThat(countBySignatureStatus(entries, SignatureStatus1.EXCLUDED_BY_VISIBILITY), is(2));
-        assertThat(countBySignatureStatus(entries, SignatureStatus1.EXCLUDED_SINCE_TRIVIAL), is(3));
-    }
-
-    private int countBySignatureStatus(Collection<CodeBaseEntry1> entries, SignatureStatus1 status) {
-        int result = 0;
-        for (CodeBaseEntry1 entry : entries) {
-            if (entry.getSignatureStatus() == status) {
-                result += 1;
-            }
+        for (CodeBaseEntry2 entry : entries) {
+            assertThat(entry.getSignature(), not(containsString("wait()")));
         }
-        return result;
+
+        assertThat(entries.size(), is(25));
     }
 
     @Test
-    public void should_find_base_methods_of_ScannerTest2() throws URISyntaxException {
-        scanner.findTrackedMethods(codeBase, ImmutableSet.of("io."), ImmutableSet.of("acme."), ScannerTest2.class);
+    public void should_find_base_methods_of_ScannerTest2() {
+        scanner.findMethods(codeBase, ScannerTest2.class, codeBase.getConfig().getNormalizedPackages());
+        assertThat(codeBase.getSignatures().size(), is(1));
+    }
+
+    @Test
+    public void should_find_base_methods_of_ScannerTest3() {
+        scanner.findMethods(codeBase, ScannerTest3.class, codeBase.getConfig().getNormalizedPackages());
 
         assertThat(codeBase.getSignatures().size(), is(1));
-        assertThat(codeBase.getOverriddenSignatures().size(), is(1));
-        assertThat(codeBase.getOverriddenSignatures().get("public " + ScannerTest2.class.getName() + ".m1()"),
-                   is("public " + ScannerTest1.class.getName() + ".m1()"));
     }
 
     @Test
-    public void should_find_base_methods_of_ScannerTest3() throws URISyntaxException {
-        scanner.findTrackedMethods(codeBase, ImmutableSet.of("io."), ImmutableSet.of("acme."), ScannerTest3.class);
-
-        assertThat(codeBase.getSignatures().size(), is(1));
-        assertThat(codeBase.getOverriddenSignatures().size(), is(2));
-        assertThat(codeBase.getOverriddenSignatures().get("public " + ScannerTest3.class.getName() + ".m1()"),
-                   is("public " + ScannerTest1.class.getName() + ".m1()"));
-        assertThat(codeBase.getOverriddenSignatures().get("public " + ScannerTest3.class.getName() + ".m2()"),
-                   is("public " + ScannerTest2.class.getName() + ".m2()"));
-    }
-
-    @Test
-    public void should_find_base_methods_of_ScannerTest4() throws URISyntaxException {
-        scanner.findTrackedMethods(codeBase, ImmutableSet.of("io."), ImmutableSet.of("acme."), ScannerTest4.class);
+    public void should_find_base_methods_of_ScannerTest4() {
+        scanner.findMethods(codeBase, ScannerTest4.class, codeBase.getConfig().getNormalizedPackages());
         assertThat(codeBase.getSignatures().size(), is(11));
     }
 
     @Test
-    public void should_find_constructors_of_ScannerTest4() throws URISyntaxException {
-        scanner.findTrackedConstructors(codeBase, ScannerTest4.class);
+    public void should_find_constructors_of_ScannerTest4() {
+        scanner.findConstructors(codeBase, ScannerTest4.class);
         assertThat(codeBase.getSignatures().size(), is(3));
     }
 
     @Test
-    public void should_handle_spring_boot_executable_jar() throws Exception {
+    public void should_handle_spring_boot_executable_jar() {
         int numClasses = scanner.scanSignatures(new CodeBase(AgentConfigFactory
                                                                  .createSampleAgentConfig().toBuilder()
                                                                  .codeBase(new File(SPRING_BOOT_EXECUTABLE_JAR_DIR).getAbsolutePath())
@@ -113,7 +92,7 @@ public class CodeBaseScannerTest {
 
     @Test
     @Ignore("Default disabled")
-    public void stability_test() throws Exception {
+    public void stability_test() {
         for (int i = 0; i < 10_000; i++) {
             System.out.printf("Stability test #%05d%n", i);
             should_handle_exploded_classes_dir();

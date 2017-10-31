@@ -1,21 +1,18 @@
 package io.codekvast.javaagent.util;
 
-import com.google.common.io.Files;
 import io.codekvast.javaagent.config.MethodAnalyzer;
 import io.codekvast.javaagent.model.v1.MethodSignature1;
 import org.junit.Test;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.net.URISyntaxException;
-import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.List;
 
 import static io.codekvast.javaagent.util.SignatureUtils.*;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 @SuppressWarnings("ALL")
@@ -25,53 +22,6 @@ public class SignatureUtilsTest {
 
     private final Method testMethods[] = TestClass.class.getDeclaredMethods();
     private final Constructor testConstructors[] = TestClass.class.getDeclaredConstructors();
-
-    private final String[] byteCodeAddedMethods = {
-        "public int se.customer.module.l2mgr.impl.persistence.FlowDomainFragmentLongTransactionEAO..EnhancerByGuice..969b9638." +
-            ".FastClassByGuice..96f9109e.getIndex(com.google.inject.internal.cglib.core..Signature)",
-        "public int se.customer.module.l1mgr.connectivity.persistence.TrailEAO..EnhancerByGuice..a219ec4a..FastClassByGuice." +
-            ".2d349e96.getIndex(java.lang.Class[])",
-        "public void io.codekvast.sample.codekvastspringheroku.CodekvastSampleApplication..EnhancerBySpringCGLIB..a405a15d()",
-        };
-
-    @Test
-    public void should_ignore_byte_code_added_signatures() throws URISyntaxException {
-        for (String s : byteCodeAddedMethods) {
-            String sig = SignatureUtils.normalizeSignature(s);
-            assertThat("Guice-generated method should be ignored", sig, nullValue());
-        }
-    }
-
-    @Test
-    public void should_normalize_strange_signatures() throws URISyntaxException, IOException {
-        List<String> signatures =
-            Files.readLines(new File(getClass().getResource("/customer1/signatures1.dat").toURI()), Charset.forName("UTF-8"));
-
-        boolean inStrangeSignaturesSection = false;
-        for (String signature : signatures) {
-            if (signature.equals("# Raw strange signatures:")) {
-                inStrangeSignaturesSection = true;
-            } else if (inStrangeSignaturesSection) {
-                String normalized = SignatureUtils.normalizeSignature(signature);
-                if (normalized != null) {
-                    assertThat(String.format("Could not normalize%n%n   %s%n%n result is%n%n   %s%n", signature, normalized),
-                               SignatureUtils.isStrangeSignature(normalized), is(false));
-                }
-            }
-        }
-    }
-
-    @Test
-    public void should_ignore_scala_traits() throws URISyntaxException, IOException {
-        List<String> signatures =
-            Files.readLines(new File(getClass().getResource("/play2-app/signatures1.dat").toURI()), Charset.forName("UTF-8"));
-        for (String signature : signatures) {
-            String normalized = SignatureUtils.normalizeSignature(signature);
-            if (normalized != null) {
-                assertThat(normalized, not(containsString("..")));
-            }
-        }
-    }
 
     @Test
     public void should_strip_modifiers_publicStaticMethod1() throws IOException, NoSuchMethodException {
