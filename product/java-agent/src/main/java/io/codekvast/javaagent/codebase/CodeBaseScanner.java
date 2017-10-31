@@ -59,18 +59,21 @@ public class CodeBaseScanner {
     public int scanSignatures(CodeBase codeBase) {
         long startedAt = System.currentTimeMillis();
         logger.fine("Scanning " + codeBase);
-        int result = 0;
+
+        Set<String> scanned = new HashSet<>();
 
         try (ScanResult scanResult = scanCodeBase(codeBase)) {
-
             for (ClassPath.ClassInfo classInfo : scanResult.getClassInfos()) {
-                try {
-                    Class<?> clazz = classInfo.load();
-                    findConstructors(codeBase, clazz);
-                    findMethods(codeBase, clazz, codeBase.getConfig().getNormalizedPackages());
-                    result += 1;
-                } catch (Throwable t) {
-                    logger.warning("Cannot analyze " + classInfo + ": " + t);
+                if (scanned.add(classInfo.getResourceName())) {
+                    try {
+                        Class<?> clazz = classInfo.load();
+                        findConstructors(codeBase, clazz);
+                        findMethods(codeBase, clazz, codeBase.getConfig().getNormalizedPackages());
+                    } catch (Throwable t) {
+                        logger.warning("Cannot analyze " + classInfo + ": " + t);
+                    }
+                } else {
+                    logger.finest("Ignoring duplicate " + classInfo);
                 }
             }
         }
@@ -79,6 +82,8 @@ public class CodeBaseScanner {
             logger.warning(String.format("%s does not contain any classes within packages %s.'", codeBase,
                                       codeBase.getConfig().getNormalizedPackages()));
         }
+
+        int result = scanned.size();
 
         logger.info(String.format("Scanned %s with package prefix %s in %d ms, found %d methods in %d classes.",
                                codeBase.getFingerprint(),
