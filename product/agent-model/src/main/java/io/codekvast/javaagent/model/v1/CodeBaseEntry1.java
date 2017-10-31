@@ -21,39 +21,51 @@
  */
 package io.codekvast.javaagent.model.v1;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Value;
 
-import javax.validation.constraints.Min;
 import java.io.Serializable;
-import java.util.Set;
 
 /**
- * Output of the InvocationDataPublisher implementations.
+ * Representation of a code base entry.
  *
  * @author olle.hallin@crisp.se
  */
-@Data
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Setter(AccessLevel.PRIVATE)
-@Builder(toBuilder = true)
-public class InvocationDataPublication implements Serializable {
+@Value
+@Builder
+public class CodeBaseEntry1 implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * The low-level description of the signature.
+     */
+    private final MethodSignature1 methodSignature;
+
+    /**
+     * The status of the signature. How it was found, if it has been excluded and so on.
+     */
     @NonNull
-    private CommonPublicationData commonData;
+    private final SignatureStatus1 signatureStatus;
 
+    /**
+     * The visibility of the signature. Package private is coded as 'package-private'.
+     */
     @NonNull
-    private Set<String> invocations;
+    private final String visibility;
 
-    @Min(1_490_000_000_000L)
-    private long recordingIntervalStartedAtMillis;
+    /**
+     * The signature.
+     */
+    @NonNull
+    private final String signature;
 
-    @Override
-    public String toString() {
-        return String.format(
-            "InvocationDataPublication{commonData=%1$s, invocations.size()=%2$d, recordingIntervalStartedAt=%3$tF:%3$tT%3$tz}",
-            commonData, invocations.size(), recordingIntervalStartedAtMillis);
+    public static CodeBaseEntry1 sampleCodeBaseEntry() {
+        return builder()
+            .methodSignature(MethodSignature1.createSampleMethodSignature())
+            .signature("signature1()")
+            .signatureStatus(SignatureStatus1.NOT_INVOKED)
+            .visibility("public")
+            .build();
     }
-
 }

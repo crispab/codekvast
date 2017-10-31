@@ -36,7 +36,7 @@ import java.io.Serializable;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Setter(AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
-public class CommonPublicationData implements Serializable {
+public class CommonPublicationData1 implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Min(value = 1, message = "customerId must be a positive number")
@@ -109,7 +109,7 @@ public class CommonPublicationData implements Serializable {
             publishedAtMillis);
     }
 
-    public static CommonPublicationData sampleCommonPublicationData() {
+    public static CommonPublicationData1 sampleCommonPublicationData() {
         return builder()
             .agentVersion("agentVersion")
             .appName("appName")

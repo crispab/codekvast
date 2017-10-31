@@ -137,7 +137,7 @@ public class AgentControllerTest {
             new MockMultipartFile(PARAM_PUBLICATION_FILE,
                                   originalFilename,
                                   APPLICATION_OCTET_STREAM_VALUE,
-                                  "InvocationDataPublication".getBytes());
+                                  "InvocationDataPublication1".getBytes());
 
         mockMvc.perform(fileUpload(V1_UPLOAD_INVOCATION_DATA)
                             .file(multipartFile)

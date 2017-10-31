@@ -24,8 +24,8 @@ package io.codekvast.javaagent.codebase;
 import com.google.common.io.Files;
 import com.google.common.reflect.ClassPath;
 import io.codekvast.javaagent.config.MethodAnalyzer;
-import io.codekvast.javaagent.model.v1.MethodSignature;
-import io.codekvast.javaagent.model.v1.SignatureStatus;
+import io.codekvast.javaagent.model.v1.MethodSignature1;
+import io.codekvast.javaagent.model.v1.SignatureStatus1;
 import io.codekvast.javaagent.util.SignatureUtils;
 import lombok.Builder;
 import lombok.Value;
@@ -225,8 +225,8 @@ public class CodeBaseScanner {
             Constructor[] declaredConstructors = clazz.getDeclaredConstructors();
 
             for (Constructor constructor : declaredConstructors) {
-                SignatureStatus status = methodAnalyzer.apply(constructor);
-                MethodSignature thisSignature = SignatureUtils.makeConstructorSignature(clazz, constructor);
+                SignatureStatus1 status = methodAnalyzer.apply(constructor);
+                MethodSignature1 thisSignature = SignatureUtils.makeConstructorSignature(clazz, constructor);
                 codeBase.addSignature(thisSignature, thisSignature, status);
             }
 
@@ -254,18 +254,18 @@ public class CodeBaseScanner {
             System.arraycopy(methods, 0, allMethods, declaredMethods.length, methods.length);
 
             for (Method method : allMethods) {
-                SignatureStatus status = methodAnalyzer.apply(method);
+                SignatureStatus1 status = methodAnalyzer.apply(method);
 
                 // Some AOP frameworks (e.g., Guice) push methods from a base class down to subclasses created in runtime.
                 // We need to map those back to the original declaring signature, or else the original declared method will look unused.
 
-                MethodSignature thisSignature = SignatureUtils.makeMethodSignature(clazz, method);
+                MethodSignature1 thisSignature = SignatureUtils.makeMethodSignature(clazz, method);
 
-                MethodSignature declaringSignature = SignatureUtils
+                MethodSignature1 declaringSignature = SignatureUtils
                     .makeMethodSignature(findDeclaringClass(method.getDeclaringClass(), method, packages), method);
 
                 if (shouldExcludeSignature(declaringSignature, excludePackages)) {
-                    status = SignatureStatus.EXCLUDED_BY_PACKAGE_NAME;
+                    status = SignatureStatus1.EXCLUDED_BY_PACKAGE_NAME;
                 }
                 codeBase.addSignature(thisSignature, declaringSignature, status);
             }
@@ -278,7 +278,7 @@ public class CodeBaseScanner {
         }
     }
 
-    private boolean shouldExcludeSignature(MethodSignature signature, Set<String> excludePackages) {
+    private boolean shouldExcludeSignature(MethodSignature1 signature, Set<String> excludePackages) {
         if (signature != null) {
             String pkg = signature.getPackageName();
             for (String excludePackage : excludePackages) {

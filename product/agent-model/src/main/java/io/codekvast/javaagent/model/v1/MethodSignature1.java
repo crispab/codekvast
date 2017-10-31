@@ -35,7 +35,7 @@ import java.io.Serializable;
 @Builder(toBuilder = true)
 @ToString(of = "aspectjString")
 @EqualsAndHashCode(of = "aspectjString")
-public class MethodSignature implements Serializable {
+public class MethodSignature1 implements Serializable {
     @NonNull
     private final String aspectjString;
     @NonNull
@@ -53,7 +53,7 @@ public class MethodSignature implements Serializable {
     @NonNull
     private final String returnType;
 
-    public static MethodSignature createSampleMethodSignature() {
+    public static MethodSignature1 createSampleMethodSignature() {
         return builder()
             .aspectjString("aspectjString")
             .declaringType("declaringType")

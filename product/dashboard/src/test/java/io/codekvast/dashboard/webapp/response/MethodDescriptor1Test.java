@@ -6,7 +6,7 @@ import io.codekvast.dashboard.webapp.model.methods.EnvironmentDescriptor1;
 import io.codekvast.dashboard.webapp.model.methods.MethodDescriptor1;
 import org.junit.Test;
 
-import static io.codekvast.javaagent.model.v1.SignatureStatus.*;
+import static io.codekvast.javaagent.model.v1.SignatureStatus1.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 

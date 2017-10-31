@@ -25,8 +25,8 @@ import io.codekvast.dashboard.customer.LicenseViolationException;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
 import io.codekvast.dashboard.file_import.PublicationImporter;
-import io.codekvast.javaagent.model.v1.CodeBasePublication;
-import io.codekvast.javaagent.model.v1.InvocationDataPublication;
+import io.codekvast.javaagent.model.v1.CodeBasePublication1;
+import io.codekvast.javaagent.model.v1.InvocationDataPublication1;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -42,8 +42,8 @@ import java.util.Set;
  * Deserialize the object and dispatch to the specialized importer.
  *
  * @author olle.hallin@crisp.se
- * @see CodeBasePublication
- * @see InvocationDataPublication
+ * @see CodeBasePublication1
+ * @see InvocationDataPublication1
  */
 @Service
 @Slf4j
@@ -86,12 +86,12 @@ public class PublicationImporterImpl implements PublicationImporter {
 
     @SuppressWarnings({"InstanceofConcreteClass", "CastToConcreteClass", "ChainOfInstanceofChecks"})
     private boolean handlePublication(Object object) {
-        if (object instanceof CodeBasePublication) {
-            return codeBaseImporter.importPublication((CodeBasePublication) object);
+        if (object instanceof CodeBasePublication1) {
+            return codeBaseImporter.importPublication((CodeBasePublication1) object);
         }
 
-        if (object instanceof InvocationDataPublication) {
-            return invocationDataImporter.importPublication((InvocationDataPublication) object);
+        if (object instanceof InvocationDataPublication1) {
+            return invocationDataImporter.importPublication((InvocationDataPublication1) object);
         }
 
         logger.warn("Don't know how to handle {}", object.getClass().getSimpleName());

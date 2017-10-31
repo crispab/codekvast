@@ -21,51 +21,50 @@
  */
 package io.codekvast.javaagent.model.v1;
 
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
+import lombok.*;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Map;
 
 /**
- * Representation of a code base entry.
+ * Output of the CodeBasePublisher implementations.
  *
  * @author olle.hallin@crisp.se
  */
-@Value
-@Builder
-public class CodeBaseEntry implements Serializable {
+@Data
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Setter(AccessLevel.PRIVATE)
+@Builder(toBuilder = true)
+public class CodeBasePublication1 implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    /**
-     * The low-level description of the signature.
-     */
-    private final MethodSignature methodSignature;
+    @NonNull
+    private CommonPublicationData1 commonData;
+
+    @NonNull
+    private Collection<CodeBaseEntry1> entries;
+
+    @NonNull
+    private Map<String, String> overriddenSignatures;
 
     /**
-     * The status of the signature. How it was found, if it has been excluded and so on.
+     * "strange" signatures, i.e., signatures with unnatural names that indicate that they are synthesized either by a compiler or at
+     * runtime by some
+     * byte-code library.
+     *
+     * key: strangeSignature
+     * value: normalized strange signature
      */
     @NonNull
-    private final SignatureStatus signatureStatus;
+    private Map<String, String> strangeSignatures;
 
-    /**
-     * The visibility of the signature. Package private is coded as 'package-private'.
-     */
-    @NonNull
-    private final String visibility;
-
-    /**
-     * The signature.
-     */
-    @NonNull
-    private final String signature;
-
-    public static CodeBaseEntry sampleCodeBaseEntry() {
-        return builder()
-            .methodSignature(MethodSignature.createSampleMethodSignature())
-            .signature("signature1()")
-            .signatureStatus(SignatureStatus.NOT_INVOKED)
-            .visibility("public")
-            .build();
+    @Override
+    public String toString() {
+        return String
+            .format("%s(commonData=%s, entries.size()=%d, strangeSignatures.size()=%d)", this.getClass().getSimpleName(), commonData,
+                    entries.size(),
+                    strangeSignatures.size());
     }
 }

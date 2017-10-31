@@ -21,9 +21,9 @@
  */
 package io.codekvast.javaagent.config;
 
+import io.codekvast.javaagent.model.v1.SignatureStatus1;
 import io.codekvast.javaagent.util.SignatureUtils;
 import lombok.EqualsAndHashCode;
-import io.codekvast.javaagent.model.v1.SignatureStatus;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -122,24 +122,24 @@ public class MethodAnalyzer {
         return (mask & Modifier.PRIVATE) != 0;
     }
 
-    public SignatureStatus apply(Method method) {
+    public SignatureStatus1 apply(Method method) {
         if (!shouldIncludeByModifiers(method.getModifiers())) {
-            return SignatureStatus.EXCLUDED_BY_VISIBILITY;
+            return SignatureStatus1.EXCLUDED_BY_VISIBILITY;
         }
         if (isGetter(method)
                 || isSetter(method)
                 || isEquals(method)
                 || isHashCode(method)) {
-            return SignatureStatus.EXCLUDED_SINCE_TRIVIAL;
+            return SignatureStatus1.EXCLUDED_SINCE_TRIVIAL;
         }
-        return SignatureStatus.NOT_INVOKED;
+        return SignatureStatus1.NOT_INVOKED;
     }
 
-    public SignatureStatus apply(Constructor constructor) {
+    public SignatureStatus1 apply(Constructor constructor) {
         if (!shouldIncludeByModifiers(constructor.getModifiers())) {
-            return SignatureStatus.EXCLUDED_BY_VISIBILITY;
+            return SignatureStatus1.EXCLUDED_BY_VISIBILITY;
         }
-        return SignatureStatus.NOT_INVOKED;
+        return SignatureStatus1.NOT_INVOKED;
     }
 
     /**

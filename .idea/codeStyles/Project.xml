@@ -314,7 +314,6 @@
     </codeStyleSettings>
     <codeStyleSettings language="JavaScript">
       <option name="WRAP_COMMENTS" value="true" />
-      <option name="PARENT_SETTINGS_INSTALLED" value="true" />
     </codeStyleSettings>
     <codeStyleSettings language="TypeScript">
       <option name="KEEP_LINE_BREAKS" value="false" />
@@ -328,7 +327,6 @@
       <option name="ARRAY_INITIALIZER_LBRACE_ON_NEXT_LINE" value="true" />
       <option name="ARRAY_INITIALIZER_RBRACE_ON_NEXT_LINE" value="true" />
       <option name="WRAP_COMMENTS" value="true" />
-      <option name="PARENT_SETTINGS_INSTALLED" value="true" />
     </codeStyleSettings>
   </code_scheme>
 </component>

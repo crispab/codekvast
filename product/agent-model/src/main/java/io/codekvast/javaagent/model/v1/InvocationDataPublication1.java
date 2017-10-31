@@ -23,12 +23,12 @@ package io.codekvast.javaagent.model.v1;
 
 import lombok.*;
 
+import javax.validation.constraints.Min;
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Map;
+import java.util.Set;
 
 /**
- * Output of the CodeBasePublisher implementations.
+ * Output of the InvocationDataPublisher implementations.
  *
  * @author olle.hallin@crisp.se
  */
@@ -37,34 +37,23 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Setter(AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
-public class CodeBasePublication implements Serializable {
+public class InvocationDataPublication1 implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @NonNull
-    private CommonPublicationData commonData;
+    private CommonPublicationData1 commonData;
 
     @NonNull
-    private Collection<CodeBaseEntry> entries;
+    private Set<String> invocations;
 
-    @NonNull
-    private Map<String, String> overriddenSignatures;
-
-    /**
-     * "strange" signatures, i.e., signatures with unnatural names that indicate that they are synthesized either by a compiler or at
-     * runtime by some
-     * byte-code library.
-     *
-     * key: strangeSignature
-     * value: normalized strange signature
-     */
-    @NonNull
-    private Map<String, String> strangeSignatures;
+    @Min(1_490_000_000_000L)
+    private long recordingIntervalStartedAtMillis;
 
     @Override
     public String toString() {
-        return String
-            .format("%s(commonData=%s, entries.size()=%d, strangeSignatures.size()=%d)", this.getClass().getSimpleName(), commonData,
-                    entries.size(),
-                    strangeSignatures.size());
+        return String.format(
+            "InvocationDataPublication1{commonData=%1$s, invocations.size()=%2$d, recordingIntervalStartedAt=%3$tF:%3$tT%3$tz}",
+            commonData, invocations.size(), recordingIntervalStartedAtMillis);
     }
+
 }

@@ -35,7 +35,7 @@ import java.io.Serializable;
  */
 @Getter
 @RequiredArgsConstructor
-public enum SignatureStatus implements Serializable {
+public enum SignatureStatus1 implements Serializable {
     /**
      * The signature has been detected in the codebase, but it has never been invoked.
      */

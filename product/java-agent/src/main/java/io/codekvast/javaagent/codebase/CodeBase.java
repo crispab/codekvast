@@ -22,10 +22,10 @@
 package io.codekvast.javaagent.codebase;
 
 import io.codekvast.javaagent.config.AgentConfig;
-import io.codekvast.javaagent.model.v1.CodeBaseEntry;
-import io.codekvast.javaagent.model.v1.CodeBasePublication;
-import io.codekvast.javaagent.model.v1.MethodSignature;
-import io.codekvast.javaagent.model.v1.SignatureStatus;
+import io.codekvast.javaagent.model.v1.CodeBaseEntry1;
+import io.codekvast.javaagent.model.v1.CodeBasePublication1;
+import io.codekvast.javaagent.model.v1.MethodSignature1;
+import io.codekvast.javaagent.model.v1.SignatureStatus1;
 import io.codekvast.javaagent.util.SignatureUtils;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -55,13 +55,13 @@ public class CodeBase {
     private final AgentConfig config;
 
     @Getter
-    private final Map<String, MethodSignature> signatures = new TreeMap<>();
+    private final Map<String, MethodSignature1> signatures = new TreeMap<>();
 
     @Getter
     private final Map<String, String> overriddenSignatures = new HashMap<>();
 
     @Getter
-    private final Map<String, SignatureStatus> statuses = new HashMap<>();
+    private final Map<String, SignatureStatus1> statuses = new HashMap<>();
 
     @Getter
     private final CodeBaseFingerprint fingerprint;
@@ -146,7 +146,7 @@ public class CodeBase {
         }
     }
 
-    void addSignature(MethodSignature thisSignature, MethodSignature declaringSignature, SignatureStatus status) {
+    void addSignature(MethodSignature1 thisSignature, MethodSignature1 declaringSignature, SignatureStatus1 status) {
         String thisNormalizedSignature = SignatureUtils.normalizeSignature(thisSignature);
         String declaringNormalizedSignature = SignatureUtils.normalizeSignature(declaringSignature);
 
@@ -170,25 +170,25 @@ public class CodeBase {
         return signatures.size();
     }
 
-    Collection<CodeBaseEntry> getEntries() {
-        List<CodeBaseEntry> result = new ArrayList<>();
+    Collection<CodeBaseEntry1> getEntries() {
+        List<CodeBaseEntry1> result = new ArrayList<>();
 
-        for (Map.Entry<String, MethodSignature> entry : signatures.entrySet()) {
+        for (Map.Entry<String, MethodSignature1> entry : signatures.entrySet()) {
             String name = entry.getKey();
             result.add(
-                CodeBaseEntry.builder()
-                             .methodSignature(entry.getValue())
-                             .signature(SignatureUtils.stripModifiers(name))
-                             .visibility(SignatureUtils.getVisibility(name))
-                             .signatureStatus(statuses.get(name))
-                             .build());
+                CodeBaseEntry1.builder()
+                              .methodSignature(entry.getValue())
+                              .signature(SignatureUtils.stripModifiers(name))
+                              .visibility(SignatureUtils.getVisibility(name))
+                              .signatureStatus(statuses.get(name))
+                              .build());
         }
 
         return result;
     }
 
-    public CodeBasePublication getCodeBasePublication(long customerId, int sequenceNumber) {
-        return CodeBasePublication
+    public CodeBasePublication1 getCodeBasePublication(long customerId, int sequenceNumber) {
+        return CodeBasePublication1
             .builder()
             .commonData(config.commonPublicationData().toBuilder()
                               .codeBaseFingerprint(getFingerprint().getSha256())

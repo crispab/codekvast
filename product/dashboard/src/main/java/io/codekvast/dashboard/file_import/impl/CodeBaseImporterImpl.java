@@ -22,8 +22,8 @@
 package io.codekvast.dashboard.file_import.impl;
 
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
-import io.codekvast.javaagent.model.v1.CodeBasePublication;
-import io.codekvast.javaagent.model.v1.CommonPublicationData;
+import io.codekvast.javaagent.model.v1.CodeBasePublication1;
+import io.codekvast.javaagent.model.v1.CommonPublicationData1;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -41,10 +41,10 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean importPublication(CodeBasePublication publication) {
+    public boolean importPublication(CodeBasePublication1 publication) {
         logger.debug("Importing {}", publication);
 
-        CommonPublicationData data = publication.getCommonData();
+        CommonPublicationData1 data = publication.getCommonData();
         long customerId = data.getCustomerId();
         long appId = importDAO.importApplication(data);
         long jvmId = importDAO.importJvm(data, appId);

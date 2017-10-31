@@ -16,10 +16,10 @@ import io.codekvast.dashboard.webapp.model.methods.GetMethodsResponse1;
 import io.codekvast.dashboard.webapp.model.methods.MethodDescriptor1;
 import io.codekvast.dashboard.webapp.model.status.AgentDescriptor1;
 import io.codekvast.dashboard.webapp.model.status.GetStatusResponse1;
-import io.codekvast.javaagent.model.v1.CodeBaseEntry;
-import io.codekvast.javaagent.model.v1.CodeBasePublication;
-import io.codekvast.javaagent.model.v1.CommonPublicationData;
-import io.codekvast.javaagent.model.v1.SignatureStatus;
+import io.codekvast.javaagent.model.v1.CodeBaseEntry1;
+import io.codekvast.javaagent.model.v1.CodeBasePublication1;
+import io.codekvast.javaagent.model.v1.CommonPublicationData1;
+import io.codekvast.javaagent.model.v1.SignatureStatus1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.testsupport.docker.DockerContainer;
@@ -146,7 +146,7 @@ public class MariadbIntegrationTest {
 
         // when
         int methodId = 0;
-        for (SignatureStatus status : SignatureStatus.values()) {
+        for (SignatureStatus1 status : SignatureStatus1.values()) {
             methodId += 1;
             jdbcTemplate.update("INSERT INTO invocations(customerId, applicationId, methodId, jvmId, invokedAtMillis, " +
                                     "invocationCount, status) VALUES(1, 11, ?, 1, ?, 0, ?)",
@@ -154,7 +154,7 @@ public class MariadbIntegrationTest {
         }
 
         // then
-        assertThat("Wrong number of invocations rows", countRowsInTable("invocations"), is(SignatureStatus.values().length));
+        assertThat("Wrong number of invocations rows", countRowsInTable("invocations"), is(SignatureStatus1.values().length));
     }
 
     @Test
@@ -353,9 +353,9 @@ public class MariadbIntegrationTest {
     @Test
     public void should_import_codeBasePublication() {
         //@formatter:off
-        CodeBasePublication publication = CodeBasePublication.builder()
-            .commonData(CommonPublicationData.sampleCommonPublicationData())
-            .entries(Arrays.asList(CodeBaseEntry.sampleCodeBaseEntry()))
+        CodeBasePublication1 publication = CodeBasePublication1.builder()
+            .commonData(CommonPublicationData1.sampleCommonPublicationData())
+            .entries(Arrays.asList(CodeBaseEntry1.sampleCodeBaseEntry()))
             .overriddenSignatures(Collections.singletonMap("signature", "overriddenBySignature"))
             .strangeSignatures(Collections.singletonMap("rawStrangeSignature", "normalizedStrangeSignature"))
             .build();
@@ -363,7 +363,7 @@ public class MariadbIntegrationTest {
         codeBaseImporter.importPublication(publication);
     }
 
-    // TODO: add tests for InvocationDataPublication import
+    // TODO: add tests for InvocationDataPublication1 import
 
     @Test(expected = ConstraintViolationException.class)
     public void should_throw_when_querying_signature_with_too_short_signature() {

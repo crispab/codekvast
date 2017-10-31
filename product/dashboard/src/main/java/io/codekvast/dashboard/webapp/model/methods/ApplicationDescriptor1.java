@@ -21,7 +21,7 @@
  */
 package io.codekvast.dashboard.webapp.model.methods;
 
-import io.codekvast.javaagent.model.v1.SignatureStatus;
+import io.codekvast.javaagent.model.v1.SignatureStatus1;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
@@ -65,7 +65,7 @@ public class ApplicationDescriptor1 implements Comparable<ApplicationDescriptor1
      * What is the status of this particular method for this application version?
      */
     @NonNull
-    private final SignatureStatus status;
+    private final SignatureStatus1 status;
 
     /**
      * Merge two application descriptors, taking the min and max values of both.

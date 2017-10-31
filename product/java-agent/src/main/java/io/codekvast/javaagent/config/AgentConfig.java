@@ -22,7 +22,7 @@
 package io.codekvast.javaagent.config;
 
 import io.codekvast.javaagent.appversion.AppVersionResolver;
-import io.codekvast.javaagent.model.v1.CommonPublicationData;
+import io.codekvast.javaagent.model.v1.CommonPublicationData1;
 import io.codekvast.javaagent.util.ConfigUtils;
 import io.codekvast.javaagent.util.Constants;
 import lombok.*;
@@ -35,9 +35,7 @@ import java.net.Proxy;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static io.codekvast.javaagent.model.Endpoints.Agent.V1_POLL_CONFIG;
-import static io.codekvast.javaagent.model.Endpoints.Agent.V1_UPLOAD_CODEBASE;
-import static io.codekvast.javaagent.model.Endpoints.Agent.V1_UPLOAD_INVOCATION_DATA;
+import static io.codekvast.javaagent.model.Endpoints.Agent.*;
 
 /**
  * Encapsulates the configuration that is used by the Codekvast agent.
@@ -166,8 +164,8 @@ public class AgentConfig implements Serializable {
         return result.toLowerCase().replaceAll("[^a-z0-9._+-]", "");
     }
 
-    public CommonPublicationData commonPublicationData() {
-        return CommonPublicationData
+    public CommonPublicationData1 commonPublicationData() {
+        return CommonPublicationData1
             .builder()
             .appName(getAppName())
             .appVersion(getResolvedAppVersion())

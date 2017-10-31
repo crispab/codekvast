@@ -7,8 +7,8 @@ import io.codekvast.javaagent.codebase.scannertest.ScannerTest3;
 import io.codekvast.javaagent.codebase.scannertest.ScannerTest4;
 import io.codekvast.javaagent.codebase.scannertest.excluded.ExcludedScannerTest5;
 import io.codekvast.javaagent.config.AgentConfigFactory;
-import io.codekvast.javaagent.model.v1.CodeBaseEntry;
-import io.codekvast.javaagent.model.v1.SignatureStatus;
+import io.codekvast.javaagent.model.v1.CodeBaseEntry1;
+import io.codekvast.javaagent.model.v1.SignatureStatus1;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -49,17 +49,17 @@ public class CodeBaseScannerTest {
         int numClasses = scanner.scanSignatures(codeBase);
         assertThat(numClasses, is(9));
 
-        Collection<CodeBaseEntry> entries = codeBase.getEntries();
+        Collection<CodeBaseEntry1> entries = codeBase.getEntries();
         assertThat(entries, notNullValue());
         assertThat(entries.size(), is(25));
-        assertThat(countBySignatureStatus(entries, SignatureStatus.EXCLUDED_BY_PACKAGE_NAME), is(1));
-        assertThat(countBySignatureStatus(entries, SignatureStatus.EXCLUDED_BY_VISIBILITY), is(2));
-        assertThat(countBySignatureStatus(entries, SignatureStatus.EXCLUDED_SINCE_TRIVIAL), is(3));
+        assertThat(countBySignatureStatus(entries, SignatureStatus1.EXCLUDED_BY_PACKAGE_NAME), is(1));
+        assertThat(countBySignatureStatus(entries, SignatureStatus1.EXCLUDED_BY_VISIBILITY), is(2));
+        assertThat(countBySignatureStatus(entries, SignatureStatus1.EXCLUDED_SINCE_TRIVIAL), is(3));
     }
 
-    private int countBySignatureStatus(Collection<CodeBaseEntry> entries, SignatureStatus status) {
+    private int countBySignatureStatus(Collection<CodeBaseEntry1> entries, SignatureStatus1 status) {
         int result = 0;
-        for (CodeBaseEntry entry : entries) {
+        for (CodeBaseEntry1 entry : entries) {
             if (entry.getSignatureStatus() == status) {
                 result += 1;
             }

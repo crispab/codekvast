@@ -21,7 +21,7 @@
  */
 package io.codekvast.dashboard.webapp.model.methods;
 
-import io.codekvast.javaagent.model.v1.SignatureStatus;
+import io.codekvast.javaagent.model.v1.SignatureStatus1;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Singular;
@@ -70,14 +70,14 @@ public class MethodDescriptor1 {
      * @return A number in the range [0..100]
      */
     public int getTrackedPercent() {
-        long tracked = occursInApplications.stream().map(ApplicationDescriptor1::getStatus).filter(SignatureStatus::isTracked).count();
+        long tracked = occursInApplications.stream().map(ApplicationDescriptor1::getStatus).filter(SignatureStatus1::isTracked).count();
         return (int) Math.round (tracked * 100D / occursInApplications.size());
     }
 
     /**
      * @return The set of signature statuses this method has across all applications.
      */
-    public Set<SignatureStatus> getStatuses() {
+    public Set<SignatureStatus1> getStatuses() {
         return occursInApplications.stream().map(ApplicationDescriptor1::getStatus).collect(Collectors.toSet());
     }
 

@@ -22,7 +22,7 @@
 package io.codekvast.javaagent.publishing.impl;
 
 import io.codekvast.javaagent.config.AgentConfig;
-import io.codekvast.javaagent.model.v1.InvocationDataPublication;
+import io.codekvast.javaagent.model.v1.InvocationDataPublication1;
 import io.codekvast.javaagent.publishing.CodekvastPublishingException;
 import io.codekvast.javaagent.util.FileUtils;
 import io.codekvast.javaagent.util.LogUtil;
@@ -64,7 +64,7 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
         String url = getConfig().getInvocationDataUploadEndpoint();
         File file = null;
         try {
-            InvocationDataPublication publication = createPublication(getCustomerId(), recordingIntervalStartedAtMillis, invocations);
+            InvocationDataPublication1 publication = createPublication(getCustomerId(), recordingIntervalStartedAtMillis, invocations);
             file = FileUtils.serializeToFile(publication,
                                              getConfig().getFilenamePrefix("invocations-"), ".ser");
 
@@ -79,17 +79,17 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
         }
     }
 
-    private InvocationDataPublication createPublication(long customerId, long recordingIntervalStartedAtMillis, Set<String> invocations) {
+    private InvocationDataPublication1 createPublication(long customerId, long recordingIntervalStartedAtMillis, Set<String> invocations) {
 
-        return InvocationDataPublication.builder()
-                                        .commonData(getConfig().commonPublicationData().toBuilder()
+        return InvocationDataPublication1.builder()
+                                         .commonData(getConfig().commonPublicationData().toBuilder()
                                                                .codeBaseFingerprint(getCodeBaseFingerprint().getSha256())
                                                                .customerId(customerId)
                                                                .sequenceNumber(this.getSequenceNumber())
                                                                .build())
-                                        .recordingIntervalStartedAtMillis(recordingIntervalStartedAtMillis)
-                                        .invocations(invocations)
-                                        .build();
+                                         .recordingIntervalStartedAtMillis(recordingIntervalStartedAtMillis)
+                                         .invocations(invocations)
+                                         .build();
     }
 
 }

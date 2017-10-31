@@ -30,7 +30,7 @@ import io.codekvast.dashboard.webapp.model.methods.*;
 import io.codekvast.dashboard.webapp.model.status.AgentDescriptor1;
 import io.codekvast.dashboard.webapp.model.status.GetStatusResponse1;
 import io.codekvast.dashboard.webapp.model.status.UserDescriptor1;
-import io.codekvast.javaagent.model.v1.SignatureStatus;
+import io.codekvast.javaagent.model.v1.SignatureStatus1;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -287,7 +287,7 @@ public class WebappServiceImpl implements WebappService {
                                            .startedAtMillis(startedAt)
                                            .publishedAtMillis(publishedAt)
                                            .invokedAtMillis(invokedAtMillis)
-                                           .status(SignatureStatus.valueOf(rs.getString("status")))
+                                           .status(SignatureStatus1.valueOf(rs.getString("status")))
                                            .build());
 
             queryState.saveEnvironment(EnvironmentDescriptor1.builder()

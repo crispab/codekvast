@@ -23,7 +23,7 @@ package io.codekvast.javaagent.publishing.impl;
 
 import io.codekvast.javaagent.codebase.CodeBase;
 import io.codekvast.javaagent.config.AgentConfig;
-import io.codekvast.javaagent.model.v1.CodeBasePublication;
+import io.codekvast.javaagent.model.v1.CodeBasePublication1;
 import io.codekvast.javaagent.publishing.CodekvastPublishingException;
 import io.codekvast.javaagent.util.FileUtils;
 import io.codekvast.javaagent.util.LogUtil;
@@ -60,7 +60,7 @@ public class HttpCodeBasePublisherImpl extends AbstractCodeBasePublisher {
         File file = null;
         try {
 
-            CodeBasePublication publication = codeBase.getCodeBasePublication(getCustomerId(), this.getSequenceNumber());
+            CodeBasePublication1 publication = codeBase.getCodeBasePublication(getCustomerId(), this.getSequenceNumber());
             file = FileUtils.serializeToFile(publication, getConfig().getFilenamePrefix("codebase-"), ".ser");
 
             doPost(file, url, codeBase.getFingerprint().getSha256(), publication.getEntries().size());
