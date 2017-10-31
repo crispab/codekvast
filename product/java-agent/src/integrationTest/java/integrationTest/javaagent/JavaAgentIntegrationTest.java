@@ -21,9 +21,7 @@ import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static io.codekvast.javaagent.model.Endpoints.Agent.V1_POLL_CONFIG;
-import static io.codekvast.javaagent.model.Endpoints.Agent.V1_UPLOAD_CODEBASE;
-import static io.codekvast.javaagent.model.Endpoints.Agent.V1_UPLOAD_INVOCATION_DATA;
+import static io.codekvast.javaagent.model.Endpoints.Agent.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -60,7 +58,7 @@ public class JavaAgentIntegrationTest {
     }
 
     @Test
-    public void should_have_been_invoked_correctly() throws Exception {
+    public void should_have_been_invoked_correctly() {
         // given
 
         // when
@@ -102,7 +100,7 @@ public class JavaAgentIntegrationTest {
                                             .invocationDataPublisherRetryIntervalSeconds(1)
                                             .build()))));
 
-        givenThat(post(V1_UPLOAD_CODEBASE).willReturn(ok()));
+        givenThat(post(V2_UPLOAD_CODEBASE).willReturn(ok()));
         givenThat(post(V1_UPLOAD_INVOCATION_DATA).willReturn(ok()));
 
         List<String> command = buildJavaCommand(agentConfigFile.getAbsolutePath());
@@ -120,7 +118,7 @@ public class JavaAgentIntegrationTest {
         assertThat(stdout, containsString("Codekvast shutdown completed in "));
 
         verify(postRequestedFor(urlEqualTo(V1_POLL_CONFIG)));
-        verify(postRequestedFor(urlEqualTo(V1_UPLOAD_CODEBASE)));
+        verify(postRequestedFor(urlEqualTo(V2_UPLOAD_CODEBASE)));
         verify(postRequestedFor(urlEqualTo(V1_UPLOAD_INVOCATION_DATA)));
 
         assertThat(stdout, not(containsString("error")));

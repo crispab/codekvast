@@ -125,7 +125,7 @@ public class AgentConfig implements Serializable {
     }
 
     public String getCodeBaseUploadEndpoint() {
-        return String.format("%s%s", serverUrl, V1_UPLOAD_CODEBASE);
+        return String.format("%s%s", serverUrl, V2_UPLOAD_CODEBASE);
     }
 
     public String getInvocationDataUploadEndpoint() {
