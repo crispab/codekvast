@@ -22,7 +22,6 @@
 package io.codekvast.dashboard.file_import.impl;
 
 import io.codekvast.dashboard.customer.CustomerService;
-import io.codekvast.javaagent.model.v1.CodeBaseEntry1;
 import io.codekvast.javaagent.model.v1.CommonPublicationData1;
 import io.codekvast.javaagent.model.v1.MethodSignature1;
 import io.codekvast.javaagent.model.v1.SignatureStatus1;
@@ -104,7 +103,7 @@ public class ImportDAOImpl implements ImportDAO {
     }
 
     @Override
-    public void importMethods1(long customerId, long appId, long jvmId, long publishedAtMillis, Collection<CodeBaseEntry1> entries) {
+    public void importMethods(long customerId, long appId, long jvmId, long publishedAtMillis, Collection<CodeBaseEntry2> entries) {
         Map<String, Long> existingMethods = getExistingMethods(customerId);
         Set<String> incompleteMethods = getIncompleteMethods(customerId);
         Set<Long> invocationsNotFoundInCodeBase = getInvocationsNotFoundInCodeBase(customerId);
@@ -113,15 +112,8 @@ public class ImportDAOImpl implements ImportDAO {
         importNewMethods(customerId, publishedAtMillis, entries, existingMethods);
         updateIncompleteMethods(customerId, publishedAtMillis, entries, incompleteMethods, existingMethods, invocationsNotFoundInCodeBase);
         ensureInitialInvocations(customerId, appId, jvmId, entries, existingMethods, existingInvocations);
-        // TODO: update initial invocation status if different from entries*.status
 
         customerService.assertDatabaseSize(customerId);
-    }
-
-    @Override
-    public void importMethods2(long customerId, long appId, long jvmId, long publishedAtMillis, Collection<CodeBaseEntry2> entries) {
-        // TODO: implement
-        throw new UnsupportedOperationException("Not Yet Implemented");
     }
 
     @Override
@@ -200,26 +192,28 @@ public class ImportDAOImpl implements ImportDAO {
                               customerId, appId, jvmId));
     }
 
-    private void importNewMethods(long customerId, long publishedAtMillis, Collection<CodeBaseEntry1> entries,
+    private void importNewMethods(long customerId, long publishedAtMillis, Collection<CodeBaseEntry2> entries,
                                   Map<String, Long> existingMethods) {
         long startedAtMillis = System.currentTimeMillis();
         int count = 0;
-        for (CodeBaseEntry1 entry : entries) {
+        for (CodeBaseEntry2 entry : entries) {
             String signature = entry.getSignature();
             if (!existingMethods.containsKey(signature)) {
-                existingMethods.put(signature, doInsertRow(new InsertCompleteMethodStatement(customerId, publishedAtMillis, entry)));
+                existingMethods
+                    .put(signature, doInsertRow(new InsertCompleteMethodStatement(customerId, publishedAtMillis, entry.getMethodSignature(),
+                                                                                  entry.getVisibility(), entry.getSignature())));
                 count += 1;
             }
         }
         logger.debug("Imported {} methods in {} ms", count, System.currentTimeMillis() - startedAtMillis);
     }
 
-    private void updateIncompleteMethods(long customerId, long publishedAtMillis, Collection<CodeBaseEntry1> entries,
+    private void updateIncompleteMethods(long customerId, long publishedAtMillis, Collection<CodeBaseEntry2> entries,
                                          Set<String> incompleteMethods,
                                          Map<String, Long> existingMethods, Set<Long> incompleteInvocations) {
         long startedAtMillis = System.currentTimeMillis();
         int count = 0;
-        for (CodeBaseEntry1 entry : entries) {
+        for (CodeBaseEntry2 entry : entries) {
             long methodId = existingMethods.get(entry.getSignature());
             if (incompleteMethods.contains(entry.getSignature()) || incompleteInvocations.contains(methodId)) {
                 logger.debug("Updating {}", entry.getSignature());
@@ -230,15 +224,15 @@ public class ImportDAOImpl implements ImportDAO {
         logger.debug("Updated {} incomplete methods in {} ms", count, System.currentTimeMillis() - startedAtMillis);
     }
 
-    private void ensureInitialInvocations(long customerId, long appId, long jvmId, Collection<CodeBaseEntry1> entries,
+    private void ensureInitialInvocations(long customerId, long appId, long jvmId, Collection<CodeBaseEntry2> entries,
                                           Map<String, Long> existingMethods, Set<Long> existingInvocations) {
         long startedAtMillis = System.currentTimeMillis();
         int importCount = 0;
 
-        for (CodeBaseEntry1 entry : entries) {
+        for (CodeBaseEntry2 entry : entries) {
             long methodId = existingMethods.get(entry.getSignature());
             if (!existingInvocations.contains(methodId)) {
-                jdbcTemplate.update(new InsertInvocationStatement(customerId, appId, jvmId, methodId, entry.getSignatureStatus(),
+                jdbcTemplate.update(new InsertInvocationStatement(customerId, appId, jvmId, methodId, SignatureStatus1.NOT_INVOKED,
                                                                   0L, 0L));
                 existingInvocations.add(methodId);
                 importCount += 1;
@@ -257,7 +251,9 @@ public class ImportDAOImpl implements ImportDAO {
     private static class InsertCompleteMethodStatement implements PreparedStatementCreator {
         private final long customerId;
         private final long publishedAtMillis;
-        private final CodeBaseEntry1 entry;
+        private final MethodSignature1 method;
+        private final String visibility;
+        private final String signature;
 
         @Override
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
@@ -268,11 +264,10 @@ public class ImportDAOImpl implements ImportDAO {
                                          "returnType) " +
                                          "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                                      Statement.RETURN_GENERATED_KEYS);
-            MethodSignature1 method = entry.getMethodSignature();
             int column = 0;
             ps.setLong(++column, customerId);
-            ps.setString(++column, entry.getVisibility());
-            ps.setString(++column, entry.getSignature());
+            ps.setString(++column, visibility);
+            ps.setString(++column, signature);
             ps.setTimestamp(++column, new Timestamp(publishedAtMillis));
             ps.setString(++column, method.getDeclaringType());
             ps.setString(++column, method.getExceptionTypes());
@@ -289,7 +284,7 @@ public class ImportDAOImpl implements ImportDAO {
     private static class UpdateIncompleteMethodStatement implements PreparedStatementCreator {
         private final long customerId;
         private final long publishedAtMillis;
-        private final CodeBaseEntry1 entry;
+        private final CodeBaseEntry2 entry;
 
         @Override
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {

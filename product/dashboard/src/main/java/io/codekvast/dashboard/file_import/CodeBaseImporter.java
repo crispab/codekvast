@@ -21,7 +21,6 @@
  */
 package io.codekvast.dashboard.file_import;
 
-import io.codekvast.javaagent.model.v1.CodeBasePublication1;
 import io.codekvast.javaagent.model.v2.CodeBasePublication2;
 
 /**
@@ -30,20 +29,11 @@ import io.codekvast.javaagent.model.v2.CodeBasePublication2;
 public interface CodeBaseImporter {
 
     /**
-     * Imports a CodeBasePublication1
-     *
-     * @param publication The publication to import.
-     * @return true iff the publication was handled
-     */
-    @SuppressWarnings("SameReturnValue")
-
-    boolean importPublication1(CodeBasePublication1 publication);
-    /**
      * Imports a CodeBasePublication2
      *
      * @param publication The publication to import.
      * @return true iff the publication was handled
      */
     @SuppressWarnings("SameReturnValue")
-    boolean importPublication2(CodeBasePublication2 publication);
+    boolean importPublication(CodeBasePublication2 publication);
 }

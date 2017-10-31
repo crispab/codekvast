@@ -364,12 +364,11 @@ public class MariadbIntegrationTest {
             .build();
         //@formatter:on
 
-        codeBaseImporter.importPublication1(publication);
+        codeBaseImporter.importPublication(CodeBasePublication2.fromV1Format(publication));
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void should_import_codeBasePublication2() {
-        // TODO: update test
         //@formatter:off
         CodeBasePublication2 publication = CodeBasePublication2.builder()
             .commonData(CommonPublicationData1.sampleCommonPublicationData())
@@ -377,7 +376,7 @@ public class MariadbIntegrationTest {
             .build();
         //@formatter:on
 
-        codeBaseImporter.importPublication2(publication);
+        codeBaseImporter.importPublication(publication);
     }
 
     @Test

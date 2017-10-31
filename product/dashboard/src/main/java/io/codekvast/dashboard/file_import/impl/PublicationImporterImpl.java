@@ -88,11 +88,11 @@ public class PublicationImporterImpl implements PublicationImporter {
     @SuppressWarnings({"InstanceofConcreteClass", "CastToConcreteClass", "ChainOfInstanceofChecks"})
     private boolean handlePublication(Object object) {
         if (object instanceof CodeBasePublication1) {
-            return codeBaseImporter.importPublication1((CodeBasePublication1) object);
+            return codeBaseImporter.importPublication(CodeBasePublication2.fromV1Format((CodeBasePublication1) object));
         }
 
         if (object instanceof CodeBasePublication2) {
-            return codeBaseImporter.importPublication2((CodeBasePublication2) object);
+            return codeBaseImporter.importPublication((CodeBasePublication2) object);
         }
 
         if (object instanceof InvocationDataPublication1) {

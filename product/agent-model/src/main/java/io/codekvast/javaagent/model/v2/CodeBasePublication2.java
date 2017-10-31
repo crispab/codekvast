@@ -21,11 +21,15 @@
  */
 package io.codekvast.javaagent.model.v2;
 
+import io.codekvast.javaagent.model.v1.CodeBaseEntry1;
+import io.codekvast.javaagent.model.v1.CodeBasePublication1;
 import io.codekvast.javaagent.model.v1.CommonPublicationData1;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Output of the CodeBasePublisher implementations.
@@ -50,5 +54,18 @@ public class CodeBasePublication2 implements Serializable {
     public String toString() {
         return String.format("%s(commonData=%s, entries.size()=%d)",
                              this.getClass().getSimpleName(), commonData, entries.size());
+    }
+
+    public static CodeBasePublication2 fromV1Format(CodeBasePublication1 publication1) {
+
+        List<CodeBaseEntry2> entries2 = new ArrayList<>();
+        for (CodeBaseEntry1 entry1 : publication1.getEntries()) {
+            entries2.add(CodeBaseEntry2.fromV1Format(entry1));
+        }
+
+        return CodeBasePublication2.builder()
+                                   .commonData(publication1.getCommonData())
+                                   .entries(entries2)
+                                   .build();
     }
 }
