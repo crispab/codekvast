@@ -26,6 +26,7 @@ import io.codekvast.javaagent.model.v1.CodeBaseEntry1;
 import io.codekvast.javaagent.model.v1.CommonPublicationData1;
 import io.codekvast.javaagent.model.v1.MethodSignature1;
 import io.codekvast.javaagent.model.v1.SignatureStatus1;
+import io.codekvast.javaagent.model.v2.CodeBaseEntry2;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -103,7 +104,7 @@ public class ImportDAOImpl implements ImportDAO {
     }
 
     @Override
-    public void importMethods(long customerId, long appId, long jvmId, long publishedAtMillis, Collection<CodeBaseEntry1> entries) {
+    public void importMethods1(long customerId, long appId, long jvmId, long publishedAtMillis, Collection<CodeBaseEntry1> entries) {
         Map<String, Long> existingMethods = getExistingMethods(customerId);
         Set<String> incompleteMethods = getIncompleteMethods(customerId);
         Set<Long> invocationsNotFoundInCodeBase = getInvocationsNotFoundInCodeBase(customerId);
@@ -115,6 +116,12 @@ public class ImportDAOImpl implements ImportDAO {
         // TODO: update initial invocation status if different from entries*.status
 
         customerService.assertDatabaseSize(customerId);
+    }
+
+    @Override
+    public void importMethods2(long customerId, long appId, long jvmId, long publishedAtMillis, Collection<CodeBaseEntry2> entries) {
+        // TODO: implement
+        throw new UnsupportedOperationException("Not Yet Implemented");
     }
 
     @Override

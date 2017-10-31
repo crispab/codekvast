@@ -27,6 +27,7 @@ import io.codekvast.dashboard.file_import.InvocationDataImporter;
 import io.codekvast.dashboard.file_import.PublicationImporter;
 import io.codekvast.javaagent.model.v1.CodeBasePublication1;
 import io.codekvast.javaagent.model.v1.InvocationDataPublication1;
+import io.codekvast.javaagent.model.v2.CodeBasePublication2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -87,7 +88,11 @@ public class PublicationImporterImpl implements PublicationImporter {
     @SuppressWarnings({"InstanceofConcreteClass", "CastToConcreteClass", "ChainOfInstanceofChecks"})
     private boolean handlePublication(Object object) {
         if (object instanceof CodeBasePublication1) {
-            return codeBaseImporter.importPublication((CodeBasePublication1) object);
+            return codeBaseImporter.importPublication1((CodeBasePublication1) object);
+        }
+
+        if (object instanceof CodeBasePublication2) {
+            return codeBaseImporter.importPublication2((CodeBasePublication2) object);
         }
 
         if (object instanceof InvocationDataPublication1) {

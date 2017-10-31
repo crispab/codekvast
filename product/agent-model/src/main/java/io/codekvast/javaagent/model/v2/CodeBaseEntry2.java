@@ -19,25 +19,47 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.javaagent.model;
+package io.codekvast.javaagent.model.v2;
+
+import io.codekvast.javaagent.model.v1.MethodSignature1;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Value;
+
+import java.io.Serializable;
 
 /**
- * Definition of the HTTP endpoints and parameters offered by the Codekvast server's AgentController
+ * Representation of a code base entry.
  *
  * @author olle.hallin@crisp.se
  */
-@SuppressWarnings({"MarkerInterface","InnerClassTooDeeplyNested"})
-public interface Endpoints {
+@Value
+@Builder
+public class CodeBaseEntry2 implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    interface Agent {
-        String V1_POLL_CONFIG = "/javaagent/v1/pollConfig";
-        String V1_UPLOAD_CODEBASE = "/javaagent/v1/uploadCodeBase";
-        String V2_UPLOAD_CODEBASE = "/javaagent/v2/uploadCodeBase";
-        String V1_UPLOAD_INVOCATION_DATA = "/javaagent/v1/uploadInvocationData";
+    /**
+     * The low-level description of the signature.
+     */
+    private final MethodSignature1 methodSignature;
 
-        String PARAM_FINGERPRINT = "fingerprint";
-        String PARAM_LICENSE_KEY = "licenseKey";
-        String PARAM_PUBLICATION_SIZE = "numMethods";
-        String PARAM_PUBLICATION_FILE = "publicationFile";
+    /**
+     * The visibility of the signature. Package private is coded as 'package-private'.
+     */
+    @NonNull
+    private final String visibility;
+
+    /**
+     * The signature.
+     */
+    @NonNull
+    private final String signature;
+
+    public static CodeBaseEntry2 sampleCodeBaseEntry() {
+        return builder()
+            .methodSignature(MethodSignature1.createSampleMethodSignature())
+            .signature("signature1()")
+            .visibility("public")
+            .build();
     }
 }

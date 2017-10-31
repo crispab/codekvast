@@ -10,18 +10,18 @@ import io.codekvast.dashboard.customer.CustomerService.LoginRequest;
 import io.codekvast.dashboard.customer.LicenseViolationException;
 import io.codekvast.dashboard.customer.PricePlanDefaults;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
+import io.codekvast.dashboard.file_import.InvocationDataImporter;
 import io.codekvast.dashboard.webapp.WebappService;
 import io.codekvast.dashboard.webapp.model.methods.GetMethodsRequest1;
 import io.codekvast.dashboard.webapp.model.methods.GetMethodsResponse1;
 import io.codekvast.dashboard.webapp.model.methods.MethodDescriptor1;
 import io.codekvast.dashboard.webapp.model.status.AgentDescriptor1;
 import io.codekvast.dashboard.webapp.model.status.GetStatusResponse1;
-import io.codekvast.javaagent.model.v1.CodeBaseEntry1;
-import io.codekvast.javaagent.model.v1.CodeBasePublication1;
-import io.codekvast.javaagent.model.v1.CommonPublicationData1;
-import io.codekvast.javaagent.model.v1.SignatureStatus1;
+import io.codekvast.javaagent.model.v1.*;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
+import io.codekvast.javaagent.model.v2.CodeBaseEntry2;
+import io.codekvast.javaagent.model.v2.CodeBasePublication2;
 import io.codekvast.testsupport.docker.DockerContainer;
 import io.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
 import org.flywaydb.core.Flyway;
@@ -119,6 +119,9 @@ public class MariadbIntegrationTest {
 
     @Inject
     private CodeBaseImporter codeBaseImporter;
+
+    @Inject
+    private InvocationDataImporter invocationDataImporter;
 
     @Inject
     private TestDataGenerator testDataGenerator;
@@ -351,7 +354,7 @@ public class MariadbIntegrationTest {
     }
 
     @Test
-    public void should_import_codeBasePublication() {
+    public void should_import_codeBasePublication1() {
         //@formatter:off
         CodeBasePublication1 publication = CodeBasePublication1.builder()
             .commonData(CommonPublicationData1.sampleCommonPublicationData())
@@ -360,10 +363,35 @@ public class MariadbIntegrationTest {
             .strangeSignatures(Collections.singletonMap("rawStrangeSignature", "normalizedStrangeSignature"))
             .build();
         //@formatter:on
-        codeBaseImporter.importPublication(publication);
+
+        codeBaseImporter.importPublication1(publication);
     }
 
-    // TODO: add tests for InvocationDataPublication1 import
+    @Test(expected = UnsupportedOperationException.class)
+    public void should_import_codeBasePublication2() {
+        // TODO: update test
+        //@formatter:off
+        CodeBasePublication2 publication = CodeBasePublication2.builder()
+            .commonData(CommonPublicationData1.sampleCommonPublicationData())
+            .entries(Arrays.asList(CodeBaseEntry2.sampleCodeBaseEntry()))
+            .build();
+        //@formatter:on
+
+        codeBaseImporter.importPublication2(publication);
+    }
+
+    @Test
+    public void should_import_invocationDataPublication() {
+        //@formatter:off
+        InvocationDataPublication1 publication = InvocationDataPublication1.builder()
+            .commonData(CommonPublicationData1.sampleCommonPublicationData())
+            .recordingIntervalStartedAtMillis(System.currentTimeMillis())
+            .invocations(Collections.singleton("signature"))
+            .build();
+        //@formatter:on
+
+        invocationDataImporter.importPublication(publication);
+    }
 
     @Test(expected = ConstraintViolationException.class)
     public void should_throw_when_querying_signature_with_too_short_signature() {

@@ -24,6 +24,7 @@ package io.codekvast.dashboard.file_import.impl;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.javaagent.model.v1.CodeBasePublication1;
 import io.codekvast.javaagent.model.v1.CommonPublicationData1;
+import io.codekvast.javaagent.model.v2.CodeBasePublication2;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -41,15 +42,28 @@ public class CodeBaseImporterImpl implements CodeBaseImporter {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean importPublication(CodeBasePublication1 publication) {
+    public boolean importPublication1(CodeBasePublication1 publication) {
         logger.debug("Importing {}", publication);
 
         CommonPublicationData1 data = publication.getCommonData();
         long customerId = data.getCustomerId();
         long appId = importDAO.importApplication(data);
         long jvmId = importDAO.importJvm(data, appId);
-        importDAO.importMethods(customerId, appId, jvmId, publication.getCommonData().getPublishedAtMillis(), publication.getEntries());
+        importDAO.importMethods1(customerId, appId, jvmId, publication.getCommonData().getPublishedAtMillis(), publication.getEntries());
         importDAO.importStrangeSignatures(customerId, appId, jvmId, publication.getStrangeSignatures());
+        return true;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean importPublication2(CodeBasePublication2 publication) {
+        logger.debug("Importing {}", publication);
+
+        CommonPublicationData1 data = publication.getCommonData();
+        long customerId = data.getCustomerId();
+        long appId = importDAO.importApplication(data);
+        long jvmId = importDAO.importJvm(data, appId);
+        importDAO.importMethods2(customerId, appId, jvmId, publication.getCommonData().getPublishedAtMillis(), publication.getEntries());
         return true;
     }
 }

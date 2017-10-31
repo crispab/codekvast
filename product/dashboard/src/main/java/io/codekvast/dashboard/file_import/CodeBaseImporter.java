@@ -22,6 +22,7 @@
 package io.codekvast.dashboard.file_import;
 
 import io.codekvast.javaagent.model.v1.CodeBasePublication1;
+import io.codekvast.javaagent.model.v2.CodeBasePublication2;
 
 /**
  * @author olle.hallin@crisp.se
@@ -35,5 +36,14 @@ public interface CodeBaseImporter {
      * @return true iff the publication was handled
      */
     @SuppressWarnings("SameReturnValue")
-    boolean importPublication(CodeBasePublication1 publication);
+
+    boolean importPublication1(CodeBasePublication1 publication);
+    /**
+     * Imports a CodeBasePublication2
+     *
+     * @param publication The publication to import.
+     * @return true iff the publication was handled
+     */
+    @SuppressWarnings("SameReturnValue")
+    boolean importPublication2(CodeBasePublication2 publication);
 }

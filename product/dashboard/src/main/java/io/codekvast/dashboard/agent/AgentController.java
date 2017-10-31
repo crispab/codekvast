@@ -101,6 +101,22 @@ public class AgentController {
         return "OK";
     }
 
+    @RequestMapping(value = V2_UPLOAD_CODEBASE, method = POST,
+        consumes = MULTIPART_FORM_DATA_VALUE, produces = TEXT_PLAIN_VALUE)
+    public String uploadCodeBase2(
+        @RequestParam(PARAM_LICENSE_KEY) String licenseKey,
+        @RequestParam(PARAM_FINGERPRINT) String fingerprint,
+        @RequestParam(PARAM_PUBLICATION_SIZE) Integer publicationSize,
+        @RequestParam(PARAM_PUBLICATION_FILE) MultipartFile file) throws IOException {
+
+        logger.debug("Received {} ({} methods, {}) with licenseKey={}, fingerprint={}", file.getOriginalFilename(),
+                  humanReadableByteCount(file.getSize()), publicationSize, licenseKey, fingerprint);
+
+        agentService.saveCodeBasePublication(licenseKey, publicationSize, file.getInputStream());
+
+        return "OK";
+    }
+
     @RequestMapping(value = V1_UPLOAD_INVOCATION_DATA, method = POST,
         consumes = MULTIPART_FORM_DATA_VALUE, produces = TEXT_PLAIN_VALUE)
     public String uploadInvocationData1(

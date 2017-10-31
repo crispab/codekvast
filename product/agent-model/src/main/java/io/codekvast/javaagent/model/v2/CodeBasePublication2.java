@@ -19,25 +19,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.javaagent.model;
+package io.codekvast.javaagent.model.v2;
+
+import io.codekvast.javaagent.model.v1.CommonPublicationData1;
+import lombok.*;
+
+import java.io.Serializable;
+import java.util.Collection;
 
 /**
- * Definition of the HTTP endpoints and parameters offered by the Codekvast server's AgentController
+ * Output of the CodeBasePublisher implementations.
  *
  * @author olle.hallin@crisp.se
  */
-@SuppressWarnings({"MarkerInterface","InnerClassTooDeeplyNested"})
-public interface Endpoints {
+@Data
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Setter(AccessLevel.PRIVATE)
+@Builder(toBuilder = true)
+public class CodeBasePublication2 implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    interface Agent {
-        String V1_POLL_CONFIG = "/javaagent/v1/pollConfig";
-        String V1_UPLOAD_CODEBASE = "/javaagent/v1/uploadCodeBase";
-        String V2_UPLOAD_CODEBASE = "/javaagent/v2/uploadCodeBase";
-        String V1_UPLOAD_INVOCATION_DATA = "/javaagent/v1/uploadInvocationData";
+    @NonNull
+    private CommonPublicationData1 commonData;
 
-        String PARAM_FINGERPRINT = "fingerprint";
-        String PARAM_LICENSE_KEY = "licenseKey";
-        String PARAM_PUBLICATION_SIZE = "numMethods";
-        String PARAM_PUBLICATION_FILE = "publicationFile";
+    @NonNull
+    private Collection<CodeBaseEntry2> entries;
+
+    @Override
+    public String toString() {
+        return String.format("%s(commonData=%s, entries.size()=%d)",
+                             this.getClass().getSimpleName(), commonData, entries.size());
     }
 }

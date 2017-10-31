@@ -23,6 +23,7 @@ package io.codekvast.dashboard.file_import.impl;
 
 import io.codekvast.javaagent.model.v1.CodeBaseEntry1;
 import io.codekvast.javaagent.model.v1.CommonPublicationData1;
+import io.codekvast.javaagent.model.v2.CodeBaseEntry2;
 
 import java.util.Collection;
 import java.util.Map;
@@ -61,7 +62,18 @@ public interface ImportDAO {
      * @param publishedAtMillis The timestamp the publication was published.
      * @param entries           The collection of code base entries to store.
      */
-    void importMethods(long customerId, long appId, long jvmId, long publishedAtMillis, Collection<CodeBaseEntry1> entries);
+    void importMethods1(long customerId, long appId, long jvmId, long publishedAtMillis, Collection<CodeBaseEntry1> entries);
+
+    /**
+     * Inserts missing rows into the database's methods and invocations tables. Does never update existing rows.
+     *
+     * @param customerId        The customer ID
+     * @param appId             The application ID returned by {@link #importApplication(CommonPublicationData1)}
+     * @param jvmId             The JVM ID returned by {@link #importJvm(CommonPublicationData1, long)}
+     * @param publishedAtMillis The timestamp the publication was published.
+     * @param entries           The collection of code base entries to store.
+     */
+    void importMethods2(long customerId, long appId, long jvmId, long publishedAtMillis, Collection<CodeBaseEntry2> entries);
 
     /**
      * Inserts or updates rows into the invocations table. Existing rows are updated with the new interval.
