@@ -62,20 +62,20 @@ public class AgentControllerTest {
     @Test
     public void getConfig1_should_reject_invalid_json() throws Exception {
         mockMvc.perform(post(V1_POLL_CONFIG)
-                        .content("invalid json")
-                        .contentType(APPLICATION_JSON_UTF8))
+                            .content("invalid json")
+                            .contentType(APPLICATION_JSON_UTF8))
                .andExpect(status().isBadRequest());
     }
 
     @Test
     public void getConfig1_should_reject_invalid_request() throws Exception {
         mockMvc.perform(post(V1_POLL_CONFIG)
-                        .content(objectMapper.writeValueAsString(
-                            GetConfigRequest1.sample()
-                                             .toBuilder()
-                                             .appName("")
-                                             .build()))
-                        .contentType(APPLICATION_JSON_UTF8))
+                            .content(objectMapper.writeValueAsString(
+                                GetConfigRequest1.sample()
+                                                 .toBuilder()
+                                                 .appName("")
+                                                 .build()))
+                            .contentType(APPLICATION_JSON_UTF8))
                .andExpect(status().isBadRequest());
     }
 
@@ -84,8 +84,8 @@ public class AgentControllerTest {
         when(agentService.getConfig(any(GetConfigRequest1.class))).thenThrow(new LicenseViolationException("foobar"));
 
         mockMvc.perform(post(V1_POLL_CONFIG)
-                        .content(objectMapper.writeValueAsString(GetConfigRequest1.sample()))
-                        .contentType(APPLICATION_JSON_UTF8))
+                            .content(objectMapper.writeValueAsString(GetConfigRequest1.sample()))
+                            .contentType(APPLICATION_JSON_UTF8))
                .andExpect(status().isForbidden());
     }
 
@@ -95,8 +95,8 @@ public class AgentControllerTest {
             GetConfigResponse1.sample().toBuilder().codeBasePublisherName("foobar").build());
 
         mockMvc.perform(post(V1_POLL_CONFIG)
-                        .content(objectMapper.writeValueAsString(GetConfigRequest1.sample()))
-                        .contentType(APPLICATION_JSON_UTF8))
+                            .content(objectMapper.writeValueAsString(GetConfigRequest1.sample()))
+                            .contentType(APPLICATION_JSON_UTF8))
                .andExpect(status().isOk())
                .andExpect(content().contentType(APPLICATION_JSON_UTF8))
                .andExpect(jsonPath("$.codeBasePublisherName").value("foobar"));
@@ -104,46 +104,28 @@ public class AgentControllerTest {
 
     @Test
     public void should_accept_upload_codebase_publication1_when_valid_license() throws Exception {
-        String licenseKey = "licenseKey";
-        String fingerprint = "fingerprint";
-        int publicationSize = 10000;
-        String originalFilename = "codekvast-codebase-9128371293719273.ser";
-
-        MockMultipartFile publicationFile =
-            new MockMultipartFile(PARAM_PUBLICATION_FILE,
-                                  originalFilename,
-                                  APPLICATION_OCTET_STREAM_VALUE,
-                                  "CodeBasePublication1".getBytes());
-
-        mockMvc.perform(fileUpload(V1_UPLOAD_CODEBASE)
-                        .file(publicationFile)
-                        .param(PARAM_LICENSE_KEY, licenseKey)
-                        .param(PARAM_FINGERPRINT, fingerprint)
-                        .param(PARAM_PUBLICATION_SIZE, publicationSize + ""))
-               .andExpect(status().isOk())
-               .andExpect(content().string("OK"));
-
-        verify(agentService).saveCodeBasePublication(eq(licenseKey), eq(publicationSize), any(InputStream.class));
+        assertUploadCodebasePublication(V1_UPLOAD_CODEBASE);
     }
 
     @Test
     public void should_accept_upload_codebase_publication2_when_valid_license() throws Exception {
+        assertUploadCodebasePublication(V2_UPLOAD_CODEBASE);
+    }
+
+    private void assertUploadCodebasePublication(String endpoint) throws Exception {
         String licenseKey = "licenseKey";
         String fingerprint = "fingerprint";
         int publicationSize = 10000;
         String originalFilename = "codekvast-codebase-9128371293719273.ser";
 
-        MockMultipartFile publicationFile =
-            new MockMultipartFile(PARAM_PUBLICATION_FILE,
-                                  originalFilename,
-                                  APPLICATION_OCTET_STREAM_VALUE,
-                                  "CodeBasePublication2".getBytes());
+        MockMultipartFile publicationFile = new MockMultipartFile(PARAM_PUBLICATION_FILE, originalFilename, APPLICATION_OCTET_STREAM_VALUE,
+                                                                  "CodeBasePublicationContent".getBytes());
 
-        mockMvc.perform(fileUpload(V2_UPLOAD_CODEBASE)
-                        .file(publicationFile)
-                        .param(PARAM_LICENSE_KEY, licenseKey)
-                        .param(PARAM_FINGERPRINT, fingerprint)
-                        .param(PARAM_PUBLICATION_SIZE, publicationSize + ""))
+        mockMvc.perform(fileUpload(endpoint)
+                            .file(publicationFile)
+                            .param(PARAM_LICENSE_KEY, licenseKey)
+                            .param(PARAM_FINGERPRINT, fingerprint)
+                            .param(PARAM_PUBLICATION_SIZE, publicationSize + ""))
                .andExpect(status().isOk())
                .andExpect(content().string("OK"));
 
@@ -151,7 +133,16 @@ public class AgentControllerTest {
     }
 
     @Test
-    public void should_accept_upload_invocation_data_publication_when_valid_license() throws Exception {
+    public void should_accept_upload_invocation_data_publication1_when_valid_license() throws Exception {
+        assertUploadInvocationDataPublication(V1_UPLOAD_INVOCATION_DATA);
+    }
+
+    @Test
+    public void should_accept_upload_invocation_data_publication2_when_valid_license() throws Exception {
+        assertUploadInvocationDataPublication(V2_UPLOAD_INVOCATION_DATA);
+    }
+
+    private void assertUploadInvocationDataPublication(String endpoint) throws Exception {
         String licenseKey = "licenseKey";
         String fingerprint = "fingerprint";
         int publicationSize = 10000;
@@ -161,13 +152,13 @@ public class AgentControllerTest {
             new MockMultipartFile(PARAM_PUBLICATION_FILE,
                                   originalFilename,
                                   APPLICATION_OCTET_STREAM_VALUE,
-                                  "InvocationDataPublication1".getBytes());
+                                  "InvocationDataPublicationContent".getBytes());
 
-        mockMvc.perform(fileUpload(V1_UPLOAD_INVOCATION_DATA)
-                        .file(multipartFile)
-                        .param(PARAM_LICENSE_KEY, licenseKey)
-                        .param(PARAM_FINGERPRINT, fingerprint)
-                        .param(PARAM_PUBLICATION_SIZE, publicationSize + ""))
+        mockMvc.perform(fileUpload(endpoint)
+                            .file(multipartFile)
+                            .param(PARAM_LICENSE_KEY, licenseKey)
+                            .param(PARAM_FINGERPRINT, fingerprint)
+                            .param(PARAM_PUBLICATION_SIZE, publicationSize + ""))
                .andExpect(status().isOk())
                .andExpect(content().string("OK"));
 

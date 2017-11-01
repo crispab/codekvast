@@ -31,8 +31,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.inject.Inject;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import java.io.IOException;
 
@@ -57,16 +55,6 @@ public class AgentController {
     @Inject
     public AgentController(AgentService agentService) {
         this.agentService = agentService;
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<String> onConstraintValidationException(ConstraintViolationException e) {
-        StringBuilder violations = new StringBuilder();
-        for (ConstraintViolation<?> violation : e.getConstraintViolations()) {
-            violations.append(violation.getMessage()).append("\n");
-        }
-        logger.warn("Invalid request: {}", violations);
-        return ResponseEntity.badRequest().body(violations.toString());
     }
 
     @ExceptionHandler
