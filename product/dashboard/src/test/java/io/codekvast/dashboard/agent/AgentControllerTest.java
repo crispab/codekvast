@@ -104,55 +104,35 @@ public class AgentControllerTest {
 
     @Test
     public void should_accept_upload_codebase_publication1_when_valid_license() throws Exception {
-        assertUploadCodebasePublication(V1_UPLOAD_CODEBASE);
+        assertUploadPublication(AgentService.PublicationType.CODEBASE, V1_UPLOAD_CODEBASE);
     }
 
     @Test
     public void should_accept_upload_codebase_publication2_when_valid_license() throws Exception {
-        assertUploadCodebasePublication(V2_UPLOAD_CODEBASE);
-    }
-
-    private void assertUploadCodebasePublication(String endpoint) throws Exception {
-        String licenseKey = "licenseKey";
-        String fingerprint = "fingerprint";
-        int publicationSize = 10000;
-        String originalFilename = "codekvast-codebase-9128371293719273.ser";
-
-        MockMultipartFile publicationFile = new MockMultipartFile(PARAM_PUBLICATION_FILE, originalFilename, APPLICATION_OCTET_STREAM_VALUE,
-                                                                  "CodeBasePublicationContent".getBytes());
-
-        mockMvc.perform(fileUpload(endpoint)
-                            .file(publicationFile)
-                            .param(PARAM_LICENSE_KEY, licenseKey)
-                            .param(PARAM_FINGERPRINT, fingerprint)
-                            .param(PARAM_PUBLICATION_SIZE, publicationSize + ""))
-               .andExpect(status().isOk())
-               .andExpect(content().string("OK"));
-
-        verify(agentService).saveCodeBasePublication(eq(licenseKey), eq(publicationSize), any(InputStream.class));
+        assertUploadPublication(AgentService.PublicationType.CODEBASE, V2_UPLOAD_CODEBASE);
     }
 
     @Test
     public void should_accept_upload_invocation_data_publication1_when_valid_license() throws Exception {
-        assertUploadInvocationDataPublication(V1_UPLOAD_INVOCATION_DATA);
+        assertUploadPublication(AgentService.PublicationType.INVOCATIONS, V1_UPLOAD_INVOCATION_DATA);
     }
 
     @Test
     public void should_accept_upload_invocation_data_publication2_when_valid_license() throws Exception {
-        assertUploadInvocationDataPublication(V2_UPLOAD_INVOCATION_DATA);
+        assertUploadPublication(AgentService.PublicationType.INVOCATIONS, V2_UPLOAD_INVOCATION_DATA);
     }
 
-    private void assertUploadInvocationDataPublication(String endpoint) throws Exception {
+    private void assertUploadPublication(AgentService.PublicationType publicationType, String endpoint) throws Exception {
         String licenseKey = "licenseKey";
         String fingerprint = "fingerprint";
         int publicationSize = 10000;
-        String originalFilename = "codekvast-invocations-9128371293719273.ser";
+        String originalFilename = String.format("codekvast-%s-9128371293719273.ser", publicationType);
 
         MockMultipartFile multipartFile =
             new MockMultipartFile(PARAM_PUBLICATION_FILE,
                                   originalFilename,
                                   APPLICATION_OCTET_STREAM_VALUE,
-                                  "InvocationDataPublicationContent".getBytes());
+                                  ("PublicationContent-" + publicationType).getBytes());
 
         mockMvc.perform(fileUpload(endpoint)
                             .file(multipartFile)
@@ -162,6 +142,6 @@ public class AgentControllerTest {
                .andExpect(status().isOk())
                .andExpect(content().string("OK"));
 
-        verify(agentService).saveInvocationDataPublication(eq(licenseKey), eq(publicationSize), any(InputStream.class));
+        verify(agentService).savePublication(eq(publicationType), eq(licenseKey), eq(publicationSize), any(InputStream.class));
     }
 }

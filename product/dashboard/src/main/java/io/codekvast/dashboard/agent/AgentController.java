@@ -34,8 +34,10 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.IOException;
 
+import static io.codekvast.dashboard.agent.AgentService.PublicationType.CODEBASE;
+import static io.codekvast.dashboard.agent.AgentService.PublicationType.INVOCATIONS;
+import static io.codekvast.dashboard.util.LoggingUtils.humanReadableByteCount;
 import static io.codekvast.javaagent.model.Endpoints.Agent.*;
-import static java.lang.String.format;
 import static org.springframework.http.MediaType.*;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
@@ -77,10 +79,7 @@ public class AgentController {
         @RequestParam(PARAM_PUBLICATION_SIZE) Integer publicationSize,
         @RequestParam(PARAM_PUBLICATION_FILE) MultipartFile file) throws IOException {
 
-        logger.debug("Received {} ({} methods, {}) with licenseKey={}, fingerprint={}", file.getOriginalFilename(),
-                  humanReadableByteCount(file.getSize()), publicationSize, licenseKey, fingerprint);
-
-        agentService.saveCodeBasePublication(licenseKey, publicationSize, file.getInputStream());
+        saveUploadedPublication(CODEBASE, licenseKey, fingerprint, publicationSize, file);
 
         return "OK";
     }
@@ -93,10 +92,7 @@ public class AgentController {
         @RequestParam(PARAM_PUBLICATION_SIZE) Integer publicationSize,
         @RequestParam(PARAM_PUBLICATION_FILE) MultipartFile file) throws IOException {
 
-        logger.debug("Received {} ({} methods, {}) with licenseKey={}, fingerprint={}", file.getOriginalFilename(),
-                  humanReadableByteCount(file.getSize()), publicationSize, licenseKey, fingerprint);
-
-        agentService.saveCodeBasePublication(licenseKey, publicationSize, file.getInputStream());
+        saveUploadedPublication(CODEBASE, licenseKey, fingerprint, publicationSize, file);
 
         return "OK";
     }
@@ -109,10 +105,7 @@ public class AgentController {
         @RequestParam(PARAM_PUBLICATION_SIZE) Integer publicationSize,
         @RequestParam(PARAM_PUBLICATION_FILE) MultipartFile file) throws IOException {
 
-        logger.debug("Received {} ({} invocations, {}) with licenseKey={}, fingerprint={}", file.getOriginalFilename(),
-                     humanReadableByteCount(file.getSize()), publicationSize, licenseKey, fingerprint);
-
-        agentService.saveInvocationDataPublication(licenseKey, publicationSize, file.getInputStream());
+        saveUploadedPublication(INVOCATIONS, licenseKey, fingerprint, publicationSize, file);
 
         return "OK";
     }
@@ -125,21 +118,19 @@ public class AgentController {
         @RequestParam(PARAM_PUBLICATION_SIZE) Integer publicationSize,
         @RequestParam(PARAM_PUBLICATION_FILE) MultipartFile file) throws IOException {
 
-        logger.debug("Received {} ({} invocations, {}) with licenseKey={}, fingerprint={}", file.getOriginalFilename(),
-                     humanReadableByteCount(file.getSize()), publicationSize, licenseKey, fingerprint);
-
-        agentService.saveInvocationDataPublication(licenseKey, publicationSize, file.getInputStream());
+        saveUploadedPublication(INVOCATIONS, licenseKey, fingerprint, publicationSize, file);
 
         return "OK";
     }
 
-    private String humanReadableByteCount(long bytes) {
-        if (bytes < 1000) {
-            return bytes + " B";
-        }
-        int exponent = (int) (Math.log(bytes) / Math.log(1000));
-        String unit = " kMGTPE".charAt(exponent) + "B";
-        return format("%.1f %s", bytes / Math.pow(1000, exponent), unit);
+    private void saveUploadedPublication(AgentService.PublicationType publicationType, String licenseKey, String fingerprint,
+                                         Integer publicationSize, MultipartFile file) throws IOException {
+
+        logger.debug("Received {} ({} {}, {}) with licenseKey={}, fingerprint={}",
+                     file.getOriginalFilename(), publicationSize, publicationType,
+                     humanReadableByteCount(file.getSize()), licenseKey, fingerprint);
+
+        agentService.savePublication(publicationType, licenseKey, publicationSize, file.getInputStream());
     }
 
 }

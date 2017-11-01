@@ -113,18 +113,18 @@ public class AgentServiceImpl implements AgentService {
 
         Integer numOtherEnabledLiveAgents =
             jdbcTemplate.queryForObject("SELECT COUNT(1) FROM agent_state " +
-                                          "WHERE enabled = TRUE AND customerId = ? AND nextPollExpectedAt >= ? AND jvmUuid != ? ",
-                                      Integer.class, customerId, Timestamp.from(now.minusSeconds(10)), jvmUuid);
+                                            "WHERE enabled = TRUE AND customerId = ? AND nextPollExpectedAt >= ? AND jvmUuid != ? ",
+                                        Integer.class, customerId, Timestamp.from(now.minusSeconds(10)), jvmUuid);
 
         String planName = customerData.getPricePlan().getName();
         int maxNumberOfAgents = customerData.getPricePlan().getMaxNumberOfAgents();
         boolean enabled = numOtherEnabledLiveAgents < maxNumberOfAgents;
         if (!enabled) {
-            logger.warn("Customer {} has already {} live agents (max for price plan '{}' is {})", customerId, numOtherEnabledLiveAgents, planName,
-                     maxNumberOfAgents);
+            logger.warn("Customer {} has already {} live agents (max for price plan '{}' is {})", customerId, numOtherEnabledLiveAgents,
+                        planName, maxNumberOfAgents);
         } else {
-            logger.debug("Customer {} now has {} live agents (max for price plan '{}' is {})", customerId, numOtherEnabledLiveAgents + 1, planName,
-                      maxNumberOfAgents);
+            logger.debug("Customer {} now has {} live agents (max for price plan '{}' is {})", customerId, numOtherEnabledLiveAgents + 1,
+                         planName, maxNumberOfAgents);
         }
 
         jdbcTemplate.update("UPDATE agent_state SET enabled = ? WHERE jvmUuid = ?", enabled, jvmUuid);
@@ -137,30 +137,21 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
-    public File saveCodeBasePublication(@NonNull String licenseKey, int publicationSize,
-                                        InputStream inputStream)
-        throws LicenseViolationException, IOException {
+    public File savePublication(@NonNull PublicationType publicationType, @NonNull String licenseKey, int publicationSize,
+                                InputStream inputStream) throws LicenseViolationException, IOException {
+
         customerService.assertPublicationSize(licenseKey, publicationSize);
 
-        return doSaveInputStream(inputStream, "codebase-");
+        return doSaveInputStream(publicationType, inputStream);
     }
 
-    @Override
-    public File saveInvocationDataPublication(@NonNull String licenseKey, int publicationSize,
-                                              InputStream inputStream)
-        throws LicenseViolationException, IOException {
-        customerService.assertPublicationSize(licenseKey, publicationSize);
-
-        return doSaveInputStream(inputStream, "invocations-");
-    }
-
-    private File doSaveInputStream(InputStream inputStream, String prefix) throws IOException {
+    private File doSaveInputStream(PublicationType publicationType, InputStream inputStream) throws IOException {
         createDirectory(settings.getQueuePath());
 
-        File result = File.createTempFile(prefix, ".ser", settings.getQueuePath());
+        File result = File.createTempFile(publicationType + "-", ".ser", settings.getQueuePath());
         Files.copy(inputStream, result.toPath(), REPLACE_EXISTING);
 
-        logger.debug("Saved uploaded publication to {}", result);
+        logger.debug("Saved uploaded {} publication to {}", publicationType, result);
         return result;
     }
 
