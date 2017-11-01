@@ -266,12 +266,6 @@ public class ImportDAOImpl implements ImportDAO {
         if (name.equals("toString") && noParameters) {
             return SignatureStatus1.EXCLUDED_SINCE_TRIVIAL;
         }
-        if (name.startsWith("get") && noParameters) {
-            return SignatureStatus1.EXCLUDED_SINCE_TRIVIAL;
-        }
-        if (name.startsWith("set") && singleParameter) {
-            return SignatureStatus1.EXCLUDED_SINCE_TRIVIAL;
-        }
 
         return SignatureStatus1.NOT_INVOKED;
     }

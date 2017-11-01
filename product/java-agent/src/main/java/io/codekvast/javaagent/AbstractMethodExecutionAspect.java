@@ -49,9 +49,7 @@ public abstract class AbstractMethodExecutionAspect {
 
     @Pointcut("execution(int compareTo(Object)) " +
             "|| execution(boolean equals(Object)) " +
-            "|| execution(* get*()) " +
             "|| execution(int hashCode()) " +
-            "|| execution(void set*(*)) " +
             "|| execution(String toString()) ")
     public void trivialMethodExecution() {
     }
