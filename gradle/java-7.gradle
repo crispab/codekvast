@@ -4,5 +4,5 @@ sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 tasks.withType(JavaCompile) {
-    options.bootClasspath = "$rootDir/tools/java-7-openjdk-x86_64/jre/lib/rt.jar"
+    options.bootstrapClasspath = files("$rootDir/tools/java-7-openjdk-x86_64/jre/lib/rt.jar")
 }
