@@ -30,13 +30,12 @@ import io.codekvast.dashboard.customer.PricePlan;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,24 +51,13 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
  * @author olle.hallin@crisp.se
  */
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class AgentServiceImpl implements AgentService {
 
     private final CodekvastSettings settings;
     private final JdbcTemplate jdbcTemplate;
     private final CustomerService customerService;
-    private final Integer fileImportIntervalSeconds;
-
-    @Inject
-    public AgentServiceImpl(CodekvastSettings settings, JdbcTemplate jdbcTemplate,
-                            CustomerService customerService,
-                            @Value("${codekvast.fileImportIntervalSeconds}")
-                                Integer fileImportIntervalSeconds) {
-        this.settings = settings;
-        this.jdbcTemplate = jdbcTemplate;
-        this.customerService = customerService;
-        this.fileImportIntervalSeconds = fileImportIntervalSeconds;
-    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -104,7 +92,7 @@ public class AgentServiceImpl implements AgentService {
         // Disable all agents that have been dead for more than two file import intervals...
         int updated = jdbcTemplate.update("UPDATE agent_state SET enabled = FALSE " +
                                               "WHERE customerId = ? AND nextPollExpectedAt < ? AND enabled = TRUE ",
-                                          customerId, Timestamp.from(now.minusSeconds(fileImportIntervalSeconds * 2)));
+                                          customerId, Timestamp.from(now.minusSeconds(settings.getQueuePathPollIntervalSeconds() * 2)));
         if (updated > 0) {
             logger.info("Disabled {} dead agents for {}", updated, customerData);
         }

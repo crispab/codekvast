@@ -24,13 +24,13 @@ package io.codekvast.dashboard.agent;
 import io.codekvast.dashboard.customer.LicenseViolationException;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.inject.Inject;
 import javax.validation.Valid;
 import java.io.IOException;
 
@@ -46,16 +46,12 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  */
 @SuppressWarnings("SameReturnValue")
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(method = POST, consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
 @Slf4j
 public class AgentController {
 
     private final AgentService agentService;
-
-    @Inject
-    public AgentController(AgentService agentService) {
-        this.agentService = agentService;
-    }
 
     @ExceptionHandler
     public ResponseEntity<String> onLicenseViolationException(LicenseViolationException e) {

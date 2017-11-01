@@ -44,15 +44,19 @@ public class AgentServiceImplTest {
     private AgentService service;
 
     @Before
-    public void setUp() {
+    public void beforeTest() {
         MockitoAnnotations.initMocks(this);
+
         settings.setQueuePath(temporaryFolder.getRoot());
-        service = new AgentServiceImpl(settings, jdbcTemplate, customerService, 60);
+        settings.setQueuePathPollIntervalSeconds(60);
+
+        service = new AgentServiceImpl(settings, jdbcTemplate, customerService);
+
         setupCustomerData(null, null);
     }
 
     @Test
-    public void should_return_enabled_publishers_when_below_agent_limit_no_trial_period() throws Exception {
+    public void should_return_enabled_publishers_when_below_agent_limit_no_trial_period() {
         // given
         when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), anyString(), anyObject(), anyString())).thenReturn(1);
 
@@ -68,7 +72,7 @@ public class AgentServiceImplTest {
     }
 
     @Test
-    public void should_return_enabled_publishers_when_below_agent_limit_within_trial_period() throws Exception {
+    public void should_return_enabled_publishers_when_below_agent_limit_within_trial_period() {
         // given
         Instant now = Instant.now();
         setupCustomerData(now.minus(10, DAYS), now.plus(10, DAYS));
@@ -86,7 +90,7 @@ public class AgentServiceImplTest {
     }
 
     @Test
-    public void should_return_disabled_publishers_when_below_agent_limit_after_trial_period_has_expired() throws Exception {
+    public void should_return_disabled_publishers_when_below_agent_limit_after_trial_period_has_expired() {
         // given
         Instant now = Instant.now();
         setupCustomerData(now.minus(10, DAYS), now.minus(1, DAYS));
@@ -104,7 +108,7 @@ public class AgentServiceImplTest {
     }
 
     @Test
-    public void should_return_disabled_publishers_when_above_agent_limit_no_trial_period() throws Exception {
+    public void should_return_disabled_publishers_when_above_agent_limit_no_trial_period() {
         // given
         when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), anyString(), anyObject(), anyString())).thenReturn(10);
 
