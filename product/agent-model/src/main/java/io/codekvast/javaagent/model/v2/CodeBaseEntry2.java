@@ -19,41 +19,56 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.javaagent.model.v1;
+package io.codekvast.javaagent.model.v2;
 
-import lombok.*;
+import io.codekvast.javaagent.model.v1.CodeBaseEntry1;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Value;
 
-import javax.validation.constraints.Min;
 import java.io.Serializable;
-import java.util.Set;
 
 /**
- * Output of the InvocationDataPublisher implementations.
+ * Representation of a code base entry.
  *
  * @author olle.hallin@crisp.se
  */
-@Data
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Setter(AccessLevel.PRIVATE)
-@Builder(toBuilder = true)
-public class InvocationDataPublication implements Serializable {
+@Value
+@Builder
+public class CodeBaseEntry2 implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * The low-level description of the signature.
+     */
+    private final MethodSignature2 methodSignature;
+
+    /**
+     * The visibility of the signature. Package private is coded as 'package-private'.
+     */
     @NonNull
-    private CommonPublicationData commonData;
+    private final String visibility;
 
+    /**
+     * The signature.
+     */
     @NonNull
-    private Set<String> invocations;
+    private final String signature;
 
-    @Min(1_490_000_000_000L)
-    private long recordingIntervalStartedAtMillis;
+    public static CodeBaseEntry2 fromV1Format(@SuppressWarnings("deprecation") CodeBaseEntry1 entry1) {
+        return CodeBaseEntry2.builder()
+                             .methodSignature(MethodSignature2.fromV1Format(entry1.getMethodSignature()))
+                             .visibility(entry1.getVisibility())
+                             .signature(entry1.getSignature())
+                             .build();
+    }
 
-    @Override
-    public String toString() {
-        return String.format(
-            "InvocationDataPublication{commonData=%1$s, invocations.size()=%2$d, recordingIntervalStartedAt=%3$tF:%3$tT%3$tz}",
-            commonData, invocations.size(), recordingIntervalStartedAtMillis);
+    public static CodeBaseEntry2 sampleCodeBaseEntry() {
+        return builder()
+            .methodSignature(MethodSignature2.createSampleMethodSignature())
+            .signature("signature1()")
+            .visibility("public")
+            .build();
     }
 
 }

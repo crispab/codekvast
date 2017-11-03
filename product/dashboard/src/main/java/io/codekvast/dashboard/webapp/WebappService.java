@@ -21,9 +21,9 @@
  */
 package io.codekvast.dashboard.webapp;
 
-import io.codekvast.dashboard.webapp.model.methods.GetMethodsRequest1;
-import io.codekvast.dashboard.webapp.model.methods.GetMethodsResponse1;
-import io.codekvast.dashboard.webapp.model.methods.MethodDescriptor1;
+import io.codekvast.dashboard.webapp.model.methods.GetMethodsRequest;
+import io.codekvast.dashboard.webapp.model.methods.GetMethodsResponse;
+import io.codekvast.dashboard.webapp.model.methods.MethodDescriptor;
 import io.codekvast.dashboard.webapp.model.status.GetStatusResponse1;
 
 import javax.validation.Valid;
@@ -52,15 +52,15 @@ public interface WebappService {
      * @return A response object. Does never return null.
      */
     @NotNull
-    GetMethodsResponse1 getMethods(@Valid GetMethodsRequest1 request);
+    GetMethodsResponse getMethods(@Valid GetMethodsRequest request);
 
     /**
      * Retrieve information about a particular method.
      *
      * @param methodId The primary key of the method.
-     * @return an optional MethodDescriptor1. Does never return null.
+     * @return an optional MethodDescriptor. Does never return null.
      */
-    Optional<MethodDescriptor1> getMethodById(@NotNull Long methodId);
+    Optional<MethodDescriptor> getMethodById(@NotNull Long methodId);
 
     /**
      * Retrieve status for the authenticated customer.

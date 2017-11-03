@@ -24,20 +24,20 @@ package io.codekvast.dashboard.agent;
 import io.codekvast.dashboard.customer.LicenseViolationException;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.inject.Inject;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import java.io.IOException;
 
+import static io.codekvast.dashboard.agent.AgentService.PublicationType.CODEBASE;
+import static io.codekvast.dashboard.agent.AgentService.PublicationType.INVOCATIONS;
+import static io.codekvast.dashboard.util.LoggingUtils.humanReadableByteCount;
 import static io.codekvast.javaagent.model.Endpoints.Agent.*;
-import static java.lang.String.format;
 import static org.springframework.http.MediaType.*;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
@@ -48,26 +48,12 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  */
 @SuppressWarnings("SameReturnValue")
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(method = POST, consumes = APPLICATION_JSON_UTF8_VALUE, produces = APPLICATION_JSON_UTF8_VALUE)
 @Slf4j
 public class AgentController {
 
     private final AgentService agentService;
-
-    @Inject
-    public AgentController(AgentService agentService) {
-        this.agentService = agentService;
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<String> onConstraintValidationException(ConstraintViolationException e) {
-        StringBuilder violations = new StringBuilder();
-        for (ConstraintViolation<?> violation : e.getConstraintViolations()) {
-            violations.append(violation.getMessage()).append("\n");
-        }
-        logger.warn("Invalid request: {}", violations);
-        return ResponseEntity.badRequest().body(violations.toString());
-    }
 
     @ExceptionHandler
     public ResponseEntity<String> onLicenseViolationException(LicenseViolationException e) {
@@ -93,10 +79,20 @@ public class AgentController {
         @RequestParam(PARAM_PUBLICATION_SIZE) Integer publicationSize,
         @RequestParam(PARAM_PUBLICATION_FILE) MultipartFile file) throws IOException {
 
-        logger.debug("Received {} ({} methods, {}) with licenseKey={}, fingerprint={}", file.getOriginalFilename(),
-                  humanReadableByteCount(file.getSize()), publicationSize, licenseKey, fingerprint);
+        saveUploadedPublication(CODEBASE, licenseKey, fingerprint, publicationSize, file);
 
-        agentService.saveCodeBasePublication(licenseKey, publicationSize, file.getInputStream());
+        return "OK";
+    }
+
+    @RequestMapping(value = V2_UPLOAD_CODEBASE, method = POST,
+        consumes = MULTIPART_FORM_DATA_VALUE, produces = TEXT_PLAIN_VALUE)
+    public String uploadCodeBase2(
+        @RequestParam(PARAM_LICENSE_KEY) String licenseKey,
+        @RequestParam(PARAM_FINGERPRINT) String fingerprint,
+        @RequestParam(PARAM_PUBLICATION_SIZE) Integer publicationSize,
+        @RequestParam(PARAM_PUBLICATION_FILE) MultipartFile file) throws IOException {
+
+        saveUploadedPublication(CODEBASE, licenseKey, fingerprint, publicationSize, file);
 
         return "OK";
     }
@@ -109,21 +105,32 @@ public class AgentController {
         @RequestParam(PARAM_PUBLICATION_SIZE) Integer publicationSize,
         @RequestParam(PARAM_PUBLICATION_FILE) MultipartFile file) throws IOException {
 
-        logger.debug("Received {} ({} invocations, {}) with licenseKey={}, fingerprint={}", file.getOriginalFilename(),
-                     humanReadableByteCount(file.getSize()), publicationSize, licenseKey, fingerprint);
-
-        agentService.saveInvocationDataPublication(licenseKey, publicationSize, file.getInputStream());
+        saveUploadedPublication(INVOCATIONS, licenseKey, fingerprint, publicationSize, file);
 
         return "OK";
     }
 
-    private String humanReadableByteCount(long bytes) {
-        if (bytes < 1000) {
-            return bytes + " B";
-        }
-        int exponent = (int) (Math.log(bytes) / Math.log(1000));
-        String unit = " kMGTPE".charAt(exponent) + "B";
-        return format("%.1f %s", bytes / Math.pow(1000, exponent), unit);
+    @RequestMapping(value = V2_UPLOAD_INVOCATION_DATA, method = POST,
+        consumes = MULTIPART_FORM_DATA_VALUE, produces = TEXT_PLAIN_VALUE)
+    public String uploadInvocationData2(
+        @RequestParam(PARAM_LICENSE_KEY) String licenseKey,
+        @RequestParam(PARAM_FINGERPRINT) String fingerprint,
+        @RequestParam(PARAM_PUBLICATION_SIZE) Integer publicationSize,
+        @RequestParam(PARAM_PUBLICATION_FILE) MultipartFile file) throws IOException {
+
+        saveUploadedPublication(INVOCATIONS, licenseKey, fingerprint, publicationSize, file);
+
+        return "OK";
+    }
+
+    private void saveUploadedPublication(AgentService.PublicationType publicationType, String licenseKey, String fingerprint,
+                                         Integer publicationSize, MultipartFile file) throws IOException {
+
+        logger.debug("Received {} ({} {}, {}) with licenseKey={}, fingerprint={}",
+                     file.getOriginalFilename(), publicationSize, publicationType,
+                     humanReadableByteCount(file.getSize()), licenseKey, fingerprint);
+
+        agentService.savePublication(publicationType, licenseKey, publicationSize, file.getInputStream());
     }
 
 }

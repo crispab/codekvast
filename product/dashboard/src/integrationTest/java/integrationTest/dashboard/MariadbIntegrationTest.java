@@ -10,18 +10,19 @@ import io.codekvast.dashboard.customer.CustomerService.LoginRequest;
 import io.codekvast.dashboard.customer.LicenseViolationException;
 import io.codekvast.dashboard.customer.PricePlanDefaults;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
+import io.codekvast.dashboard.file_import.InvocationDataImporter;
 import io.codekvast.dashboard.webapp.WebappService;
-import io.codekvast.dashboard.webapp.model.methods.GetMethodsRequest1;
-import io.codekvast.dashboard.webapp.model.methods.GetMethodsResponse1;
-import io.codekvast.dashboard.webapp.model.methods.MethodDescriptor1;
+import io.codekvast.dashboard.webapp.model.methods.GetMethodsRequest;
+import io.codekvast.dashboard.webapp.model.methods.GetMethodsResponse;
+import io.codekvast.dashboard.webapp.model.methods.MethodDescriptor;
 import io.codekvast.dashboard.webapp.model.status.AgentDescriptor1;
 import io.codekvast.dashboard.webapp.model.status.GetStatusResponse1;
-import io.codekvast.javaagent.model.v1.CodeBaseEntry;
-import io.codekvast.javaagent.model.v1.CodeBasePublication;
-import io.codekvast.javaagent.model.v1.CommonPublicationData;
-import io.codekvast.javaagent.model.v1.SignatureStatus;
+import io.codekvast.javaagent.model.v1.CodeBaseEntry1;
+import io.codekvast.javaagent.model.v1.CodeBasePublication1;
+import io.codekvast.javaagent.model.v1.CommonPublicationData1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
+import io.codekvast.javaagent.model.v2.*;
 import io.codekvast.testsupport.docker.DockerContainer;
 import io.codekvast.testsupport.docker.MariaDbContainerReadyChecker;
 import org.flywaydb.core.Flyway;
@@ -46,6 +47,7 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
@@ -121,6 +123,9 @@ public class MariadbIntegrationTest {
     private CodeBaseImporter codeBaseImporter;
 
     @Inject
+    private InvocationDataImporter invocationDataImporter;
+
+    @Inject
     private TestDataGenerator testDataGenerator;
 
     @Before
@@ -146,7 +151,7 @@ public class MariadbIntegrationTest {
 
         // when
         int methodId = 0;
-        for (SignatureStatus status : SignatureStatus.values()) {
+        for (SignatureStatus2 status : SignatureStatus2.values()) {
             methodId += 1;
             jdbcTemplate.update("INSERT INTO invocations(customerId, applicationId, methodId, jvmId, invokedAtMillis, " +
                                     "invocationCount, status) VALUES(1, 11, ?, 1, ?, 0, ?)",
@@ -154,7 +159,7 @@ public class MariadbIntegrationTest {
         }
 
         // then
-        assertThat("Wrong number of invocations rows", countRowsInTable("invocations"), is(SignatureStatus.values().length));
+        assertThat("Wrong number of invocations rows", countRowsInTable("invocations"), is(SignatureStatus2.values().length));
     }
 
     @Test
@@ -350,27 +355,71 @@ public class MariadbIntegrationTest {
         assertThat(customerData.isTrialPeriodExpired(now.plus(days + 1, DAYS)), is(true));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
-    public void should_import_codeBasePublication() {
+    public void should_import_codeBasePublication1() {
         //@formatter:off
-        CodeBasePublication publication = CodeBasePublication.builder()
-            .commonData(CommonPublicationData.sampleCommonPublicationData())
-            .entries(Arrays.asList(CodeBaseEntry.sampleCodeBaseEntry()))
+        CodeBasePublication1 publication = CodeBasePublication1.builder()
+            .commonData(CommonPublicationData1.sampleCommonPublicationData())
+            .entries(Arrays.asList(CodeBaseEntry1.sampleCodeBaseEntry()))
             .overriddenSignatures(Collections.singletonMap("signature", "overriddenBySignature"))
             .strangeSignatures(Collections.singletonMap("rawStrangeSignature", "normalizedStrangeSignature"))
             .build();
         //@formatter:on
+
+        codeBaseImporter.importPublication(CodeBasePublication2.fromV1Format(publication));
+    }
+
+    @Test
+    public void should_import_codeBasePublication2() {
+        //@formatter:off
+        CodeBasePublication2 publication = CodeBasePublication2.builder()
+            .commonData(CommonPublicationData2.sampleCommonPublicationData())
+            .entries(Arrays.asList(CodeBaseEntry2.sampleCodeBaseEntry()))
+            .build();
+        //@formatter:on
+
         codeBaseImporter.importPublication(publication);
     }
 
-    // TODO: add tests for InvocationDataPublication import
+    @Test
+    public void should_import_codeBasePublication2_after_invocationDataPublication() {
+        //@formatter:off
+        CodeBasePublication2 codeBasePublication = CodeBasePublication2.builder()
+            .commonData(CommonPublicationData2.sampleCommonPublicationData())
+            .entries(Arrays.asList(CodeBaseEntry2.sampleCodeBaseEntry()))
+            .build();
+
+        InvocationDataPublication2 invocationDataPublication = InvocationDataPublication2.builder()
+            .commonData(CommonPublicationData2.sampleCommonPublicationData())
+            .recordingIntervalStartedAtMillis(System.currentTimeMillis())
+            .invocations(codeBasePublication.getEntries().stream().map(CodeBaseEntry2::getSignature).collect(Collectors.toSet()))
+            .build();
+        //@formatter:on
+
+        invocationDataImporter.importPublication(invocationDataPublication);
+        codeBaseImporter.importPublication(codeBasePublication);
+    }
+
+    @Test
+    public void should_import_invocationDataPublication() {
+        //@formatter:off
+        InvocationDataPublication2 publication = InvocationDataPublication2.builder()
+            .commonData(CommonPublicationData2.sampleCommonPublicationData())
+            .recordingIntervalStartedAtMillis(System.currentTimeMillis())
+            .invocations(Collections.singleton("signature"))
+            .build();
+        //@formatter:on
+
+        invocationDataImporter.importPublication(publication);
+    }
 
     @Test(expected = ConstraintViolationException.class)
     public void should_throw_when_querying_signature_with_too_short_signature() {
         // given
 
         // when query with too short signature
-        webappService.getMethods(GetMethodsRequest1.defaults().toBuilder().signature("").build());
+        webappService.getMethods(GetMethodsRequest.defaults().toBuilder().signature("").build());
     }
 
     @Test
@@ -378,8 +427,8 @@ public class MariadbIntegrationTest {
         // given
 
         // when find exact signature
-        GetMethodsResponse1 response = webappService.getMethods(
-            GetMethodsRequest1.defaults().toBuilder().signature("foobar").build());
+        GetMethodsResponse response = webappService.getMethods(
+            GetMethodsRequest.defaults().toBuilder().signature("foobar").build());
 
         // then
         assertThat(response.getMethods(), hasSize(0));
@@ -393,7 +442,7 @@ public class MariadbIntegrationTest {
         // List<Long> validIds = jdbcTemplate.query("SELECT id FROM methods", (rs, rowNum) -> rs.getLong(1));
 
         // when
-        // Optional<MethodDescriptor1> result = webappService.getMethodById(validIds.get(0));
+        // Optional<MethodDescriptor> result = webappService.getMethodById(validIds.get(0));
 
         // then
         // assertThat(result.isPresent(), is(true));
@@ -405,7 +454,7 @@ public class MariadbIntegrationTest {
         // generateQueryTestData();
 
         // when
-        Optional<MethodDescriptor1> result = webappService.getMethodById(-1L);
+        Optional<MethodDescriptor> result = webappService.getMethodById(-1L);
 
         // then
         assertThat(result.isPresent(), is(false));

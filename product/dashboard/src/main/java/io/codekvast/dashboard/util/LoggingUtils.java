@@ -19,26 +19,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.javaagent.model;
+package io.codekvast.dashboard.util;
+
+import lombok.experimental.UtilityClass;
+
+import static java.lang.String.format;
 
 /**
- * Definition of the HTTP endpoints and parameters offered by the Codekvast server's AgentController
- *
  * @author olle.hallin@crisp.se
  */
-@SuppressWarnings({"MarkerInterface","InnerClassTooDeeplyNested"})
-public interface Endpoints {
+@UtilityClass
+public class LoggingUtils {
 
-    interface Agent {
-        String V1_POLL_CONFIG = "/javaagent/v1/pollConfig";
-        String V1_UPLOAD_CODEBASE = "/javaagent/v1/uploadCodeBase";
-        String V2_UPLOAD_CODEBASE = "/javaagent/v2/uploadCodeBase";
-        String V1_UPLOAD_INVOCATION_DATA = "/javaagent/v1/uploadInvocationData";
-        String V2_UPLOAD_INVOCATION_DATA = "/javaagent/v2/uploadInvocationData";
-
-        String PARAM_FINGERPRINT = "fingerprint";
-        String PARAM_LICENSE_KEY = "licenseKey";
-        String PARAM_PUBLICATION_SIZE = "numMethods";
-        String PARAM_PUBLICATION_FILE = "publicationFile";
+    /**
+     * Converts a number of bytes to a human readable string. Example: 12345 i converted to "12,3 kB" It uses the default locale for
+     * formatting the float.
+     *
+     * @param bytes The byte count
+     * @return A human readable string rounded to one decimal.
+     */
+    public static String humanReadableByteCount(long bytes) {
+        if (bytes < 1000) {
+            return bytes + " B";
+        }
+        int exponent = (int) (Math.log(bytes) / Math.log(1000));
+        String unit = " kMGTPE".charAt(exponent) + "B";
+        return format("%.1f %s", bytes / Math.pow(1000, exponent), unit);
     }
+
 }

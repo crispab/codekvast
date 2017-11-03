@@ -23,9 +23,9 @@ task frontendTest(type: Exec) {
 
     def timestampFile = file("$buildDir/${name}.timestamp")
 
-    inputs.file 'src/webapp/package.json'
-    inputs.file 'src/webapp/tsconfig.json'
-    inputs.file 'src/webapp/webpack.config.json'
+    inputs.file file('src/webapp/package.json')
+    inputs.file file('src/webapp/tsconfig.json')
+    inputs.file file('src/webapp/webpack.config.js')
     inputs.files fileTree('src/webapp/config')
     inputs.files fileTree('src/webapp/src')
     outputs.file timestampFile
@@ -50,9 +50,9 @@ task frontendLint(type: Exec) {
 
     def timestampFile = file("$buildDir/${name}.timestamp")
 
-    inputs.file 'src/webapp/package.json'
-    inputs.file 'src/webapp/tsconfig.json'
-    inputs.file 'src/webapp/tslint.json'
+    inputs.file file('src/webapp/package.json')
+    inputs.file file('src/webapp/tsconfig.json')
+    inputs.file file('src/webapp/tslint.json')
     inputs.files fileTree('src/webapp/config')
     inputs.files fileTree('src/webapp/src')
     inputs.property "version", codekvastDisplayVersion
@@ -87,7 +87,7 @@ task frontendWebpack(type: Exec) {
 
     inputs.file file('src/webapp/package.json')
     inputs.file file('src/webapp/tsconfig.json')
-    inputs.file file('src/webapp/webpack.config.json')
+    inputs.file file('src/webapp/webpack.config.js')
     inputs.dir file('src/webapp/config')
     inputs.dir file('src/webapp/src')
     inputs.dir file('src/webapp/static')

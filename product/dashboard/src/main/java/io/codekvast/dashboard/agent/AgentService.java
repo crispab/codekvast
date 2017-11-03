@@ -22,10 +22,10 @@
 package io.codekvast.dashboard.agent;
 
 import io.codekvast.dashboard.customer.LicenseViolationException;
-import io.codekvast.javaagent.model.v1.CodeBasePublication;
-import io.codekvast.javaagent.model.v1.InvocationDataPublication;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
+import io.codekvast.javaagent.model.v2.CodeBasePublication2;
+import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +35,15 @@ import java.io.InputStream;
  * Handles requests from the {@link AgentController}.
  */
 public interface AgentService {
+
+    enum PublicationType {
+        CODEBASE, INVOCATIONS;
+
+        @Override
+        public String toString() {
+            return name().toLowerCase();
+        }
+    }
 
     /**
      * What config parameters should this javaagent use?
@@ -46,28 +55,18 @@ public interface AgentService {
     GetConfigResponse1 getConfig(GetConfigRequest1 request) throws LicenseViolationException;
 
     /**
-     * Save an uploaded {@link CodeBasePublication} into the import area where it will be processed by another thread.
+     * Save an uploaded publication into the import area where it will be processed by another thread.
      *
-     * @param licenseKey          The javaagent's licenseKey.
-     * @param publicationSize     The size of the publication. Used for price plan enforcement.
-     * @param inputStream         The data input stream.  @return The resulting file or null of the code base was already uploaded.
+     * @param publicationType The type of publication.
+     * @param licenseKey      The javaagent's licenseKey.
+     * @param publicationSize The size of the publication. Used for price plan enforcement.
+     * @param inputStream     The data input stream.  @return The resulting file or null of the code base was already uploaded.
      * @return the resulting file in the queue directory.
      * @throws LicenseViolationException If invalid license or license violations.
      * @throws IOException               If failure to create the file.
+     * @see CodeBasePublication2
+     * @see InvocationDataPublication2
      */
-    File saveCodeBasePublication(String licenseKey, int publicationSize, InputStream inputStream)
-        throws LicenseViolationException, IOException;
-
-    /**
-     * Save an uploaded {@link InvocationDataPublication} into the import area where it will be processed by another thread.
-     *
-     * @param licenseKey          The javaagent's licenseKey.
-     * @param publicationSize     The size of the publication. Used for price plan enforcement.
-     * @param inputStream         The data input stream.  @return The resulting file or null if the invocation data was already uploaded.
-     * @return the resulting file in the queue directory.
-     * @throws LicenseViolationException If invalid license or license violations
-     * @throws IOException               If failure to create the file.
-     */
-    File saveInvocationDataPublication(String licenseKey, int publicationSize, InputStream inputStream)
+    File savePublication(PublicationType publicationType, String licenseKey, int publicationSize, InputStream inputStream)
         throws LicenseViolationException, IOException;
 }

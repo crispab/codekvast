@@ -19,26 +19,45 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.javaagent.model;
+package io.codekvast.dashboard.webapp.model.methods;
+
+import lombok.Builder;
+import lombok.ToString;
+import lombok.Value;
+
+import java.util.List;
 
 /**
- * Definition of the HTTP endpoints and parameters offered by the Codekvast server's AgentController
+ * Response to {@link GetMethodsRequest}.
  *
  * @author olle.hallin@crisp.se
  */
-@SuppressWarnings({"MarkerInterface","InnerClassTooDeeplyNested"})
-public interface Endpoints {
+@Value
+@Builder
+@ToString(exclude = "methods")
+public class GetMethodsResponse {
+    /**
+     * When was the request received? Millis since epoch.
+     */
+    private final Long timestamp;
 
-    interface Agent {
-        String V1_POLL_CONFIG = "/javaagent/v1/pollConfig";
-        String V1_UPLOAD_CODEBASE = "/javaagent/v1/uploadCodeBase";
-        String V2_UPLOAD_CODEBASE = "/javaagent/v2/uploadCodeBase";
-        String V1_UPLOAD_INVOCATION_DATA = "/javaagent/v1/uploadInvocationData";
-        String V2_UPLOAD_INVOCATION_DATA = "/javaagent/v2/uploadInvocationData";
+    /**
+     * What was the original request?
+     */
+    private final GetMethodsRequest request;
 
-        String PARAM_FINGERPRINT = "fingerprint";
-        String PARAM_LICENSE_KEY = "licenseKey";
-        String PARAM_PUBLICATION_SIZE = "numMethods";
-        String PARAM_PUBLICATION_FILE = "publicationFile";
-    }
+    /**
+     * How long did it take to execute the request?
+     */
+    private final Long queryTimeMillis;
+
+    /**
+     * How many methods were found?
+     */
+    private final int numMethods;
+
+    /**
+     * The resulting methods.
+     */
+    private final List<MethodDescriptor> methods;
 }

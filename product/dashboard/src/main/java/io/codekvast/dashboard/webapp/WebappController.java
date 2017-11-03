@@ -24,9 +24,9 @@ package io.codekvast.dashboard.webapp;
 import io.codekvast.dashboard.bootstrap.CodekvastSettings;
 import io.codekvast.dashboard.security.SecurityConfig;
 import io.codekvast.dashboard.security.WebappTokenProvider;
-import io.codekvast.dashboard.webapp.model.methods.GetMethodsRequest1;
-import io.codekvast.dashboard.webapp.model.methods.GetMethodsResponse1;
-import io.codekvast.dashboard.webapp.model.methods.MethodDescriptor1;
+import io.codekvast.dashboard.webapp.model.methods.GetMethodsRequest;
+import io.codekvast.dashboard.webapp.model.methods.GetMethodsResponse;
+import io.codekvast.dashboard.webapp.model.methods.MethodDescriptor;
 import io.codekvast.dashboard.webapp.model.status.GetStatusResponse1;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -81,8 +81,8 @@ public class WebappController {
     }
 
     @RequestMapping(method = GET, path = WEBAPP_V1_METHODS)
-    public ResponseEntity<GetMethodsResponse1> getMethods1(@RequestParam(value = "signature", defaultValue = "%") String signature,
-                                                           @RequestParam(name = "maxResults", defaultValue = WebappService
+    public ResponseEntity<GetMethodsResponse> getMethods1(@RequestParam(value = "signature", defaultValue = "%") String signature,
+                                                          @RequestParam(name = "maxResults", defaultValue = WebappService
                                                                .DEFAULT_MAX_RESULTS_STR)
                                                                Integer maxResults) {
         return ResponseEntity.ok()
@@ -91,10 +91,10 @@ public class WebappController {
     }
 
     @RequestMapping(method = GET, path = WEBAPP_V1_METHOD)
-    public ResponseEntity<MethodDescriptor1> getMethod1(@PathVariable(value = "id") Long methodId) {
+    public ResponseEntity<MethodDescriptor> getMethod1(@PathVariable(value = "id") Long methodId) {
         long startedAt = System.currentTimeMillis();
 
-        Optional<MethodDescriptor1> result = webappService.getMethodById(methodId);
+        Optional<MethodDescriptor> result = webappService.getMethodById(methodId);
 
         logger.debug("{} method with id={} in {} ms", result.map(methodDescriptor1 -> "Found").orElse("Could not find"),
                   methodId, System.currentTimeMillis() - startedAt);
@@ -130,10 +130,10 @@ public class WebappController {
         return ResponseEntity.ok(Boolean.toString(settings.isDemoMode()));
     }
 
-    private GetMethodsResponse1 doGetMethods(String signature, Integer maxResults) {
-        GetMethodsRequest1 request = GetMethodsRequest1.defaults().toBuilder().signature(signature).maxResults(maxResults).build();
+    private GetMethodsResponse doGetMethods(String signature, Integer maxResults) {
+        GetMethodsRequest request = GetMethodsRequest.defaults().toBuilder().signature(signature).maxResults(maxResults).build();
 
-        GetMethodsResponse1 response = webappService.getMethods(request);
+        GetMethodsResponse response = webappService.getMethods(request);
 
         logger.debug("Response: {}", response);
         return response;

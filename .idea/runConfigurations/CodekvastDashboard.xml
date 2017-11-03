@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="CodekvastDashboard" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+    <extension name="krasa.grepconsole.plugin.runConfiguration.GrepRunConfigurationExtension" selectedProfileId="0" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="io.codekvast.dashboard.CodekvastDashboard" />
-    <option name="SHOW_IN_DASHBOARD" value="true" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <additionalParameters>
       <param>

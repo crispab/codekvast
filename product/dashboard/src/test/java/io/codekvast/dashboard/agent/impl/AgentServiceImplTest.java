@@ -44,15 +44,19 @@ public class AgentServiceImplTest {
     private AgentService service;
 
     @Before
-    public void setUp() {
+    public void beforeTest() {
         MockitoAnnotations.initMocks(this);
+
         settings.setQueuePath(temporaryFolder.getRoot());
-        service = new AgentServiceImpl(settings, jdbcTemplate, customerService, 60);
+        settings.setQueuePathPollIntervalSeconds(60);
+
+        service = new AgentServiceImpl(settings, jdbcTemplate, customerService);
+
         setupCustomerData(null, null);
     }
 
     @Test
-    public void should_return_enabled_publishers_when_below_agent_limit_no_trial_period() throws Exception {
+    public void should_return_enabled_publishers_when_below_agent_limit_no_trial_period() {
         // given
         when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), anyString(), anyObject(), anyString())).thenReturn(1);
 
@@ -68,7 +72,7 @@ public class AgentServiceImplTest {
     }
 
     @Test
-    public void should_return_enabled_publishers_when_below_agent_limit_within_trial_period() throws Exception {
+    public void should_return_enabled_publishers_when_below_agent_limit_within_trial_period() {
         // given
         Instant now = Instant.now();
         setupCustomerData(now.minus(10, DAYS), now.plus(10, DAYS));
@@ -86,7 +90,7 @@ public class AgentServiceImplTest {
     }
 
     @Test
-    public void should_return_disabled_publishers_when_below_agent_limit_after_trial_period_has_expired() throws Exception {
+    public void should_return_disabled_publishers_when_below_agent_limit_after_trial_period_has_expired() {
         // given
         Instant now = Instant.now();
         setupCustomerData(now.minus(10, DAYS), now.minus(1, DAYS));
@@ -104,7 +108,7 @@ public class AgentServiceImplTest {
     }
 
     @Test
-    public void should_return_disabled_publishers_when_above_agent_limit_no_trial_period() throws Exception {
+    public void should_return_disabled_publishers_when_above_agent_limit_no_trial_period() {
         // given
         when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), anyString(), anyObject(), anyString())).thenReturn(10);
 
@@ -126,7 +130,7 @@ public class AgentServiceImplTest {
         doThrow(new LicenseViolationException("stub")).when(customerService).assertPublicationSize(anyString(), eq(publicationSize));
 
         // when
-        service.saveCodeBasePublication("key", publicationSize, null);
+        service.savePublication(AgentService.PublicationType.CODEBASE, "key", publicationSize, null);
     }
 
     @Test
@@ -135,9 +139,8 @@ public class AgentServiceImplTest {
         String contents = "Dummy Code Base Publication";
 
         // when
-        File resultingFile = service.saveCodeBasePublication("key",
-                                                             1000,
-                                                             new ByteArrayInputStream(contents.getBytes()));
+        File resultingFile = service.savePublication(AgentService.PublicationType.CODEBASE, "key", 1000,
+                                                     new ByteArrayInputStream(contents.getBytes()));
 
         // then
         assertThat(resultingFile, notNullValue());
@@ -147,25 +150,37 @@ public class AgentServiceImplTest {
         assertThat(resultingFile.length(), is((long) contents.length()));
     }
 
-    @Test(expected = NullPointerException.class)
-    public void should_reject_null_codebase_licenseKey() throws Exception {
-        service.saveCodeBasePublication(null, 0, null);
+    @Test
+    public void should_save_uploaded_invocations_no_license() throws Exception {
+        // given
+        String contents = "Dummy Code Base Publication";
+
+        // when
+        File resultingFile = service.savePublication(AgentService.PublicationType.INVOCATIONS, "key", 1000,
+                                                     new ByteArrayInputStream(contents.getBytes()));
+
+        // then
+        assertThat(resultingFile, notNullValue());
+        assertThat(resultingFile.getName(), startsWith("invocations-"));
+        assertThat(resultingFile.getName(), endsWith(".ser"));
+        assertThat(resultingFile.exists(), is(true));
+        assertThat(resultingFile.length(), is((long) contents.length()));
     }
 
     @Test(expected = NullPointerException.class)
-    public void should_reject_null_invocation_data_licenseKey() throws Exception {
-        service.saveInvocationDataPublication(null, 0, null);
+    public void should_reject_null_licenseKey() throws Exception {
+        service.savePublication(AgentService.PublicationType.CODEBASE, null, 0, null);
     }
 
     private void setupCustomerData(Instant collectionStartedAt, Instant trialPeriodEndsAt) {
         CustomerData customerData = CustomerData.builder()
-                                         .customerId(1L)
-                                         .customerName("name")
-                                         .source("source")
-                                         .pricePlan(PricePlan.of(PricePlanDefaults.TEST))
-                                         .collectionStartedAt(collectionStartedAt)
-                                         .trialPeriodEndsAt(trialPeriodEndsAt)
-                                         .build();
+                                                .customerId(1L)
+                                                .customerName("name")
+                                                .source("source")
+                                                .pricePlan(PricePlan.of(PricePlanDefaults.TEST))
+                                                .collectionStartedAt(collectionStartedAt)
+                                                .trialPeriodEndsAt(trialPeriodEndsAt)
+                                                .build();
 
         when(customerService.getCustomerDataByLicenseKey(anyString())).thenReturn(customerData);
         when(customerService.registerAgentDataPublication(any(CustomerData.class), any(Instant.class))).thenReturn(customerData);

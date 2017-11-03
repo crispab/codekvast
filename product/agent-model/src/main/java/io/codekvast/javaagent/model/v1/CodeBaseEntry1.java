@@ -19,45 +19,55 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.webapp.model.methods;
+package io.codekvast.javaagent.model.v1;
 
 import lombok.Builder;
-import lombok.ToString;
+import lombok.NonNull;
 import lombok.Value;
 
-import java.util.List;
+import java.io.Serializable;
 
 /**
- * Response to {@link GetMethodsRequest1}.
+ * Representation of a code base entry.
  *
  * @author olle.hallin@crisp.se
+ * @deprecated Use {@link io.codekvast.javaagent.model.v2.CodeBaseEntry2} instead.
  */
 @Value
 @Builder
-@ToString(exclude = "methods")
-public class GetMethodsResponse1 {
-    /**
-     * When was the request received? Millis since epoch.
-     */
-    private final Long timestamp;
+@Deprecated
+public class CodeBaseEntry1 implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     /**
-     * What was the original request?
+     * The low-level description of the signature.
      */
-    private final GetMethodsRequest1 request;
+    private final MethodSignature1 methodSignature;
 
     /**
-     * How long did it take to execute the request?
+     * The status of the signature. How it was found, if it has been excluded and so on.
      */
-    private final Long queryTimeMillis;
+    @NonNull
+    private final SignatureStatus1 signatureStatus;
 
     /**
-     * How many methods were found?
+     * The visibility of the signature. Package private is coded as 'package-private'.
      */
-    private final int numMethods;
+    @NonNull
+    private final String visibility;
 
     /**
-     * The resulting methods.
+     * The signature.
      */
-    private final List<MethodDescriptor1> methods;
+    @NonNull
+    private final String signature;
+
+    public static CodeBaseEntry1 sampleCodeBaseEntry() {
+        return builder()
+            .methodSignature(MethodSignature1.createSampleMethodSignature())
+            .signature("signature1()")
+            .signatureStatus(SignatureStatus1.NOT_INVOKED)
+            .visibility("public")
+            .build();
+    }
 }

@@ -34,7 +34,7 @@ import java.util.Set;
 @Value
 @Builder
 @EqualsAndHashCode(of = "name")
-public class EnvironmentDescriptor1 implements Comparable<EnvironmentDescriptor1> {
+public class EnvironmentDescriptor implements Comparable<EnvironmentDescriptor> {
 
     /**
      * The name of the environment
@@ -89,16 +89,16 @@ public class EnvironmentDescriptor1 implements Comparable<EnvironmentDescriptor1
      * @param that The environment descriptor to merge with.
      * @return A new object with extreme values of the numerical values and the union of host names and tags.
      */
-    public EnvironmentDescriptor1 mergeWith(EnvironmentDescriptor1 that) {
+    public EnvironmentDescriptor mergeWith(EnvironmentDescriptor that) {
         return that == null ? this
-            : EnvironmentDescriptor1.builder()
-                                    .name(this.name)
-                                    .invokedAtMillis(Math.max(this.invokedAtMillis, that.invokedAtMillis))
-                                    .collectedToMillis(Math.max(this.collectedToMillis, that.collectedToMillis))
-                                    .collectedSinceMillis(Math.min(this.collectedSinceMillis, that.collectedSinceMillis))
-                                    .hostnames(union(this.hostnames, that.hostnames))
-                                    .tags(union(this.tags, that.tags))
-                                    .build();
+            : EnvironmentDescriptor.builder()
+                                   .name(this.name)
+                                   .invokedAtMillis(Math.max(this.invokedAtMillis, that.invokedAtMillis))
+                                   .collectedToMillis(Math.max(this.collectedToMillis, that.collectedToMillis))
+                                   .collectedSinceMillis(Math.min(this.collectedSinceMillis, that.collectedSinceMillis))
+                                   .hostnames(union(this.hostnames, that.hostnames))
+                                   .tags(union(this.tags, that.tags))
+                                   .build();
     }
 
     private Set<String> union(Set<String> left, Set<String> right) {
@@ -113,7 +113,7 @@ public class EnvironmentDescriptor1 implements Comparable<EnvironmentDescriptor1
      * @return this.name.compareTo(that.name)
      */
     @Override
-    public int compareTo(EnvironmentDescriptor1 that) {
+    public int compareTo(EnvironmentDescriptor that) {
         return this.name.compareTo(that.name);
     }
 }

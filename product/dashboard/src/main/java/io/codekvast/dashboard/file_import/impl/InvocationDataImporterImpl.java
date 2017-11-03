@@ -22,8 +22,8 @@
 package io.codekvast.dashboard.file_import.impl;
 
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
-import io.codekvast.javaagent.model.v1.CommonPublicationData;
-import io.codekvast.javaagent.model.v1.InvocationDataPublication;
+import io.codekvast.javaagent.model.v2.CommonPublicationData2;
+import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,10 +46,10 @@ public class InvocationDataImporterImpl implements InvocationDataImporter {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean importPublication(InvocationDataPublication publication) {
+    public boolean importPublication(InvocationDataPublication2 publication) {
         logger.debug("Importing {}", publication);
 
-        CommonPublicationData commonData = publication.getCommonData();
+        CommonPublicationData2 commonData = publication.getCommonData();
         long customerId = commonData.getCustomerId();
         long appId = importDAO.importApplication(commonData);
         long jvmId = importDAO.importJvm(commonData, appId);

@@ -22,7 +22,7 @@
 package io.codekvast.javaagent.publishing.impl;
 
 import io.codekvast.javaagent.config.AgentConfig;
-import io.codekvast.javaagent.model.v1.InvocationDataPublication;
+import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
 import io.codekvast.javaagent.publishing.CodekvastPublishingException;
 import io.codekvast.javaagent.util.FileUtils;
 import io.codekvast.javaagent.util.LogUtil;
@@ -64,14 +64,14 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
         String url = getConfig().getInvocationDataUploadEndpoint();
         File file = null;
         try {
-            InvocationDataPublication publication = createPublication(getCustomerId(), recordingIntervalStartedAtMillis, invocations);
+            InvocationDataPublication2 publication = createPublication(getCustomerId(), recordingIntervalStartedAtMillis, invocations);
             file = FileUtils.serializeToFile(publication,
                                              getConfig().getFilenamePrefix("invocations-"), ".ser");
 
             doPost(file, url, getCodeBaseFingerprint().getSha256(), publication.getInvocations().size());
 
             logger.info(String.format("Codekvast uploaded %d invocations (%s) to %s", publication.getInvocations().size(),
-                                    LogUtil.humanReadableByteCount(file.length()), url));
+                                      LogUtil.humanReadableByteCount(file.length()), url));
         } catch (Exception e) {
             throw new CodekvastPublishingException("Cannot upload invocation data to " + url, e);
         } finally {
@@ -79,17 +79,17 @@ public class HttpInvocationDataPublisherImpl extends AbstractInvocationDataPubli
         }
     }
 
-    private InvocationDataPublication createPublication(long customerId, long recordingIntervalStartedAtMillis, Set<String> invocations) {
+    private InvocationDataPublication2 createPublication(long customerId, long recordingIntervalStartedAtMillis, Set<String> invocations) {
 
-        return InvocationDataPublication.builder()
-                                        .commonData(getConfig().commonPublicationData().toBuilder()
-                                                               .codeBaseFingerprint(getCodeBaseFingerprint().getSha256())
-                                                               .customerId(customerId)
-                                                               .sequenceNumber(this.getSequenceNumber())
-                                                               .build())
-                                        .recordingIntervalStartedAtMillis(recordingIntervalStartedAtMillis)
-                                        .invocations(invocations)
-                                        .build();
+        return InvocationDataPublication2.builder()
+                                         .commonData(getConfig().commonPublicationData().toBuilder()
+                                                                .codeBaseFingerprint(getCodeBaseFingerprint().getSha256())
+                                                                .customerId(customerId)
+                                                                .sequenceNumber(this.getSequenceNumber())
+                                                                .build())
+                                         .recordingIntervalStartedAtMillis(recordingIntervalStartedAtMillis)
+                                         .invocations(invocations)
+                                         .build();
     }
 
 }

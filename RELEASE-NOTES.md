@@ -1,5 +1,8 @@
 # Codekvast Release Notes
 
+## 0.22.0
+1. Moved codebase analysis from agent to server. Now all introspected methods are uploaded to the server, no matter the name pattern.
+
 ## 0.21.6
 1. Upgraded to Angular 4.4.4, Typescript 3.5.3.
 1. Upgraded to aspectjweaver 1.8.11.

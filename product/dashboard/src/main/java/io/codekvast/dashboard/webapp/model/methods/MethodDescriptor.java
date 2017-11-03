@@ -21,7 +21,7 @@
  */
 package io.codekvast.dashboard.webapp.model.methods;
 
-import io.codekvast.javaagent.model.v1.SignatureStatus;
+import io.codekvast.javaagent.model.v2.SignatureStatus2;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Singular;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  */
 @Value
 @Builder(toBuilder = true)
-public class MethodDescriptor1 {
+public class MethodDescriptor {
     @NonNull
     private final Long id;
 
@@ -55,51 +55,55 @@ public class MethodDescriptor1 {
      */
     private final String modifiers;
 
+    private final Boolean bridge;
+
+    private final Boolean synthetic;
+
     private final String packageName;
 
     private final String declaringType;
 
     @Singular
-    private final SortedSet<ApplicationDescriptor1> occursInApplications;
+    private final SortedSet<ApplicationDescriptor> occursInApplications;
 
     @Singular
-    private final SortedSet<EnvironmentDescriptor1> collectedInEnvironments;
+    private final SortedSet<EnvironmentDescriptor> collectedInEnvironments;
 
     /**
      * Calculates in how many apps this method is tracked.
      * @return A number in the range [0..100]
      */
     public int getTrackedPercent() {
-        long tracked = occursInApplications.stream().map(ApplicationDescriptor1::getStatus).filter(SignatureStatus::isTracked).count();
+        long tracked = occursInApplications.stream().map(ApplicationDescriptor::getStatus).filter(SignatureStatus2::isTracked).count();
         return (int) Math.round (tracked * 100D / occursInApplications.size());
     }
 
     /**
      * @return The set of signature statuses this method has across all applications.
      */
-    public Set<SignatureStatus> getStatuses() {
-        return occursInApplications.stream().map(ApplicationDescriptor1::getStatus).collect(Collectors.toSet());
+    public Set<SignatureStatus2> getStatuses() {
+        return occursInApplications.stream().map(ApplicationDescriptor::getStatus).collect(Collectors.toSet());
     }
 
     /**
      * @return The maximum value of occursInApplications.invokedAtMillis;
      */
     public Long getLastInvokedAtMillis() {
-        return occursInApplications.stream().map(ApplicationDescriptor1::getInvokedAtMillis).reduce(Math::max).orElse(0L);
+        return occursInApplications.stream().map(ApplicationDescriptor::getInvokedAtMillis).reduce(Math::max).orElse(0L);
     }
 
     /**
      * @return The minimum value of occursInApplications.startedAtMillis
      */
     public Long getCollectedSinceMillis() {
-        return occursInApplications.stream().map(ApplicationDescriptor1::getStartedAtMillis).reduce(Math::min).orElse(0L);
+        return occursInApplications.stream().map(ApplicationDescriptor::getStartedAtMillis).reduce(Math::min).orElse(0L);
     }
 
     /**
      * @return The maximum value of occursInApplications.getPublishedAtMillis
      */
     public Long getCollectedToMillis() {
-        return occursInApplications.stream().map(ApplicationDescriptor1::getPublishedAtMillis).reduce(Math::max).orElse(0L);
+        return occursInApplications.stream().map(ApplicationDescriptor::getPublishedAtMillis).reduce(Math::max).orElse(0L);
     }
 
     /**
@@ -117,7 +121,7 @@ public class MethodDescriptor1 {
     @SuppressWarnings("unused")
     public Set<String> getTags() {
         Set<String> result = new TreeSet<>();
-        collectedInEnvironments.stream().map(EnvironmentDescriptor1::getTags).forEach(result::addAll);
+        collectedInEnvironments.stream().map(EnvironmentDescriptor::getTags).forEach(result::addAll);
         return result;
     }
 }

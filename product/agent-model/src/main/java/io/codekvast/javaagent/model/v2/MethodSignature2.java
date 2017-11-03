@@ -19,8 +19,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.javaagent.model.v1;
+package io.codekvast.javaagent.model.v2;
 
+import io.codekvast.javaagent.model.v1.MethodSignature1;
 import lombok.*;
 
 import java.io.Serializable;
@@ -35,9 +36,10 @@ import java.io.Serializable;
 @Builder(toBuilder = true)
 @ToString(of = "aspectjString")
 @EqualsAndHashCode(of = "aspectjString")
-public class MethodSignature implements Serializable {
+public class MethodSignature2 implements Serializable {
     @NonNull
     private final String aspectjString;
+    private final Boolean bridge;
     @NonNull
     private final String declaringType;
     @NonNull
@@ -52,10 +54,29 @@ public class MethodSignature implements Serializable {
     private final String parameterTypes;
     @NonNull
     private final String returnType;
+    private final Boolean synthetic;
 
-    public static MethodSignature createSampleMethodSignature() {
+    @SuppressWarnings("deprecation")
+    public static MethodSignature2 fromV1Format(MethodSignature1 m1) {
+        return builder()
+            .aspectjString(m1.getAspectjString())
+            .bridge(null)
+            .declaringType(m1.getDeclaringType())
+            .exceptionTypes(m1.getExceptionTypes())
+            .methodName(m1.getMethodName())
+            .modifiers(m1.getModifiers())
+            .packageName(m1.getPackageName())
+            .parameterTypes(m1.getParameterTypes())
+            .returnType(m1.getReturnType())
+            .synthetic(null)
+            .build();
+
+    }
+
+    public static MethodSignature2 createSampleMethodSignature() {
         return builder()
             .aspectjString("aspectjString")
+            .bridge(false)
             .declaringType("declaringType")
             .exceptionTypes("exceptionTypes")
             .methodName("methodName")
@@ -63,6 +84,8 @@ public class MethodSignature implements Serializable {
             .packageName("packageName")
             .parameterTypes("parameterTypes")
             .returnType("returnType")
+            .synthetic(false)
             .build();
     }
+
 }

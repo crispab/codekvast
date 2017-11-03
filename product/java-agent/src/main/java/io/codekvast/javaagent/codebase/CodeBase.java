@@ -22,10 +22,9 @@
 package io.codekvast.javaagent.codebase;
 
 import io.codekvast.javaagent.config.AgentConfig;
-import io.codekvast.javaagent.model.v1.CodeBaseEntry;
-import io.codekvast.javaagent.model.v1.CodeBasePublication;
-import io.codekvast.javaagent.model.v1.MethodSignature;
-import io.codekvast.javaagent.model.v1.SignatureStatus;
+import io.codekvast.javaagent.model.v2.CodeBaseEntry2;
+import io.codekvast.javaagent.model.v2.CodeBasePublication2;
+import io.codekvast.javaagent.model.v2.MethodSignature2;
 import io.codekvast.javaagent.util.SignatureUtils;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -55,13 +54,7 @@ public class CodeBase {
     private final AgentConfig config;
 
     @Getter
-    private final Map<String, MethodSignature> signatures = new TreeMap<>();
-
-    @Getter
-    private final Map<String, String> overriddenSignatures = new HashMap<>();
-
-    @Getter
-    private final Map<String, SignatureStatus> statuses = new HashMap<>();
+    private final Set<MethodSignature2> signatures = new HashSet<>();
 
     @Getter
     private final CodeBaseFingerprint fingerprint;
@@ -109,7 +102,7 @@ public class CodeBase {
         CodeBaseFingerprint result = builder.build();
 
         logger.fine(String.format("Made fingerprint of %d files at %s in %d ms, fingerprint=%s", result.getNumFiles(), codeBaseFiles,
-                               System.currentTimeMillis() - startedAt, result));
+                                  System.currentTimeMillis() - startedAt, result));
         return result;
     }
 
@@ -146,19 +139,13 @@ public class CodeBase {
         }
     }
 
-    void addSignature(MethodSignature thisSignature, MethodSignature declaringSignature, SignatureStatus status) {
-        String thisNormalizedSignature = SignatureUtils.normalizeSignature(thisSignature);
-        String declaringNormalizedSignature = SignatureUtils.normalizeSignature(declaringSignature);
+    void addSignature(MethodSignature2 signature) {
+        String normalizedSignature = SignatureUtils.normalizeSignature(signature);
 
-        if (declaringNormalizedSignature != null) {
-            if (!declaringNormalizedSignature.equals(thisNormalizedSignature) && thisNormalizedSignature != null) {
-                logger.finest(
-                    String.format("  Adding %s -> %s to overridden signatures", thisNormalizedSignature, declaringNormalizedSignature));
-                overriddenSignatures.put(thisNormalizedSignature, declaringNormalizedSignature);
-            } else if (signatures.put(declaringNormalizedSignature, declaringSignature) == null) {
-                logger.finest("  Found " + declaringNormalizedSignature);
+        if (normalizedSignature != null) {
+            if (signatures.add(signature)) {
+                logger.finest("  Found " + normalizedSignature);
             }
-            statuses.put(declaringNormalizedSignature, status);
         }
     }
 
@@ -170,25 +157,22 @@ public class CodeBase {
         return signatures.size();
     }
 
-    Collection<CodeBaseEntry> getEntries() {
-        List<CodeBaseEntry> result = new ArrayList<>();
+    Collection<CodeBaseEntry2> getEntries() {
+        List<CodeBaseEntry2> result = new ArrayList<>();
 
-        for (Map.Entry<String, MethodSignature> entry : signatures.entrySet()) {
-            String name = entry.getKey();
+        for (MethodSignature2 signature : signatures) {
             result.add(
-                CodeBaseEntry.builder()
-                             .methodSignature(entry.getValue())
-                             .signature(SignatureUtils.stripModifiers(name))
-                             .visibility(SignatureUtils.getVisibility(name))
-                             .signatureStatus(statuses.get(name))
-                             .build());
+                CodeBaseEntry2.builder()
+                              .methodSignature(signature)
+                              .signature(SignatureUtils.stripModifiers(signature.getAspectjString()))
+                              .visibility(SignatureUtils.getVisibility(signature.getAspectjString()))
+                              .build());
         }
-
         return result;
     }
 
-    public CodeBasePublication getCodeBasePublication(long customerId, int sequenceNumber) {
-        return CodeBasePublication
+    public CodeBasePublication2 getCodeBasePublication(long customerId, int sequenceNumber) {
+        return CodeBasePublication2
             .builder()
             .commonData(config.commonPublicationData().toBuilder()
                               .codeBaseFingerprint(getFingerprint().getSha256())
@@ -196,8 +180,6 @@ public class CodeBase {
                               .sequenceNumber(sequenceNumber)
                               .build())
             .entries(getEntries())
-            .overriddenSignatures(new HashMap<>(overriddenSignatures))
-            .strangeSignatures(SignatureUtils.getStrangeSignatureMap())
             .build();
     }
 }

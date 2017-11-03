@@ -32,10 +32,12 @@ import java.io.Serializable;
  * NOTE: Is also defined as an ENUM in the central dashboard's invocations table!
  *
  * @author olle.hallin@crisp.se
+ * @deprecated Use {@link io.codekvast.javaagent.model.v2.SignatureStatus2} instead.
  */
 @Getter
 @RequiredArgsConstructor
-public enum SignatureStatus implements Serializable {
+@Deprecated
+public enum SignatureStatus1 implements Serializable {
     /**
      * The signature has been detected in the codebase, but it has never been invoked.
      */

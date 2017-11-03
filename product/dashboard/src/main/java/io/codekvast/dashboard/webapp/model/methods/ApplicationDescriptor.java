@@ -21,7 +21,7 @@
  */
 package io.codekvast.dashboard.webapp.model.methods;
 
-import io.codekvast.javaagent.model.v1.SignatureStatus;
+import io.codekvast.javaagent.model.v2.SignatureStatus2;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
@@ -35,7 +35,7 @@ import lombok.Value;
 @Value
 @Builder
 @EqualsAndHashCode(of = {"name", "version"})
-public class ApplicationDescriptor1 implements Comparable<ApplicationDescriptor1> {
+public class ApplicationDescriptor implements Comparable<ApplicationDescriptor> {
 
     @NonNull
     private final String name;
@@ -65,27 +65,27 @@ public class ApplicationDescriptor1 implements Comparable<ApplicationDescriptor1
      * What is the status of this particular method for this application version?
      */
     @NonNull
-    private final SignatureStatus status;
+    private final SignatureStatus2 status;
 
     /**
      * Merge two application descriptors, taking the min and max values of both.
      * @param that The other descriptor to merge with.
      * @return An application descriptor with extreme values of startedAtMillis, publishedAtMillis, invokedAtMillis and the latest status.
      */
-    public ApplicationDescriptor1 mergeWith(ApplicationDescriptor1 that) {
+    public ApplicationDescriptor mergeWith(ApplicationDescriptor that) {
         return that == null ? this
-                : ApplicationDescriptor1.builder()
-                                        .name(this.name)
-                                        .version(this.version)
-                                        .startedAtMillis(Math.min(this.startedAtMillis, that.startedAtMillis))
-                                        .publishedAtMillis(Math.max(this.publishedAtMillis, that.publishedAtMillis))
-                                        .invokedAtMillis(Math.max(this.invokedAtMillis, that.invokedAtMillis))
-                                        .status(this.invokedAtMillis > that.invokedAtMillis ? this.status : that.status)
-                                        .build();
+            : ApplicationDescriptor.builder()
+                                   .name(this.name)
+                                   .version(this.version)
+                                   .startedAtMillis(Math.min(this.startedAtMillis, that.startedAtMillis))
+                                   .publishedAtMillis(Math.max(this.publishedAtMillis, that.publishedAtMillis))
+                                   .invokedAtMillis(Math.max(this.invokedAtMillis, that.invokedAtMillis))
+                                   .status(this.invokedAtMillis > that.invokedAtMillis ? this.status : that.status)
+                                   .build();
     }
 
     @Override
-    public int compareTo(ApplicationDescriptor1 that) {
+    public int compareTo(ApplicationDescriptor that) {
         int result = this.name.compareTo(that.name);
         if (result == 0) {
             result = this.version.compareTo(that.version);

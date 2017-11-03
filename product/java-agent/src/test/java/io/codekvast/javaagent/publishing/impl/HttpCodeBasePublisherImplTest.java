@@ -3,8 +3,7 @@ package io.codekvast.javaagent.publishing.impl;
 import io.codekvast.javaagent.codebase.CodeBase;
 import io.codekvast.javaagent.config.AgentConfig;
 import io.codekvast.javaagent.config.AgentConfigFactory;
-import io.codekvast.javaagent.model.v1.MethodSignature;
-import io.codekvast.javaagent.model.v1.SignatureStatus;
+import io.codekvast.javaagent.model.v2.MethodSignature2;
 import okhttp3.*;
 import org.junit.Test;
 
@@ -31,8 +30,7 @@ public class HttpCodeBasePublisherImplTest {
     @Test
     public void should_create_and_upload_file() throws Exception {
         // given
-        codeBase.getSignatures().put("key", MethodSignature.createSampleMethodSignature());
-        codeBase.getStatuses().put("key", SignatureStatus.NOT_INVOKED);
+        codeBase.getSignatures().add(MethodSignature2.createSampleMethodSignature());
 
         // when
         publisher.doPublishCodeBase(codeBase);
@@ -61,7 +59,7 @@ public class HttpCodeBasePublisherImplTest {
         }
 
         @Override
-        Response executeRequest(Request request) throws IOException {
+        Response executeRequest(Request request) {
             return new Response.Builder()
                 .request(request)
                 .protocol(Protocol.HTTP_1_1)

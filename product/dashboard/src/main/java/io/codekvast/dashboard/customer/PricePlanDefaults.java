@@ -25,7 +25,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Default values for all defined price plans. Corresponds 1-to-1 to rows in the table price_plans.
+ * Default values for all defined price plans.
+ *
+ * The names of the plans corresponds 1-to-1 to rows in the table price_plans.
  *
  * The price plans are also defined at Heroku (except for DEMO).
  *

@@ -24,47 +24,47 @@ package io.codekvast.javaagent.model.v1;
 import lombok.*;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Map;
 
 /**
- * Output of the CodeBasePublisher implementations.
+ * Immutable representation of a method signature.
  *
  * @author olle.hallin@crisp.se
+ * @deprecated Use {@link io.codekvast.javaagent.model.v2.MethodSignature2} instead.
  */
-@Data
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Setter(AccessLevel.PRIVATE)
+@Value
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
-public class CodeBasePublication implements Serializable {
-    private static final long serialVersionUID = 1L;
-
+@ToString(of = "aspectjString")
+@EqualsAndHashCode(of = "aspectjString")
+@Deprecated
+public class MethodSignature1 implements Serializable {
     @NonNull
-    private CommonPublicationData commonData;
-
+    private final String aspectjString;
     @NonNull
-    private Collection<CodeBaseEntry> entries;
-
+    private final String declaringType;
     @NonNull
-    private Map<String, String> overriddenSignatures;
-
-    /**
-     * "strange" signatures, i.e., signatures with unnatural names that indicate that they are synthesized either by a compiler or at
-     * runtime by some
-     * byte-code library.
-     *
-     * key: strangeSignature
-     * value: normalized strange signature
-     */
+    private final String exceptionTypes;
     @NonNull
-    private Map<String, String> strangeSignatures;
+    private final String methodName;
+    @NonNull
+    private final String modifiers;
+    @NonNull
+    private final String packageName;
+    @NonNull
+    private final String parameterTypes;
+    @NonNull
+    private final String returnType;
 
-    @Override
-    public String toString() {
-        return String
-            .format("%s(commonData=%s, entries.size()=%d, strangeSignatures.size()=%d)", this.getClass().getSimpleName(), commonData,
-                    entries.size(),
-                    strangeSignatures.size());
+    public static MethodSignature1 createSampleMethodSignature() {
+        return builder()
+            .aspectjString("aspectjString")
+            .declaringType("declaringType")
+            .exceptionTypes("exceptionTypes")
+            .methodName("methodName")
+            .modifiers("modifiers")
+            .packageName("packageName")
+            .parameterTypes("parameterTypes")
+            .returnType("returnType")
+            .build();
     }
 }

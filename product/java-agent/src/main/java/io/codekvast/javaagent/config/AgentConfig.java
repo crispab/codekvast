@@ -22,7 +22,7 @@
 package io.codekvast.javaagent.config;
 
 import io.codekvast.javaagent.appversion.AppVersionResolver;
-import io.codekvast.javaagent.model.v1.CommonPublicationData;
+import io.codekvast.javaagent.model.v2.CommonPublicationData2;
 import io.codekvast.javaagent.util.ConfigUtils;
 import io.codekvast.javaagent.util.Constants;
 import lombok.*;
@@ -35,9 +35,7 @@ import java.net.Proxy;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static io.codekvast.javaagent.model.Endpoints.Agent.V1_POLL_CONFIG;
-import static io.codekvast.javaagent.model.Endpoints.Agent.V1_UPLOAD_CODEBASE;
-import static io.codekvast.javaagent.model.Endpoints.Agent.V1_UPLOAD_INVOCATION_DATA;
+import static io.codekvast.javaagent.model.Endpoints.Agent.*;
 
 /**
  * Encapsulates the configuration that is used by the Codekvast agent.
@@ -127,11 +125,11 @@ public class AgentConfig implements Serializable {
     }
 
     public String getCodeBaseUploadEndpoint() {
-        return String.format("%s%s", serverUrl, V1_UPLOAD_CODEBASE);
+        return String.format("%s%s", serverUrl, V2_UPLOAD_CODEBASE);
     }
 
     public String getInvocationDataUploadEndpoint() {
-        return String.format("%s%s", serverUrl, V1_UPLOAD_INVOCATION_DATA);
+        return String.format("%s%s", serverUrl, V2_UPLOAD_INVOCATION_DATA);
     }
 
     public String getResolvedAppVersion() {
@@ -166,20 +164,20 @@ public class AgentConfig implements Serializable {
         return result.toLowerCase().replaceAll("[^a-z0-9._+-]", "");
     }
 
-    public CommonPublicationData commonPublicationData() {
-        return CommonPublicationData
+    public CommonPublicationData2 commonPublicationData() {
+        return CommonPublicationData2
             .builder()
             .appName(getAppName())
             .appVersion(getResolvedAppVersion())
             .agentVersion(Constants.AGENT_VERSION)
             .computerId(Constants.COMPUTER_ID)
             .environment(getEnvironment())
-            .excludePackages(getNormalizedExcludePackages().toString())
+            .excludePackages(getNormalizedExcludePackages())
             .hostname(Constants.HOST_NAME)
             .jvmStartedAtMillis(Constants.JVM_STARTED_AT_MILLIS)
             .jvmUuid(Constants.JVM_UUID)
-            .methodVisibility(getMethodVisibility())
-            .packages(getNormalizedPackages().toString())
+            .methodVisibility(getNormalizedMethodVisibility())
+            .packages(getNormalizedPackages())
             .publishedAtMillis(System.currentTimeMillis())
             .tags(getTags())
 
@@ -187,6 +185,10 @@ public class AgentConfig implements Serializable {
 
             .build();
 
+    }
+
+    private String getNormalizedMethodVisibility() {
+        return getMethodAnalyzer().toString();
     }
 
     AgentConfig validate() {

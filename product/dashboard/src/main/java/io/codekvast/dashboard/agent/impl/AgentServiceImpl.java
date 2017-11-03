@@ -30,13 +30,12 @@ import io.codekvast.dashboard.customer.PricePlan;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,24 +51,13 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
  * @author olle.hallin@crisp.se
  */
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class AgentServiceImpl implements AgentService {
 
     private final CodekvastSettings settings;
     private final JdbcTemplate jdbcTemplate;
     private final CustomerService customerService;
-    private final Integer fileImportIntervalSeconds;
-
-    @Inject
-    public AgentServiceImpl(CodekvastSettings settings, JdbcTemplate jdbcTemplate,
-                            CustomerService customerService,
-                            @Value("${codekvast.fileImportIntervalSeconds}")
-                                Integer fileImportIntervalSeconds) {
-        this.settings = settings;
-        this.jdbcTemplate = jdbcTemplate;
-        this.customerService = customerService;
-        this.fileImportIntervalSeconds = fileImportIntervalSeconds;
-    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -104,7 +92,7 @@ public class AgentServiceImpl implements AgentService {
         // Disable all agents that have been dead for more than two file import intervals...
         int updated = jdbcTemplate.update("UPDATE agent_state SET enabled = FALSE " +
                                               "WHERE customerId = ? AND nextPollExpectedAt < ? AND enabled = TRUE ",
-                                          customerId, Timestamp.from(now.minusSeconds(fileImportIntervalSeconds * 2)));
+                                          customerId, Timestamp.from(now.minusSeconds(settings.getQueuePathPollIntervalSeconds() * 2)));
         if (updated > 0) {
             logger.info("Disabled {} dead agents for {}", updated, customerData);
         }
@@ -125,18 +113,18 @@ public class AgentServiceImpl implements AgentService {
 
         Integer numOtherEnabledLiveAgents =
             jdbcTemplate.queryForObject("SELECT COUNT(1) FROM agent_state " +
-                                          "WHERE enabled = TRUE AND customerId = ? AND nextPollExpectedAt >= ? AND jvmUuid != ? ",
-                                      Integer.class, customerId, Timestamp.from(now.minusSeconds(10)), jvmUuid);
+                                            "WHERE enabled = TRUE AND customerId = ? AND nextPollExpectedAt >= ? AND jvmUuid != ? ",
+                                        Integer.class, customerId, Timestamp.from(now.minusSeconds(10)), jvmUuid);
 
         String planName = customerData.getPricePlan().getName();
         int maxNumberOfAgents = customerData.getPricePlan().getMaxNumberOfAgents();
         boolean enabled = numOtherEnabledLiveAgents < maxNumberOfAgents;
         if (!enabled) {
-            logger.warn("Customer {} has already {} live agents (max for price plan '{}' is {})", customerId, numOtherEnabledLiveAgents, planName,
-                     maxNumberOfAgents);
+            logger.warn("Customer {} has already {} live agents (max for price plan '{}' is {})", customerId, numOtherEnabledLiveAgents,
+                        planName, maxNumberOfAgents);
         } else {
-            logger.debug("Customer {} now has {} live agents (max for price plan '{}' is {})", customerId, numOtherEnabledLiveAgents + 1, planName,
-                      maxNumberOfAgents);
+            logger.debug("Customer {} now has {} live agents (max for price plan '{}' is {})", customerId, numOtherEnabledLiveAgents + 1,
+                         planName, maxNumberOfAgents);
         }
 
         jdbcTemplate.update("UPDATE agent_state SET enabled = ? WHERE jvmUuid = ?", enabled, jvmUuid);
@@ -149,30 +137,21 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
-    public File saveCodeBasePublication(@NonNull String licenseKey, int publicationSize,
-                                        InputStream inputStream)
-        throws LicenseViolationException, IOException {
+    public File savePublication(@NonNull PublicationType publicationType, @NonNull String licenseKey, int publicationSize,
+                                InputStream inputStream) throws LicenseViolationException, IOException {
+
         customerService.assertPublicationSize(licenseKey, publicationSize);
 
-        return doSaveInputStream(inputStream, "codebase-");
+        return doSaveInputStream(publicationType, inputStream);
     }
 
-    @Override
-    public File saveInvocationDataPublication(@NonNull String licenseKey, int publicationSize,
-                                              InputStream inputStream)
-        throws LicenseViolationException, IOException {
-        customerService.assertPublicationSize(licenseKey, publicationSize);
-
-        return doSaveInputStream(inputStream, "invocations-");
-    }
-
-    private File doSaveInputStream(InputStream inputStream, String prefix) throws IOException {
+    private File doSaveInputStream(PublicationType publicationType, InputStream inputStream) throws IOException {
         createDirectory(settings.getQueuePath());
 
-        File result = File.createTempFile(prefix, ".ser", settings.getQueuePath());
+        File result = File.createTempFile(publicationType + "-", ".ser", settings.getQueuePath());
         Files.copy(inputStream, result.toPath(), REPLACE_EXISTING);
 
-        logger.debug("Saved uploaded publication to {}", result);
+        logger.debug("Saved uploaded {} publication to {}", publicationType, result);
         return result;
     }
 

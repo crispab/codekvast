@@ -21,51 +21,41 @@
  */
 package io.codekvast.javaagent.model.v1;
 
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
+import lombok.*;
 
+import javax.validation.constraints.Min;
 import java.io.Serializable;
+import java.util.Set;
 
 /**
- * Representation of a code base entry.
+ * Output of the InvocationDataPublisher implementations.
  *
  * @author olle.hallin@crisp.se
+ * @deprecated Use {@link io.codekvast.javaagent.model.v2.InvocationDataPublication2} instead.
  */
-@Value
-@Builder
-public class CodeBaseEntry implements Serializable {
+@Data
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Setter(AccessLevel.PRIVATE)
+@Builder(toBuilder = true)
+@Deprecated
+public class InvocationDataPublication1 implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    /**
-     * The low-level description of the signature.
-     */
-    private final MethodSignature methodSignature;
-
-    /**
-     * The status of the signature. How it was found, if it has been excluded and so on.
-     */
     @NonNull
-    private final SignatureStatus signatureStatus;
+    private CommonPublicationData1 commonData;
 
-    /**
-     * The visibility of the signature. Package private is coded as 'package-private'.
-     */
     @NonNull
-    private final String visibility;
+    private Set<String> invocations;
 
-    /**
-     * The signature.
-     */
-    @NonNull
-    private final String signature;
+    @Min(1_490_000_000_000L)
+    private long recordingIntervalStartedAtMillis;
 
-    public static CodeBaseEntry sampleCodeBaseEntry() {
-        return builder()
-            .methodSignature(MethodSignature.createSampleMethodSignature())
-            .signature("signature1()")
-            .signatureStatus(SignatureStatus.NOT_INVOKED)
-            .visibility("public")
-            .build();
+    @Override
+    public String toString() {
+        return String.format(
+            "InvocationDataPublication1{commonData=%1$s, invocations.size()=%2$d, recordingIntervalStartedAt=%3$tF:%3$tT%3$tz}",
+            commonData, invocations.size(), recordingIntervalStartedAtMillis);
     }
+
 }
