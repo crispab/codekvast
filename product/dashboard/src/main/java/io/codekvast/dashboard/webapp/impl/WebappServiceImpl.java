@@ -30,7 +30,7 @@ import io.codekvast.dashboard.webapp.model.methods.*;
 import io.codekvast.dashboard.webapp.model.status.AgentDescriptor1;
 import io.codekvast.dashboard.webapp.model.status.GetStatusResponse1;
 import io.codekvast.dashboard.webapp.model.status.UserDescriptor1;
-import io.codekvast.javaagent.model.v1.SignatureStatus1;
+import io.codekvast.javaagent.model.v2.SignatureStatus2;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +40,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.sql.ResultSet;
@@ -54,6 +53,7 @@ import java.util.*;
  * @author olle.hallin@crisp.se
  */
 @Service
+@RequiredArgsConstructor
 @Slf4j
 @Validated
 public class WebappServiceImpl implements WebappService {
@@ -62,17 +62,9 @@ public class WebappServiceImpl implements WebappService {
     private final CustomerIdProvider customerIdProvider;
     private final CustomerService customerService;
 
-    @Inject
-    public WebappServiceImpl(JdbcTemplate jdbcTemplate, CustomerIdProvider customerIdProvider,
-                             CustomerService customerService) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.customerIdProvider = customerIdProvider;
-        this.customerService = customerService;
-    }
-
     @Override
     @Transactional(readOnly = true)
-    public GetMethodsResponse1 getMethods(@Valid GetMethodsRequest1 request) {
+    public GetMethodsResponse getMethods(@Valid GetMethodsRequest request) {
         long startedAt = System.currentTimeMillis();
 
         MethodDescriptorRowCallbackHandler rowCallbackHandler =
@@ -81,20 +73,20 @@ public class WebappServiceImpl implements WebappService {
         jdbcTemplate.query(rowCallbackHandler.getSelectStatement(), rowCallbackHandler, customerIdProvider.getCustomerId(),
                            request.getNormalizedSignature());
 
-        List<MethodDescriptor1> methods = rowCallbackHandler.getResult();
+        List<MethodDescriptor> methods = rowCallbackHandler.getResult();
 
-        return GetMethodsResponse1.builder()
-                                  .timestamp(startedAt)
-                                  .request(request)
-                                  .numMethods(methods.size())
-                                  .methods(methods)
-                                  .queryTimeMillis(System.currentTimeMillis() - startedAt)
-                                  .build();
+        return GetMethodsResponse.builder()
+                                 .timestamp(startedAt)
+                                 .request(request)
+                                 .numMethods(methods.size())
+                                 .methods(methods)
+                                 .queryTimeMillis(System.currentTimeMillis() - startedAt)
+                                 .build();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<MethodDescriptor1> getMethodById(@NotNull Long methodId) {
+    public Optional<MethodDescriptor> getMethodById(@NotNull Long methodId) {
         MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler("m.id = ?", 1);
 
         jdbcTemplate.query(rowCallbackHandler.getSelectStatement(), rowCallbackHandler, customerIdProvider.getCustomerId(), methodId);
@@ -226,7 +218,7 @@ public class WebappServiceImpl implements WebappService {
         private final String whereClause;
         private final long maxResults;
 
-        private final List<MethodDescriptor1> result = new ArrayList<>();
+        private final List<MethodDescriptor> result = new ArrayList<>();
 
         private QueryState queryState;
 
@@ -240,13 +232,14 @@ public class WebappServiceImpl implements WebappService {
 
             // This is a simpler to understand approach than trying to do everything in the database.
             // Let the database do the joining and selection, and the Java layer do the data reduction. The query will return several rows
-            // for each method that matches the WHERE clause, and the RowCallbackHandler reduces them to only one MethodDescriptor1 per
+            // for each method that matches the WHERE clause, and the RowCallbackHandler reduces them to only one MethodDescriptor per
             // method ID.
             // This is probably doable in pure SQL too, provided you are a black-belt SQL ninja. Unfortunately I'm not that strong at SQL.
 
             return String.format("SELECT i.methodId, a.name AS appName, a.version AS appVersion,\n" +
                                      "  i.invokedAtMillis, i.status, j.startedAt, j.publishedAt, j.environment, j.hostname, j.tags,\n" +
-                                     "  m.visibility, m.signature, m.declaringType, m.methodName, m.modifiers, m.packageName\n" +
+                                     "  m.visibility, m.signature, m.declaringType, m.methodName, m.bridge, m.synthetic, m.modifiers, m" +
+                                     ".packageName\n" +
                                      "  FROM invocations i\n" +
                                      "  JOIN applications a ON a.id = i.applicationId \n" +
                                      "  JOIN methods m ON m.id = i.methodId\n" +
@@ -276,41 +269,43 @@ public class WebappServiceImpl implements WebappService {
             long publishedAt = rs.getTimestamp("publishedAt").getTime();
             long invokedAtMillis = rs.getLong("invokedAtMillis");
 
-            MethodDescriptor1.MethodDescriptor1Builder builder = queryState.getBuilder();
+            MethodDescriptor.MethodDescriptorBuilder builder = queryState.getBuilder();
             String appName = rs.getString("appName");
             String appVersion = rs.getString("appVersion");
 
-            queryState.saveApplication(ApplicationDescriptor1
+            queryState.saveApplication(ApplicationDescriptor
                                            .builder()
                                            .name(appName)
                                            .version(appVersion)
                                            .startedAtMillis(startedAt)
                                            .publishedAtMillis(publishedAt)
                                            .invokedAtMillis(invokedAtMillis)
-                                           .status(SignatureStatus1.valueOf(rs.getString("status")))
+                                           .status(SignatureStatus2.valueOf(rs.getString("status")))
                                            .build());
 
-            queryState.saveEnvironment(EnvironmentDescriptor1.builder()
-                                                             .name(rs.getString("environment"))
-                                                             .hostname(rs.getString("hostname"))
-                                                             .tags(splitOnCommaOrSemicolon(rs.getString("tags")))
-                                                             .collectedSinceMillis(startedAt)
-                                                             .collectedToMillis(publishedAt)
-                                                             .invokedAtMillis(invokedAtMillis)
-                                                             .build());
+            queryState.saveEnvironment(EnvironmentDescriptor.builder()
+                                                            .name(rs.getString("environment"))
+                                                            .hostname(rs.getString("hostname"))
+                                                            .tags(splitOnCommaOrSemicolon(rs.getString("tags")))
+                                                            .collectedSinceMillis(startedAt)
+                                                            .collectedToMillis(publishedAt)
+                                                            .invokedAtMillis(invokedAtMillis)
+                                                            .build());
 
             builder.declaringType(rs.getString("declaringType"))
                    .modifiers(rs.getString("modifiers"))
                    .packageName(rs.getString("packageName"))
                    .signature(signature)
-                   .visibility(rs.getString("visibility"));
+                   .visibility(rs.getString("visibility"))
+                   .bridge(rs.getBoolean("bridge"))
+                   .synthetic(rs.getBoolean("synthetic"));
         }
 
         private Set<String> splitOnCommaOrSemicolon(String tags) {
             return new HashSet<>(Arrays.asList(tags.split("\\s*[,;]\\s")));
         }
 
-        private List<MethodDescriptor1> getResult() {
+        private List<MethodDescriptor> getResult() {
             queryState.addTo(result);
             return result;
         }
@@ -321,15 +316,15 @@ public class WebappServiceImpl implements WebappService {
         private final long methodId;
         private final long maxResults;
 
-        private final Map<ApplicationId, ApplicationDescriptor1> applications = new HashMap<>();
-        private final Map<String, EnvironmentDescriptor1> environments = new HashMap<>();
+        private final Map<ApplicationId, ApplicationDescriptor> applications = new HashMap<>();
+        private final Map<String, EnvironmentDescriptor> environments = new HashMap<>();
 
-        private MethodDescriptor1.MethodDescriptor1Builder builder;
+        private MethodDescriptor.MethodDescriptorBuilder builder;
         private int rows;
 
-        MethodDescriptor1.MethodDescriptor1Builder getBuilder() {
+        MethodDescriptor.MethodDescriptorBuilder getBuilder() {
             if (builder == null) {
-                builder = MethodDescriptor1.builder().id(methodId);
+                builder = MethodDescriptor.builder().id(methodId);
             }
             return builder;
         }
@@ -338,18 +333,18 @@ public class WebappServiceImpl implements WebappService {
             return id == this.methodId;
         }
 
-        void saveApplication(ApplicationDescriptor1 applicationDescriptor) {
+        void saveApplication(ApplicationDescriptor applicationDescriptor) {
             ApplicationId appId = ApplicationId.of(applicationDescriptor);
             applications.put(appId, applicationDescriptor.mergeWith(applications.get(appId)));
 
         }
 
-        void saveEnvironment(EnvironmentDescriptor1 environmentDescriptor) {
+        void saveEnvironment(EnvironmentDescriptor environmentDescriptor) {
             String name = environmentDescriptor.getName();
             environments.put(name, environmentDescriptor.mergeWith(environments.get(name)));
         }
 
-        void addTo(List<MethodDescriptor1> result) {
+        void addTo(List<MethodDescriptor> result) {
             if (builder != null && result.size() < maxResults) {
                 logger.trace("Adding method {} to result ({} result set rows)", methodId, rows);
                 builder.occursInApplications(new TreeSet<>(applications.values()));
@@ -377,7 +372,7 @@ public class WebappServiceImpl implements WebappService {
             return this.toString().compareTo(that.toString());
         }
 
-        static ApplicationId of(ApplicationDescriptor1 applicationDescriptor) {
+        static ApplicationId of(ApplicationDescriptor applicationDescriptor) {
             return new ApplicationId(applicationDescriptor.getName(), applicationDescriptor.getVersion());
         }
     }

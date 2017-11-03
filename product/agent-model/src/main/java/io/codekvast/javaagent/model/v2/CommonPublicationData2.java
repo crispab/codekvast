@@ -112,6 +112,7 @@ public class CommonPublicationData2 implements Serializable {
             publishedAtMillis);
     }
 
+    @SuppressWarnings("deprecation")
     public static CommonPublicationData2 fromV1format(CommonPublicationData1 data1) {
         return CommonPublicationData2.builder()
                                      .agentVersion(data1.getAgentVersion())

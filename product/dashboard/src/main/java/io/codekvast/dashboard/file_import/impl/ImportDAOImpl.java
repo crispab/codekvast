@@ -22,10 +22,10 @@
 package io.codekvast.dashboard.file_import.impl;
 
 import io.codekvast.dashboard.customer.CustomerService;
-import io.codekvast.javaagent.model.v1.MethodSignature1;
-import io.codekvast.javaagent.model.v1.SignatureStatus1;
 import io.codekvast.javaagent.model.v2.CodeBaseEntry2;
 import io.codekvast.javaagent.model.v2.CommonPublicationData2;
+import io.codekvast.javaagent.model.v2.MethodSignature2;
+import io.codekvast.javaagent.model.v2.SignatureStatus2;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -38,6 +38,7 @@ import java.sql.*;
 import java.time.Instant;
 import java.util.*;
 
+import static java.sql.Types.BOOLEAN;
 import static java.util.Optional.ofNullable;
 
 /**
@@ -149,7 +150,7 @@ public class ImportDAOImpl implements ImportDAO {
             } else {
                 logger.trace("Inserting invocation {}", signature);
                 jdbcTemplate
-                    .update(new InsertInvocationStatement(customerId, appId, jvmId, methodId, SignatureStatus1.NOT_FOUND_IN_CODE_BASE,
+                    .update(new InsertInvocationStatement(customerId, appId, jvmId, methodId, SignatureStatus2.NOT_FOUND_IN_CODE_BASE,
                                                           invokedAtMillis, 1L));
             }
         }
@@ -174,7 +175,7 @@ public class ImportDAOImpl implements ImportDAO {
         return new HashSet<>(
             jdbcTemplate
                 .queryForList("SELECT methodId FROM invocations WHERE customerId = ? AND status = ?", Long.class,
-                              customerId, SignatureStatus1.NOT_FOUND_IN_CODE_BASE.name())
+                              customerId, SignatureStatus2.NOT_FOUND_IN_CODE_BASE.name())
         );
     }
 
@@ -227,7 +228,7 @@ public class ImportDAOImpl implements ImportDAO {
         for (CodeBaseEntry2 entry : entries) {
             long methodId = existingMethods.get(entry.getSignature());
             if (!existingInvocations.contains(methodId)) {
-                SignatureStatus1 initialStatus = calculateInitialStatus(data, entry);
+                SignatureStatus2 initialStatus = calculateInitialStatus(data, entry);
                 jdbcTemplate.update(new InsertInvocationStatement(customerId, appId, jvmId, methodId, initialStatus,
                                                                   0L, 0L));
                 existingInvocations.add(methodId);
@@ -237,17 +238,17 @@ public class ImportDAOImpl implements ImportDAO {
         logger.debug("Imported {} invocations in {} ms", importCount, System.currentTimeMillis() - startedAtMillis);
     }
 
-    private SignatureStatus1 calculateInitialStatus(CommonPublicationData2 data, CodeBaseEntry2 entry) {
+    private SignatureStatus2 calculateInitialStatus(CommonPublicationData2 data, CodeBaseEntry2 entry) {
         for (String pkg : data.getExcludePackages()) {
             if (entry.getMethodSignature().getPackageName().startsWith(pkg)) {
-                return SignatureStatus1.EXCLUDED_BY_PACKAGE_NAME;
+                return SignatureStatus2.EXCLUDED_BY_PACKAGE_NAME;
             }
         }
 
         return ofNullable(getExcludeByVisibility(data.getMethodVisibility(), entry)).orElse(getExcludeByTriviality(entry));
     }
 
-    private SignatureStatus1 getExcludeByTriviality(CodeBaseEntry2 entry) {
+    private SignatureStatus2 getExcludeByTriviality(CodeBaseEntry2 entry) {
         String name = entry.getMethodSignature().getMethodName();
         String parameterTypes = entry.getMethodSignature().getParameterTypes().trim();
 
@@ -255,33 +256,33 @@ public class ImportDAOImpl implements ImportDAO {
         boolean singleParameter = !parameterTypes.isEmpty() && !parameterTypes.contains(",");
 
         if (name.equals("hashCode") && noParameters) {
-            return SignatureStatus1.EXCLUDED_SINCE_TRIVIAL;
+            return SignatureStatus2.EXCLUDED_SINCE_TRIVIAL;
         }
         if (name.equals("equals") && singleParameter) {
-            return SignatureStatus1.EXCLUDED_SINCE_TRIVIAL;
+            return SignatureStatus2.EXCLUDED_SINCE_TRIVIAL;
         }
         if (name.equals("compareTo") && singleParameter) {
-            return SignatureStatus1.EXCLUDED_SINCE_TRIVIAL;
+            return SignatureStatus2.EXCLUDED_SINCE_TRIVIAL;
         }
         if (name.equals("toString") && noParameters) {
-            return SignatureStatus1.EXCLUDED_SINCE_TRIVIAL;
+            return SignatureStatus2.EXCLUDED_SINCE_TRIVIAL;
         }
 
-        return SignatureStatus1.NOT_INVOKED;
+        return SignatureStatus2.NOT_INVOKED;
     }
 
-    SignatureStatus1 getExcludeByVisibility(String methodVisibility, CodeBaseEntry2 entry) {
+    SignatureStatus2 getExcludeByVisibility(String methodVisibility, CodeBaseEntry2 entry) {
         String v = entry.getVisibility();
         switch (methodVisibility) {
         case VISIBILITY_PRIVATE:
             return null;
         case VISIBILITY_PACKAGE_PRIVATE:
             return v.equals(VISIBILITY_PUBLIC) || v.equals(PROTECTED) || v.equals(VISIBILITY_PACKAGE_PRIVATE) ? null :
-                SignatureStatus1.EXCLUDED_BY_VISIBILITY;
+                SignatureStatus2.EXCLUDED_BY_VISIBILITY;
         case PROTECTED:
-            return v.equals(VISIBILITY_PUBLIC) || v.equals(PROTECTED) ? null : SignatureStatus1.EXCLUDED_BY_VISIBILITY;
+            return v.equals(VISIBILITY_PUBLIC) || v.equals(PROTECTED) ? null : SignatureStatus2.EXCLUDED_BY_VISIBILITY;
         case VISIBILITY_PUBLIC:
-            return v.equals(VISIBILITY_PUBLIC) ? null : SignatureStatus1.EXCLUDED_BY_VISIBILITY;
+            return v.equals(VISIBILITY_PUBLIC) ? null : SignatureStatus2.EXCLUDED_BY_VISIBILITY;
         }
         return null;
     }
@@ -296,7 +297,7 @@ public class ImportDAOImpl implements ImportDAO {
     private static class InsertCompleteMethodStatement implements PreparedStatementCreator {
         private final long customerId;
         private final long publishedAtMillis;
-        private final MethodSignature1 method;
+        private final MethodSignature2 method;
         private final String visibility;
         private final String signature;
 
@@ -305,9 +306,9 @@ public class ImportDAOImpl implements ImportDAO {
 
             PreparedStatement ps =
                 con.prepareStatement("INSERT INTO methods(customerId, visibility, signature, createdAt, declaringType, " +
-                                         "exceptionTypes, methodName, modifiers, packageName, parameterTypes, " +
+                                         "exceptionTypes, methodName, bridge, synthetic, modifiers, packageName, parameterTypes, " +
                                          "returnType) " +
-                                         "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                                         "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                                      Statement.RETURN_GENERATED_KEYS);
             int column = 0;
             ps.setLong(++column, customerId);
@@ -317,12 +318,15 @@ public class ImportDAOImpl implements ImportDAO {
             ps.setString(++column, method.getDeclaringType());
             ps.setString(++column, method.getExceptionTypes());
             ps.setString(++column, method.getMethodName());
+            ps.setObject(++column, method.getBridge(), BOOLEAN);
+            ps.setObject(++column, method.getSynthetic(), BOOLEAN);
             ps.setString(++column, method.getModifiers());
             ps.setString(++column, method.getPackageName());
             ps.setString(++column, method.getParameterTypes());
             ps.setString(++column, method.getReturnType());
             return ps;
         }
+
     }
 
     @RequiredArgsConstructor
@@ -335,17 +339,19 @@ public class ImportDAOImpl implements ImportDAO {
         public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 
             PreparedStatement ps = con.prepareStatement(
-                "UPDATE methods SET " +
-                    "visibility = ?, createdAt = LEAST(createdAt, ?), declaringType = ?, exceptionTypes = ?, methodName = ?, modifiers = " +
-                    "?" +
-                    ", packageName = ?, parameterTypes = ?, returnType = ? WHERE customerId = ? AND signature = ?");
+                "UPDATE methods\n" +
+                    "SET visibility   = ?, createdAt = LEAST(createdAt, ?), declaringType = ?, exceptionTypes = ?, methodName = ?,\n" +
+                    "  bridge = ?, synthetic = ?, modifiers = ?, packageName    = ?, parameterTypes = ?, returnType = ?\n" +
+                    "WHERE customerId = ? AND signature = ?");
             int column = 0;
-            MethodSignature1 method = entry.getMethodSignature();
+            MethodSignature2 method = entry.getMethodSignature();
             ps.setString(++column, entry.getVisibility());
             ps.setTimestamp(++column, new Timestamp(publishedAtMillis));
             ps.setString(++column, method.getDeclaringType());
             ps.setString(++column, method.getExceptionTypes());
             ps.setString(++column, method.getMethodName());
+            ps.setObject(++column, method.getBridge(), BOOLEAN);
+            ps.setObject(++column, method.getSynthetic(), BOOLEAN);
             ps.setString(++column, method.getModifiers());
             ps.setString(++column, method.getPackageName());
             ps.setString(++column, method.getParameterTypes());
@@ -362,7 +368,7 @@ public class ImportDAOImpl implements ImportDAO {
         private final long appId;
         private final long jvmId;
         private final long methodId;
-        private final SignatureStatus1 status;
+        private final SignatureStatus2 status;
         private final long invokedAtMillis;
         private final long invocationCount;
 
@@ -402,7 +408,7 @@ public class ImportDAOImpl implements ImportDAO {
                     Statement.RETURN_GENERATED_KEYS);
             int column = 0;
             ps.setLong(++column, invokedAtMillis);
-            ps.setString(++column, SignatureStatus1.INVOKED.name());
+            ps.setString(++column, SignatureStatus2.INVOKED.name());
             ps.setLong(++column, customerId);
             ps.setLong(++column, appId);
             ps.setLong(++column, jvmId);

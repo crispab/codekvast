@@ -11,6 +11,7 @@ import static org.junit.Assert.assertThat;
  */
 public class CodeBaseEntry2Test {
 
+    @SuppressWarnings("deprecation")
     @Test
     public void should_transform_from_v1_format() {
         CodeBaseEntry1 e1 = CodeBaseEntry1.sampleCodeBaseEntry();

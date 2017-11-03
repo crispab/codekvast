@@ -28,14 +28,14 @@ import lombok.Value;
 import java.util.List;
 
 /**
- * Response to {@link GetMethodsRequest1}.
+ * Response to {@link GetMethodsRequest}.
  *
  * @author olle.hallin@crisp.se
  */
 @Value
 @Builder
 @ToString(exclude = "methods")
-public class GetMethodsResponse1 {
+public class GetMethodsResponse {
     /**
      * When was the request received? Millis since epoch.
      */
@@ -44,7 +44,7 @@ public class GetMethodsResponse1 {
     /**
      * What was the original request?
      */
-    private final GetMethodsRequest1 request;
+    private final GetMethodsRequest request;
 
     /**
      * How long did it take to execute the request?
@@ -59,5 +59,5 @@ public class GetMethodsResponse1 {
     /**
      * The resulting methods.
      */
-    private final List<MethodDescriptor1> methods;
+    private final List<MethodDescriptor> methods;
 }

@@ -22,7 +22,6 @@
 package io.codekvast.javaagent.model.v2;
 
 import io.codekvast.javaagent.model.v1.CodeBaseEntry1;
-import io.codekvast.javaagent.model.v1.MethodSignature1;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -42,7 +41,7 @@ public class CodeBaseEntry2 implements Serializable {
     /**
      * The low-level description of the signature.
      */
-    private final MethodSignature1 methodSignature;
+    private final MethodSignature2 methodSignature;
 
     /**
      * The visibility of the signature. Package private is coded as 'package-private'.
@@ -56,9 +55,9 @@ public class CodeBaseEntry2 implements Serializable {
     @NonNull
     private final String signature;
 
-    public static CodeBaseEntry2 fromV1Format(CodeBaseEntry1 entry1) {
+    public static CodeBaseEntry2 fromV1Format(@SuppressWarnings("deprecation") CodeBaseEntry1 entry1) {
         return CodeBaseEntry2.builder()
-                             .methodSignature(entry1.getMethodSignature())
+                             .methodSignature(MethodSignature2.fromV1Format(entry1.getMethodSignature()))
                              .visibility(entry1.getVisibility())
                              .signature(entry1.getSignature())
                              .build();
@@ -66,7 +65,7 @@ public class CodeBaseEntry2 implements Serializable {
 
     public static CodeBaseEntry2 sampleCodeBaseEntry() {
         return builder()
-            .methodSignature(MethodSignature1.createSampleMethodSignature())
+            .methodSignature(MethodSignature2.createSampleMethodSignature())
             .signature("signature1()")
             .visibility("public")
             .build();

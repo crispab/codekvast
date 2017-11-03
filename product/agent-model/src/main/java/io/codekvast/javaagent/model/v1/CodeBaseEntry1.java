@@ -31,9 +31,11 @@ import java.io.Serializable;
  * Representation of a code base entry.
  *
  * @author olle.hallin@crisp.se
+ * @deprecated Use {@link io.codekvast.javaagent.model.v2.CodeBaseEntry2} instead.
  */
 @Value
 @Builder
+@Deprecated
 public class CodeBaseEntry1 implements Serializable {
     private static final long serialVersionUID = 1L;
 

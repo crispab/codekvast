@@ -55,6 +55,7 @@ public class CodeBasePublication2 implements Serializable {
                              this.getClass().getSimpleName(), commonData, entries.size());
     }
 
+    @SuppressWarnings("deprecation")
     public static CodeBasePublication2 fromV1Format(CodeBasePublication1 publication1) {
 
         List<CodeBaseEntry2> entries2 = new ArrayList<>();

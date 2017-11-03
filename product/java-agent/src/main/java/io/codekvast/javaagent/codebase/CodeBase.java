@@ -22,9 +22,9 @@
 package io.codekvast.javaagent.codebase;
 
 import io.codekvast.javaagent.config.AgentConfig;
-import io.codekvast.javaagent.model.v1.MethodSignature1;
 import io.codekvast.javaagent.model.v2.CodeBaseEntry2;
 import io.codekvast.javaagent.model.v2.CodeBasePublication2;
+import io.codekvast.javaagent.model.v2.MethodSignature2;
 import io.codekvast.javaagent.util.SignatureUtils;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -54,7 +54,7 @@ public class CodeBase {
     private final AgentConfig config;
 
     @Getter
-    private final Set<MethodSignature1> signatures = new HashSet<>();
+    private final Set<MethodSignature2> signatures = new HashSet<>();
 
     @Getter
     private final CodeBaseFingerprint fingerprint;
@@ -139,7 +139,7 @@ public class CodeBase {
         }
     }
 
-    void addSignature(MethodSignature1 signature) {
+    void addSignature(MethodSignature2 signature) {
         String normalizedSignature = SignatureUtils.normalizeSignature(signature);
 
         if (normalizedSignature != null) {
@@ -160,7 +160,7 @@ public class CodeBase {
     Collection<CodeBaseEntry2> getEntries() {
         List<CodeBaseEntry2> result = new ArrayList<>();
 
-        for (MethodSignature1 signature : signatures) {
+        for (MethodSignature2 signature : signatures) {
             result.add(
                 CodeBaseEntry2.builder()
                               .methodSignature(signature)

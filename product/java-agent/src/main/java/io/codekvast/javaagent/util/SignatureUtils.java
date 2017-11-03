@@ -21,7 +21,7 @@
  */
 package io.codekvast.javaagent.util;
 
-import io.codekvast.javaagent.model.v1.MethodSignature1;
+import io.codekvast.javaagent.model.v2.MethodSignature2;
 import lombok.experimental.UtilityClass;
 import lombok.extern.java.Log;
 import org.aspectj.lang.Signature;
@@ -46,7 +46,7 @@ public class SignatureUtils {
     public static final String PRIVATE = "private";
     private static final String[] VISIBILITY_KEYWORDS = {PUBLIC, PROTECTED, PACKAGE_PRIVATE, PRIVATE};
 
-    public static String normalizeSignature(MethodSignature1 methodSignature) {
+    public static String normalizeSignature(MethodSignature2 methodSignature) {
         return methodSignature == null ? null : normalizeSignature(methodSignature.getAspectjString());
     }
 
@@ -139,14 +139,14 @@ public class SignatureUtils {
     }
 
     /**
-     * Converts a java.lang.reflect.Method to a MethodSignature1 object.
+     * Converts a java.lang.reflect.Method to a MethodSignature2 object.
      *
      * @param clazz  The class containing the method
      * @param method The method to make a signature of
-     * @return A MethodSignature1 or null if the methodFilter stops the method.
+     * @return A MethodSignature2 or null if the methodFilter stops the method.
      * @see #makeSignature(Class, Method)
      */
-    public static MethodSignature1 makeMethodSignature(Class<?> clazz, Method method) {
+    public static MethodSignature2 makeMethodSignature(Class<?> clazz, Method method) {
         org.aspectj.lang.reflect.MethodSignature aspectjSignature =
             (org.aspectj.lang.reflect.MethodSignature) makeSignature(clazz, method);
 
@@ -154,8 +154,9 @@ public class SignatureUtils {
             return null;
         }
 
-        return MethodSignature1.builder()
+        return MethodSignature2.builder()
                                .aspectjString(stripModifiersAndReturnType(signatureToString(aspectjSignature)))
+                               .bridge(method.isBridge())
                                .declaringType(aspectjSignature.getDeclaringTypeName())
                                .exceptionTypes(classArrayToString(aspectjSignature.getExceptionTypes()))
                                .methodName(aspectjSignature.getName())
@@ -163,19 +164,20 @@ public class SignatureUtils {
                                .packageName(aspectjSignature.getDeclaringType().getPackage().getName())
                                .parameterTypes(classArrayToString(aspectjSignature.getParameterTypes()))
                                .returnType(aspectjSignature.getReturnType().getName())
+                               .synthetic(method.isSynthetic())
                                .build();
 
     }
 
     /**
-     * Converts a java.lang.reflect.Constructor to a MethodSignature1 object.
+     * Converts a java.lang.reflect.Constructor to a MethodSignature2 object.
      *
      * @param clazz       The class containing the method.
      * @param constructor The constructor to make a signature of.
-     * @return A MethodSignature1 or null if the methodFilter stops the constructor.
+     * @return A MethodSignature2 or null if the methodFilter stops the constructor.
      * @see #makeSignature(Class, Method)
      */
-    public static MethodSignature1 makeConstructorSignature(Class<?> clazz, Constructor constructor) {
+    public static MethodSignature2 makeConstructorSignature(Class<?> clazz, Constructor constructor) {
         org.aspectj.lang.reflect.ConstructorSignature aspectjSignature =
             (org.aspectj.lang.reflect.ConstructorSignature) makeSignature(clazz, constructor);
 
@@ -183,8 +185,9 @@ public class SignatureUtils {
             return null;
         }
 
-        return MethodSignature1.builder()
+        return MethodSignature2.builder()
                                .aspectjString(stripModifiersAndReturnType(signatureToString(aspectjSignature)))
+                               .bridge(false)
                                .declaringType(aspectjSignature.getDeclaringTypeName())
                                .exceptionTypes(classArrayToString(aspectjSignature.getExceptionTypes()))
                                .methodName(aspectjSignature.getName())
@@ -192,6 +195,7 @@ public class SignatureUtils {
                                .packageName(aspectjSignature.getDeclaringType().getPackage().getName())
                                .parameterTypes(classArrayToString(aspectjSignature.getParameterTypes()))
                                .returnType("")
+                               .synthetic(constructor.isSynthetic())
                                .build();
 
     }

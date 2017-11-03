@@ -16,6 +16,7 @@ import static org.junit.Assert.assertThat;
  */
 public class CodeBasePublication2Test {
 
+    @SuppressWarnings("deprecation")
     @Test
     public void should_transform_from_v1_format() {
         CodeBasePublication1 pub1 = CodeBasePublication1.builder()

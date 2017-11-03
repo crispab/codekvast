@@ -44,8 +44,6 @@ import java.util.Set;
  * Deserialize the object and dispatch to the specialized importer.
  *
  * @author olle.hallin@crisp.se
- * @see CodeBasePublication1
- * @see InvocationDataPublication1
  * @see CodeBasePublication2
  * @see InvocationDataPublication2
  */
@@ -88,7 +86,7 @@ public class PublicationImporterImpl implements PublicationImporter {
         return false;
     }
 
-    @SuppressWarnings({"InstanceofConcreteClass", "CastToConcreteClass", "ChainOfInstanceofChecks"})
+    @SuppressWarnings({"InstanceofConcreteClass", "CastToConcreteClass", "ChainOfInstanceofChecks", "deprecation"})
     private boolean handlePublication(Object object) {
         if (object instanceof CodeBasePublication1) {
             return codeBaseImporter.importPublication(CodeBasePublication2.fromV1Format((CodeBasePublication1) object));

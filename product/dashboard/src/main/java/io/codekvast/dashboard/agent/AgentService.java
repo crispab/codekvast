@@ -22,8 +22,6 @@
 package io.codekvast.dashboard.agent;
 
 import io.codekvast.dashboard.customer.LicenseViolationException;
-import io.codekvast.javaagent.model.v1.CodeBasePublication1;
-import io.codekvast.javaagent.model.v1.InvocationDataPublication1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.javaagent.model.v2.CodeBasePublication2;
@@ -66,9 +64,7 @@ public interface AgentService {
      * @return the resulting file in the queue directory.
      * @throws LicenseViolationException If invalid license or license violations.
      * @throws IOException               If failure to create the file.
-     * @see CodeBasePublication1
      * @see CodeBasePublication2
-     * @see InvocationDataPublication1
      * @see InvocationDataPublication2
      */
     File savePublication(PublicationType publicationType, String licenseKey, int publicationSize, InputStream inputStream)

@@ -29,7 +29,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
 /**
- * A validated parameters object for {@link WebappService#getMethods(GetMethodsRequest1)}
+ * A validated parameters object for {@link WebappService#getMethods(GetMethodsRequest)}
  *
  * @author olle.hallin@crisp.se
  */
@@ -37,7 +37,7 @@ import javax.validation.constraints.Size;
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString
-public class GetMethodsRequest1 {
+public class GetMethodsRequest {
 
     /**
      * The signature to search for.
@@ -69,7 +69,7 @@ public class GetMethodsRequest1 {
         return normalizeSignature ? sig.replace("#", ".") : signature;
     }
 
-    public static GetMethodsRequest1 defaults() {
+    public static GetMethodsRequest defaults() {
         return builder()
             .signature("")
             .maxResults(WebappService.DEFAULT_MAX_RESULTS)

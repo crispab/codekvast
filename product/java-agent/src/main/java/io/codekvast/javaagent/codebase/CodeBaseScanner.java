@@ -23,7 +23,7 @@ package io.codekvast.javaagent.codebase;
 
 import com.google.common.io.Files;
 import com.google.common.reflect.ClassPath;
-import io.codekvast.javaagent.model.v1.MethodSignature1;
+import io.codekvast.javaagent.model.v2.MethodSignature2;
 import io.codekvast.javaagent.util.SignatureUtils;
 import lombok.Builder;
 import lombok.Value;
@@ -223,7 +223,7 @@ public class CodeBaseScanner {
             Constructor[] declaredConstructors = clazz.getDeclaredConstructors();
 
             for (Constructor constructor : declaredConstructors) {
-                MethodSignature1 thisSignature = SignatureUtils.makeConstructorSignature(clazz, constructor);
+                MethodSignature2 thisSignature = SignatureUtils.makeConstructorSignature(clazz, constructor);
                 codeBase.addSignature(thisSignature);
             }
 
@@ -246,7 +246,7 @@ public class CodeBaseScanner {
             Method[] declaredMethods = clazz.getDeclaredMethods();
             for (Method method : declaredMethods) {
                 boolean ignored = true;
-                MethodSignature1 signature = SignatureUtils.makeMethodSignature(clazz, method);
+                MethodSignature2 signature = SignatureUtils.makeMethodSignature(clazz, method);
 
                 String declaringPackage = method.getDeclaringClass().getPackage().getName();
                 for (String pkg : packages) {

@@ -57,6 +57,7 @@ public class InvocationDataPublication2 implements Serializable {
             commonData, invocations.size(), recordingIntervalStartedAtMillis);
     }
 
+    @SuppressWarnings("deprecation")
     public static InvocationDataPublication2 fromV1Format(InvocationDataPublication1 pub1) {
         return InvocationDataPublication2.builder()
                                          .commonData(CommonPublicationData2.fromV1format(pub1.getCommonData()))

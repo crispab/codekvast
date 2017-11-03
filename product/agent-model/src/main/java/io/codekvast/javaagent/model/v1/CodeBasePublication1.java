@@ -31,12 +31,14 @@ import java.util.Map;
  * Output of the CodeBasePublisher implementations.
  *
  * @author olle.hallin@crisp.se
+ * @deprecated Use {@link io.codekvast.javaagent.model.v2.CodeBasePublication2} instead.
  */
 @Data
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Setter(AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
+@Deprecated
 public class CodeBasePublication1 implements Serializable {
     private static final long serialVersionUID = 1L;
 

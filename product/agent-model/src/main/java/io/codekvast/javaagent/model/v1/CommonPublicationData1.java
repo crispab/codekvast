@@ -29,6 +29,7 @@ import java.io.Serializable;
 
 /**
  * @author olle.hallin@crisp.se
+ * @deprecated Use {@link io.codekvast.javaagent.model.v2.CommonPublicationData2} instead.
  */
 @SuppressWarnings({"ClassWithTooManyFields", "ClassWithTooManyMethods", "OverlyComplexClass"})
 @Data
@@ -36,6 +37,7 @@ import java.io.Serializable;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Setter(AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
+@Deprecated
 public class CommonPublicationData1 implements Serializable {
     private static final long serialVersionUID = 1L;
 
