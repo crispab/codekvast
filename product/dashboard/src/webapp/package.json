@@ -28,7 +28,7 @@
     "@ng-bootstrap/ng-bootstrap": "1.0.0-beta.5",
     "core-js": "2.5.1",
     "intl": "1.2.5",
-    "rxjs": "5.5.0",
+    "rxjs": "5.5.2",
     "zone.js": "0.8.18"
   },
   "devDependencies": {
