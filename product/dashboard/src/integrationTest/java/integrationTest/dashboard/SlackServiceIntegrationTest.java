@@ -38,7 +38,7 @@ public class SlackServiceIntegrationTest {
 
     @Test
     @Ignore("Requires git-crypt")
-    public void should_have_wired_context_correctly() throws Exception {
+    public void should_have_wired_context_correctly() {
         assertThat(slackService, not(nullValue()));
         assertThat(settings, not(nullValue()));
         assertThat(settings.getSlackWebHookUrl().isEmpty(), is(false));
@@ -47,7 +47,7 @@ public class SlackServiceIntegrationTest {
 
     @Test
     @Ignore("Sends stuff to codekvast.slack.com")
-    public void should_send_to_slack() throws Exception {
+    public void should_send_to_slack() {
         slackService.sendNotification("_Hello, World!_ says `" + getClass().getName() + "`", SlackService.Channel.BUILDS);
     }
 }

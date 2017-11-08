@@ -21,12 +21,12 @@ ext.systemTestJdbcPort = allocateFreePort()
 ext.systemTestAppPort = allocateFreePort()
 ext.systemTestEndpointFile = file("build/systemTestEndpoint.txt")
 
-def seleniumVersion = '3.5.3'
+def seleniumVersion = '3.7.1'
 dependencies {
     systemTestCompileOnly lombok
 
     systemTestCompile project(':product:testsupport')
-    systemTestCompile 'org.gebish:geb-spock:1.1.1'
+    systemTestCompile 'org.gebish:geb-spock:2.0'
     systemTestCompile 'org.spockframework:spock-core:1.1-groovy-2.4'
     systemTestCompile "org.seleniumhq.selenium:selenium-api:$seleniumVersion"
 
@@ -36,7 +36,7 @@ dependencies {
     systemTestRuntime "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
     systemTestRuntime "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
 
-    chromeDriver 'com.github.igor-suhorukov:chromedriver:2.31:linux64@bin'
+    chromeDriver 'com.github.igor-suhorukov:chromedriver:2.33:linux64@bin'
     // geckoDriver '???'
     jdbc mariadbDriver
 }
