@@ -1,6 +1,5 @@
 import 'core-js/es6';
 import 'reflect-metadata';
-import 'intl';
 
 require('zone.js/dist/zone');
 if (process.env.ENV === 'production') {

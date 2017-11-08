@@ -10,8 +10,6 @@ require('zone.js/dist/sync-test');
 require('zone.js/dist/jasmine-patch');
 require('zone.js/dist/async-test');
 require('zone.js/dist/fake-async-test');
-require('intl');
-require('intl/locale-data/jsonp/en.js');
 
 var appContext = require.context('../src', true, /\.spec\.ts/);
 

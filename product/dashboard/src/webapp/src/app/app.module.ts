@@ -1,5 +1,5 @@
 import {AgePipe} from './pipes/age.pipe';
-import {APP_BASE_HREF} from '@angular/common';
+import {APP_BASE_HREF, registerLocaleData} from '@angular/common';
 import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
 import {BrowserModule, Title} from '@angular/platform-browser';
@@ -24,6 +24,10 @@ import {VoteResultComponent} from './pages/vote-result/vote-result.component';
 import {DashboardService} from './services/dashboard.service';
 import {AuthTokenRenewer} from './guards/auth-token-renewer';
 import {IsLoggedIn} from './guards/is-logged-in';
+import localeSv from '@angular/common/locales/sv';
+
+registerLocaleData(localeSv);
+console.log('window.navigator.language=%o', window.navigator.language);
 
 @NgModule({
     imports: [
