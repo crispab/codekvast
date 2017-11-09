@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PreDestroy;
 import java.io.IOException;
+import java.time.Instant;
 
 /**
  * @author olle.hallin@crisp.se
@@ -69,7 +70,7 @@ public class SlackServiceImpl implements SlackService, ApplicationListener<Appli
 
     private void doSend(String text, Channel channel) {
         String ch = channel.name().toLowerCase().replace("_", "-");
-        Payload payload = Payload.builder().text(text).channel(ch).build();
+        Payload payload = Payload.builder().text(String.format("%s: %s", Instant.now(), text)).channel(ch).build();
 
         String url = getSlackWebhookUrl(settings);
         if (url != null) {
