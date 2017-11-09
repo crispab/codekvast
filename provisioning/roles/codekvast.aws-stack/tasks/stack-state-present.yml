@@ -259,7 +259,7 @@
   loop_control:
     label: "{{ item.1.public_dns_name }}"
 
-- name: Tag application instances with their CNAMEs
+- name: Tag database instances with their CNAMEs
   local_action:
     module: ec2_tag
     region: "{{ aws_region }}"

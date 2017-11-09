@@ -1,8 +1,10 @@
 # Codekvast Release Notes
 
+## 022.1
+1. Upgraded to Angular 5.0.1, Typescript 2.6.1, aspectjweaver 1.8.12
+
 ## 0.22.0
 1. Moved codebase analysis from agent to server. Now all discovered methods are uploaded to the server, no matter the name pattern.
-1. Upgraded to Angular 5.0.1, Typescript 2.6.1, aspectjweaver 1.8.12
 
 ## 0.21.6
 1. Upgraded to Angular 4.4.4, Typescript 3.5.3.
