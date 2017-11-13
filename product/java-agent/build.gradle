@@ -25,7 +25,7 @@ check.dependsOn integrationTest
 dependencies {
     compile project(":product:agent-model")
     compile 'com.squareup.okhttp3:okhttp:3.9.0'
-    compile 'com.google.guava:guava:23.3-jre'
+    compile 'com.google.guava:guava:23.4-jre'
     compile 'com.google.code.gson:gson:2.8.2'
     compile aspectjWeaver
 
@@ -35,7 +35,7 @@ dependencies {
     testCompile testFrameworks
 
     integrationTestCompile project(":product:testsupport")
-    integrationTestCompile "com.github.tomakehurst:wiremock:2.10.1"
+    integrationTestCompile "com.github.tomakehurst:wiremock:2.11.0"
     integrationTestRuntime logback
 
     jacocoagent 'org.jacoco:org.jacoco.agent:0.7.9:runtime@jar'
