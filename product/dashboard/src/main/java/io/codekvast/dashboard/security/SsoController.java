@@ -24,6 +24,7 @@ package io.codekvast.dashboard.security;
 import io.codekvast.dashboard.bootstrap.CodekvastSettings;
 import io.codekvast.dashboard.customer.CustomerData;
 import io.codekvast.dashboard.customer.CustomerService;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,7 +52,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 public class SsoController {
 
     private final CodekvastSettings settings;
-    private final MessageDigest sha1;
     private final WebappTokenProvider webappTokenProvider;
     private final CustomerService customerService;
 
@@ -61,7 +61,6 @@ public class SsoController {
         this.settings = settings;
         this.webappTokenProvider = webappTokenProvider;
         this.customerService = customerService;
-        this.sha1 = MessageDigest.getInstance("SHA-1");
     }
 
     @ExceptionHandler
@@ -121,7 +120,10 @@ public class SsoController {
                              .build());
     }
 
+    @SneakyThrows(NoSuchAlgorithmException.class)
     String makeHerokuSsoToken(String externalId, long timestampSeconds) {
+        MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
+
         return printHexBinary(
             sha1.digest(String.format("%s:%s:%d", externalId, settings.getHerokuApiSsoSalt(), timestampSeconds).getBytes())).toLowerCase();
     }
