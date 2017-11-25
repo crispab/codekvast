@@ -24,8 +24,8 @@ check.dependsOn integrationTest
 
 dependencies {
     compile project(":product:agent-model")
-    compile 'com.squareup.okhttp3:okhttp:3.9.0'
-    compile 'com.google.guava:guava:23.4-jre'
+    compile 'com.squareup.okhttp3:okhttp:3.9.1'
+    compile 'com.google.guava:guava:23.5-jre'
     compile 'com.google.code.gson:gson:2.8.2'
     compile aspectjWeaver
 
@@ -75,12 +75,14 @@ shadowJar {
     exclude 'aspectj*.dtd'
     exclude 'publicsuffixes.gz'
 
+    relocate 'afu', 'ck.afu'
     relocate 'aj.org', 'ck.aj.org'
     relocate 'com', 'ck.com'
     relocate 'javax.annotation', 'ck.javax.annotation'
     relocate 'javax.validation', 'ck.javax.validation'
     relocate 'okhttp3', 'ck.okhttp3'
     relocate 'okio', 'ck.okio'
+    relocate 'org.checkerframework', 'ck.org.checkerframework'
 
     relocate('org.aspectj', 'ck.org.aspectj') {
         exclude 'org/aspectj/lang/**' // Cannot be relocated, since that would break weaving
