@@ -2,6 +2,7 @@
 
 ## 022.1
 1. Upgraded to Angular 5.0.1, Typescript 2.6.1, aspectjweaver 1.8.12
+1. Upgraded to Spring Boot 1.5.9
 
 ## 0.22.0
 1. Moved codebase analysis from agent to server. Now all discovered methods are uploaded to the server, no matter the name pattern.

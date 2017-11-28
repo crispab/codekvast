@@ -59,7 +59,7 @@ import static org.junit.Assume.assumeTrue;
 /**
  * @author olle.hallin@crisp.se
  */
-@SuppressWarnings("SpringAutowiredFieldsWarningInspection")
+@SuppressWarnings({"SpringAutowiredFieldsWarningInspection", "ClassWithTooManyFields"})
 @SpringBootTest(
     classes = {CodekvastDashboard.class, TestDataGenerator.class},
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
