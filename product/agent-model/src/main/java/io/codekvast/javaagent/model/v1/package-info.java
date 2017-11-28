@@ -27,6 +27,5 @@
  * Instead, a new version of the class should be created.
  *
  * @author olle.hallin@crisp.se
- * @deprecated Use the classes in io.codekvast.javaagent.model.v2 instead.
  */
 package io.codekvast.javaagent.model.v1;

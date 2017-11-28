@@ -1,8 +1,11 @@
-package io.codekvast.javaagent.model.v2;
+package io.codekvast.javaagent.model.model.v2;
 
 import io.codekvast.javaagent.model.v1.CodeBaseEntry1;
 import io.codekvast.javaagent.model.v1.CodeBasePublication1;
 import io.codekvast.javaagent.model.v1.CommonPublicationData1;
+import io.codekvast.javaagent.model.v2.CodeBaseEntry2;
+import io.codekvast.javaagent.model.v2.CodeBasePublication2;
+import io.codekvast.javaagent.model.v2.CommonPublicationData2;
 import org.junit.Test;
 
 import java.util.Collections;

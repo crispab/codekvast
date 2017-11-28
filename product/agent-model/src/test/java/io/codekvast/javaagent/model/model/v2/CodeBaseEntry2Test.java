@@ -1,6 +1,7 @@
-package io.codekvast.javaagent.model.v2;
+package io.codekvast.javaagent.model.model.v2;
 
 import io.codekvast.javaagent.model.v1.CodeBaseEntry1;
+import io.codekvast.javaagent.model.v2.CodeBaseEntry2;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
