@@ -14,10 +14,10 @@ include ':sample:jenkins1'
 include ':sample:jenkins2'
 include ':sample:sample-gradle-application'
 include ':sample:sample-spring-boot-executable-jar'
-include ':sample:sample-concrete-aspect'
+// include ':sample:sample-concrete-aspect'
 include ':sample:sample-lib'
 include ':sample:swing-app'
-include ':sample:webstart-swing-app'
+// include ':sample:webstart-swing-app'
 
 buildCache {
     local(DirectoryBuildCache) {
