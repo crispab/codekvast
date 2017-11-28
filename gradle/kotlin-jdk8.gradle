@@ -1,0 +1,12 @@
+apply from: "$rootDir/gradle/kotlin.gradle"
+
+dependencies {
+    compile 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+}
+
+compileKotlin {
+    kotlinOptions {
+        javaParameters = true
+        jvmTarget = '1.8'
+    }
+}
