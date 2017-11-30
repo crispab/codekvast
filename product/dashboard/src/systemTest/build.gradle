@@ -13,8 +13,8 @@ check.dependsOn systemTest
 
 configurations {
     chromeDriver
-    jdbc
     // geckoDriver
+    jdbc
 }
 
 ext.systemTestJdbcPort = allocateFreePort()
@@ -181,15 +181,18 @@ systemTest {
         def endpoint = getSystemTestEndpoint()
         logger.lifecycle("Running system tests against {}", endpoint)
 
-        "chmod +x ${configurations.chromeDriver.asPath}".execute().waitFor()
-
-        // PhantomJS
-        systemProperty "geb.driver", "org.openqa.selenium.phantomjs.PhantomJSDriver"
-
-        // Chrome
-        // TODO: switch from PhantomJS to headless Chrome
-        // systemProperty "geb.driver", "org.openqa.selenium.chrome.ChromeDriver"
-        // systemProperty "webdriver.chrome.driver", configurations.chromeDriver.asPath
+        def chromeBinary = "google-chrome"
+        def foundChromeBinary = "which $chromeBinary".execute().in.text.trim()
+        if (foundChromeBinary) {
+            logger.lifecycle("Running system test with $foundChromeBinary in headless mode")
+            "chmod +x ${configurations.chromeDriver.asPath}".execute().waitFor()
+            systemProperty "geb.env", "chromeHeadless"
+            systemProperty "webdriver.chrome.driver", configurations.chromeDriver.asPath
+            // ChromeDriver is configured in resources/GebConfig.groovy
+        } else {
+            logger.lifecycle("Running system test with PhantomJS as $chromeBinary was not found in PATH")
+            systemProperty "geb.driver", "org.openqa.selenium.phantomjs.PhantomJSDriver"
+        }
 
         // Firefox
         // systemProperty "geb.driver", "org.openqa.selenium.firefox.FirefoxDriver"

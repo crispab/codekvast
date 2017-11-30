@@ -4,7 +4,7 @@
 
 The following stack is used when developing Codekvast (in alphabetical order):
 
-1. Angular 4
+1. Angular 5+
 1. AspectJ (in Load-Time Weaving mode)
 1. Docker 1.10.3+ (For running MariaDB)
 1. Github
@@ -17,12 +17,11 @@ The following stack is used when developing Codekvast (in alphabetical order):
 1. MariaDB 10+ (Codekvast Dashboard)
 1. NodeJS
 1. Node Package Manager (npm)
-1. PhantomJS
+1. Chrome headless (if installed) or PhantomJS (fallback)
 1. Spring Boot
 1. TypeScript
 1. Webpack
 1. Yarn
-1. On master
 
 ## Directory structure
 
