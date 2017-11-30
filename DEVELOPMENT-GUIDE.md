@@ -22,6 +22,7 @@ The following stack is used when developing Codekvast (in alphabetical order):
 1. TypeScript
 1. Webpack
 1. Yarn
+1. On master
 
 ## Directory structure
 
