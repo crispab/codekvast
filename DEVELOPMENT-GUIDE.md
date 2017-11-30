@@ -12,6 +12,7 @@ The following stack is used when developing Codekvast (in alphabetical order):
 1. Gradle 
 1. Inkscape (SVG graphics)
 1. Java 8
+1. Kotlin
 1. Lombok
 1. MariaDB 10+ (Codekvast Dashboard)
 1. NodeJS
