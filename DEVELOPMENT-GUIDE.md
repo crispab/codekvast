@@ -53,9 +53,10 @@ If you run some other OS or prefer to do it by hand, here are the requirements:
 
 ### git-crypt
 
-The `provisioning/` directory is encrypted with `git-crypt` and GPG public keys.
+Some files in the `provisioning/` directory is encrypted with `git-crypt` and GPG public keys.
+Which files that are encrypted can be seen in `provisioning/.gitattributes`.
 
-You must be added as trusted developer by `git-crypt add-gpg-user` to access the provisioning directory.
+You must be added as trusted developer by `git-crypt add-gpg-user` to access the secrets.
 
 ### JDK and Node.js
 
@@ -83,7 +84,7 @@ Put this into your `/etc/profile.d/phantomjs.sh` or your `$HOME/.profile` or sim
     
 ### TypeScript
 
-The Codekvast Dashboard web UI is developed with TypeScript and Angular 4. Twitter Bootstrap is used as CSS framework.
+The Codekvast Dashboard web UI is developed with TypeScript and Angular 5. Twitter Bootstrap is used as CSS framework.
 
 npm and yarn are used for managing the frontend development environment. Webpack is used as frontend bundler.
     
