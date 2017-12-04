@@ -35,10 +35,10 @@ registerLocaleData(localeFr);
 registerLocaleData(localeEs);
 
 function selectBestLocale() {
-    var supportedLocales = ['de', 'en', 'es', 'fr', 'sv'];
-    var result = window.navigator.language;
-    if (!supportedLocales.includes(result)) {
-        console.log("window.navigator.language=%o, which is not supported. Falling back to en-US", result);
+    const supportedLocales = ['de', 'en', 'es', 'fr', 'sv'];
+    let result = window.navigator.language;
+    if (supportedLocales.indexOf(result) < 0) {
+        console.log('window.navigator.language=%o, which is not supported. Falling back to en-US', result);
         result = 'en-US';
     }
     console.log('bestLocale=%o', result);
