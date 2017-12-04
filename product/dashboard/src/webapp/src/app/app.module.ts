@@ -24,10 +24,26 @@ import {VoteResultComponent} from './pages/vote-result/vote-result.component';
 import {DashboardService} from './services/dashboard.service';
 import {AuthTokenRenewer} from './guards/auth-token-renewer';
 import {IsLoggedIn} from './guards/is-logged-in';
+import localeDe from '@angular/common/locales/de';
+import localeEs from '@angular/common/locales/es';
+import localeFr from '@angular/common/locales/fr';
 import localeSv from '@angular/common/locales/sv';
 
 registerLocaleData(localeSv);
-console.log('window.navigator.language=%o', window.navigator.language);
+registerLocaleData(localeDe);
+registerLocaleData(localeFr);
+registerLocaleData(localeEs);
+
+function selectBestLocale() {
+    var supportedLocales = ['de', 'en', 'es', 'fr', 'sv'];
+    var result = window.navigator.language;
+    if (!supportedLocales.includes(result)) {
+        console.log("window.navigator.language=%o, which is not supported. Falling back to en-US", result);
+        result = 'en-US';
+    }
+    console.log('bestLocale=%o', result);
+    return result;
+}
 
 @NgModule({
     imports: [
@@ -61,7 +77,7 @@ console.log('window.navigator.language=%o', window.navigator.language);
         },
         {
             provide: LOCALE_ID,
-            useValue: window.navigator.language
+            useValue: selectBestLocale()
         },
     ],
     bootstrap: [AppComponent]
