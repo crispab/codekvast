@@ -21,7 +21,7 @@
  */
 package io.codekvast.javaagent.model.v2;
 
-import io.codekvast.javaagent.model.v1.CommonPublicationData1;
+import io.codekvast.javaagent.model.v1.CommonPublicationData;
 import lombok.*;
 
 import javax.validation.constraints.Min;
@@ -113,7 +113,7 @@ public class CommonPublicationData2 implements Serializable {
     }
 
     @SuppressWarnings("deprecation")
-    public static CommonPublicationData2 fromV1format(CommonPublicationData1 data1) {
+    public static CommonPublicationData2 fromV1format(CommonPublicationData data1) {
         return CommonPublicationData2.builder()
                                      .agentVersion(data1.getAgentVersion())
                                      .appName(data1.getAppName())

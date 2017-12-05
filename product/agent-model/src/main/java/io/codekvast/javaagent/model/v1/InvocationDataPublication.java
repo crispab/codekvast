@@ -39,11 +39,11 @@ import java.util.Set;
 @Setter(AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
 @Deprecated
-public class InvocationDataPublication1 implements Serializable {
+public class InvocationDataPublication implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @NonNull
-    private CommonPublicationData1 commonData;
+    private CommonPublicationData commonData;
 
     @NonNull
     private Set<String> invocations;
@@ -54,7 +54,7 @@ public class InvocationDataPublication1 implements Serializable {
     @Override
     public String toString() {
         return String.format(
-            "InvocationDataPublication1{commonData=%1$s, invocations.size()=%2$d, recordingIntervalStartedAt=%3$tF:%3$tT%3$tz}",
+            "InvocationDataPublication{commonData=%1$s, invocations.size()=%2$d, recordingIntervalStartedAt=%3$tF:%3$tT%3$tz}",
             commonData, invocations.size(), recordingIntervalStartedAtMillis);
     }
 

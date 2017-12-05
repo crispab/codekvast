@@ -39,14 +39,14 @@ import java.util.Map;
 @Setter(AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
 @Deprecated
-public class CodeBasePublication1 implements Serializable {
+public class CodeBasePublication implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @NonNull
-    private CommonPublicationData1 commonData;
+    private CommonPublicationData commonData;
 
     @NonNull
-    private Collection<CodeBaseEntry1> entries;
+    private Collection<CodeBaseEntry> entries;
 
     @NonNull
     private Map<String, String> overriddenSignatures;

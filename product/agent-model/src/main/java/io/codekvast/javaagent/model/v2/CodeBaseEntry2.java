@@ -21,7 +21,7 @@
  */
 package io.codekvast.javaagent.model.v2;
 
-import io.codekvast.javaagent.model.v1.CodeBaseEntry1;
+import io.codekvast.javaagent.model.v1.CodeBaseEntry;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -55,7 +55,7 @@ public class CodeBaseEntry2 implements Serializable {
     @NonNull
     private final String signature;
 
-    public static CodeBaseEntry2 fromV1Format(@SuppressWarnings("deprecation") CodeBaseEntry1 entry1) {
+    public static CodeBaseEntry2 fromV1Format(@SuppressWarnings("deprecation") CodeBaseEntry entry1) {
         return CodeBaseEntry2.builder()
                              .methodSignature(MethodSignature2.fromV1Format(entry1.getMethodSignature()))
                              .visibility(entry1.getVisibility())

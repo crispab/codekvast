@@ -17,9 +17,9 @@ import io.codekvast.dashboard.webapp.model.methods.GetMethodsResponse;
 import io.codekvast.dashboard.webapp.model.methods.MethodDescriptor;
 import io.codekvast.dashboard.webapp.model.status.AgentDescriptor1;
 import io.codekvast.dashboard.webapp.model.status.GetStatusResponse1;
-import io.codekvast.javaagent.model.v1.CodeBaseEntry1;
-import io.codekvast.javaagent.model.v1.CodeBasePublication1;
-import io.codekvast.javaagent.model.v1.CommonPublicationData1;
+import io.codekvast.javaagent.model.v1.CodeBaseEntry;
+import io.codekvast.javaagent.model.v1.CodeBasePublication;
+import io.codekvast.javaagent.model.v1.CommonPublicationData;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.javaagent.model.v2.*;
@@ -359,9 +359,9 @@ public class MariadbIntegrationTest {
     @Test
     public void should_import_codeBasePublication1() {
         //@formatter:off
-        CodeBasePublication1 publication = CodeBasePublication1.builder()
-            .commonData(CommonPublicationData1.sampleCommonPublicationData())
-            .entries(Arrays.asList(CodeBaseEntry1.sampleCodeBaseEntry()))
+        CodeBasePublication publication = CodeBasePublication.builder()
+            .commonData(CommonPublicationData.sampleCommonPublicationData())
+            .entries(Arrays.asList(CodeBaseEntry.sampleCodeBaseEntry()))
             .overriddenSignatures(Collections.singletonMap("signature", "overriddenBySignature"))
             .strangeSignatures(Collections.singletonMap("rawStrangeSignature", "normalizedStrangeSignature"))
             .build();

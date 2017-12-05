@@ -36,19 +36,19 @@ import java.io.Serializable;
 @Value
 @Builder
 @Deprecated
-public class CodeBaseEntry1 implements Serializable {
+public class CodeBaseEntry implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
      * The low-level description of the signature.
      */
-    private final MethodSignature1 methodSignature;
+    private final MethodSignature methodSignature;
 
     /**
      * The status of the signature. How it was found, if it has been excluded and so on.
      */
     @NonNull
-    private final SignatureStatus1 signatureStatus;
+    private final SignatureStatus signatureStatus;
 
     /**
      * The visibility of the signature. Package private is coded as 'package-private'.
@@ -62,11 +62,11 @@ public class CodeBaseEntry1 implements Serializable {
     @NonNull
     private final String signature;
 
-    public static CodeBaseEntry1 sampleCodeBaseEntry() {
+    public static CodeBaseEntry sampleCodeBaseEntry() {
         return builder()
-            .methodSignature(MethodSignature1.createSampleMethodSignature())
+            .methodSignature(MethodSignature.createSampleMethodSignature())
             .signature("signature1()")
-            .signatureStatus(SignatureStatus1.NOT_INVOKED)
+            .signatureStatus(SignatureStatus.NOT_INVOKED)
             .visibility("public")
             .build();
     }

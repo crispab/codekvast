@@ -38,7 +38,7 @@ import java.io.Serializable;
 @Setter(AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
 @Deprecated
-public class CommonPublicationData1 implements Serializable {
+public class CommonPublicationData implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Min(value = 1, message = "customerId must be a positive number")
@@ -111,7 +111,7 @@ public class CommonPublicationData1 implements Serializable {
             publishedAtMillis);
     }
 
-    public static CommonPublicationData1 sampleCommonPublicationData() {
+    public static CommonPublicationData sampleCommonPublicationData() {
         return builder()
             .agentVersion("agentVersion")
             .appName("appName")

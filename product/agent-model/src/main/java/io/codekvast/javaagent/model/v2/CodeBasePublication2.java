@@ -21,8 +21,8 @@
  */
 package io.codekvast.javaagent.model.v2;
 
-import io.codekvast.javaagent.model.v1.CodeBaseEntry1;
-import io.codekvast.javaagent.model.v1.CodeBasePublication1;
+import io.codekvast.javaagent.model.v1.CodeBaseEntry;
+import io.codekvast.javaagent.model.v1.CodeBasePublication;
 import lombok.*;
 
 import java.io.Serializable;
@@ -56,10 +56,10 @@ public class CodeBasePublication2 implements Serializable {
     }
 
     @SuppressWarnings("deprecation")
-    public static CodeBasePublication2 fromV1Format(CodeBasePublication1 publication1) {
+    public static CodeBasePublication2 fromV1Format(CodeBasePublication publication1) {
 
         List<CodeBaseEntry2> entries2 = new ArrayList<>();
-        for (CodeBaseEntry1 entry1 : publication1.getEntries()) {
+        for (CodeBaseEntry entry1 : publication1.getEntries()) {
             entries2.add(CodeBaseEntry2.fromV1Format(entry1));
         }
 

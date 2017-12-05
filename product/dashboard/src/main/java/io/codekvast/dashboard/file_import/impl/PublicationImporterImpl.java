@@ -25,8 +25,8 @@ import io.codekvast.dashboard.customer.LicenseViolationException;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
 import io.codekvast.dashboard.file_import.PublicationImporter;
-import io.codekvast.javaagent.model.v1.CodeBasePublication1;
-import io.codekvast.javaagent.model.v1.InvocationDataPublication1;
+import io.codekvast.javaagent.model.v1.CodeBasePublication;
+import io.codekvast.javaagent.model.v1.InvocationDataPublication;
 import io.codekvast.javaagent.model.v2.CodeBasePublication2;
 import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
 import lombok.extern.slf4j.Slf4j;
@@ -88,16 +88,16 @@ public class PublicationImporterImpl implements PublicationImporter {
 
     @SuppressWarnings({"InstanceofConcreteClass", "CastToConcreteClass", "ChainOfInstanceofChecks", "deprecation"})
     private boolean handlePublication(Object object) {
-        if (object instanceof CodeBasePublication1) {
-            return codeBaseImporter.importPublication(CodeBasePublication2.fromV1Format((CodeBasePublication1) object));
+        if (object instanceof CodeBasePublication) {
+            return codeBaseImporter.importPublication(CodeBasePublication2.fromV1Format((CodeBasePublication) object));
         }
 
         if (object instanceof CodeBasePublication2) {
             return codeBaseImporter.importPublication((CodeBasePublication2) object);
         }
 
-        if (object instanceof InvocationDataPublication1) {
-            return invocationDataImporter.importPublication(InvocationDataPublication2.fromV1Format((InvocationDataPublication1) object));
+        if (object instanceof InvocationDataPublication) {
+            return invocationDataImporter.importPublication(InvocationDataPublication2.fromV1Format((InvocationDataPublication) object));
         }
 
         if (object instanceof InvocationDataPublication2) {

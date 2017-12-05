@@ -29,7 +29,7 @@ import io.codekvast.javaagent.model.v2.InvocationDataPublication2;
 public interface InvocationDataImporter {
 
     /**
-     * Imports an InvocationDataPublication1
+     * Imports an InvocationDataPublication2
      *
      * @param publication The publication to import.
      * @return true iff the publication was handled.
