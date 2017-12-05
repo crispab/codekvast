@@ -1,6 +1,6 @@
 {
   "name": "codekvast-dashboard",
-  "version": "0.21.6",
+  "version": "0.22.1",
   "description": "The web interface for Codekvast Dashboard",
   "private": true,
   "scripts": {
