@@ -34,7 +34,7 @@ public class FileImportTaskTest {
     private FileImportTask task;
 
     @Before
-    public void beforeTest() throws Exception {
+    public void beforeTest() {
         settings = new CodekvastSettings();
         settings.setQueuePath(temporaryFolder.getRoot());
 
@@ -42,7 +42,7 @@ public class FileImportTaskTest {
     }
 
     @Test
-    public void should_handle_empty_queuePath() throws Exception {
+    public void should_handle_empty_queuePath() {
         // given
         // An empty queuePath
 
