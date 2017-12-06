@@ -1,5 +1,7 @@
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.chrome.ChromeOptions
+import org.openqa.selenium.firefox.FirefoxDriver
+import org.openqa.selenium.phantomjs.PhantomJSDriver
 
 environments {
 
@@ -11,4 +13,21 @@ environments {
         }
     }
 
+    chrome {
+        driver = {
+            new ChromeDriver()
+        }
+    }
+
+    firefox {
+        driver = {
+            new FirefoxDriver()
+        }
+    }
+
+    phantomjs {
+        driver = {
+            new PhantomJSDriver()
+        }
+    }
 }
