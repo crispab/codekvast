@@ -25,20 +25,28 @@ import {DashboardService} from './services/dashboard.service';
 import {AuthTokenRenewer} from './guards/auth-token-renewer';
 import {IsLoggedIn} from './guards/is-logged-in';
 import localeDe from '@angular/common/locales/de';
+import localeEn from '@angular/common/locales/en';
 import localeEs from '@angular/common/locales/es';
 import localeFr from '@angular/common/locales/fr';
 import localeSv from '@angular/common/locales/sv';
 
-registerLocaleData(localeSv);
 registerLocaleData(localeDe);
-registerLocaleData(localeFr);
+registerLocaleData(localeEn);
 registerLocaleData(localeEs);
+registerLocaleData(localeFr);
+registerLocaleData(localeSv);
 
 function selectBestLocale() {
-    const supportedLocales = ['de', 'en', 'es', 'fr', 'sv'];
     let result = window.navigator.language;
+    let hyphen = result.indexOf('-');
+    if (hyphen > 0) {
+        result = result.substr(0, hyphen);
+        console.log(`Stripping variant from window.navigator.language=${window.navigator.language}, using ${result}`);
+    }
+
+    const supportedLocales = ['de', 'en', 'es', 'fr', 'sv'];
     if (supportedLocales.indexOf(result) < 0) {
-        console.log('window.navigator.language=%o, which is not supported. Falling back to en-US', result);
+        console.log(`window.navigator.language=${result}, which is not supported. Falling back to en-US`);
         result = 'en-US';
     }
     console.log('bestLocale=%o', result);
@@ -66,16 +74,10 @@ function selectBestLocale() {
         VoteResultComponent,
     ],
     providers: [
-        AuthTokenRenewer,
-        ConfigService,
-        IsLoggedIn,
-        StateService,
-        Title, DashboardService,
-        {
+        AuthTokenRenewer, ConfigService, IsLoggedIn, StateService, Title, DashboardService, {
             provide: APP_BASE_HREF,
             useValue: '/'
-        },
-        {
+        }, {
             provide: LOCALE_ID,
             useValue: selectBestLocale()
         },
