@@ -1,0 +1,74 @@
+- name: Install AWS CLI and Boto
+  package: name={{ item }} state=present
+  with_items:
+  - awscli
+  - aws-shell
+  - python-boto
+  - python-boto3
+  - s3cmd
+
+- name: Create AWS config directory
+  file:
+    path: /home/{{ actual_username }}/.aws
+    state: directory
+    owner: "{{ actual_username }}"
+    group: "{{ actual_username }}"
+    mode: 0755
+
+- name: Configure AWS CLI profiles
+  ini_file:
+    dest: /home/{{ actual_username }}/.aws/config
+    owner: "{{ actual_username }}"
+    group: "{{ actual_username }}"
+    mode: 0644
+    section: "{{ item.s }}"
+    option: "{{ item.k }}"
+    value: "{{ item.v }}"
+    backup: yes
+  with_items:
+  - { s: 'profile codekvast', k: region, v: eu-central-1 }
+  notify: Test AWS CLI
+  loop_control:
+    label: "[{{ item.s }}] {{ item.k }}={{ item.v }}"
+
+- name: Configure AWS CLI credentials
+  ini_file:
+    dest: /home/{{ actual_username }}/.aws/credentials
+    owner: "{{ actual_username }}"
+    group: "{{ actual_username }}"
+    mode: 0600
+    section: "{{ item.s }}"
+    option: "{{ item.k }}"
+    value: "{{ item.v }}"
+    backup: yes
+  with_items:
+  - { s: 'codekvast', k: 'aws_access_key_id', v: "{{ secrets.aws.hit.access_key }}" }
+  - { s: 'codekvast', k: 'aws_secret_access_key', v: "{{ secrets.aws.hit.secret_key }}" }
+  notify: Test AWS CLI
+  loop_control:
+    label: "[{{ item.s }}] {{ item.k }}=xxxxxxxx"
+
+- name: Configure Boto profiles
+  ini_file:
+    dest: /home/{{ actual_username }}/.boto
+    owner: "{{ actual_username }}"
+    group: "{{ actual_username }}"
+    mode: 0600
+    section: "{{ item.s }}"
+    option: "{{ item.k }}"
+    value: "{{ item.v }}"
+    backup: yes
+  with_items:
+  - { s: 'codekvast', k: 'aws_access_key_id', v: "{{ secrets.aws.hit.access_key }}" }
+  - { s: 'codekvast', k: 'aws_secret_access_key', v: "{{ secrets.aws.hit.secret_key }}" }
+  notify: Test AWS CLI
+  loop_control:
+    label: "[{{ item.s }}] {{ item.k }}=xxxxxxxx"
+
+- name: Correct the owner AWS config directory
+  file:
+    path: /home/{{ actual_username }}/.aws
+    owner: "{{ actual_username }}"
+    group: "{{ actual_username }}"
+    mode: 0755
+    recurse: yes

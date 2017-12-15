@@ -14,3 +14,4 @@ ec2_instance_type: "t2.micro"
 
 s3_database_backup_bucket: "io.codekvast.{{ stack.customer|lower }}.{{ stack.env|lower }}.backup"
 
+s3_downloads_bucket: "io.codekvast.downloads"

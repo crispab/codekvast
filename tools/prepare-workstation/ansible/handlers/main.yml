@@ -1,0 +1,5 @@
+---
+- name: Test AWS CLI
+  shell: aws --profile {{ item }} ec2 describe-availability-zones
+  with_items:
+  - codekvast

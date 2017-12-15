@@ -3,6 +3,12 @@
   connection: local
   become: yes
 
+  vars_files:
+  - vars/secrets.yml
+
+  handlers:
+  - include: handlers/main.yml
+
   roles:
   - {role: franklinkim.docker, tags: [docker, docker-engine]}
   
@@ -10,3 +16,4 @@
   - {include: tasks/compilers.yml, tags: compilers}
   - {include: tasks/docker.yml, tags: docker}
   - {include: tasks/yarn.yml, tags: yarn}
+  - {include: tasks/aws-cli.yml, tags: aws}

@@ -12,11 +12,58 @@
     - vars/secrets.yml
 
   vars:
+    static_web_sites:
+    - { name: 'downloads.codekvast.io', region: 'eu-central-1' }
+
     dns_records:
-    - { name: 'codekvast.io', type: A, alias: True, alias_zone_id: 'Z21DNDUVLTQW6Q', value: s3-website.eu-central-1.amazonaws.com, owner: olle }
-    - { name: 'www.codekvast.io', type: A, alias: True, alias_zone_id: 'Z21DNDUVLTQW6Q', value: s3-website.eu-central-1.amazonaws.com, owner: olle }
+    - { name: 'codekvast.io', type: A, alias: True, alias_zone_id: 'Z21DNDUVLTQW6Q', value: 's3-website.eu-central-1.amazonaws.com', owner: olle }
+    - { name: 'www.codekvast.io', type: A, alias: True, alias_zone_id: 'Z21DNDUVLTQW6Q', value: 's3-website.eu-central-1.amazonaws.com', owner: olle }
 
   tasks:
+  - name: Create S3 buckets for static websites
+    local_action:
+      module: s3_bucket
+      profile: codekvast
+      region: "{{ item.region }}"
+      name: "{{ item.name }}"
+      tags:
+        Owner: Codekvast
+    with_items: "{{ static_web_sites }}"
+    loop_control:
+      label: "{{ item.name }}"
+    tags:
+    - static-web-sites
+
+  - name: Configure S3 buckets as static websites
+    local_action:
+      module: s3_website
+      profile: codekvast
+      region: "{{ item.region }}"
+      name: "{{ item.name }}"
+      state: present
+    with_items: "{{ static_web_sites }}"
+    loop_control:
+      label: "{{ item.name }}"
+    tags:
+    - static-web-sites
+
+  - name: Create CNAMES for static websites
+    local_action:
+      module: route53
+      profile: codekvast # in ~/.boto
+      zone: codekvast.io
+      command: "{{ item.command | default('create') }}"
+      overwrite: yes
+      record: "{{ item.name }}"
+      type: CNAME
+      value: "{{ item.name }}.s3-website.{{ item.region }}.amazonaws.com"
+      ttl: "{{ item.ttl | default('7200') }}"
+    with_items: "{{ static_web_sites }}"
+    loop_control:
+      label: "{{ item.name }}"
+    tags:
+    - static-web-sites
+
   - name: Create static DNS records
     local_action:
       module: route53
