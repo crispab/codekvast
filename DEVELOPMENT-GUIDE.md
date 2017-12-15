@@ -62,13 +62,13 @@ You must be added as trusted developer by `git-crypt add-gpg-user` to access the
 
 Java 8 is required. OpenJDK is recommended.
 
-Node.js 6, NPM 3.10+ and PhantomJS are required.
+Node.js 8+, NPM 3.10+ and PhantomJS are required.
 
 git-crypt is required for deploying to the cloud.
 
 Use the following command to install OpenJDK 8, git-crypt, Node.js, npm, PhantomJS and Yarn (Ubuntu, Debian):
 
-    curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+    curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
     sudo apt install openjdk-8-jdk openjdk-8-doc openjdk-8-source git-crypt nodejs
     sudo npm install -g phantomjs-prebuilt
     curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
