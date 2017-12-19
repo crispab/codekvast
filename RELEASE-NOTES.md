@@ -1,8 +1,9 @@
 # Codekvast Release Notes
 
 ## 0.22.1
-1. Upgraded to Angular 5.0.1, Typescript 2.6.1, aspectjweaver 1.8.12
+1. Upgraded to Angular 5.1.1, Typescript 2.6.1, aspectjweaver 1.8.12
 1. Upgraded to Spring Boot 1.5.9
+1. Upgraded to Gradle 4.4
 1. Fixed bug caused by renaming classes in agent-model
 
 ## 0.22.0
