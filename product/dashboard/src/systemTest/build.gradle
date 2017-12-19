@@ -185,7 +185,7 @@ systemTest {
         logger.lifecycle("Running system tests against {}", endpoint)
 
         "chmod +x ${configurations.chromeDriver.asPath}".execute().waitFor()
-        logger.lifecycle "Running Geb with environment=$gebEnv"
+        logger.lifecycle "Running Geb with -Dgeb.env=$gebEnv, override with -Pbrowser=xxx"
         systemProperty "geb.env", gebEnv
         systemProperty "webdriver.chrome.driver", configurations.chromeDriver.asPath
         systemProperty "webdriver.gecko.driver", configurations.geckoDriver.asPath
