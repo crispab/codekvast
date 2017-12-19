@@ -18,6 +18,8 @@
     dns_records:
     - { name: 'codekvast.io', type: A, alias: True, alias_zone_id: 'Z21DNDUVLTQW6Q', value: 's3-website.eu-central-1.amazonaws.com', owner: olle }
     - { name: 'www.codekvast.io', type: A, alias: True, alias_zone_id: 'Z21DNDUVLTQW6Q', value: 's3-website.eu-central-1.amazonaws.com', owner: olle }
+    - { name: 'demo.codekvast.io', type: CNAME, value: 'codekvast-demo1.herokuapp.com', owner: olle }
+    - { name: 'demo1.codekvast.io', type: CNAME, value: 'codekvast-demo1.herokuapp.com', owner: olle }
 
   tasks:
   - name: Create S3 buckets for static websites
