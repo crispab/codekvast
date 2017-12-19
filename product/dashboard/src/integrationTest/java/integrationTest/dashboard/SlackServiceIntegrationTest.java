@@ -4,13 +4,13 @@ import io.codekvast.dashboard.bootstrap.CodekvastSettings;
 import io.codekvast.dashboard.messaging.SlackService;
 import io.codekvast.dashboard.messaging.impl.SlackServiceImpl;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeTrue;
 
 /**
  * A manual integration test.
@@ -26,6 +26,8 @@ public class SlackServiceIntegrationTest {
 
     @Before
     public void beforeTest() throws Exception {
+        assumeTrue("true".equals(System.getenv("RUN_SLACK_TESTS")));
+
         Properties props = new Properties();
 
         props.load(getClass().getResourceAsStream("/application.properties"));
@@ -37,7 +39,6 @@ public class SlackServiceIntegrationTest {
     }
 
     @Test
-    @Ignore("Requires git-crypt")
     public void should_have_wired_context_correctly() {
         assertThat(slackService, not(nullValue()));
         assertThat(settings, not(nullValue()));
@@ -46,7 +47,6 @@ public class SlackServiceIntegrationTest {
     }
 
     @Test
-    @Ignore("Sends stuff to codekvast.slack.com")
     public void should_send_to_slack() {
         slackService.sendNotification("_Hello, World!_ says `" + getClass().getName() + "`", SlackService.Channel.BUILDS);
     }
