@@ -121,6 +121,7 @@ You execute the publishing to Bintray by executing `tools/ship-it.sh` in the roo
 
 Preconditions:
 
+1. `curl` installed.
 1. Clean workspace (no work in progress).
 1. On the master branch.
 1. Synced with origin (pushed and pulled).
