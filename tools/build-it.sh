@@ -1,28 +1,24 @@
 #!/bin/bash
 
-set -e
+source $(dirname $0)/.build-common.sh
 
-cd $(dirname $0)/..
 declare GRADLEW=./gradlew
 declare GRADLE_OPTS="${GRADLE_OPTS:--Dorg.gradle.configureondemand=false}"
-declare CODEKVAST_VERSION=$(grep codekvastVersion gradle.properties | egrep --only-matching '[0-9.]+')
-declare GIT_HASH=$(git rev-parse --short HEAD)
-declare BUILD_STATE_FILE=.buildState
-declare lastBuilt=$(cat ${BUILD_STATE_FILE} 2>/dev/null)
-if [ "$lastBuilt" == "${CODEKVAST_VERSION}-${GIT_HASH}" -a $(git status --porcelain | wc -l) -eq 0 ]; then
-  echo "Build is up-to-date with ${CODEKVAST_VERSION}-${GIT_HASH} and workspace is clean; will not build"
+
+if [ "$BUILT_FROM_VERSION" == "${COMMITTED_VERSION}" -a ${NUM_DIRTY_FILES} -eq 0 ]; then
+  echo "Build is up-to-date with ${COMMITTED_VERSION} and workspace is clean; will not build"
   exit 0
 fi
 
 declare tasks=${@:-build}
 
 if [ -z "$PHANTOMJS_BIN" ]; then
-    echo "Locating phantomjs ..."
+    echo "Trying to locate phantomjs ..."
     export PHANTOMJS_BIN=$(which phantomjs)
 fi
 
-if [ -z "$PHANTOMJS_BIN" ]; then
-    echo "phantomjs is missing, cannot run JavScript tests"
+if [ -z "$PHANTOMJS_BIN" -a "$(which google-chrome)" == "" ]; then
+    echo "Both phantomjs and Google Chrome are missing, cannot run JavaScript tests"
     exit 1
 fi
 
@@ -35,7 +31,7 @@ ${GRADLEW} ${GRADLE_OPTS} :product:aggregateJavadoc
 echo "Generating coverage report..."
 ${GRADLEW} ${GRADLE_OPTS} coverageReport
 
-if [ $(git status --porcelain | wc -l) -eq 0 ]; then
-    echo "Recorded that $CODEKVAST_VERSION-$GIT_HASH has been built in a clean workspace."
-    echo "$CODEKVAST_VERSION-$GIT_HASH" > ${BUILD_STATE_FILE}
+if [ ${NUM_DIRTY_FILES} -eq 0 -a "${tasks}" == "build" ]; then
+    echo "Recorded that ${COMMITTED_VERSION} has been built in a clean workspace."
+    echo "${COMMITTED_VERSION}" > ${BUILD_STATE_FILE}
 fi

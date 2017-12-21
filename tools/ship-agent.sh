@@ -1,13 +1,8 @@
 #!/usr/bin/env bash
 
-# Abort on errors
-set -e
+source $(dirname $0)/.build-common.sh
 
-cd $(dirname $0)/..
-declare GRADLEW=./gradlew
 declare GRADLE_PROPERTIES=$HOME/.gradle/gradle.properties
-declare CODEKVAST_VERSION=$(grep codekvastVersion gradle.properties | egrep --only-matching '[0-9.]+')
-declare GIT_HASH=$(git rev-parse --short HEAD)
 
 echo "Checking that we have Bintray credentials..."
 if [ -n "$BINTRAY_USER" -a -n "$BINTRAY_KEY" ]; then
@@ -37,7 +32,7 @@ git status --porcelain --branch | egrep --quiet '^## master\.\.\.origin/master' 
     exit 2
 }
 
-if [ $(git status --porcelain | wc -l) -gt 0 ]; then
+if [ ${NUM_DIRTY_FILES} -gt 0 ]; then
     echo "The Git workspace is not clean. Git status:"
     git status --short --branch
     exit 2
@@ -52,7 +47,7 @@ git status --porcelain --branch | egrep --quiet '^## master\.\.\.origin/master$'
 }
 
 echo -n "Everything looks fine.
-About to build and publish $CODEKVAST_VERSION-$GIT_HASH
+About to build and publish ${COMMITTED_VERSION}.
 Are you sure [N/y]? "
 read answer
 if [ "${answer}" != 'y' ]; then
@@ -60,7 +55,7 @@ if [ "${answer}" != 'y' ]; then
     exit 4
 fi
 
-tools/real-clean-workspace.sh
+tools/clean-workspace.sh
 tools/build-it.sh --console=plain --no-daemon --no-build-cache --max-workers=1 build
 
 echo "Creating Git tag ${CODEKVAST_VERSION}"
