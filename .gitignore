@@ -51,3 +51,4 @@ product/dashboard/src/webapp/dist/
 target/
 tools/downloaded/
 typings/
+.buildState
