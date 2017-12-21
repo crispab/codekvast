@@ -45,15 +45,17 @@ distributions {
 
 task bintrayStage(type: Sync) {
     from agentDistZip
-    from dashboardDistZip
-    from tasks.getByPath(':product:docs:asciidoctor'), {
-        include 'CodekvastUserManual.html'
-        rename { "CodekvastUserManual-${codekvastVersion}.html" }
-    }
-    from file("$rootDir/RELEASE-NOTES.md")
+//    from dashboardDistZip
+//    from tasks.getByPath(':product:docs:asciidoctor'), {
+//        include 'CodekvastUserManual.html'
+//        rename { "CodekvastUserManual-${codekvastVersion}.html" }
+//    }
+//    from file("$rootDir/RELEASE-NOTES.md")
 
     into "$buildDir/bintrayStage"
 }
+
+bintrayUpload.dependsOn bintrayStage
 
 bintray {
     // These are supposed to be defined in $HOME/.gradle/gradle.properties
@@ -61,8 +63,8 @@ bintray {
     key = project.findProperty('bintrayKey') ?: System.getenv('BINTRAY_KEY')
 
     filesSpec {
-        from bintrayStage
-        into codekvastVersion
+        from "$buildDir/bintrayStage"
+        into "."
     }
 
     dryRun = false
@@ -88,4 +90,23 @@ bintray {
             released = project.gitTimeIso
         }
     }
+}
+
+task bintrayUploadContent(type: Exec, dependsOn: bintrayUpload) {
+    group "Publishing"
+    description "Work-around for bug in gradle-bintray-plugin"
+
+    def user = project.findProperty('bintrayUser') ?: System.getenv('BINTRAY_USER')
+    def key = project.findProperty('bintrayKey') ?: System.getenv('BINTRAY_KEY')
+
+    def theArgs = ['--user', "$user:$key", '--progress-bar', '--fail']
+
+    new File("$buildDir/bintrayStage").eachFile {
+        theArgs << "https://api.bintray.com/content/crisp/codekvast/distributions/$codekvastVersion/$codekvastVersion/$it.name?publish=1"
+        theArgs << '--upload-file' << it.name
+    }
+
+    workingDir "$buildDir/bintrayStage"
+    executable "curl"
+    args theArgs
 }

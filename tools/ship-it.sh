@@ -71,7 +71,7 @@ git push --force --tags
 set +e
 
 echo "Uploading distributions to Bintray..."
-${GRADLEW} --console=plain :product:dist:bintrayUpload
+${GRADLEW} --console=plain :product:dist:bintrayUploadContent
 
 echo "Uploading codekvast-agent-${CODEKVAST_VERSION}.jar to jcenter..."
 ${GRADLEW} --console=plain :product:java-agent:bintrayUpload
