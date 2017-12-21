@@ -36,6 +36,6 @@ echo "Generating coverage report..."
 ${GRADLEW} ${GRADLE_OPTS} coverageReport
 
 if [ $(git status --porcelain | wc -l) -eq 0 ]; then
-    echo "Recording that $CODEKVAST_VERSION-$GIT_HASH has been build..."
+    echo "Recorded that $CODEKVAST_VERSION-$GIT_HASH has been built in a clean workspace."
     echo "$CODEKVAST_VERSION-$GIT_HASH" > ${BUILD_STATE_FILE}
 fi
