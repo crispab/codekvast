@@ -35,3 +35,15 @@
 
 - name: Install gradlew finder
   template: src=gradlew-finder.sh dest=/usr/local/bin/gradle mode=a=rx
+
+- name: Install Yarn APT key
+  apt_key: url=https://dl.yarnpkg.com/debian/pubkey.gpg state=present
+
+- name: Make sure Yarn APT source is defined
+  apt_repository:
+    filename: yarn
+    repo: "deb https://dl.yarnpkg.com/debian/ stable main"
+    state: present
+
+- name: Install Yarn
+  package: name=yarn state=present

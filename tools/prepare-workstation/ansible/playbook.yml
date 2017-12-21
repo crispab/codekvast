@@ -13,7 +13,6 @@
   - {role: franklinkim.docker, tags: [docker, docker-engine], distribution_release: zesty}
   
   post_tasks:
-  - {include: tasks/compilers.yml, tags: compilers}
+  - {include: tasks/tools.yml, tags: tools}
   - {include: tasks/docker.yml, tags: docker}
-  - {include: tasks/yarn.yml, tags: yarn}
   - {include: tasks/aws-cli.yml, tags: aws}
