@@ -10,7 +10,7 @@
   - include: handlers/main.yml
 
   roles:
-  - {role: franklinkim.docker, tags: [docker, docker-engine]}
+  - {role: franklinkim.docker, tags: [docker, docker-engine], distribution_release: zesty}
   
   post_tasks:
   - {include: tasks/compilers.yml, tags: compilers}
