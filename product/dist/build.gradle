@@ -92,32 +92,32 @@ bintray {
     }
 }
 
-//task bintrayUploadContent(type: Exec, dependsOn: bintrayUpload) {
-//    group "Publishing"
-//    description "Work-around for bug in gradle-bintray-plugin"
-//
-//    inputs.dir "$buildDir/bintrayStage"
-//    outputs.upToDateWhen {
-//        def code = new URL("https://dl.bintray.com/$bintrayUserOrg/codekvast/$codekvastVersion/codekvast-agent-${codekvastVersion}.zip")
-//            .openConnection().with {
-//            requestMethod = 'HEAD'
-//            connect()
-//            responseCode
-//        }
-//        code == 2002
-//    }
-//
-//    def user = project.findProperty('bintrayUser') ?: System.getenv('BINTRAY_USER')
-//    def key = project.findProperty('bintrayKey') ?: System.getenv('BINTRAY_KEY')
-//
-//    def theArgs = ['--user', "$user:$key", '--progress-bar', '--fail',
-//                   "https://api.bintray.com/content/$bintrayUserOrg/codekvast/distributions/$codekvastVersion/$codekvastVersion/?publish=1"]
-//
-//    new File("$buildDir/bintrayStage").eachFile {
-//        theArgs << '--upload-file' << it.name
-//    }
-//
-//    workingDir "$buildDir/bintrayStage"
-//    executable "curl"
-//    args theArgs
-//}
+task bintrayUploadContent(type: Exec, dependsOn: bintrayUpload) {
+    group "Publishing"
+    description "Work-around for bug in gradle-bintray-plugin"
+
+    inputs.dir "$buildDir/bintrayStage"
+    outputs.upToDateWhen {
+        def code = new URL("https://dl.bintray.com/$bintrayUserOrg/codekvast/$codekvastVersion/codekvast-agent-${codekvastVersion}.zip")
+            .openConnection().with {
+            requestMethod = 'HEAD'
+            connect()
+            responseCode
+        }
+        code == 2002
+    }
+
+    def user = project.findProperty('bintrayUser') ?: System.getenv('BINTRAY_USER')
+    def key = project.findProperty('bintrayKey') ?: System.getenv('BINTRAY_KEY')
+
+    def theArgs = ['--user', "$user:$key", '--progress-bar', '--fail',
+                   "https://api.bintray.com/content/$bintrayUserOrg/codekvast/distributions/$codekvastVersion/$codekvastVersion/?publish=1"]
+
+    new File("$buildDir/bintrayStage").eachFile {
+        theArgs << '--upload-file' << it.name
+    }
+
+    workingDir "$buildDir/bintrayStage"
+    executable "curl"
+    args theArgs
+}

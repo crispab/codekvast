@@ -115,9 +115,9 @@ The pipeline is defined by `Jenkinsfile`.
 To access http://jenkins.crisp.se you need to be either a Member or an Outside collaborator of https://github.com/orgs/crispab/people.
 
 ## Software publishing
-Codekvast binaries are published to Bintray.
+Codekvast Agent is published to Bintray as well as to jcenter.
 
-You execute the publishing to Bintray by executing `tools/ship-it.sh` in the root of the project.
+You execute the publishing to Bintray and jcenter by executing `tools/ship-agent.sh` in the root of the project.
 
 Preconditions:
 
