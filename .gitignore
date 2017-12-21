@@ -32,6 +32,7 @@
 **/src/webapp/src/**/*.js
 **/src/webapp/src/**/*.js.map
 *.log
+*.log.*
 *.retry
 .build-cache/
 .classpath

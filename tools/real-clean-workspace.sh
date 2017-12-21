@@ -8,10 +8,9 @@ cd $(dirname $0)/..
 declare CODEKVAST_VERSION=$(grep codekvastVersion gradle.properties | egrep --only-matching '[0-9.]+')
 declare GIT_HASH=$(git rev-parse --short HEAD)
 declare BUILD_STATE_FILE=.buildState
-
-declare lastBuilt=
-if [ "$(cat ${BUILD_STATE_FILE} 2>/dev/null)" == "${CODEKVAST_VERSION}-${GIT_HASH}" ]; then
-  echo "No need to clean, build is up-to-date with ${CODEKVAST_VERSION}-${GIT_HASH}"
+declare lastBuilt=$(cat ${BUILD_STATE_FILE} 2>/dev/null)
+if [ "$lastBuilt" == "${CODEKVAST_VERSION}-${GIT_HASH}" -a $(git status --porcelain | wc -l) -eq 0 ]; then
+  echo "Build is up-to-date with ${CODEKVAST_VERSION}-${GIT_HASH} and workspace is clean; will not clean"
   exit 0
 fi
 
