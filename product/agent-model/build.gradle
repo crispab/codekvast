@@ -7,7 +7,7 @@ version = codekvastVersion
 
 dependencies {
     compileOnly lombok
-    compile 'javax.validation:validation-api:2.0.0.Final'
+    compile 'javax.validation:validation-api:2.0.1.Final'
 
     testCompile testFrameworks
 }

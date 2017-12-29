@@ -18,5 +18,5 @@ ext {
     ]
     logback = 'ch.qos.logback:logback-classic:1.2.3'
     lombok = 'org.projectlombok:lombok:1.16.18'
-    mariadbDriver = 'org.mariadb.jdbc:mariadb-java-client:2.2.0'
+    mariadbDriver = 'org.mariadb.jdbc:mariadb-java-client:2.2.1'
 }
