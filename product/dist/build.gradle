@@ -113,8 +113,10 @@ def argsList() {
     def baseUrl = "https://api.bintray.com/content/$bintrayUserOrg/codekvast/distributions/$codekvastVersion/$codekvastVersion"
     result = ['--user', "$user:$key", '--progress-bar', '--fail']
 
-    stageDir.eachFile {
-        result << baseUrl + "/" + it.name + "?publish=1" << '--upload-file' << it.name
+    if (stageDir.exists()) {
+        stageDir.eachFile {
+            result << baseUrl + "/" + it.name + "?publish=1" << '--upload-file' << it.name
+        }
     }
     return result
 }
