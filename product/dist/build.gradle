@@ -43,7 +43,7 @@ distributions {
 
 }
 
-def stageDir = file("$buildDir/bintrayStage")
+ext.stageDir = file("$buildDir/bintrayStage")
 
 task bintrayStage(type: Sync) {
     from agentDistZip
@@ -100,21 +100,21 @@ task bintrayUploadContent(type: Exec, dependsOn: bintrayUpload) {
 
     inputs.dir stageDir
 
-    def argsList = []
-
-    doFirst {
-        def user = project.findProperty('bintrayUser') ?: System.getenv('BINTRAY_USER')
-        def key = project.findProperty('bintrayKey') ?: System.getenv('BINTRAY_KEY')
-
-        argsList = ['--user', "$user:$key", '--progress-bar', '--fail',
-                       "https://api.bintray.com/content/$bintrayUserOrg/codekvast/distributions/$codekvastVersion/$codekvastVersion/?publish=1"]
-
-        stageDir.eachFile {
-            argsList << '--upload-file' << it.name
-        }
-    }
-
     workingDir "$buildDir/bintrayStage"
     executable "curl"
-    args argsList
+    args argsList()
+}
+
+def argsList() {
+    def result = []
+
+    def user = project.findProperty('bintrayUser') ?: System.getenv('BINTRAY_USER')
+    def key = project.findProperty('bintrayKey') ?: System.getenv('BINTRAY_KEY')
+    def baseUrl = "https://api.bintray.com/content/$bintrayUserOrg/codekvast/distributions/$codekvastVersion/$codekvastVersion"
+    result = ['--user', "$user:$key", '--progress-bar', '--fail']
+
+    stageDir.eachFile {
+        result << baseUrl + "/" + it.name + "?publish=1" << '--upload-file' << it.name
+    }
+    return result
 }
