@@ -28,6 +28,29 @@
                             </ng-template>
                         </div>
                     </div>
+                    <div class="form-group row"
+                    >
+                        <label class="col-2">Min. inv. age:</label>
+                        <div class="col-3 input-group"
+                             [ngbPopover]="minimumAgePopover"
+                             popoverTitle="Minimum invocation age"
+                             triggers="mouseenter:mouseleave"
+                             placement="bottom">
+                            <input class="form-control"
+                                   id="includeIfNotInvokedInDays"
+                                   name="includeIfNotInvokedInDays"
+                                   [(ngModel)]="state.includeIfNotInvokedInDays"
+                                   min="1"
+                                   max="365"
+                                   type="number">
+                            <span class="input-group-addon font-italic">days</span>
+                        </div>
+                    </div>
+                    <ng-template #minimumAgePopover>
+                        <p>Only include methods in the search results that have <b>not</b> been invoked <b>after {{ state.getInvokedBefore()
+                            | date:'short' }}</b>.</p>
+                    </ng-template>
+                    settings.dateFormat
                     <div class="form-group row">
                         <label class="col-2">Include:</label>
                         <div class="form-check ml-3">

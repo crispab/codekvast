@@ -12,6 +12,7 @@ export class MethodsComponentState {
     signature: string;
     includeSyntheticMethods: false;
     includeUntrackedMethods: false;
+    includeIfNotInvokedInDays = 30;
     maxResults = 100;
     data: MethodData;
     errorMessage: string;
@@ -83,9 +84,16 @@ export class MethodsComponentState {
         });
     }
 
+    getInvokedBefore(): Date {
+        let d = new Date();
+        d.setDate(d.getDate() - this.includeIfNotInvokedInDays);
+        return d;
+    }
+
     search() {
         this.dashboard
-            .getMethods(this.signature, this.maxResults, !this.includeSyntheticMethods, !this.includeUntrackedMethods)
+            .getMethods(this.signature, this.maxResults, !this.includeSyntheticMethods, !this.includeUntrackedMethods,
+                this.getInvokedBefore().getTime())
             .subscribe(data => {
                 this.data = data;
                 this.errorMessage = undefined;

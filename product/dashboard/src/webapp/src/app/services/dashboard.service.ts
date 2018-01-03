@@ -22,21 +22,22 @@ export class DashboardService {
     constructor(private http: Http, private configService: ConfigService, private stateService: StateService, private router: Router) {
     }
 
-    getMethods(signature: string, maxResults: number, suppressSyntheticMethods: boolean,
-               suppressUntrackedMethods: boolean): Observable<MethodData> {
+    getMethods(signature: string, maxResults: number, suppressSyntheticMethods?: boolean, suppressUntrackedMethods?: boolean,
+               invokedBeforeMillis?: number, invokedAfterMillis?: number): Observable<MethodData> {
         if (signature === '-----' && this.configService.getVersion() === 'dev') {
             console.log('Returning a canned response');
             return new Observable<MethodData>(subscriber => subscriber.next(require('../test/canned/v1/MethodData.json')));
         }
 
-        const url: string = this.constructGetMethodsUrl(signature, maxResults, suppressSyntheticMethods, suppressUntrackedMethods);
+        const url: string = this.constructGetMethodsUrl(signature, maxResults, suppressSyntheticMethods, suppressUntrackedMethods,
+            invokedBeforeMillis, invokedAfterMillis);
         return this.http.get(url, {headers: this.getHeaders()})
                    .do(res => this.replaceAuthToken(res))
                    .map(res => res.json());
     }
 
-    constructGetMethodsUrl(signature: string, maxResults: number, suppressSyntheticMethods: boolean,
-                           suppressUntrackedMethods: boolean): string {
+    constructGetMethodsUrl(signature: string, maxResults?: number, suppressSyntheticMethods?: boolean, suppressUntrackedMethods?: boolean,
+                           invokedBeforeMillis?: number, invokedAfterMillis?: number): string {
         let result = this.configService.getApiPrefix() + this.METHODS_URL;
         let delimiter = '?';
         if (signature !== undefined && signature.trim().length > 0) {
@@ -53,6 +54,14 @@ export class DashboardService {
         }
         if (suppressUntrackedMethods !== undefined) {
             result += `${delimiter}suppressUntrackedMethods=${suppressUntrackedMethods}`;
+            delimiter = '&';
+        }
+        if (isNumber(invokedBeforeMillis)) {
+            result += `${delimiter}onlyInvokedBeforeMillis=${invokedBeforeMillis}`;
+            delimiter = '&';
+        }
+        if (isNumber(invokedAfterMillis)) {
+            result += `${delimiter}onlyInvokedAfterMillis=${invokedAfterMillis}`;
             delimiter = '&';
         }
         return result;

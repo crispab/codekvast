@@ -26,8 +26,8 @@ describe('DashboardService', () => {
     });
 
     it('should construct a get methods url with signature containing wildcard', () => {
-        expect(dashboard.constructGetMethodsUrl('sample.app.SampleApp%foo*bar', 100, true, true))
-            .toBe('xxx/webapp/v1/methods?signature=sample.app.SampleApp%25foo*bar&maxResults=100&suppressSyntheticMethods=true' + '&suppressUntrackedMethods=true');
+        expect(dashboard.constructGetMethodsUrl('sample.app.SampleApp%foo*bar'))
+            .toBe('xxx/webapp/v1/methods?signature=sample.app.SampleApp%25foo*bar');
     });
 
 });
