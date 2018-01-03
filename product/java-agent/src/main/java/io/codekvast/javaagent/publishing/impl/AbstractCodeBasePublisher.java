@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2017 Hallin Information Technology AB
+ * Copyright (c) 2015-2018 Hallin Information Technology AB
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,12 +21,12 @@
  */
 package io.codekvast.javaagent.publishing.impl;
 
-import io.codekvast.javaagent.publishing.CodeBasePublisher;
-import io.codekvast.javaagent.publishing.CodekvastPublishingException;
 import io.codekvast.javaagent.codebase.CodeBase;
 import io.codekvast.javaagent.codebase.CodeBaseFingerprint;
 import io.codekvast.javaagent.codebase.CodeBaseScanner;
 import io.codekvast.javaagent.config.AgentConfig;
+import io.codekvast.javaagent.publishing.CodeBasePublisher;
+import io.codekvast.javaagent.publishing.CodekvastPublishingException;
 import lombok.Getter;
 
 import java.util.logging.Logger;
