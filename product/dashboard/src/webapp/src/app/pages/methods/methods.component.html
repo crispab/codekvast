@@ -29,6 +29,26 @@
                         </div>
                     </div>
                     <div class="form-group row">
+                        <label class="col-2">Include:</label>
+                        <div class="form-check ml-3">
+                            <label for="includeSyntheticMethods" class="form-check-label">
+                                <input class="form-check-input"
+                                       id="includeSyntheticMethods"
+                                       name="includeSyntheticMethods"
+                                       [(ngModel)]="state.includeSyntheticMethods"
+                                       type="checkbox"> Synthetic methods</label>
+                        </div>
+                        <div class="form-check ml-3">
+                            <label for="includeUntrackedMethods" class="form-check-label">
+                                <input class="form-check-input"
+                                       id="includeUntrackedMethods"
+                                       name="includeUntrackedMethods"
+                                       [(ngModel)]="state.includeUntrackedMethods"
+                                       type="checkbox"> Untracked methods</label>
+                        </div>
+
+                    </div>
+                    <div class="form-group row">
                         <label for="maxResults" class="col-2 col-form-label">Max&nbsp;Results:</label>
                         <div class="col-2">
                             <input class="form-control"
@@ -43,16 +63,17 @@
                         </button>
 
                         <div *ngIf="state.data">
-                            <small class="ml-2 col-form-label form-text text-muted">{{ state.data.timestamp | ckAge:settings.dateFormat }}: Found {{
-                                                                                    state.data.numMethods }} methods in {{
-                                                                                    state.data.queryTimeMillis }} ms
+                            <small class="ml-2 col-form-label form-text text-muted">{{ state.data.timestamp | ckAge:settings.dateFormat }}:
+                                Found {{
+                                state.data.numMethods }} methods in {{
+                                state.data.queryTimeMillis }} ms
                             </small>
                         </div>
 
                         <div *ngIf="state.errorMessage">
                             <small class="ml-2 col-form-label form-text text-muted" title="{{ state.errorMessage }}">{{
-                                                                                                                     communicationFailure()
-                                                                                                                     }}
+                                communicationFailure()
+                                }}
                             </small>
                         </div>
                     </div>

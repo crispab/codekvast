@@ -10,6 +10,8 @@ export class MethodsComponentState {
     static KEY = 'methods';
 
     signature: string;
+    includeSyntheticMethods: false;
+    includeUntrackedMethods: false;
     maxResults = 100;
     data: MethodData;
     errorMessage: string;
@@ -83,7 +85,7 @@ export class MethodsComponentState {
 
     search() {
         this.dashboard
-            .getMethods(this.signature, this.maxResults)
+            .getMethods(this.signature, this.maxResults, !this.includeSyntheticMethods, !this.includeUntrackedMethods)
             .subscribe(data => {
                 this.data = data;
                 this.errorMessage = undefined;

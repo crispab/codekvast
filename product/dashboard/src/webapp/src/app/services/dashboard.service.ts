@@ -22,27 +22,37 @@ export class DashboardService {
     constructor(private http: Http, private configService: ConfigService, private stateService: StateService, private router: Router) {
     }
 
-    getMethods(signature?: string, maxResults?: number): Observable<MethodData> {
+    getMethods(signature: string, maxResults: number, suppressSyntheticMethods: boolean,
+               suppressUntrackedMethods: boolean): Observable<MethodData> {
         if (signature === '-----' && this.configService.getVersion() === 'dev') {
             console.log('Returning a canned response');
             return new Observable<MethodData>(subscriber => subscriber.next(require('../test/canned/v1/MethodData.json')));
         }
 
-        const url: string = this.constructGetMethodsUrl(signature, maxResults);
+        const url: string = this.constructGetMethodsUrl(signature, maxResults, suppressSyntheticMethods, suppressUntrackedMethods);
         return this.http.get(url, {headers: this.getHeaders()})
                    .do(res => this.replaceAuthToken(res))
                    .map(res => res.json());
     }
 
-    constructGetMethodsUrl(signature: string, maxResults: number): string {
+    constructGetMethodsUrl(signature: string, maxResults: number, suppressSyntheticMethods: boolean,
+                           suppressUntrackedMethods: boolean): string {
         let result = this.configService.getApiPrefix() + this.METHODS_URL;
         let delimiter = '?';
         if (signature !== undefined && signature.trim().length > 0) {
-            result += `${delimiter}signature=${signature.replace('#', '.')}`;
+            result += `${delimiter}signature=${encodeURI(signature)}`;
             delimiter = '&';
         }
         if (isNumber(maxResults)) {
             result += `${delimiter}maxResults=${maxResults}`;
+            delimiter = '&';
+        }
+        if (suppressSyntheticMethods !== undefined) {
+            result += `${delimiter}suppressSyntheticMethods=${suppressSyntheticMethods}`;
+            delimiter = '&';
+        }
+        if (suppressUntrackedMethods !== undefined) {
+            result += `${delimiter}suppressUntrackedMethods=${suppressUntrackedMethods}`;
             delimiter = '&';
         }
         return result;

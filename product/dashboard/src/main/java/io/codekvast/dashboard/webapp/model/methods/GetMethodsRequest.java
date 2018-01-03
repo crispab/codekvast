@@ -23,6 +23,7 @@ package io.codekvast.dashboard.webapp.model.methods;
 
 import io.codekvast.dashboard.webapp.WebappService;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -37,6 +38,7 @@ import javax.validation.constraints.Size;
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString
+@Slf4j
 public class GetMethodsRequest {
 
     /**
@@ -82,9 +84,16 @@ public class GetMethodsRequest {
     private final boolean suppressUntrackedMethods;
 
     public String getNormalizedSignature() {
-        String sig = signature.contains("%") ? signature : "%" + signature + "%";
-        sig = sig.replace("%%", "%");
-        return normalizeSignature ? sig.replace("#", ".") : signature;
+        String result;
+        if (!normalizeSignature) {
+            result = signature;
+        } else {
+            String sig = signature.replace("*", "%").replace("?", "_").replace("#", ".");
+            sig = "%" + sig + "%";
+            result = sig.replace("%%", "%");
+        }
+        logger.debug("Normalized '{}' to '{}'", signature, result);
+        return result;
     }
 
     public static GetMethodsRequest defaults() {

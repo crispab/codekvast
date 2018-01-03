@@ -102,7 +102,7 @@
     <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="11">
+          <list size="15">
             <item index="0" class="java.lang.String" itemvalue="th:if" />
             <item index="1" class="java.lang.String" itemvalue="th:text" />
             <item index="2" class="java.lang.String" itemvalue="th:action" />
@@ -114,6 +114,10 @@
             <item index="8" class="java.lang.String" itemvalue="[attr.href]" />
             <item index="9" class="java.lang.String" itemvalue="routerlink" />
             <item index="10" class="java.lang.String" itemvalue="routerlinkactive" />
+            <item index="11" class="java.lang.String" itemvalue="placement" />
+            <item index="12" class="java.lang.String" itemvalue="container" />
+            <item index="13" class="java.lang.String" itemvalue="popovertitle" />
+            <item index="14" class="java.lang.String" itemvalue="triggers" />
           </list>
         </value>
       </option>
