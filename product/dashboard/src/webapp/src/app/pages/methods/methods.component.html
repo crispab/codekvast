@@ -24,33 +24,34 @@
                             <ng-template #signatureHints>
                                 <p><b>IDEA:</b> Edit-&gt;Copy Reference</p>
                                 <p><b>Eclipse:</b> Edit-&gt;Copy Qualified Name</p>
-                                <p>and paste it into the signature field.</p>
+                                <p>on a signature and paste it into the signature field.</p>
                             </ng-template>
                         </div>
                     </div>
-                    <div class="form-group row"
-                    >
-                        <label class="col-2">Min. inv. age:</label>
+                    <div class="form-group row">
+                        <label class="col-2">Cutoff Date:</label>
                         <div class="col-3 input-group"
-                             [ngbPopover]="minimumAgePopover"
-                             popoverTitle="Minimum invocation age"
+                             [ngbPopover]="cutoffDatePopover"
+                             popoverTitle="Cutoff Date"
                              triggers="mouseenter:mouseleave"
-                             placement="bottom">
+                             placement="right">
+
                             <input class="form-control"
                                    id="includeIfNotInvokedInDays"
                                    name="includeIfNotInvokedInDays"
                                    [(ngModel)]="state.includeIfNotInvokedInDays"
-                                   min="1"
-                                   max="365"
+                                   min="0"
+                                   max="3650"
                                    type="number">
-                            <span class="input-group-addon font-italic">days</span>
+                            <span class="input-group-addon font-italic">days ago</span>
                         </div>
                     </div>
-                    <ng-template #minimumAgePopover>
-                        <p>Only include methods in the search results that have <b>not</b> been invoked <b>after {{ state.getInvokedBefore()
-                            | date:'short' }}</b>.</p>
+                    <ng-template #cutoffDatePopover>
+                        <p>Only include methods in the search results that have <b>not been invoked at all</b> or <b>only
+                            been invoked before {{ state.getInvokedBefore() | date:'short' }}</b>.
+                        </p>
                     </ng-template>
-                    settings.dateFormat
+
                     <div class="form-group row">
                         <label class="col-2">Include:</label>
                         <div class="form-check ml-3">

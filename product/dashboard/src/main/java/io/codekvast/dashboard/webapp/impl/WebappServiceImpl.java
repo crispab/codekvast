@@ -348,7 +348,7 @@ public class WebappServiceImpl implements WebappService {
 
     boolean isSyntheticMethod(String signature) {
         return signature.contains("..");
-        // TODO: add other patterns such as $FastClassByGuice$
+        // TODO: add other patterns not containing ".."
     }
 
     @RequiredArgsConstructor
@@ -386,7 +386,7 @@ public class WebappServiceImpl implements WebappService {
 
         void addTo(List<MethodDescriptor> result) {
             if (builder != null && result.size() < maxResults) {
-                logger.trace("Adding method {} to result ({} result set rows)", methodId, rows);
+                logger.trace("Adding method {} to result (compiled from {} result set rows)", methodId, rows);
                 builder.occursInApplications(new TreeSet<>(applications.values()));
                 builder.collectedInEnvironments(new TreeSet<>(environments.values()));
                 result.add(builder.build());
