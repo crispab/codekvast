@@ -158,14 +158,14 @@ public class WebappServiceImplTest {
     @Test
     public void should_build_default_select_statement() {
         String whereClause = webappService.buildWhereClause(GetMethodsRequest.defaults());
-        assertThat(whereClause, is("m.signature LIKE '%'"));
+        assertThat(whereClause, is("m.signature LIKE ?"));
     }
 
     @Test
     public void should_build_normalized_where_clause_with_redundant_wildcards() {
         String whereClause = webappService.buildWhereClause(GetMethodsRequest.defaults().toBuilder()
                                                                              .signature("%%").build());
-        assertThat(whereClause, is("m.signature LIKE '%'"));
+        assertThat(whereClause, is("m.signature LIKE ?"));
     }
 
     @Test
@@ -173,7 +173,7 @@ public class WebappServiceImplTest {
         String whereClause = webappService.buildWhereClause(GetMethodsRequest.defaults().toBuilder()
                                                                              .normalizeSignature(true)
                                                                              .signature("foobar").build());
-        assertThat(whereClause, is("m.signature LIKE '%foobar%'"));
+        assertThat(whereClause, is("m.signature LIKE ?"));
     }
 
     @Test
@@ -181,7 +181,7 @@ public class WebappServiceImplTest {
         String whereClause = webappService.buildWhereClause(GetMethodsRequest.defaults().toBuilder()
                                                                              .normalizeSignature(false)
                                                                              .signature("foobar").build());
-        assertThat(whereClause, is("m.signature = 'foobar'"));
+        assertThat(whereClause, is("m.signature = ?"));
     }
 
     @Test
@@ -189,7 +189,7 @@ public class WebappServiceImplTest {
         String whereClause = webappService.buildWhereClause(GetMethodsRequest.defaults().toBuilder()
                                                                              .onlyInvokedBeforeMillis(100_000_000L)
                                                                              .build());
-        assertThat(whereClause, is("m.signature LIKE '%' AND i.invokedAtMillis <= 100000000"));
+        assertThat(whereClause, is("i.invokedAtMillis <= 100000000 AND m.signature LIKE ?"));
     }
 
     @Test
@@ -197,7 +197,7 @@ public class WebappServiceImplTest {
         String whereClause = webappService.buildWhereClause(GetMethodsRequest.defaults().toBuilder()
                                                                              .onlyInvokedAfterMillis(100_000_000L)
                                                                              .build());
-        assertThat(whereClause, is("m.signature LIKE '%' AND i.invokedAtMillis >= 100000000"));
+        assertThat(whereClause, is("i.invokedAtMillis >= 100000000 AND m.signature LIKE ?"));
     }
 
     @Test
@@ -206,7 +206,7 @@ public class WebappServiceImplTest {
                                                                              .onlyInvokedAfterMillis(100_000_000L)
                                                                              .onlyInvokedBeforeMillis(200_000_000L)
                                                                              .build());
-        assertThat(whereClause, is("m.signature LIKE '%' AND (i.invokedAtMillis BETWEEN 100000000 AND 200000000)"));
+        assertThat(whereClause, is("i.invokedAtMillis >= 100000000 AND i.invokedAtMillis <= 200000000 AND m.signature LIKE ?"));
     }
 
     @Test

@@ -72,7 +72,8 @@ public class WebappServiceImpl implements WebappService {
         MethodDescriptorRowCallbackHandler rowCallbackHandler =
             new MethodDescriptorRowCallbackHandler(buildWhereClause(request), request);
 
-        jdbcTemplate.query(rowCallbackHandler.getSelectStatement(), rowCallbackHandler, customerIdProvider.getCustomerId());
+        jdbcTemplate.query(rowCallbackHandler.getSelectStatement(), rowCallbackHandler, customerIdProvider.getCustomerId(),
+                           request.getNormalizedSignature());
 
         List<MethodDescriptor> methods = rowCallbackHandler.getResult();
 
@@ -87,19 +88,16 @@ public class WebappServiceImpl implements WebappService {
 
     String buildWhereClause(GetMethodsRequest request) {
         StringBuilder sb = new StringBuilder();
-        String operator = request.isNormalizeSignature() ? "LIKE" : "=";
-        sb.append("m.signature ").append(operator).append(" '").append(request.getNormalizedSignature()).append("'");
-        String delimiter = " AND ";
-        if (request.getOnlyInvokedAfterMillis() > 0L && request.getOnlyInvokedBeforeMillis() >= Long.MAX_VALUE) {
+        String delimiter = "";
+        if (request.getOnlyInvokedAfterMillis() > 0L) {
             sb.append(delimiter).append("i.invokedAtMillis >= ").append(request.getOnlyInvokedAfterMillis());
+            delimiter = " AND ";
         }
-        if (request.getOnlyInvokedAfterMillis() <= 0L && request.getOnlyInvokedBeforeMillis() < Long.MAX_VALUE) {
+        if (request.getOnlyInvokedBeforeMillis() < Long.MAX_VALUE) {
             sb.append(delimiter).append("i.invokedAtMillis <= ").append(request.getOnlyInvokedBeforeMillis());
+            delimiter = " AND ";
         }
-        if (request.getOnlyInvokedAfterMillis() > 0L && request.getOnlyInvokedBeforeMillis() < Long.MAX_VALUE) {
-            sb.append(delimiter).append("(i.invokedAtMillis BETWEEN ").append(request.getOnlyInvokedAfterMillis()).append(" AND ")
-              .append(request.getOnlyInvokedBeforeMillis()).append(")");
-        }
+        sb.append(delimiter).append("m.signature ").append(request.isNormalizeSignature() ? "LIKE ?" : "= ?");
         return sb.toString();
     }
 
