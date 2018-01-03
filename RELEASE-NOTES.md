@@ -1,6 +1,7 @@
 # Codekvast Release Notes
 
 ## 0.22.2
+1. Dashboard: added search filter for synthetic methods and not truly dead methods
 
 ## 0.22.1
 1. Upgraded to Angular 5.1.1, Typescript 2.6.1, aspectjweaver 1.8.12

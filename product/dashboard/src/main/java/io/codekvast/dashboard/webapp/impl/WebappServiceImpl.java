@@ -25,6 +25,7 @@ import io.codekvast.dashboard.customer.CustomerData;
 import io.codekvast.dashboard.customer.CustomerService;
 import io.codekvast.dashboard.customer.PricePlan;
 import io.codekvast.dashboard.security.CustomerIdProvider;
+import io.codekvast.dashboard.util.TimeService;
 import io.codekvast.dashboard.webapp.WebappService;
 import io.codekvast.dashboard.webapp.model.methods.*;
 import io.codekvast.dashboard.webapp.model.status.AgentDescriptor1;
@@ -61,17 +62,17 @@ public class WebappServiceImpl implements WebappService {
     private final JdbcTemplate jdbcTemplate;
     private final CustomerIdProvider customerIdProvider;
     private final CustomerService customerService;
+    private final TimeService timeService;
 
     @Override
     @Transactional(readOnly = true)
     public GetMethodsResponse getMethods(@Valid GetMethodsRequest request) {
-        long startedAt = System.currentTimeMillis();
+        long startedAt = timeService.currentTimeMillis();
 
         MethodDescriptorRowCallbackHandler rowCallbackHandler =
-            new MethodDescriptorRowCallbackHandler("m.signature LIKE ?", request.getMaxResults());
+            new MethodDescriptorRowCallbackHandler(buildWhereClause(request), request);
 
-        jdbcTemplate.query(rowCallbackHandler.getSelectStatement(), rowCallbackHandler, customerIdProvider.getCustomerId(),
-                           request.getNormalizedSignature());
+        jdbcTemplate.query(rowCallbackHandler.getSelectStatement(), rowCallbackHandler, customerIdProvider.getCustomerId());
 
         List<MethodDescriptor> methods = rowCallbackHandler.getResult();
 
@@ -80,14 +81,37 @@ public class WebappServiceImpl implements WebappService {
                                  .request(request)
                                  .numMethods(methods.size())
                                  .methods(methods)
-                                 .queryTimeMillis(System.currentTimeMillis() - startedAt)
+                                 .queryTimeMillis(timeService.currentTimeMillis() - startedAt)
                                  .build();
+    }
+
+    String buildWhereClause(GetMethodsRequest request) {
+        StringBuilder sb = new StringBuilder();
+        String operator = request.isNormalizeSignature() ? "LIKE" : "=";
+        sb.append("m.signature ").append(operator).append(" '").append(request.getNormalizedSignature()).append("'");
+        String delimiter = " AND ";
+        if (request.getOnlyInvokedAfterMillis() > 0L && request.getOnlyInvokedBeforeMillis() >= Long.MAX_VALUE) {
+            sb.append(delimiter).append("i.invokedAtMillis >= ").append(request.getOnlyInvokedAfterMillis());
+        }
+        if (request.getOnlyInvokedAfterMillis() <= 0L && request.getOnlyInvokedBeforeMillis() < Long.MAX_VALUE) {
+            sb.append(delimiter).append("i.invokedAtMillis <= ").append(request.getOnlyInvokedBeforeMillis());
+        }
+        if (request.getOnlyInvokedAfterMillis() > 0L && request.getOnlyInvokedBeforeMillis() < Long.MAX_VALUE) {
+            sb.append(delimiter).append("(i.invokedAtMillis BETWEEN ").append(request.getOnlyInvokedAfterMillis()).append(" AND ")
+              .append(request.getOnlyInvokedBeforeMillis()).append(")");
+        }
+        return sb.toString();
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<MethodDescriptor> getMethodById(@NotNull Long methodId) {
-        MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler("m.id = ?", 1);
+        GetMethodsRequest request = GetMethodsRequest.defaults().toBuilder()
+                                                     .maxResults(1)
+                                                     .suppressUntrackedMethods(false)
+                                                     .suppressSyntheticMethods(false)
+                                                     .build();
+        MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler("m.id = ?", request);
 
         jdbcTemplate.query(rowCallbackHandler.getSelectStatement(), rowCallbackHandler, customerIdProvider.getCustomerId(), methodId);
 
@@ -97,7 +121,7 @@ public class WebappServiceImpl implements WebappService {
     @Override
     @Transactional(readOnly = true)
     public GetStatusResponse1 getStatus() {
-        long startedAt = System.currentTimeMillis();
+        long startedAt = timeService.currentTimeMillis();
 
         Long customerId = customerIdProvider.getCustomerId();
         CustomerData customerData = customerService.getCustomerDataByCustomerId(customerId);
@@ -106,7 +130,7 @@ public class WebappServiceImpl implements WebappService {
         List<AgentDescriptor1> agents = getAgents(customerId, pp.getPublishIntervalSeconds());
         List<UserDescriptor1> users = getUsers(customerId);
 
-        Instant now = Instant.now();
+        Instant now = timeService.now();
         Instant collectionStartedAt = customerData.getCollectionStartedAt();
         Instant trialPeriodEndsAt = customerData.getTrialPeriodEndsAt();
         Duration trialPeriodDuration =
@@ -123,7 +147,7 @@ public class WebappServiceImpl implements WebappService {
         return GetStatusResponse1.builder()
                                  // query stuff
                                  .timestamp(startedAt)
-                                 .queryTimeMillis(System.currentTimeMillis() - startedAt)
+                                 .queryTimeMillis(timeService.currentTimeMillis() - startedAt)
 
                                  // price plan stuff
                                  .pricePlan(pp.getName())
@@ -187,7 +211,7 @@ public class WebappServiceImpl implements WebappService {
                 Timestamp nextPollExpectedAt = rs.getTimestamp("nextPollExpectedAt");
                 Timestamp publishedAt = rs.getTimestamp("publishedAt");
                 boolean isAlive =
-                    nextPollExpectedAt != null && nextPollExpectedAt.after(Timestamp.from(Instant.now().minusSeconds(60)));
+                    nextPollExpectedAt != null && nextPollExpectedAt.after(Timestamp.from(timeService.now().minusSeconds(60)));
                 Instant nextPublicationExpectedAt = lastPolledAt.toInstant().plusSeconds(publishIntervalSeconds);
 
                 result.add(
@@ -216,15 +240,18 @@ public class WebappServiceImpl implements WebappService {
 
     private class MethodDescriptorRowCallbackHandler implements RowCallbackHandler {
         private final String whereClause;
-        private final long maxResults;
-
+        private final int maxResults;
         private final List<MethodDescriptor> result = new ArrayList<>();
+        private final boolean suppressSyntheticMethods;
+        private final boolean suppressUntrackedMethods;
 
         private QueryState queryState;
 
-        private MethodDescriptorRowCallbackHandler(String whereClause, long maxResults) {
+        private MethodDescriptorRowCallbackHandler(String whereClause, GetMethodsRequest request) {
             this.whereClause = whereClause;
-            this.maxResults = maxResults;
+            this.maxResults = request.getMaxResults();
+            this.suppressSyntheticMethods = request.isSuppressSyntheticMethods();
+            this.suppressUntrackedMethods = request.isSuppressUntrackedMethods();
             queryState = new QueryState(-1L, this.maxResults);
         }
 
@@ -254,8 +281,18 @@ public class WebappServiceImpl implements WebappService {
                 return;
             }
 
-            long id = rs.getLong("methodId");
             String signature = rs.getString("signature");
+
+            if (suppressSyntheticMethods && isSyntheticMethod(signature)) {
+                return;
+            }
+
+            SignatureStatus2 status = SignatureStatus2.valueOf(rs.getString("status"));
+            if (suppressUntrackedMethods && !status.isTracked()) {
+                return;
+            }
+
+            long id = rs.getLong("methodId");
 
             if (!queryState.isSameMethod(id)) {
                 // The query is sorted on methodId
@@ -280,7 +317,7 @@ public class WebappServiceImpl implements WebappService {
                                            .startedAtMillis(startedAt)
                                            .publishedAtMillis(publishedAt)
                                            .invokedAtMillis(invokedAtMillis)
-                                           .status(SignatureStatus2.valueOf(rs.getString("status")))
+                                           .status(status)
                                            .build());
 
             queryState.saveEnvironment(EnvironmentDescriptor.builder()
@@ -309,6 +346,11 @@ public class WebappServiceImpl implements WebappService {
             queryState.addTo(result);
             return result;
         }
+    }
+
+    boolean isSyntheticMethod(String signature) {
+        return signature.contains("..");
+        // TODO: add other patterns such as $FastClassByGuice$
     }
 
     @RequiredArgsConstructor

@@ -81,13 +81,30 @@ public class WebappController {
     }
 
     @RequestMapping(method = GET, path = WEBAPP_V1_METHODS)
-    public ResponseEntity<GetMethodsResponse> getMethods1(@RequestParam(value = "signature", defaultValue = "%") String signature,
-                                                          @RequestParam(name = "maxResults", defaultValue = WebappService
-                                                               .DEFAULT_MAX_RESULTS_STR)
-                                                               Integer maxResults) {
+    public ResponseEntity<GetMethodsResponse> getMethods1(
+        @RequestParam(value = "signature", defaultValue = "%") String signature,
+        @RequestParam(value = "onlyInvokedBeforeMillis", defaultValue = WebappService.DEFAULT_ONLY_INVOKED_BEFORE_MILLIS_STR) Long
+            onlyInvokedBeforeMillis,
+        @RequestParam(value = "onlyInvokedAfterMillis", defaultValue = WebappService.DEFAULT_ONLY_INVOKED_AFTER_MILLIS_STR) Long
+            onlyInvokedAfterMillis,
+        @RequestParam(value = "suppressSyntheticMethods", defaultValue = WebappService.DEFAULT_SUPPRESS_SYNTHETIC_METHODS_STR) Boolean
+            suppressSyntheticMethods,
+        @RequestParam(value = "suppressUntrackedMethods", defaultValue = WebappService.DEFAULT_SUPPRESS_UNTRACKED_METHODS_STR) Boolean
+            suppressUntrackedMethods,
+        @RequestParam(name = "maxResults", defaultValue = WebappService.DEFAULT_MAX_RESULTS_STR) Integer maxResults) {
+
+        GetMethodsRequest request = GetMethodsRequest.defaults().toBuilder()
+                                                     .signature(signature)
+                                                     .onlyInvokedBeforeMillis(onlyInvokedBeforeMillis)
+                                                     .onlyInvokedAfterMillis(onlyInvokedAfterMillis)
+                                                     .suppressUntrackedMethods(suppressUntrackedMethods)
+                                                     .suppressSyntheticMethods(suppressSyntheticMethods)
+                                                     .maxResults(maxResults)
+                                                     .build();
+
         return ResponseEntity.ok()
                              .header(X_CODEKVAST_AUTH_TOKEN, securityHandler.renewWebappToken())
-                             .body(doGetMethods(signature, maxResults));
+                             .body(doGetMethods(request));
     }
 
     @RequestMapping(method = GET, path = WEBAPP_V1_METHOD)
@@ -97,7 +114,7 @@ public class WebappController {
         Optional<MethodDescriptor> result = webappService.getMethodById(methodId);
 
         logger.debug("{} method with id={} in {} ms", result.map(methodDescriptor1 -> "Found").orElse("Could not find"),
-                  methodId, System.currentTimeMillis() - startedAt);
+                     methodId, System.currentTimeMillis() - startedAt);
 
         return result.map(method -> ResponseEntity.ok()
                                                   .header(X_CODEKVAST_AUTH_TOKEN, securityHandler.renewWebappToken())
@@ -130,8 +147,8 @@ public class WebappController {
         return ResponseEntity.ok(Boolean.toString(settings.isDemoMode()));
     }
 
-    private GetMethodsResponse doGetMethods(String signature, Integer maxResults) {
-        GetMethodsRequest request = GetMethodsRequest.defaults().toBuilder().signature(signature).maxResults(maxResults).build();
+    private GetMethodsResponse doGetMethods(GetMethodsRequest request) {
+        logger.debug("Request: {}", request);
 
         GetMethodsResponse response = webappService.getMethods(request);
 
