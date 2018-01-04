@@ -326,11 +326,16 @@ public class WebappServiceImpl implements WebappService {
                 boolean keep = true;
 
                 if (request.isSuppressSyntheticMethods() && (md.getBridge() || md.getSynthetic() || isSyntheticMethod(md.getSignature()))) {
-                    logger.trace("Throwing away synthetic method {}", md);
+                    logger.trace("Throwing away synthetic method: {}", md);
                     keep = false;
                 }
                 if (keep && request.isSuppressUntrackedMethods() && md.getStatuses().stream().anyMatch(s -> !s.isTracked())) {
-                    logger.trace("Throwing away untracked method {}", md);
+                    logger.trace("Throwing away untracked method: {}", md);
+                    keep = false;
+                }
+
+                if (keep && md.getCollectedDays() < request.getMinCollectedDays()) {
+                    logger.trace("Throwing away method collected too few days: {}", md);
                     keep = false;
                 }
 
@@ -338,11 +343,11 @@ public class WebappServiceImpl implements WebappService {
                 Long lastInvokedAtMillis = keep ? md.getLastInvokedAtMillis() : 0L;
 
                 if (keep && request.getOnlyInvokedAfterMillis() > lastInvokedAtMillis) {
-                    logger.trace("Throwing away too old method {}", md);
+                    logger.trace("Throwing away too old method: {}", md);
                     keep = false;
                 }
                 if (keep && request.getOnlyInvokedBeforeMillis() < lastInvokedAtMillis) {
-                    logger.trace("Throwing away too new method {}", md);
+                    logger.trace("Throwing away too new method: {}", md);
                     keep = false;
                 }
                 if (!keep) {

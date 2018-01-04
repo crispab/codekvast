@@ -85,20 +85,19 @@ public class WebappController {
         @RequestParam(value = "signature", defaultValue = "%") String signature,
         @RequestParam(value = "onlyInvokedBeforeMillis", defaultValue = WebappService.DEFAULT_ONLY_INVOKED_BEFORE_MILLIS_STR) Long
             onlyInvokedBeforeMillis,
-        @RequestParam(value = "onlyInvokedAfterMillis", defaultValue = WebappService.DEFAULT_ONLY_INVOKED_AFTER_MILLIS_STR) Long
-            onlyInvokedAfterMillis,
         @RequestParam(value = "suppressSyntheticMethods", defaultValue = WebappService.DEFAULT_SUPPRESS_SYNTHETIC_METHODS_STR) Boolean
             suppressSyntheticMethods,
         @RequestParam(value = "suppressUntrackedMethods", defaultValue = WebappService.DEFAULT_SUPPRESS_UNTRACKED_METHODS_STR) Boolean
             suppressUntrackedMethods,
+        @RequestParam(name = "minCollectedDays", defaultValue = WebappService.DEFAULT_MIN_COLLECTED_DAYS_STR) Integer minCollectedDays,
         @RequestParam(name = "maxResults", defaultValue = WebappService.DEFAULT_MAX_RESULTS_STR) Integer maxResults) {
 
         GetMethodsRequest request = GetMethodsRequest.defaults().toBuilder()
                                                      .signature(signature)
                                                      .onlyInvokedBeforeMillis(onlyInvokedBeforeMillis)
-                                                     .onlyInvokedAfterMillis(onlyInvokedAfterMillis)
                                                      .suppressUntrackedMethods(suppressUntrackedMethods)
                                                      .suppressSyntheticMethods(suppressSyntheticMethods)
+                                                     .minCollectedDays(minCollectedDays)
                                                      .maxResults(maxResults)
                                                      .build();
 

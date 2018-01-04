@@ -58,7 +58,29 @@
                     </div>
 
                     <div class="form-group row">
-                        <label class="col-2">Cutoff Date:</label>
+                        <label class="col-2 col-form-label">Tracked For:</label>
+                        <div class="col-3 input-group"
+                             [ngbPopover]="collectedDaysPopover"
+                             popoverTitle="Tracked For Days"
+                             triggers="mouseenter:mouseleave"
+                             placement="right">
+
+                            <input class="form-control"
+                                   id="collectedDays"
+                                   name="collectedDays"
+                                   [(ngModel)]="state.collectedDays"
+                                   min="0"
+                                   max="3650"
+                                   type="number">
+                            <span class="input-group-addon font-italic">days</span>
+                        </div>
+
+                        <ng-template #collectedDaysPopover>
+                            <p>Only include methods in the search results that have been tracked by Codekvast for <b>at least {{
+                                state.collectedDays }} days</b>.</p>
+                        </ng-template>
+
+                        <label class="ml-2 col-form-label">Cutoff Date:</label>
                         <div class="col-3 input-group"
                              [ngbPopover]="cutoffDatePopover"
                              popoverTitle="Cutoff Date"
@@ -75,13 +97,15 @@
                                    [disabled]="state.includeOnlyNeverInvokedMethods">
                             <span class="input-group-addon font-italic">days ago</span>
                         </div>
+
+                        <ng-template #cutoffDatePopover>
+                            <p>Only include methods in the search results that have <b>not been invoked at all</b> or <b>only
+                                been invoked before {{ state.getInvokedBefore() | date:'short' }}</b>.
+                            </p>
+                            <p>Cutoff Date has no effect if <em>Only never invoked methods</em> is checked</p>
+                        </ng-template>
+
                     </div>
-                    <ng-template #cutoffDatePopover>
-                        <p>Only include methods in the search results that have <b>not been invoked at all</b> or <b>only
-                            been invoked before {{ state.getInvokedBefore() | date:'short' }}</b>.
-                        </p>
-                        <p>Cutoff Date has no effect if <em>Only never invoked methods</em> is checked</p>
-                    </ng-template>
 
                     <div class="form-group row">
                         <label for="maxResults" class="col-2 col-form-label">Max&nbsp;Results:</label>
@@ -99,16 +123,13 @@
 
                         <div *ngIf="state.data">
                             <small class="ml-2 col-form-label form-text text-muted">{{ state.data.timestamp | ckAge:settings.dateFormat }}:
-                                Found {{
-                                state.data.numMethods }} methods in {{
-                                state.data.queryTimeMillis }} ms
+                                Found {{ state.data.numMethods }} methods in {{ state.data.queryTimeMillis }} ms
                             </small>
                         </div>
 
                         <div *ngIf="state.errorMessage">
                             <small class="ml-2 col-form-label form-text text-muted" title="{{ state.errorMessage }}">{{
-                                communicationFailure()
-                                }}
+                                communicationFailure() }}
                             </small>
                         </div>
                     </div>

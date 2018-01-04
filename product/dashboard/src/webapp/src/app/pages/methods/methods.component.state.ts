@@ -4,7 +4,7 @@
 import {MethodData} from '../../model/methods/MethodData';
 import {MethodsComponent} from './methods.component';
 import {Method} from '../../model/methods/Method';
-import {DashboardService} from '../../services/dashboard.service';
+import {DashboardService, GetMethodsRequest} from '../../services/dashboard.service';
 
 export class MethodsComponentState {
     static KEY = 'methods';
@@ -15,6 +15,7 @@ export class MethodsComponentState {
     includeUntrackedMethods: false;
     includeOnlyNeverInvokedMethods: true;
     maxResults = 100;
+    collectedDays = 14;
     data: MethodData;
     errorMessage: string;
     sortColumn = MethodsComponent.SIGNATURE_COLUMN;
@@ -97,8 +98,14 @@ export class MethodsComponentState {
 
     search() {
         this.dashboard
-            .getMethods(this.signature, this.maxResults, !this.includeSyntheticMethods, !this.includeUntrackedMethods,
-                this.getCutoffTimeMillis())
+            .getMethods({
+                signature: this.signature,
+                maxResults: this.maxResults,
+                collectedDays: this.collectedDays,
+                suppressSyntheticMethods: !this.includeSyntheticMethods,
+                suppressUntrackedMethods: !this.includeUntrackedMethods,
+                invokedBeforeMillis: this.getCutoffTimeMillis()
+            } as GetMethodsRequest)
             .subscribe(data => {
                 this.data = data;
                 this.errorMessage = undefined;

@@ -83,6 +83,12 @@ public class GetMethodsRequest {
      */
     private final boolean suppressUntrackedMethods;
 
+    /**
+     * Only include methods that have been collected for this number of days
+     */
+    @Min(value = 0, message = "minCollectedDays must be >= 0")
+    private final int minCollectedDays;
+
     public String getNormalizedSignature() {
         String result;
         if (!normalizeSignature) {
@@ -90,7 +96,7 @@ public class GetMethodsRequest {
         } else {
             String sig = signature.replace("*", "%").replace("?", "_").replace("#", ".");
             sig = "%" + sig + "%";
-            result = sig.replace("%%", "%");
+            result = sig.replaceAll("%+", "%");
         }
         logger.debug("Normalized '{}' to '{}'", signature, result);
         return result;
@@ -103,6 +109,7 @@ public class GetMethodsRequest {
             .suppressUntrackedMethods(WebappService.DEFAULT_SUPPRESS_UNTRACKED_METHODS)
             .suppressSyntheticMethods(WebappService.DEFAULT_SUPPRESS_SYNTHETIC_METHODS)
             .maxResults(WebappService.DEFAULT_MAX_RESULTS)
+            .minCollectedDays(WebappService.DEFAULT_MIN_COLLECTED_DAYS)
             .normalizeSignature(WebappService.DEFAULT_NORMALIZE_SIGNATURE)
             .signature("")
             .build();

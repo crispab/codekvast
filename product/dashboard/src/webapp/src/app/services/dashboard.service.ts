@@ -9,6 +9,15 @@ import {StateService} from './state.service';
 import {Router} from '@angular/router';
 import {StatusData} from '../model/status/StatusData';
 
+export class GetMethodsRequest {
+    signature: string;
+    maxResults: number;
+    collectedDays: number;
+    suppressSyntheticMethods: boolean;
+    suppressUntrackedMethods: boolean;
+    invokedBeforeMillis: number
+}
+
 @Injectable()
 export class DashboardService {
 
@@ -22,48 +31,47 @@ export class DashboardService {
     constructor(private http: Http, private configService: ConfigService, private stateService: StateService, private router: Router) {
     }
 
-    getMethods(signature: string, maxResults: number, suppressSyntheticMethods?: boolean, suppressUntrackedMethods?: boolean,
-               invokedBeforeMillis?: number, invokedAfterMillis?: number): Observable<MethodData> {
-        if (signature === '-----' && this.configService.getVersion() === 'dev') {
+    getMethods(req: GetMethodsRequest): Observable<MethodData> {
+        if (req.signature === '-----' && this.configService.getVersion() === 'dev') {
             console.log('Returning a canned response');
             return new Observable<MethodData>(subscriber => subscriber.next(require('../test/canned/v1/MethodData.json')));
         }
 
-        const url: string = this.constructGetMethodsUrl(signature, maxResults, suppressSyntheticMethods, suppressUntrackedMethods,
-            invokedBeforeMillis, invokedAfterMillis);
+        const url: string = this.constructGetMethodsUrl(req);
+
         return this.http.get(url, {headers: this.getHeaders()})
                    .do(res => this.replaceAuthToken(res))
                    .map(res => res.json());
     }
 
-    constructGetMethodsUrl(signature: string, maxResults?: number, suppressSyntheticMethods?: boolean, suppressUntrackedMethods?: boolean,
-                           invokedBeforeMillis?: number, invokedAfterMillis?: number): string {
+    constructGetMethodsUrl(req: GetMethodsRequest): string {
         let result = this.configService.getApiPrefix() + this.METHODS_URL;
         let delimiter = '?';
-        if (signature !== undefined && signature.trim().length > 0) {
-            result += `${delimiter}signature=${encodeURI(signature)}`;
+        if (req.signature !== undefined && req.signature.trim().length > 0) {
+            result += `${delimiter}signature=${encodeURI(req.signature)}`;
             delimiter = '&';
         }
-        if (isNumber(maxResults)) {
-            result += `${delimiter}maxResults=${maxResults}`;
+        if (isNumber(req.maxResults)) {
+            result += `${delimiter}maxResults=${req.maxResults}`;
             delimiter = '&';
         }
-        if (suppressSyntheticMethods !== undefined) {
-            result += `${delimiter}suppressSyntheticMethods=${suppressSyntheticMethods}`;
+        if (isNumber(req.collectedDays)) {
+            result += `${delimiter}minCollectedDays=${req.collectedDays}`;
             delimiter = '&';
         }
-        if (suppressUntrackedMethods !== undefined) {
-            result += `${delimiter}suppressUntrackedMethods=${suppressUntrackedMethods}`;
+        if (req.suppressSyntheticMethods !== undefined) {
+            result += `${delimiter}suppressSyntheticMethods=${req.suppressSyntheticMethods}`;
             delimiter = '&';
         }
-        if (isNumber(invokedBeforeMillis)) {
-            result += `${delimiter}onlyInvokedBeforeMillis=${invokedBeforeMillis}`;
+        if (req.suppressUntrackedMethods !== undefined) {
+            result += `${delimiter}suppressUntrackedMethods=${req.suppressUntrackedMethods}`;
             delimiter = '&';
         }
-        if (isNumber(invokedAfterMillis)) {
-            result += `${delimiter}onlyInvokedAfterMillis=${invokedAfterMillis}`;
+        if (isNumber(req.invokedBeforeMillis)) {
+            result += `${delimiter}onlyInvokedBeforeMillis=${req.invokedBeforeMillis}`;
             delimiter = '&';
         }
+        console.log('GetMethodsUrl(%o) returns %o', req, result);
         return result;
     }
 
