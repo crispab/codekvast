@@ -6,7 +6,6 @@ import io.codekvast.dashboard.customer.PricePlan;
 import io.codekvast.dashboard.customer.PricePlanDefaults;
 import io.codekvast.dashboard.security.CustomerIdProvider;
 import io.codekvast.dashboard.util.TimeService;
-import io.codekvast.dashboard.webapp.model.methods.GetMethodsRequest;
 import io.codekvast.dashboard.webapp.model.status.GetStatusResponse1;
 import org.junit.Before;
 import org.junit.Test;
@@ -153,60 +152,6 @@ public class WebappServiceImplTest {
         assertThat(status.getTrialPeriodEndsAtMillis(), is(nullValue()));
         assertThat(status.getTrialPeriodPercent(), is(nullValue()));
         assertThat(status.getTrialPeriodExpired(), is(false));
-    }
-
-    @Test
-    public void should_build_default_select_statement() {
-        String whereClause = webappService.buildWhereClause(GetMethodsRequest.defaults());
-        assertThat(whereClause, is("m.signature LIKE ?"));
-    }
-
-    @Test
-    public void should_build_normalized_where_clause_with_redundant_wildcards() {
-        String whereClause = webappService.buildWhereClause(GetMethodsRequest.defaults().toBuilder()
-                                                                             .signature("%%").build());
-        assertThat(whereClause, is("m.signature LIKE ?"));
-    }
-
-    @Test
-    public void should_build_normalized_where_clause_with_explicit_signature() {
-        String whereClause = webappService.buildWhereClause(GetMethodsRequest.defaults().toBuilder()
-                                                                             .normalizeSignature(true)
-                                                                             .signature("foobar").build());
-        assertThat(whereClause, is("m.signature LIKE ?"));
-    }
-
-    @Test
-    public void should_build_where_clause_with_unnormalized_signature() {
-        String whereClause = webappService.buildWhereClause(GetMethodsRequest.defaults().toBuilder()
-                                                                             .normalizeSignature(false)
-                                                                             .signature("foobar").build());
-        assertThat(whereClause, is("m.signature = ?"));
-    }
-
-    @Test
-    public void should_build_where_clause_for_only_invoked_before() {
-        String whereClause = webappService.buildWhereClause(GetMethodsRequest.defaults().toBuilder()
-                                                                             .onlyInvokedBeforeMillis(100_000_000L)
-                                                                             .build());
-        assertThat(whereClause, is("i.invokedAtMillis <= 100000000 AND m.signature LIKE ?"));
-    }
-
-    @Test
-    public void should_build_where_clause_for_only_invoked_after() {
-        String whereClause = webappService.buildWhereClause(GetMethodsRequest.defaults().toBuilder()
-                                                                             .onlyInvokedAfterMillis(100_000_000L)
-                                                                             .build());
-        assertThat(whereClause, is("i.invokedAtMillis >= 100000000 AND m.signature LIKE ?"));
-    }
-
-    @Test
-    public void should_build_where_clause_for_only_invoked_between() {
-        String whereClause = webappService.buildWhereClause(GetMethodsRequest.defaults().toBuilder()
-                                                                             .onlyInvokedAfterMillis(100_000_000L)
-                                                                             .onlyInvokedBeforeMillis(200_000_000L)
-                                                                             .build());
-        assertThat(whereClause, is("i.invokedAtMillis >= 100000000 AND i.invokedAtMillis <= 200000000 AND m.signature LIKE ?"));
     }
 
     @Test

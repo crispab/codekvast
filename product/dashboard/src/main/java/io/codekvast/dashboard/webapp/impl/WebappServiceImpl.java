@@ -32,6 +32,7 @@ import io.codekvast.dashboard.webapp.model.status.AgentDescriptor1;
 import io.codekvast.dashboard.webapp.model.status.GetStatusResponse1;
 import io.codekvast.dashboard.webapp.model.status.UserDescriptor1;
 import io.codekvast.javaagent.model.v2.SignatureStatus2;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +50,7 @@ import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author olle.hallin@crisp.se
@@ -70,35 +72,24 @@ public class WebappServiceImpl implements WebappService {
         long startedAt = timeService.currentTimeMillis();
 
         MethodDescriptorRowCallbackHandler rowCallbackHandler =
-            new MethodDescriptorRowCallbackHandler(buildWhereClause(request), request);
+            new MethodDescriptorRowCallbackHandler("m.signature LIKE ?");
 
         jdbcTemplate.query(rowCallbackHandler.getSelectStatement(), rowCallbackHandler, customerIdProvider.getCustomerId(),
                            request.getNormalizedSignature());
 
-        List<MethodDescriptor> methods = rowCallbackHandler.getResult();
+        List<MethodDescriptor> methods = rowCallbackHandler.getResult(request);
+
+
+        long queryTimeMillis = timeService.currentTimeMillis() - startedAt;
+        logger.debug("Processed {} in {} ms. {} result set rows processed", request, queryTimeMillis, rowCallbackHandler.getRowCount());
 
         return GetMethodsResponse.builder()
                                  .timestamp(startedAt)
                                  .request(request)
                                  .numMethods(methods.size())
                                  .methods(methods)
-                                 .queryTimeMillis(timeService.currentTimeMillis() - startedAt)
+                                 .queryTimeMillis(queryTimeMillis)
                                  .build();
-    }
-
-    String buildWhereClause(GetMethodsRequest request) {
-        StringBuilder sb = new StringBuilder();
-        String delimiter = "";
-        if (request.getOnlyInvokedAfterMillis() > 0L) {
-            sb.append(delimiter).append("i.invokedAtMillis >= ").append(request.getOnlyInvokedAfterMillis());
-            delimiter = " AND ";
-        }
-        if (request.getOnlyInvokedBeforeMillis() < Long.MAX_VALUE) {
-            sb.append(delimiter).append("i.invokedAtMillis <= ").append(request.getOnlyInvokedBeforeMillis());
-            delimiter = " AND ";
-        }
-        sb.append(delimiter).append("m.signature ").append(request.isNormalizeSignature() ? "LIKE ?" : "= ?");
-        return sb.toString();
     }
 
     @Override
@@ -109,11 +100,11 @@ public class WebappServiceImpl implements WebappService {
                                                      .suppressUntrackedMethods(false)
                                                      .suppressSyntheticMethods(false)
                                                      .build();
-        MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler("m.id = ?", request);
+        MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler("m.id = ?");
 
         jdbcTemplate.query(rowCallbackHandler.getSelectStatement(), rowCallbackHandler, customerIdProvider.getCustomerId(), methodId);
 
-        return rowCallbackHandler.getResult().stream().findFirst();
+        return rowCallbackHandler.getResult(request).stream().findFirst();
     }
 
     @Override
@@ -238,19 +229,16 @@ public class WebappServiceImpl implements WebappService {
 
     private class MethodDescriptorRowCallbackHandler implements RowCallbackHandler {
         private final String whereClause;
-        private final int maxResults;
         private final List<MethodDescriptor> result = new ArrayList<>();
-        private final boolean suppressSyntheticMethods;
-        private final boolean suppressUntrackedMethods;
 
         private QueryState queryState;
 
-        private MethodDescriptorRowCallbackHandler(String whereClause, GetMethodsRequest request) {
+        @Getter
+        private int rowCount;
+
+        private MethodDescriptorRowCallbackHandler(String whereClause) {
             this.whereClause = whereClause;
-            this.maxResults = request.getMaxResults();
-            this.suppressSyntheticMethods = request.isSuppressSyntheticMethods();
-            this.suppressUntrackedMethods = request.isSuppressUntrackedMethods();
-            queryState = new QueryState(-1L, this.maxResults);
+            queryState = new QueryState(-1L);
         }
 
         String getSelectStatement() {
@@ -275,28 +263,16 @@ public class WebappServiceImpl implements WebappService {
 
         @Override
         public void processRow(ResultSet rs) throws SQLException {
-            if (result.size() >= maxResults) {
-                return;
-            }
-
-            String signature = rs.getString("signature");
-
-            if (suppressSyntheticMethods && isSyntheticMethod(signature)) {
-                return;
-            }
-
-            SignatureStatus2 status = SignatureStatus2.valueOf(rs.getString("status"));
-            if (suppressUntrackedMethods && !status.isTracked()) {
-                return;
-            }
+            this.rowCount += 1;
 
             long id = rs.getLong("methodId");
+            String signature = rs.getString("signature");
 
             if (!queryState.isSameMethod(id)) {
                 // The query is sorted on methodId
                 logger.trace("Found method {}:{}", id, signature);
                 queryState.addTo(result);
-                queryState = new QueryState(id, this.maxResults);
+                queryState = new QueryState(id);
             }
 
             queryState.countRow();
@@ -315,7 +291,7 @@ public class WebappServiceImpl implements WebappService {
                                            .startedAtMillis(startedAt)
                                            .publishedAtMillis(publishedAt)
                                            .invokedAtMillis(invokedAtMillis)
-                                           .status(status)
+                                           .status(SignatureStatus2.valueOf(rs.getString("status")))
                                            .build());
 
             queryState.saveEnvironment(EnvironmentDescriptor.builder()
@@ -340,21 +316,59 @@ public class WebappServiceImpl implements WebappService {
             return new HashSet<>(Arrays.asList(tags.split("\\s*[,;]\\s")));
         }
 
-        private List<MethodDescriptor> getResult() {
+        private List<MethodDescriptor> getResult(GetMethodsRequest request) {
+            // Include the last method
             queryState.addTo(result);
-            return result;
+
+            // Get rid of unwanted result
+            for (Iterator<MethodDescriptor> iterator = result.iterator(); iterator.hasNext(); ) {
+                MethodDescriptor md = iterator.next();
+                boolean keep = true;
+
+                if (request.isSuppressSyntheticMethods() && (md.getBridge() || md.getSynthetic() || isSyntheticMethod(md.getSignature()))) {
+                    logger.trace("Throwing away synthetic method {}", md);
+                    keep = false;
+                }
+                if (keep && request.isSuppressUntrackedMethods() && md.getStatuses().stream().anyMatch(s -> !s.isTracked())) {
+                    logger.trace("Throwing away untracked method {}", md);
+                    keep = false;
+                }
+
+                // only calculate once (if needed)
+                Long lastInvokedAtMillis = keep ? md.getLastInvokedAtMillis() : 0L;
+
+                if (keep && request.getOnlyInvokedAfterMillis() > lastInvokedAtMillis) {
+                    logger.trace("Throwing away too old method {}", md);
+                    keep = false;
+                }
+                if (keep && request.getOnlyInvokedBeforeMillis() < lastInvokedAtMillis) {
+                    logger.trace("Throwing away too new method {}", md);
+                    keep = false;
+                }
+                if (!keep) {
+                    iterator.remove();
+                } else {
+                    logger.trace("Keeping {}", md);
+                }
+            }
+
+            // Sort with respect to lastInvokedAt ASC (so that we keep the oldest invocations)
+            result.sort((md1, md2) -> (int) (md2.getLastInvokedAtMillis() - md1.getLastInvokedAtMillis()));
+
+            // Limit the result
+            return result.stream().limit(request.getMaxResults()).collect(Collectors.toList());
         }
+
     }
 
     boolean isSyntheticMethod(String signature) {
         return signature.contains("..");
-        // TODO: add other patterns not containing ".."
+        // Are there any other strange patterns not containing ".." ?
     }
 
     @RequiredArgsConstructor
     private class QueryState {
         private final long methodId;
-        private final long maxResults;
 
         private final Map<ApplicationId, ApplicationDescriptor> applications = new HashMap<>();
         private final Map<String, EnvironmentDescriptor> environments = new HashMap<>();
@@ -385,7 +399,7 @@ public class WebappServiceImpl implements WebappService {
         }
 
         void addTo(List<MethodDescriptor> result) {
-            if (builder != null && result.size() < maxResults) {
+            if (builder != null) {
                 logger.trace("Adding method {} to result (compiled from {} result set rows)", methodId, rows);
                 builder.occursInApplications(new TreeSet<>(applications.values()));
                 builder.collectedInEnvironments(new TreeSet<>(environments.values()));
@@ -396,7 +410,6 @@ public class WebappServiceImpl implements WebappService {
         void countRow() {
             rows += 1;
         }
-
     }
 
     /**
