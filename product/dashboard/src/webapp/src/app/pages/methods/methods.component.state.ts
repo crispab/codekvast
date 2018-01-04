@@ -10,9 +10,10 @@ export class MethodsComponentState {
     static KEY = 'methods';
 
     signature: string;
+    includeIfNotInvokedInDays = 30;
     includeSyntheticMethods: false;
     includeUntrackedMethods: false;
-    includeIfNotInvokedInDays = 30;
+    includeOnlyNeverInvokedMethods: true;
     maxResults = 100;
     data: MethodData;
     errorMessage: string;
@@ -90,10 +91,14 @@ export class MethodsComponentState {
         return d;
     }
 
+    private getCutoffTimeMillis(): number {
+        return this.includeOnlyNeverInvokedMethods ? 0 : this.getInvokedBefore().getTime();
+    }
+
     search() {
         this.dashboard
             .getMethods(this.signature, this.maxResults, !this.includeSyntheticMethods, !this.includeUntrackedMethods,
-                this.getInvokedBefore().getTime())
+                this.getCutoffTimeMillis())
             .subscribe(data => {
                 this.data = data;
                 this.errorMessage = undefined;

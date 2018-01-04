@@ -29,31 +29,15 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label class="col-2">Cutoff Date:</label>
-                        <div class="col-3 input-group"
-                             [ngbPopover]="cutoffDatePopover"
-                             popoverTitle="Cutoff Date"
-                             triggers="mouseenter:mouseleave"
-                             placement="right">
-
-                            <input class="form-control"
-                                   id="includeIfNotInvokedInDays"
-                                   name="includeIfNotInvokedInDays"
-                                   [(ngModel)]="state.includeIfNotInvokedInDays"
-                                   min="0"
-                                   max="3650"
-                                   type="number">
-                            <span class="input-group-addon font-italic">days ago</span>
-                        </div>
-                    </div>
-                    <ng-template #cutoffDatePopover>
-                        <p>Only include methods in the search results that have <b>not been invoked at all</b> or <b>only
-                            been invoked before {{ state.getInvokedBefore() | date:'short' }}</b>.
-                        </p>
-                    </ng-template>
-
-                    <div class="form-group row">
                         <label class="col-2">Include:</label>
+                        <div class="form-check ml-3">
+                            <label for="includeOnlyNeverInvokedMethods" class="form-check-label">
+                                <input class="form-check-input"
+                                       id="includeOnlyNeverInvokedMethods"
+                                       name="includeOnlyNeverInvokedMethods"
+                                       [(ngModel)]="state.includeOnlyNeverInvokedMethods"
+                                       type="checkbox"> Only never invoked methods</label>
+                        </div>
                         <div class="form-check ml-3">
                             <label for="includeSyntheticMethods" class="form-check-label">
                                 <input class="form-check-input"
@@ -72,6 +56,33 @@
                         </div>
 
                     </div>
+
+                    <div class="form-group row">
+                        <label class="col-2">Cutoff Date:</label>
+                        <div class="col-3 input-group"
+                             [ngbPopover]="cutoffDatePopover"
+                             popoverTitle="Cutoff Date"
+                             triggers="mouseenter:mouseleave"
+                             placement="right">
+
+                            <input class="form-control"
+                                   id="includeIfNotInvokedInDays"
+                                   name="includeIfNotInvokedInDays"
+                                   [(ngModel)]="state.includeIfNotInvokedInDays"
+                                   min="0"
+                                   max="3650"
+                                   type="number"
+                                   [disabled]="state.includeOnlyNeverInvokedMethods">
+                            <span class="input-group-addon font-italic">days ago</span>
+                        </div>
+                    </div>
+                    <ng-template #cutoffDatePopover>
+                        <p>Only include methods in the search results that have <b>not been invoked at all</b> or <b>only
+                            been invoked before {{ state.getInvokedBefore() | date:'short' }}</b>.
+                        </p>
+                        <p>Cutoff Date has no effect if <em>Only never invoked methods</em> is checked</p>
+                    </ng-template>
+
                     <div class="form-group row">
                         <label for="maxResults" class="col-2 col-form-label">Max&nbsp;Results:</label>
                         <div class="col-2">
