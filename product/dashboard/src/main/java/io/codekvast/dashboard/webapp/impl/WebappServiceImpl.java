@@ -61,6 +61,8 @@ import java.util.stream.Collectors;
 @Validated
 public class WebappServiceImpl implements WebappService {
 
+    private static final String UNKNOWN_ENVIRONMENT = "<unknown>";
+
     private final JdbcTemplate jdbcTemplate;
     private final CustomerIdProvider customerIdProvider;
     private final CustomerService customerService;
@@ -81,7 +83,7 @@ public class WebappServiceImpl implements WebappService {
 
 
         long queryTimeMillis = timeService.currentTimeMillis() - startedAt;
-        logger.debug("Processed {} in {} ms. {} result set rows processed", request, queryTimeMillis, rowCallbackHandler.getRowCount());
+        logger.debug("Processed {} in {} ms. {} result set rows processed.", request, queryTimeMillis, rowCallbackHandler.getRowCount());
 
         return GetMethodsResponse.builder()
                                  .timestamp(startedAt)
@@ -211,7 +213,7 @@ public class WebappServiceImpl implements WebappService {
                                     .agentVersion(rs.getString("agentVersion"))
                                     .appName(rs.getString("appName"))
                                     .appVersion(rs.getString("appVersion"))
-                                    .environment(rs.getString("environment"))
+                                    .environment(getStringOrDefault(rs, "environment", UNKNOWN_ENVIRONMENT))
                                     .excludePackages(rs.getString("excludePackages"))
                                     .id(rs.getLong("jvmId"))
                                     .methodVisibility(rs.getString("methodVisibility"))
@@ -296,7 +298,7 @@ public class WebappServiceImpl implements WebappService {
                                            .build());
 
             queryState.saveEnvironment(EnvironmentDescriptor.builder()
-                                                            .name(rs.getString("environment"))
+                                                            .name(getStringOrDefault(rs, "environment", UNKNOWN_ENVIRONMENT))
                                                             .hostname(rs.getString("hostname"))
                                                             .tags(splitOnCommaOrSemicolon(rs.getString("tags")))
                                                             .collectedSinceMillis(startedAt)
@@ -365,6 +367,11 @@ public class WebappServiceImpl implements WebappService {
             return result.stream().limit(request.getMaxResults()).collect(Collectors.toList());
         }
 
+    }
+
+    String getStringOrDefault(ResultSet rs, String columnLabel, String defaultValue) throws SQLException {
+        String value = rs.getString(columnLabel);
+        return value == null || value.isEmpty() ? defaultValue : value;
     }
 
     boolean isSyntheticMethod(String signature) {

@@ -98,7 +98,9 @@ public class GetMethodsRequest {
             sig = "%" + sig + "%";
             result = sig.replaceAll("%+", "%");
         }
-        logger.debug("Normalized '{}' to '{}'", signature, result);
+        if (!result.equals(signature)) {
+            logger.debug("Normalized '{}' to '{}'", signature, result);
+        }
         return result;
     }
 
