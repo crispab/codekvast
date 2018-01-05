@@ -42,6 +42,7 @@ methodVisibility = all
 packages = sample. , foo.bar.
 tags = development, sample
 bridgeAspectjMessagesToJUL = true
+environment = Gradle
 
 # serverUrl = https://api-staging.codekvast.io
 httpProxyHost =   

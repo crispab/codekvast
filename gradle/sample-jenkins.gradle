@@ -110,6 +110,7 @@ codeBase = $catalinaBase/webapps/jenkins, ${System.properties['user.home']}/.jen
 methodVisibility = private
 packages = hudson, jenkins
 tags = development, sample
+environment = Gradle
 
 #serverUrl = https://api-staging.codekvast.io
 """
