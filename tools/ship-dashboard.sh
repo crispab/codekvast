@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 provisioning/start-staging.sh
 
 tools/clean-workspace.sh
