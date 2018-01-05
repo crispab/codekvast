@@ -139,7 +139,8 @@
     </div>
 
     <div class="d-flex flex-row h-100 content mx-4">
-        <div id="methods-table">
+        <div id="methods-table" [ngClass]="state.detailsTableClasses()">
+            <h5 class="text-center">Search Results</h5>
             <table class="table table-striped table-bordered table-hover table-sm">
                 <thead>
                 <tr>
@@ -147,7 +148,8 @@
                         Signature <i [ngClass]="state.headerIconClassesSignature()" aria-hidden="true"></i>
                     </th>
                     <th (click)="state.sortByCollectedDays()" class="collected-days-column">
-                        Tracked Days <i [ngClass]="state.headerIconClassesCollectedDays()" aria-hidden="true"></i>
+                        {{ state.detailsTableVisible ? 'Tracked' : 'Tracked Days'}} <i [ngClass]="state.headerIconClassesCollectedDays()"
+                                                                                       aria-hidden="true"></i>
                     </th>
                     <th (click)="state.sortByAge()" class="age-column">
                         Last Invoked <i [ngClass]="state.headerIconClassesAge()" aria-hidden="true"></i>
@@ -175,7 +177,13 @@
                 </tbody>
             </table>
         </div>
-        <div id="details-table">
+        <div id="details-table-toggle" [ngClass]="state.detailsTableClasses()" (click)="state.toggleDetailsTable()"
+             ngbTooltip="Click to {{ state.detailsTableVisible ? 'hide' : 'show'}} method details"
+             placement="{{ state.detailsTableVisible ? 'right' : 'left'}}">
+            <i [ngClass]="state.detailsTableToggleClasses()" aria-hidden="true"></i>
+        </div>
+        <div id="details-table" [ngClass]="state.detailsTableClasses()">
+            <h5 class="text-center">Method Details</h5>
             <table *ngIf="state.selectedMethod"
                    class="table table-bordered table-striped table-sm"
                    (click)="gotoMethodDetail(state.selectedMethod.id)">

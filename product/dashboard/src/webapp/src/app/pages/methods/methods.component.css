@@ -11,13 +11,26 @@ div.wrapper {
 }
 
 .content div#methods-table {
-    flex: 2;
+    flex: 66;
+}
+
+.content div#methods-table.details-table-hidden {
+    flex: 99;
+}
+
+.content div#details-table-toggle {
+    flex: 1;
+    padding-top: .5em;
+    padding-left: 2px;
+    background-color: lightgrey;
 }
 
 .content div#details-table {
+    flex: 33;
+}
+
+.content div#details-table.details-table-hidden {
     display: none;
-    flex: 1;
-    margin-left: 2em;
 }
 
 .wrap-word {
@@ -28,6 +41,10 @@ div.wrapper {
 
 .signature-column {
     width: 72%;
+}
+
+.details-table-visible .signature-column {
+    width: 69%;
 }
 
 .collected-days-column {

@@ -21,6 +21,7 @@ export class MethodsComponentState {
     sortColumn = MethodsComponent.SIGNATURE_COLUMN;
     sortAscending = true;
     selectedMethod: Method;
+    detailsTableVisible = false;
 
     constructor(private dashboard: DashboardService) {
     }
@@ -142,5 +143,25 @@ export class MethodsComponentState {
         return this.selectedMethod && this.selectedMethod.id === m.id;
     }
 
+    toggleDetailsTable() {
+        this.detailsTableVisible = !this.detailsTableVisible;
+        console.log(`details-table is now ${this.detailsTableVisible}`);
+    }
+
+    detailsTableClasses() {
+        return {
+            'details-table-visible': this.detailsTableVisible,
+            'details-table-hidden': !this.detailsTableVisible
+        }
+    }
+
+    detailsTableToggleClasses() {
+        return {
+            'fa': true,
+            'text-center': true,
+            'fa-angle-double-right': this.detailsTableVisible,
+            'fa-angle-double-left': !this.detailsTableVisible
+        };
+    }
 }
 
