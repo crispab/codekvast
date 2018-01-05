@@ -50,6 +50,10 @@ export class MethodsComponentState {
         return this.getHeaderIconClassesFor(MethodsComponent.AGE_COLUMN);
     }
 
+    headerIconClassesCollectedDays() {
+        return this.getHeaderIconClassesFor(MethodsComponent.COLLECTED_DAYS_COLUMN);
+    }
+
     rowIconClasses(id: number) {
         let visible = this.selectedMethod && this.selectedMethod.id === id;
         return {
@@ -66,6 +70,10 @@ export class MethodsComponentState {
         this.sortBy(MethodsComponent.AGE_COLUMN);
     }
 
+    sortByCollectedDays() {
+        this.sortBy(MethodsComponent.COLLECTED_DAYS_COLUMN);
+    }
+
     sortedMethods(): Method[] {
         if (!this.data || !this.data.methods) {
             return null;
@@ -77,6 +85,8 @@ export class MethodsComponentState {
                 cmp = m1.signature.localeCompare(m2.signature);
             } else if (this.sortColumn === MethodsComponent.AGE_COLUMN) {
                 cmp = m1.lastInvokedAtMillis - m2.lastInvokedAtMillis;
+            } else if (this.sortColumn === MethodsComponent.COLLECTED_DAYS_COLUMN) {
+                cmp = m1.collectedDays - m2.collectedDays;
             }
             if (cmp === 0) {
                 // Make sure the sorting is stable

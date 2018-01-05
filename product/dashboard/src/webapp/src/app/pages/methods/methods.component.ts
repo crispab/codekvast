@@ -17,6 +17,7 @@ import {Method} from '../../model/methods/Method';
 export class MethodsComponent implements OnInit {
     static readonly SIGNATURE_COLUMN = 'signature';
     static readonly AGE_COLUMN = 'age';
+    static readonly COLLECTED_DAYS_COLUMN = 'collectedDays';
 
     settings: Settings;
     state: MethodsComponentState;

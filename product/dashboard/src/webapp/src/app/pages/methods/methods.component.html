@@ -76,11 +76,12 @@
                         </div>
 
                         <ng-template #collectedDaysPopover>
-                            <p>Only include methods in the search results that have been tracked by Codekvast for <b>at least {{
-                                state.collectedDays }} days</b>.</p>
+                            <p>Only include methods in the search results that have been tracked by Codekvast for
+                                <b>at least {{ state.collectedDays }} days</b>.</p>
                         </ng-template>
 
-                        <label class="ml-2 col-form-label">Cutoff Date:</label>
+                        <label class="ml-2 col-form-label" [class.text-secondary]="state.includeOnlyNeverInvokedMethods">Cutoff
+                            Date:</label>
                         <div class="col-3 input-group"
                              [ngbPopover]="cutoffDatePopover"
                              popoverTitle="Cutoff Date"
@@ -95,7 +96,7 @@
                                    max="3650"
                                    type="number"
                                    [disabled]="state.includeOnlyNeverInvokedMethods">
-                            <span class="input-group-addon font-italic">days ago</span>
+                            <span class="input-group-addon font-italic" [class.text-secondary]="state.includeOnlyNeverInvokedMethods">days ago</span>
                         </div>
 
                         <ng-template #cutoffDatePopover>
@@ -128,9 +129,7 @@
                         </div>
 
                         <div *ngIf="state.errorMessage">
-                            <small class="ml-2 col-form-label form-text text-muted" title="{{ state.errorMessage }}">{{
-                                communicationFailure() }}
-                            </small>
+                            <small class="ml-2 col-form-label form-text text-muted">{{ communicationFailure() }}</small>
                         </div>
                     </div>
                 </form>
@@ -147,6 +146,9 @@
                     <th (click)="state.sortBySignature()" class="signature-column">
                         Signature <i [ngClass]="state.headerIconClassesSignature()" aria-hidden="true"></i>
                     </th>
+                    <th (click)="state.sortByCollectedDays()" class="collected-days-column">
+                        Tracked Days <i [ngClass]="state.headerIconClassesCollectedDays()" aria-hidden="true"></i>
+                    </th>
                     <th (click)="state.sortByAge()" class="age-column">
                         Last Invoked <i [ngClass]="state.headerIconClassesAge()" aria-hidden="true"></i>
                     </th>
@@ -160,6 +162,9 @@
                     (click)="gotoMethodDetail(method.id)"
                     [class.table-active]="state.isSelectedMethod(method)">
                     <td class="signature-column wrap-word" [ngClass]="signatureClasses(method)">{{ method.signature }}</td>
+                    <td class="collected-days-column text-right">
+                        {{ method.collectedDays }}
+                    </td>
                     <td class="age-column wrap-word">
                         {{ method.lastInvokedAtMillis | ckAge:settings.dateFormat }}
                     </td>
@@ -203,7 +208,7 @@
                     <td class="date-column">{{ state.selectedMethod.collectedToMillis|ckAge:settings.dateFormat}}</td>
                 </tr>
                 <tr>
-                    <th colspan="2">Collected in environments:</th>
+                    <th colspan="2">Tracked in environments:</th>
                 </tr>
                 <tr *ngFor="let env of state.selectedMethod.collectedInEnvironments">
                     <td>{{ env.name }}</td>
