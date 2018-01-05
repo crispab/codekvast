@@ -2,6 +2,7 @@
 
 ## 0.22.3
 1. Dashboard: the method details table to right is now optional.
+1. Dashboard: method details does not show hosts if more than 10.
 
 ## 0.22.2
 1. Dashboard: added more search filters in the Methods page

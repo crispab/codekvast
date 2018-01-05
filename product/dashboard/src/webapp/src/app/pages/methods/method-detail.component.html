@@ -6,7 +6,7 @@
             <ck-settings-editor class="w-25"></ck-settings-editor>
         </div>
 
-        <table class="table table-striped table-bordered table-sm">
+        <table id="identity-table" class="table table-striped table-bordered table-sm">
             <thead>
             <tr class="bg-info text-white">
                 <th colspan="2">Identity</th>
@@ -38,7 +38,7 @@
             </tbody>
         </table>
 
-        <table class="table table-striped table-bordered table-sm">
+        <table id="summary-table" class="table table-striped table-bordered table-sm">
             <thead>
             <tr class="bg-info text-white">
                 <th colspan="2">Collection Summary</th>
@@ -75,7 +75,7 @@
             <tbody>
             <tr>
                 <th class="w-25">Hosts:</th>
-                <td class="w-75">{{ env.hostnames.join(', ') }}</td>
+                <td class="w-75">{{ env.hostnames.length <= 10 ? env.hostnames.join(', '): '(more than 10)' }}</td>
             </tr>
             <tr>
                 <th>Last Invoked:</th>
