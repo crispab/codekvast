@@ -99,6 +99,7 @@ public class WebappServiceImpl implements WebappService {
                                                      .maxResults(1)
                                                      .suppressUntrackedMethods(false)
                                                      .suppressSyntheticMethods(false)
+                                                     .minCollectedDays(0)
                                                      .build();
         MethodDescriptorRowCallbackHandler rowCallbackHandler = new MethodDescriptorRowCallbackHandler("m.id = ?");
 
