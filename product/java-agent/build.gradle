@@ -104,7 +104,7 @@ task verifyShadowJar {
         logger.info("Verifying relocations in {}", shadowJarFile)
 
         ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(new FileInputStream(shadowJarFile)))
-        InputStreamReader reader = new InputStreamReader(zipInputStream, Charset.forName("UTF-8"))
+        // InputStreamReader reader = new InputStreamReader(zipInputStream, Charset.forName("UTF-8"))
 
         ZipEntry zipEntry
         while ((zipEntry = zipInputStream.getNextEntry()) != null) {
@@ -114,6 +114,16 @@ task verifyShadowJar {
                 name.startsWith("ck/") ||
                 name.startsWith("io/codekvast/") ||
                 name.startsWith("org/aspectj/lang")
+
+            if (name.endsWith(".class")) {
+                byte[] header = new byte[8]
+                int read = zipInputStream.read(header, 0, 8)
+                short majorVersion = header[6] << 8 | (header[7] & 0xFF)
+                logger.debug("Class file major version for {} is {}", name, majorVersion)
+                if (majorVersion > 51) {
+                    throw new UnsupportedClassVersionError(name + " has major Java version " + majorVersion + " which will not run in Java 7")
+                }
+            }
         }
 
         assert shadowJarFile.length() < 6_000_000 // bytes, it is currently approx. 5.3 MB
