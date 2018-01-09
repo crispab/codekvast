@@ -1,5 +1,8 @@
 # Codekvast Release Notes
 
+## 0.22.4
+1. Upgraded Java dependencies: jslack 1.0.20, wiremock 2.13.0, phantomjsdriver 1.4.4
+
 ## 0.22.3
 1. Dashboard: the method details table to right is now optional.
 1. Dashboard: method details does not show hosts if more than 10.

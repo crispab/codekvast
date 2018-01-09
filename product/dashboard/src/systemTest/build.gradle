@@ -30,7 +30,7 @@ dependencies {
     systemTestCompile 'org.spockframework:spock-core:1.1-groovy-2.4'
     systemTestCompile "org.seleniumhq.selenium:selenium-api:$seleniumVersion"
 
-    systemTestRuntime "com.codeborne:phantomjsdriver:1.4.3"
+    systemTestRuntime "com.codeborne:phantomjsdriver:1.4.4"
     systemTestRuntime "org.seleniumhq.selenium:selenium-remote-driver:$seleniumVersion"
     systemTestRuntime "org.seleniumhq.selenium:selenium-chrome-driver:$seleniumVersion"
     systemTestRuntime "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
@@ -200,7 +200,7 @@ systemTest {
         if (failures == 0) {
             doStopSystemTestEnvironment(false)
         } else {
-            logger.lifecycle("Since there were failures, the system test environment is still running at {} running", endpoint)
+            logger.lifecycle("Since there were failures, the system test environment is still running at {}", endpoint)
         }
     }
 }
