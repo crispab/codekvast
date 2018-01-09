@@ -34,7 +34,6 @@ import io.codekvast.javaagent.util.FileUtils;
 import lombok.extern.java.Log;
 import org.aspectj.bridge.Constants;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.lang.instrument.Instrumentation;
 import java.util.Collections;
@@ -77,7 +76,6 @@ public class CodekvastAgent {
     // AspectJ uses this system property for defining the list of names of load-time weaving config files to locate...
     private static final String ASPECTJ_WEAVER_CONFIGURATION = "org.aspectj.weaver.loadtime.configuration";
 
-    @Nullable
     private static Scheduler scheduler;
 
     private CodekvastAgent() {

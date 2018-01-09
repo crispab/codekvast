@@ -24,7 +24,6 @@ package io.codekvast.javaagent;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 
-import javax.annotation.Nonnull;
 import java.util.concurrent.ThreadFactory;
 
 /**
@@ -40,7 +39,7 @@ public class CodekvastThreadFactory implements ThreadFactory {
     private final int relativePriority;
 
     @Override
-    public Thread newThread(@Nonnull Runnable r) {
+    public Thread newThread(Runnable r) {
         Thread thread = new Thread(r);
         thread.setName("Codekvast " + name);
         thread.setPriority(thread.getPriority() + relativePriority);
