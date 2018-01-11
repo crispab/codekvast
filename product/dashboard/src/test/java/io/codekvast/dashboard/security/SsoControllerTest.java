@@ -24,9 +24,9 @@ public class SsoControllerTest {
     private SsoController controller;
 
     @Before
-    public void beforeTest() throws Exception {
+    public void beforeTest() {
         MockitoAnnotations.initMocks(this);
-        controller = new SsoController(settings, new SecurityServiceImpl(settings, customerService), customerService);
+        controller = new SsoController(settings, new SecurityServiceImpl(settings), customerService);
     }
 
 

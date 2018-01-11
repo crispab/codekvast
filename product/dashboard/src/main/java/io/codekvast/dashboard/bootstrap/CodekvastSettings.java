@@ -108,7 +108,7 @@ public class CodekvastSettings {
     /**
      * How long shall a webapp authentication token live?
      */
-    private Long webappJwtExpirationSeconds = 1800L;
+    private Long webappJwtExpirationHours = 8760L;
 
     /**
      * Which is the Slack Incoming Webhook URL?

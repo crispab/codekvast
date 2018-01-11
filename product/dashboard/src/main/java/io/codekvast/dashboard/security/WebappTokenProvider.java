@@ -22,7 +22,7 @@
 package io.codekvast.dashboard.security;
 
 /**
- * Business interface dealing with webapp SSO tokens.
+ * Business interface dealing with webapp authentication tokens.
  *
  * @author olle.hallin@crisp.se
  */
@@ -36,11 +36,4 @@ public interface WebappTokenProvider {
      * @return A (JWT) token to use when launching the webapp.
      */
     String createWebappToken(Long customerId, WebappCredentials credentials);
-
-    /**
-     * Extends the lifetime of a webapp token.
-     *
-     * @return A new webapp token to use in future webapp API requests.
-     */
-    String renewWebappToken();
 }

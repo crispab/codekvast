@@ -131,13 +131,6 @@ public interface CustomerService {
     void deleteCustomerByExternalId(String externalId);
 
     /**
-     * Register that this user has been using the dashboard interactively.
-     *
-     * @param activity The activity to register
-     */
-    void registerInteractiveActivity(InteractiveActivity activity);
-
-    /**
      * Parameter object for {@link #addCustomer(AddCustomerRequest)}
      */
     @Value
@@ -171,18 +164,4 @@ public interface CustomerService {
         @NonNull
         String source;
     }
-
-    /**
-     * Parameter object for {@link #registerInteractiveActivity(InteractiveActivity)}
-     */
-    @Value
-    @Builder
-    class InteractiveActivity {
-        @NonNull
-        Long customerId;
-
-        @NonNull
-        String email;
-    }
-
 }

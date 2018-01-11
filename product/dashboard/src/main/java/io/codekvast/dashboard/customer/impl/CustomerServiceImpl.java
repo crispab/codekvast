@@ -183,19 +183,6 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void registerInteractiveActivity(InteractiveActivity activity) {
-        Timestamp now = new Timestamp(System.currentTimeMillis());
-        int count = jdbcTemplate.update("UPDATE users SET lastActivityAt = ? WHERE customerId = ? AND email = ? ",
-                                        now, activity.getCustomerId(), activity.getEmail());
-        if (count == 0) {
-            logger.warn("Database inconsistency: Cannot register interactive activity for {}", activity);
-        } else {
-            logger.debug("Processed {}", activity);
-        }
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
     public String addCustomer(AddCustomerRequest request) {
         String licenseKey = UUID.randomUUID().toString().replaceAll("[-_]", "").toUpperCase();
 

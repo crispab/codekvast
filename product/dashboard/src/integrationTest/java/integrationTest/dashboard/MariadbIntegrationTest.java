@@ -5,7 +5,6 @@ import io.codekvast.dashboard.CodekvastDashboard;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.customer.CustomerData;
 import io.codekvast.dashboard.customer.CustomerService;
-import io.codekvast.dashboard.customer.CustomerService.InteractiveActivity;
 import io.codekvast.dashboard.customer.CustomerService.LoginRequest;
 import io.codekvast.dashboard.customer.LicenseViolationException;
 import io.codekvast.dashboard.customer.PricePlanDefaults;
@@ -299,10 +298,6 @@ public class MariadbIntegrationTest {
                                                   .email("email")
                                                   .build());
 
-        customerService.registerInteractiveActivity(InteractiveActivity.builder()
-                                                                       .customerId(1L)
-                                                                       .email("email")
-                                                                       .build());
         // then
         assertThat(countRowsInTable("users"), is(1));
     }

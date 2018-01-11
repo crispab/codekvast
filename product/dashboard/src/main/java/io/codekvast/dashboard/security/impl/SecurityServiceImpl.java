@@ -22,8 +22,6 @@
 package io.codekvast.dashboard.security.impl;
 
 import io.codekvast.dashboard.bootstrap.CodekvastSettings;
-import io.codekvast.dashboard.customer.CustomerService;
-import io.codekvast.dashboard.customer.CustomerService.InteractiveActivity;
 import io.codekvast.dashboard.security.SecurityConfig;
 import io.codekvast.dashboard.security.SecurityService;
 import io.codekvast.dashboard.security.WebappCredentials;
@@ -31,6 +29,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -39,8 +38,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import javax.annotation.PostConstruct;
 import java.io.UnsupportedEncodingException;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Set;
@@ -52,6 +52,7 @@ import static java.util.Collections.singleton;
  */
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class SecurityServiceImpl implements SecurityService {
 
     private static final Set<SimpleGrantedAuthority> USER_AUTHORITY = singleton(new SimpleGrantedAuthority("ROLE_" + SecurityConfig.USER_ROLE));
@@ -62,14 +63,12 @@ public class SecurityServiceImpl implements SecurityService {
     private static final String BEARER_ = "Bearer ";
 
     private final CodekvastSettings settings;
-    private final CustomerService customerService;
-    private final byte[] jwtSecret;
-    private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS512;
 
-    @Inject
-    public SecurityServiceImpl(CodekvastSettings settings, CustomerService customerService) throws UnsupportedEncodingException {
-        this.settings = settings;
-        this.customerService = customerService;
+    private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS512;
+    private byte[] jwtSecret;
+
+    @PostConstruct
+    public void postConstruct() throws UnsupportedEncodingException {
         String secret = settings.getWebappJwtSecret();
         if (secret == null) {
             secret = "";
@@ -101,12 +100,19 @@ public class SecurityServiceImpl implements SecurityService {
                   .setId(credentials.getExternalId())
                   .setSubject(Long.toString(customerId))
                   .setIssuedAt(new Date())
-                  .setExpiration(Date.from(Instant.now().plusSeconds(settings.getWebappJwtExpirationSeconds())))
+                  .setExpiration(calculateExpirationDate())
                   .claim(JWT_CLAIM_CUSTOMER_NAME, credentials.getCustomerName())
                   .claim(JWT_CLAIM_EMAIL, credentials.getEmail())
                   .claim(JWT_CLAIM_SOURCE, credentials.getSource())
                   .signWith(signatureAlgorithm, jwtSecret)
                   .compact();
+    }
+
+    private Date calculateExpirationDate() {
+        Long hours = settings.getWebappJwtExpirationHours();
+        Duration duration = hours <= 0L ? Duration.ofMinutes(-hours) : Duration.ofHours(hours);
+        logger.debug("The session token will live for {}", duration);
+        return Date.from(Instant.now().plus(duration));
     }
 
     private Authentication toAuthentication(String token) throws AuthenticationException {
@@ -133,26 +139,6 @@ public class SecurityServiceImpl implements SecurityService {
             logger.debug("Failed to authenticate token: " + e);
             return null;
         }
-    }
-
-    @Override
-    public String renewWebappToken() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth instanceof PreAuthenticatedAuthenticationToken) {
-            logger.debug("Authenticated");
-            Long customerId = (Long) auth.getPrincipal();
-
-            //noinspection CastToConcreteClass
-            WebappCredentials credentials = (WebappCredentials) auth.getCredentials();
-
-            customerService.registerInteractiveActivity(InteractiveActivity.builder()
-                                                                           .customerId(customerId)
-                                                                           .email(credentials.getEmail())
-                                                                           .build());
-
-            return createWebappToken(customerId, credentials);
-        }
-        return null;
     }
 
 }
