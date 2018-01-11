@@ -24,6 +24,7 @@ package io.codekvast.dashboard.security.impl;
 import io.codekvast.dashboard.bootstrap.CodekvastSettings;
 import io.codekvast.dashboard.customer.CustomerService;
 import io.codekvast.dashboard.customer.CustomerService.InteractiveActivity;
+import io.codekvast.dashboard.security.SecurityConfig;
 import io.codekvast.dashboard.security.SecurityService;
 import io.codekvast.dashboard.security.WebappCredentials;
 import io.jsonwebtoken.Claims;
@@ -53,7 +54,7 @@ import static java.util.Collections.singleton;
 @Slf4j
 public class SecurityServiceImpl implements SecurityService {
 
-    private static final Set<SimpleGrantedAuthority> USER_AUTHORITY = singleton(new SimpleGrantedAuthority("ROLE_USER"));
+    private static final Set<SimpleGrantedAuthority> USER_AUTHORITY = singleton(new SimpleGrantedAuthority("ROLE_" + SecurityConfig.USER_ROLE));
 
     private static final String JWT_CLAIM_CUSTOMER_NAME = "customerName";
     private static final String JWT_CLAIM_EMAIL = "email";
