@@ -24,6 +24,7 @@ package io.codekvast.dashboard.security;
 import io.codekvast.dashboard.bootstrap.CodekvastSettings;
 import io.codekvast.dashboard.customer.CustomerData;
 import io.codekvast.dashboard.customer.CustomerService;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -36,7 +37,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.inject.Inject;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -49,19 +49,12 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  */
 @Controller
 @Slf4j
+@RequiredArgsConstructor
 public class SsoController {
 
     private final CodekvastSettings settings;
     private final WebappTokenProvider webappTokenProvider;
     private final CustomerService customerService;
-
-    @Inject
-    public SsoController(CodekvastSettings settings, WebappTokenProvider webappTokenProvider, CustomerService customerService)
-        throws NoSuchAlgorithmException {
-        this.settings = settings;
-        this.webappTokenProvider = webappTokenProvider;
-        this.customerService = customerService;
-    }
 
     @ExceptionHandler
     public ResponseEntity<String> onAuthenticationException(AuthenticationException e) {
@@ -95,7 +88,7 @@ public class SsoController {
         }
 
         if (timestampSeconds < nowSeconds - 5 * 60) {
-            throw new NonceExpiredException("Too old timestamp");
+            throw new NonceExpiredException("Timestamp is too old");
         }
 
         if (!expectedToken.equals(token)) {
