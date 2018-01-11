@@ -74,6 +74,8 @@ public class SsoController {
 
         String jwt = doHerokuSingleSignOn(externalId, timestampSeconds, token, email);
 
+        // TODO: set sessionToken cookie
+
         return "redirect:/sso/" + jwt + "/" + navData;
     }
 

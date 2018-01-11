@@ -6,7 +6,6 @@ import {Method} from '../model/methods/Method';
 import {Observable} from 'rxjs/Observable';
 import {isNumber} from 'util';
 import {StateService} from './state.service';
-import {Router} from '@angular/router';
 import {StatusData} from '../model/status/StatusData';
 
 export class GetMethodsRequest {
@@ -24,11 +23,9 @@ export class DashboardService {
     readonly METHODS_URL = '/webapp/v1/methods';
     readonly METHOD_BY_ID_URL = '/webapp/v1/method/detail/';
     readonly STATUS_URL = '/webapp/v1/status';
-    readonly RENEW_AUTH_TOKEN_URL = '/webapp/renewAuthToken';
     readonly IS_DEMO_MODE_URL = '/webapp/isDemoMode';
-    readonly AUTH_TOKEN_HEADER = 'X-Codekvast-Auth-Token';
 
-    constructor(private http: Http, private configService: ConfigService, private stateService: StateService, private router: Router) {
+    constructor(private http: Http, private configService: ConfigService, private stateService: StateService) {
     }
 
     getMethods(req: GetMethodsRequest): Observable<MethodData> {
@@ -40,7 +37,6 @@ export class DashboardService {
         const url: string = this.constructGetMethodsUrl(req);
 
         return this.http.get(url, {headers: this.getHeaders()})
-                   .do(res => this.replaceAuthToken(res))
                    .map(res => res.json());
     }
 
@@ -78,7 +74,6 @@ export class DashboardService {
     getMethodById(id: number): Observable<Method> {
         const url = this.constructGetMethodByIdUrl(id);
         return this.http.get(url, {headers: this.getHeaders()})
-                   .do(res => this.replaceAuthToken(res))
                    .map(res => res.json());
     }
 
@@ -90,18 +85,7 @@ export class DashboardService {
 
         const url = this.configService.getApiPrefix() + this.STATUS_URL;
         return this.http.get(url, {headers: this.getHeaders()})
-                   .do(res => this.replaceAuthToken(res))
                    .map(res => res.json());
-    }
-
-    ping(): Observable<boolean> {
-        if (this.stateService.getAuthToken() !== null) {
-            return this.http.get(this.configService.getApiPrefix() + this.RENEW_AUTH_TOKEN_URL, {headers: this.getHeaders()})
-                       // .do(res => console.log('ping: %o', res), () => console.log('Failed to ping'))
-                       .do(res => this.replaceAuthToken(res), res => this.handleErrors(res))
-                       .map(() => true);
-        }
-        return Observable.of(true);
     }
 
     isDemoMode(): Observable<boolean> {
@@ -119,27 +103,6 @@ export class DashboardService {
         headers.set('Content-type', 'application/json; charset=utf-8');
         headers.set('Authorization', 'Bearer ' + this.stateService.getAuthToken());
         return headers;
-    }
-
-    private replaceAuthToken(res: any) {
-        return this.stateService.replaceAuthToken(res.headers.get(this.AUTH_TOKEN_HEADER));
-    }
-
-    private handleErrors(res: any) {
-        console.log('Error=%o', res);
-
-        let nextRoute = [''];
-
-        if (res.status === 401) {
-            if (this.stateService.isLoggedIn()) {
-                // Bearer token time-out
-                nextRoute = ['/logged-out'];
-            }
-            this.stateService.setLoggedOut();
-        }
-
-        // noinspection JSIgnoredPromiseFromCall
-        this.router.navigate(nextRoute);
     }
 
 }

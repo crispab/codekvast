@@ -1,4 +1,3 @@
-import {AuthTokenRenewer} from './guards/auth-token-renewer';
 import {CollectionStatusComponent} from './pages/collection-status/collection-status.component';
 import {HomeComponent} from './pages/home/home.component';
 import {IsLoggedIn} from './guards/is-logged-in';
@@ -19,19 +18,18 @@ const routes: Routes = [
         pathMatch: 'full'
     }, {
         path: 'home',
-        component: HomeComponent,
-        canActivate: [AuthTokenRenewer]
+        component: HomeComponent
     }, {
         path: 'logged-out',
         component: LoggedOutComponent
     }, {
         path: 'methods',
         component: MethodsComponent,
-        canActivate: [IsLoggedIn, AuthTokenRenewer]
+        canActivate: [IsLoggedIn]
     }, {
         path: 'method/:id',
         component: MethodDetailComponent,
-        canActivate: [IsLoggedIn, AuthTokenRenewer]
+        canActivate: [IsLoggedIn]
     }, {
         path: 'not-logged-in',
         component: NotLoggedInComponent
@@ -41,15 +39,15 @@ const routes: Routes = [
     }, {
         path: 'status',
         component: CollectionStatusComponent,
-        canActivate: [IsLoggedIn, AuthTokenRenewer]
+        canActivate: [IsLoggedIn]
     }, {
         path: 'reports',
         component: ReportGeneratorComponent,
-        canActivate: [IsLoggedIn, AuthTokenRenewer]
+        canActivate: [IsLoggedIn]
     }, {
         path: 'vote-result/:feature/:vote',
         component: VoteResultComponent,
-        canActivate: [IsLoggedIn, AuthTokenRenewer]
+        canActivate: [IsLoggedIn]
     }, {
         path: '**',
         redirectTo: 'home',

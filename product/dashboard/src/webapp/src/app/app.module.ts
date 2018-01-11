@@ -22,7 +22,6 @@ import {StateService} from './services/state.service';
 import {VoteComponent} from './components/vote.component';
 import {VoteResultComponent} from './pages/vote-result/vote-result.component';
 import {DashboardService} from './services/dashboard.service';
-import {AuthTokenRenewer} from './guards/auth-token-renewer';
 import {IsLoggedIn} from './guards/is-logged-in';
 import localeDe from '@angular/common/locales/de';
 import localeEn from '@angular/common/locales/en';
@@ -74,7 +73,7 @@ function selectBestLocale() {
         VoteResultComponent,
     ],
     providers: [
-        AuthTokenRenewer, ConfigService, IsLoggedIn, StateService, Title, DashboardService, {
+        ConfigService, IsLoggedIn, StateService, Title, DashboardService, {
             provide: APP_BASE_HREF,
             useValue: '/'
         }, {

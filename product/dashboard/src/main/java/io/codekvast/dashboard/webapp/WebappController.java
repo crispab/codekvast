@@ -106,21 +106,20 @@ public class WebappController {
 
     @RequestMapping(method = GET, path = WEBAPP_V1_STATUS)
     public ResponseEntity<GetStatusResponse1> getStatus1() {
-        return ResponseEntity.ok().body(webappService.getStatus());
+        GetStatusResponse1 response = webappService.getStatus();
+        logger.debug("Response: {}", response);
+        return ResponseEntity.ok().body(response);
     }
 
     @RequestMapping(method = GET, value = SecurityConfig.REQUEST_MAPPING_WEBAPP_IS_DEMO_MODE, produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> isDemoMode() {
         logger.trace("Is demo mode? {}", settings.isDemoMode());
-
         return ResponseEntity.ok(Boolean.toString(settings.isDemoMode()));
     }
 
     private GetMethodsResponse doGetMethods(GetMethodsRequest request) {
         logger.debug("Request: {}", request);
-
         GetMethodsResponse response = webappService.getMethods(request);
-
         logger.debug("Response: {}", response);
         return response;
     }

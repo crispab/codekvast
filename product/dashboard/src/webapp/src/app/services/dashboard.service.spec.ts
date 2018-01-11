@@ -1,7 +1,6 @@
 import {DashboardService, GetMethodsRequest} from './dashboard.service';
 import {ConfigService} from './config.service';
 import {StateService} from './state.service';
-import {Router} from '@angular/router';
 
 let dashboard: DashboardService;
 
@@ -17,12 +16,10 @@ const configServiceMock: ConfigService = {
     }
 } as ConfigService;
 
-const routerMock: Router = {} as Router;
-
 describe('DashboardService', () => {
 
     beforeEach(() => {
-        dashboard = new DashboardService(null, configServiceMock, new StateService(), routerMock);
+        dashboard = new DashboardService(null, configServiceMock, new StateService());
     });
 
     it('should construct a get methods url with signature containing wildcard', () => {
