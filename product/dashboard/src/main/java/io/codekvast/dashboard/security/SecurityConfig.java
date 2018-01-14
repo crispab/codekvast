@@ -23,6 +23,7 @@ package io.codekvast.dashboard.security;
 
 import io.codekvast.dashboard.bootstrap.CodekvastSettings;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -35,9 +36,12 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 /**
  * Configuration of Spring Security.
@@ -91,6 +95,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             // disable page caching
             httpSecurity.headers().cacheControl();
         }
+    }
+
+
+    @SneakyThrows(UnsupportedEncodingException.class)
+    public static Cookie createSessionTokenCookie(String token) {
+        Cookie result = new Cookie(SESSION_TOKEN_COOKIE, URLEncoder.encode(token, "UTF-8"));
+        result.setPath("/");
+        result.setMaxAge(-1); // Remove when browser exits.
+        result.setHttpOnly(true); // Hide from JavaScript in the browser
+        return result;
     }
 
     @Component

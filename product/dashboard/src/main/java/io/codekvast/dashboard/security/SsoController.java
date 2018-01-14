@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletResponse;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -68,13 +69,14 @@ public class SsoController {
         @RequestParam("timestamp") long timestampSeconds,
         @RequestParam("token") String token,
         @RequestParam("nav-data") String navData,
-        @RequestParam("email") String email) throws AuthenticationException {
+        @RequestParam("email") String email,
+        HttpServletResponse response) throws AuthenticationException {
 
         logger.debug("externalId={}, nav-data={}", externalId, navData);
 
         String jwt = doHerokuSingleSignOn(externalId, timestampSeconds, token, email);
 
-        // TODO: set sessionToken cookie
+        response.addCookie(SecurityConfig.createSessionTokenCookie(jwt));
 
         return "redirect:/sso/" + jwt + "/" + navData;
     }
