@@ -27,7 +27,7 @@ dependencies {
     compile project(":product:agent-model")
     compile 'com.squareup.okhttp3:okhttp:3.9.1'
     compile 'com.google.guava:guava:20.0'
-    compile 'com.google.code.gson:gson:2.8.2'
+    compile "com.google.code.gson:gson:$gsonVersion"
     compile aspectjWeaver
 
     compileOnly lombok
@@ -36,7 +36,7 @@ dependencies {
     testCompile testFrameworks
 
     integrationTestCompile project(":product:testsupport")
-    integrationTestCompile "com.github.tomakehurst:wiremock:2.13.0"
+    integrationTestCompile "com.github.tomakehurst:wiremock:2.14.0"
     integrationTestRuntime logback
 
     jacocoagent 'org.jacoco:org.jacoco.agent:0.7.9:runtime@jar'

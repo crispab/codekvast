@@ -9,6 +9,6 @@ class SwaggerSpec extends GebSpec {
         report 'swagger-ui'
 
         then:
-        info_title == 'codekvast-dashboard'
+        info_title =~ /(?s)codekvast-dashboard.*${System.getProperty('expectedCodekvastVersion')}/
     }
 }
