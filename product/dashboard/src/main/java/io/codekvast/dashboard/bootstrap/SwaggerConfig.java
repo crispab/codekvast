@@ -21,16 +21,19 @@
  */
 package io.codekvast.dashboard.bootstrap;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.google.gson.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.json.Json;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger.web.UiConfiguration;
+import springfox.documentation.swagger.web.UiConfigurationBuilder;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 /**
@@ -43,51 +46,54 @@ import java.util.ArrayList;
 public class SwaggerConfig {
 
     @Bean
-    ApiInfo swaggerApiInfo(CodekvastSettings settings) {
-        return new ApiInfo(settings.getApplicationName(),
-                           "Codekvast Dashboard",
-                           settings.getDisplayVersion(),
-                           "http://www.codekvast.io",
-                           new Contact("Olle Hallin", "http://www.codekvast.io", "olle.hallin@crisp.se"),
-                           "MIT",
-                           "https://opensource.org/licenses/MIT",
-                           new ArrayList<>());
-
-    }
-
-    @Bean
     UiConfiguration swaggerUiConfig() {
         // disable validationUrl
-        return new UiConfiguration(null);
+        return UiConfigurationBuilder.builder().validatorUrl(null).build();
     }
 
     @Bean
-    public Docket agentDocket(ApiInfo apiInfo) {
+    public Docket agentDocket(CodekvastSettings settings) {
         return new Docket(DocumentationType.SWAGGER_2)
-            .apiInfo(apiInfo)
-            .groupName("javaagent-endpoints")
+            .apiInfo(getApiInfo(settings, "Endpoints used by the Java agent"))
+            .groupName("Java agent endpoints")
             .select()
             .paths(path -> path.startsWith("/javaagent"))
             .build();
     }
 
     @Bean
-    public Docket webappDocket(ApiInfo apiInfo) {
+    public Docket webappDocket(CodekvastSettings settings) {
         return new Docket(DocumentationType.SWAGGER_2)
-            .apiInfo(apiInfo)
-            .groupName("webapp-endpoints")
+            .apiInfo(getApiInfo(settings, "Endpoints used by the dashboard web app"))
+            .groupName("Webapp endpoints")
             .select()
             .paths(path -> path.startsWith("/webapp"))
             .build();
     }
 
+    private ApiInfo getApiInfo(CodekvastSettings settings, String description) {
+        return new ApiInfo(settings.getApplicationName(),
+                           description,
+                           settings.getDisplayVersion(),
+                           // TODO: insert the correct termsOfServiceUrl
+                           "http://www.codekvast.io/pages/what-is-codekvast.html",
+                           new Contact("Codekvast", "http://www.codekvast.io", "codekvast-support@hit.se"),
+                           "Licensed under the MIT license",
+                           "https://opensource.org/licenses/MIT",
+                           new ArrayList<>());
+    }
+
+    // Hack to make swagger-ui.html work with Gson instead of Jackson
     @Bean
-    public Docket managementDocket(ApiInfo apiInfo, @Value("${management.contextPath}") String managementPath) {
-        return new Docket(DocumentationType.SWAGGER_2)
-            .apiInfo(apiInfo)
-            .groupName("management-endpoints")
-            .select()
-            .paths(path -> path.startsWith(managementPath))
-            .build();
+    public Gson gson() {
+        return new GsonBuilder().registerTypeAdapter(Json.class, new SpringfoxJsonToGsonAdapter()).create();
+    }
+
+    public static class SpringfoxJsonToGsonAdapter implements JsonSerializer<Json> {
+        @Override
+        public JsonElement serialize(Json json, Type type, JsonSerializationContext context) {
+            final JsonParser parser = new JsonParser();
+            return parser.parse(json.value());
+        }
     }
 }
