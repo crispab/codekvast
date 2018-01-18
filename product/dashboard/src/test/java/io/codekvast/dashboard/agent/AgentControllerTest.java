@@ -1,6 +1,6 @@
 package io.codekvast.dashboard.agent;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import io.codekvast.dashboard.customer.LicenseViolationException;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
@@ -9,6 +9,8 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -34,12 +36,14 @@ public class AgentControllerTest {
 
     private MockMvc mockMvc;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final Gson gson = new Gson();
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(agentController).build();
+        this.mockMvc = MockMvcBuilders.standaloneSetup(agentController)
+                                      .setMessageConverters(new GsonHttpMessageConverter(), new StringHttpMessageConverter())
+                                      .build();
     }
 
     @Test
@@ -70,7 +74,7 @@ public class AgentControllerTest {
     @Test
     public void getConfig1_should_reject_invalid_request() throws Exception {
         mockMvc.perform(post(V1_POLL_CONFIG)
-                            .content(objectMapper.writeValueAsString(
+                            .content(gson.toJson(
                                 GetConfigRequest1.sample()
                                                  .toBuilder()
                                                  .appName("")
@@ -84,7 +88,7 @@ public class AgentControllerTest {
         when(agentService.getConfig(any(GetConfigRequest1.class))).thenThrow(new LicenseViolationException("foobar"));
 
         mockMvc.perform(post(V1_POLL_CONFIG)
-                            .content(objectMapper.writeValueAsString(GetConfigRequest1.sample()))
+                            .content(gson.toJson(GetConfigRequest1.sample()))
                             .contentType(APPLICATION_JSON_UTF8))
                .andExpect(status().isForbidden());
     }
@@ -95,7 +99,7 @@ public class AgentControllerTest {
             GetConfigResponse1.sample().toBuilder().codeBasePublisherName("foobar").build());
 
         mockMvc.perform(post(V1_POLL_CONFIG)
-                            .content(objectMapper.writeValueAsString(GetConfigRequest1.sample()))
+                            .content(gson.toJson(GetConfigRequest1.sample()))
                             .contentType(APPLICATION_JSON_UTF8))
                .andExpect(status().isOk())
                .andExpect(content().contentType(APPLICATION_JSON_UTF8))

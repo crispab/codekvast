@@ -21,7 +21,9 @@
  */
 package io.codekvast.javaagent.model.v1.rest;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Value;
 
 /**
  * A response object for {@link GetConfigRequest1}
@@ -29,11 +31,8 @@ import lombok.*;
  * @author olle.hallin@crisp.se
  */
 @SuppressWarnings("ClassWithTooManyFields")
+@Value
 @Builder(toBuilder = true)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Getter
-@ToString
-@EqualsAndHashCode
 public class GetConfigResponse1 {
 
     /**

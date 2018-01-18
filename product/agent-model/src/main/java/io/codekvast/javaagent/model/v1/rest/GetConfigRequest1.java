@@ -21,7 +21,9 @@
  */
 package io.codekvast.javaagent.model.v1.rest;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Value;
 
 import javax.validation.constraints.Size;
 
@@ -30,11 +32,8 @@ import javax.validation.constraints.Size;
  *
  * @author olle.hallin@crisp.se
  */
+@Value
 @Builder(toBuilder = true)
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-@Getter
-@ToString
-@EqualsAndHashCode
 public class GetConfigRequest1 {
 
     /**
