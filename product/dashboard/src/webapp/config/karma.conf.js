@@ -4,7 +4,7 @@ module.exports = function (config) {
     var _config = {
         autoWatch: false,
         basePath: '',
-        browsers: ['PhantomJS'], // 'ChromeHeadless'
+        browsers: ['ChromeHeadless'],
 
         customLaunchers: {
             ChromeHeadless: {
