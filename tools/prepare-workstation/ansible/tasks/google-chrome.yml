@@ -1,0 +1,12 @@
+---
+- name: Install Google APT key
+  apt_key: url=https://dl-ssl.google.com/linux/linux_signing_key.pub state=present
+
+- name: Make sure Google Chrome APT source is defined
+  apt_repository:
+    filename: google-chrome
+    repo: "deb http://dl.google.com/linux/chrome/deb/ stable main"
+    state: present
+
+- name: Install Google Chrome
+  package: name=google-chrome-stable state=present

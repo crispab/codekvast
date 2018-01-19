@@ -12,13 +12,8 @@ fi
 
 declare tasks=${@:-build}
 
-if [ -z "$PHANTOMJS_BIN" ]; then
-    echo "Trying to locate phantomjs ..."
-    export PHANTOMJS_BIN=$(which phantomjs)
-fi
-
-if [ -z "$PHANTOMJS_BIN" -a "$(which google-chrome)" == "" ]; then
-    echo "Both phantomjs and Google Chrome are missing, cannot run JavaScript tests"
+if [ "$(which google-chrome)" == "" ]; then
+    echo "Google Chrome is missing, cannot run JavaScript tests"
     exit 1
 fi
 

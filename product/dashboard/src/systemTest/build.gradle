@@ -30,7 +30,6 @@ dependencies {
     systemTestCompile 'org.spockframework:spock-core:1.1-groovy-2.4'
     systemTestCompile "org.seleniumhq.selenium:selenium-api:$seleniumVersion"
 
-    systemTestRuntime "com.codeborne:phantomjsdriver:1.4.4"
     systemTestRuntime "org.seleniumhq.selenium:selenium-remote-driver:$seleniumVersion"
     systemTestRuntime "org.seleniumhq.selenium:selenium-chrome-driver:$seleniumVersion"
     systemTestRuntime "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
@@ -47,7 +46,6 @@ task startSystemTestEnvironment {
     dependsOn bootRepackage
 
     inputs.files bootRepackage.outputs.files
-    outputs.file systemTestEndpointFile
 
     doLast {
         logger.lifecycle("Stopping previous system test environments (if any)...")
@@ -164,7 +162,9 @@ systemTest {
     dependsOn test, frontendTest, integrationTest, systemTestClasses, startSystemTestEnvironment
 
     def foundChromeBinary = "which google-chrome".execute().in.text.trim()
-    ext.gebEnv = project.findProperty("browser") ?: foundChromeBinary ? "chromeHeadless" : "phantomjs"
+    assert !foundChromeBinary.isEmpty() : "Cannot find Chrome executable!"
+
+    ext.gebEnv = project.findProperty("browser") ?: "chromeHeadless"
 
     inputs.dir file("src/systemTest")
     inputs.file systemTestEndpointFile

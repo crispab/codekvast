@@ -27,12 +27,6 @@
   - nodejs
   - build-essential
 
-- name: Install PhantomJS
-  npm: name=phantomjs-prebuilt global=yes
-
-- name: Create /etc/profile.d/phantomjs.sh
-  copy: dest=/etc/profile.d/phantomjs.sh content="export PHANTOMJS_BIN=$(which phantomjs)" mode=0644
-
 - name: Install gradlew finder
   template: src=gradlew-finder.sh dest=/usr/local/bin/gradle mode=a=rx
 

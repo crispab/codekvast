@@ -3,113 +3,110 @@ def startedAt = java.time.Instant.now()
 node {
     try {
         timestamps {
-            withEnv(['PHANTOMJS_BIN=/usr/local/lib/node_modules/phantomjs-prebuilt/bin/phantomjs']) {
-                stage('Prepare') {
-                    checkout scm
-                    sh """
-                    printenv | sort
-                    tools/real-clean-workspace.sh
-                    """
+            stage('Prepare') {
+                checkout scm
+                sh """
+                printenv | sort
+                tools/real-clean-workspace.sh
+                """
+            }
+
+            stage('Compile Java') {
+                sh "./gradlew --console=plain classes testClasses integrationTestClasses systemTestClasses"
+            }
+
+            stage('Java unit test') {
+                try {
+                    sh './gradlew --console=plain test'
+                } finally {
+                    // Prevent junit publisher to fail if Gradle has skipped the test
+                    sh "find . -name '*.xml' | grep '/build/test-results/test/' | xargs touch"
+                    junit '**/build/test-results/test/*.xml'
                 }
+            }
 
-                stage('Compile Java') {
-                    sh "./gradlew --console=plain classes testClasses integrationTestClasses systemTestClasses"
-                }
-
-                stage('Java unit test') {
-                    try {
-                        sh './gradlew --console=plain test'
-                    } finally {
-                        // Prevent junit publisher to fail if Gradle has skipped the test
-                        sh "find . -name '*.xml' | grep '/build/test-results/test/' | xargs touch"
-                        junit '**/build/test-results/test/*.xml'
-                    }
-                }
-
-                stage('TypeScript unit test') {
-                    try {
-                        sh './gradlew --console=plain frontendTest'
-                    } finally {
-                        // Prevent junit publisher to fail if Gradle has skipped the test
-                        sh "find . -name '*.xml' | grep '/build/test-results/frontendTest/' | xargs touch"
-                        junit '**/build/test-results/frontendTest/*.xml'
-
-                        publishHTML([allowMissing: true,
-                            alwaysLinkToLastBuild: true,
-                            keepAll: true,
-                            reportDir: 'product/dashboard/build/reports/frontend-coverage',
-                            reportFiles: 'index.html',
-                            reportName: 'Frontend Coverage Report'])
-                    }
-                }
-
-                stage('Integration test') {
-                    try {
-                        sh './gradlew --console=plain integrationTest'
-                    } finally {
-                        // Prevent junit publisher to fail if Gradle has skipped the test
-                        sh "find . -name '*.xml' | grep '/build/test-results/integrationTest/' | xargs touch"
-                        junit '**/build/test-results/integrationTest/*.xml'
-                    }
-                }
-
-                stage('System test') {
-                    try {
-                        sh './gradlew --console=plain systemTest'
-                    } finally {
-                        // Prevent junit publisher to fail if Gradle has skipped the test
-                        sh "find . -name '*.xml' | grep '/build/test-results/systemTest/' | xargs touch"
-                        junit '**/build/test-results/systemTest/*.xml'
-                    }
-                }
-
-                stage('Documentation & reports') {
-                    sh './gradlew --console=plain -Dorg.gradle.configureondemand=false :product:docs:build :product:aggregateJavadoc'
+            stage('TypeScript unit test') {
+                try {
+                    sh './gradlew --console=plain frontendTest'
+                } finally {
+                    // Prevent junit publisher to fail if Gradle has skipped the test
+                    sh "find . -name '*.xml' | grep '/build/test-results/frontendTest/' | xargs touch"
+                    junit '**/build/test-results/frontendTest/*.xml'
 
                     publishHTML([allowMissing: true,
                         alwaysLinkToLastBuild: true,
                         keepAll: true,
-                        reportDir: 'product/docs/build/asciidoc/html5',
-                        reportFiles: 'CodekvastUserManual.html',
-                        reportName: 'User Manual'])
-
-                    publishHTML([allowMissing: true,
-                        alwaysLinkToLastBuild: true,
-                        keepAll: true,
-                        reportDir: 'product/build/docs/javadoc',
+                        reportDir: 'product/dashboard/build/reports/frontend-coverage',
                         reportFiles: 'index.html',
-                        reportName: 'API docs'])
-
-                    step([$class: 'JacocoPublisher',
-                        classPattern: 'product/**/build/classes/main',
-                        execPattern: '**/build/jacoco/*.exec',
-                        buildOverBuild: true,
-                        changeBuildStatus: true,
-                        deltaBranchCoverage: '10',
-                        deltaClassCoverage: '10',
-                        deltaComplexityCoverage: '10',
-                        deltaInstructionCoverage: '10',
-                        deltaLineCoverage: '10',
-                        deltaMethodCoverage: '10',
-                        maximumBranchCoverage: '30',
-                        minimumBranchCoverage: '20',
-                        maximumClassCoverage: '90',
-                        minimumClassCoverage: '80',
-                        maximumComplexityCoverage: '40',
-                        minimumComplexityCoverage: '30',
-                        maximumInstructionCoverage: '50',
-                        minimumInstructionCoverage: '40',
-                        maximumLineCoverage: '80',
-                        minimumLineCoverage: '65',
-                        maximumMethodCoverage: '70',
-                        minimumMethodCoverage: '60',
-                        ])
-
-                    echo "Running tools/uptodate-report.sh"
-                    sh 'tools/uptodate-report.sh'
-                    archiveArtifacts 'build/reports/**'
+                        reportName: 'Frontend Coverage Report'])
                 }
+            }
 
+            stage('Integration test') {
+                try {
+                    sh './gradlew --console=plain integrationTest'
+                } finally {
+                    // Prevent junit publisher to fail if Gradle has skipped the test
+                    sh "find . -name '*.xml' | grep '/build/test-results/integrationTest/' | xargs touch"
+                    junit '**/build/test-results/integrationTest/*.xml'
+                }
+            }
+
+            stage('System test') {
+                try {
+                    sh './gradlew --console=plain systemTest'
+                } finally {
+                    // Prevent junit publisher to fail if Gradle has skipped the test
+                    sh "find . -name '*.xml' | grep '/build/test-results/systemTest/' | xargs touch"
+                    junit '**/build/test-results/systemTest/*.xml'
+                }
+            }
+
+            stage('Documentation & reports') {
+                sh './gradlew --console=plain -Dorg.gradle.configureondemand=false :product:docs:build :product:aggregateJavadoc'
+
+                publishHTML([allowMissing: true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
+                    reportDir: 'product/docs/build/asciidoc/html5',
+                    reportFiles: 'CodekvastUserManual.html',
+                    reportName: 'User Manual'])
+
+                publishHTML([allowMissing: true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
+                    reportDir: 'product/build/docs/javadoc',
+                    reportFiles: 'index.html',
+                    reportName: 'API docs'])
+
+                step([$class: 'JacocoPublisher',
+                    classPattern: 'product/**/build/classes/main',
+                    execPattern: '**/build/jacoco/*.exec',
+                    buildOverBuild: true,
+                    changeBuildStatus: true,
+                    deltaBranchCoverage: '10',
+                    deltaClassCoverage: '10',
+                    deltaComplexityCoverage: '10',
+                    deltaInstructionCoverage: '10',
+                    deltaLineCoverage: '10',
+                    deltaMethodCoverage: '10',
+                    maximumBranchCoverage: '30',
+                    minimumBranchCoverage: '20',
+                    maximumClassCoverage: '90',
+                    minimumClassCoverage: '80',
+                    maximumComplexityCoverage: '40',
+                    minimumComplexityCoverage: '30',
+                    maximumInstructionCoverage: '50',
+                    minimumInstructionCoverage: '40',
+                    maximumLineCoverage: '80',
+                    minimumLineCoverage: '65',
+                    maximumMethodCoverage: '70',
+                    minimumMethodCoverage: '60',
+                    ])
+
+                echo "Running tools/uptodate-report.sh"
+                sh 'tools/uptodate-report.sh'
+                archiveArtifacts 'build/reports/**'
             }
         }
         slackNotification 'good', "Build finished", startedAt

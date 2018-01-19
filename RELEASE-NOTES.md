@@ -3,6 +3,8 @@
 ## 0.22.4
 1. Upgraded Java dependencies: jslack 1.0.20, wiremock 2.13.0, phantomjsdriver 1.4.4
 1. Upgraded JavaScript dependencies: angular 5.1.3, zone.js 0.8.19, rxjs 5.5.6 (+ some test deps)
+1. Replaced PhantomJS with Chrome headless for web tests.
+1. Dashboard: passes JWT token with cookie instead of header.
 
 ## 0.22.3
 1. Dashboard: the method details table to right is now optional.

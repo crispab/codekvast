@@ -17,7 +17,7 @@ The following stack is used when developing Codekvast (in alphabetical order):
 1. MariaDB 10+ (Codekvast Dashboard)
 1. NodeJS
 1. Node Package Manager (npm)
-1. Chrome headless (if installed) or PhantomJS (fallback)
+1. Chrome headless
 1. Spring Boot
 1. TypeScript
 1. Webpack
@@ -62,26 +62,19 @@ You must be added as trusted developer by `git-crypt add-gpg-user` to access the
 
 Java 8 is required. OpenJDK is recommended.
 
-Node.js 8+, NPM 3.10+ and PhantomJS are required.
+Node.js 8+, NPM 3.10+ and Chrome are required.
 
 git-crypt is required for deploying to the cloud.
 
-Use the following command to install OpenJDK 8, git-crypt, Node.js, npm, PhantomJS and Yarn (Ubuntu, Debian):
+Use the following command to install OpenJDK 8, git-crypt, Node.js, npm, Chrome and Yarn (Ubuntu, Debian):
 
     curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
     sudo apt install openjdk-8-jdk openjdk-8-doc openjdk-8-source git-crypt nodejs
-    sudo npm install -g phantomjs-prebuilt
     curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
     echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-    sudo apt-get update && sudo apt-get install yarn
+    echo "deb http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+    sudo apt-get update && sudo apt-get install yarn google-chrome-stable
 
-You also must define the environment variable `PHANTOMJS_BIN` to point to the phantomjs executable.
-(This is due to a bug in the karma-phantomjs-launcher, which does not use PATH.)
-
-Put this into your `/etc/profile.d/phantomjs.sh` or your `$HOME/.profile` or similar:
-
-    export PHANTOMJS_BIN=$(which phantomjs)
-    
 ### TypeScript
 
 The Codekvast Dashboard web UI is developed with TypeScript and Angular 5. Twitter Bootstrap is used as CSS framework.

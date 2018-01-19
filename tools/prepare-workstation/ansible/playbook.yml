@@ -16,3 +16,4 @@
   - {include: tasks/tools.yml, tags: tools}
   - {include: tasks/docker.yml, tags: docker}
   - {include: tasks/aws-cli.yml, tags: aws}
+  - {include: tasks/google-chrome.yml, tags: chrome}
