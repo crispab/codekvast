@@ -40,49 +40,43 @@ dependencies {
     jdbc mariadbDriver
 }
 
-task startSystemTestEnvironment {
-    description 'Starts the system test environment'
-    group 'System test'
-    dependsOn bootRepackage
+private String startSystemTestEnvironment() {
 
-    inputs.files bootRepackage.outputs.files
+    logger.lifecycle("Stopping previous system test environments (if any)...")
+    doStopSystemTestEnvironment(true)
 
-    doLast {
-        logger.lifecycle("Stopping previous system test environments (if any)...")
-        doStopSystemTestEnvironment(true)
+    def command = 'docker pull mariadb:10'
+    logger.lifecycle(command)
+    assert command.execute().waitFor() == 0
 
-        def command = 'docker pull mariadb:10'
-        logger.lifecycle(command)
-        assert command.execute().waitFor() == 0
+    command = 'docker run -d --restart=unless-stopped ' +
+        "--name codekvast_systest_$systemTestJdbcPort " +
+        "-p $systemTestJdbcPort:3306 " +
+        '-e MYSQL_ROOT_PASSWORD=root ' +
+        '-e MYSQL_DATABASE=codekvast ' +
+        '-e MYSQL_USER=codekvast ' +
+        '-e MYSQL_PASSWORD=codekvast ' +
+        '-e TERM=xterm-256color ' +
+        'mariadb:10 ' +
+        '--character-set-server=utf8 ' +
+        '--collation-server=utf8_general_ci ' +
+        '--default-storage-engine=innodb '
+    logger.lifecycle(command)
+    assert command.execute().waitFor() == 0
 
-        command = 'docker run -d --restart=unless-stopped ' +
-            "--name codekvast_systest_$systemTestJdbcPort " +
-            "-p $systemTestJdbcPort:3306 " +
-            '-e MYSQL_ROOT_PASSWORD=root ' +
-            '-e MYSQL_DATABASE=codekvast ' +
-            '-e MYSQL_USER=codekvast ' +
-            '-e MYSQL_PASSWORD=codekvast ' +
-            '-e TERM=xterm-256color ' +
-            'mariadb:10 ' +
-            '--character-set-server=utf8 ' +
-            '--collation-server=utf8_general_ci ' +
-            '--default-storage-engine=innodb '
-        logger.lifecycle(command)
-        assert command.execute().waitFor() == 0
+    def jdbcUrl = "jdbc:mariadb://localhost:$systemTestJdbcPort/codekvast"
+    logger.info("jdbcUrl={}", jdbcUrl)
 
-        def jdbcUrl = "jdbc:mariadb://localhost:$systemTestJdbcPort/codekvast"
-        logger.info("jdbcUrl={}", jdbcUrl)
+    waitForDatabaseReady(jdbcUrl)
 
-        waitForDatabaseReady(jdbcUrl)
+    command = "java " +
+        "-jar ${bootRepackage.outputs.files.asPath} " +
+        "--server.port=${systemTestAppPort} " +
+        "--spring.datasource.url=$jdbcUrl"
 
-        command = "java " +
-            "-jar ${bootRepackage.outputs.files.asPath} " +
-            "--server.port=${systemTestAppPort} " +
-            "--spring.datasource.url=$jdbcUrl"
-
-        launchAppAndWaitForReady(command)
-        systemTestEndpointFile.text = getSystemTestEndpoint()
-    }
+    launchAppAndWaitForReady(command)
+    systemTestEndpointFile.text = getSystemTestEndpoint()
+    return systemTestEndpointFile.text
 }
 
 int allocateFreePort() {
@@ -159,7 +153,7 @@ task psSystemTestEnvironment {
 systemTest {
     description 'Runs end-to-end tests against Codekvast Dashboard with MariaDB in a Docker container'
     group 'System test'
-    dependsOn test, frontendTest, integrationTest, systemTestClasses, startSystemTestEnvironment
+    dependsOn test, frontendTest, integrationTest, systemTestClasses, bootRepackage
 
     def foundChromeBinary = "which google-chrome".execute().in.text.trim()
     assert !foundChromeBinary.isEmpty() : "Cannot find Chrome executable!"
@@ -167,7 +161,7 @@ systemTest {
     ext.gebEnv = project.findProperty("browser") ?: "chromeHeadless"
 
     inputs.dir file("src/systemTest")
-    inputs.file systemTestEndpointFile
+    inputs.files bootRepackage.outputs.files
     inputs.property "geb.env", gebEnv
 
     outputs.dir file("build/reports/systemTest")
@@ -181,7 +175,7 @@ systemTest {
     }
 
     doFirst {
-        def endpoint = getSystemTestEndpoint()
+        def endpoint = startSystemTestEnvironment()
         logger.lifecycle("Running system tests against {}", endpoint)
 
         "chmod +x ${configurations.chromeDriver.asPath}".execute().waitFor()
