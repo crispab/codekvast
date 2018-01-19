@@ -125,3 +125,8 @@ bootRepackage {
     classifier = 'all'
     dependsOn ":product:dashboard:frontendWebpack"
 }
+
+processResources {
+    // codekvastDisplayVersion is filtered into application.properties...
+    inputs.property "codekvastDisplayVersion", codekvastDisplayVersion
+}
