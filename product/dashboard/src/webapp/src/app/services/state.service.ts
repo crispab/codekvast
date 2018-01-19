@@ -7,16 +7,12 @@ import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Observable';
 
 export class AuthData {
-    readonly token: string;
-    readonly customerId: number;
     readonly customerName: string;
     readonly email: string;
     readonly source: string;
     readonly sourceApp: string;
 
-    constructor(token: string, customerId: number, customerName: string, email: string, source: string, sourceApp: string) {
-        this.token = token;
-        this.customerId = customerId;
+    constructor(customerName: string, email: string, source: string, sourceApp: string) {
         this.customerName = customerName;
         this.email = email;
         this.source = source;
@@ -44,11 +40,6 @@ export class StateService {
         return this.authData;
     }
 
-    getAuthToken() {
-        let authDataJson = localStorage.getItem(this.AUTH_DATA);
-        return authDataJson ? JSON.parse(authDataJson).token : null;
-    }
-
     isDemoMode() {
         return this.demoMode;
     }
@@ -58,37 +49,20 @@ export class StateService {
     }
 
     isLoggedIn() {
-        let authData = localStorage.getItem(this.AUTH_DATA);
+        let authData = sessionStorage.getItem(this.AUTH_DATA);
         return !!authData;
     }
 
-    setLoggedInAs(token: string, customerId: number, customerName: string, email: string, source: string, sourceApp: string) {
-        if (token) {
-            let authData = new AuthData(token, customerId, customerName, email, source, sourceApp);
-            console.log('Setting authData');
-            localStorage.setItem(this.AUTH_DATA, JSON.stringify(authData));
-            this.authData.next(authData);
-        } else {
-            this.setLoggedOut();
-        }
-    }
-
-    replaceAuthToken(token: string) {
-        let authDataJson = localStorage.getItem(this.AUTH_DATA);
-        if (authDataJson) {
-            let authData = JSON.parse(authDataJson);
-            authData.token = token;
-            console.log('Updating authData');
-            localStorage.setItem(this.AUTH_DATA, JSON.stringify(authData));
-            this.authData.next(authData);
-        } else {
-            this.setLoggedInAs(token, undefined, undefined, undefined, undefined, undefined);
-        }
+    setLoggedInAs(customerName: string, email: string, source: string, sourceApp: string) {
+        let authData = new AuthData(customerName, email, source, sourceApp);
+        console.log('Setting authData');
+        sessionStorage.setItem(this.AUTH_DATA, JSON.stringify(authData));
+        this.authData.next(authData);
     }
 
     setLoggedOut() {
         console.log('Removing authData');
-        localStorage.removeItem(this.AUTH_DATA);
+        sessionStorage.removeItem(this.AUTH_DATA);
         this.authData.next(null);
     }
 
@@ -97,7 +71,7 @@ export class StateService {
             return 'Demo mode';
         }
 
-        let authDataJson = localStorage.getItem(this.AUTH_DATA);
+        let authDataJson = sessionStorage.getItem(this.AUTH_DATA);
 
         if (authDataJson) {
             let authData = JSON.parse(authDataJson);

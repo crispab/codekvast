@@ -1,6 +1,5 @@
 import {DashboardService, GetMethodsRequest} from './dashboard.service';
 import {ConfigService} from './config.service';
-import {StateService} from './state.service';
 
 let dashboard: DashboardService;
 
@@ -19,7 +18,7 @@ const configServiceMock: ConfigService = {
 describe('DashboardService', () => {
 
     beforeEach(() => {
-        dashboard = new DashboardService(null, configServiceMock, new StateService());
+        dashboard = new DashboardService(null, configServiceMock);
     });
 
     it('should construct a get methods url with signature containing wildcard', () => {

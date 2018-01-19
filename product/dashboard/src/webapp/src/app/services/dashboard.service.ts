@@ -5,7 +5,6 @@ import {MethodData} from '../model/methods/MethodData';
 import {Method} from '../model/methods/Method';
 import {Observable} from 'rxjs/Observable';
 import {isNumber} from 'util';
-import {StateService} from './state.service';
 import {StatusData} from '../model/status/StatusData';
 
 export class GetMethodsRequest {
@@ -25,7 +24,7 @@ export class DashboardService {
     readonly STATUS_URL = '/webapp/v1/status';
     readonly IS_DEMO_MODE_URL = '/webapp/isDemoMode';
 
-    constructor(private http: Http, private configService: ConfigService, private stateService: StateService) {
+    constructor(private http: Http, private configService: ConfigService) {
     }
 
     getMethods(req: GetMethodsRequest): Observable<MethodData> {
@@ -37,6 +36,7 @@ export class DashboardService {
         const url: string = this.constructGetMethodsUrl(req);
 
         return this.http.get(url, {headers: this.getHeaders()})
+                   // TODO catch status 401 & 403
                    .map(res => res.json());
     }
 
@@ -74,6 +74,7 @@ export class DashboardService {
     getMethodById(id: number): Observable<Method> {
         const url = this.constructGetMethodByIdUrl(id);
         return this.http.get(url, {headers: this.getHeaders()})
+                   // TODO catch status 401 & 403
                    .map(res => res.json());
     }
 
@@ -85,12 +86,14 @@ export class DashboardService {
 
         const url = this.configService.getApiPrefix() + this.STATUS_URL;
         return this.http.get(url, {headers: this.getHeaders()})
+                   // TODO catch status 401 & 403
                    .map(res => res.json());
     }
 
     isDemoMode(): Observable<boolean> {
         return this.http.get(this.configService.getApiPrefix() + this.IS_DEMO_MODE_URL)
                    // .do(res => console.log('isDemoMode: %o', res))
+                   // TODO catch status 401 & 403
                    .map(res => res.text() === 'true');
     }
 
@@ -101,7 +104,7 @@ export class DashboardService {
     private getHeaders() {
         let headers = new Headers();
         headers.set('Content-type', 'application/json; charset=utf-8');
-        headers.set('Authorization', 'Bearer ' + this.stateService.getAuthToken());
+        // headers.set('Authorization', 'Bearer ' + this.stateService.getAuthToken());
         return headers;
     }
 

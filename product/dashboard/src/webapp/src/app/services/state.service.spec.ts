@@ -31,35 +31,20 @@ describe('StateService', () => {
         expect(stateService.isLoggedIn()).toBe(false);
     });
 
-    it('Should not have any auth token by default', () => {
-        expect(stateService.getAuthToken()).toBeNull();
-    });
-
-    it('Should accept replaceAuthToken when not logged in', () => {
-        stateService.setDemoMode(false);
-        stateService.replaceAuthToken('newToken');
-
-        expect(stateService.isLoggedIn()).toBe(true);
-        expect(stateService.getAuthToken()).toBe('newToken');
-        expect(stateService.getLoginState()).toBe('Logged in as undefined');
-    });
-
     it('Should accept setLoggedInAs()', () => {
         stateService.setDemoMode(false);
-        stateService.setLoggedInAs('token', 17, 'customerName', 'email', 'heroku', 'my-heroku-app');
+        stateService.setLoggedInAs('customerName', 'foo@bar.baz', 'heroku', 'my-heroku-app');
         expect(stateService.isLoggedIn()).toBe(true);
-        expect(stateService.getAuthToken()).toBe('token');
-        expect(stateService.getLoginState()).toBe('Logged in as email');
+        expect(stateService.getLoginState()).toBe('Logged in as foo@bar.baz');
     });
 
     it('Should accept setLoggedOut()', () => {
         stateService.setDemoMode(false);
-        stateService.setLoggedInAs('token', 17, 'customerName', 'email', 'heroku', 'my-heroku-app');
+        stateService.setLoggedInAs('customerName', 'foo@bar.baz', 'heroku', 'my-heroku-app');
         expect(stateService.isLoggedIn()).toBe(true);
 
         stateService.setLoggedOut();
 
-        expect(stateService.getAuthToken()).toBeNull();
         expect(stateService.getLoginState()).toBe('Not logged in');
     });
 });

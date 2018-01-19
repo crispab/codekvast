@@ -15,7 +15,7 @@ export class SsoComponent implements OnInit {
     ngOnInit(): void {
         let token = this.route.snapshot.params['token'];
         let parts = token.split('\.');
-        if (parts.length === 3) {
+        if (parts.length >= 2) {
             // header = parts[0]
             let payload = JSON.parse(atob(parts[1]));
             // signature = parts[2]
@@ -28,7 +28,9 @@ export class SsoComponent implements OnInit {
                 sourceApp = args.app || args.appname;
             }
 
-            this.stateService.setLoggedInAs(token, payload.sub, payload.customerName, payload.email, payload.source, sourceApp);
+            this.stateService.setLoggedInAs(payload.customerName, payload.email, payload.source, sourceApp);
+        } else {
+            this.stateService.setLoggedOut();
         }
         // noinspection JSIgnoredPromiseFromCall
         this.router.navigate(['']);
