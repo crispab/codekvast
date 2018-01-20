@@ -294,6 +294,7 @@
     resource: "{{ item.1.id }}"
     tags:
       CNAME: "{{ stack.app_cnames[0] }}{{ '%02d'|format(item.0) }}.codekvast.io"
+      LBCNAME: "{{ stack.app_cnames[0] }}.codekvast.io"
   with_indexed_items: "{{ ec2backends.tagged_instances }}"
   loop_control:
     label: "{{ item.1.public_dns_name }}"
