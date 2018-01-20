@@ -6,7 +6,7 @@ declare GRADLEW=./gradlew
 declare GRADLE_OPTS="${GRADLE_OPTS:--Dorg.gradle.configureondemand=false}"
 
 if [ "$BUILT_FROM_VERSION" == "${COMMITTED_VERSION}" -a ${NUM_DIRTY_FILES} -eq 0 ]; then
-  echo "Build is up-to-date with ${COMMITTED_VERSION} and workspace is clean; will not build"
+  echo "Build is up-to-date with ${COMMITTED_VERSION} and workspace is clean. No need to build. Use $(dirname $0)/real-clean-workspace.sh to force."
   exit 0
 fi
 

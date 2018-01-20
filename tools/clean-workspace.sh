@@ -3,7 +3,7 @@
 source $(dirname $0)/.build-common.sh
 
 if [ "$BUILT_FROM_VERSION" == "${COMMITTED_VERSION}" -a ${NUM_DIRTY_FILES} -eq 0 ]; then
-  echo "Build is up-to-date with ${COMMITTED_VERSION} and workspace is clean; will not clean"
+  echo "Build is up-to-date with ${COMMITTED_VERSION} and workspace is clean. Will not clean. Use $(dirname $0)/real-clean-workspace.sh to force."
   exit 0
 fi
 
