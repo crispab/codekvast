@@ -27,10 +27,18 @@ describe('AgePipe', () => {
     beforeEach(() => {
         parentPipe = {
             transform(value: any, pattern?: string): string {
-                return 'parentPipe(' + pattern + ')' + value;
+                return `parentPipe(${pattern})${value}`;
             }
         } as DatePipe;
         pipe = new AgePipe(parentPipe);
+    });
+
+    it('Should return null for undefined', () => {
+        expect(pipe.transform(undefined)).toBe(null);
+    });
+
+    it('Should return null for null', () => {
+        expect(pipe.transform(null)).toBe(null);
     });
 
     it('Should return null for zero', () => {

@@ -13,7 +13,7 @@ export class AgePipe implements PipeTransform {
     }
 
     transform(value: any, pattern?: string): string {
-        if (value === 0) {
+        if (value === undefined || value == null || value === 0) {
             return null;
         }
         if (pattern === 'age') {
