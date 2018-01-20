@@ -136,6 +136,7 @@ export class MethodsComponentState {
     }
 
     selectMethod(m: Method) {
+        console.log('Selected method %o', m);
         this.selectedMethod = m;
     }
 
