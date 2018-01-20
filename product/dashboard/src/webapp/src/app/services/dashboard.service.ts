@@ -66,7 +66,6 @@ export class DashboardService {
             result += `${delimiter}onlyInvokedBeforeMillis=${req.invokedBeforeMillis}`;
             delimiter = '&';
         }
-        console.log('GetMethodsUrl(%o) returns %o', req, result);
         return result;
     }
 
