@@ -19,6 +19,7 @@ configurations {
 
 ext.systemTestJdbcPort = allocateFreePort()
 ext.systemTestAppPort = allocateFreePort()
+ext.systemTestManagementPort = allocateFreePort()
 ext.systemTestEndpointFile = file("build/systemTestEndpoint.txt")
 
 def seleniumVersion = '3.8.1'
@@ -36,7 +37,7 @@ dependencies {
     systemTestRuntime "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
 
     chromeDriver 'com.github.igor-suhorukov:chromedriver:2.34:linux64@bin'
-    geckoDriver files("src/systemTest/lib/geckodriver-0.19.1-linux64.bin")
+    geckoDriver files("$rootDir/tools/downloaded/geckodriver-0.19.1-linux64.bin")
     jdbc mariadbDriver
 }
 
@@ -72,6 +73,7 @@ private String startSystemTestEnvironment() {
     command = "java " +
         "-jar ${bootRepackage.outputs.files.asPath} " +
         "--server.port=${systemTestAppPort} " +
+        "--management.port=${systemTestManagementPort} " +
         "--spring.datasource.url=$jdbcUrl"
 
     launchAppAndWaitForReady(command)
@@ -179,7 +181,7 @@ systemTest {
         logger.lifecycle("Running system tests against {}", endpoint)
 
         "chmod +x ${configurations.chromeDriver.asPath}".execute().waitFor()
-        logger.lifecycle "Running Geb with -Dgeb.env=$gebEnv, override with -Pbrowser=xxx"
+        logger.lifecycle "Running Geb with -Dgeb.env=$gebEnv, override with -Pbrowser=[chrome|chromeHeadless|firefox]"
         systemProperty "geb.env", gebEnv
         systemProperty "webdriver.chrome.driver", configurations.chromeDriver.asPath
         systemProperty "webdriver.gecko.driver", configurations.geckoDriver.asPath
