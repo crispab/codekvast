@@ -6,7 +6,7 @@ import io.codekvast.dashboard.customer.PricePlan;
 import io.codekvast.dashboard.customer.PricePlanDefaults;
 import io.codekvast.dashboard.security.CustomerIdProvider;
 import io.codekvast.dashboard.util.TimeService;
-import io.codekvast.dashboard.webapp.model.status.GetStatusResponse1;
+import io.codekvast.dashboard.webapp.model.status.GetStatusResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -73,7 +73,7 @@ public class WebappServiceImplTest {
         when(customerService.countMethods(eq(1L))).thenReturn(1000);
 
         // when
-        GetStatusResponse1 status = webappService.getStatus();
+        GetStatusResponse status = webappService.getStatus();
 
         // then
         assertNotNull(status);
@@ -116,7 +116,7 @@ public class WebappServiceImplTest {
         when(customerService.countMethods(eq(1L))).thenReturn(1000);
 
         // when
-        GetStatusResponse1 status = webappService.getStatus();
+        GetStatusResponse status = webappService.getStatus();
 
         // then
         assertNotNull(status);
@@ -144,7 +144,7 @@ public class WebappServiceImplTest {
         when(customerService.countMethods(eq(1L))).thenReturn(1000);
 
         // when
-        GetStatusResponse1 status = webappService.getStatus();
+        GetStatusResponse status = webappService.getStatus();
 
         // then
         assertNotNull(status);

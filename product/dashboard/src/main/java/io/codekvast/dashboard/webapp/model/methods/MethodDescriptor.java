@@ -22,10 +22,7 @@
 package io.codekvast.dashboard.webapp.model.methods;
 
 import io.codekvast.javaagent.model.v2.SignatureStatus2;
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Singular;
-import lombok.Value;
+import lombok.*;
 
 import java.util.Set;
 import java.util.SortedSet;
@@ -35,9 +32,13 @@ import java.util.stream.Collectors;
 /**
  * @author olle.hallin@crisp.se
  */
-@Value
+// Cannot use @Value here, since that will prohibit computed fields.
+@SuppressWarnings({"ClassWithTooManyFields", "ClassWithTooManyMethods"})
+@Data
+@Setter(value = AccessLevel.NONE)
 @Builder(toBuilder = true)
 public class MethodDescriptor {
+
     @NonNull
     private final Long id;
 
@@ -69,59 +70,35 @@ public class MethodDescriptor {
     @Singular
     private final SortedSet<EnvironmentDescriptor> collectedInEnvironments;
 
-    /**
-     * Calculates in how many apps this method is tracked.
-     * @return A number in the range [0..100]
-     */
-    public int getTrackedPercent() {
-        long tracked = occursInApplications.stream().map(ApplicationDescriptor::getStatus).filter(SignatureStatus2::isTracked).count();
-        return (int) Math.round (tracked * 100D / occursInApplications.size());
-    }
+    // Computed fields, to make it work with Gson. Gson does not serialize using getters.
+    private long collectedSinceMillis;
+    private long collectedToMillis;
+    private long lastInvokedAtMillis;
+    private int collectedDays;
+    private int trackedPercent;
+    private Set<SignatureStatus2> statuses;
+    private Set<String> tags;
 
     /**
-     * @return The set of signature statuses this method has across all applications.
+     * Assigns values to all computed fields.
      */
-    public Set<SignatureStatus2> getStatuses() {
-        return occursInApplications.stream().map(ApplicationDescriptor::getStatus).collect(Collectors.toSet());
-    }
+    public MethodDescriptor computeFields() {
+        this.collectedSinceMillis =
+            occursInApplications.stream().map(ApplicationDescriptor::getStartedAtMillis).reduce(Math::min).orElse(0L);
 
-    /**
-     * @return The maximum value of occursInApplications.invokedAtMillis;
-     */
-    public Long getLastInvokedAtMillis() {
-        return occursInApplications.stream().map(ApplicationDescriptor::getInvokedAtMillis).reduce(Math::max).orElse(0L);
-    }
+        this.collectedToMillis =
+            occursInApplications.stream().map(ApplicationDescriptor::getPublishedAtMillis).reduce(Math::max).orElse(0L);
 
-    /**
-     * @return The minimum value of occursInApplications.startedAtMillis
-     */
-    public Long getCollectedSinceMillis() {
-        return occursInApplications.stream().map(ApplicationDescriptor::getStartedAtMillis).reduce(Math::min).orElse(0L);
-    }
-
-    /**
-     * @return The maximum value of occursInApplications.getPublishedAtMillis
-     */
-    public Long getCollectedToMillis() {
-        return occursInApplications.stream().map(ApplicationDescriptor::getPublishedAtMillis).reduce(Math::max).orElse(0L);
-    }
-
-    /**
-     * @return The difference between {@link #getCollectedToMillis()} and {@link #getCollectedSinceMillis()} expressed as days.
-     */
-    @SuppressWarnings("unused")
-    public int getCollectedDays() {
         int dayInMillis = 24 * 60 * 60 * 1000;
-        return Math.toIntExact((getCollectedToMillis() - getCollectedSinceMillis()) / dayInMillis);
+        this.collectedDays = Math.toIntExact((this.collectedToMillis - this.collectedSinceMillis) / dayInMillis);
+        this.lastInvokedAtMillis =
+            occursInApplications.stream().map(ApplicationDescriptor::getInvokedAtMillis).reduce(Math::max).orElse(0L);
+        this.statuses = occursInApplications.stream().map(ApplicationDescriptor::getStatus).collect(Collectors.toSet());
+        this.tags = new TreeSet<>();
+        collectedInEnvironments.stream().map(EnvironmentDescriptor::getTags).forEach(tags::addAll);
+        long tracked = occursInApplications.stream().map(ApplicationDescriptor::getStatus).filter(SignatureStatus2::isTracked).count();
+        this.trackedPercent = (int) Math.round(tracked * 100D / occursInApplications.size());
+        return this;
     }
 
-    /**
-     * @return The union of tags from all environments
-     */
-    @SuppressWarnings("unused")
-    public Set<String> getTags() {
-        Set<String> result = new TreeSet<>();
-        collectedInEnvironments.stream().map(EnvironmentDescriptor::getTags).forEach(result::addAll);
-        return result;
-    }
 }

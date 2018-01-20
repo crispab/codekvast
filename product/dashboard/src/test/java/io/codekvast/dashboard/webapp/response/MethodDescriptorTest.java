@@ -103,7 +103,7 @@ public class MethodDescriptorTest {
                                                         .invokedAtMillis(invokedAtMillis2)
                                                         .tag("tag2=2")
                                                         .tag("tag1=1")
-                                                        .build())
+                                                        .build().computeFields())
                                .collectedInEnvironment(
                                    EnvironmentDescriptor.builder()
                                                         .name("customer1")
@@ -115,13 +115,13 @@ public class MethodDescriptorTest {
                                                         .tag("foo=1")
                                                         .tag("bar=2")
                                                         .tag("baz")
-                                                        .build())
+                                                        .build().computeFields())
                                .packageName("packageName")
                                .signature("signature")
                                .visibility("public")
                                .bridge(null)
                                .synthetic(false)
-                               .build();
+                               .build().computeFields();
     }
 
 }

@@ -26,72 +26,28 @@ import lombok.NonNull;
 import lombok.Value;
 
 /**
+ * Describes one user for a certain customer.
+ *
  * @author olle.hallin@crisp.se
  */
-@SuppressWarnings("ClassWithTooManyFields")
 @Value
 @Builder
-public class AgentDescriptor1 {
+public class UserDescriptor {
+    @NonNull
+    private final String email;
 
     @NonNull
-    private final Long id;
+    private final String lastLoginSource;
 
     @NonNull
-    private final String appName;
+    private final Long firstLoginAtMillis;
 
     @NonNull
-    private final String appVersion;
+    private final Long lastLoginAtMillis;
 
     @NonNull
-    private final String agentVersion;
+    private final Long lastActivityAtMillis;
 
     @NonNull
-    private final String packages;
-
-    private final String excludePackages;
-
-    private final String environment;
-
-    @NonNull
-    private final String tags;
-
-    /**
-     * public, protected, package-private or private
-     */
-    @NonNull
-    private final String methodVisibility;
-
-    @NonNull
-    private final Long startedAtMillis;
-
-    @NonNull
-    private final Long publishedAtMillis;
-
-    /**
-     * When did we hear from this agent?
-     */
-    @NonNull
-    private final Long pollReceivedAtMillis;
-
-    /**
-     * When will we hear again from this agent?
-     */
-    @NonNull
-    private final Long nextPollExpectedAtMillis;
-
-    /**
-     * When will we get data again from this agent?
-     */
-    @NonNull
-    private final Long nextPublicationExpectedAtMillis;
-
-    /**
-     * Is this agent alive?
-     */
-    private final boolean agentAlive;
-
-    /**
-     * Is this agent live and enabled?
-     */
-    private final boolean agentLiveAndEnabled;
+    private final Integer numberOfLogins;
 }

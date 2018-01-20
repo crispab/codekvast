@@ -28,9 +28,9 @@ import io.codekvast.dashboard.security.CustomerIdProvider;
 import io.codekvast.dashboard.util.TimeService;
 import io.codekvast.dashboard.webapp.WebappService;
 import io.codekvast.dashboard.webapp.model.methods.*;
-import io.codekvast.dashboard.webapp.model.status.AgentDescriptor1;
-import io.codekvast.dashboard.webapp.model.status.GetStatusResponse1;
-import io.codekvast.dashboard.webapp.model.status.UserDescriptor1;
+import io.codekvast.dashboard.webapp.model.status.AgentDescriptor;
+import io.codekvast.dashboard.webapp.model.status.GetStatusResponse;
+import io.codekvast.dashboard.webapp.model.status.UserDescriptor;
 import io.codekvast.javaagent.model.v2.SignatureStatus2;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -112,15 +112,15 @@ public class WebappServiceImpl implements WebappService {
 
     @Override
     @Transactional(readOnly = true)
-    public GetStatusResponse1 getStatus() {
+    public GetStatusResponse getStatus() {
         long startedAt = timeService.currentTimeMillis();
 
         Long customerId = customerIdProvider.getCustomerId();
         CustomerData customerData = customerService.getCustomerDataByCustomerId(customerId);
 
         PricePlan pp = customerData.getPricePlan();
-        List<AgentDescriptor1> agents = getAgents(customerId, pp.getPublishIntervalSeconds());
-        List<UserDescriptor1> users = getUsers(customerId);
+        List<AgentDescriptor> agents = getAgents(customerId, pp.getPublishIntervalSeconds());
+        List<UserDescriptor> users = getUsers(customerId);
 
         Instant now = timeService.now();
         Instant collectionStartedAt = customerData.getCollectionStartedAt();
@@ -136,56 +136,56 @@ public class WebappServiceImpl implements WebappService {
         Integer collectedDays =
             collectionStartedAt == null ? null : Math.toIntExact(Duration.between(collectionStartedAt, now).toMillis() / dayInMillis);
 
-        return GetStatusResponse1.builder()
-                                 // query stuff
-                                 .timestamp(startedAt)
-                                 .queryTimeMillis(timeService.currentTimeMillis() - startedAt)
+        return GetStatusResponse.builder()
+                                // query stuff
+                                .timestamp(startedAt)
+                                .queryTimeMillis(timeService.currentTimeMillis() - startedAt)
 
-                                 // price plan stuff
-                                 .pricePlan(pp.getName())
-                                 .collectionResolutionSeconds(pp.getPublishIntervalSeconds())
-                                 .maxNumberOfAgents(pp.getMaxNumberOfAgents())
-                                 .maxNumberOfMethods(pp.getMaxMethods())
+                                // price plan stuff
+                                .pricePlan(pp.getName())
+                                .collectionResolutionSeconds(pp.getPublishIntervalSeconds())
+                                .maxNumberOfAgents(pp.getMaxNumberOfAgents())
+                                .maxNumberOfMethods(pp.getMaxMethods())
 
-                                 // actual values
-                                 .collectedSinceMillis(collectionStartedAt == null ? null : collectionStartedAt.toEpochMilli())
-                                 .trialPeriodEndsAtMillis(trialPeriodEndsAt == null ? null : trialPeriodEndsAt.toEpochMilli())
-                                 .trialPeriodExpired(customerData.isTrialPeriodExpired(now))
-                                 .trialPeriodPercent(trialPeriodPercent)
-                                 .collectedDays(collectedDays)
-                                 .numMethods(customerService.countMethods(customerId))
-                                 .numAgents(agents.size())
-                                 .numLiveAgents((int) agents.stream().filter(AgentDescriptor1::isAgentAlive).count())
-                                 .numLiveEnabledAgents((int) agents.stream().filter(AgentDescriptor1::isAgentLiveAndEnabled).count())
+                                // actual values
+                                .collectedSinceMillis(collectionStartedAt == null ? null : collectionStartedAt.toEpochMilli())
+                                .trialPeriodEndsAtMillis(trialPeriodEndsAt == null ? null : trialPeriodEndsAt.toEpochMilli())
+                                .trialPeriodExpired(customerData.isTrialPeriodExpired(now))
+                                .trialPeriodPercent(trialPeriodPercent)
+                                .collectedDays(collectedDays)
+                                .numMethods(customerService.countMethods(customerId))
+                                .numAgents(agents.size())
+                                .numLiveAgents((int) agents.stream().filter(AgentDescriptor::isAgentAlive).count())
+                                .numLiveEnabledAgents((int) agents.stream().filter(AgentDescriptor::isAgentLiveAndEnabled).count())
 
-                                 // details
-                                 .agents(agents)
-                                 .users(users)
-                                 .build();
+                                // details
+                                .agents(agents)
+                                .users(users)
+                                .build();
     }
 
-    private List<UserDescriptor1> getUsers(Long customerId) {
-        List<UserDescriptor1> result = new ArrayList<>();
+    private List<UserDescriptor> getUsers(Long customerId) {
+        List<UserDescriptor> result = new ArrayList<>();
 
         jdbcTemplate.query(
             "SELECT email, firstLoginAt, lastLoginAt, lastActivityAt, numberOfLogins, lastLoginSource " +
                 "FROM users WHERE customerId = ? ORDER BY email ",
             rs -> {
                 result.add(
-                    UserDescriptor1.builder()
-                                   .email(rs.getString("email"))
-                                   .firstLoginAtMillis(rs.getTimestamp("firstLoginAt").getTime())
-                                   .lastLoginAtMillis(rs.getTimestamp("lastLoginAt").getTime())
-                                   .lastActivityAtMillis(rs.getTimestamp("lastActivityAt").getTime())
-                                   .numberOfLogins(rs.getInt("numberOfLogins"))
-                                   .lastLoginSource(rs.getString("lastLoginSource"))
-                                   .build());
+                    UserDescriptor.builder()
+                                  .email(rs.getString("email"))
+                                  .firstLoginAtMillis(rs.getTimestamp("firstLoginAt").getTime())
+                                  .lastLoginAtMillis(rs.getTimestamp("lastLoginAt").getTime())
+                                  .lastActivityAtMillis(rs.getTimestamp("lastActivityAt").getTime())
+                                  .numberOfLogins(rs.getInt("numberOfLogins"))
+                                  .lastLoginSource(rs.getString("lastLoginSource"))
+                                  .build());
             }, customerId);
         return result;
     }
 
-    private List<AgentDescriptor1> getAgents(Long customerId, int publishIntervalSeconds) {
-        List<AgentDescriptor1> result = new ArrayList<>();
+    private List<AgentDescriptor> getAgents(Long customerId, int publishIntervalSeconds) {
+        List<AgentDescriptor> result = new ArrayList<>();
 
         jdbcTemplate.query(
             "SELECT agent_state.enabled, agent_state.lastPolledAt, agent_state.nextPollExpectedAt, " +
@@ -207,24 +207,24 @@ public class WebappServiceImpl implements WebappService {
                 Instant nextPublicationExpectedAt = lastPolledAt.toInstant().plusSeconds(publishIntervalSeconds);
 
                 result.add(
-                    AgentDescriptor1.builder()
-                                    .agentAlive(isAlive)
-                                    .agentLiveAndEnabled(isAlive && rs.getBoolean("enabled"))
-                                    .agentVersion(rs.getString("agentVersion"))
-                                    .appName(rs.getString("appName"))
-                                    .appVersion(rs.getString("appVersion"))
-                                    .environment(getStringOrDefault(rs, "environment", UNKNOWN_ENVIRONMENT))
-                                    .excludePackages(rs.getString("excludePackages"))
-                                    .id(rs.getLong("jvmId"))
-                                    .methodVisibility(rs.getString("methodVisibility"))
-                                    .nextPublicationExpectedAtMillis(nextPublicationExpectedAt.toEpochMilli())
-                                    .nextPollExpectedAtMillis(nextPollExpectedAt.getTime())
-                                    .packages(rs.getString("packages"))
-                                    .pollReceivedAtMillis(lastPolledAt.getTime())
-                                    .publishedAtMillis(publishedAt.getTime())
-                                    .startedAtMillis(rs.getTimestamp("startedAt").getTime())
-                                    .tags(rs.getString("tags"))
-                                    .build());
+                    AgentDescriptor.builder()
+                                   .agentAlive(isAlive)
+                                   .agentLiveAndEnabled(isAlive && rs.getBoolean("enabled"))
+                                   .agentVersion(rs.getString("agentVersion"))
+                                   .appName(rs.getString("appName"))
+                                   .appVersion(rs.getString("appVersion"))
+                                   .environment(getStringOrDefault(rs, "environment", UNKNOWN_ENVIRONMENT))
+                                   .excludePackages(rs.getString("excludePackages"))
+                                   .id(rs.getLong("jvmId"))
+                                   .methodVisibility(rs.getString("methodVisibility"))
+                                   .nextPublicationExpectedAtMillis(nextPublicationExpectedAt.toEpochMilli())
+                                   .nextPollExpectedAtMillis(nextPollExpectedAt.getTime())
+                                   .packages(rs.getString("packages"))
+                                   .pollReceivedAtMillis(lastPolledAt.getTime())
+                                   .publishedAtMillis(publishedAt.getTime())
+                                   .startedAtMillis(rs.getTimestamp("startedAt").getTime())
+                                   .tags(rs.getString("tags"))
+                                   .build());
             }, customerId);
 
         return result;
@@ -304,7 +304,7 @@ public class WebappServiceImpl implements WebappService {
                                                             .collectedSinceMillis(startedAt)
                                                             .collectedToMillis(publishedAt)
                                                             .invokedAtMillis(invokedAtMillis)
-                                                            .build());
+                                                            .build().computeFields());
 
             builder.declaringType(rs.getString("declaringType"))
                    .modifiers(rs.getString("modifiers"))
@@ -369,7 +369,7 @@ public class WebappServiceImpl implements WebappService {
 
     }
 
-    String getStringOrDefault(ResultSet rs, String columnLabel, String defaultValue) throws SQLException {
+    private String getStringOrDefault(ResultSet rs, String columnLabel, String defaultValue) throws SQLException {
         String value = rs.getString(columnLabel);
         return value == null || value.isEmpty() ? defaultValue : value;
     }
@@ -416,7 +416,7 @@ public class WebappServiceImpl implements WebappService {
                 logger.trace("Adding method {} to result (compiled from {} result set rows)", methodId, rows);
                 builder.occursInApplications(new TreeSet<>(applications.values()));
                 builder.collectedInEnvironments(new TreeSet<>(environments.values()));
-                result.add(builder.build());
+                result.add(builder.build().computeFields());
             }
         }
 

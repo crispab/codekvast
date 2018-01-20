@@ -31,7 +31,8 @@ import java.util.Set;
  *
  * @author olle.hallin@crisp.se
  */
-@Value
+@Data
+@Setter(AccessLevel.NONE)
 @Builder
 @EqualsAndHashCode(of = "name")
 public class EnvironmentDescriptor implements Comparable<EnvironmentDescriptor> {
@@ -74,13 +75,13 @@ public class EnvironmentDescriptor implements Comparable<EnvironmentDescriptor> 
     @NonNull
     private final Long invokedAtMillis;
 
-    /**
-     * @return  difference between collectedToMillis and collectedSinceMillis expressed as days.
-     */
-    @SuppressWarnings("unused")
-    public Integer getCollectedDays() {
+    // Computed fields to make it usable with Gson, which only serializes fields.
+    private int collectedDays;
+
+    public EnvironmentDescriptor computeFields() {
         int oneDayInMillis = 24 * 60 * 60 * 1000;
-        return Math.toIntExact((collectedToMillis - collectedSinceMillis) / oneDayInMillis);
+        this.collectedDays = Math.toIntExact((collectedToMillis - collectedSinceMillis) / oneDayInMillis);
+        return this;
     }
 
     /**
@@ -98,7 +99,7 @@ public class EnvironmentDescriptor implements Comparable<EnvironmentDescriptor> 
                                    .collectedSinceMillis(Math.min(this.collectedSinceMillis, that.collectedSinceMillis))
                                    .hostnames(union(this.hostnames, that.hostnames))
                                    .tags(union(this.tags, that.tags))
-                                   .build();
+                                   .build().computeFields();
     }
 
     private Set<String> union(Set<String> left, Set<String> right) {

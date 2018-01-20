@@ -24,7 +24,7 @@ package io.codekvast.dashboard.webapp;
 import io.codekvast.dashboard.webapp.model.methods.GetMethodsRequest;
 import io.codekvast.dashboard.webapp.model.methods.GetMethodsResponse;
 import io.codekvast.dashboard.webapp.model.methods.MethodDescriptor;
-import io.codekvast.dashboard.webapp.model.status.GetStatusResponse1;
+import io.codekvast.dashboard.webapp.model.status.GetStatusResponse;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -76,5 +76,5 @@ public interface WebappService {
      * @return A status object.
      */
     @NotNull
-    GetStatusResponse1 getStatus();
+    GetStatusResponse getStatus();
 }

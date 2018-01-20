@@ -26,7 +26,7 @@ import io.codekvast.dashboard.security.SecurityConfig;
 import io.codekvast.dashboard.webapp.model.methods.GetMethodsRequest;
 import io.codekvast.dashboard.webapp.model.methods.GetMethodsResponse;
 import io.codekvast.dashboard.webapp.model.methods.MethodDescriptor;
-import io.codekvast.dashboard.webapp.model.status.GetStatusResponse1;
+import io.codekvast.dashboard.webapp.model.status.GetStatusResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -52,7 +52,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 public class WebappController {
 
     private static final String WEBAPP_V1_METHODS = "/webapp/v1/methods";
-    private static final String WEBAPP_V1_METHOD = "/webapp/v1/method/detail/{id}";
+    static final String WEBAPP_V1_METHOD = "/webapp/v1/method/detail/{id}";
     private static final String WEBAPP_V1_STATUS = "/webapp/v1/status";
 
     private final WebappService webappService;
@@ -105,8 +105,8 @@ public class WebappController {
     }
 
     @RequestMapping(method = GET, path = WEBAPP_V1_STATUS)
-    public ResponseEntity<GetStatusResponse1> getStatus1() {
-        GetStatusResponse1 response = webappService.getStatus();
+    public ResponseEntity<GetStatusResponse> getStatus1() {
+        GetStatusResponse response = webappService.getStatus();
         logger.debug("Response: {}", response);
         return ResponseEntity.ok().body(response);
     }

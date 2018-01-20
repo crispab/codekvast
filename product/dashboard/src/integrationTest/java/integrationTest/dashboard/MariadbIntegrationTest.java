@@ -14,8 +14,8 @@ import io.codekvast.dashboard.webapp.WebappService;
 import io.codekvast.dashboard.webapp.model.methods.GetMethodsRequest;
 import io.codekvast.dashboard.webapp.model.methods.GetMethodsResponse;
 import io.codekvast.dashboard.webapp.model.methods.MethodDescriptor;
-import io.codekvast.dashboard.webapp.model.status.AgentDescriptor1;
-import io.codekvast.dashboard.webapp.model.status.GetStatusResponse1;
+import io.codekvast.dashboard.webapp.model.status.AgentDescriptor;
+import io.codekvast.dashboard.webapp.model.status.GetStatusResponse;
 import io.codekvast.javaagent.model.v1.CodeBaseEntry;
 import io.codekvast.javaagent.model.v1.CodeBasePublication;
 import io.codekvast.javaagent.model.v1.CommonPublicationData;
@@ -510,7 +510,7 @@ public class MariadbIntegrationTest {
         Timestamps timestamps = new Timestamps().invoke();
 
         // when
-        GetStatusResponse1 status = webappService.getStatus();
+        GetStatusResponse status = webappService.getStatus();
 
         // then
         assertThat(status.getPricePlan(), is("DEMO"));
@@ -522,26 +522,26 @@ public class MariadbIntegrationTest {
         assertThat(status.getNumLiveAgents(), is(2));
         assertThat(status.getNumLiveEnabledAgents(), is(1));
 
-        assertThat(status.getAgents().get(0), is(AgentDescriptor1.builder()
-                                                                 .agentAlive(true)
-                                                                 .agentLiveAndEnabled(true)
-                                                                 .agentVersion("agentVersion1")
-                                                                 .appName("app1")
-                                                                 .appVersion("v1")
-                                                                 .environment("env1")
-                                                                 .excludePackages("com.foobar.excluded1")
-                                                                 .id(1L)
-                                                                 .methodVisibility("public")
-                                                                 .nextPollExpectedAtMillis(cutMillis(timestamps.plusOneMinute))
-                                                                 .nextPublicationExpectedAtMillis(cutMillis(
+        assertThat(status.getAgents().get(0), is(AgentDescriptor.builder()
+                                                                .agentAlive(true)
+                                                                .agentLiveAndEnabled(true)
+                                                                .agentVersion("agentVersion1")
+                                                                .appName("app1")
+                                                                .appVersion("v1")
+                                                                .environment("env1")
+                                                                .excludePackages("com.foobar.excluded1")
+                                                                .id(1L)
+                                                                .methodVisibility("public")
+                                                                .nextPollExpectedAtMillis(cutMillis(timestamps.plusOneMinute))
+                                                                .nextPublicationExpectedAtMillis(cutMillis(
                                                                      Timestamp.from(timestamps.minusTenMinutes.toInstant().plusSeconds(
                                                                          PricePlanDefaults.DEMO.getPublishIntervalSeconds()))))
-                                                                 .packages("com.foobar1")
-                                                                 .pollReceivedAtMillis(cutMillis(timestamps.minusTenMinutes))
-                                                                 .publishedAtMillis(cutMillis(timestamps.minusTwoMinutes))
-                                                                 .startedAtMillis(cutMillis(timestamps.minusThreeDaysPlus))
-                                                                 .tags("tag1=t1,tag2=t2")
-                                                                 .build()));
+                                                                .packages("com.foobar1")
+                                                                .pollReceivedAtMillis(cutMillis(timestamps.minusTenMinutes))
+                                                                .publishedAtMillis(cutMillis(timestamps.minusTwoMinutes))
+                                                                .startedAtMillis(cutMillis(timestamps.minusThreeDaysPlus))
+                                                                .tags("tag1=t1,tag2=t2")
+                                                                .build()));
 
         assertThat(status.getNumMethods(), is(10));
 

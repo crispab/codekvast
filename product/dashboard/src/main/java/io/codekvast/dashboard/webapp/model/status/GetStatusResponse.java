@@ -35,7 +35,7 @@ import java.util.List;
 @SuppressWarnings({"ClassWithTooManyFields", "ClassWithTooManyMethods"})
 @Value
 @Builder
-public class GetStatusResponse1 {
+public class GetStatusResponse {
     //--- Query performance stuff -----------------------------------
     /**
      * When was the request received? Millis since epoch.
@@ -132,10 +132,10 @@ public class GetStatusResponse1 {
     /**
      * The agents (JVMs) reporting to this customer account.
      */
-    private final List<AgentDescriptor1> agents;
+    private final List<AgentDescriptor> agents;
 
     /**
      * The interactive users that have logged in to this customer.
      */
-    private final List<UserDescriptor1> users;
+    private final List<UserDescriptor> users;
 }
