@@ -18,3 +18,29 @@ task downloadTools(type: Sync) {
 }
 
 build.dependsOn downloadTools
+
+ext.geckoDriver = "geckodriver-0.19.1-${System.properties['os.arch']}.bin"
+
+task downloadGeckoDriver {
+    description = "Downloads Geckodriver from Bintray to be used by web driver tests in other modules"
+    group "Test support"
+
+    def downloadDir = file("$rootDir/.tmp/download")
+    def geckoDriverDownloadUrl = "https://dl.bintray.com/crisp/codekvast/${geckoDriver}"
+    def dest = file("$downloadDir/$geckoDriver")
+
+    inputs.property "geckoDriver", geckoDriver
+    outputs.file dest
+
+    doLast {
+        downloadDir.mkdirs()
+
+        logger.lifecycle "Downloading $geckoDriverDownloadUrl ..."
+        ant.get(
+            src: geckoDriverDownloadUrl,
+            dest: dest,
+            usetimestamp: true,
+            verbose: true
+        )
+    }
+}

@@ -13,7 +13,6 @@ check.dependsOn systemTest
 
 configurations {
     chromeDriver
-    geckoDriver
     jdbc
 }
 
@@ -37,7 +36,6 @@ dependencies {
     systemTestRuntime "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
 
     chromeDriver 'com.github.igor-suhorukov:chromedriver:2.34:linux64@bin'
-    geckoDriver files("$rootDir/tools/downloaded/geckodriver-0.19.1-linux64.bin")
     jdbc mariadbDriver
 }
 
@@ -155,7 +153,7 @@ task psSystemTestEnvironment {
 systemTest {
     description 'Runs end-to-end tests against Codekvast Dashboard with MariaDB in a Docker container'
     group 'System test'
-    dependsOn test, frontendTest, integrationTest, systemTestClasses, bootRepackage
+    dependsOn test, frontendTest, integrationTest, systemTestClasses, bootRepackage, ':tools:downloadGeckoDriver'
 
     def foundChromeBinary = "which google-chrome".execute().in.text.trim()
     assert !foundChromeBinary.isEmpty() : "Cannot find Chrome executable!"
@@ -177,14 +175,17 @@ systemTest {
     }
 
     doFirst {
+        def chromeDriver = configurations.chromeDriver.asPath
+        def geckoDriver = tasks.getByPath(':tools:downloadGeckoDriver').outputs.files.asPath
+        [chromeDriver, geckoDriver].each { "chmod +x ${it}".execute().waitFor() }
+
         def endpoint = startSystemTestEnvironment()
         logger.lifecycle("Running system tests against {}", endpoint)
 
-        "chmod +x ${configurations.chromeDriver.asPath}".execute().waitFor()
         logger.lifecycle "Running Geb with -Dgeb.env=$gebEnv, override with -Pbrowser=[chrome|chromeHeadless|firefox]"
         systemProperty "geb.env", gebEnv
-        systemProperty "webdriver.chrome.driver", configurations.chromeDriver.asPath
-        systemProperty "webdriver.gecko.driver", configurations.geckoDriver.asPath
+        systemProperty "webdriver.chrome.driver", chromeDriver
+        systemProperty "webdriver.gecko.driver",  geckoDriver
         systemProperty "geb.build.reportsDir", "$reportsDir/systemTest/dumps"
         systemProperty 'geb.build.baseUrl', endpoint
 
