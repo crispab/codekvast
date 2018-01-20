@@ -5,10 +5,13 @@ import {AppRoutingModule} from './app-routing.module';
 import {BrowserModule, Title} from '@angular/platform-browser';
 import {CollectionStatusComponent} from './pages/collection-status/collection-status.component';
 import {ConfigService} from './services/config.service';
+import {DashboardService} from './services/dashboard.service';
 import {FormsModule} from '@angular/forms';
 import {HomeComponent} from './pages/home/home.component';
-import {HttpModule} from '@angular/http';
+import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
+import {HttpResponseInterceptor} from './services/httpResponse.interceptor';
 import {InvocationStatusPipe} from './pipes/invocation-status.pipe';
+import {IsLoggedIn} from './guards/is-logged-in';
 import {LOCALE_ID, NgModule} from '@angular/core';
 import {LoggedOutComponent} from './pages/auth/logged-out.component';
 import {MethodDetailComponent} from './pages/methods/method-detail.component';
@@ -21,8 +24,6 @@ import {SsoComponent} from './components/sso.component';
 import {StateService} from './services/state.service';
 import {VoteComponent} from './components/vote.component';
 import {VoteResultComponent} from './pages/vote-result/vote-result.component';
-import {DashboardService} from './services/dashboard.service';
-import {IsLoggedIn} from './guards/is-logged-in';
 import localeDe from '@angular/common/locales/de';
 import localeEn from '@angular/common/locales/en';
 import localeEs from '@angular/common/locales/es';
@@ -54,7 +55,7 @@ function selectBestLocale() {
 
 @NgModule({
     imports: [
-        AppRoutingModule, BrowserModule, FormsModule, HttpModule, NgbModule.forRoot(),
+        AppRoutingModule, BrowserModule, FormsModule, HttpClientModule, NgbModule.forRoot(),
     ],
     declarations: [
         AgePipe,
@@ -79,7 +80,11 @@ function selectBestLocale() {
         }, {
             provide: LOCALE_ID,
             useValue: selectBestLocale()
-        },
+        }, {
+            provide: HTTP_INTERCEPTORS,
+            useClass: HttpResponseInterceptor,
+            multi: true,
+        }
     ],
     bootstrap: [AppComponent]
 })

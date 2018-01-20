@@ -126,7 +126,7 @@ public class CodekvastSettings {
     private String dnsCname;
 
     /**
-     * @return true iff the webapp should be secured with a JWT token
+     * @return true unless the webapp is secured
      */
     public boolean isDemoMode() {
         return webappJwtSecret == null || webappJwtSecret.trim().isEmpty();

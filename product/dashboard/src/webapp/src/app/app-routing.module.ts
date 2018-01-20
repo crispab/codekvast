@@ -42,12 +42,10 @@ const routes: Routes = [
         canActivate: [IsLoggedIn]
     }, {
         path: 'reports',
-        component: ReportGeneratorComponent,
-        canActivate: [IsLoggedIn]
+        component: ReportGeneratorComponent
     }, {
         path: 'vote-result/:feature/:vote',
-        component: VoteResultComponent,
-        canActivate: [IsLoggedIn]
+        component: VoteResultComponent
     }, {
         path: '**',
         redirectTo: 'home',
