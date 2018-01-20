@@ -13,11 +13,11 @@ license {
 
 licenseFormat {
     description "Adds the correct license header to all source files"
-    group "Licensing"
+    group "License"
 }
 
 downloadLicenses {
-    group "Licensing"
+    group "License"
 }
 
 project.gradle.projectsEvaluated {

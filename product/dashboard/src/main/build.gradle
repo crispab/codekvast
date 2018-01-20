@@ -93,7 +93,7 @@ run {
     args = ["--logging.file=$buildDir/log/${applicationName}.log",
             '--codekvast.fileImportIntervalSeconds=10',
             '--codekvast.herokuCodekvastUrl=http://localhost:8080',
-            '--codekvast.webappJwtSecret=secret',
+            // '--codekvast.webappJwtSecret=secret',
             '--codekvast.webappJwtExpirationHours=-5',
             '--spring.resources.staticLocations=' +
                 "file:$projectDir/src/webapp/dist/," +
