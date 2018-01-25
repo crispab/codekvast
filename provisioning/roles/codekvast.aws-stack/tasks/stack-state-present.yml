@@ -239,7 +239,7 @@
     overwrite: yes
     record: "{{ item }}.codekvast.io"
     value: "{{ elb_dns_name }}"
-    ttl: 600
+    ttl: 3600
     type: CNAME
     zone: codekvast.io
   with_items: "{{ stack.app_cnames }}"
@@ -279,7 +279,7 @@
     overwrite: yes
     record: "{{ stack.app_cnames[0] }}{{ '%02d'|format(item.0) }}.codekvast.io"
     value: "{{ item.1.public_dns_name }}"
-    ttl: 600
+    ttl: 60
     type: CNAME
     zone: codekvast.io
   with_indexed_items: "{{ ec2backends.tagged_instances }}"

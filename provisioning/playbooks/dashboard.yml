@@ -1,0 +1,134 @@
+---
+#--------------------------------------------------------------------------------------------------------------------------------
+# Playbook that installs the Codekvast Dashboard application, which is an executable Spring Boot jar running as a systemd service
+#--------------------------------------------------------------------------------------------------------------------------------
+- name: Codekvast Dashboard Application
+  hosts: tag_role_backend
+  user: ubuntu
+  become: yes
+  serial: 1
+
+  vars_files:
+  - vars/secrets.yml
+  - vars/common.yml
+
+  vars:
+    service_name: dashboard
+    service_port: 8080
+    customer: "{{ hostvars[inventory_hostname]['ec2_tag_Customer'] }}"
+    env: "{{ hostvars[inventory_hostname]['ec2_tag_Env'] }}"
+    database_group_name: "tag_Name_Codekvast_{{ customer }}_{{ env }}_database"
+
+    codekvast_queue_path: "/var/codekvast/{{ service_name }}/queue"
+    codekvast_queue_pollIntervalSeconds: 30
+    codekvast_webapp_jwtExpirationHours: 168
+    codekvastVersion: "{{ lookup('ini', 'codekvastVersion type=properties file=../../gradle.properties') }}"
+
+  tasks:
+  - name: "Stop and disable old {{ service_name }}"
+    service: name=codekvast enabled=no state=stopped
+    ignore_errors: yes
+
+  - name: Remove old application files
+    shell: rm -f /opt/codekvast/*{.properties,.jar}
+
+  - name: Remove old systemd service definition
+    file: path=/etc/systemd/system/codekvast.service state=absent
+    notify:
+    - systemctl daemon-reload
+
+  - meta: flush_handlers
+
+  - name: Lookup the private DNS name for the database server
+    set_fact: database_dns_names="{{ groups[database_group_name]|map('extract', hostvars, 'ec2_private_dns_name')|list }}"
+
+  - name: Setting timezone to UTC
+    timezone: name=UTC
+
+  - name: Install OpenJDK 8
+    package: name=openjdk-8-jdk-headless state=installed
+    notify: "restart codekvast {{ service_name }}"
+
+  - name: Create codekvast group
+    group: name=codekvast state=present
+
+  - name: Create codekvast user
+    user: name=codekvast group=codekvast state=present home=/opt/codekvast
+
+  - name: Create directories
+    file: path={{ item }} state=directory owner=codekvast group=codekvast
+    with_items:
+    - "{{ codekvast_queue_path }}"
+    - "/opt/codekvast/{{ service_name }}"
+    - /var/log/codekvast
+
+  - name: "Wait until Codekvast {{ service_name }} has stopped"
+    wait_for:
+      port: "{{ service_port }}"
+      state: stopped
+      timeout: 10
+    ignore_errors: yes
+
+  - name: "Move old queue contents to {{ codekvast_queue_path }}"
+    shell: "mv /var/codekvast/queue/* {{ codekvast_queue_path }}"
+    ignore_errors: yes
+
+  - name: "Rename log files"
+    shell: "rename 's/codekvast.log/codekvast-dashboard.log/' codekvast.log*"
+    args:
+      chdir: /var/log/codekvast
+    ignore_errors: yes
+
+  - name: "Install {{ service_name }} executable jar"
+    copy:
+      src: ../../product/{{ service_name }}/build/libs/codekvast-{{ service_name }}-{{ codekvastVersion }}-all.jar
+      dest: "/opt/codekvast/{{ service_name }}/codekvast-{{ service_name }}-{{ codekvastVersion }}-all.jar"
+      owner: codekvast
+      group: codekvast
+      mode: 0700
+    notify: "restart codekvast {{ service_name }}"
+
+  - name: "Install Codekvast {{ service_name }} configuration file"
+    template:
+      src: "codekvast/{{ service_name }}/application.properties"
+      dest: "/opt/codekvast/{{ service_name }}/application.properties"
+      owner: codekvast
+      group: codekvast
+    notify: "restart codekvast {{ service_name }}"
+
+  - name: "Install /etc/systemd/system/codekvast-{{ service_name }}.service"
+    template:
+      src: "codekvast/systemd.service"
+      dest: "/etc/systemd/system/codekvast-{{ service_name }}.service"
+      owner: root
+      group: root
+    notify:
+    - systemctl daemon-reload
+    - "restart codekvast {{ service_name }}"
+
+  - name: "Enable codekvast {{ service_name }}"
+    service:
+      name: "codekvast-{{ service_name }}"
+      enabled: yes
+
+  - name: "Start codekvast {{ service_name }}"
+    service:
+      name: "codekvast-{{ service_name }}"
+      state: started
+
+  - meta: flush_handlers
+
+  - name: "Wait until Codekvast {{ service_name }} has started"
+    wait_for:
+      port: "{{ service_port }}"
+      state: started
+      timeout: 30
+
+  handlers:
+  - name: systemctl daemon-reload
+    shell: systemctl daemon-reload
+
+  - name: "restart codekvast {{ service_name }}"
+    service:
+      name: "codekvast-{{ service_name }}"
+      state: restarted

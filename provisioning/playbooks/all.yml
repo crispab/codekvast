@@ -6,4 +6,4 @@
 - {include: infrastructure.yml, tags: [aws, infrastructure]}
 - {include: os-maintenance.yml, tags: [server, os, patches]}
 - {include: database.yml, tags: [server, database]}
-- {include: application.yml, tags: [server, application]}
+- {include: dashboard.yml, tags: [server, application, dashboard]}

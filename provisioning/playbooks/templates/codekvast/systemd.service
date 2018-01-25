@@ -1,0 +1,14 @@
+[Unit]
+Description=Codekvast {{ service_name }}
+After=syslog.target
+
+[Service]
+User=codekvast
+ExecStart=/bin/sh -c "/opt/codekvast/{{ service_name }}/codekvast-{{ service_name }}-{{ codekvastVersion }}-all.jar > /dev/null"
+KillMode=control-group
+SuccessExitStatus=143
+TimeoutSec=30
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
