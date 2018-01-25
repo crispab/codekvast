@@ -32,8 +32,8 @@ Vagrant.configure('2') do |config|
             '-e codekvast_herokuApiPassword=herokuApiPassword',
             '-e codekvast_herokuApiSsoSalt=herokuApiSsoSalt',
             '-e codekvast_webappJwtSecret=webappJwtSecret',
-            '-e codekvast_queue_pollIntervalSeconds=5',
-            '-e codekvast_webapp_jwtExpirationHours=-5'
+            '-e fileImportIntervalSeconds=5',
+            '-e webappJwtExpirationHours=-5'
         ]
     end
 end

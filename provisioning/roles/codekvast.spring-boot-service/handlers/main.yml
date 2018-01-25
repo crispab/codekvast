@@ -1,0 +1,8 @@
+---
+- name: systemctl daemon-reload
+  shell: systemctl daemon-reload
+
+- name: "restart codekvast service"
+  service:
+    name: "codekvast-{{ service_name }}"
+    state: restarted

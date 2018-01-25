@@ -1,5 +1,7 @@
+{{ ansible_managed  | comment }}
+
 [Unit]
-Description=Codekvast {{ service_name }}
+Description=Codekvast {{ service_name | capitalize }}
 After=syslog.target
 
 [Service]
