@@ -1,0 +1,45 @@
+// --- Rapid Application Development ------------------------------------------------------------------------------------------
+
+//--- Run & bootRun -----------------------------------------------------------------------------------------------------
+
+run {
+    group "Backend Development"
+    dependsOn ":product:dashboard:startMariadb"
+
+    jvmArgs = [
+        '-ea',
+        // "-Dcodekvast.configuration=$generateCodekvastConfig.outputs.files.asPath",
+    ]
+
+    args = ["--logging.file=$buildDir/log/${applicationName}.log"]
+}
+
+bootRun {
+    group "Backend Development"
+    dependsOn ":product:dashboard:startMariadb"
+
+    jvmArgs = run.jvmArgs
+    args = run.args
+    addResources = true
+}
+
+//--- Packaging ------------------------------------------------------------------------------------------------------------------
+springBoot {
+    executable = true
+    embeddedLaunchScriptProperties = [
+        'initInfoProvides'        : applicationName,
+        'initInfoShortDescription': 'Codekvast Login',
+        'initInfoDescription'     : 'Codekvast Login handles logins',
+    ]
+    excludeDevtools = true
+}
+
+bootRepackage {
+    // Set a classifier, or else gradle distZip will overwrite the repackaged jar...
+    classifier = 'all'
+}
+
+processResources {
+    // codekvastDisplayVersion is filtered into application.properties...
+    inputs.property "codekvastDisplayVersion", codekvastDisplayVersion
+}

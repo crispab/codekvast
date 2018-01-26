@@ -6,6 +6,7 @@ include ':product:dashboard'
 include ':product:dist'
 include ':product:docs'
 include ':product:java-agent'
+include ':product:login'
 include ':product:testsupport'
 
 include ':tools'
