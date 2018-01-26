@@ -4,5 +4,5 @@
 # See also infrastructure.yml
 #---------------------------------------------------------------------------
 - {include: database.yml, tags: [server, database]}
-- {include: nginx.yml, tags: [server, nginx, application]}
+- {include: nginx.yml, tags: [server, nginx]}
 - {include: dashboard.yml, tags: [server, service, dashboard]}

@@ -1,9 +1,0 @@
----
-#---------------------------------------------------------------------------
-# Configures all servers once the infrastructure has been provisioned.
-# See also infrastructure.yml
-#---------------------------------------------------------------------------
-- {include: infrastructure.yml, tags: [aws, infrastructure]}
-- {include: os-maintenance.yml, tags: [server, os, patches]}
-- {include: database.yml, tags: [server, database]}
-- {include: dashboard.yml, tags: [server, application, dashboard]}

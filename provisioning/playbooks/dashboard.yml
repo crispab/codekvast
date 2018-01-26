@@ -15,6 +15,7 @@
   vars:
     service_name: dashboard
     service_port: 8080
+    management_port: 9080
 
     queuePath: "/var/codekvast/dashboard/queue"
     fileImportIntervalSeconds: 30
