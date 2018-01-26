@@ -1,8 +1,9 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="CodekvastDashboard" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="dashboard_main" />
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
     <extension name="krasa.grepconsole.plugin.runConfiguration.GrepRunConfigurationExtension" selectedProfileId="0" />
-    <option name="SPRING_BOOT_MAIN_CLASS" value="io.codekvast.dashboard.CodekvastDashboard" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="io.codekvast.dashboard.CodekvastDashboardApplication" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <additionalParameters>
       <param>
@@ -18,8 +19,6 @@
         <option name="value" value="9080" />
       </param>
     </additionalParameters>
-    <module name="dashboard_main" />
-    <envs />
     <method />
   </configuration>
 </component>

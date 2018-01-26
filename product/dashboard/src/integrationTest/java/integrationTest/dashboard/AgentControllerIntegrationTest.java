@@ -1,7 +1,7 @@
 package integrationTest.dashboard;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.codekvast.dashboard.CodekvastDashboard;
+import io.codekvast.dashboard.CodekvastDashboardApplication;
 import io.codekvast.dashboard.agent.AgentController;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @WebMvcTest(AgentController.class)
-@ContextConfiguration(classes = CodekvastDashboard.class)
+@ContextConfiguration(classes = CodekvastDashboardApplication.class)
 public class AgentControllerIntegrationTest {
 
     @Autowired

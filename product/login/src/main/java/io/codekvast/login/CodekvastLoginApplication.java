@@ -19,23 +19,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard;
+package io.codekvast.login;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 /**
- * The Spring Boot main for codekvast-dashboard,
+ * The Spring Boot main for codekvast-login,
  *
  * @author olle.hallin@crisp.se
  */
 @SpringBootApplication
 @ComponentScan(basePackages = "io.codekvast")
-public class CodekvastDashboard {
+public class CodekvastLoginApplication {
 
     public static void main(String[] args) {
-        new SpringApplication(CodekvastDashboard.class).run(args);
+        new SpringApplication(CodekvastLoginApplication.class).run(args);
     }
 
 }

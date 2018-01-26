@@ -11,7 +11,7 @@ applicationName = 'codekvast-login'
 archivesBaseName = 'codekvast-login'
 version = codekvastVersion
 group = 'crisp'
-mainClassName = 'io.codekvast.login.CodekvastLogin'
+mainClassName = 'io.codekvast.login.CodekvastLoginApplication'
 
 configurations.compile {
     exclude module: 'spring-boot-starter-tomcat'

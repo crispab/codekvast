@@ -12,7 +12,7 @@ applicationName = 'codekvast-dashboard'
 archivesBaseName = 'codekvast-dashboard'
 version = codekvastVersion
 group = 'crisp'
-mainClassName = 'io.codekvast.dashboard.CodekvastDashboard'
+mainClassName = 'io.codekvast.dashboard.CodekvastDashboardApplication'
 
 apply from: "$projectDir/src/main/build.gradle"
 apply from: "$projectDir/src/webapp/build.gradle"

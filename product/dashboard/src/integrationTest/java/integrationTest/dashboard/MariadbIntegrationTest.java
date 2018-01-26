@@ -1,7 +1,7 @@
 package integrationTest.dashboard;
 
 import integrationTest.dashboard.testdata.TestDataGenerator;
-import io.codekvast.dashboard.CodekvastDashboard;
+import io.codekvast.dashboard.CodekvastDashboardApplication;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.customer.CustomerData;
 import io.codekvast.dashboard.customer.CustomerService;
@@ -60,7 +60,7 @@ import static org.junit.Assume.assumeTrue;
  */
 @SuppressWarnings({"SpringAutowiredFieldsWarningInspection", "ClassWithTooManyFields"})
 @SpringBootTest(
-    classes = {CodekvastDashboard.class, TestDataGenerator.class},
+    classes = {CodekvastDashboardApplication.class, TestDataGenerator.class},
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("integrationTest")
 @Transactional(rollbackFor = Exception.class)
