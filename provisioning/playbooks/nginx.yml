@@ -1,0 +1,27 @@
+---
+#--------------------------------------------------------------------------------------------------------------------------------
+# Playbook that installs the Codekvast Dashboard application, which is an executable Spring Boot jar running as a systemd service
+#--------------------------------------------------------------------------------------------------------------------------------
+- name: Nginx reverse proxy
+  hosts: tag_role_backend
+  user: ubuntu
+  become: yes
+  serial: 1
+
+  vars:
+    nginx_vhosts:
+      - listen: "80"
+        server_name: "codekvast"
+        extra_parameters: |
+          location / {
+            proxy_pass http://localhost:8080/;
+          }
+          proxy_buffering    off;
+          proxy_set_header   X-Real-IP $remote_addr;
+          proxy_set_header   X-Scheme $scheme;
+          proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header   Host $http_host;
+    nginx_remove_default_vhost: true
+
+  roles:
+  - geerlingguy.nginx
