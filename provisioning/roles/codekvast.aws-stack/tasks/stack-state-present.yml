@@ -79,6 +79,10 @@
     description: "Codekvast backend access"
     rules:
     - proto: tcp
+      from_port: 80
+      to_port: 80
+      group_name: "codekvast-{{ stack.customer }}-{{ stack.env }}-frontend"
+    - proto: tcp
       from_port: 8080
       to_port: 8080
       group_name: "codekvast-{{ stack.customer }}-{{ stack.env }}-frontend"
@@ -205,12 +209,12 @@
     listeners:
     - protocol: http
       load_balancer_port: 80
-      instance_port: 8080
+      instance_port: 80
       proxy_protocol: True
     - protocol: https
       load_balancer_port: 443
       instance_protocol: http
-      instance_port: 8080
+      instance_port: 80
       ssl_certificate_id: "{{ ssl_certificate_id }}"
     health_check:
       ping_protocol: http
