@@ -18,7 +18,6 @@
 - name: Create directories
   file: path={{ item }} state=directory owner=codekvast group=codekvast
   with_items:
-  - "{{ queuePath }}"
   - "/opt/codekvast/{{ service_name }}"
   - /var/log/codekvast
 

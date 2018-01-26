@@ -6,3 +6,4 @@
 - {include: database.yml, tags: [server, database]}
 - {include: nginx.yml, tags: [server, nginx]}
 - {include: dashboard.yml, tags: [server, service, dashboard]}
+- {include: login.yml, tags: [server, service, login]}

@@ -1,0 +1,21 @@
+---
+#--------------------------------------------------------------------------------------------------------------------------------
+# Playbook that installs the Codekvast Login application, which is an executable Spring Boot jar running as a systemd service
+#--------------------------------------------------------------------------------------------------------------------------------
+- name: Codekvast Login Application
+  hosts: tag_role_backend
+  user: ubuntu
+  become: yes
+  serial: 1
+
+  vars_files:
+  - vars/secrets.yml
+  - vars/common.yml
+
+  vars:
+    service_name: login
+    service_port: "{{ port.login.service }}"
+    management_port: "{{ port.login.management }}"
+
+  roles:
+  - {role: codekvast.spring-boot-service, tags: [service, login]}

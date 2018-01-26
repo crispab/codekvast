@@ -8,13 +8,19 @@
   become: yes
   serial: 1
 
+  vars_files:
+  - vars/common.yml
+
   vars:
     nginx_vhosts:
       - listen: "80"
         server_name: "codekvast"
         extra_parameters: |
+          location /login/ {
+            proxy_pass http://localhost:{{ port.login.service }}/login/;
+          }
           location / {
-            proxy_pass http://localhost:8080/;
+            proxy_pass http://localhost:{{ port.dashboard.service }}/;
           }
           proxy_buffering    off;
           proxy_set_header   X-Real-IP $remote_addr;

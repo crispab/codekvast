@@ -14,8 +14,8 @@
 
   vars:
     service_name: dashboard
-    service_port: 8080
-    management_port: 9080
+    service_port: "{{ port.dashboard.service }}"
+    management_port: "{{ port.dashboard.management }}"
 
     queuePath: "/var/codekvast/dashboard/queue"
     fileImportIntervalSeconds: 30
@@ -23,3 +23,9 @@
 
   roles:
   - {role: codekvast.spring-boot-service, tags: [service, dashboard]}
+
+  post_tasks:
+  - name: Create directories
+    file: path={{ item }} state=directory owner=codekvast group=codekvast
+    with_items:
+    - "{{ queuePath }}"
