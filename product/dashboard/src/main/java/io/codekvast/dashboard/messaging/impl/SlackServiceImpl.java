@@ -23,7 +23,7 @@ package io.codekvast.dashboard.messaging.impl;
 
 import com.github.seratch.jslack.Slack;
 import com.github.seratch.jslack.api.webhook.Payload;
-import io.codekvast.dashboard.bootstrap.CodekvastSettings;
+import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.dashboard.messaging.SlackService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +44,7 @@ import java.time.Instant;
 @Slf4j
 public class SlackServiceImpl implements SlackService, ApplicationListener<ApplicationReadyEvent> {
 
-    private final CodekvastSettings settings;
+    private final CodekvastDashboardSettings settings;
     private final Slack slack = Slack.getInstance();
 
     @Override
@@ -90,7 +90,7 @@ public class SlackServiceImpl implements SlackService, ApplicationListener<Appli
         return t.getCause() == null ? t : getRootCause(t.getCause());
     }
 
-    private String getSlackWebhookUrl(CodekvastSettings settings) {
+    private String getSlackWebhookUrl(CodekvastDashboardSettings settings) {
         String token = settings.getSlackWebHookToken();
         if (token == null || token.trim().isEmpty()) {
             return null;

@@ -1,7 +1,7 @@
 package io.codekvast.dashboard.agent.impl;
 
 import io.codekvast.dashboard.agent.AgentService;
-import io.codekvast.dashboard.bootstrap.CodekvastSettings;
+import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.dashboard.customer.*;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
@@ -38,7 +38,7 @@ public class AgentServiceImplTest {
     @Mock
     private CustomerService customerService;
 
-    private final CodekvastSettings settings = new CodekvastSettings();
+    private final CodekvastDashboardSettings settings = new CodekvastDashboardSettings();
     private final GetConfigRequest1 request = GetConfigRequest1.sample();
 
     private AgentService service;

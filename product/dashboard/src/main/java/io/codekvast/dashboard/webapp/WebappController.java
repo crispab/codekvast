@@ -21,7 +21,7 @@
  */
 package io.codekvast.dashboard.webapp;
 
-import io.codekvast.dashboard.bootstrap.CodekvastSettings;
+import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.dashboard.security.SecurityConfig;
 import io.codekvast.dashboard.webapp.model.methods.GetMethodsRequest;
 import io.codekvast.dashboard.webapp.model.methods.GetMethodsResponse;
@@ -56,7 +56,7 @@ public class WebappController {
     private static final String WEBAPP_V1_STATUS = "/webapp/v1/status";
 
     private final WebappService webappService;
-    private final CodekvastSettings settings;
+    private final CodekvastDashboardSettings settings;
 
     @ExceptionHandler
     public ResponseEntity<String> onConstraintValidationException(ConstraintViolationException e) {

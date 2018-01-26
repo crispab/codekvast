@@ -1,6 +1,6 @@
 package integrationTest.dashboard;
 
-import io.codekvast.dashboard.bootstrap.CodekvastSettings;
+import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.dashboard.messaging.SlackService;
 import io.codekvast.dashboard.messaging.impl.SlackServiceImpl;
 import org.junit.Before;
@@ -22,7 +22,7 @@ import static org.junit.Assume.assumeTrue;
 public class SlackServiceIntegrationTest {
 
     private SlackService slackService;
-    private CodekvastSettings settings = new CodekvastSettings();
+    private CodekvastDashboardSettings settings = new CodekvastDashboardSettings();
 
     @Before
     public void beforeTest() throws Exception {

@@ -1,6 +1,6 @@
 package io.codekvast.dashboard.file_import;
 
-import io.codekvast.dashboard.bootstrap.CodekvastSettings;
+import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,13 +29,13 @@ public class FileImportTaskTest {
     @Mock
     private PublicationImporter importer;
 
-    private CodekvastSettings settings;
+    private CodekvastDashboardSettings settings;
 
     private FileImportTask task;
 
     @Before
     public void beforeTest() {
-        settings = new CodekvastSettings();
+        settings = new CodekvastDashboardSettings();
         settings.setQueuePath(temporaryFolder.getRoot());
 
         task = new FileImportTask(settings, importer);

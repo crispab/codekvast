@@ -21,7 +21,7 @@
  */
 package io.codekvast.dashboard.security;
 
-import io.codekvast.dashboard.bootstrap.CodekvastSettings;
+import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.dashboard.customer.CustomerData;
 import io.codekvast.dashboard.customer.CustomerService;
 import lombok.RequiredArgsConstructor;
@@ -53,7 +53,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RequiredArgsConstructor
 public class SsoController {
 
-    private final CodekvastSettings settings;
+    private final CodekvastDashboardSettings settings;
     private final WebappTokenProvider webappTokenProvider;
     private final CustomerService customerService;
 

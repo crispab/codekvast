@@ -52,7 +52,7 @@ public class SwaggerConfig {
     }
 
     @Bean
-    public Docket agentDocket(CodekvastSettings settings) {
+    public Docket agentDocket(CodekvastDashboardSettings settings) {
         return new Docket(DocumentationType.SWAGGER_2)
             .apiInfo(getApiInfo(settings, "Endpoints used by the Java agent"))
             .groupName("Java agent endpoints")
@@ -62,7 +62,7 @@ public class SwaggerConfig {
     }
 
     @Bean
-    public Docket webappDocket(CodekvastSettings settings) {
+    public Docket webappDocket(CodekvastDashboardSettings settings) {
         return new Docket(DocumentationType.SWAGGER_2)
             .apiInfo(getApiInfo(settings, "Endpoints used by the dashboard web app"))
             .groupName("Webapp endpoints")
@@ -71,7 +71,7 @@ public class SwaggerConfig {
             .build();
     }
 
-    private ApiInfo getApiInfo(CodekvastSettings settings, String description) {
+    private ApiInfo getApiInfo(CodekvastDashboardSettings settings, String description) {
         return new ApiInfo(settings.getApplicationName(),
                            description,
                            settings.getDisplayVersion(),

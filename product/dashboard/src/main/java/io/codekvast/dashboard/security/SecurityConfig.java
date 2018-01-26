@@ -21,7 +21,7 @@
  */
 package io.codekvast.dashboard.security;
 
-import io.codekvast.dashboard.bootstrap.CodekvastSettings;
+import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.context.annotation.Configuration;
@@ -61,7 +61,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public static final String USER_ROLE = "USER";
 
     private final UnauthorizedHandler unauthorizedHandler;
-    private final CodekvastSettings settings;
+    private final CodekvastDashboardSettings settings;
     private final WebappTokenFilter webappTokenFilter;
 
     @Override

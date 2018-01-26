@@ -21,7 +21,7 @@
  */
 package io.codekvast.dashboard.file_import;
 
-import io.codekvast.dashboard.bootstrap.CodekvastSettings;
+import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -38,17 +38,17 @@ import java.io.File;
 @Slf4j
 public class FileImportTask {
 
-    private final CodekvastSettings codekvastSettings;
+    private final CodekvastDashboardSettings settings;
     private final PublicationImporter publicationImporter;
 
     @Inject
-    public FileImportTask(CodekvastSettings codekvastSettings, PublicationImporter publicationImporter) {
+    public FileImportTask(CodekvastDashboardSettings settings, PublicationImporter publicationImporter) {
 
-        this.codekvastSettings = codekvastSettings;
+        this.settings = settings;
         this.publicationImporter = publicationImporter;
 
-        logger.info("Looking for files in {} every {} seconds", codekvastSettings.getQueuePath(),
-                 codekvastSettings.getQueuePathPollIntervalSeconds());
+        logger.info("Looking for files in {} every {} seconds", settings.getQueuePath(),
+                    settings.getQueuePathPollIntervalSeconds());
     }
 
     @Scheduled(
@@ -58,8 +58,8 @@ public class FileImportTask {
         String oldThreadName = Thread.currentThread().getName();
         Thread.currentThread().setName("Codekvast FileImport");
         try {
-            logger.trace("Looking for files to import in {}", codekvastSettings.getQueuePath());
-            walkDirectory(codekvastSettings.getQueuePath());
+            logger.trace("Looking for files to import in {}", settings.getQueuePath());
+            walkDirectory(settings.getQueuePath());
         } finally {
             Thread.currentThread().setName(oldThreadName);
         }
@@ -74,7 +74,7 @@ public class FileImportTask {
                         walkDirectory(file);
                     } else if (file.getName().endsWith(".ser")) {
                         boolean handled = publicationImporter.importPublicationFile(file);
-                        if (handled && codekvastSettings.isDeleteImportedFiles()) {
+                        if (handled && settings.isDeleteImportedFiles()) {
                             deleteFile(file);
                         }
                     } else {

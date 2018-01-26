@@ -21,7 +21,7 @@
  */
 package io.codekvast.dashboard.heroku.impl;
 
-import io.codekvast.dashboard.bootstrap.CodekvastSettings;
+import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.dashboard.customer.CustomerService;
 import io.codekvast.dashboard.heroku.HerokuChangePlanRequest;
 import io.codekvast.dashboard.heroku.HerokuProvisionRequest;
@@ -41,11 +41,11 @@ import java.util.Map;
 @Slf4j
 public class HerokuServiceImpl implements HerokuService {
 
-    private final CodekvastSettings settings;
+    private final CodekvastDashboardSettings settings;
     private final CustomerService customerService;
 
     @Inject
-    public HerokuServiceImpl(CodekvastSettings settings, CustomerService customerService) {
+    public HerokuServiceImpl(CodekvastDashboardSettings settings, CustomerService customerService) {
         this.settings = settings;
         this.customerService = customerService;
     }

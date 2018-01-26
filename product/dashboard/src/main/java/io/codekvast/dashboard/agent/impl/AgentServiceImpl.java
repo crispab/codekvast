@@ -22,7 +22,7 @@
 package io.codekvast.dashboard.agent.impl;
 
 import io.codekvast.dashboard.agent.AgentService;
-import io.codekvast.dashboard.bootstrap.CodekvastSettings;
+import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.dashboard.customer.CustomerData;
 import io.codekvast.dashboard.customer.CustomerService;
 import io.codekvast.dashboard.customer.LicenseViolationException;
@@ -55,7 +55,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 @Slf4j
 public class AgentServiceImpl implements AgentService {
 
-    private final CodekvastSettings settings;
+    private final CodekvastDashboardSettings settings;
     private final JdbcTemplate jdbcTemplate;
     private final CustomerService customerService;
 

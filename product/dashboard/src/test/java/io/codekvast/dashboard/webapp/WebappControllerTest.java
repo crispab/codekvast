@@ -1,6 +1,6 @@
 package io.codekvast.dashboard.webapp;
 
-import io.codekvast.dashboard.bootstrap.CodekvastSettings;
+import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.dashboard.security.SecurityConfig;
 import io.codekvast.dashboard.webapp.model.methods.ApplicationDescriptor;
 import io.codekvast.dashboard.webapp.model.methods.EnvironmentDescriptor;
@@ -23,9 +23,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * @author olle.hallin@crisp.se
@@ -34,7 +32,7 @@ public class WebappControllerTest {
     @Mock
     private WebappService webappService;
 
-    private CodekvastSettings settings = new CodekvastSettings();
+    private CodekvastDashboardSettings settings = new CodekvastDashboardSettings();
 
     private WebappController webappController;
 

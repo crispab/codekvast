@@ -21,7 +21,7 @@
  */
 package io.codekvast.dashboard.security.impl;
 
-import io.codekvast.dashboard.bootstrap.CodekvastSettings;
+import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.dashboard.security.SecurityConfig;
 import io.codekvast.dashboard.security.SecurityService;
 import io.codekvast.dashboard.security.WebappCredentials;
@@ -62,7 +62,7 @@ public class SecurityServiceImpl implements SecurityService {
     private static final String JWT_CLAIM_SOURCE = "source";
     private static final String BEARER_ = "Bearer ";
 
-    private final CodekvastSettings settings;
+    private final CodekvastDashboardSettings settings;
 
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS512;
     private byte[] jwtSecret;

@@ -19,15 +19,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.login.bootstrap;
+package io.codekvast.dashboard.bootstrap;
 
 import lombok.Data;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.io.File;
 
 /**
  * Wrapper for environment properties codekvast.*
@@ -39,7 +41,8 @@ import javax.annotation.PreDestroy;
 @ConfigurationProperties(prefix = "codekvast")
 @Data
 @Slf4j
-public class CodekvastSettings {
+@ToString(exclude = {"herokuApiPassword", "herokuApiSsoSalt", "webappJwtSecret", "slackWebHookToken"})
+public class CodekvastDashboardSettings {
 
     /**
      * The name of the application, injected from the build system.
@@ -67,16 +70,83 @@ public class CodekvastSettings {
     private String commitMessage;
 
     /**
-     * What is my server's DNS CNAME?
+     * The path to the agent publication queue
+     */
+    private File queuePath;
+
+    /**
+     * How often to scan queuePath for new files.
+     */
+    private int queuePathPollIntervalSeconds = 60;
+
+    /**
+     * Should imported files be deleted after successful import?
+     */
+    private boolean deleteImportedFiles = true;
+
+    /**
+     * What password will Heroku use when contacting us?
+     */
+    private String herokuApiPassword;
+
+    /**
+     * What SSO salt value will Heroku use when launching the dashboard webapp via SSO?
+     */
+    private String herokuApiSsoSalt;
+
+    /**
+     * Which value should the Heroku add-on provide as CODEKVAST_URL?
+     */
+    private String herokuCodekvastUrl;
+
+    /**
+     * Should the webapp be secured?
+     * Leaving this empty will enable running the webapp in demo mode, with only one customerId=1
+     */
+    private String webappJwtSecret;
+
+    /**
+     * How long shall a webapp authentication token live?
+     */
+    private Long webappJwtExpirationHours = 8760L;
+
+    /**
+     * Which is the Slack Incoming Webhook URL?
+     */
+    private String slackWebHookUrl;
+
+    /**
+     * Which is the token to use when posting to slackWebHookUrl?
+     */
+    private String slackWebHookToken;
+
+    /**
+     * What is my server's CNAME?
      */
     private String dnsCname;
 
+    /**
+     * @return true unless the webapp is secured
+     */
+    public boolean isDemoMode() {
+        return webappJwtSecret == null || webappJwtSecret.trim().isEmpty();
+    }
+
+    /**
+     * @return The customerId to use for unauthenticated data queries. Will return -1 if running in secure mode and an unauthenticated
+     * request is received.
+     */
+    public Long getDemoCustomerId() {
+        return isDemoMode() ? 1L : -1L;
+    }
+
     @PostConstruct
     public void logStartup() {
+        String demoMode = isDemoMode() ? " in demo mode" : "";
 
         //noinspection UseOfSystemOutOrSystemErr
-        System.out.printf("%s v%s (%s) started%n", applicationName, displayVersion, commitDate);
-        logger.info("{} v{} ({}) starts", applicationName, displayVersion, commitDate);
+        System.out.printf("%s v%s (%s) started%s%n", applicationName, displayVersion, commitDate, demoMode);
+        logger.info("{} v{} ({}) starts{}", applicationName, displayVersion, commitDate, demoMode);
     }
 
     @PreDestroy

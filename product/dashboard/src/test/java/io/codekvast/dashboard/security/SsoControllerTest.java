@@ -1,6 +1,6 @@
 package io.codekvast.dashboard.security;
 
-import io.codekvast.dashboard.bootstrap.CodekvastSettings;
+import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import io.codekvast.dashboard.customer.CustomerService;
 import io.codekvast.dashboard.security.impl.SecurityServiceImpl;
 import org.junit.Before;
@@ -16,7 +16,7 @@ import static org.junit.Assert.assertThat;
  */
 public class SsoControllerTest {
 
-    private CodekvastSettings settings = new CodekvastSettings();
+    private CodekvastDashboardSettings settings = new CodekvastDashboardSettings();
 
     @Mock
     private CustomerService customerService;

@@ -21,7 +21,7 @@
  */
 package io.codekvast.dashboard.heroku;
 
-import io.codekvast.dashboard.bootstrap.CodekvastSettings;
+import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,11 +44,11 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 @Slf4j
 public class HerokuResourceController {
 
-    private final CodekvastSettings settings;
+    private final CodekvastDashboardSettings settings;
     private final HerokuService herokuService;
 
     @Inject
-    public HerokuResourceController(CodekvastSettings settings, HerokuService herokuService) {
+    public HerokuResourceController(CodekvastDashboardSettings settings, HerokuService herokuService) {
         this.settings = settings;
         this.herokuService = herokuService;
     }
