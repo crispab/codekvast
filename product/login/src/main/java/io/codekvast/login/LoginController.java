@@ -32,8 +32,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 /**
  * @author olle.hallin@crisp.se
@@ -55,23 +53,33 @@ public class LoginController {
     }
 
     @RequestMapping(path = "/janrain", method = RequestMethod.POST)
-    public String janrainToken(@RequestParam("token") String token) throws UnsupportedEncodingException {
-        logger.info("Received Janrain token {}", token);
+    public String janrainToken(@RequestParam("token") String token) {
+        logger.info("Received Janrain token '{}'", token);
 
-        String url = String.format("%s?apiKey=%s&token=%s", settings.getJanrainAuthInfoUrl(),
-                                   URLEncoder.encode(settings.getJanrainApiKey(), "UTF-8"),
-                                   URLEncoder.encode(token, "UTF-8"));
+        if (token.contains(",")) {
+            logger.warn("Strange, token contains a comma. Will take first part.");
+            token = token.split(",")[0];
+            logger.info("Will use token '{}'", token);
+        }
+
+        String url = String.format("%s?apiKey=%s&token=%s", settings.getJanrainAuthInfoUrl(), settings.getJanrainApiKey(), token, "UTF-8");
 
         logger.debug("Will GET {}", url);
-        AuthInfo authInfo = restTemplate.getForObject(url, AuthInfo.class);
-        logger.debug("Received {}", authInfo);
+        try {
+            AuthInfo authInfo = restTemplate.getForObject(url, AuthInfo.class);
+            logger.debug("Received {}", authInfo);
 
-        // TODO: check if user has a known email address
-        // TODO: Member of more that one organisation?
-        // TODO: create a JWT for the correct customer
-        // TODO: set session token cookie
+            // TODO: check if user has a known email address
+            // TODO: Member of more that one organisation?
+            // TODO: create a JWT for the correct customer
+            // TODO: set session token cookie
 
-        return "redirect:" + settings.getRedirectAfterLoginTarget();
+            return "redirect:" + settings.getRedirectAfterLoginTarget();
+        } catch (Exception e) {
+            logger.error("Failed to invoke " + settings.getJanrainAuthInfoUrl(), e);
+            // Redirect after POST
+            return "redirect:/";
+        }
     }
 
     @Data
@@ -85,5 +93,6 @@ public class LoginController {
         private String identifier;
         private String email;
         private String preferredUsername;
+        private String displayName;
     }
 }

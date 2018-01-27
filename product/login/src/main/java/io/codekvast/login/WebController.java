@@ -23,12 +23,6 @@ public class WebController {
 
     @RequestMapping("/")
     String home() {
-        logger.info("Welcome home.");
-        return "home";
-    }
-
-    @RequestMapping("/feature1")
-    String feature1() {
-        return "feature1";
+        return "index";
     }
 }
