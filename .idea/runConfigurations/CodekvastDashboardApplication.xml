@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="CodekvastDashboard" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+  <configuration default="false" name="CodekvastDashboardApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
     <module name="dashboard_main" />
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
     <extension name="krasa.grepconsole.plugin.runConfiguration.GrepRunConfigurationExtension" selectedProfileId="0" />

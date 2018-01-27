@@ -102,7 +102,7 @@
     <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="15">
+          <list size="17">
             <item index="0" class="java.lang.String" itemvalue="th:if" />
             <item index="1" class="java.lang.String" itemvalue="th:text" />
             <item index="2" class="java.lang.String" itemvalue="th:action" />
@@ -118,6 +118,8 @@
             <item index="12" class="java.lang.String" itemvalue="container" />
             <item index="13" class="java.lang.String" itemvalue="popovertitle" />
             <item index="14" class="java.lang.String" itemvalue="triggers" />
+            <item index="15" class="java.lang.String" itemvalue="th:class" />
+            <item index="16" class="java.lang.String" itemvalue="th:inline" />
           </list>
         </value>
       </option>
@@ -126,7 +128,7 @@
     <inspection_tool class="HtmlUnknownTag" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="12">
+          <list size="13">
             <item index="0" class="java.lang.String" itemvalue="nobr" />
             <item index="1" class="java.lang.String" itemvalue="noembed" />
             <item index="2" class="java.lang.String" itemvalue="comment" />
@@ -139,6 +141,7 @@
             <item index="9" class="java.lang.String" itemvalue="ck-method-list" />
             <item index="10" class="java.lang.String" itemvalue="router-outlet" />
             <item index="11" class="java.lang.String" itemvalue="ck-vote-for" />
+            <item index="12" class="java.lang.String" itemvalue="th:block" />
           </list>
         </value>
       </option>
@@ -154,6 +157,7 @@
     <inspection_tool class="InstanceofInterfaces" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="InstanceofThis" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="JSMethodCanBeStatic" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="JSUnnecessarySemicolon" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="JSUnresolvedVariable" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="JSUnusedGlobalSymbols" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="LimitedScopeInnerClass" enabled="true" level="WARNING" enabled_by_default="true" />

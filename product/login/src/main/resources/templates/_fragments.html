@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<!--suppress JSUnresolvedLibraryURL -->
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<th:block th:fragment="head(feature)">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+
+    <title th:text="'Codekvast ' + ${feature}">Codekvast Login</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
+          integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous"/>
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"
+            integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"
+            integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"
+            integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
+            crossorigin="anonymous"></script>
+</th:block>
+
+<th:block th:fragment="navigation(feature)">
+    <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
+                data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+            Menu&nbsp;
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="navbar-brand" th:href="@{/}">Codekvast Login</a>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li th:class="${feature.equals('home')}? 'nav-item active' : 'nav-item'">
+                    <a class="nav-link" th:href="@{/}">Home <span th:if="${feature.equals('home')}" class="sr-only">(current)</span></a>
+                </li>
+                <li th:class="${feature.equals('feature1')}? 'nav-item active' : 'nav-item'">
+                    <a class="nav-link" th:href="@{/feature1}">Feature1 <span th:if="${feature.equals('feature1')}"
+                                                                              class="sr-only">(current)</span></a>
+                </li>
+                <li th:class="nav-item">
+                    <div id="janrainEngageEmbed"></div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</th:block>
+
+<th:block th:fragment="janrain">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+
+        (function () {
+            if (typeof window.janrain !== 'object') window.janrain = {};
+            if (typeof window.janrain.settings !== 'object') window.janrain.settings = {};
+
+            janrain.settings.tokenUrl = [[${janrainTokenUrl}]];
+
+            function isReady() {
+                janrain.ready = true;
+            };
+            if (document.addEventListener) {
+                document.addEventListener("DOMContentLoaded", isReady, false);
+            } else {
+                window.attachEvent('onload', isReady);
+            }
+
+            var e = document.createElement('script');
+            e.type = 'text/javascript';
+            e.id = 'janrainAuthWidget';
+
+            if (document.location.protocol === 'https:') {
+                e.src = 'https://rpxnow.com/js/lib/codekvast/engage.js';
+            } else {
+                e.src = 'http://widget-cdn.rpxnow.com/js/lib/codekvast/engage.js';
+            }
+
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(e, s);
+        })();
+        /*]]>*/
+    </script>
+</th:block>
+
+<th:block th:fragment="google_analytics">
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-97240168-3', 'auto');
+        ga('send', 'pageview');
+    </script>
+</th:block>
+
+</body>
+</html>

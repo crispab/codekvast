@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.login.bootstrap;
+package io.codekvast.login.config;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,7 @@ import javax.annotation.PreDestroy;
  *
  * @author olle.hallin@crisp.se
  */
-@Component
+@Component("codekvastSettings")
 @ConfigurationProperties(prefix = "codekvast")
 @Data
 @Slf4j
@@ -69,6 +69,11 @@ public class CodekvastLoginSettings {
      * To where should we redirect after a login?
      */
     private String redirectAfterLoginTarget;
+
+    /**
+     * To where should Janrain post the token after a succesful login?
+     */
+    private String janrainTokenUrl;
 
     @PostConstruct
     public void logStartup() {

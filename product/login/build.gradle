@@ -4,8 +4,6 @@ apply plugin: 'application'
 apply plugin: 'org.unbroken-dome.test-sets'
 apply plugin: 'org.springframework.boot'
 
-apply from: "$projectDir/src/main/build.gradle"
-
 description = 'The Codekvast Login server'
 applicationName = 'codekvast-login'
 archivesBaseName = 'codekvast-login'
@@ -33,7 +31,6 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-logging'
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-undertow'
-    compile 'org.springframework.boot:spring-boot-starter-security'
     compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
     compile 'io.jsonwebtoken:jjwt:0.9.0'
 
@@ -46,6 +43,7 @@ dependencies {
 }
 
 processResources {
+    inputs.property "codekvastDisplayVersion", codekvastDisplayVersion
     from 'src/main/resources', {
         include '*application*.properties'
         expand(project.properties)
@@ -54,4 +52,40 @@ processResources {
         exclude '*application*.properties'
     }
     filteringCharset = 'UTF-8'
+}
+
+run {
+    group "Backend Development"
+    dependsOn ":product:dashboard:startMariadb"
+
+    jvmArgs = [
+        '-ea',
+    ]
+
+    args = ["--logging.file=$buildDir/log/${applicationName}.log"]
+}
+
+bootRun {
+    group "Backend Development"
+    dependsOn ":product:dashboard:startMariadb"
+
+    jvmArgs = run.jvmArgs
+    args = run.args
+    addResources = true
+}
+
+//--- Packaging ------------------------------------------------------------------------------------------------------------------
+springBoot {
+    executable = true
+    embeddedLaunchScriptProperties = [
+        'initInfoProvides'        : applicationName,
+        'initInfoShortDescription': 'Codekvast Login',
+        'initInfoDescription'     : 'Codekvast Login handles logins',
+    ]
+    excludeDevtools = true
+}
+
+bootRepackage {
+    // Set a classifier, or else gradle distZip will overwrite the repackaged jar...
+    classifier = 'all'
 }

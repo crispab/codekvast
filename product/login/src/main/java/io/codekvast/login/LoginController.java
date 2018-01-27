@@ -21,7 +21,7 @@
  */
 package io.codekvast.login;
 
-import io.codekvast.login.bootstrap.CodekvastLoginSettings;
+import io.codekvast.login.config.CodekvastLoginSettings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -33,13 +33,14 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @author olle.hallin@crisp.se
  */
 @Controller
+@RequestMapping(path = "/login")
 @Slf4j
 @RequiredArgsConstructor
 public class LoginController {
 
     private final CodekvastLoginSettings settings;
 
-    @RequestMapping(path = "/login/janrain", method = RequestMethod.POST)
+    @RequestMapping(path = "/janrain", method = RequestMethod.POST)
     public String janrainToken(@RequestParam("token") String token) {
         logger.info("Received Janrain token {}", token);
 
