@@ -22,38 +22,12 @@ distributions {
         }
     }
 
-    dashboard {
-        baseName = "codekvast-dashboard-$codekvastVersion"
-        contents {
-            from tasks.getByPath(':product:dashboard:bootRepackage'), {
-                rename { 'codekvast-dashboard.jar' }
-            }
-            from tasks.getByPath(':product:dashboard:processResources'), {
-                include 'exposed-application.properties'
-                rename { 'application.properties' }
-            }
-            from tasks.getByPath(':product:docs:asciidoctor'), {
-                exclude 'html5/**'
-                exclude 'images/**'
-            }
-            from file("$rootDir/RELEASE-NOTES.md")
-            from file("$rootDir/LICENSE")
-        }
-    }
-
 }
 
 ext.stageDir = file("$buildDir/bintrayStage")
 
 task bintrayStage(type: Sync) {
     from agentDistZip
-//    from dashboardDistZip
-//    from tasks.getByPath(':product:docs:asciidoctor'), {
-//        include 'CodekvastUserManual.html'
-//        rename { "CodekvastUserManual-${codekvastVersion}.html" }
-//    }
-//    from file("$rootDir/RELEASE-NOTES.md")
-
     into stageDir
 }
 

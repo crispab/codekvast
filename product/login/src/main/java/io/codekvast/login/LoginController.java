@@ -62,7 +62,8 @@ public class LoginController {
 
         // TODO: check if user has a known email address
         // TODO: Member of more that one organisation?
-        // TODO: create a JWT
+        // TODO: create a JWT for the correct customer
+        // TODO: set session token cookie
 
         return "redirect:" + settings.getRedirectAfterLoginTarget();
     }

@@ -4,6 +4,8 @@
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
     <extension name="krasa.grepconsole.plugin.runConfiguration.GrepRunConfigurationExtension" selectedProfileId="0" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="io.codekvast.dashboard.CodekvastDashboardApplication" />
+    <option name="ACTIVE_PROFILES" value="with-jwt,with-webapp-dist" />
+    <option name="WORKING_DIRECTORY" value="file://product/dashboard" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <additionalParameters>
       <param>
