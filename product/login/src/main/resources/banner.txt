@@ -4,4 +4,4 @@ _________            .___      __                            __    .____        
 \     \___(  <_> ) /_/ \  ___/|    <  \   /  / __ \_\___ \  |  |   |    |__(  <_> ) /_/  >  |   |  \
  \______  /\____/\____ |\___  >__|_ \  \_/  (____  /____  > |__|   |_______ \____/\___  /|__|___|  /
         \/            \/    \/     \/            \/     \/                 \/    /_____/         \/
-Codekvast Login ${AnsiColor.MAGENTA}V${application.version}${AnsiColor.DEFAULT} running on Spring Boot ${AnsiColor.MAGENTA}${spring-boot.version}${AnsiColor.DEFAULT}
+${application.title} ${AnsiColor.MAGENTA}V${application.version}${AnsiColor.DEFAULT} running on Spring Boot ${AnsiColor.MAGENTA}${spring-boot.version}${AnsiColor.DEFAULT}

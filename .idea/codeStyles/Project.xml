@@ -17,6 +17,7 @@
     </MarkdownNavigatorCodeStyleSettings>
     <Properties>
       <option name="SPACES_AROUND_KEY_VALUE_DELIMITER" value="true" />
+      <option name="KEEP_BLANK_LINES" value="true" />
     </Properties>
     <SqlCodeStyleSettings>
       <option name="QUOTE_IDENTIFIER" value="1" />
@@ -314,6 +315,9 @@
     </codeStyleSettings>
     <codeStyleSettings language="JavaScript">
       <option name="WRAP_COMMENTS" value="true" />
+    </codeStyleSettings>
+    <codeStyleSettings language="Properties">
+      <option name="ALIGN_GROUP_FIELD_DECLARATIONS" value="true" />
     </codeStyleSettings>
     <codeStyleSettings language="TypeScript">
       <option name="KEEP_LINE_BREAKS" value="false" />
