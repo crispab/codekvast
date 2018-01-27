@@ -1,12 +1,28 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <div th:replace="_fragments::head (feature='home')"></div>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+
+    <title>Codekvast Login</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
+          integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous"/>
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"
+            integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"
+            integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"
+            integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
+            crossorigin="anonymous"></script>
+
+    <div th:replace="_fragments::janrain"></div>
 </head>
 <body>
-<div th:replace="_fragments::navigation (feature='home')"></div>
-<div class="jumbotron">This is Codekvast Login home</div>
-<div th:replace="_fragments::janrain"></div>
+<h1>Codekvast Login</h1>
+<div id="janrainEngageEmbed"></div>
 <div th:replace="_fragments::google_analytics"></div>
 </body>
 </html>

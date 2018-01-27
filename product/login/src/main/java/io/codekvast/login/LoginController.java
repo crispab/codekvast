@@ -32,6 +32,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 /**
  * @author olle.hallin@crisp.se
@@ -53,10 +55,14 @@ public class LoginController {
     }
 
     @RequestMapping(path = "/janrain", method = RequestMethod.POST)
-    public String janrainToken(@RequestParam("token") String token) {
+    public String janrainToken(@RequestParam("token") String token) throws UnsupportedEncodingException {
         logger.info("Received Janrain token {}", token);
 
-        String url = String.format("%s?apiKey=%s&token=%s", settings.getJanrainAuthInfoUrl(), settings.getJanrainApiKey(), token);
+        String url = String.format("%s?apiKey=%s&token=%s", settings.getJanrainAuthInfoUrl(),
+                                   URLEncoder.encode(settings.getJanrainApiKey(), "UTF-8"),
+                                   URLEncoder.encode(token, "UTF-8"));
+
+        logger.debug("Will GET {}", url);
         AuthInfo authInfo = restTemplate.getForObject(url, AuthInfo.class);
         logger.debug("Received {}", authInfo);
 
