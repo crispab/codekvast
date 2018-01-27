@@ -21,13 +21,17 @@
  */
 package io.codekvast.login;
 
-import io.codekvast.login.config.CodekvastLoginSettings;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.RestTemplate;
+
+import javax.annotation.PostConstruct;
 
 /**
  * @author olle.hallin@crisp.se
@@ -39,15 +43,40 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class LoginController {
 
     private final CodekvastLoginSettings settings;
+    private final RestTemplateBuilder restTemplateBuilder;
+
+    private RestTemplate restTemplate;
+
+    @PostConstruct
+    public void postConstruct() {
+        this.restTemplate = restTemplateBuilder.build();
+    }
 
     @RequestMapping(path = "/janrain", method = RequestMethod.POST)
     public String janrainToken(@RequestParam("token") String token) {
         logger.info("Received Janrain token {}", token);
 
-        // TODO: invoke Janrain to trade the token for user info
+        String url = String.format("%s?apiKey=%s&token=%s", settings.getJanrainAuthInfoUrl(), settings.getJanrainApiKey(), token);
+        AuthInfo authInfo = restTemplate.getForObject(url, AuthInfo.class);
+        logger.debug("Received {}", authInfo);
+
         // TODO: check if user has a known email address
+        // TODO: Member of more that one organisation?
         // TODO: create a JWT
 
         return "redirect:" + settings.getRedirectAfterLoginTarget();
+    }
+
+    @Data
+    private static class AuthInfo {
+        private String stat;
+        private Profile profile;
+    }
+
+    @Data
+    private static class Profile {
+        private String identifier;
+        private String email;
+        private String preferredUsername;
     }
 }

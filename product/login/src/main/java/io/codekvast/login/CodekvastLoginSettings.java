@@ -19,9 +19,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.login.config;
+package io.codekvast.login;
 
 import lombok.Data;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -38,6 +39,8 @@ import javax.annotation.PreDestroy;
 @ConfigurationProperties(prefix = "codekvast")
 @Data
 @Slf4j
+@ToString(exclude = "janrainApiKey")
+@SuppressWarnings("ClassWithTooManyMethods")
 public class CodekvastLoginSettings {
 
     /**
@@ -74,6 +77,16 @@ public class CodekvastLoginSettings {
      * To where should Janrain post the token after a succesful login?
      */
     private String janrainTokenUrl;
+
+    /**
+     * What is the URL for getting auth info from Janrain?
+     */
+    private String janrainAuthInfoUrl;
+
+    /**
+     * What API key shall we use when accessing Janrain?
+     */
+    private String janrainApiKey;
 
     @PostConstruct
     public void logStartup() {
