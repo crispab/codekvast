@@ -45,13 +45,13 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-undertow'
     compile 'org.springframework.boot:spring-boot-starter-security'
     compile 'io.jsonwebtoken:jjwt:0.9.0'
-    compile "io.springfox:springfox-swagger2:${springfoxVersion}"
-    compile 'com.github.seratch:jslack:1.0.20'
+    compile "io.springfox:springfox-swagger2:$springfoxVersion"
+    compile 'com.github.seratch:jslack:1.0.22'
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion"
 
     runtime 'com.zaxxer:HikariCP'
     runtime 'org.springframework.boot:spring-boot-starter-actuator'
-    runtime "io.springfox:springfox-swagger-ui:${springfoxVersion}"
+    runtime "io.springfox:springfox-swagger-ui:$springfoxVersion"
 
     runtime mariadbDriver
 

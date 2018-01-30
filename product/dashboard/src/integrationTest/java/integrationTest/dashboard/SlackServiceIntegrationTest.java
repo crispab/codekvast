@@ -29,7 +29,6 @@ public class SlackServiceIntegrationTest {
         assumeTrue("true".equals(System.getenv("RUN_SLACK_TESTS")));
 
         Properties props = new Properties();
-
         props.load(getClass().getResourceAsStream("/application.properties"));
         props.load(getClass().getResourceAsStream("/secrets.properties"));
 
@@ -48,6 +47,6 @@ public class SlackServiceIntegrationTest {
 
     @Test
     public void should_send_to_slack() {
-        slackService.sendNotification("_Hello, World!_ says `" + getClass().getName() + "`", SlackService.Channel.BUILDS);
+        slackService.sendNotification("`" + getClass().getName() + "` says _Hello, World!_", SlackService.Channel.BUILDS);
     }
 }

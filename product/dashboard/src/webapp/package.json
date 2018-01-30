@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@angular/language-service": "5.2.2",
-    "@types/google.analytics": "^0.0.36",
+    "@types/google.analytics": "^0.0.37",
     "angular2-template-loader": "0.6.2",
     "awesome-typescript-loader": "3.4.1",
     "copy-webpack-plugin": "4.3.1",

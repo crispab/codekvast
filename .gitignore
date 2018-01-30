@@ -52,3 +52,4 @@ target/
 tools/downloaded/
 typings/
 .buildState
+ajcore.*.txt

@@ -1,7 +1,7 @@
 apply from: "$rootDir/gradle/kotlin.gradle"
 
 dependencies {
-    compile 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
 }
 
 compileKotlin {
