@@ -42,7 +42,7 @@ import java.util.*;
  *
  * @author olle.hallin@crisp.se
  */
-@SuppressWarnings({"ClassWithTooManyFields", "ClassWithTooManyMethods"})
+// @SuppressWarnings({"ClassWithTooManyFields", "ClassWithTooManyMethods"})
 @ToString(of = {"codeBaseFiles", "fingerprint"})
 @EqualsAndHashCode(of = "fingerprint")
 @Log
@@ -73,7 +73,7 @@ public class CodeBase {
             // TODO: implement WAR and EAR exploding
             throw new UnsupportedOperationException("Exploding WAR or EAR not yet implemented");
         }
-        return urls.toArray(new URL[urls.size()]);
+        return urls.toArray(new URL[0]);
     }
 
     private CodeBaseFingerprint calculateFingerprint() {

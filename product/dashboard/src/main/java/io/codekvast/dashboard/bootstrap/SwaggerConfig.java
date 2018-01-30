@@ -75,8 +75,7 @@ public class SwaggerConfig {
         return new ApiInfo(settings.getApplicationName(),
                            description,
                            settings.getDisplayVersion(),
-                           // TODO: insert the correct termsOfServiceUrl
-                           "http://www.codekvast.io/pages/what-is-codekvast.html",
+                           "http://www.codekvast.io/pages/terms-of-service.html",
                            new Contact("Codekvast", "http://www.codekvast.io", "codekvast-support@hit.se"),
                            "Licensed under the MIT license",
                            "https://opensource.org/licenses/MIT",
