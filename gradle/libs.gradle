@@ -3,7 +3,7 @@ ext {
     jacksonVersion = '2.9.4'
     kotlinVersion = '1.2.21'
     gsonVersion = '2.8.2'
-    springBootVersion = '1.5.9.RELEASE'
+    springBootVersion = '1.5.10.RELEASE'
     springfoxVersion = '2.8.0'
 
     aspectjWeaver = "org.aspectj:aspectjweaver:$aspectjVersion"

@@ -53,3 +53,4 @@ tools/downloaded/
 typings/
 .buildState
 ajcore.*.txt
+**/.DS_Store
