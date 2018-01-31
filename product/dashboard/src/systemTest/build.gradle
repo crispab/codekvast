@@ -12,7 +12,6 @@ testSets {
 check.dependsOn systemTest
 
 configurations {
-    chromeDriver
     jdbc
 }
 
@@ -35,7 +34,6 @@ dependencies {
     systemTestRuntime "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
     systemTestRuntime "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
 
-    chromeDriver 'com.github.igor-suhorukov:chromedriver:2.34:linux64@bin'
     jdbc mariadbDriver
 }
 
@@ -153,9 +151,9 @@ task psSystemTestEnvironment {
 systemTest {
     description 'Runs end-to-end tests against Codekvast Dashboard with MariaDB in a Docker container'
     group 'System test'
-    dependsOn test, frontendTest, integrationTest, systemTestClasses, bootRepackage, ':tools:downloadGeckoDriver'
+    dependsOn test, frontendTest, integrationTest, systemTestClasses, bootRepackage, ':tools:downloadChromeDriver', ':tools:downloadGeckoDriver'
 
-    def foundChromeBinary = "which google-chrome".execute().in.text.trim()
+    def foundChromeBinary = locateChromeBinary()
     assert !foundChromeBinary.isEmpty() : "Cannot find Chrome executable!"
 
     ext.gebEnv = project.findProperty("browser") ?: "chromeHeadless"
@@ -175,7 +173,7 @@ systemTest {
     }
 
     doFirst {
-        def chromeDriver = configurations.chromeDriver.asPath
+        def chromeDriver = tasks.getByPath(':tools:downloadChromeDriver').outputs.files.asPath
         def geckoDriver = tasks.getByPath(':tools:downloadGeckoDriver').outputs.files.asPath
         [chromeDriver, geckoDriver].each { "chmod +x ${it}".execute().waitFor() }
 
@@ -199,6 +197,15 @@ systemTest {
         } else {
             logger.lifecycle("Since there were failures, the system test environment is still running at {}", endpoint)
         }
+    }
+}
+
+private String locateChromeBinary() {
+    if (System.getProperty('os.name') == 'Mac OS X') {
+        def binary = new File("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
+        return binary.canExecute() ? binary : null
+    } else {
+        return "which google-chrome".execute().in.text.trim()
     }
 }
 

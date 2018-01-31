@@ -19,7 +19,44 @@ task downloadTools(type: Sync) {
 
 build.dependsOn downloadTools
 
-ext.geckoDriver = "geckodriver-0.19.1-${System.properties['os.arch']}.bin"
+ext.geckoDriver = buildGeckoDriverName()
+ext.chromeDriver = buildChromeDriverName()
+
+private String getOsName() {
+    System.properties['os.name'] == 'Mac OS X' ? 'macos-' : 'linux-'
+}
+
+private GString buildGeckoDriverName() {
+    "geckodriver-0.19.1-${getOsName()}${System.properties['os.arch']}.bin"
+}
+
+private GString buildChromeDriverName() {
+    "chromedriver-2.35-${getOsName()}${System.properties['os.arch']}.bin"
+}
+
+task downloadChromeDriver {
+    description = "Downloads Chromedriver from Bintray to be used by web driver tests in other modules"
+    group "Test support"
+
+    def downloadDir = file("$rootDir/.tmp/download")
+    def chromeDriverDownloadUrl = "https://dl.bintray.com/crisp/codekvast/${chromeDriver}"
+    def dest = file("$downloadDir/$chromeDriver")
+
+    inputs.property "chromeDriver", chromeDriver
+    outputs.file dest
+
+    doLast {
+        downloadDir.mkdirs()
+
+        logger.lifecycle "Downloading $chromeDriverDownloadUrl ..."
+        ant.get(
+            src: chromeDriverDownloadUrl,
+            dest: dest,
+            usetimestamp: true,
+            verbose: true
+        )
+    }
+}
 
 task downloadGeckoDriver {
     description = "Downloads Geckodriver from Bintray to be used by web driver tests in other modules"

@@ -12,5 +12,6 @@ dependencies {
 }
 
 compileAspect {
+    dependsOn ':product:java-agent:jar'
     additionalAjcArgs = ['source': '1.7', 'target': '1.7']
 }
