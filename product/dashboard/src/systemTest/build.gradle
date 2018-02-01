@@ -201,7 +201,7 @@ systemTest {
 }
 
 private String locateChromeBinary() {
-    if (System.getProperty('os.name') == 'Mac OS X') {
+    if (System.properties['os.name'] == 'Mac OS X') {
         def binary = new File("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
         return binary.canExecute() ? binary : null
     } else {
