@@ -61,7 +61,7 @@ flyway {
 //
 //     def configFile = file("$buildDir/codekvast.conf")
 //
-//     inputs.file file("build.gradle")
+//     inputs.files file("build.gradle")
 //     outputs.file configFile
 //
 //     doLast {
@@ -78,7 +78,6 @@ flyway {
 // }
 //
 // processResources.dependsOn generateCodekvastConfig
-
 
 run {
     group "Backend Development"
@@ -118,15 +117,4 @@ springBoot {
         'initInfoDescription'     : 'Codekvast Dashboard aggregates data from many Codekvast Agents',
     ]
     excludeDevtools = true
-}
-
-bootRepackage {
-    // Set a classifier, or else gradle distZip will overwrite the repackaged jar...
-    classifier = 'all'
-    dependsOn ":product:dashboard:frontendWebpack"
-}
-
-processResources {
-    // codekvastDisplayVersion is filtered into application.properties...
-    inputs.property "codekvastDisplayVersion", codekvastDisplayVersion
 }

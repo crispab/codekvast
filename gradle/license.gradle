@@ -5,10 +5,12 @@ license {
     ext.year = Calendar.getInstance().get(Calendar.YEAR)
 
     include '**/*.java'
+    include '**/*.kt'
     include '**/*.sql'
 
     strictCheck true
     mapping 'java', 'SLASHSTAR_STYLE'
+    mapping 'kt', 'SLASHSTAR_STYLE'
 }
 
 licenseFormat {
@@ -26,5 +28,4 @@ project.gradle.projectsEvaluated {
         logger.debug "Disabling $task.name"
         task.enabled = false
     }
-
 }

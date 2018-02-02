@@ -8,7 +8,7 @@ project.gradle.projectsEvaluated {
         group = JavaBasePlugin.DOCUMENTATION_GROUP
         dependsOn javaProjects.javadoc
 
-        inputs.file "$rootDir/gradle/java.gradle"
+        inputs.files "$rootDir/gradle/java.gradle"
 
         source javaProjects.javadoc.source
         destinationDir file("$buildDir/docs/javadoc")

@@ -1,0 +1,9 @@
+//-----------------------------------------------------------------------------------------------------------------------------
+// Common stuff for any Spring Boot app that uses JDBC
+//-----------------------------------------------------------------------------------------------------------------------------
+dependencies {
+    compile 'org.springframework.boot:spring-boot-starter-jdbc'
+
+    runtime 'com.zaxxer:HikariCP'
+    runtime mariadbDriver
+}

@@ -27,7 +27,7 @@ task generateCodekvastConfig {
 
     def configFile = file("$buildDir/codekvast.conf")
 
-    inputs.file file("build.gradle")
+    inputs.files file("build.gradle")
     outputs.file configFile
 
     doLast {

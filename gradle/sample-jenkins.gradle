@@ -30,7 +30,7 @@ task installJenkinsInTomcat7 {
     inputs.property "tomcat", tomcatDownloadUrl
     inputs.property "jenkinsVersion", jenkinsVersion
     inputs.property "jenkins", jenkinsDownloadUrl
-    inputs.file file("build.gradle")
+    inputs.files file("build.gradle")
     outputs.dir tomcatDir
 
     doLast {
@@ -97,8 +97,8 @@ task generateCodekvastConfig {
 
     ext.configFile = file("$buildDir/codekvast.conf")
 
-    inputs.file file("$rootDir/product/build.gradle")
-    inputs.file file("build.gradle")
+    inputs.files file("$rootDir/product/build.gradle")
+    inputs.files file("build.gradle")
     outputs.file configFile
 
     doLast {
@@ -125,7 +125,7 @@ task generateTomcatSetenvSh {
     dependsOn installJenkinsInTomcat7, generateCodekvastConfig, installTomcatEndorsed
     def setenvFile = file("$catalinaBase/bin/setenv.sh")
 
-    inputs.file file("build.gradle")
+    inputs.files file("build.gradle")
     outputs.file setenvFile
 
     doLast {

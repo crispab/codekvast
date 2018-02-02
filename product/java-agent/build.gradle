@@ -49,7 +49,7 @@ jar {
 shadowJar {
     classifier = ''
 
-    inputs.file file('build.gradle')
+    inputs.files file('build.gradle')
     inputs.files jar.outputs.files
     outputs.file file("build/libs/${archivesBaseName}-${codekvastVersion}.jar")
 
@@ -141,7 +141,7 @@ integrationTest {
     dependsOn verifyShadowJar
     shouldRunAfter test
 
-    inputs.file file("build.gradle")
+    inputs.files file("build.gradle")
     inputs.files shadowJar.outputs.files
     inputs.files sourceSets.integrationTest.output
     outputs.dir file("$buildDir/test-results/integrationTest")

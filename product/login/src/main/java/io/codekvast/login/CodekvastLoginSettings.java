@@ -74,7 +74,7 @@ public class CodekvastLoginSettings {
     private String redirectAfterLoginTarget;
 
     /**
-     * To where should Janrain post the token after a succesful login?
+     * To where should Janrain post the token after a successful login?
      */
     private String janrainTokenUrl;
 

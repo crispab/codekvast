@@ -1,8 +1,7 @@
-apply from: "$rootDir/gradle/java-8.gradle"
-apply from: "$rootDir/gradle/license.gradle"
-apply plugin: 'application'
-apply plugin: 'org.unbroken-dome.test-sets'
-apply plugin: 'org.springframework.boot'
+apply from: "$rootDir/gradle/spring-boot-app.gradle"
+apply from: "$rootDir/gradle/spring-boot-jdbc.gradle"
+apply from: "$rootDir/gradle/spring-boot-web.gradle"
+// apply from: "$rootDir/gradle/kotlin-jdk8.gradle"
 
 description = 'The Codekvast Login server'
 applicationName = 'codekvast-login'
@@ -11,47 +10,10 @@ version = codekvastVersion
 group = 'crisp'
 mainClassName = 'io.codekvast.login.CodekvastLoginApplication'
 
-configurations.compile {
-    exclude module: 'spring-boot-starter-tomcat'
-    exclude module: 'tomcat-jdbc'
-}
-
 dependencies {
-    // Annotation processors
-    compileOnly lombok
-    compileOnly 'org.springframework.boot:spring-boot-configuration-processor'
-
     // Regular dependencies
-    compile "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
-    compile "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
-    compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
-    compile 'javax.inject:javax.inject:1'
-    compile 'org.springframework.boot:spring-boot-devtools'
-    compile 'org.springframework.boot:spring-boot-starter-jdbc'
-    compile 'org.springframework.boot:spring-boot-starter-logging'
-    compile 'org.springframework.boot:spring-boot-starter-web'
-    compile 'org.springframework.boot:spring-boot-starter-undertow'
     compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
     compile 'io.jsonwebtoken:jjwt:0.9.0'
-
-    runtime 'com.zaxxer:HikariCP'
-    runtime 'org.springframework.boot:spring-boot-starter-actuator'
-
-    runtime mariadbDriver
-
-    testCompile 'org.springframework.boot:spring-boot-starter-test'
-}
-
-processResources {
-    inputs.property "codekvastDisplayVersion", codekvastDisplayVersion
-    from 'src/main/resources', {
-        include '*application.properties'
-        expand(project.properties)
-    }
-    from 'src/main/resources', {
-        exclude '*application.properties'
-    }
-    filteringCharset = 'UTF-8'
 }
 
 run {
@@ -83,9 +45,4 @@ springBoot {
         'initInfoDescription'     : 'Codekvast Login handles logins',
     ]
     excludeDevtools = true
-}
-
-bootRepackage {
-    // Set a classifier, or else gradle distZip will overwrite the repackaged jar...
-    classifier = 'all'
 }

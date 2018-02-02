@@ -1,0 +1,40 @@
+//-----------------------------------------------------------------------------------------------------------------------------
+// Common stuff for any Spring Boot app
+//-----------------------------------------------------------------------------------------------------------------------------
+apply from: "$rootDir/gradle/java-8.gradle"
+apply from: "$rootDir/gradle/license.gradle"
+apply plugin: 'org.springframework.boot'
+apply plugin: 'application'
+apply plugin: 'org.unbroken-dome.test-sets'
+
+dependencies {
+    // Annotation processors
+    compileOnly lombok
+    compileOnly 'org.springframework.boot:spring-boot-configuration-processor'
+
+    compile 'javax.inject:javax.inject:1'
+    compile 'org.springframework.boot:spring-boot-starter-logging'
+    compile 'org.springframework.boot:spring-boot-devtools'
+
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+}
+
+processResources {
+    inputs.property "codekvastDisplayVersion", codekvastDisplayVersion
+    from 'src/main/resources', {
+        include 'application*.properties'
+        expand(project.properties)
+    }
+    from 'src/main/resources', {
+        exclude 'application*.properties'
+    }
+    filteringCharset = 'UTF-8'
+}
+
+// Let spring-boot-configuration-processor do it's job before compiling...
+compileJava.dependsOn processResources
+
+bootRepackage {
+    // Set a classifier, or else gradle distZip will overwrite the repackaged jar...
+    classifier = 'all'
+}
