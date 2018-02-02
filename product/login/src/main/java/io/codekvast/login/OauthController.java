@@ -21,6 +21,7 @@
  */
 package io.codekvast.login;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,10 +31,12 @@ import java.security.Principal;
  * @author olle.hallin@crisp.se
  */
 @RestController
+@Slf4j
 public class OauthController {
 
     @RequestMapping("/user")
     public Principal user(Principal principal) {
+        logger.info("Principal={}", principal);
         return principal;
     }
 
