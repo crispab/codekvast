@@ -38,6 +38,7 @@ import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticat
 import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.filter.CompositeFilter;
@@ -62,13 +63,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
             .antMatcher("/**")
             .authorizeRequests()
-              .antMatchers("/", "/login**", "/webjars/**")
-              .permitAll()
-            .anyRequest()
-              .authenticated()
-            .and().logout().logoutSuccessUrl("/").permitAll()
-            .and().csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-            .and().addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
+                .antMatchers("/", "/login**", "/webjars/**").permitAll()
+                .anyRequest().authenticated()
+            .and()
+                .exceptionHandling().authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/"))
+            .and()
+                .logout().logoutSuccessUrl("/").permitAll()
+            .and()
+                .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+            .and()
+                .addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
         //@formatter:on
     }
 
@@ -77,6 +81,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         List<Filter> filters = new ArrayList<>();
         filters.add(ssoFilter(facebook(), "/login/facebook"));
         filters.add(ssoFilter(github(), "/login/github"));
+        filters.add(ssoFilter(google(), "/login/google"));
         filter.setFilters(filters);
         return filter;
     }
@@ -109,6 +114,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     @ConfigurationProperties("github")
     public ClientResources github() {
+        return new ClientResources();
+    }
+
+    @Bean
+    @ConfigurationProperties("google")
+    public ClientResources google() {
         return new ClientResources();
     }
 

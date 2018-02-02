@@ -31,4 +31,9 @@ public class WebController {
     String home() {
         return "index";
     }
+
+    @RequestMapping("/unauthenticated")
+    public String unauthenticated() {
+        return "redirect:/?error=true";
+    }
 }

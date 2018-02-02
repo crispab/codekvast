@@ -16,12 +16,17 @@
 <div class="container unauthenticated">
     <p>Login with <a href="/login/facebook">Facebook</a></p>
     <p>Login with <a href="/login/github">Github</a></p>
+    <p>Login with <a href="/login/google">Google</a></p>
 </div>
 <div class="container authenticated" style="display:none">
     Logged in as: <span id="user"></span>
     <div>
         <button onClick="logout()" class="btn btn-primary">Logout</button>
     </div>
+</div>
+
+<div id="login-failure" class="container text-danger" style="display:none">
+    There was an error (bad credentials).
 </div>
 
 <script type="text/javascript">
@@ -37,12 +42,6 @@
         }
     });
 
-    $.get("/user", function (data) {
-        $("#user").html(data.userAuthentication.details.name);
-        $(".unauthenticated").hide();
-        $(".authenticated").show();
-    });
-
     var logout = function () {
         $.post("/logout", function () {
             $("#user").html('');
@@ -51,6 +50,18 @@
         });
         return true;
     }
+
+    $.get("/user", function (data) {
+        console.log("data=%o", data);
+        if (data) {
+            $("#user").html(JSON.stringify(data));
+            $(".unauthenticated").hide();
+            $(".authenticated").show();
+        } else {
+            logout();
+        }
+    });
+
 </script>
 <div th:replace="_fragments::google_analytics"></div>
 </body>

@@ -21,40 +21,20 @@
  */
 package io.codekvast.login;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
+import org.springframework.boot.web.servlet.ErrorPage;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 
 /**
  * @author olle.hallin@crisp.se
  */
-@RestController
-@Slf4j
-public class OauthController {
+@Configuration
+public class ServletContainerCustomizer {
 
-    @RequestMapping("/user")
-    public User user(OAuth2Authentication authentication) {
-        logger.info("Authentication={}", authentication);
-        Map<String, String> details = (Map<String, String>) authentication.getUserAuthentication().getDetails();
-        String id = details.get("link"); // Facebook
-        if (id == null) {
-            id = details.get("url"); // Github
-        }
-        if (id == null) {
-            id = details.get("profile"); // Google+
-        }
-        if (id == null) {
-            id = details.get("sub"); // Google+
-        }
-
-        return User.builder()
-                   .id(id)
-                   .name(details.get("name"))
-                   .email(details.get("email"))
-                   .build();
+    @Bean
+    public EmbeddedServletContainerCustomizer customizer() {
+        return container -> container.addErrorPages(new ErrorPage(HttpStatus.UNAUTHORIZED, "/unauthenticated"));
     }
-
 }
