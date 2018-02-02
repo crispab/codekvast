@@ -22,11 +22,11 @@ dependencies {
 processResources {
     inputs.property "codekvastDisplayVersion", codekvastDisplayVersion
     from 'src/main/resources', {
-        include 'application*.properties'
+        include 'application.properties'
         expand(project.properties)
     }
     from 'src/main/resources', {
-        exclude 'application*.properties'
+        exclude 'application.properties'
     }
     filteringCharset = 'UTF-8'
 }
