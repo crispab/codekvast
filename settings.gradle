@@ -18,7 +18,6 @@ include ':sample:sample-spring-boot-executable-jar'
 include ':sample:sample-lib'
 include ':sample:swing-app'
 include ':sample:sample-concrete-aspect'
-include ':sample:webstart-swing-app'
 
 buildCache {
     local(DirectoryBuildCache) {

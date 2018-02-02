@@ -39,7 +39,7 @@ import javax.annotation.PreDestroy;
 @ConfigurationProperties(prefix = "codekvast")
 @Data
 @Slf4j
-@ToString(exclude = "janrainApiKey")
+@ToString
 @SuppressWarnings("ClassWithTooManyMethods")
 public class CodekvastLoginSettings {
 
@@ -72,21 +72,6 @@ public class CodekvastLoginSettings {
      * To where should we redirect after a login?
      */
     private String redirectAfterLoginTarget;
-
-    /**
-     * To where should Janrain post the token after a successful login?
-     */
-    private String janrainTokenUrl;
-
-    /**
-     * What is the URL for getting auth info from Janrain?
-     */
-    private String janrainAuthInfoUrl;
-
-    /**
-     * What API key shall we use when accessing Janrain?
-     */
-    private String janrainApiKey;
 
     @PostConstruct
     public void logStartup() {

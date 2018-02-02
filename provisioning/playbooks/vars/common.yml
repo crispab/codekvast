@@ -8,7 +8,7 @@ aws_stacks:
 
 port:
   dashboard:
-    service: 8080
+    service: 8081
     management: 9080
   login:
     service: 8081

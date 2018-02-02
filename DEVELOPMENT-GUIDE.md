@@ -197,7 +197,7 @@ This will start Codekvast Dashboard that will consume the data files uploaded by
 1. In terminal #3 do `./gradlew :sample:jenkins2:run`. This will download and start another version of Jenkins with Codekvast attached.
 1. In terminal #4 do `./gradlew :sample:sample-gradle-application:run`. This will launch the short-lived `sample.app.SampleApp` with Codekvast attached. The SampleApp is handy when
 you want to correlate source code to the data that is collected by Codekvast.
-1. Open a web browser at http://localhost:8080. It will show the dashboard web interface wher e you can inspect the collected data.
+1. Open a web browser at http://localhost:8081. It will show the dashboard web interface wher e you can inspect the collected data.
 
 ### How to do rapid development of the dashboard web app
 
@@ -226,7 +226,7 @@ Canned responses has to be re-captured every time the dashboard REST API has bee
 
 The canned response for `/webapp/v1/methods` is captured by executing
 
-    curl -X GET --header 'Accept: application/json' 'http://localhost:8080/webapp/v1/methods?signature=%25&maxResults=100'|jq . > product/dashboard/src/webapp/src/app/test/canned/v1/MethodData.json
+    curl -X GET --header 'Accept: application/json' 'http://localhost:8081/webapp/v1/methods?signature=%25&maxResults=100'|jq . > product/dashboard/src/webapp/src/app/test/canned/v1/MethodData.json
     git add product/dashboard/src/webapp/src/app/test/canned/v1/MethodData.json
     
 from the root directory while `./gradlew :product:dashboard:bootRun` is running.

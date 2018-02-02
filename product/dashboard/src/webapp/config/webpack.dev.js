@@ -1,4 +1,4 @@
-process.env.CODEKVAST_API = 'http://localhost:8080';
+process.env.CODEKVAST_API = 'http://localhost:8081';
 process.env.CODEKVAST_VERSION = 'dev';
 process.env.ENV = 'development';
 

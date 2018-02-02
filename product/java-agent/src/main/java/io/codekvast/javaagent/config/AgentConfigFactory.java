@@ -38,7 +38,7 @@ public class AgentConfigFactory {
     private static final String DEFAULT_ASPECTJ_OPTIONS = "";
     private static final String DEFAULT_ENVIRONMENT = "";
     private static final String DEFAULT_METHOD_VISIBILITY = SignatureUtils.PROTECTED;
-    private static final String DEFAULT_SERVER_URL = "http://localhost:8080";
+    private static final String DEFAULT_SERVER_URL = "http://localhost:8081";
     private static final String DEFAULT_HTTP_PROXY_HOST = null;
     private static final int DEFAULT_HTTP_PROXY_PORT = 3128;
     private static final int DEFAULT_HTTP_CONNECT_TIMEOUT_SECONDS = 10;

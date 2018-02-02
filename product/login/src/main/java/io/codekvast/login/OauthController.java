@@ -21,19 +21,20 @@
  */
 package io.codekvast.login;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.security.Principal;
 
 /**
- * The Spring Boot main for codekvast-login,
- *
  * @author olle.hallin@crisp.se
  */
-@SpringBootApplication
-public class CodekvastLoginApplication {
+@RestController
+public class OauthController {
 
-    public static void main(String[] args) {
-        new SpringApplication(CodekvastLoginApplication.class).run(args);
+    @RequestMapping("/user")
+    public Principal user(Principal principal) {
+        return principal;
     }
 
 }
