@@ -275,13 +275,28 @@
   loop_control:
     label: "{{ item.1.public_dns_name }}"
 
-- name: Define application instances' CNAMEs
+- name: Define application instances' api CNAMEs
   local_action:
     module: route53
     profile: codekvast # in ~/.boto
     command: create
     overwrite: yes
     record: "{{ stack.app_cnames[0] }}{{ '%02d'|format(item.0) }}.codekvast.io"
+    value: "{{ item.1.public_dns_name }}"
+    ttl: 60
+    type: CNAME
+    zone: codekvast.io
+  with_indexed_items: "{{ ec2backends.tagged_instances }}"
+  loop_control:
+    label: "{{ item.1.public_dns_name }}"
+
+- name: Define application instances' login CNAMEs
+  local_action:
+    module: route53
+    profile: codekvast # in ~/.boto
+    command: create
+    overwrite: yes
+    record: "{{ stack.app_cnames[1] }}{{ '%02d'|format(item.0) }}.codekvast.io"
     value: "{{ item.1.public_dns_name }}"
     ttl: 60
     type: CNAME
