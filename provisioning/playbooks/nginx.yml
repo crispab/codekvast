@@ -17,7 +17,7 @@
         server_name: "{{ ec2_tag_LBCNAME0 }}"
         extra_parameters: |
           location / {
-              proxy_pass http://localhost:{{ ports.dashboard.service }}/;
+              proxy_pass http://localhost:{{ ports.dashboard.service }};
               proxy_buffering    off;
               proxy_set_header   X-Real-IP $remote_addr;
               proxy_set_header   X-Scheme $scheme;
@@ -28,7 +28,7 @@
         server_name: "{{ ec2_tag_LBCNAME1 }}"
         extra_parameters: |
           location / {
-              proxy_pass http://localhost:{{ ports.login.service }}/;
+              proxy_pass http://localhost:{{ ports.login.service }};
               proxy_buffering    off;
               proxy_set_header   X-Real-IP $remote_addr;
               proxy_set_header   X-Scheme $scheme;
