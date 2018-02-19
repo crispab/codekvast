@@ -2,8 +2,8 @@
 
 ## 0.22.4
 1. Started implementing new login service.
-1. Upgraded Java dependencies: jslack 1.0.22, wiremock 2.13.0, Kotlin 1.2.21
-1. Dashboard: Upgraded JavaScript dependencies: angular 5.2.1, zone.js 0.8.20, rxjs 5.5.6 (+ some test deps)
+1. Upgraded Java dependencies: jslack 1.0.25, wiremock 2.15.0, Kotlin 1.2.21
+1. Dashboard: Upgraded JavaScript dependencies: angular 5.2.5, zone.js 0.8.20, rxjs 5.5.6, typescript 2.7.2 (+ some test deps)
 1. Replaced PhantomJS with Chrome headless for web tests.
 1. Dashboard: passes JWT token with cookie instead of header.
 1. Upgraded to Spring Boot 1.5.10

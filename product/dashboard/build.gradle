@@ -20,7 +20,7 @@ apply from: "$projectDir/src/systemTest/build.gradle"
 
 dependencies {
     compile project(':product:agent-model')
-    compile 'com.github.seratch:jslack:1.0.22'
+    compile 'com.github.seratch:jslack:1.0.25'
     compile "com.google.code.gson:gson:$gsonVersion"
     compile 'org.flywaydb:flyway-core'
     compile 'org.springframework.boot:spring-boot-starter-security'

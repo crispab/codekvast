@@ -20,12 +20,12 @@ ext.systemTestAppPort = allocateFreePort()
 ext.systemTestManagementPort = allocateFreePort()
 ext.systemTestEndpointFile = file("build/systemTestEndpoint.txt")
 
-def seleniumVersion = '3.8.1'
+def seleniumVersion = '3.9.1'
 dependencies {
     systemTestCompileOnly lombok
 
     systemTestCompile project(':product:testsupport')
-    systemTestCompile 'org.gebish:geb-spock:2.0'
+    systemTestCompile 'org.gebish:geb-spock:2.1'
     systemTestCompile 'org.spockframework:spock-core:1.1-groovy-2.4'
     systemTestCompile "org.seleniumhq.selenium:selenium-api:$seleniumVersion"
 
