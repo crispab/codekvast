@@ -12,11 +12,6 @@ fi
 
 declare tasks=${@:-build}
 
-if [ "$(which google-chrome)" == "" ]; then
-    echo "Google Chrome is missing, cannot run JavaScript tests"
-    exit 1
-fi
-
 echo "Building..."
 ${GRADLEW} ${GRADLE_OPTS} ${tasks}
 
