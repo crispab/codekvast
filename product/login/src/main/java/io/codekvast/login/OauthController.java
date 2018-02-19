@@ -21,6 +21,7 @@
  */
 package io.codekvast.login;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,8 +33,11 @@ import java.util.Map;
  * @author olle.hallin@crisp.se
  */
 @RestController
+@RequiredArgsConstructor
 @Slf4j
 public class OauthController {
+
+    private final CodekvastLoginSettings settings;
 
     @RequestMapping("/user")
     public User user(OAuth2Authentication authentication) {
@@ -55,6 +59,8 @@ public class OauthController {
                    .name(details.get("name"))
                    .email(details.get("email"))
                    .build();
+
+        // TODO: instead of just returning a User, create a sessionToken cookie and redirect to settings.getRedirectAfterLoginTarget();
     }
 
 }

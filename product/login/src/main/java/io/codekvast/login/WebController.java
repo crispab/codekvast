@@ -21,10 +21,12 @@
  */
 package io.codekvast.login;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
+@Slf4j
 public class WebController {
 
     @RequestMapping({"/", "/index", "/home"})
@@ -34,6 +36,7 @@ public class WebController {
 
     @RequestMapping("/unauthenticated")
     public String unauthenticated() {
+        logger.info("Unauthenticated");
         return "redirect:/?error=true";
     }
 }
