@@ -3,14 +3,8 @@
 # Starts not running staging instances
 #---------------------------------------------------------------------------------------------------
 
-for f in ~/.boto ~/.ssh/codekvast-amazon.pem; do
-    if [ ! -f ${f} ]; then
-        echo "Missing required file: $f" 1>&2
-        exit 1
-    fi
-done
+source $(dirname $0)/.check-requirements.sh
 
-cd $(dirname $0)
 declare region=$(grep aws_region playbooks/vars/common.yml | cut -d: -f2)
 declare AWS_EC2="aws --profile codekvast --region ${region} ec2"
 

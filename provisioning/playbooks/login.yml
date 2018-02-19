@@ -14,8 +14,8 @@
 
   vars:
     service_name: login
-    service_port: "{{ port.login.service }}"
-    management_port: "{{ port.login.management }}"
+    service_port: "{{ ports.login.service }}"
+    management_port: "{{ ports.login.management }}"
 
   roles:
   - {role: codekvast.spring-boot-service, tags: [service, login]}

@@ -17,10 +17,10 @@
         server_name: "codekvast"
         extra_parameters: |
           location /login/ {
-            proxy_pass http://localhost:{{ port.login.service }}/login/;
+            proxy_pass http://localhost:{{ ports.login.service }}/login/;
           }
           location / {
-            proxy_pass http://localhost:{{ port.dashboard.service }}/;
+            proxy_pass http://localhost:{{ ports.dashboard.service }}/;
           }
           proxy_buffering    off;
           proxy_set_header   X-Real-IP $remote_addr;

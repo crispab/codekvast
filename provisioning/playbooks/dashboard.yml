@@ -14,12 +14,11 @@
 
   vars:
     service_name: dashboard
-    service_port: "{{ port.dashboard.service }}"
-    management_port: "{{ port.dashboard.management }}"
+    service_port: "{{ ports.dashboard.service }}"
+    management_port: "{{ ports.dashboard.management }}"
 
     queuePath: "/var/codekvast/dashboard/queue"
     fileImportIntervalSeconds: 30
-    webappJwtExpirationHours: 168
 
   roles:
   - {role: codekvast.spring-boot-service, tags: [service, dashboard]}
