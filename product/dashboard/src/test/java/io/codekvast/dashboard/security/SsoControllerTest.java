@@ -21,12 +21,15 @@ public class SsoControllerTest {
     @Mock
     private CustomerService customerService;
 
+    @Mock
+    private SecurityConfig securityConfig;
+
     private SsoController controller;
 
     @Before
     public void beforeTest() {
         MockitoAnnotations.initMocks(this);
-        controller = new SsoController(settings, new SecurityServiceImpl(settings), customerService);
+        controller = new SsoController(settings, new SecurityServiceImpl(settings), customerService, securityConfig);
     }
 
 
@@ -45,5 +48,4 @@ public class SsoControllerTest {
         // then
         assertThat(token, is("bb466eb1d6bc345d11072c3cd25c311f21be130d"));
     }
-
 }

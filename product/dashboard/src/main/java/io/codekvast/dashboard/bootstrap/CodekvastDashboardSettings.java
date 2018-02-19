@@ -111,6 +111,11 @@ public class CodekvastDashboardSettings {
     private Long webappJwtExpirationHours = 8760L;
 
     /**
+     * Which domain should we set on the JWT cookie?
+     */
+    private String webappJwtCookieDomain;
+
+    /**
      * Which is the Slack Incoming Webhook URL?
      */
     private String slackWebHookUrl;

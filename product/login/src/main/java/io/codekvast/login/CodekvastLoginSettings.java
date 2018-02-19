@@ -69,6 +69,11 @@ public class CodekvastLoginSettings {
     private String commitMessage;
 
     /**
+     * Which domain should we set on the JWT cookie?
+     */
+    private String webappJwtCookieDomain;
+
+    /**
      * To where should we redirect after a login?
      */
     private String redirectAfterLoginTarget;

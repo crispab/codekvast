@@ -56,6 +56,7 @@ public class SsoController {
     private final CodekvastDashboardSettings settings;
     private final WebappTokenProvider webappTokenProvider;
     private final CustomerService customerService;
+    private final SecurityConfig securityConfig;
 
     @ExceptionHandler
     public ResponseEntity<String> onAuthenticationException(AuthenticationException e) {
@@ -76,7 +77,7 @@ public class SsoController {
 
         String jwt = doHerokuSingleSignOn(externalId, timestampSeconds, token, email);
 
-        response.addCookie(SecurityConfig.createSessionTokenCookie(jwt));
+        response.addCookie(securityConfig.createSessionTokenCookie(jwt));
 
         return "redirect:/sso/" + jwt + "/" + navData;
     }

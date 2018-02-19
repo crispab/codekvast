@@ -99,8 +99,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 
     @SneakyThrows(UnsupportedEncodingException.class)
-    public static Cookie createSessionTokenCookie(String token) {
+    public Cookie createSessionTokenCookie(String token) {
         Cookie result = new Cookie(SESSION_TOKEN_COOKIE, URLEncoder.encode(token, "UTF-8"));
+        result.setDomain(settings.getWebappJwtCookieDomain());
         result.setPath("/");
         result.setMaxAge(-1); // Remove when browser exits.
         result.setHttpOnly(true); // Hide from JavaScript in the browser
