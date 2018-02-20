@@ -3,7 +3,7 @@
 # Playbook which provisions the AWS infrastructure
 #---------------------------------------------------------------
 - name: AWS infrastructure stack
-  hosts: localhost
+  hosts: all[0]
   connection: local
   gather_facts: no
 

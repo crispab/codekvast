@@ -23,7 +23,13 @@ package io.codekvast.login;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import java.time.Instant;
 
 @Controller
 @Slf4j
@@ -39,4 +45,26 @@ public class WebController {
         logger.info("Unauthenticated");
         return "redirect:/?error=true";
     }
+
+    @RequestMapping("/dummy")
+    String dummy(@RequestHeader("Host") String hostHeader,
+                 @CookieValue(name = "dummy", required = false) String dummyCookie,
+                 HttpServletResponse response) {
+        logger.debug("request.header[Host]={}", hostHeader);
+        logger.debug("cookies[dummy]={}", dummyCookie);
+        response.addCookie(createDummyCookie(hostHeader));
+
+        // TODO: find another way of redirecting with a cookie
+        return "redirect:/";
+    }
+
+    private Cookie createDummyCookie(String hostHeader) {
+        Cookie cookie = new Cookie("dummy", Instant.now().toString());
+        cookie.setDomain(hostHeader.replaceAll(":[0-9]+$", ""));
+        cookie.setPath("/");
+        cookie.setMaxAge(-1);
+        cookie.setHttpOnly(true);
+        return cookie;
+    }
+
 }
