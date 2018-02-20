@@ -34,7 +34,7 @@
     tags:
     - static-web-sites
 
-  - name: Configure S3 buckets as static websites
+  - name: Configure S3 buckets for static websites
     local_action:
       module: s3_website
       profile: codekvast

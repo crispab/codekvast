@@ -112,6 +112,7 @@ public class CodekvastDashboardSettings {
 
     /**
      * Which domain should we set on the JWT cookie?
+     * TODO: remove webappJwtCookieDomain
      */
     private String webappJwtCookieDomain;
 

@@ -97,11 +97,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         }
     }
 
-
+    /**
+     * Creates a cookie with the name {@value SESSION_TOKEN_COOKIE}.
+     *
+     * @param token      The cookie value
+     * @param hostHeader The value of the HTTP header "Host". Is used for setting the cookie domain. The port number (if present) is
+     *                   ignored.
+     * @return A httpOnly session cookie with the path '/'.
+     */
     @SneakyThrows(UnsupportedEncodingException.class)
-    public Cookie createSessionTokenCookie(String token) {
+    public Cookie createSessionTokenCookie(String token, String hostHeader) {
         Cookie result = new Cookie(SESSION_TOKEN_COOKIE, URLEncoder.encode(token, "UTF-8"));
-        result.setDomain(settings.getWebappJwtCookieDomain());
+        if (hostHeader != null && !hostHeader.isEmpty()) {
+            result.setDomain(hostHeader.replaceAll(":[0-9]+$", ""));
+        }
         result.setPath("/");
         result.setMaxAge(-1); // Remove when browser exits.
         result.setHttpOnly(true); // Hide from JavaScript in the browser

@@ -42,7 +42,10 @@ public class OauthController {
     @RequestMapping("/user")
     public User user(OAuth2Authentication authentication) {
         logger.info("Authentication={}", authentication);
+
+        //noinspection unchecked
         Map<String, String> details = (Map<String, String>) authentication.getUserAuthentication().getDetails();
+
         String id = details.get("link"); // Facebook
         if (id == null) {
             id = details.get("url"); // Github

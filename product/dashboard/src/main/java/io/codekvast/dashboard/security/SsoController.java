@@ -34,6 +34,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.www.NonceExpiredException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -71,13 +72,14 @@ public class SsoController {
         @RequestParam("token") String token,
         @RequestParam("nav-data") String navData,
         @RequestParam("email") String email,
+        @RequestHeader(name = "Host", required = false, defaultValue = "") String hostHeader,
         HttpServletResponse response) throws AuthenticationException {
 
-        logger.debug("externalId={}, nav-data={}", externalId, navData);
+        logger.debug("host={}, externalId={}, nav-data={}", hostHeader, externalId, navData);
 
         String jwt = doHerokuSingleSignOn(externalId, timestampSeconds, token, email);
 
-        response.addCookie(securityConfig.createSessionTokenCookie(jwt));
+        response.addCookie(securityConfig.createSessionTokenCookie(jwt, hostHeader));
 
         return "redirect:/sso/" + jwt + "/" + navData;
     }
