@@ -36,7 +36,8 @@ import java.time.Instant;
 public class WebController {
 
     @RequestMapping({"/", "/index", "/home"})
-    String home() {
+    String home(@CookieValue(name = "dummy", required = false) String dummyCookie) {
+        logger.info("/index, cookies[dummy]={}", dummyCookie);
         return "index";
     }
 
@@ -50,11 +51,10 @@ public class WebController {
     String dummy(@RequestHeader("Host") String hostHeader,
                  @CookieValue(name = "dummy", required = false) String dummyCookie,
                  HttpServletResponse response) {
-        logger.debug("request.header[Host]={}", hostHeader);
-        logger.debug("cookies[dummy]={}", dummyCookie);
+
+        logger.debug("/dummy, request.header[Host]={}, cookies[dummy]={}", hostHeader, dummyCookie);
         response.addCookie(createDummyCookie(hostHeader));
 
-        // TODO: find another way of redirecting with a cookie
         return "redirect:/";
     }
 
@@ -63,7 +63,7 @@ public class WebController {
         cookie.setDomain(hostHeader.replaceAll(":[0-9]+$", ""));
         cookie.setPath("/");
         cookie.setMaxAge(-1);
-        cookie.setHttpOnly(true);
+        // cookie.setHttpOnly(true);
         return cookie;
     }
 

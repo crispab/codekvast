@@ -1,50 +1,60 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th='http://www.thymeleaf.org'>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+    <meta content='width=device-width, initial-scale=1' name='viewport'/>
 
     <title>Codekvast Login</title>
 
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <link rel='stylesheet' th:href='@{https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css}'
+          integrity='sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm'
+          crossorigin='anonymous'/>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"/>
-
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.0/js.cookie.min.js"></script>
 </head>
 <body>
-<h1>Codekvast Login</h1>
-<div class="container unauthenticated">
-    <p>Login with <a href="/login/facebook">Facebook</a></p>
-    <p>Login with <a href="/login/github">Github</a></p>
-    <p>Login with <a href="/login/google">Google</a></p>
+<div class="jumbotron">
+    <h1>Codekvast Login</h1>
 </div>
-<div class="container authenticated" style="display:none">
-    Logged in as: <span id="user"></span>
+<div class='container unauthenticated'>
+    <p>Login with <a href='/login/facebook'>Facebook</a></p>
+    <p>Login with <a href='/login/github'>Github</a></p>
+    <p>Login with <a href='/login/google'>Google</a></p>
+</div>
+<div class='container authenticated' style='display:none'>
+    Logged in as: <span id='user'></span>
     <div>
-        <button onClick="logout()" class="btn btn-primary">Logout</button>
+        <button onClick='logout()' class='btn btn-primary'>Logout</button>
     </div>
 </div>
 
-<div id="login-failure" class="container text-danger" style="display:none">
+<div id='login-failure' class='container text-danger' style='display:none'>
     There was an error (bad credentials).
 </div>
 
-<script type="text/javascript">
+<div id='dummy'></div>
+
+<script type='text/javascript' th:src='@{https://code.jquery.com/jquery-3.3.1.min.js}'
+        integrity='sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8='
+        crossorigin='anonymous'></script>
+
+<script type='text/javascript' th:src='@{https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js}'
+        integrity='sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q'
+        crossorigin='anonymous'></script>
+
+<script type='text/javascript' th:src='@{https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js}'
+        integrity='sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl'
+        crossorigin='anonymous'></script>
+
+<script type='text/javascript' th:src='@{https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.0/js.cookie.min.js}'></script>
+
+<script type='text/javascript' th:inline='javascript'>
+    /*<![CDATA[*/
     $.ajaxSetup({
         beforeSend: function (xhr, settings) {
             if (settings.type == 'POST' || settings.type == 'PUT' || settings.type == 'DELETE') {
-                if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                if (!(/^http:.*!/.test(settings.url) || /^https:.*!/.test(settings.url))) {
                     // Only send the token to relative URLs i.e. locally.
-                    xhr.setRequestHeader("X-XSRF-TOKEN",
+                    xhr.setRequestHeader('X-XSRF-TOKEN',
                         Cookies.get('XSRF-TOKEN'));
                 }
             }
@@ -52,26 +62,28 @@
     });
 
     var logout = function () {
-        $.post("/logout", function () {
-            $("#user").html('');
-            $(".unauthenticated").show();
-            $(".authenticated").hide();
+        $.post('/logout', function () {
+            $('#user').html('');
+            $('.unauthenticated').show();
+            $('.authenticated').hide();
         });
         return true;
-    }
+    };
 
-    $.get("/user", function (data) {
-        console.log("data=%o", data);
-        if (data) {
-            $("#user").html(JSON.stringify(data));
-            $(".unauthenticated").hide();
-            $(".authenticated").show();
+    $.get('/user', function (data) {
+        if (data && data.name) {
+            $('#user').html(JSON.stringify(data));
+            // $('#user').html(data.name);
+            $('.unauthenticated').hide();
+            $('.authenticated').show();
         } else {
             logout();
         }
     });
 
+    $('#dummy').html('dummy=' + Cookies.get('dummy'));
+    /*]]>*/
 </script>
-<div th:replace="_fragments::google_analytics"></div>
+<div th:replace='_fragments::google_analytics'></div>
 </body>
 </html>
