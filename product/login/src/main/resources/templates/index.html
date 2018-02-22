@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th='http://www.thymeleaf.org'>
-<head>
+<head th:inline="text">
+    <span th:remove="tag" th:utext="|&lt;!-- Version ${applicationVersion} --&gt;|"></span>
     <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
     <meta content='width=device-width, initial-scale=1' name='viewport'/>
 
-    <title>Codekvast Login</title>
+    <title th:inline="text">Codekvast Login</title>
 
     <link rel='stylesheet' th:href='@{https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css}'
           integrity='sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm'
@@ -49,6 +50,7 @@
 
 <script type='text/javascript' th:inline='javascript'>
     /*<![CDATA[*/
+
     $.ajaxSetup({
         beforeSend: function (xhr, settings) {
             if (settings.type == 'POST' || settings.type == 'PUT' || settings.type == 'DELETE') {
@@ -73,7 +75,6 @@
     $.get('/user', function (data) {
         if (data && data.name) {
             $('#user').html(JSON.stringify(data));
-            // $('#user').html(data.name);
             $('.unauthenticated').hide();
             $('.authenticated').show();
         } else {
@@ -84,6 +85,8 @@
     $('#dummy').html('dummy=' + Cookies.get('dummy'));
     /*]]>*/
 </script>
-<div th:replace='_fragments::google_analytics'></div>
+
+<script type='text/javascript' th:src='@{/js/google-analytics.js}'></script>
+
 </body>
 </html>

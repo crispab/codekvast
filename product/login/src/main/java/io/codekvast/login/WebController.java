@@ -22,8 +22,11 @@
 package io.codekvast.login;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -35,9 +38,14 @@ import java.time.Instant;
 @Slf4j
 public class WebController {
 
+    @Value("${application.version}")
+    private String applicationVersion;
+
     @RequestMapping({"/", "/index", "/home"})
-    String home(@CookieValue(name = "dummy", required = false) String dummyCookie) {
-        logger.info("/index, cookies[dummy]={}", dummyCookie);
+    String home(@CookieValue(name = "dummy", required = false) String dummyCookie,
+                Model model) {
+        logger.info("/index, cookies[dummy]={}, version={}", dummyCookie, applicationVersion);
+        model.addAttribute("applicationVersion", applicationVersion);
         return "index";
     }
 
