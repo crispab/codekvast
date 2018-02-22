@@ -71,7 +71,6 @@ module.exports = {
                 'https://s3.amazonaws.com/assets.heroku.com/boomerang/boomerang.js',
                 'https://www.google-analytics.com/analytics.js'
             ],
-            devServer: 'http://localhost:8088',
             // Google Analytics is initialized in app.component.ts
             mobile: true,
             minify: false,
