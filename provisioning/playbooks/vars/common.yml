@@ -14,7 +14,7 @@ ports:
     service: 8080
     management: 9080
 
-environment:
+settings:
   prod:
     hsts:
       max_age_seconds: 0
