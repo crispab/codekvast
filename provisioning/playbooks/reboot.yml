@@ -1,0 +1,16 @@
+---
+#-----------------------------------------------------------------------------------------------------------
+# Playbook for rebooting servers
+#-----------------------------------------------------------------------------------------------------------
+- name: Reboot
+  hosts: all
+  user: ubuntu
+  become: yes
+
+  tasks:
+  - name: Check confirmation
+    fail: msg="Confirm by adding '-e confirmation=yes' to the command line"
+    when: confirmation is undefined or confirmation != 'yes'
+
+  - name: Reboot server
+    shell: reboot
