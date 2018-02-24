@@ -40,12 +40,13 @@ import org.springframework.security.oauth2.client.token.grant.code.Authorization
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.filter.CompositeFilter;
 
 import javax.servlet.Filter;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.security.web.csrf.CookieCsrfTokenRepository.withHttpOnlyFalse;
 
 /**
  * @author olle.hallin@crisp.se
@@ -63,14 +64,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
             .antMatcher("/**")
             .authorizeRequests()
-                .antMatchers("/", "/index", "/home", "/dummy", "/login**", "/webjars/**", "/management/**").permitAll()
+                .antMatchers("/", "/index", "/home", "/dummy", "/login/**", "/webjars/**", "/management/**").permitAll()
                 .anyRequest().authenticated()
             .and()
                 .exceptionHandling().authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/"))
             .and()
                 .logout().logoutSuccessUrl("/").permitAll()
             .and()
-                .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .csrf().ignoringAntMatchers("/logout").csrfTokenRepository(withHttpOnlyFalse())
             .and()
                 .addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
         //@formatter:on

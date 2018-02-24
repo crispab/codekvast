@@ -43,6 +43,10 @@ public class OauthController {
     public User user(OAuth2Authentication authentication) {
         logger.info("Authentication={}", authentication);
 
+        if (authentication == null) {
+            return null;
+        }
+
         //noinspection unchecked
         Map<String, String> details = (Map<String, String>) authentication.getUserAuthentication().getDetails();
 
