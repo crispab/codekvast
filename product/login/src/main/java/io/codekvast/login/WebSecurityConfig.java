@@ -63,7 +63,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
             .antMatcher("/**")
             .authorizeRequests()
-                .antMatchers("/", "/index", "/home", "/dummy", "/login**", "/webjars/**").permitAll()
+                .antMatchers("/", "/index", "/home", "/dummy", "/login**", "/webjars/**", "/management/**").permitAll()
                 .anyRequest().authenticated()
             .and()
                 .exceptionHandling().authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/"))

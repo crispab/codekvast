@@ -9,6 +9,8 @@
     </extension>
     <option name="SPRING_BOOT_MAIN_CLASS" value="io.codekvast.login.CodekvastLoginApplication" />
     <option name="ACTIVE_PROFILES" value="oauth-secrets" />
+    <option name="PROGRAM_PARAMETERS" value="--project.codekvastDisplayVersion=dev" />
+    <option name="WORKING_DIRECTORY" value="file://$MODULE_DIR$" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <method />
   </configuration>
