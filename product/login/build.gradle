@@ -29,7 +29,10 @@ run {
         '-ea',
     ]
 
-    args = ["--logging.file=$buildDir/log/${applicationName}.log"]
+    args = [
+        "--logging.file=$buildDir/log/${applicationName}.log",
+        "--spring.profiles.active=dev-oauth-secrets"
+    ]
 }
 
 bootRun {

@@ -57,11 +57,13 @@ public class OauthController {
             id = details.get("sub"); // Google+
         }
 
-        return User.builder()
-                   .id(id)
-                   .name(details.get("name"))
-                   .email(details.get("email"))
-                   .build();
+        User user = User.builder()
+                        .id(id)
+                        .name(details.get("name"))
+                        .email(details.get("email"))
+                        .build();
+        logger.debug("Returning {}", user);
+        return user;
 
         // TODO: instead of just returning a User, create a sessionToken cookie and redirect to settings.getRedirectAfterLoginTarget();
     }
