@@ -14,8 +14,10 @@ ports:
     service: 8080
     management: 9080
 
-hsts:
+environment:
   prod:
-    max_age_seconds: 0
+    hsts:
+      max_age_seconds: 0
   staging:
-    max_age_seconds: 60
+    hsts:
+      max_age_seconds: 60
