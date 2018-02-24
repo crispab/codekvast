@@ -30,7 +30,7 @@
     mode: 0700
   notify: "restart codekvast service"
 
-- name: "Configure Codekvast {{ service_name | capitalize }}"
+- name: "Install /opt/codekvast/{{ service_name }}/application.properties"
   template:
     src: "codekvast/{{ service_name }}/application.properties"
     dest: "/opt/codekvast/{{ service_name }}/application.properties"
