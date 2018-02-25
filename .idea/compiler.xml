@@ -11,6 +11,8 @@
       <module name="dashboard_main" target="1.8" />
       <module name="dashboard_systemTest" target="1.8" />
       <module name="dashboard_test" target="1.8" />
+      <module name="db-migration_main" target="1.8" />
+      <module name="db-migration_test" target="1.8" />
       <module name="java-agent_integrationTest" target="1.7" />
       <module name="java-agent_main" target="1.7" />
       <module name="java-agent_test" target="1.7" />

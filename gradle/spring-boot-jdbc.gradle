@@ -1,9 +1,57 @@
 //-----------------------------------------------------------------------------------------------------------------------------
 // Common stuff for any Spring Boot app that uses JDBC
 //-----------------------------------------------------------------------------------------------------------------------------
+apply plugin: 'flyway'
+
 dependencies {
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
+    compile 'org.flywaydb:flyway-core'
 
     runtime 'com.zaxxer:HikariCP'
     runtime mariadbDriver
 }
+
+task startMariadb {
+    description 'Starts MariaDB 10 in a Docker container, on port 3306'
+    group 'Backend Development'
+
+    outputs.upToDateWhen {
+        "docker ps".execute().in.text.contains("codekvast_database")
+    }
+
+    doLast {
+        def created = "docker ps -a".execute().in.text.contains("codekvast_database")
+        if (created) {
+            def command = "docker start codekvast_database"
+            logger.lifecycle(command)
+            assert command.execute().waitFor() == 0
+        } else {
+            def command = 'docker pull mariadb:10'
+            logger.lifecycle(command)
+            assert command.execute().waitFor() == 0
+
+            command = 'docker run -d --restart=unless-stopped ' +
+                '--name codekvast_database ' +
+                '-p 3306:3306 ' +
+                '-e MYSQL_ROOT_PASSWORD=root ' +
+                '-e MYSQL_DATABASE=codekvast ' +
+                '-e MYSQL_USER=codekvast ' +
+                '-e MYSQL_PASSWORD=codekvast ' +
+                '-e TERM=xterm-256color ' +
+                'mariadb:10 ' +
+                '--character-set-server=utf8 ' +
+                '--collation-server=utf8_general_ci ' +
+                '--default-storage-engine=innodb '
+            logger.lifecycle(command)
+            assert command.execute().waitFor() == 0
+        }
+    }
+}
+
+flyway {
+    url = 'jdbc:mariadb://localhost/codekvast'
+    user = 'codekvast'
+    password = 'codekvast'
+    validateOnMigrate = false
+}
+
