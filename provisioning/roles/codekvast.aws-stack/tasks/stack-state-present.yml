@@ -208,7 +208,7 @@
     instance_ids: "{{ backend_instance_ids }}"
     stickiness:
       type:  application
-      cookie: JSESSIONID
+      cookie: "{{ settings.session.cookie.name }}"
       enabled: yes
     listeners:
     - protocol: http

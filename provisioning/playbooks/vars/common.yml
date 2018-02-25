@@ -15,6 +15,9 @@ ports:
     management: 9080
 
 settings:
+  session:
+    cookie:
+      name: JSESSIONID
   prod:
     hsts:
       max_age_seconds: 0
