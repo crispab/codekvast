@@ -206,6 +206,10 @@
     profile: codekvast
     name: "{{ aws_stack_name }}"
     instance_ids: "{{ backend_instance_ids }}"
+    stickiness:
+      type:  application
+      cookie: JSESSIONID
+      enabled: yes
     listeners:
     - protocol: http
       load_balancer_port: 80
