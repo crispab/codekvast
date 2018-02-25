@@ -5,6 +5,7 @@ import {AppRoutingModule} from './app-routing.module';
 import {BrowserModule, Title} from '@angular/platform-browser';
 import {CollectionStatusComponent} from './pages/collection-status/collection-status.component';
 import {ConfigService} from './services/config.service';
+import {CookieModule} from 'ngx-cookie';
 import {DashboardService} from './services/dashboard.service';
 import {FormsModule} from '@angular/forms';
 import {HomeComponent} from './pages/home/home.component';
@@ -55,7 +56,7 @@ function selectBestLocale() {
 
 @NgModule({
     imports: [
-        AppRoutingModule, BrowserModule, FormsModule, HttpClientModule, NgbModule.forRoot(),
+        AppRoutingModule, BrowserModule, CookieModule.forRoot(), FormsModule, HttpClientModule, NgbModule.forRoot(),
     ],
     declarations: [
         AgePipe,

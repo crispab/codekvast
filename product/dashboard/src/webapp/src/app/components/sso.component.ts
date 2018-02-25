@@ -1,5 +1,6 @@
 import {ActivatedRoute, Router} from '@angular/router';
 import {Component, OnInit} from '@angular/core';
+import {CookieService} from 'ngx-cookie';
 import {StateService} from '../services/state.service';
 
 @Component({
@@ -9,7 +10,8 @@ import {StateService} from '../services/state.service';
 
 export class SsoComponent implements OnInit {
 
-    constructor(private route: ActivatedRoute, private router: Router, private stateService: StateService) {
+    constructor(private route: ActivatedRoute, private router: Router, private stateService: StateService,
+                private cookieService: CookieService) {
     }
 
     ngOnInit(): void {
@@ -29,6 +31,20 @@ export class SsoComponent implements OnInit {
             }
 
             this.stateService.setLoggedInAs(payload.customerName, payload.email, payload.source, sourceApp);
+            const cookieName = 'sessionToken';
+            if (!this.cookieService.get(cookieName)) {
+                // This happens when launched from the codekvast-demo1 app, which fails to set the correct sessionToken cookie.
+                console.log(`Setting ${cookieName} cookie from path param`);
+
+                let expires = new Date();
+                expires.setHours(expires.getHours() + 1);
+
+                this.cookieService.put(cookieName, token, {
+                    path: '/',
+                    httpOnly: true,
+                    expires: expires
+                });
+            }
         } else {
             this.stateService.setLoggedOut();
         }
