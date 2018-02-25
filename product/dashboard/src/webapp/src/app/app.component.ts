@@ -36,8 +36,9 @@ export class AppComponent implements OnInit {
                     this.googleAnalyticsInitialized = true;
                 }
 
-                console.log(`Sending ${url} to GoogleAnalytics`);
-                ga('set', 'page', url);
+                let theUrl = url.startsWith('/sso/') ? '/sso/xxxx' : url;
+                console.log(`Sending ${theUrl} to GoogleAnalytics`);
+                ga('set', 'page', theUrl);
                 ga('send', 'pageview');
             })
             .subscribe(url => {
@@ -48,7 +49,6 @@ export class AppComponent implements OnInit {
 
 
         this.stateService.getAuthData()
-            .do(authData => console.log('AppComponent: authData=%o', authData))
             .subscribe(authData => {
                 if (authData && authData.source === 'heroku') {
                     this.showHerokuIntegrationMenu = true;

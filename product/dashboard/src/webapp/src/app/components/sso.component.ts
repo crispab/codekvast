@@ -25,8 +25,8 @@ export class SsoComponent implements OnInit {
             let sourceApp = 'unknown';
             if (payload.source === 'heroku') {
                 let navData = this.route.snapshot.params['navData'];
-                console.log('navData=%o', navData);
                 let args = JSON.parse(atob(navData));
+                console.log('navData=%o', args);
                 sourceApp = args.app || args.appname;
             }
 

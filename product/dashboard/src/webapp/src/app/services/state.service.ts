@@ -55,13 +55,11 @@ export class StateService {
 
     setLoggedInAs(customerName: string, email: string, source: string, sourceApp: string) {
         let authData = new AuthData(customerName, email, source, sourceApp);
-        console.log('Setting authData');
         sessionStorage.setItem(this.AUTH_DATA, JSON.stringify(authData));
         this.authData.next(authData);
     }
 
     setLoggedOut() {
-        console.log('Removing authData');
         sessionStorage.removeItem(this.AUTH_DATA);
         this.authData.next(null);
     }

@@ -145,7 +145,6 @@ export class MethodsComponentState {
 
     toggleDetailsTable() {
         this.detailsTableVisible = !this.detailsTableVisible;
-        console.log(`details-table is now ${this.detailsTableVisible}`);
     }
 
     detailsTableClasses() {
