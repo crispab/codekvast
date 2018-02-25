@@ -24,6 +24,7 @@ package io.codekvast.dashboard.security;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -54,6 +55,7 @@ import java.net.URLEncoder;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
+@Slf4j
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     public static final String REQUEST_MAPPING_WEBAPP_IS_DEMO_MODE = "/webapp/isDemoMode";
@@ -114,6 +116,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         result.setPath("/");
         result.setMaxAge(-1); // Remove when browser exits.
         result.setHttpOnly(true); // Hide from JavaScript in the browser
+        logger.debug("Created {} cookie with domain={}, path={}, httpOnly={}", SESSION_TOKEN_COOKIE, result.getDomain(), result.getPath(), result.isHttpOnly());
         return result;
     }
 

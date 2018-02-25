@@ -75,7 +75,7 @@ public class SsoController {
         @RequestHeader(name = "Host", required = false, defaultValue = "") String hostHeader,
         HttpServletResponse response) throws AuthenticationException {
 
-        logger.debug("host={}, externalId={}, nav-data={}", hostHeader, externalId, navData);
+        logger.debug("headers['Host']={}, externalId={}, nav-data={}", hostHeader, externalId, navData);
 
         String jwt = doHerokuSingleSignOn(externalId, timestampSeconds, token, email);
 
