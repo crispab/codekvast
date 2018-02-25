@@ -40,13 +40,13 @@ public class WebController {
     @Value("${application.version}")
     private String applicationVersion;
 
-    @RequestMapping({"/", "/index", "/home"})
-    String home(@CookieValue(name = "dummy", required = false) String dummyCookie,
-                Model model) {
-        logger.info("/index, cookies[dummy]={}, version={}", dummyCookie, applicationVersion);
-        model.addAttribute("applicationVersion", applicationVersion);
-        return "index";
-    }
+//    @RequestMapping({"/", "/index", "/home"})
+//    String home(@CookieValue(name = "dummy", required = false) String dummyCookie,
+//                Model model) {
+//        logger.info("/index, cookies[dummy]={}, version={}", dummyCookie, applicationVersion);
+//        model.addAttribute("applicationVersion", applicationVersion);
+//        return "index";
+//    }
 
     @RequestMapping("/unauthenticated")
     public String unauthenticated() {
