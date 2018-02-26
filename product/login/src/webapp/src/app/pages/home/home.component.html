@@ -1,3 +1,18 @@
 <div class="container">
-    <h4>Codekvast Login</h4>
+    <h3 class="jumbotron">Welcome to Codekvast</h3>
+
+    <div *ngIf="user">
+        <span>Logged in as {{ user | json }}</span>
+        <a href="/logout">Logout</a>
+    </div>
+
+    <div *ngIf="errorMessage" class="error">
+        {{ errorMessage }}
+    </div>
+
+    <div *ngIf="!user">
+        <p>Login with <a href="/sso/github">Github</a></p>
+        <p>Login with <a href="/sso/google">Google</a></p>
+        <p>Login with <a href="/sso/faccebook">Facebook</a></p>
+    </div>
 </div>

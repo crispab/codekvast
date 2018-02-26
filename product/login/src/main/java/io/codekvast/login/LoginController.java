@@ -21,24 +21,38 @@
  */
 package io.codekvast.login;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.Map;
 
-/**
- * @author olle.hallin@crisp.se
- */
 @RestController
-@RequiredArgsConstructor
+@CrossOrigin("http://localhost:8088")
 @Slf4j
-public class OauthController {
+public class LoginController {
 
-    private final CodekvastLoginSettings settings;
+    /**
+     * This is an unprotected endpoint that returns true if the user is authenticated.
+     *
+     * @param principal The logged in principal, or null if unauthenticated.
+     * @return true iff the user is authenticated.
+     */
+    @RequestMapping("/is-logged-in")
+    public boolean isLoggedIn(Principal principal) {
+        logger.debug("isLoggedIn: principal={}", principal);
+        return principal != null;
+    }
 
+    /**
+     * This is a protected endpoint that requires authentication.
+     *
+     * @param authentication The OAuth2 authentication object
+     * @return A User object.
+     */
     @RequestMapping("/user")
     public User user(OAuth2Authentication authentication) {
         logger.info("Authentication={}", authentication);
@@ -71,5 +85,6 @@ public class OauthController {
 
         // TODO: instead of just returning a User, create a sessionToken cookie and redirect to settings.getRedirectAfterLoginTarget();
     }
+
 
 }

@@ -64,12 +64,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
             .antMatcher("/**")
             .authorizeRequests()
-                .antMatchers("/", "/index", "/home", "/dummy", "/login/**", "/webjars/**", "/management/**").permitAll()
+                .antMatchers("/", "/home", "/is-logged-in", "/sso/**", "/webjars/**", "/management/**").permitAll()
                 .anyRequest().authenticated()
             .and()
-                .exceptionHandling().authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/"))
+                .exceptionHandling().authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
             .and()
-                .logout().logoutSuccessUrl("/").permitAll()
+                .logout().logoutSuccessUrl("/login").permitAll()
             .and()
                 .csrf().ignoringAntMatchers("/logout").csrfTokenRepository(withHttpOnlyFalse())
             .and()
@@ -80,9 +80,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private Filter ssoFilter() {
         CompositeFilter filter = new CompositeFilter();
         List<Filter> filters = new ArrayList<>();
-        filters.add(ssoFilter(facebook(), "/login/facebook"));
-        filters.add(ssoFilter(github(), "/login/github"));
-        filters.add(ssoFilter(google(), "/login/google"));
+        filters.add(ssoFilter(facebook(), "/sso/facebook"));
+        filters.add(ssoFilter(github(), "/sso/github"));
+        filters.add(ssoFilter(google(), "/sso/google"));
         filter.setFilters(filters);
         return filter;
     }

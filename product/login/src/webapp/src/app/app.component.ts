@@ -14,7 +14,7 @@ import {Title} from '@angular/platform-browser';
 export class AppComponent implements OnInit {
 
     private googleAnalyticsInitialized = false;
-    private readonly googleAnalyticsId = 'UA-97240168-3';
+    private readonly googleAnalyticsId = 'UA-97240168-5';
 
     constructor(private configService: ConfigService, private titleService: Title, private router: Router,
                 private titleCasePipe: TitleCasePipe) {
@@ -33,9 +33,8 @@ export class AppComponent implements OnInit {
                     this.googleAnalyticsInitialized = true;
                 }
 
-                let theUrl = url.startsWith('/sso/') ? '/sso/xxxx' : url;
-                console.log(`Sending ${theUrl} to GoogleAnalytics`);
-                ga('set', 'page', theUrl);
+                console.log(`Sending ${url} to GoogleAnalytics`);
+                ga('set', 'page', url);
                 ga('send', 'pageview');
             })
             .subscribe(url => {

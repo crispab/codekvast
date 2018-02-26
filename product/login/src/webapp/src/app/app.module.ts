@@ -7,6 +7,7 @@ import {CookieModule} from 'ngx-cookie';
 import {LoginService} from './services/login.service';
 import {FormsModule} from '@angular/forms';
 import {HomeComponent} from './pages/home/home.component';
+import {LoginComponent} from './pages/login/login.component';
 import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 import {HttpResponseInterceptor} from './services/httpResponse.interceptor';
 import {LOCALE_ID, NgModule} from '@angular/core';
@@ -16,6 +17,7 @@ import localeEn from '@angular/common/locales/en';
 import localeEs from '@angular/common/locales/es';
 import localeFr from '@angular/common/locales/fr';
 import localeSv from '@angular/common/locales/sv';
+import {LoggedInComponent} from './pages/logged-in/logged-in.component';
 
 registerLocaleData(localeDe);
 registerLocaleData(localeEn);
@@ -47,6 +49,8 @@ function selectBestLocale() {
     declarations: [
         AppComponent,
         HomeComponent,
+        LoginComponent,
+        LoggedInComponent,
     ],
     providers: [
         ConfigService, Title, LoginService, {

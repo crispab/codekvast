@@ -35,6 +35,6 @@ public class ServletContainerCustomizer {
 
     @Bean
     public EmbeddedServletContainerCustomizer customizer() {
-        return container -> container.addErrorPages(new ErrorPage(HttpStatus.UNAUTHORIZED, "/unauthenticated"));
+        return container -> container.addErrorPages(new ErrorPage(HttpStatus.UNAUTHORIZED, "/login"));
     }
 }

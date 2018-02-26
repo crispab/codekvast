@@ -68,7 +68,6 @@ module.exports = {
                 'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'
             ],
             scripts: [
-                'https://s3.amazonaws.com/assets.heroku.com/boomerang/boomerang.js',
                 'https://www.google-analytics.com/analytics.js'
             ],
             // Google Analytics is initialized in app.component.ts
