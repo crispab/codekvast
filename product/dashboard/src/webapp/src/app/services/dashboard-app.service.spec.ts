@@ -1,7 +1,7 @@
-import {DashboardService, GetMethodsRequest} from './dashboard.service';
 import {ConfigService} from './config.service';
+import {DashboardAppService, GetMethodsRequest} from './dashboard-app.service';
 
-let dashboard: DashboardService;
+let app: DashboardAppService;
 
 const configServiceMock: ConfigService = {
     getVersion() {
@@ -15,14 +15,14 @@ const configServiceMock: ConfigService = {
     }
 } as ConfigService;
 
-describe('DashboardService', () => {
+describe('DashboardAppService', () => {
 
     beforeEach(() => {
-        dashboard = new DashboardService(null, configServiceMock);
+        app = new DashboardAppService(null, configServiceMock);
     });
 
     it('should construct a get methods url with signature containing wildcard', () => {
-        expect(dashboard.constructGetMethodsUrl({signature: 'sample.app.SampleApp%foo*bar'} as GetMethodsRequest))
+        expect(app.constructGetMethodsUrl({signature: 'sample.app.SampleApp%foo*bar'} as GetMethodsRequest))
             .toBe('xxx/webapp/v1/methods?signature=sample.app.SampleApp%25foo*bar');
     });
 

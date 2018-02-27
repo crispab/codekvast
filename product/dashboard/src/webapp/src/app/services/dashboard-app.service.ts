@@ -17,7 +17,7 @@ export class GetMethodsRequest {
 }
 
 @Injectable()
-export class DashboardService {
+export class DashboardAppService {
 
     readonly METHODS_URL = '/webapp/v1/methods';
     readonly METHOD_BY_ID_URL = '/webapp/v1/method/detail/';

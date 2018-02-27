@@ -1,11 +1,11 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {By} from '@angular/platform-browser';
-import {DebugElement} from '@angular/core';
-import {MethodsComponent} from './methods.component';
 import {AppModule} from '../../app.module';
-import {DashboardService} from '../../services/dashboard.service';
+import {By} from '@angular/platform-browser';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ConfigService} from '../../services/config.service';
+import {DashboardAppService} from '../../services/dashboard-app.service';
+import {DebugElement} from '@angular/core';
 import {MethodData} from '../../model/methods/MethodData';
+import {MethodsComponent} from './methods.component';
 import {Method} from '../../model/methods/Method';
 import {StateService} from '../../services/state.service';
 
@@ -39,7 +39,7 @@ describe('MethodsComponent', () => {
                     useValue: {}
                 },
                 {
-                    provide: DashboardService,
+                    provide: DashboardAppService,
                     useValue: dashboardServiceStub
                 },
                 StateService

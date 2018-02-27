@@ -6,7 +6,7 @@ import {BrowserModule, Title} from '@angular/platform-browser';
 import {CollectionStatusComponent} from './pages/collection-status/collection-status.component';
 import {ConfigService} from './services/config.service';
 import {CookieModule} from 'ngx-cookie';
-import {DashboardService} from './services/dashboard.service';
+import {DashboardAppService} from './services/dashboard-app.service';
 import {FormsModule} from '@angular/forms';
 import {HomeComponent} from './pages/home/home.component';
 import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
@@ -25,6 +25,7 @@ import {SsoComponent} from './components/sso.component';
 import {StateService} from './services/state.service';
 import {VoteComponent} from './components/vote.component';
 import {VoteResultComponent} from './pages/vote-result/vote-result.component';
+
 import localeDe from '@angular/common/locales/de';
 import localeEn from '@angular/common/locales/en';
 import localeEs from '@angular/common/locales/es';
@@ -75,7 +76,7 @@ function selectBestLocale() {
         VoteResultComponent,
     ],
     providers: [
-        ConfigService, IsLoggedIn, StateService, Title, DashboardService, {
+        ConfigService, IsLoggedIn, StateService, Title, DashboardAppService, {
             provide: APP_BASE_HREF,
             useValue: '/'
         }, {

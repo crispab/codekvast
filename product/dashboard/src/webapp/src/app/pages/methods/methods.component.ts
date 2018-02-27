@@ -1,12 +1,12 @@
-import {Component, OnInit} from '@angular/core';
-import {DashboardService} from '../../services/dashboard.service';
 import {AgePipe} from '../../pipes/age.pipe';
+import {Component, OnInit} from '@angular/core';
+import {DashboardAppService} from '../../services/dashboard-app.service';
 import {DatePipe} from '@angular/common';
-import {Router} from '@angular/router';
-import {StateService} from '../../services/state.service';
 import {MethodsComponentState} from './methods.component.state';
-import {Settings} from '../../components/settings.model';
 import {Method} from '../../model/methods/Method';
+import {Router} from '@angular/router';
+import {Settings} from '../../components/settings.model';
+import {StateService} from '../../services/state.service';
 
 @Component({
     selector: 'ck-methods',
@@ -22,12 +22,12 @@ export class MethodsComponent implements OnInit {
     settings: Settings;
     state: MethodsComponentState;
 
-    constructor(private router: Router, private stateService: StateService, private dashboard: DashboardService, private agePipe: AgePipe) {
+    constructor(private router: Router, private stateService: StateService, private app: DashboardAppService, private agePipe: AgePipe) {
     }
 
     ngOnInit(): void {
         this.settings = this.stateService.getState(Settings.KEY, () => new Settings());
-        this.state = this.stateService.getState(MethodsComponentState.KEY, () => new MethodsComponentState(this.dashboard));
+        this.state = this.stateService.getState(MethodsComponentState.KEY, () => new MethodsComponentState(this.app));
     }
 
     communicationFailure() {

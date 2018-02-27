@@ -1,11 +1,11 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {DashboardService} from '../../services/dashboard.service';
-import {Settings} from '../../components/settings.model';
-import {AuthData, StateService} from '../../services/state.service';
-import {AgePipe} from '../../pipes/age.pipe';
-import {DatePipe} from '@angular/common';
-import {CollectionStatusComponentState} from './collection-status.component.state';
 import {Agent} from '../../model/status/Agent';
+import {AgePipe} from '../../pipes/age.pipe';
+import {AuthData, StateService} from '../../services/state.service';
+import {CollectionStatusComponentState} from './collection-status.component.state';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {DashboardAppService} from '../../services/dashboard-app.service';
+import {DatePipe} from '@angular/common';
+import {Settings} from '../../components/settings.model';
 
 @Component({
     selector: 'ck-collection-status',
@@ -18,13 +18,13 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
     state: CollectionStatusComponentState;
     agentsLabel = 'agents';
 
-    constructor(private stateService: StateService, private dashboard: DashboardService, private agePipe: AgePipe) {
+    constructor(private stateService: StateService, private app: DashboardAppService, private agePipe: AgePipe) {
     }
 
     ngOnInit(): void {
         this.settings = this.stateService.getState(Settings.KEY, () => new Settings());
         this.state = this.stateService.getState(CollectionStatusComponentState.KEY,
-            () => new CollectionStatusComponentState(this.agePipe, this.dashboard));
+            () => new CollectionStatusComponentState(this.agePipe, this.app));
         this.state.init();
         this.stateService.getAuthData().subscribe((ad: AuthData) => {
             this.agentsLabel = ad && ad.source === 'heroku' ? 'dynos' : 'agents';

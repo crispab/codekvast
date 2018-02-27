@@ -1,10 +1,10 @@
 /**
  * The state for MethodsComponent.
  */
+import {DashboardAppService, GetMethodsRequest} from '../../services/dashboard-app.service';
 import {MethodData} from '../../model/methods/MethodData';
 import {MethodsComponent} from './methods.component';
 import {Method} from '../../model/methods/Method';
-import {DashboardService, GetMethodsRequest} from '../../services/dashboard.service';
 
 export class MethodsComponentState {
     static KEY = 'methods';
@@ -23,7 +23,7 @@ export class MethodsComponentState {
     selectedMethod: Method;
     detailsTableVisible = false;
 
-    constructor(private dashboard: DashboardService) {
+    constructor(private app: DashboardAppService) {
     }
 
     private sortBy(column: string) {
@@ -108,7 +108,7 @@ export class MethodsComponentState {
     }
 
     search() {
-        this.dashboard
+        this.app
             .getMethods({
                 signature: this.signature,
                 maxResults: this.maxResults,

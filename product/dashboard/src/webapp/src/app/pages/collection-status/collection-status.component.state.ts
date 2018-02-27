@@ -1,6 +1,6 @@
-import {StatusData} from '../../model/status/StatusData';
-import {DashboardService} from '../../services/dashboard.service';
 import {AgePipe} from '../../pipes/age.pipe';
+import {DashboardAppService} from '../../services/dashboard-app.service';
+import {StatusData} from '../../model/status/StatusData';
 import {Subscription} from 'rxjs/Subscription';
 import {TimerObservable} from 'rxjs/observable/TimerObservable';
 
@@ -14,7 +14,7 @@ export class CollectionStatusComponentState {
     refreshIntervalSeconds = 60;
     private timerSubscription: Subscription;
 
-    constructor(private agePipe: AgePipe, private dashboard: DashboardService) {
+    constructor(private agePipe: AgePipe, private app: DashboardAppService) {
     }
 
     init() {
@@ -72,7 +72,7 @@ export class CollectionStatusComponentState {
     }
 
     refreshNow() {
-        this.dashboard
+        this.app
             .getStatus()
             .subscribe(data => {
                 this.data = data;
