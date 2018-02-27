@@ -18,7 +18,7 @@ export class LoginAppService {
         return this.http.get<User>(url, {headers: this.HEADERS});
     }
 
-    isLoggedIn(): Observable<boolean> {
+    isAuthenticated(): Observable<boolean> {
         const url = this.configService.getApiPrefix() + '/authenticated';
         return this.http.get<boolean>(url, {headers: this.HEADERS});
     }
@@ -28,7 +28,7 @@ export class LoginAppService {
         this.http.post(url, {})
             .finally(() => {
                 // noinspection JSIgnoredPromiseFromCall
-                this.router.navigateByUrl('/login');
+                this.router.navigateByUrl('login');
             }).subscribe();
     }
 

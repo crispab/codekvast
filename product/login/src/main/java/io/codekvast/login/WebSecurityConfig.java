@@ -70,7 +70,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
                 .logout().logoutSuccessUrl("/login").permitAll()
             .and()
-                .csrf().ignoringAntMatchers("/logout").csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             .and()
                 .addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
         //@formatter:on

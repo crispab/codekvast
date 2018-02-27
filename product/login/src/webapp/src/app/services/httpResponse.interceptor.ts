@@ -22,7 +22,7 @@ export class HttpResponseInterceptor implements HttpInterceptor {
                     console.log('HttpErrorResponse=%o', err);
                     if (err.status === 401) {
                         // noinspection JSIgnoredPromiseFromCall
-                        this.router.navigate(['/login']);
+                        this.router.navigateByUrl('login');
                     }
                 }
             });

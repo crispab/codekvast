@@ -13,16 +13,11 @@ export class HomeComponent implements OnInit {
 
     ngOnInit(): void {
         this.app
-            .isLoggedIn()
-            .do(console.log)
-            .subscribe(loggedIn => {
-                if (loggedIn) {
-                    // noinspection JSIgnoredPromiseFromCall
-                    this.router.navigateByUrl('start');
-                } else {
-                    // noinspection JSIgnoredPromiseFromCall
-                    this.router.navigateByUrl('login');
-                }
+            .isAuthenticated()
+            .do(authenticated => console.log(`Authenticated=${authenticated}`))
+            .subscribe(authenticated => {
+                // noinspection JSIgnoredPromiseFromCall
+                this.router.navigateByUrl(authenticated ? 'start' : 'login');
             });
     }
 }
