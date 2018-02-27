@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
+import {LoginAppService} from '../../services/login-app.service';
 import {User} from '../../model/User';
-import {AppService} from '../../services/app.service';
 
 @Component({
     selector: 'ck-start',
@@ -10,14 +10,14 @@ export class StartComponent implements OnInit {
 
     user: User;
 
-    constructor(private appService: AppService) {
+    constructor(private app: LoginAppService) {
     }
 
     ngOnInit(): void {
-        this.appService.getUser().subscribe(user => this.user = user);
+        this.app.getUser().subscribe(user => this.user = user);
     }
 
     logout(): void {
-        this.appService.logout();
+        this.app.logout();
     }
 }

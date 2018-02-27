@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {AppService} from '../../services/app.service';
+import {LoginAppService} from '../../services/login-app.service';
 import {Router} from '@angular/router';
 
 @Component({
@@ -8,11 +8,11 @@ import {Router} from '@angular/router';
 })
 export class HomeComponent implements OnInit {
 
-    constructor(private appService: AppService, private router: Router) {
+    constructor(private app: LoginAppService, private router: Router) {
     }
 
     ngOnInit(): void {
-        this.appService
+        this.app
             .isLoggedIn()
             .do(console.log)
             .subscribe(loggedIn => {

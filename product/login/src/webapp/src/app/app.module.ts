@@ -1,7 +1,6 @@
 import {APP_BASE_HREF, registerLocaleData} from '@angular/common';
 import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
-import {AppService} from './services/app.service';
 import {BrowserModule, Title} from '@angular/platform-browser';
 import {ConfigService} from './services/config.service';
 import {CookieModule} from 'ngx-cookie';
@@ -10,6 +9,7 @@ import {HomeComponent} from './pages/home/home.component';
 import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 import {HttpResponseInterceptor} from './services/httpResponse.interceptor';
 import {LOCALE_ID, NgModule} from '@angular/core';
+import {LoginAppService} from './services/login-app.service';
 import {LoginComponent} from './pages/login/login.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {StartComponent} from './pages/start/start.component';
@@ -54,7 +54,7 @@ function selectBestLocale() {
         StartComponent,
     ],
     providers: [
-        ConfigService, Title, AppService, {
+        ConfigService, Title, LoginAppService, {
             provide: APP_BASE_HREF,
             useValue: '/'
         }, {

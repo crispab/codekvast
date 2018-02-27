@@ -6,7 +6,7 @@ import {Router} from '@angular/router';
 import {User} from '../model/User';
 
 @Injectable()
-export class AppService {
+export class LoginAppService {
 
     readonly HEADERS = new HttpHeaders().set('Content-type', 'application/json; charset=utf-8');
 
