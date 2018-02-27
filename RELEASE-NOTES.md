@@ -1,5 +1,8 @@
 # Codekvast Release Notes
 
+## 0.22.5
+1. Implemented skeleton of login service.
+
 ## 0.22.4
 1. Started implementing new login service.
 1. Upgraded Java dependencies: jslack 1.0.25, wiremock 2.15.0, Kotlin 1.2.21

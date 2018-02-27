@@ -1,0 +1,29 @@
+description = "Common utilities that can be used from any application"
+
+apply from: "$rootDir/gradle/java-8.gradle"
+apply from: "$rootDir/gradle/license.gradle"
+apply plugin: 'org.springframework.boot'
+apply plugin: 'org.unbroken-dome.test-sets'
+
+archivesBaseName = "codekvast-common"
+
+testSets {
+    integrationTest
+}
+
+integrationTest.mustRunAfter test
+check.dependsOn integrationTest
+
+dependencies {
+    compileOnly lombok
+    compile slf4jApi
+    compile 'com.github.seratch:jslack:1.0.25'
+    compile 'org.springframework.boot:spring-boot-starter'
+
+    testCompile testFrameworks
+    testRuntime logback
+
+    integrationTestCompileOnly lombok
+}
+
+bootRepackage.enabled = false

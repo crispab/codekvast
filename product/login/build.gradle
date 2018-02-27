@@ -11,6 +11,8 @@ group = 'crisp'
 mainClassName = 'io.codekvast.login.CodekvastLoginApplication'
 
 dependencies {
+    compile project(":product:common")
+
     compile 'org.springframework.boot:spring-boot-starter-security'
     compile 'org.springframework.security.oauth:spring-security-oauth2'
 

@@ -21,6 +21,7 @@
  */
 package io.codekvast.login;
 
+import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import lombok.Data;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +42,7 @@ import javax.annotation.PreDestroy;
 @Slf4j
 @ToString
 @SuppressWarnings("ClassWithTooManyMethods")
-public class CodekvastLoginSettings {
+public class CodekvastLoginSettings implements CodekvastCommonSettings {
 
     /**
      * The name of the application, injected from the build system.
@@ -77,6 +78,21 @@ public class CodekvastLoginSettings {
      * To where should we redirect after a login?
      */
     private String redirectAfterLoginTarget;
+
+    /**
+     * Which is our CNAME in the DNS?
+     */
+    private String dnsCname;
+
+    /**
+     * To where should we POST slack messages?
+     */
+    private String slackWebHookUrl;
+
+    /**
+     * Which token should we use when POSTing to Slack?
+     */
+    private String slackWebHookToken;
 
     @PostConstruct
     public void logStartup() {

@@ -7,6 +7,9 @@
     <bytecodeTargetLevel>
       <module name="agent-model_main" target="1.7" />
       <module name="agent-model_test" target="1.7" />
+      <module name="common_integrationTest" target="1.8" />
+      <module name="common_main" target="1.8" />
+      <module name="common_test" target="1.8" />
       <module name="dashboard_integrationTest" target="1.8" />
       <module name="dashboard_main" target="1.8" />
       <module name="dashboard_systemTest" target="1.8" />

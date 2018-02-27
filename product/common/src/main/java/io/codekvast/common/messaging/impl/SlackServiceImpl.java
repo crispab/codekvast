@@ -19,12 +19,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.messaging.impl;
+package io.codekvast.common.messaging.impl;
 
 import com.github.seratch.jslack.Slack;
 import com.github.seratch.jslack.api.webhook.Payload;
-import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
-import io.codekvast.dashboard.messaging.SlackService;
+import io.codekvast.common.bootstrap.CodekvastCommonSettings;
+import io.codekvast.common.messaging.SlackService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -44,7 +44,7 @@ import java.time.Instant;
 @Slf4j
 public class SlackServiceImpl implements SlackService, ApplicationListener<ApplicationReadyEvent> {
 
-    private final CodekvastDashboardSettings settings;
+    private final CodekvastCommonSettings settings;
     private final Slack slack = Slack.getInstance();
 
     @Override
@@ -90,7 +90,7 @@ public class SlackServiceImpl implements SlackService, ApplicationListener<Appli
         return t.getCause() == null ? t : getRootCause(t.getCause());
     }
 
-    private String getSlackWebhookUrl(CodekvastDashboardSettings settings) {
+    private String getSlackWebhookUrl(CodekvastCommonSettings settings) {
         String token = settings.getSlackWebHookToken();
         if (token == null || token.trim().isEmpty()) {
             return null;

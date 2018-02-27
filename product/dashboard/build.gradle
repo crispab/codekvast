@@ -19,7 +19,7 @@ apply from: "$projectDir/src/systemTest/build.gradle"
 
 dependencies {
     compile project(':product:agent-model')
-    compile 'com.github.seratch:jslack:1.0.25'
+    compile project(':product:common')
     compile "com.google.code.gson:gson:$gsonVersion"
     compile 'org.springframework.boot:spring-boot-starter-security'
     compile 'io.jsonwebtoken:jjwt:0.9.0'

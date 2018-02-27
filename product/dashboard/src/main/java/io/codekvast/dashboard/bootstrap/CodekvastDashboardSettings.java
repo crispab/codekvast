@@ -21,6 +21,7 @@
  */
 package io.codekvast.dashboard.bootstrap;
 
+import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import lombok.Data;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +43,7 @@ import java.io.File;
 @Data
 @Slf4j
 @ToString(exclude = {"herokuApiPassword", "herokuApiSsoSalt", "webappJwtSecret", "slackWebHookToken"})
-public class CodekvastDashboardSettings {
+public class CodekvastDashboardSettings implements CodekvastCommonSettings {
 
     /**
      * The name of the application, injected from the build system.

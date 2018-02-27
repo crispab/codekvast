@@ -1,8 +1,7 @@
-package integrationTest.dashboard;
+package integrationTest.common;
 
-import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
-import io.codekvast.dashboard.messaging.SlackService;
-import io.codekvast.dashboard.messaging.impl.SlackServiceImpl;
+import io.codekvast.common.messaging.SlackService;
+import io.codekvast.common.messaging.impl.SlackServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,17 +21,16 @@ import static org.junit.Assume.assumeTrue;
 public class SlackServiceIntegrationTest {
 
     private SlackService slackService;
-    private CodekvastDashboardSettings settings = new CodekvastDashboardSettings();
+    private CodekvastCommonSettingsImpl settings = new CodekvastCommonSettingsImpl();
 
     @Before
     public void beforeTest() throws Exception {
         assumeTrue("true".equals(System.getenv("RUN_SLACK_TESTS")));
 
         Properties props = new Properties();
-        props.load(getClass().getResourceAsStream("/application.properties"));
         props.load(getClass().getResourceAsStream("/secrets.properties"));
 
-        settings.setSlackWebHookUrl(props.getProperty("codekvast.slackWebHookUrl"));
+        settings.setSlackWebHookUrl("https://hooks.slack.com/services");
         settings.setSlackWebHookToken(props.getProperty("codekvast.slackWebHookToken"));
         slackService = new SlackServiceImpl(settings);
     }

@@ -2,6 +2,7 @@ rootProject.name = 'codekvast'
 
 include ':product'
 include ':product:agent-model'
+include ':product:common'
 include ':product:dashboard'
 include ':product:db-migration'
 include ':product:dist'

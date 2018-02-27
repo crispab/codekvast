@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.messaging;
+package io.codekvast.common.messaging;
 
 /**
  * @author olle.hallin@crisp.se

@@ -22,7 +22,7 @@
 package io.codekvast.dashboard.customer.impl;
 
 import io.codekvast.dashboard.customer.*;
-import io.codekvast.dashboard.messaging.SlackService;
+import io.codekvast.common.messaging.SlackService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

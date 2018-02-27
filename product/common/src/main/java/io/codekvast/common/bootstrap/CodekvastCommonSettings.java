@@ -19,23 +19,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.login;
-
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+package io.codekvast.common.bootstrap;
 
 /**
- * The Spring Boot main for codekvast-login,
- *
  * @author olle.hallin@crisp.se
  */
-@SpringBootApplication
-@ComponentScan(basePackages = "io.codekvast")
-public class CodekvastLoginApplication {
+public interface CodekvastCommonSettings {
 
-    public static void main(String[] args) {
-        new SpringApplication(CodekvastLoginApplication.class).run(args);
-    }
+    String getApplicationName();
 
+    String getDisplayVersion();
+
+    String getDnsCname();
+
+    String getSlackWebHookToken();
+
+    String getSlackWebHookUrl();
 }

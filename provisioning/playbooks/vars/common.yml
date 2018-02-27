@@ -20,7 +20,7 @@ settings:
       name: JSESSIONID
   prod:
     hsts:
-      max_age_seconds: 0
+      max_age_seconds: 2592000 # 30 days
   staging:
     hsts:
-      max_age_seconds: 60
+      max_age_seconds: 3600 # one hour

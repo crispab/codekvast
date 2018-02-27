@@ -3,7 +3,7 @@ package io.codekvast.dashboard.customer.impl;
 import io.codekvast.dashboard.customer.CustomerData;
 import io.codekvast.dashboard.customer.CustomerService;
 import io.codekvast.dashboard.customer.LicenseViolationException;
-import io.codekvast.dashboard.messaging.SlackService;
+import io.codekvast.common.messaging.SlackService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
