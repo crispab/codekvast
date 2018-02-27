@@ -64,7 +64,7 @@ module.exports = {
             template: require('html-webpack-template'),
             title: 'Codekvast',
             links: [
-                'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css',
+                'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css',
                 'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'
             ],
             scripts: [

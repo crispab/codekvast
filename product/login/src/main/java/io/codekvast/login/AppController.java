@@ -33,7 +33,7 @@ import java.util.Map;
 @RestController
 @CrossOrigin("http://localhost:8088")
 @Slf4j
-public class LoginController {
+public class AppController {
 
     /**
      * This is an unprotected endpoint that returns true if the user is authenticated.
@@ -41,9 +41,9 @@ public class LoginController {
      * @param principal The logged in principal, or null if unauthenticated.
      * @return true iff the user is authenticated.
      */
-    @RequestMapping("/is-logged-in")
-    public boolean isLoggedIn(Principal principal) {
-        logger.debug("isLoggedIn: principal={}", principal);
+    @RequestMapping("/authenticated")
+    public boolean isAuthenticated(Principal principal) {
+        logger.debug("isAuthenticated(): principal={}", principal);
         return principal != null;
     }
 

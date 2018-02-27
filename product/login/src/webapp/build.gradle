@@ -119,7 +119,7 @@ jar {
 
     // Output from frontendWebpack
     into('static') {
-        from('src/webapp/dist') {
+        from("$projectDir/src/webapp/dist") {
             exclude '**/*.css.map'
             exclude '**/*.js.map'
             exclude '**/test/**'

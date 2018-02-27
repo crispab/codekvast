@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {LoginService} from '../../services/login.service';
+import {AppService} from '../../services/app.service';
 import {Router} from '@angular/router';
 
 @Component({
@@ -8,17 +8,20 @@ import {Router} from '@angular/router';
 })
 export class HomeComponent implements OnInit {
 
-    constructor(private loginService: LoginService, private router: Router) {
+    constructor(private appService: AppService, private router: Router) {
     }
 
     ngOnInit(): void {
-        this.loginService
+        this.appService
             .isLoggedIn()
             .do(console.log)
             .subscribe(loggedIn => {
                 if (loggedIn) {
                     // noinspection JSIgnoredPromiseFromCall
-                    this.router.navigate(['/logged-in']);
+                    this.router.navigateByUrl('start');
+                } else {
+                    // noinspection JSIgnoredPromiseFromCall
+                    this.router.navigateByUrl('login');
                 }
             });
     }

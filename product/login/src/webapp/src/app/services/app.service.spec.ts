@@ -1,7 +1,7 @@
-// import {LoginService} from './login.service';
+// import {AppService} from './app.service';
 // import {ConfigService} from './config.service';
 
-// let login: LoginService;
+// let app: AppService;
 
 // const configServiceMock: ConfigService = {
 //     getVersion() {
@@ -12,10 +12,10 @@
 //     },
 // } as ConfigService;
 
-describe('LoginService', () => {
+describe('AppService', () => {
 
 //    beforeEach(() => {
-//        login = new LoginService(null, configServiceMock);
+//        app = new AppService(null, configServiceMock);
 //    });
 
     it('should xxx', () => {

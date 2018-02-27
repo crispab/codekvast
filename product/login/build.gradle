@@ -21,7 +21,7 @@ dependencies {
 
 run {
     group "Backend Development"
-    dependsOn ":product:dashboard:startMariadb"
+    dependsOn startMariadb
 
     jvmArgs = [
         '-ea',
@@ -35,7 +35,7 @@ run {
 
 bootRun {
     group "Backend Development"
-    dependsOn ":product:dashboard:startMariadb"
+    dependsOn startMariadb
 
     jvmArgs = run.jvmArgs
     args = run.args

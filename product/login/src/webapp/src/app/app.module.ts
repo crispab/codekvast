@@ -1,23 +1,24 @@
 import {APP_BASE_HREF, registerLocaleData} from '@angular/common';
 import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
+import {AppService} from './services/app.service';
 import {BrowserModule, Title} from '@angular/platform-browser';
 import {ConfigService} from './services/config.service';
 import {CookieModule} from 'ngx-cookie';
-import {LoginService} from './services/login.service';
 import {FormsModule} from '@angular/forms';
 import {HomeComponent} from './pages/home/home.component';
-import {LoginComponent} from './pages/login/login.component';
 import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 import {HttpResponseInterceptor} from './services/httpResponse.interceptor';
 import {LOCALE_ID, NgModule} from '@angular/core';
+import {LoginComponent} from './pages/login/login.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {StartComponent} from './pages/start/start.component';
+
 import localeDe from '@angular/common/locales/de';
 import localeEn from '@angular/common/locales/en';
 import localeEs from '@angular/common/locales/es';
 import localeFr from '@angular/common/locales/fr';
 import localeSv from '@angular/common/locales/sv';
-import {LoggedInComponent} from './pages/logged-in/logged-in.component';
 
 registerLocaleData(localeDe);
 registerLocaleData(localeEn);
@@ -50,10 +51,10 @@ function selectBestLocale() {
         AppComponent,
         HomeComponent,
         LoginComponent,
-        LoggedInComponent,
+        StartComponent,
     ],
     providers: [
-        ConfigService, Title, LoginService, {
+        ConfigService, Title, AppService, {
             provide: APP_BASE_HREF,
             useValue: '/'
         }, {
