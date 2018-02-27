@@ -317,6 +317,8 @@
     resource: "{{ item.1.id }}"
     tags:
       CNAME: "{{ stack.app_cnames[0] }}{{ '%02d'|format(item.0) }}.codekvast.io"
+      CNAME0: "{{ stack.app_cnames[0] }}{{ '%02d'|format(item.0) }}.codekvast.io"
+      CNAME1: "{{ stack.app_cnames[1] }}{{ '%02d'|format(item.0) }}.codekvast.io"
       LBCNAME: "{{ stack.app_cnames[0] }}.codekvast.io"
       LBCNAME0: "{{ stack.app_cnames[0] }}.codekvast.io"
       LBCNAME1: "{{ stack.app_cnames[1] }}.codekvast.io"
