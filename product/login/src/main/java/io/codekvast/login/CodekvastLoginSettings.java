@@ -40,7 +40,7 @@ import javax.annotation.PreDestroy;
 @ConfigurationProperties(prefix = "codekvast")
 @Data
 @Slf4j
-@ToString
+@ToString(exclude = {"slackWebHookToken", "committer", "commitMessage"})
 @SuppressWarnings("ClassWithTooManyMethods")
 public class CodekvastLoginSettings implements CodekvastCommonSettings {
 
@@ -75,9 +75,9 @@ public class CodekvastLoginSettings implements CodekvastCommonSettings {
     private String webappJwtCookieDomain;
 
     /**
-     * To where should we redirect after a login?
+     * What is the URL of the Codekvast dashboard?
      */
-    private String redirectAfterLoginTarget;
+    private String dashboardUrl;
 
     /**
      * Which is our CNAME in the DNS?
@@ -94,19 +94,24 @@ public class CodekvastLoginSettings implements CodekvastCommonSettings {
      */
     private String slackWebHookToken;
 
+    /**
+     * To where should Spring Security redirect after a successful login?
+     */
+    private String loginSuccessUrl;
+
     @PostConstruct
     public void logStartup() {
 
         //noinspection UseOfSystemOutOrSystemErr
-        System.out.printf("%s v%s (%s) started%n", applicationName, displayVersion, commitDate);
-        logger.info("{} v{} ({}) starts", applicationName, displayVersion, commitDate);
+        System.out.printf("%s starts%n", this);
+        logger.info("{} starts", this);
     }
 
     @PreDestroy
     public void logShutdown() {
         //noinspection UseOfSystemOutOrSystemErr
-        System.out.printf("%s v%s (%s) shuts down%n", applicationName, displayVersion, commitDate);
-        logger.info("{} v{} ({}) shuts down", applicationName, displayVersion, commitDate);
+        System.out.printf("%s shuts down%n", this);
+        logger.info("{} shuts down", this);
     }
 
 }

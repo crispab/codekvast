@@ -1,4 +1,3 @@
-process.env.CODEKVAST_API = '';
 process.env.ENV = 'production';
 
 var webpack = require('webpack');

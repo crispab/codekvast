@@ -31,7 +31,8 @@ import java.security.Principal;
 import java.util.Map;
 
 @RestController
-@CrossOrigin("http://localhost:8088")
+@RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:8088")
 @Slf4j
 public class AppController {
 
@@ -83,7 +84,7 @@ public class AppController {
         logger.debug("Returning {}", user);
         return user;
 
-        // TODO: instead of just returning a User, create a sessionToken cookie and redirect to settings.getRedirectAfterLoginTarget();
+        // TODO: instead of just returning a User, create a sessionToken cookie and redirect to settings.getdashboardUrl();
     }
 
 

@@ -1,4 +1,3 @@
-process.env.CODEKVAST_API = 'http://localhost:8080';
 process.env.CODEKVAST_VERSION = 'dev';
 process.env.ENV = 'development';
 
@@ -22,7 +21,13 @@ module.exports = webpackMerge(commonConfig, {
     ],
 
     devServer: {
+        inline: true,
+        port: 8088,
         historyApiFallback: true,
-        stats: 'minimal'
+        stats: 'minimal',
+        proxy: {
+            '/api': 'http://localhost:8080',
+            '/oauth': 'http://localhost:8080'
+        }
     }
 });

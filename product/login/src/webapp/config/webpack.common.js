@@ -46,7 +46,6 @@ module.exports = {
 
     plugins: [
         new webpack.EnvironmentPlugin([
-            'CODEKVAST_API',
             'CODEKVAST_VERSION',
             'ENV'
         ]),
@@ -75,7 +74,7 @@ module.exports = {
             minify: false,
             appMountId: 'app',
             window: {
-                CODEKVAST_API: process.env.CODEKVAST_API,
+                CODEKVAST_API: '/api',
                 CODEKVAST_VERSION: process.env.CODEKVAST_VERSION || 'dev'
             }
         })
