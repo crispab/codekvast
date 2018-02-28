@@ -43,10 +43,6 @@ export class AppComponent implements OnInit {
             });
     }
 
-    getApiPrefix(): String {
-        return this.configService.getApiPrefix();
-    }
-
     getVersion(): String {
         return this.configService.getVersion();
     }

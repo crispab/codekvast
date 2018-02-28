@@ -7,9 +7,6 @@
 //     getVersion() {
 //         return 'dev'
 //     },
-//     getApiPrefix() {
-//         return 'xxx'
-//     },
 // } as ConfigService;
 
 describe('LoginAppService', () => {
