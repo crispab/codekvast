@@ -81,7 +81,7 @@ public class SsoController {
 
         response.addCookie(securityConfig.createSessionTokenCookie(jwt, hostHeader));
 
-        return "redirect:/sso/" + jwt + "/" + navData;
+        return String.format("redirect:%s/sso/%s/%s", settings.getWebappUrl(), jwt, navData);
     }
 
     private String doHerokuSingleSignOn(String externalId, long timestampSeconds, String token, String email)

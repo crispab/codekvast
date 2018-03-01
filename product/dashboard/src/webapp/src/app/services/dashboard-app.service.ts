@@ -40,7 +40,7 @@ export class DashboardAppService {
     }
 
     constructGetMethodsUrl(req: GetMethodsRequest): string {
-        let result = this.configService.getApiPrefix() + this.METHODS_URL;
+        let result = this.METHODS_URL;
         let delimiter = '?';
         if (req.signature !== undefined && req.signature.trim().length > 0) {
             result += `${delimiter}signature=${encodeURI(req.signature)}`;
@@ -75,16 +75,15 @@ export class DashboardAppService {
     }
 
     getStatus(): Observable<StatusData> {
-        const url = this.configService.getApiPrefix() + this.STATUS_URL;
-        return this.http.get<StatusData>(url, {headers: this.HEADERS});
+        return this.http.get<StatusData>(this.STATUS_URL, {headers: this.HEADERS});
     }
 
     isDemoMode(): Observable<boolean> {
-        return this.http.get<boolean>(this.configService.getApiPrefix() + this.IS_DEMO_MODE_URL);
+        return this.http.get<boolean>(this.IS_DEMO_MODE_URL);
     }
 
     constructGetMethodByIdUrl(id: number) {
-        return this.configService.getApiPrefix() + this.METHOD_BY_ID_URL + id;
+        return this.METHOD_BY_ID_URL + id;
     }
 
 }

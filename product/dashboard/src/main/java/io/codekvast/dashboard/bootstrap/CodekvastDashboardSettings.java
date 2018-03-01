@@ -133,6 +133,11 @@ public class CodekvastDashboardSettings implements CodekvastCommonSettings {
     private String dnsCname;
 
     /**
+     * What is the URL of the Codekvast dashboard webapp?
+     */
+    private String webappUrl;
+
+    /**
      * @return true unless the webapp is secured
      */
     public boolean isDemoMode() {
@@ -149,11 +154,9 @@ public class CodekvastDashboardSettings implements CodekvastCommonSettings {
 
     @PostConstruct
     public void logStartup() {
-        String demoMode = isDemoMode() ? " in demo mode" : "";
-
         //noinspection UseOfSystemOutOrSystemErr
-        System.out.printf("%s v%s (%s) started%s%n", applicationName, displayVersion, commitDate, demoMode);
-        logger.info("{} v{} ({}) starts{}", applicationName, displayVersion, commitDate, demoMode);
+        System.out.printf("%n%s starts%n%n", this);
+        logger.info("{} starts", this);
     }
 
     @PreDestroy

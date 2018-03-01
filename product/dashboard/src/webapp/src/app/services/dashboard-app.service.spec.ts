@@ -7,9 +7,6 @@ const configServiceMock: ConfigService = {
     getVersion() {
         return 'dev'
     },
-    getApiPrefix() {
-        return 'xxx'
-    },
     isDemoMode() {
         return true;
     }

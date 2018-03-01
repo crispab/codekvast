@@ -1,4 +1,3 @@
-process.env.CODEKVAST_API = 'http://localhost:8081';
 process.env.CODEKVAST_VERSION = 'dev';
 process.env.ENV = 'development';
 
@@ -22,7 +21,14 @@ module.exports = webpackMerge(commonConfig, {
     ],
 
     devServer: {
+        inline: true,
+        port: 8089,
         historyApiFallback: true,
-        stats: 'minimal'
+        stats: 'minimal',
+        proxy: {
+            '/api-docs': 'http://localhost:8081',
+            '/swagger-ui.html': 'http://localhost:8081',
+            '/webapp': 'http://localhost:8081'
+        }
     }
 });

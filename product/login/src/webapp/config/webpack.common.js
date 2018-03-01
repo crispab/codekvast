@@ -74,7 +74,6 @@ module.exports = {
             minify: false,
             appMountId: 'app',
             window: {
-                CODEKVAST_API: '/api',
                 CODEKVAST_VERSION: process.env.CODEKVAST_VERSION || 'dev'
             }
         })

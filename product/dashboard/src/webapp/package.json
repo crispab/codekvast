@@ -10,7 +10,7 @@
     "lint": "tslint ./src/**/*.ts -t verbose",
     "postinstall": "typings install",
     "prebuild": "rimraf dist",
-    "start": "webpack-dev-server --inline --progress --port 8089",
+    "start": "webpack-dev-server --progress",
     "test": "karma start && npm run ts-coverage-remap",
     "test:w": "karma start --no-single-run --auto-watch",
     "ts-coverage-remap": "remap-istanbul -i ../../build/reports/frontend-coverage/coverage-final.json -o ../../build/reports/frontend-coverage -t html"

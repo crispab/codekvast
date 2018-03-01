@@ -10,7 +10,4 @@ export class ConfigService {
         return window['CODEKVAST_VERSION'] || 'dev';
     }
 
-    getApiPrefix(): String {
-        return window['CODEKVAST_API'] || '';
-    }
 }
