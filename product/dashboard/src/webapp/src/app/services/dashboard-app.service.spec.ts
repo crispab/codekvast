@@ -20,7 +20,7 @@ describe('DashboardAppService', () => {
 
     it('should construct a get methods url with signature containing wildcard', () => {
         expect(app.constructGetMethodsUrl({signature: 'sample.app.SampleApp%foo*bar'} as GetMethodsRequest))
-            .toBe('xxx/webapp/v1/methods?signature=sample.app.SampleApp%25foo*bar');
+            .toBe('/webapp/v1/methods?signature=sample.app.SampleApp%25foo*bar');
     });
 
 });
