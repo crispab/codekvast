@@ -15,7 +15,9 @@ integrationTest.mustRunAfter test
 check.dependsOn integrationTest
 
 dependencies {
+    annotationProcessor lombok
     compileOnly lombok
+
     compile slf4jApi
     compile 'com.github.seratch:jslack:1.0.25'
     compile 'org.springframework.boot:spring-boot-starter'

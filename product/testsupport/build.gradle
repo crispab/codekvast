@@ -13,7 +13,9 @@ integrationTest.dependsOn test
 check.dependsOn integrationTest
 
 dependencies {
+    annotationProcessor lombok
     compileOnly lombok
+
     compile slf4jApi
     compile testFrameworks
     compile mariadbDriver, {

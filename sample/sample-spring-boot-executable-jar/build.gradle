@@ -25,7 +25,9 @@ configurations {
 }
 
 dependencies {
+    annotationProcessor 'org.projectlombok:lombok:1.16.16'
     compileOnly 'org.projectlombok:lombok:1.16.16'
+
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile project(":sample:sample-lib")
     testCompile 'org.springframework.boot:spring-boot-starter-test'

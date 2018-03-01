@@ -9,7 +9,10 @@ apply plugin: 'org.unbroken-dome.test-sets'
 
 dependencies {
     // Annotation processors
+    annotationProcessor lombok
     compileOnly lombok
+
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     compileOnly 'org.springframework.boot:spring-boot-configuration-processor'
 
     compile 'javax.inject:javax.inject:1'

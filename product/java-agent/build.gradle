@@ -24,13 +24,14 @@ testSets {
 check.dependsOn integrationTest
 
 dependencies {
+    annotationProcessor lombok
+    compileOnly lombok
+
     compile project(":product:agent-model")
     compile 'com.squareup.okhttp3:okhttp:3.10.0'
     compile 'com.google.guava:guava:20.0'
     compile "com.google.code.gson:gson:$gsonVersion"
     compile aspectjWeaver
-
-    compileOnly lombok
 
     testCompile lombok
     testCompile testFrameworks
@@ -39,7 +40,7 @@ dependencies {
     integrationTestCompile "com.github.tomakehurst:wiremock:2.15.0"
     integrationTestRuntime logback
 
-    jacocoagent 'org.jacoco:org.jacoco.agent:0.7.9:runtime@jar'
+    jacocoagent 'org.jacoco:org.jacoco.agent:0.8.0:runtime@jar'
 }
 
 jar {
