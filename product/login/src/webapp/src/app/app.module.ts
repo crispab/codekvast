@@ -9,7 +9,7 @@ import {HomeComponent} from './pages/home/home.component';
 import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 import {HttpResponseInterceptor} from './services/httpResponse.interceptor';
 import {LOCALE_ID, NgModule} from '@angular/core';
-import {LoginAppService} from './services/login-app.service';
+import {LoginApiService} from './services/login-api.service';
 import {LoginComponent} from './pages/login/login.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {StartComponent} from './pages/start/start.component';
@@ -54,7 +54,7 @@ function selectBestLocale() {
         StartComponent,
     ],
     providers: [
-        ConfigService, Title, LoginAppService, {
+        ConfigService, Title, LoginApiService, {
             provide: APP_BASE_HREF,
             useValue: '/'
         }, {

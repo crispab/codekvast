@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {LoginAppService} from '../../services/login-app.service';
+import {LoginApiService} from '../../services/login-api.service';
 import {Router} from '@angular/router';
 
 @Component({
@@ -8,11 +8,11 @@ import {Router} from '@angular/router';
 })
 export class HomeComponent implements OnInit {
 
-    constructor(private app: LoginAppService, private router: Router) {
+    constructor(private api: LoginApiService, private router: Router) {
     }
 
     ngOnInit(): void {
-        this.app
+        this.api
             .isAuthenticated()
             .do(authenticated => console.log(`Authenticated=${authenticated}`))
             .subscribe(authenticated => {

@@ -2,7 +2,7 @@ import {AppModule} from '../../app.module';
 import {By} from '@angular/platform-browser';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ConfigService} from '../../services/config.service';
-import {DashboardAppService} from '../../services/dashboard-app.service';
+import {DashboardApiService} from '../../services/dashboard-api.service';
 import {DebugElement} from '@angular/core';
 import {MethodData} from '../../model/methods/MethodData';
 import {MethodsComponent} from './methods.component';
@@ -39,7 +39,7 @@ describe('MethodsComponent', () => {
                     useValue: {}
                 },
                 {
-                    provide: DashboardAppService,
+                    provide: DashboardApiService,
                     useValue: dashboardServiceStub
                 },
                 StateService

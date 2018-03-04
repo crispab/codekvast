@@ -1,7 +1,7 @@
 import {ActivatedRoute, Params} from '@angular/router';
 import {AgePipe} from '../../pipes/age.pipe';
 import {Component, OnInit} from '@angular/core';
-import {DashboardAppService} from '../../services/dashboard-app.service';
+import {DashboardApiService} from '../../services/dashboard-api.service';
 import {DatePipe, Location} from '@angular/common';
 import {InvocationStatusPipe} from '../../pipes/invocation-status.pipe';
 import {Method} from '../../model/methods/Method';
@@ -20,13 +20,13 @@ export class MethodDetailComponent implements OnInit {
     settings: Settings;
 
     constructor(private route: ActivatedRoute, private location: Location, private stateService: StateService,
-                private app: DashboardAppService, private agePipe: AgePipe) {
+                private api: DashboardApiService, private agePipe: AgePipe) {
     }
 
     ngOnInit(): void {
         this.settings = this.stateService.getState(Settings.KEY, () => new Settings());
         this.route.params
-            .switchMap((params: Params) => this.app.getMethodById(+params['id']))
+            .switchMap((params: Params) => this.api.getMethodById(+params['id']))
             .subscribe(method => {
                 this.method = method;
                 this.errorMessage = undefined;

@@ -1,6 +1,6 @@
 import {AgePipe} from '../../pipes/age.pipe';
 import {Component, OnInit} from '@angular/core';
-import {DashboardAppService} from '../../services/dashboard-app.service';
+import {DashboardApiService} from '../../services/dashboard-api.service';
 import {DatePipe} from '@angular/common';
 import {MethodsComponentState} from './methods.component.state';
 import {Method} from '../../model/methods/Method';
@@ -22,12 +22,12 @@ export class MethodsComponent implements OnInit {
     settings: Settings;
     state: MethodsComponentState;
 
-    constructor(private router: Router, private stateService: StateService, private app: DashboardAppService, private agePipe: AgePipe) {
+    constructor(private router: Router, private stateService: StateService, private api: DashboardApiService, private agePipe: AgePipe) {
     }
 
     ngOnInit(): void {
         this.settings = this.stateService.getState(Settings.KEY, () => new Settings());
-        this.state = this.stateService.getState(MethodsComponentState.KEY, () => new MethodsComponentState(this.app));
+        this.state = this.stateService.getState(MethodsComponentState.KEY, () => new MethodsComponentState(this.api));
     }
 
     communicationFailure() {

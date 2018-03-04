@@ -3,7 +3,7 @@ import {AgePipe} from '../../pipes/age.pipe';
 import {AuthData, StateService} from '../../services/state.service';
 import {CollectionStatusComponentState} from './collection-status.component.state';
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {DashboardAppService} from '../../services/dashboard-app.service';
+import {DashboardApiService} from '../../services/dashboard-api.service';
 import {DatePipe} from '@angular/common';
 import {Settings} from '../../components/settings.model';
 
@@ -18,13 +18,13 @@ export class CollectionStatusComponent implements OnInit, OnDestroy {
     state: CollectionStatusComponentState;
     agentsLabel = 'agents';
 
-    constructor(private stateService: StateService, private app: DashboardAppService, private agePipe: AgePipe) {
+    constructor(private stateService: StateService, private api: DashboardApiService, private agePipe: AgePipe) {
     }
 
     ngOnInit(): void {
         this.settings = this.stateService.getState(Settings.KEY, () => new Settings());
         this.state = this.stateService.getState(CollectionStatusComponentState.KEY,
-            () => new CollectionStatusComponentState(this.agePipe, this.app));
+            () => new CollectionStatusComponentState(this.agePipe, this.api));
         this.state.init();
         this.stateService.getAuthData().subscribe((ad: AuthData) => {
             this.agentsLabel = ad && ad.source === 'heroku' ? 'dynos' : 'agents';
