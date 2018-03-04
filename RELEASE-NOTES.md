@@ -2,6 +2,8 @@
 
 ## 0.22.5
 1. Implemented skeleton of login service.
+1. Upgraded to Gradle 4.6
+1. Upgraded dependencies
 
 ## 0.22.4
 1. Started implementing new login service.
