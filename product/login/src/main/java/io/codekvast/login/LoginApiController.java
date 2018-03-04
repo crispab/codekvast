@@ -30,11 +30,14 @@ import org.springframework.web.bind.annotation.RestController;
 import java.security.Principal;
 import java.util.Map;
 
+/**
+ * Implements the API used by login-api.service.ts
+ */
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:8088")
 @Slf4j
-public class AppController {
+public class LoginApiController {
 
     /**
      * This is an unprotected endpoint that returns true if the user is authenticated.
