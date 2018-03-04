@@ -1,13 +1,13 @@
 package integrationTest.dashboard;
 
 import integrationTest.dashboard.testdata.TestDataGenerator;
+import io.codekvast.common.customer.CustomerData;
+import io.codekvast.common.customer.CustomerService;
+import io.codekvast.common.customer.CustomerService.LoginRequest;
+import io.codekvast.common.customer.LicenseViolationException;
+import io.codekvast.common.customer.PricePlanDefaults;
 import io.codekvast.dashboard.CodekvastDashboardApplication;
 import io.codekvast.dashboard.agent.AgentService;
-import io.codekvast.dashboard.customer.CustomerData;
-import io.codekvast.dashboard.customer.CustomerService;
-import io.codekvast.dashboard.customer.CustomerService.LoginRequest;
-import io.codekvast.dashboard.customer.LicenseViolationException;
-import io.codekvast.dashboard.customer.PricePlanDefaults;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
 import io.codekvast.dashboard.webapp.WebappService;

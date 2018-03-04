@@ -21,7 +21,7 @@
  */
 package io.codekvast.dashboard.file_import.impl;
 
-import io.codekvast.dashboard.customer.LicenseViolationException;
+import io.codekvast.common.customer.LicenseViolationException;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
 import io.codekvast.dashboard.file_import.PublicationImporter;

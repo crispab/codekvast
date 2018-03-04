@@ -21,7 +21,7 @@
  */
 package io.codekvast.dashboard.file_import.impl;
 
-import io.codekvast.dashboard.customer.CustomerService;
+import io.codekvast.common.customer.CustomerService;
 import io.codekvast.javaagent.model.v2.CodeBaseEntry2;
 import io.codekvast.javaagent.model.v2.CommonPublicationData2;
 import io.codekvast.javaagent.model.v2.MethodSignature2;

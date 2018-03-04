@@ -21,8 +21,8 @@
  */
 package io.codekvast.dashboard.heroku.impl;
 
+import io.codekvast.common.customer.CustomerService;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
-import io.codekvast.dashboard.customer.CustomerService;
 import io.codekvast.dashboard.heroku.HerokuChangePlanRequest;
 import io.codekvast.dashboard.heroku.HerokuProvisionRequest;
 import io.codekvast.dashboard.heroku.HerokuProvisionResponse;

@@ -21,9 +21,9 @@
  */
 package io.codekvast.dashboard.webapp.impl;
 
-import io.codekvast.dashboard.customer.CustomerData;
-import io.codekvast.dashboard.customer.CustomerService;
-import io.codekvast.dashboard.customer.PricePlan;
+import io.codekvast.common.customer.CustomerData;
+import io.codekvast.common.customer.CustomerService;
+import io.codekvast.common.customer.PricePlan;
 import io.codekvast.dashboard.security.CustomerIdProvider;
 import io.codekvast.dashboard.util.TimeService;
 import io.codekvast.dashboard.webapp.WebappService;

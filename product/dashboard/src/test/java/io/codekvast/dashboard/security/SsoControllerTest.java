@@ -1,7 +1,7 @@
 package io.codekvast.dashboard.security;
 
+import io.codekvast.common.customer.CustomerService;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
-import io.codekvast.dashboard.customer.CustomerService;
 import io.codekvast.dashboard.security.impl.SecurityServiceImpl;
 import org.junit.Before;
 import org.junit.Test;

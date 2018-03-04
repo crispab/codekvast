@@ -1,7 +1,7 @@
 package io.codekvast.dashboard.heroku.impl;
 
+import io.codekvast.common.customer.CustomerService;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
-import io.codekvast.dashboard.customer.CustomerService;
 import io.codekvast.dashboard.heroku.HerokuProvisionRequest;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +24,7 @@ public class HerokuServiceImplTest {
     private HerokuServiceImpl service;
 
     @Before
-    public void beforeTest() throws Exception {
+    public void beforeTest() {
         MockitoAnnotations.initMocks(this);
         service = new HerokuServiceImpl(settings, customerService);
     }

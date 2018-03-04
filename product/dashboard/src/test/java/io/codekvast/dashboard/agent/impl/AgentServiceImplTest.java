@@ -1,8 +1,8 @@
 package io.codekvast.dashboard.agent.impl;
 
+import io.codekvast.common.customer.*;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
-import io.codekvast.dashboard.customer.*;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import org.junit.Before;

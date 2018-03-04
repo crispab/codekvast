@@ -21,12 +21,12 @@
  */
 package io.codekvast.dashboard.agent.impl;
 
+import io.codekvast.common.customer.CustomerData;
+import io.codekvast.common.customer.CustomerService;
+import io.codekvast.common.customer.LicenseViolationException;
+import io.codekvast.common.customer.PricePlan;
 import io.codekvast.dashboard.agent.AgentService;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
-import io.codekvast.dashboard.customer.CustomerData;
-import io.codekvast.dashboard.customer.CustomerService;
-import io.codekvast.dashboard.customer.LicenseViolationException;
-import io.codekvast.dashboard.customer.PricePlan;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import lombok.NonNull;

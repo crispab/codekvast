@@ -21,7 +21,7 @@
  */
 package io.codekvast.dashboard.agent;
 
-import io.codekvast.dashboard.customer.LicenseViolationException;
+import io.codekvast.common.customer.LicenseViolationException;
 import io.codekvast.javaagent.model.v1.rest.GetConfigRequest1;
 import io.codekvast.javaagent.model.v1.rest.GetConfigResponse1;
 import io.codekvast.javaagent.model.v2.CodeBasePublication2;

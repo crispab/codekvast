@@ -1,4 +1,4 @@
-package io.codekvast.dashboard.customer;
+package io.codekvast.common.customer;
 
 import org.junit.Test;
 
