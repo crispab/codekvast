@@ -19,7 +19,7 @@ dependencies {
     compileOnly lombok
 
     compile slf4jApi
-    compile 'com.github.seratch:jslack:1.0.25'
+    compile 'com.github.seratch:jslack:1.0.26'
     compile 'org.springframework.boot:spring-boot-starter'
 
     testCompile testFrameworks
