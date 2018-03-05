@@ -1,8 +1,9 @@
-package io.codekvast.dashboard.heroku.impl;
+package io.codekvast.common.heroku.impl.impl;
 
 import io.codekvast.common.customer.CustomerService;
+import io.codekvast.common.heroku.HerokuProvisionRequest;
+import io.codekvast.common.heroku.impl.HerokuServiceImpl;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
-import io.codekvast.dashboard.heroku.HerokuProvisionRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;

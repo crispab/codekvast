@@ -19,24 +19,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.common.bootstrap;
-
 /**
+ * Implementations of Heroku-related services.
+ *
  * @author olle.hallin@crisp.se
  */
-public interface CodekvastCommonSettings {
-
-    String getApplicationName();
-
-    String getDisplayVersion();
-
-    String getDnsCname();
-
-    String getSlackWebHookToken();
-
-    String getSlackWebHookUrl();
-
-    String getHerokuCodekvastUrl();
-
-    String getHerokuApiPassword();
-}
+package io.codekvast.common.heroku.impl;

@@ -19,22 +19,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.login;
-
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
-import org.springframework.boot.web.servlet.ErrorPage;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
-
 /**
+ * Thing related to Heroku.
+ *
  * @author olle.hallin@crisp.se
  */
-@Configuration
-public class ServletContainerCustomizer {
-
-    @Bean
-    public EmbeddedServletContainerCustomizer customizer() {
-        return container -> container.addErrorPages(new ErrorPage(HttpStatus.UNAUTHORIZED, "/login"));
-    }
-}
+package io.codekvast.login.heroku;

@@ -19,24 +19,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.common.bootstrap;
+package io.codekvast.common.heroku;
 
 /**
+ * Service for handling Heroku provisioning, deprovisioning and plan changes.
+ *
  * @author olle.hallin@crisp.se
  */
-public interface CodekvastCommonSettings {
+public interface HerokuService {
+    /**
+     * Provision Codekvast for one Heroku app.
+     *
+     * @param request The provisioning request sent by Heroku.
+     * @return The response that Heroku will forward to the app developer.
+     */
+    HerokuProvisionResponse provision(HerokuProvisionRequest request);
 
-    String getApplicationName();
+    /**
+     * Request to change plan.
+     *
+     * @param externalId The value of {@link HerokuProvisionResponse#id}.
+     * @param request    The change plan request.
+     */
+    void changePlan(String externalId, HerokuChangePlanRequest request);
 
-    String getDisplayVersion();
+    /**
+     * Deprovision Codekvast from one Heroku app.
+     *
+     * @param externalId The value of {@link HerokuProvisionResponse#id}.
+     */
+    void deprovision(String externalId);
 
-    String getDnsCname();
-
-    String getSlackWebHookToken();
-
-    String getSlackWebHookUrl();
-
-    String getHerokuCodekvastUrl();
-
-    String getHerokuApiPassword();
 }

@@ -8,17 +8,12 @@
     <option name="ALTERNATIVE_JRE_PATH" />
     <additionalParameters>
       <param>
-        <option name="enabled" value="true" />
         <option name="name" value="codekvast.webapp-jwt-secret" />
         <option name="value" value="" />
       </param>
       <param>
         <option name="name" value="codekvast.webapp-jwt-expiration-seconds" />
         <option name="value" value="15" />
-      </param>
-      <param>
-        <option name="name" value="server.port" />
-        <option name="value" value="9080" />
       </param>
     </additionalParameters>
     <method />

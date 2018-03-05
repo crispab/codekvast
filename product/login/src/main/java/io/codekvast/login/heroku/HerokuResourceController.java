@@ -19,9 +19,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.heroku;
+package io.codekvast.login.heroku;
 
-import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
+import io.codekvast.common.bootstrap.CodekvastCommonSettings;
+import io.codekvast.common.heroku.HerokuChangePlanRequest;
+import io.codekvast.common.heroku.HerokuProvisionRequest;
+import io.codekvast.common.heroku.HerokuProvisionResponse;
+import io.codekvast.common.heroku.HerokuService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +34,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
-import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.xml.bind.DatatypeConverter;
 
@@ -42,16 +46,11 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
  */
 @RestController
 @Slf4j
+@RequiredArgsConstructor
 public class HerokuResourceController {
 
-    private final CodekvastDashboardSettings settings;
+    private final CodekvastCommonSettings settings;
     private final HerokuService herokuService;
-
-    @Inject
-    public HerokuResourceController(CodekvastDashboardSettings settings, HerokuService herokuService) {
-        this.settings = settings;
-        this.herokuService = herokuService;
-    }
 
     @ExceptionHandler
     public ResponseEntity<String> onAuthenticationException(AuthenticationException e) {

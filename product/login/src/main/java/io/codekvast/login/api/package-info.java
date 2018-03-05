@@ -19,24 +19,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.heroku;
-
-import lombok.*;
-
-import java.util.Map;
-
 /**
+ * Things related to the frontend API.
+ *
  * @author olle.hallin@crisp.se
  */
-@Builder(toBuilder = true)
-@Getter
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-@ToString
-public class HerokuProvisionRequest {
-    private final String heroku_id;
-    private final String plan;
-    private final String region;
-    private final String callback_url;
-    private final Map<String, String> options;
-    private final String uuid;
-}
+package io.codekvast.login.api;

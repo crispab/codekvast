@@ -19,14 +19,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.heroku;
+package io.codekvast.common.heroku;
+
+import lombok.Builder;
+import lombok.Value;
+
+import java.util.Map;
 
 /**
  * @author olle.hallin@crisp.se
  */
-public class HerokuException extends Exception {
+@Value
+@Builder
+public class HerokuProvisionResponse {
 
-    public HerokuException(String message) {
-        super(message);
-    }
+    private final String id;
+
+    private final String message;
+
+    private final Map<String, String> config;
 }

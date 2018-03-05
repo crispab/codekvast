@@ -19,18 +19,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.heroku.impl;
+package io.codekvast.common.heroku.impl;
 
+import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import io.codekvast.common.customer.CustomerService;
-import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
-import io.codekvast.dashboard.heroku.HerokuChangePlanRequest;
-import io.codekvast.dashboard.heroku.HerokuProvisionRequest;
-import io.codekvast.dashboard.heroku.HerokuProvisionResponse;
-import io.codekvast.dashboard.heroku.HerokuService;
+import io.codekvast.common.heroku.HerokuChangePlanRequest;
+import io.codekvast.common.heroku.HerokuProvisionRequest;
+import io.codekvast.common.heroku.HerokuProvisionResponse;
+import io.codekvast.common.heroku.HerokuService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,16 +39,11 @@ import java.util.Map;
  */
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class HerokuServiceImpl implements HerokuService {
 
-    private final CodekvastDashboardSettings settings;
+    private final CodekvastCommonSettings settings;
     private final CustomerService customerService;
-
-    @Inject
-    public HerokuServiceImpl(CodekvastDashboardSettings settings, CustomerService customerService) {
-        this.settings = settings;
-        this.customerService = customerService;
-    }
 
     @Override
     public HerokuProvisionResponse provision(HerokuProvisionRequest request) {

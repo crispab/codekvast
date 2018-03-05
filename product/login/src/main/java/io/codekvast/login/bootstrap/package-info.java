@@ -19,24 +19,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.common.bootstrap;
-
 /**
+ * Things related to the bootstrapping of the app.
+ *
  * @author olle.hallin@crisp.se
  */
-public interface CodekvastCommonSettings {
-
-    String getApplicationName();
-
-    String getDisplayVersion();
-
-    String getDnsCname();
-
-    String getSlackWebHookToken();
-
-    String getSlackWebHookUrl();
-
-    String getHerokuCodekvastUrl();
-
-    String getHerokuApiPassword();
-}
+package io.codekvast.login.bootstrap;

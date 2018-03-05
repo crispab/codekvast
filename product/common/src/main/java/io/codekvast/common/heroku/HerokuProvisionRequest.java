@@ -19,35 +19,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.heroku;
+package io.codekvast.common.heroku;
+
+import lombok.*;
+
+import java.util.Map;
 
 /**
- * Service for handling Heroku provisioning, deprovisioning and plan changes.
- *
  * @author olle.hallin@crisp.se
  */
-public interface HerokuService {
-    /**
-     * Provision Codekvast for one Heroku app.
-     *
-     * @param request The provisioning request sent by Heroku.
-     * @return The response that Heroku will forward to the app developer.
-     */
-    HerokuProvisionResponse provision(HerokuProvisionRequest request);
-
-    /**
-     * Request to change plan.
-     *
-     * @param externalId The value of {@link HerokuProvisionResponse#id}.
-     * @param request    The change plan request.
-     */
-    void changePlan(String externalId, HerokuChangePlanRequest request);
-
-    /**
-     * Deprovision Codekvast from one Heroku app.
-     *
-     * @param externalId The value of {@link HerokuProvisionResponse#id}.
-     */
-    void deprovision(String externalId);
-
+@Builder(toBuilder = true)
+@Getter
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@ToString
+public class HerokuProvisionRequest {
+    private final String heroku_id;
+    private final String plan;
+    private final String region;
+    private final String callback_url;
+    private final Map<String, String> options;
+    private final String uuid;
 }

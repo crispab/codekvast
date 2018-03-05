@@ -19,8 +19,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.login;
+package io.codekvast.login.api;
 
+import io.codekvast.login.model.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;

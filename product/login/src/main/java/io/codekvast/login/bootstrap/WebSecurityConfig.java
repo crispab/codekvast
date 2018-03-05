@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.login;
+package io.codekvast.login.bootstrap;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -68,10 +68,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         //@formatter:off
         http
-            .antMatcher("/**")
             .authorizeRequests()
-                .antMatchers("/", "/home", "/login", "/oauth/**", "/api/authenticated").permitAll()
+                .antMatchers("/", "/home", "/login", "/oauth/**", "/api/authenticated", "/heroku/**").permitAll()
                 .anyRequest().authenticated()
+            .and()
+                .csrf().ignoringAntMatchers("/heroku/**")
             .and()
                 .exceptionHandling().authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
             .and()

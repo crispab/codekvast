@@ -21,7 +21,7 @@ import static org.junit.Assume.assumeTrue;
 public class SlackServiceIntegrationTest {
 
     private SlackService slackService;
-    private CodekvastCommonSettingsImpl settings = new CodekvastCommonSettingsImpl();
+    private CodekvastCommonSettingsForTestImpl settings = new CodekvastCommonSettingsForTestImpl();
 
     @Before
     public void beforeTest() throws Exception {

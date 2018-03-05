@@ -6,7 +6,7 @@
 
 cd $(dirname $0)
 
-declare addonManifest=../product/dashboard/src/heroku/addon-manifest.json
+declare addonManifest=../product/login/src/heroku/addon-manifest.json
 declare secrets=playbooks/vars/secrets.yml
 
 if [ ! -f ${addonManifest} ]; then

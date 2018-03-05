@@ -19,26 +19,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.login;
+package io.codekvast.common.heroku;
 
-import org.springframework.boot.autoconfigure.web.ErrorViewResolver;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.servlet.ModelAndView;
-
-import java.util.Collections;
+import lombok.*;
 
 /**
- * Redirects all 404s to index.html (since we run in HTML5 mode)
+ * @author olle.hallin@crisp.se
  */
-@Configuration
-public class Html5ModeConfig {
-
-    @Bean
-    ErrorViewResolver supportPathBasedLocationStrategyWithoutHashes() {
-        return (request, status, model) -> status == HttpStatus.NOT_FOUND
-                ? new ModelAndView("index.html", Collections.emptyMap(), HttpStatus.OK)
-                : null;
-    }
+@Builder(toBuilder = true)
+@Getter
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@ToString
+public class HerokuChangePlanRequest {
+    private final String heroku_id;
+    private final String plan;
 }

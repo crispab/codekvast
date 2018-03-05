@@ -1,6 +1,7 @@
 apply from: "$rootDir/gradle/spring-boot-app.gradle"
 apply from: "$rootDir/gradle/spring-boot-jdbc.gradle"
 apply from: "$rootDir/gradle/spring-boot-web.gradle"
+apply from: "$projectDir/src/heroku/build.gradle"
 apply from: "$projectDir/src/webapp/build.gradle"
 
 description = 'The Codekvast Login server'
@@ -15,6 +16,7 @@ dependencies {
 
     compile 'org.springframework.boot:spring-boot-starter-security'
     compile 'org.springframework.security.oauth:spring-security-oauth2'
+    compile "com.google.code.gson:gson:$gsonVersion"
 
     compile 'io.jsonwebtoken:jjwt:0.9.0'
 

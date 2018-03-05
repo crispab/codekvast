@@ -7,7 +7,7 @@ import lombok.Data;
  * @author olle.hallin@crisp.se
  */
 @Data
-class CodekvastCommonSettingsImpl implements CodekvastCommonSettings {
+class CodekvastCommonSettingsForTestImpl implements CodekvastCommonSettings {
 
     private String applicationName;
 
@@ -18,4 +18,8 @@ class CodekvastCommonSettingsImpl implements CodekvastCommonSettings {
     private String slackWebHookToken;
 
     private String slackWebHookUrl;
+
+    private String herokuCodekvastUrl;
+
+    private String herokuApiPassword;
 }

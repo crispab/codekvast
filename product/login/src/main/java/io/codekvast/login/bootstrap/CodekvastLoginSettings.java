@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.login;
+package io.codekvast.login.bootstrap;
 
 import io.codekvast.common.bootstrap.CodekvastCommonSettings;
 import lombok.Data;
@@ -40,7 +40,7 @@ import javax.annotation.PreDestroy;
 @ConfigurationProperties(prefix = "codekvast")
 @Data
 @Slf4j
-@ToString(exclude = {"slackWebHookToken", "committer", "commitMessage"})
+@ToString(exclude = {"slackWebHookToken", "committer", "commitMessage", "herokuApiPassword"})
 @SuppressWarnings("ClassWithTooManyMethods")
 public class CodekvastLoginSettings implements CodekvastCommonSettings {
 
@@ -98,6 +98,16 @@ public class CodekvastLoginSettings implements CodekvastCommonSettings {
      * To where should Spring Security redirect after a successful login?
      */
     private String loginSuccessUrl;
+
+    /**
+     * Which CODEKVAST_URL should be used by Heroku addons?
+     */
+    private String herokuCodekvastUrl;
+
+    /**
+     * Which password is Heroku using when invoking us?
+     */
+    private String herokuApiPassword;
 
     @PostConstruct
     public void logStartup() {

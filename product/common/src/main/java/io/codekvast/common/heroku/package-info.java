@@ -24,4 +24,4 @@
  *
  * @author olle.hallin@crisp.se
  */
-package io.codekvast.dashboard.heroku;
+package io.codekvast.common.heroku;
