@@ -30,7 +30,7 @@ export class DashboardApiService {
 
     getMethods(req: GetMethodsRequest): Observable<MethodData> {
         if (req.signature === '-----' && this.configService.getVersion() === 'dev') {
-            console.log('Returning a canned response');
+            console.log('[ck] Returning a canned response');
             return new Observable<MethodData>(subscriber => subscriber.next(require('../test/canned/v1/MethodData.json')));
         }
 

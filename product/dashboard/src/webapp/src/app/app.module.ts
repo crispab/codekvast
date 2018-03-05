@@ -9,7 +9,7 @@ import {CookieModule} from 'ngx-cookie';
 import {DashboardApiService} from './services/dashboard-api.service';
 import {FormsModule} from '@angular/forms';
 import {HomeComponent} from './pages/home/home.component';
-import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {HttpResponseInterceptor} from './services/httpResponse.interceptor';
 import {InvocationStatusPipe} from './pipes/invocation-status.pipe';
 import {IsLoggedIn} from './guards/is-logged-in';
@@ -43,15 +43,15 @@ function selectBestLocale() {
     let hyphen = result.indexOf('-');
     if (hyphen > 0) {
         result = result.substr(0, hyphen);
-        console.log(`Stripping variant from window.navigator.language=${window.navigator.language}, using ${result}`);
+        console.log(`[ck] Stripping variant from window.navigator.language=${window.navigator.language}, using ${result}`);
     }
 
     const supportedLocales = ['de', 'en', 'es', 'fr', 'sv'];
     if (supportedLocales.indexOf(result) < 0) {
-        console.log(`window.navigator.language=${result}, which is not supported. Falling back to en-US`);
+        console.log(`[ck] window.navigator.language=${result}, which is not supported. Falling back to en-US`);
         result = 'en-US';
     }
-    console.log('bestLocale=%o', result);
+    console.log('[ck] bestLocale=%o', result);
     return result;
 }
 

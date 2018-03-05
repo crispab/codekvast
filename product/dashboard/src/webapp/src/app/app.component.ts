@@ -31,13 +31,13 @@ export class AppComponent implements OnInit {
                 let ga = window['ga'];
 
                 if (!this.googleAnalyticsInitialized) {
-                    console.log('Initializing GoogleAnalytics');
+                    console.log('[ck] Initializing GoogleAnalytics');
                     ga('create', this.googleAnalyticsId, 'auto');
                     this.googleAnalyticsInitialized = true;
                 }
 
                 let theUrl = url.startsWith('/sso/') ? '/sso/xxxx' : url;
-                console.log(`Sending ${theUrl} to GoogleAnalytics`);
+                console.log(`[ck] Sending ${theUrl} to GoogleAnalytics`);
                 ga('set', 'page', theUrl);
                 ga('send', 'pageview');
             })

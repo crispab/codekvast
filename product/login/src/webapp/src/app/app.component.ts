@@ -28,12 +28,12 @@ export class AppComponent implements OnInit {
                 let ga = window['ga'];
 
                 if (!this.googleAnalyticsInitialized) {
-                    console.log('Initializing GoogleAnalytics');
+                    console.log('[ck] Initializing GoogleAnalytics');
                     ga('create', this.googleAnalyticsId, 'auto');
                     this.googleAnalyticsInitialized = true;
                 }
 
-                console.log(`Sending ${url} to GoogleAnalytics`);
+                console.log(`[ck] Sending ${url} to GoogleAnalytics`);
                 ga('set', 'page', url);
                 ga('send', 'pageview');
             })

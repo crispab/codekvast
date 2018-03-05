@@ -11,11 +11,11 @@ class VoteState {
     vote: boolean = undefined;
 
     constructor(private router: Router, private feature: string) {
-        console.log('Created a vote state for ' + feature);
+        console.log('[ck] Created a vote state for ' + feature);
     }
 
     doVote(choice: boolean) {
-        console.log(`Voted ${choice} for ${this.feature}`);
+        console.log(`[ck] Voted ${choice} for ${this.feature}`);
         this.vote = choice;
         //noinspection JSIgnoredPromiseFromCall
         this.router.navigate(['/vote-result', this.feature, this.vote]);
@@ -30,7 +30,7 @@ class VoteState {
     }
 
     resetVote() {
-        console.log(`Withdraw vote=${this.vote} for ${this.feature}`);
+        console.log(`[ck] Withdraw vote=${this.vote} for ${this.feature}`);
         //noinspection JSIgnoredPromiseFromCall
         this.router.navigate(['/vote-result', this.feature, 'withdraw-' + this.vote]);
         this.vote = undefined;

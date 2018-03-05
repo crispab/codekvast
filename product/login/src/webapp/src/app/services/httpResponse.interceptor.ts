@@ -15,11 +15,11 @@ export class HttpResponseInterceptor implements HttpInterceptor {
             .handle(req)
             .do(event => {
                 if (event instanceof HttpResponse) {
-                    console.log('HttpResponse=%o', event);
+                    console.log('[ck] HttpResponse=%o', event);
                 }
             }, err => {
                 if (err instanceof HttpErrorResponse) {
-                    console.log('HttpErrorResponse=%o', err);
+                    console.log('[ck] HttpErrorResponse=%o', err);
                     if (err.status === 401) {
                         // noinspection JSIgnoredPromiseFromCall
                         this.router.navigateByUrl('login');

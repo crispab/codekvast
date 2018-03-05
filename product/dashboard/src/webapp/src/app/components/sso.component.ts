@@ -16,6 +16,7 @@ export class SsoComponent implements OnInit {
 
     ngOnInit(): void {
         let token = this.route.snapshot.params['token'];
+        console.log('[ck] SsoComponent.ngOnInit(), token=%o', token);
         let parts = token.split('\.');
         if (parts.length >= 2) {
             // header = parts[0]
@@ -26,7 +27,7 @@ export class SsoComponent implements OnInit {
             if (payload.source === 'heroku') {
                 let navData = this.route.snapshot.params['navData'];
                 let args = JSON.parse(atob(navData));
-                console.log('navData=%o', args);
+                console.log('[ck] navData=%o', args);
                 sourceApp = args.app || args.appname;
             }
 
@@ -34,7 +35,7 @@ export class SsoComponent implements OnInit {
             const cookieName = 'sessionToken';
             if (!this.cookieService.get(cookieName)) {
                 // This happens when launched from the codekvast-demo1 app, which fails to set the correct sessionToken cookie.
-                console.log(`Setting ${cookieName} cookie from path param`);
+                console.log(`[ck] Setting ${cookieName} cookie from path param`);
 
                 let expires = new Date();
                 expires.setHours(expires.getHours() + 1);

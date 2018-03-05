@@ -14,7 +14,7 @@ export class HomeComponent implements OnInit {
     ngOnInit(): void {
         this.api
             .isAuthenticated()
-            .do(authenticated => console.log(`Authenticated=${authenticated}`))
+            .do(authenticated => console.log(`[ck] Authenticated=${authenticated}`))
             .subscribe(authenticated => {
                 // noinspection JSIgnoredPromiseFromCall
                 this.router.navigateByUrl(authenticated ? 'start' : 'login');
