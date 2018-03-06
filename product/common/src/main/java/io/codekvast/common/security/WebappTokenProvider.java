@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.security;
+package io.codekvast.common.security;
 
 /**
  * Business interface dealing with webapp authentication tokens.
@@ -29,7 +29,7 @@ package io.codekvast.dashboard.security;
 public interface WebappTokenProvider {
 
     /**
-     * Used for converting a successful Single Sign-On to a webapp token.
+     * Used for converting a successful login to a webapp JWT token.
      *
      * @param customerId  The internal customerId
      * @param credentials The credentials to convert to a token

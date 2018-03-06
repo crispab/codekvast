@@ -137,21 +137,6 @@ public class CodekvastDashboardSettings implements CodekvastCommonSettings {
      */
     private String webappUrl;
 
-    /**
-     * @return true unless the webapp is secured
-     */
-    public boolean isDemoMode() {
-        return webappJwtSecret == null || webappJwtSecret.trim().isEmpty();
-    }
-
-    /**
-     * @return The customerId to use for unauthenticated data queries. Will return -1 if running in secure mode and an unauthenticated
-     * request is received.
-     */
-    public Long getDemoCustomerId() {
-        return isDemoMode() ? 1L : -1L;
-    }
-
     @PostConstruct
     public void logStartup() {
         //noinspection UseOfSystemOutOrSystemErr

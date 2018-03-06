@@ -19,33 +19,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.security.impl;
+package io.codekvast.common.security.impl;
 
-import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
-import io.codekvast.dashboard.security.SecurityConfig;
-import io.codekvast.dashboard.security.SecurityService;
-import io.codekvast.dashboard.security.WebappCredentials;
+import io.codekvast.common.bootstrap.CodekvastCommonSettings;
+import io.codekvast.common.customer.CustomerData;
+import io.codekvast.common.customer.CustomerService;
+import io.codekvast.common.security.SecurityService;
+import io.codekvast.common.security.WebappCredentials;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
+import org.springframework.security.web.authentication.www.NonceExpiredException;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.Cookie;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Set;
 
 import static java.util.Collections.singleton;
+import static javax.xml.bind.DatatypeConverter.printHexBinary;
 
 /**
  * @author olle.hallin@crisp.se
@@ -55,14 +64,15 @@ import static java.util.Collections.singleton;
 @RequiredArgsConstructor
 public class SecurityServiceImpl implements SecurityService {
 
-    private static final Set<SimpleGrantedAuthority> USER_AUTHORITY = singleton(new SimpleGrantedAuthority("ROLE_" + SecurityConfig.USER_ROLE));
+    private static final Set<SimpleGrantedAuthority> USER_AUTHORITY = singleton(new SimpleGrantedAuthority("ROLE_" + USER_ROLE));
 
     private static final String JWT_CLAIM_CUSTOMER_NAME = "customerName";
     private static final String JWT_CLAIM_EMAIL = "email";
     private static final String JWT_CLAIM_SOURCE = "source";
     private static final String BEARER_ = "Bearer ";
 
-    private final CodekvastDashboardSettings settings;
+    private final CodekvastCommonSettings settings;
+    private final CustomerService customerService;
 
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS512;
     private byte[] jwtSecret;
@@ -91,6 +101,22 @@ public class SecurityServiceImpl implements SecurityService {
     public void removeAuthentication() {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
+
+    @Override
+    @SneakyThrows(UnsupportedEncodingException.class)
+    public Cookie createSessionTokenCookie(String token, String hostHeader) {
+        Cookie result = new Cookie(SESSION_TOKEN_COOKIE, URLEncoder.encode(token, "UTF-8"));
+        if (hostHeader != null && !hostHeader.isEmpty()) {
+            result.setDomain(hostHeader.replaceAll(":[0-9]+$", ""));
+        }
+        result.setPath("/");
+        result.setMaxAge(-1); // Remove when browser exits.
+        result.setHttpOnly(true); // Hide from JavaScript in the browser
+        logger.debug("Created {} cookie with domain={}, path={}, httpOnly={}", SESSION_TOKEN_COOKIE, result.getDomain(), result.getPath(),
+                     result.isHttpOnly());
+        return result;
+    }
+
 
     @Override
     public String createWebappToken(Long customerId, WebappCredentials credentials) {
@@ -141,4 +167,48 @@ public class SecurityServiceImpl implements SecurityService {
         }
     }
 
+    @SneakyThrows(NoSuchAlgorithmException.class)
+    String makeHerokuSsoToken(String externalId, long timestampSeconds) {
+        MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
+
+        return printHexBinary(
+            sha1.digest(String.format("%s:%s:%d", externalId, settings.getHerokuApiSsoSalt(), timestampSeconds).getBytes())).toLowerCase();
+    }
+
+    @Override
+    public String doHerokuSingleSignOn(String token, String externalId, String email, long timestampSeconds)
+        throws AuthenticationException {
+        String expectedToken = makeHerokuSsoToken(externalId, timestampSeconds);
+        logger.debug("id={}, token={}, timestamp={}, expectedToken={}", externalId, token, timestampSeconds, expectedToken);
+
+        long nowSeconds = Instant.now().getEpochSecond();
+        if (timestampSeconds > nowSeconds + 60) {
+            throw new NonceExpiredException("Timestamp is too far into the future");
+        }
+
+        if (timestampSeconds < nowSeconds - 5 * 60) {
+            throw new NonceExpiredException("Timestamp is too old");
+        }
+
+        if (!expectedToken.equals(token)) {
+            throw new BadCredentialsException("Invalid token");
+        }
+
+        CustomerData customerData = customerService.getCustomerDataByExternalId(externalId);
+
+        customerService.registerLogin(CustomerService.LoginRequest.builder()
+                                                                  .customerId(customerData.getCustomerId())
+                                                                  .source(customerData.getSource())
+                                                                  .email(email)
+                                                                  .build());
+
+        return createWebappToken(
+            customerData.getCustomerId(),
+            WebappCredentials.builder()
+                             .externalId(externalId)
+                             .customerName(customerData.getCustomerName())
+                             .email(email)
+                             .source(customerData.getSource())
+                             .build());
+    }
 }

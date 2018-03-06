@@ -21,9 +21,9 @@
  */
 package io.codekvast.dashboard.security;
 
+import io.codekvast.common.security.SecurityService;
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -37,12 +37,9 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 /**
  * Configuration of Spring Security.
@@ -59,8 +56,6 @@ import java.net.URLEncoder;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     public static final String REQUEST_MAPPING_WEBAPP_IS_DEMO_MODE = "/webapp/isDemoMode";
-    public static final String SESSION_TOKEN_COOKIE = "sessionToken";
-    public static final String USER_ROLE = "USER";
 
     private final UnauthorizedHandler unauthorizedHandler;
     private final CodekvastDashboardSettings settings;
@@ -85,7 +80,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // /webapp/** should require an authorized user
                 .antMatchers(HttpMethod.GET, REQUEST_MAPPING_WEBAPP_IS_DEMO_MODE).permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/webapp/**").permitAll()
-                .antMatchers("/webapp/**").hasRole(USER_ROLE)
+                .antMatchers("/webapp/**").hasRole(SecurityService.USER_ROLE)
 
                 // But the rest should be open
                 .anyRequest().permitAll();
@@ -97,27 +92,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             // disable page caching
             httpSecurity.headers().cacheControl();
         }
-    }
-
-    /**
-     * Creates a cookie with the name {@value SESSION_TOKEN_COOKIE}.
-     *
-     * @param token      The cookie value
-     * @param hostHeader The value of the HTTP header "Host". Is used for setting the cookie domain. The port number (if present) is
-     *                   ignored.
-     * @return A httpOnly session cookie with the path '/'.
-     */
-    @SneakyThrows(UnsupportedEncodingException.class)
-    public Cookie createSessionTokenCookie(String token, String hostHeader) {
-        Cookie result = new Cookie(SESSION_TOKEN_COOKIE, URLEncoder.encode(token, "UTF-8"));
-        if (hostHeader != null && !hostHeader.isEmpty()) {
-            result.setDomain(hostHeader.replaceAll(":[0-9]+$", ""));
-        }
-        result.setPath("/");
-        result.setMaxAge(-1); // Remove when browser exits.
-        result.setHttpOnly(true); // Hide from JavaScript in the browser
-        logger.debug("Created {} cookie with domain={}, path={}, httpOnly={}", SESSION_TOKEN_COOKIE, result.getDomain(), result.getPath(), result.isHttpOnly());
-        return result;
     }
 
     @Component

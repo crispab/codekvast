@@ -20,10 +20,13 @@ dependencies {
 
     compile slf4jApi
     compile 'com.github.seratch:jslack:1.0.26'
+    compile 'io.jsonwebtoken:jjwt:0.9.0'
+    compile 'javax.servlet:javax.servlet-api:3.1.0'
     compile 'org.springframework.boot:spring-boot-starter'
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
     compile 'org.springframework.boot:spring-boot-starter-security'
 
+    testCompile lombok
     testCompile testFrameworks
     testRuntime logback
 

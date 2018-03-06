@@ -40,8 +40,8 @@ import javax.annotation.PreDestroy;
 @ConfigurationProperties(prefix = "codekvast")
 @Data
 @Slf4j
-@ToString(exclude = {"slackWebHookToken", "committer", "commitMessage", "herokuApiPassword"})
-@SuppressWarnings("ClassWithTooManyMethods")
+@ToString(exclude = {"slackWebHookToken", "herokuApiPassword", "herokuApiSsoSalt", "webappJwtSecret"})
+@SuppressWarnings({"ClassWithTooManyMethods", "ClassWithTooManyFields", "OverlyComplexClass"})
 public class CodekvastLoginSettings implements CodekvastCommonSettings {
 
     /**
@@ -68,11 +68,6 @@ public class CodekvastLoginSettings implements CodekvastCommonSettings {
      * The last commit message, injected from the build system.
      */
     private String commitMessage;
-
-    /**
-     * Which domain should we set on the JWT cookie?
-     */
-    private String webappJwtCookieDomain;
 
     /**
      * What is the URL of the Codekvast dashboard?
@@ -109,9 +104,28 @@ public class CodekvastLoginSettings implements CodekvastCommonSettings {
      */
     private String herokuApiPassword;
 
+    /**
+     * Which salt does Heroku use when creating SSO tokens?
+     */
+    private String herokuApiSsoSalt;
+
+    /**
+     * Which domain should we set on the JWT cookie?
+     */
+    private String webappJwtCookieDomain;
+
+    /**
+     * Which secret should be used when creating a webapp JWT?
+     */
+    private String webappJwtSecret;
+
+    /**
+     * How many hours shall a JWT be valid?
+     */
+    private Long webappJwtExpirationHours;
+
     @PostConstruct
     public void logStartup() {
-
         //noinspection UseOfSystemOutOrSystemErr
         System.out.printf("%s starts%n", this);
         logger.info("{} starts", this);
@@ -123,5 +137,4 @@ public class CodekvastLoginSettings implements CodekvastCommonSettings {
         System.out.printf("%s shuts down%n", this);
         logger.info("{} shuts down", this);
     }
-
 }

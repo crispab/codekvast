@@ -19,20 +19,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.security;
-
 /**
- * Function interface for obtaining the current customer.
+ * Implementations of security services.
  *
  * @author olle.hallin@crisp.se
  */
-public interface CustomerIdProvider {
-
-    /**
-     * Interfaces to the Spring SecurityContextHolder for getting the customerId of the current request's
-     * authenticated customer.
-     *
-     * @return The id of the currently authenticated customer or null.
-     */
-    Long getCustomerId();
-}
+package io.codekvast.common.security.impl;

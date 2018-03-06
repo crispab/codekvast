@@ -8,7 +8,7 @@
       </pattern>
     </extension>
     <option name="SPRING_BOOT_MAIN_CLASS" value="io.codekvast.login.CodekvastLoginApplication" />
-    <option name="ACTIVE_PROFILES" value="dev-oauth-secrets" />
+    <option name="ACTIVE_PROFILES" value="dev-oauth-secrets,webpack-dev-server" />
     <option name="PROGRAM_PARAMETERS" value="--project.codekvastDisplayVersion=dev" />
     <option name="WORKING_DIRECTORY" value="file://product/login" />
     <option name="ALTERNATIVE_JRE_PATH" />

@@ -21,6 +21,7 @@
  */
 package io.codekvast.dashboard.security;
 
+import io.codekvast.common.security.SecurityService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -57,7 +58,7 @@ class WebappTokenFilter extends OncePerRequestFilter {
     }
 
     private String getSessionToken(HttpServletRequest request) {
-        String token = getTokenFromCookie(request, SecurityConfig.SESSION_TOKEN_COOKIE);
+        String token = getTokenFromCookie(request, SecurityService.SESSION_TOKEN_COOKIE);
         if (token != null) {
             logger.debug("Found sessionToken in cookie");
         } else {

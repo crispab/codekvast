@@ -2,7 +2,7 @@
   "id": "codekvast",
   "api": {
     "test": {
-      "sso_url": "http://localhost:8081/heroku/sso/",
+      "sso_url": "http://localhost:8080/heroku/sso/",
       "base_url": "http://localhost:8080/heroku/resources"
     },
     "regions": [
@@ -15,7 +15,7 @@
     ],
     "sso_salt": "herokuApiSsoSalt",
     "production": {
-      "sso_url": "https://app.codekvast.io/heroku/sso/",
+      "sso_url": "https://login.codekvast.io/heroku/sso/",
       "base_url": "https://login.codekvast.io/heroku/resources"
     },
     "config_vars": [

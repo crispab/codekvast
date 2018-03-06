@@ -4,7 +4,7 @@ import io.codekvast.common.customer.CustomerData;
 import io.codekvast.common.customer.CustomerService;
 import io.codekvast.common.customer.PricePlan;
 import io.codekvast.common.customer.PricePlanDefaults;
-import io.codekvast.dashboard.security.CustomerIdProvider;
+import io.codekvast.common.security.CustomerIdProvider;
 import io.codekvast.dashboard.util.TimeService;
 import io.codekvast.dashboard.webapp.model.status.GetStatusResponse;
 import org.junit.Before;

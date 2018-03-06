@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.dashboard.security;
+package io.codekvast.common.security;
 
 import lombok.Builder;
 import lombok.NonNull;
