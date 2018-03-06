@@ -65,7 +65,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
             // We cannot use CSRF since agents must be able to POST
-            .csrf().disable()
+            .csrf().disable() // TODO: enable CSRF except for /agent/**
 
             // and we don't want HttpSessions
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
