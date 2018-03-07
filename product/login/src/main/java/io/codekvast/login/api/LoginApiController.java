@@ -46,7 +46,7 @@ public class LoginApiController {
      * @param principal The logged in principal, or null if unauthenticated.
      * @return true iff the user is authenticated.
      */
-    @RequestMapping("/authenticated")
+    @RequestMapping("/is-authenticated")
     public boolean isAuthenticated(Principal principal) {
         logger.debug("isAuthenticated(): principal={}", principal);
         return principal != null;
