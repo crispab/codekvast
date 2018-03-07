@@ -27,6 +27,7 @@ import lombok.Value;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 
 import java.time.Instant;
+import java.util.List;
 
 /**
  * @author olle.hallin@crisp.se
@@ -63,6 +64,15 @@ public interface CustomerService {
      * @throws AuthenticationCredentialsNotFoundException iff the customerId was invalid.
      */
     CustomerData getCustomerDataByCustomerId(long customerId) throws AuthenticationCredentialsNotFoundException;
+
+    /**
+     * Retrieve a list of customers which has a user with a certain email address
+     *
+     * @param email The user's email address.
+     * @return A collection of CustomerData objects. Does never return null.
+     * @throws UnrecognizedEmailException if no customer has a user with that email address.
+     */
+    List<CustomerData> getCustomerDataByUserEmail(String email) throws UnrecognizedEmailException;
 
     /**
      * Validates a received publication before accepting it.

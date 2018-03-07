@@ -32,9 +32,9 @@ export class AppComponent implements OnInit {
                     ga('create', this.googleAnalyticsId, 'auto');
                     this.googleAnalyticsInitialized = true;
                 }
-
-                console.log(`[ck] Sending ${url} to GoogleAnalytics`);
-                ga('set', 'page', url);
+                let theUrl = url.startsWith('/login/') ? '/login/error' : url;
+                console.log(`[ck] Sending ${theUrl} to GoogleAnalytics`);
+                ga('set', 'page', theUrl);
                 ga('send', 'pageview');
             })
             .subscribe(url => {

@@ -58,7 +58,6 @@ public class HerokuSsoController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
-
     @RequestMapping(path = "/heroku/sso/", method = POST, consumes = APPLICATION_FORM_URLENCODED_VALUE)
     public String doHerokuSingleSignOn(
         @RequestParam("id") String externalId,

@@ -34,8 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
@@ -68,6 +67,25 @@ public class CustomerServiceImpl implements CustomerService {
         } catch (DataAccessException e) {
             throw new AuthenticationCredentialsNotFoundException("Invalid customerId: " + customerId);
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CustomerData> getCustomerDataByUserEmail(String email) throws UnrecognizedEmailException {
+        List<CustomerData> result = new ArrayList<>();
+
+        List<Long> customerIds = jdbcTemplate.queryForList("SELECT customerId FROM users WHERE email = ?", Long.class, email);
+        for (Long customerId : customerIds) {
+            result.add(getCustomerDataByCustomerId(customerId));
+        }
+
+        logger.debug("Found {} customers for email {}", result.size(), email);
+        if (result.isEmpty()) {
+            throw new UnrecognizedEmailException("Unrecognized email address " + email);
+        }
+
+        result.sort(Comparator.comparing(CustomerData::getCustomerName));
+        return result;
     }
 
     @Override

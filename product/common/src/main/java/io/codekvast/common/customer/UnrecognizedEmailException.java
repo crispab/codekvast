@@ -19,30 +19,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.login.model;
+package io.codekvast.common.customer;
 
-import io.codekvast.common.customer.CustomerData;
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
-
-import java.util.List;
+import org.springframework.security.core.AuthenticationException;
 
 /**
- * @author olle.hallin@crisp.se
+ * Thrown when a user tries to do a Single-Sign On with an unrecognized email address.
  */
-@Value
-@Builder
-public class User {
-    @NonNull
-    String id;
+public class UnrecognizedEmailException extends AuthenticationException {
 
-    @NonNull
-    String name;
-
-    @NonNull
-    String email;
-
-    @NonNull
-    List<CustomerData> customerData;
+    public UnrecognizedEmailException(String message) {
+        super(message);
+    }
 }

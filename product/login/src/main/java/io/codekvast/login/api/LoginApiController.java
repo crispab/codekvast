@@ -21,13 +21,22 @@
  */
 package io.codekvast.login.api;
 
+import io.codekvast.common.customer.CustomerService;
+import io.codekvast.common.customer.UnrecognizedEmailException;
 import io.codekvast.login.model.User;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.security.Principal;
 import java.util.Map;
 
@@ -37,8 +46,23 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:8088")
+@RequiredArgsConstructor
 @Slf4j
 public class LoginApiController {
+
+    private final CustomerService customerService;
+
+    @ExceptionHandler
+    public void onUnrecognizedEmailException(UnrecognizedEmailException e, HttpServletRequest request, HttpServletResponse response)
+        throws IOException {
+
+        // This happens after a successful OAuth dance, but the principal contains an unrecognized email address.
+        logger.warn("Invalid login attempt: " + e.getMessage());
+
+        new CookieClearingLogoutHandler("sessionToken", "XSRF-TOKEN").logout(request, response, null);
+        new SecurityContextLogoutHandler().logout(request, response, null);
+        response.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
+    }
 
     /**
      * This is an unprotected endpoint that returns true if the user is authenticated.
@@ -67,7 +91,13 @@ public class LoginApiController {
         }
 
         //noinspection unchecked
-        Map<String, String> details = (Map<String, String>) authentication.getUserAuthentication().getDetails();
+        return getUserFromDetails((Map<String, String>) authentication.getUserAuthentication().getDetails());
+
+        // TODO: instead of just returning a User, create a sessionToken cookie and redirect to settings.getDashboardUrl();
+    }
+
+    User getUserFromDetails(Map<String, String> details) {
+        String email = details.get("email");
 
         String id = details.get("link"); // Facebook
         if (id == null) {
@@ -83,12 +113,11 @@ public class LoginApiController {
         User user = User.builder()
                         .id(id)
                         .name(details.get("name"))
-                        .email(details.get("email"))
+                        .email(email)
+                        .customerData(customerService.getCustomerDataByUserEmail(email))
                         .build();
         logger.debug("Returning {}", user);
         return user;
-
-        // TODO: instead of just returning a User, create a sessionToken cookie and redirect to settings.getdashboardUrl();
     }
 
 
