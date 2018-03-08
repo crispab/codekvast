@@ -8,7 +8,7 @@
     "regions": [
       "*"
     ],
-    "version": 1,
+    "version": 2,
     "password": "herokuApiPassword",
     "requires": [
       "attachable"

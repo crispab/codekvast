@@ -4,6 +4,7 @@
 1. Implemented skeleton of login service.
 1. Upgraded to Gradle 4.6
 1. Upgraded dependencies
+1. Moved api.codekvast.io/heroku to login.codekvast.io/heroku (with an nginx rule to also accept the former)
 
 ## 0.22.4
 1. Started implementing new login service.
