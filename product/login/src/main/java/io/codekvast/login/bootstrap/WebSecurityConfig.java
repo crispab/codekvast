@@ -69,7 +69,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         //@formatter:off
         http
             .authorizeRequests()
-                .antMatchers("/", "/home", "/login", "/oauth/**", "/api/is-authenticated", "/heroku/**").permitAll()
+                .antMatchers("/", "/home", "/login", "/oauth/**", "/api/isAuthenticated", "/heroku/**").permitAll()
                 .anyRequest().authenticated()
             .and()
                 .csrf().ignoringAntMatchers("/heroku/**").csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())

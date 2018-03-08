@@ -17,7 +17,7 @@ export class LoginApiService {
     }
 
     isAuthenticated(): Observable<boolean> {
-        return this.http.get<boolean>('/api/is-authenticated', {headers: this.HEADERS});
+        return this.http.get<boolean>('/api/isAuthenticated', {headers: this.HEADERS});
     }
 
     logout(): void {

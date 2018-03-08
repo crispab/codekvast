@@ -37,7 +37,6 @@ import java.util.Map;
  * Implements the API used by login-api.service.ts
  */
 @RestController
-@RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:8088")
 @RequiredArgsConstructor
 @Slf4j
@@ -51,7 +50,7 @@ public class LoginApiController {
      * @param principal The logged in principal, or null if unauthenticated.
      * @return true iff the user is authenticated.
      */
-    @RequestMapping("/is-authenticated")
+    @RequestMapping("/api/isAuthenticated")
     public boolean isAuthenticated(Principal principal) {
         logger.debug("isAuthenticated(): principal={}", principal);
         return principal != null;
@@ -63,7 +62,7 @@ public class LoginApiController {
      * @param authentication The OAuth2 authentication object
      * @return A User object.
      */
-    @RequestMapping("/user")
+    @RequestMapping("/api/user")
     public User user(OAuth2Authentication authentication) {
         logger.info("Authentication={}", authentication);
 

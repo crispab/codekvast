@@ -1,4 +1,4 @@
 <div class="container">
-    <div>Logged in as {{ user | json }}</div>
+    <div>Logged in as {{ user | async | json }}</div>
     <button (click)="logout()">Logout</button>
 </div>
