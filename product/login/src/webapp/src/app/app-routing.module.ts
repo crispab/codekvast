@@ -1,8 +1,10 @@
-import {HomeComponent} from './pages/home/home.component';
-import {LoginComponent} from './pages/login/login.component';
+import {ForbiddenComponent} from './pages/forbidden.component';
+import {HomeComponent} from './pages/home.component';
+import {IsAuthenticated} from './guards/isAuthenticated';
+import {LoginComponent} from './pages/login.component';
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {StartComponent} from './pages/start/start.component';
+import {StartComponent} from './pages/start.component';
 
 const routes: Routes = [
     {
@@ -10,14 +12,18 @@ const routes: Routes = [
         redirectTo: 'home',
         pathMatch: 'full'
     }, {
+        path: 'forbidden',
+        component: ForbiddenComponent
+    }, {
         path: 'home',
         component: HomeComponent
     }, {
-        path: 'login/:errorMessage',
+        path: 'login',
         component: LoginComponent
     }, {
         path: 'start',
-        component: StartComponent
+        component: StartComponent,
+        canActivate: [IsAuthenticated]
     }, {
         path: '**',
         redirectTo: 'home',

@@ -71,7 +71,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CustomerData> getCustomerDataByUserEmail(String email) throws UnrecognizedEmailException {
+    public List<CustomerData> getCustomerDataByUserEmail(String email) {
         List<CustomerData> result = new ArrayList<>();
 
         List<Long> customerIds = jdbcTemplate.queryForList("SELECT customerId FROM users WHERE email = ?", Long.class, email);
@@ -80,10 +80,6 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         logger.debug("Found {} customers for email {}", result.size(), email);
-        if (result.isEmpty()) {
-            throw new UnrecognizedEmailException("Unrecognized email address " + email);
-        }
-
         result.sort(Comparator.comparing(CustomerData::getCustomerName));
         return result;
     }

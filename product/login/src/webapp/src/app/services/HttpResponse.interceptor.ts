@@ -18,12 +18,10 @@ export class HttpResponseInterceptor implements HttpInterceptor {
                     console.log('[ck] HttpResponse=%o', event);
                 }
             }, err => {
-                if (err instanceof HttpErrorResponse) {
-                    console.log('[ck] HttpErrorResponse=%o', err);
-                    if (err.status === 403) {
-                        // noinspection JSIgnoredPromiseFromCall
-                        this.router.navigate(['login', err.error.message]);
-                    }
+                console.log('[ck] HttpResponseInterceptor: err=%o', err);
+                if ((err instanceof HttpErrorResponse) && (err.status === 401 || err.status === 403)) {
+                    // noinspection JSIgnoredPromiseFromCall
+                    this.router.navigateByUrl('forbidden');
                 }
             });
     }

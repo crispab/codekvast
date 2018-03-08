@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {LoginApiService} from '../../services/login-api.service';
-import {User} from '../../model/User';
+import {LoginApiService} from '../services/LoginApi.service';
+import {User} from '../model/User';
 
 @Component({
     selector: 'ck-start',

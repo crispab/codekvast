@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
-import {ConfigService} from './services/config.service';
+import {ConfigService} from './services/Config.service';
 import {NavigationEnd, Router} from '@angular/router';
 import {TitleCasePipe} from '@angular/common';
 import {Title} from '@angular/platform-browser';
@@ -24,7 +24,7 @@ export class AppComponent implements OnInit {
         this.router.events
             .filter(event => event instanceof NavigationEnd)
             .map(event => (event as NavigationEnd).urlAfterRedirects)
-            .do(url => {
+            .subscribe(url => {
                 let ga = window['ga'];
 
                 if (!this.googleAnalyticsInitialized) {
@@ -32,14 +32,19 @@ export class AppComponent implements OnInit {
                     ga('create', this.googleAnalyticsId, 'auto');
                     this.googleAnalyticsInitialized = true;
                 }
-                let theUrl = url.startsWith('/login/') ? '/login/error' : url;
-                console.log(`[ck] Sending ${theUrl} to GoogleAnalytics`);
-                ga('set', 'page', theUrl);
-                ga('send', 'pageview');
-            })
-            .subscribe(url => {
+
                 let feature = this.titleCasePipe.transform(url.substr(1));
-                this.titleService.setTitle('Codekvast ' + feature);
+                let hash = feature.indexOf('#');
+                if (hash < 0) {
+                    hash = feature.length
+                }
+                feature = feature.substr(0, hash);
+
+                this.titleService.setTitle('Codekvast ' + feature.substr(0, hash));
+
+                console.log(`[ck] Sending ${feature} to GoogleAnalytics`);
+                ga('set', 'page', feature);
+                ga('send', 'pageview');
             });
     }
 

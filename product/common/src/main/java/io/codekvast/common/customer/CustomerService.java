@@ -70,9 +70,8 @@ public interface CustomerService {
      *
      * @param email The user's email address.
      * @return A collection of CustomerData objects. Does never return null.
-     * @throws UnrecognizedEmailException if no customer has a user with that email address.
      */
-    List<CustomerData> getCustomerDataByUserEmail(String email) throws UnrecognizedEmailException;
+    List<CustomerData> getCustomerDataByUserEmail(String email);
 
     /**
      * Validates a received publication before accepting it.

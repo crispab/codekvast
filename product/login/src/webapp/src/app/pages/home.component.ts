@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {LoginApiService} from '../../services/login-api.service';
+import {LoginApiService} from '../services/LoginApi.service';
 import {Router} from '@angular/router';
 
 @Component({
@@ -22,7 +22,7 @@ export class HomeComponent implements OnInit {
                     this.router.navigateByUrl('start');
                 } else {
                     // noinspection JSIgnoredPromiseFromCall
-                    this.router.navigate(['login', '']);
+                    this.router.navigateByUrl('login');
                 }
             });
     }
