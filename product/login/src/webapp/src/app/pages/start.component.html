@@ -1,4 +1,13 @@
 <div class="container">
-    <div>Logged in as {{ user | async | json }}</div>
+    <div>Logged in as {{ user.email }}</div>
+    <div *ngIf="user.customerData">
+        <div *ngFor="let cd of user.customerData">
+            <button (click)="launch(cd)">Show collected data for {{ cd.customerName }}</button>
+        </div>
+        <hr>
+    </div>
+    <div *ngIf="!user.customerData">
+        <span>You don't have access to any Codekvast data</span>
+    </div>
     <button (click)="logout()">Logout</button>
 </div>
