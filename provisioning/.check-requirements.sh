@@ -4,7 +4,7 @@ if [ "$(which ansible)" == "" ]; then
     exit 1
 fi
 
-declare ansibleVersion=$(ansible --version | grep -E "^ansible" | awk '{print $2}')
+declare ansibleVersion=$(ansible --version | awk '/^ansible/ {print $2}')
 case "$ansibleVersion" in
     2.4*)
         ;;

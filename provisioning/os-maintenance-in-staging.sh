@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #---------------------------------------------------------------------------------------------------
-# Upgrades the servers' operating system in prod
+# Upgrades the servers' operating system in staging
 #---------------------------------------------------------------------------------------------------
 
 source $(dirname $0)/.check-requirements.sh

@@ -1,7 +1,7 @@
 ---
 #------------------------------------------------------------------------------------
 # Which third-party Ansible roles do we need?
-# Install with `ansible-galaxy install -r requirements.yml`
+# Install with `ansible-galaxy install -r ansible-role-requirements.yml`
 # NOTE: the roles/ directory should be version controlled!
 #------------------------------------------------------------------------------------
 - {src: HanXHX.mysql, version: 9c0455a} # master branch at 2016-11-09
