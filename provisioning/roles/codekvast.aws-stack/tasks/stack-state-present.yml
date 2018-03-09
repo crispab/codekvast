@@ -160,6 +160,7 @@
     - "codekvast-{{ stack.customer }}-{{ stack.env }}-management"
     image: "{{ aws_ami_id }}"
     instance_type: "{{ ec2_instance_type }}"
+    instance_profile_name: "{{ ec2_instance_profile_name }}"
     user_data: "{{ lookup('file', 'files/ubuntu-cloud-init.sh') }}"
     exact_count: 1
     count_tag: "{{ role_tag_database }}"
@@ -182,6 +183,7 @@
     - "codekvast-{{ stack.customer }}-{{ stack.env }}-management"
     image: "{{ aws_ami_id }}"
     instance_type: "{{ ec2_instance_type }}"
+    instance_profile_name: "{{ ec2_instance_profile_name }}"
     user_data: "{{ lookup('file', 'files/ubuntu-cloud-init.sh') }}"
     exact_count: "{{ stack.backend_count | default(1) }}"
     count_tag: "{{ role_tag_backend }}"
