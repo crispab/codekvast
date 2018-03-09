@@ -1,0 +1,1 @@
+env: "{{ hostvars[inventory_hostname]['ec2_tag_Env'] }}"

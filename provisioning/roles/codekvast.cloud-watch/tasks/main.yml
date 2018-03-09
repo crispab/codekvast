@@ -1,0 +1,15 @@
+---
+- name: Copy /tmp/awslogs-agent-setup.py
+  copy: src=awslogs-agent-setup.py dest=/tmp/awslogs-agent-setup.py
+
+- name: Create /tmp/awslogs.config
+  template:
+    src: "awslogs.conf.{{ server_type }}.j2"
+    dest: /tmp/awslogs.config
+  notify:
+  - Reconfigure awslogs
+
+- meta: flush_handlers
+
+- name: Enable and start awslogs service
+  service: name=awslogs enabled=yes state=started

@@ -1,0 +1,20 @@
+# awslogs config for Codekvast Services
+
+[general]
+state_file = /var/awslogs/state/agent-state
+
+[/var/log/syslog]
+datetime_format = %Y-%m-%d %H:%M:%S
+file = /var/log/syslog
+buffer_duration = 5000
+log_stream_name = syslog
+initial_position = start_of_file
+log_group_name = {{ env }}
+
+[/var/log/codekvast/]
+datetime_format = %Y-%m-%d %H:%M:%S
+file = /var/log/codekvast/{{ service_name }}.log
+buffer_duration = 5000
+log_stream_name = codekvast-{{ service_name }}
+initial_position = start_of_file
+log_group_name = {{ env }}

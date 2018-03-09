@@ -13,6 +13,7 @@
   - vars/common.yml
 
   vars:
+    server_type: application
     service_name: dashboard
     service_port: "{{ ports.dashboard.service }}"
     management_port: "{{ ports.dashboard.management }}"
@@ -21,6 +22,7 @@
     fileImportIntervalSeconds: 30
 
   roles:
+  - {role: codekvast.cloud-watch, tags: [cloud-watch, dashboard]}
   - {role: codekvast.spring-boot-service, tags: [service, dashboard]}
 
   post_tasks:

@@ -1,0 +1,3 @@
+---
+- name: Reconfigure awslogs
+  shell: python /tmp/awslogs-agent-setup.py --region {{ aws_region }} --non-interactive --configfile=/tmp/awslogs.config
