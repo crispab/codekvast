@@ -11,10 +11,18 @@ log_stream_name = syslog
 initial_position = start_of_file
 log_group_name = {{ env }}
 
-[/var/log/codekvast/]
+[/var/log/codekvast/application]
 datetime_format = %Y-%m-%d %H:%M:%S
-file = /var/log/codekvast/{{ service_name }}.log
+file = /var/log/codekvast/application.log
 buffer_duration = 5000
-log_stream_name = codekvast-{{ service_name }}
+log_stream_name = application
+initial_position = start_of_file
+log_group_name = {{ env }}
+
+[/var/log/codekvast/access]
+datetime_format = %Y-%m-%d %H:%M:%S
+file = /var/log/codekvast/access.log
+buffer_duration = 5000
+log_stream_name = access
 initial_position = start_of_file
 log_group_name = {{ env }}
