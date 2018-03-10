@@ -66,7 +66,6 @@ public class SecurityServiceImpl implements SecurityService {
 
     private static final Set<SimpleGrantedAuthority> USER_AUTHORITY = singleton(new SimpleGrantedAuthority("ROLE_" + USER_ROLE));
 
-    private static final String JWT_CLAIM_CUSTOMER_NAME = "customerName";
     private static final String JWT_CLAIM_EMAIL = "email";
     private static final String JWT_CLAIM_SOURCE = "source";
     private static final String BEARER_ = "Bearer ";
@@ -89,7 +88,7 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public Long getCustomerId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication == null ? settings.getDemoCustomerId() : (Long) authentication.getPrincipal();
+        return (Long) authentication.getPrincipal();
     }
 
     @Override
@@ -120,18 +119,15 @@ public class SecurityServiceImpl implements SecurityService {
 
     @Override
     public String createWebappToken(Long customerId, WebappCredentials credentials) {
-        return settings.isDemoMode()
-            ? null
-            : Jwts.builder()
-                  .setId(credentials.getExternalId())
-                  .setSubject(Long.toString(customerId))
-                  .setIssuedAt(new Date())
-                  .setExpiration(calculateExpirationDate())
-                  .claim(JWT_CLAIM_CUSTOMER_NAME, credentials.getCustomerName())
-                  .claim(JWT_CLAIM_EMAIL, credentials.getEmail())
-                  .claim(JWT_CLAIM_SOURCE, credentials.getSource())
-                  .signWith(signatureAlgorithm, jwtSecret)
-                  .compact();
+        return Jwts.builder()
+                   .setId(Long.toString(customerId))
+                   .setSubject(credentials.getCustomerName())
+                   .setIssuedAt(new Date())
+                   .setExpiration(calculateExpirationDate())
+                   .claim(JWT_CLAIM_EMAIL, credentials.getEmail())
+                   .claim(JWT_CLAIM_SOURCE, credentials.getSource())
+                   .signWith(signatureAlgorithm, jwtSecret)
+                   .compact();
     }
 
     private Date calculateExpirationDate() {
@@ -142,8 +138,7 @@ public class SecurityServiceImpl implements SecurityService {
     }
 
     private Authentication toAuthentication(String token) throws AuthenticationException {
-
-        if (token == null || settings.isDemoMode()) {
+        if (token == null) {
             return null;
         }
 
@@ -153,10 +148,9 @@ public class SecurityServiceImpl implements SecurityService {
             Jws<Claims> claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token.substring(pos));
 
             return new PreAuthenticatedAuthenticationToken(
-                Long.valueOf(claims.getBody().getSubject()),
+                Long.valueOf(claims.getBody().getId()),
                 WebappCredentials.builder()
-                                 .externalId(claims.getBody().getId())
-                                 .customerName(claims.getBody().get(JWT_CLAIM_CUSTOMER_NAME, String.class))
+                                 .customerName((claims.getBody().getSubject()))
                                  .email(claims.getBody().get(JWT_CLAIM_EMAIL, String.class))
                                  .source(claims.getBody().get(JWT_CLAIM_SOURCE, String.class))
                                  .build(),
@@ -205,7 +199,6 @@ public class SecurityServiceImpl implements SecurityService {
         return createWebappToken(
             customerData.getCustomerId(),
             WebappCredentials.builder()
-                             .externalId(externalId)
                              .customerName(customerData.getCustomerName())
                              .email(email)
                              .source(customerData.getSource())

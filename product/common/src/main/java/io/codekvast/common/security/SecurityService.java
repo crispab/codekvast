@@ -28,10 +28,19 @@ import javax.servlet.http.Cookie;
  *
  * @author olle.hallin@crisp.se
  */
-public interface SecurityService extends CustomerIdProvider, WebappTokenProvider {
+public interface SecurityService extends CustomerIdProvider {
 
     String SESSION_TOKEN_COOKIE = "sessionToken";
     String USER_ROLE = "USER";
+
+    /**
+     * Used for converting a successful login to a webapp JWT token.
+     *
+     * @param customerId  The internal customerId
+     * @param credentials The credentials to convert to a token
+     * @return A (JWT) token to use when launching the webapp.
+     */
+    String createWebappToken(Long customerId, WebappCredentials credentials);
 
     /**
      * Authenticates a token attached to an incoming request.

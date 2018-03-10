@@ -19,21 +19,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.common.security;
+package io.codekvast.login.api;
+
+import io.codekvast.login.model.User;
+import org.springframework.security.core.Authentication;
 
 /**
- * Business interface dealing with webapp authentication tokens.
- *
  * @author olle.hallin@crisp.se
  */
-public interface WebappTokenProvider {
+public interface LoginService {
+    String getDashboardSsoLink(Long customerId);
 
-    /**
-     * Used for converting a successful login to a webapp JWT token.
-     *
-     * @param customerId  The internal customerId
-     * @param credentials The credentials to convert to a token
-     * @return A (JWT) token to use when launching the webapp.
-     */
-    String createWebappToken(Long customerId, WebappCredentials credentials);
+    User getUserFromAuthentication(Authentication authentication);
 }

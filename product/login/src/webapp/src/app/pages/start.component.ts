@@ -10,7 +10,6 @@ import {CustomerData} from '../model/CustomerData';
 export class StartComponent implements OnInit {
 
     user: User;
-    message: string = '';
 
     constructor(private api: LoginApiService) {
     }
@@ -19,8 +18,8 @@ export class StartComponent implements OnInit {
         this.api.getUser().subscribe(user => this.user = user);
     }
 
-    launch(cd: CustomerData): void {
-        this.message = this.message + '\nLaunched ' + cd.customerId;
+    launchDashboard(cd: CustomerData): void {
+        this.api.launchDashboard(cd.customerId);
     }
 
     logout(): void {

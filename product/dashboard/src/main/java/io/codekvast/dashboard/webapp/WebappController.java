@@ -22,7 +22,6 @@
 package io.codekvast.dashboard.webapp;
 
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
-import io.codekvast.dashboard.security.SecurityConfig;
 import io.codekvast.dashboard.webapp.model.methods.GetMethodsRequest;
 import io.codekvast.dashboard.webapp.model.methods.GetMethodsResponse;
 import io.codekvast.dashboard.webapp.model.methods.MethodDescriptor;
@@ -109,12 +108,6 @@ public class WebappController {
         GetStatusResponse response = webappService.getStatus();
         logger.debug("Response: {}", response);
         return ResponseEntity.ok().body(response);
-    }
-
-    @RequestMapping(method = GET, value = SecurityConfig.REQUEST_MAPPING_WEBAPP_IS_DEMO_MODE, produces = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<String> isDemoMode() {
-        logger.trace("Is demo mode? {}", settings.isDemoMode());
-        return ResponseEntity.ok(Boolean.toString(settings.isDemoMode()));
     }
 
     private GetMethodsResponse doGetMethods(GetMethodsRequest request) {

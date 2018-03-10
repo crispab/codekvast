@@ -110,11 +110,6 @@ public class CodekvastLoginSettings implements CodekvastCommonSettings {
     private String herokuApiSsoSalt;
 
     /**
-     * Which domain should we set on the JWT cookie?
-     */
-    private String webappJwtCookieDomain;
-
-    /**
      * Which secret should be used when creating a webapp JWT?
      */
     private String webappJwtSecret;

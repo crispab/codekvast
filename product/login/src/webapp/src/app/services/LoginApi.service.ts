@@ -28,4 +28,12 @@ export class LoginApiService {
             }).subscribe();
     }
 
+    launchDashboard(customerId: number): void {
+        // @formatter:off
+        this.http.post<string>(`/api/launchDashboard/${customerId}`, {})
+            .subscribe(
+            newLocation => this.router.navigateByUrl(newLocation),
+            () => this.router.navigateByUrl('forbidden'));
+        // @formatter:on
+    }
 }

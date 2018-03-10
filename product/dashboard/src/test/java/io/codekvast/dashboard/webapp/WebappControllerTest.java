@@ -1,7 +1,6 @@
 package io.codekvast.dashboard.webapp;
 
 import io.codekvast.dashboard.bootstrap.CodekvastDashboardSettings;
-import io.codekvast.dashboard.security.SecurityConfig;
 import io.codekvast.dashboard.webapp.model.methods.ApplicationDescriptor;
 import io.codekvast.dashboard.webapp.model.methods.EnvironmentDescriptor;
 import io.codekvast.dashboard.webapp.model.methods.MethodDescriptor;
@@ -45,22 +44,6 @@ public class WebappControllerTest {
         this.mockMvc = MockMvcBuilders.standaloneSetup(webappController)
                                       .setMessageConverters(new GsonHttpMessageConverter(), new StringHttpMessageConverter())
                                       .build();
-    }
-
-    @Test
-    public void should_disable_demo_mode_when_jwt_secret_is_set() throws Exception {
-        settings.setWebappJwtSecret("secret");
-        mockMvc.perform(get(SecurityConfig.REQUEST_MAPPING_WEBAPP_IS_DEMO_MODE))
-               .andExpect(status().isOk())
-               .andExpect(content().string("false"));
-    }
-
-    @Test
-    public void should_enable_demo_mode_when_jwt_secret_is_not_set() throws Exception {
-        settings.setWebappJwtSecret("");
-        mockMvc.perform(get(SecurityConfig.REQUEST_MAPPING_WEBAPP_IS_DEMO_MODE))
-               .andExpect(status().isOk())
-               .andExpect(content().string("true"));
     }
 
     @Test

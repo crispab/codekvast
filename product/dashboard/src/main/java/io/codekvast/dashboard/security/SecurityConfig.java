@@ -35,6 +35,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,43 +56,30 @@ import java.io.IOException;
 @Slf4j
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    public static final String REQUEST_MAPPING_WEBAPP_IS_DEMO_MODE = "/webapp/isDemoMode";
-
     private final UnauthorizedHandler unauthorizedHandler;
     private final CodekvastDashboardSettings settings;
     private final WebappTokenFilter webappTokenFilter;
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
+        // formatter:off
         httpSecurity
-            // We cannot use CSRF since agents must be able to POST
-            .csrf().disable() // TODO: enable CSRF except for /agent/**
-
-            // and we don't want HttpSessions
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
-        if (!settings.isDemoMode()) {
-
-            httpSecurity
-                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-
-                .authorizeRequests()
-
-                // /webapp/** should require an authorized user
-                .antMatchers(HttpMethod.GET, REQUEST_MAPPING_WEBAPP_IS_DEMO_MODE).permitAll()
-                .antMatchers(HttpMethod.OPTIONS, "/webapp/**").permitAll()
-                .antMatchers("/webapp/**").hasRole(SecurityService.USER_ROLE)
-
-                // But the rest should be open
-                .anyRequest().permitAll();
-
-            // Custom token-based security filter
-            httpSecurity
-                .addFilterBefore(webappTokenFilter, UsernamePasswordAuthenticationFilter.class);
-
-            // disable page caching
-            httpSecurity.headers().cacheControl();
-        }
+            .csrf()
+            .ignoringAntMatchers("/javaagent/**")
+            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+            .and()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+            .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
+            .and()
+            .authorizeRequests()
+            .antMatchers(HttpMethod.OPTIONS, "/webapp/**").permitAll()
+            .antMatchers("/webapp/**").hasRole(SecurityService.USER_ROLE)
+            .antMatchers("/javaagent/**").permitAll()
+            .and()
+            .addFilterBefore(webappTokenFilter, UsernamePasswordAuthenticationFilter.class)
+            .headers().cacheControl();
+        // @formatter:on
     }
 
     @Component

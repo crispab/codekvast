@@ -21,17 +21,20 @@
  */
 package io.codekvast.login.api;
 
-import io.codekvast.common.customer.CustomerService;
 import io.codekvast.login.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
-import java.util.Map;
+
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
  * Implements the API used by login-api.service.ts
@@ -42,7 +45,7 @@ import java.util.Map;
 @Slf4j
 public class LoginApiController {
 
-    private final CustomerService customerService;
+    private final LoginService loginService;
 
     /**
      * This is an unprotected endpoint that returns true if the user is authenticated.
@@ -52,7 +55,7 @@ public class LoginApiController {
      */
     @RequestMapping("/api/isAuthenticated")
     public boolean isAuthenticated(Principal principal) {
-        logger.debug("isAuthenticated(): principal={}", principal);
+        logger.debug("isAuthenticated(): {}", principal != null);
         return principal != null;
     }
 
@@ -63,40 +66,25 @@ public class LoginApiController {
      * @return A User object.
      */
     @RequestMapping("/api/user")
-    public User user(OAuth2Authentication authentication) {
+    public User user(Authentication authentication) {
         logger.info("Authentication={}", authentication);
 
-        if (authentication == null) {
-            return null;
-        }
-
-        //noinspection unchecked
-        return getUserFromDetails((Map<String, String>) authentication.getUserAuthentication().getDetails());
+        return loginService.getUserFromAuthentication(authentication);
     }
 
-    User getUserFromDetails(Map<String, String> details) {
-        String email = details.get("email");
+    @RequestMapping(path = "/api/getDashboardSsoLink/{customerId}", method = POST)
+    public ResponseEntity<String> launchDashboard(@PathVariable("customerId") Long customerId,
+                                                  Principal principal,
+                                                  HttpServletResponse response) {
+        String link = loginService.getDashboardSsoLink(customerId);
 
-        String id = details.get("link"); // Facebook
-        if (id == null) {
-            id = details.get("url"); // Github
-        }
-        if (id == null) {
-            id = details.get("profile"); // Google+
-        }
-        if (id == null) {
-            id = details.get("sub"); // Google+
+        if (link != null) {
+            logger.info("{} is launching dashboard for customerId {}", principal.getName(), customerId);
+            return ResponseEntity.ok(link);
         }
 
-        User user = User.builder()
-                        .id(id)
-                        .name(details.get("name"))
-                        .email(email)
-                        .customerData(customerService.getCustomerDataByUserEmail(email))
-                        .build();
-        logger.debug("Returning {}", user);
-        return user;
+        logger.warn("{} has no rights to launch dashboard for customerId {}", principal.getName(), customerId);
+        return ResponseEntity.notFound().build();
     }
-
 
 }

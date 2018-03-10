@@ -1,6 +1,5 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {ConfigService} from './services/config.service';
-import {DashboardApiService} from './services/dashboard-api.service';
 import {NavigationEnd, Router} from '@angular/router';
 import {StateService} from './services/state.service';
 import {TitleCasePipe} from '@angular/common';
@@ -20,7 +19,7 @@ export class AppComponent implements OnInit {
     private readonly googleAnalyticsId = 'UA-97240168-3';
 
     constructor(private configService: ConfigService, private stateService: StateService, private titleService: Title,
-                private router: Router, private titleCasePipe: TitleCasePipe, private api: DashboardApiService) {
+                private router: Router, private titleCasePipe: TitleCasePipe) {
     }
 
     ngOnInit(): void {
@@ -44,7 +43,6 @@ export class AppComponent implements OnInit {
             .subscribe(url => {
                 let feature = this.titleCasePipe.transform(url.substr(1));
                 this.titleService.setTitle('Codekvast ' + feature);
-                this.api.isDemoMode().subscribe(demoMode => this.stateService.setDemoMode(demoMode));
             });
 
 

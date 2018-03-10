@@ -7,9 +7,6 @@ const configServiceMock: ConfigService = {
     getVersion() {
         return 'dev'
     },
-    isDemoMode() {
-        return true;
-    }
 } as ConfigService;
 
 describe('DashboardApiService', () => {

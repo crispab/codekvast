@@ -101,8 +101,7 @@ public class CodekvastDashboardSettings implements CodekvastCommonSettings {
     private String herokuCodekvastUrl;
 
     /**
-     * Should the webapp be secured?
-     * Leaving this empty will enable running the webapp in demo mode, with only one customerId=1
+     * What secret should be used for signing JWT tokens?
      */
     private String webappJwtSecret;
 
@@ -110,12 +109,6 @@ public class CodekvastDashboardSettings implements CodekvastCommonSettings {
      * How long shall a webapp authentication token live?
      */
     private Long webappJwtExpirationHours = 8760L;
-
-    /**
-     * Which domain should we set on the JWT cookie?
-     * TODO: remove webappJwtCookieDomain
-     */
-    private String webappJwtCookieDomain;
 
     /**
      * Which is the Slack Incoming Webhook URL?
