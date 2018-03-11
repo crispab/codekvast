@@ -27,6 +27,6 @@ public class DashboardLaunchControllerTest {
         assertThat(cookie.getValue(), is("foo%2Fbar"));
         assertThat(cookie.getPath(), is("/"));
         assertThat(cookie.getMaxAge(), is(-1));
-        assertThat(cookie.isHttpOnly(), is(true));
+        assertThat(cookie.isHttpOnly(), is(false));
     }
 }
