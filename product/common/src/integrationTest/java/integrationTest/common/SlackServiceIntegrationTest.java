@@ -60,7 +60,7 @@ public class SlackServiceIntegrationTest {
         private String herokuCodekvastUrl;
         private String slackWebHookToken;
         private String slackWebHookUrl;
-        private String webappJwtSecret;
-        private Long webappJwtExpirationHours;
+        private String dashboardJwtSecret;
+        private Long dashboardJwtExpirationHours;
     }
 }

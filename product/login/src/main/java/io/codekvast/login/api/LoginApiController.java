@@ -21,9 +21,11 @@
  */
 package io.codekvast.login.api;
 
+import com.google.common.net.HttpHeaders;
 import io.codekvast.login.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -72,7 +74,7 @@ public class LoginApiController {
         return loginService.getUserFromAuthentication(authentication);
     }
 
-    @RequestMapping(path = "/api/getDashboardSsoLink/{customerId}", method = POST)
+    @RequestMapping(path = "/api/launchDashboard/{customerId}", method = POST)
     public ResponseEntity<String> launchDashboard(@PathVariable("customerId") Long customerId,
                                                   Principal principal,
                                                   HttpServletResponse response) {
@@ -80,7 +82,7 @@ public class LoginApiController {
 
         if (link != null) {
             logger.info("{} is launching dashboard for customerId {}", principal.getName(), customerId);
-            return ResponseEntity.ok(link);
+            return ResponseEntity.status(HttpStatus.FOUND.value()).header(HttpHeaders.LOCATION, link).body(link);
         }
 
         logger.warn("{} has no rights to launch dashboard for customerId {}", principal.getName(), customerId);

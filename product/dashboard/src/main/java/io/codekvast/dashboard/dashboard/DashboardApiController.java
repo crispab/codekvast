@@ -44,7 +44,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
  */
 @RestController
 @RequestMapping(produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-// TODO Remove @CrossOrigin(origins = "http://localhost:8089")
 @Slf4j
 @RequiredArgsConstructor
 public class DashboardApiController {

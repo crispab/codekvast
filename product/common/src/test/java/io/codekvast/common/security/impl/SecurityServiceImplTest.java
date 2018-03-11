@@ -130,8 +130,8 @@ public class SecurityServiceImplTest {
 
         // Example data from https://devcenter.heroku.com/articles/add-on-single-sign-on
         private String herokuApiSsoSalt = "2f97bfa52ca102f8874716e2eb1d3b4920ad0be4";
-        private String webappJwtSecret = "secret";
-        private Long webappJwtExpirationHours = 1L;
+        private String dashboardJwtSecret = "secret";
+        private Long dashboardJwtExpirationHours = 1L;
 
         // not used in test
         private String applicationName = null;

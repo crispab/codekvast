@@ -32,7 +32,10 @@ export class LoginApiService {
         // @formatter:off
         this.http.post<string>(`/api/launchDashboard/${customerId}`, {})
             .subscribe(
-            newLocation => this.router.navigateByUrl(newLocation),
+            newLocation =>{
+                console.log('[ck] Redirecting to %o', newLocation);
+                window.location.href = newLocation;
+            },
             () => this.router.navigateByUrl('forbidden'));
         // @formatter:on
     }

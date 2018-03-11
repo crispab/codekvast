@@ -43,7 +43,7 @@ public interface CodekvastCommonSettings {
 
     String getHerokuApiSsoSalt();
 
-    String getWebappJwtSecret();
+    String getDashboardJwtSecret();
 
-    Long getWebappJwtExpirationHours();
+    Long getDashboardJwtExpirationHours();
 }

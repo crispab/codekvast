@@ -7,7 +7,7 @@ import {CookieModule} from 'ngx-cookie';
 import {ForbiddenComponent} from './pages/forbidden.component';
 import {FormsModule} from '@angular/forms';
 import {HomeComponent} from './pages/home.component';
-import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule, HttpClientXsrfModule} from '@angular/common/http';
 import {HttpResponseInterceptor} from './services/HttpResponse.interceptor';
 import {LOCALE_ID, NgModule} from '@angular/core';
 import {LoginApiService} from './services/LoginApi.service';
@@ -47,7 +47,13 @@ function selectBestLocale() {
 
 @NgModule({
     imports: [
-        AppRoutingModule, BrowserModule, CookieModule.forRoot(), FormsModule, HttpClientModule, NgbModule.forRoot(),
+        AppRoutingModule,
+        BrowserModule,
+        CookieModule.forRoot(),
+        FormsModule,
+        HttpClientModule,
+        HttpClientXsrfModule.withOptions(),
+        NgbModule.forRoot(),
     ],
     declarations: [
         AppComponent, ForbiddenComponent, HomeComponent, LoginComponent, StartComponent,

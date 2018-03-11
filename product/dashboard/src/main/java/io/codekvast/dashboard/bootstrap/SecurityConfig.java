@@ -26,12 +26,10 @@ import io.codekvast.dashboard.dashboard.DashboardTokenFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -41,6 +39,8 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
+import static org.springframework.security.config.http.SessionCreationPolicy.IF_REQUIRED;
 
 /**
  * Configuration of Spring Security.
@@ -64,16 +64,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // @formatter:off
         httpSecurity
             .csrf()
-                .ignoringAntMatchers("/javaagent/**")
+                .ignoringAntMatchers("/javaagent/**", "/dashboard/launch")
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionManagement().sessionCreationPolicy(IF_REQUIRED)
             .and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
             .and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.OPTIONS, "/dashboard/**").permitAll()
-                .antMatchers("/dashboard/launch/**").permitAll()
+                .antMatchers("/dashboard/launch").permitAll()
                 .antMatchers("/dashboard/**").hasRole(SecurityService.USER_ROLE)
                 .antMatchers("/javaagent/**").permitAll()
             .and()

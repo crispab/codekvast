@@ -10,10 +10,17 @@ class MethodsSpec extends GebSpec {
     def 'Methods page should render correctly'() {
         given:
         def settings = new CodekvastDashboardSettings();
-        settings.setWebappJwtSecret("secret")
+        settings.setDashboardJwtSecret("secret")
         def securityManager = new SecurityServiceImpl(settings, null);
+        securityManager.postConstruct()
         def sessionToken = securityManager.createWebappToken(1L, WebappCredentials.sample())
 
+        println """
+
+============ sessionToken = $sessionToken
+
+
+"""
         def options = driver.manage()
         options.addCookie(new Cookie('sessionToken', sessionToken))
 

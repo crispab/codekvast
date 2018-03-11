@@ -53,13 +53,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.springframework.security.config.http.SessionCreationPolicy.IF_REQUIRED;
+
 /**
  * @author olle.hallin@crisp.se
  */
 @Configuration
 @EnableOAuth2Client
 @RequiredArgsConstructor
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final OAuth2ClientContext oauth2ClientContext;
     private final CodekvastLoginSettings settings;
@@ -68,15 +70,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         //@formatter:off
         http
-            .authorizeRequests()
-                .antMatchers("/", "/home", "/login", "/oauth/**", "/api/isAuthenticated", "/heroku/**").permitAll()
-                .anyRequest().authenticated()
+            .csrf()
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .ignoringAntMatchers("/heroku/**")
             .and()
-                .csrf().ignoringAntMatchers("/heroku/**").csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-            .and()
-                .exceptionHandling().authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
+                .sessionManagement().sessionCreationPolicy(IF_REQUIRED)
             .and()
                 .logout().logoutUrl("/api/logout").logoutSuccessUrl("/login").permitAll()
+            .and()
+                .authorizeRequests()
+                .antMatchers("/", "/home", "/login", "/oauth/**", "/api/isAuthenticated", "/heroku/**")
+                    .permitAll()
+                .anyRequest().authenticated()
+            .and()
+                .exceptionHandling().authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
             .and()
                 .addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
         //@formatter:on

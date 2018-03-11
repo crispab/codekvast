@@ -70,7 +70,8 @@ private String startSystemTestEnvironment() {
         "-jar ${bootRepackage.outputs.files.asPath} " +
         "--server.port=${systemTestAppPort} " +
         "--management.port=${systemTestManagementPort} " +
-        "--spring.datasource.url=$jdbcUrl"
+        "--spring.datasource.url=$jdbcUrl" +
+        "--codekvast.dashboardJwtSecret=secret"
 
     launchAppAndWaitForReady(command)
     systemTestEndpointFile.text = getSystemTestEndpoint()

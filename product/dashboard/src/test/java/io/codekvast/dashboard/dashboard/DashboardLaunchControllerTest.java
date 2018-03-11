@@ -11,16 +11,16 @@ import static org.junit.Assert.assertThat;
 /**
  * @author olle.hallin@crisp.se
  */
-public class DashboardSsoControllerTest {
+public class DashboardLaunchControllerTest {
 
-    private DashboardSsoController dashboardSsoController = new DashboardSsoController();
+    private DashboardLaunchController dashboardLaunchController = new DashboardLaunchController();
 
     @Test
     public void should_generate_correct_sessionToken_cookie() {
         // given
 
         // when
-        Cookie cookie = dashboardSsoController.createSessionTokenCookie("foo/bar");
+        Cookie cookie = dashboardLaunchController.createSessionTokenCookie("foo/bar");
 
         // then
         assertThat(cookie.getDomain(), is(nullValue()));

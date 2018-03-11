@@ -76,7 +76,7 @@ public class SecurityServiceImpl implements SecurityService {
 
     @PostConstruct
     public void postConstruct() throws UnsupportedEncodingException {
-        String secret = settings.getWebappJwtSecret();
+        String secret = settings.getDashboardJwtSecret();
         if (secret == null) {
             secret = "";
         }
@@ -113,7 +113,7 @@ public class SecurityServiceImpl implements SecurityService {
     }
 
     private Date calculateExpirationDate() {
-        Long hours = settings.getWebappJwtExpirationHours();
+        Long hours = settings.getDashboardJwtExpirationHours();
         Duration duration = hours <= 0L ? Duration.ofMinutes(-hours) : Duration.ofHours(hours);
         logger.debug("The session token will live for {}", duration);
         return Date.from(Instant.now().plus(duration));

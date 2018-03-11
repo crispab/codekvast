@@ -40,7 +40,7 @@ import javax.annotation.PreDestroy;
 @ConfigurationProperties(prefix = "codekvast")
 @Data
 @Slf4j
-@ToString(exclude = {"slackWebHookToken", "herokuApiPassword", "herokuApiSsoSalt", "webappJwtSecret"})
+@ToString(exclude = {"slackWebHookToken", "herokuApiPassword", "herokuApiSsoSalt", "dashboardJwtSecret"})
 @SuppressWarnings({"ClassWithTooManyMethods", "ClassWithTooManyFields", "OverlyComplexClass"})
 public class CodekvastLoginSettings implements CodekvastCommonSettings {
 
@@ -112,12 +112,12 @@ public class CodekvastLoginSettings implements CodekvastCommonSettings {
     /**
      * Which secret should be used when creating a webapp JWT?
      */
-    private String webappJwtSecret;
+    private String dashboardJwtSecret;
 
     /**
      * How many hours shall a JWT be valid?
      */
-    private Long webappJwtExpirationHours;
+    private Long dashboardJwtExpirationHours;
 
     @PostConstruct
     public void logStartup() {
