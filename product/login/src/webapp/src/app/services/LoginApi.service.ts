@@ -30,13 +30,13 @@ export class LoginApiService {
 
     launchDashboard(customerId: number): void {
         // @formatter:off
-        this.http.post<string>(`/api/launchDashboard/${customerId}`, {})
+        this.http.post<string>(`/api/launchDashboard/${customerId}`, {} )
             .subscribe(
-            newLocation =>{
-                console.log('[ck] Redirecting to %o', newLocation);
-                window.location.href = newLocation;
-            },
-            () => this.router.navigateByUrl('forbidden'));
+                newLocation =>{
+                    console.log('[ck] Launch dashboard: Redirecting to %o', newLocation);
+                    window.location.href = newLocation;
+                },
+                () => this.router.navigateByUrl('forbidden'));
         // @formatter:on
     }
 }

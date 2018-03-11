@@ -34,6 +34,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
  * This is a regular MVC controller that transforms a request from codekvast-login (i.e. another domain)
@@ -50,17 +51,17 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @Slf4j
 public class DashboardLaunchController {
 
-    @RequestMapping(path = "/dashboard/launch", method = GET)
+    @RequestMapping(path = "/dashboard/launch", method = {GET, POST})
     public String launchDashboard(
         @RequestParam("sessionToken") String sessionToken,
         @RequestParam(value = "navData", required = false) String navData,
         HttpServletResponse response) {
 
         // TODO: mask signature in sessionToken
-        logger.debug("Handling SSO request, sessionToken={}", sessionToken);
+        logger.debug("Handling launch request, sessionToken={}", sessionToken);
 
         response.addCookie(createSessionTokenCookie(sessionToken));
-        response.addCookie(createNavDataCookie(navData));
+        response.addCookie(createOrRemoveNavDataCookie(navData));
         return "redirect:/";
     }
 
@@ -69,15 +70,12 @@ public class DashboardLaunchController {
         Cookie cookie = new Cookie(CookieNames.SESSION_TOKEN, URLEncoder.encode(token, "UTF-8"));
         cookie.setPath("/");
         cookie.setMaxAge(-1); // Remove when browser exits.
-        cookie.setHttpOnly(true); // Hide from JavaScript in the browser
-        logger.debug("Created {} cookie with domain={}, path={}, httpOnly={}", CookieNames.SESSION_TOKEN, cookie.getDomain(),
-                     cookie.getPath(),
-                     cookie.isHttpOnly());
+        cookie.setHttpOnly(false);
         return cookie;
     }
 
 
-    private Cookie createNavDataCookie(String navData) {
+    private Cookie createOrRemoveNavDataCookie(String navData) {
         Cookie cookie = new Cookie(CookieNames.NAV_DATA, navData == null ? "" : navData);
         cookie.setPath("/");
         cookie.setMaxAge(navData == null ? 0 : -1);

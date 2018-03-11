@@ -4,6 +4,7 @@ import {NavigationEnd, Router} from '@angular/router';
 import {StateService} from './services/state.service';
 import {TitleCasePipe} from '@angular/common';
 import {Title} from '@angular/platform-browser';
+import {CookieService} from 'ngx-cookie';
 
 @Component({
     selector: '#app',
@@ -19,7 +20,7 @@ export class AppComponent implements OnInit {
     private readonly googleAnalyticsId = 'UA-97240168-3';
 
     constructor(private configService: ConfigService, private stateService: StateService, private titleService: Title,
-                private router: Router, private titleCasePipe: TitleCasePipe) {
+                private router: Router, private titleCasePipe: TitleCasePipe, private cookieService: CookieService) {
     }
 
     ngOnInit(): void {
@@ -27,42 +28,50 @@ export class AppComponent implements OnInit {
             .filter(event => event instanceof NavigationEnd)
             .map(event => (event as NavigationEnd).urlAfterRedirects)
             .do(url => {
-                let ga = window['ga'];
+                console.log('[ck] NavigationEnd: %o', url);
+                this.updateGoogleAnalytics(url);
+                this.setLoggedInState();
 
-                if (!this.googleAnalyticsInitialized) {
-                    console.log('[ck] Initializing GoogleAnalytics');
-                    ga('create', this.googleAnalyticsId, 'auto');
-                    this.googleAnalyticsInitialized = true;
-                }
-
-                let theUrl = url.startsWith('/sso/') ? '/sso/xxxx' : url;
-                console.log(`[ck] Sending ${theUrl} to GoogleAnalytics`);
-                ga('set', 'page', theUrl);
-                ga('send', 'pageview');
             })
             .subscribe(url => {
                 let feature = this.titleCasePipe.transform(url.substr(1));
                 this.titleService.setTitle('Codekvast ' + feature);
             });
+    }
 
+    private setLoggedInState() {
+        let Boomerang = window['Boomerang'];
+        let token = this.cookieService.get('sessionToken');
+        let navData = this.cookieService.get('navData');
 
-        this.stateService.getAuthData()
-            .subscribe(authData => {
-                if (authData && authData.source === 'heroku') {
-                    this.showHerokuIntegrationMenu = true;
-                }
+        let parts = token.split('\.');
+        if (parts.length >= 2) {
+            // header = parts[0]
+            let payload = JSON.parse(atob(parts[1]));
+            // signature = parts[2]
 
-                let Boomerang = window['Boomerang'];
+            let sourceApp = 'codekvast-login';
+            if (payload.source === 'heroku') {
+                let args = JSON.parse(atob(navData));
+                console.log('[ck] navData=%o', args);
+                sourceApp = args.app || args.appname;
+                this.showHerokuIntegrationMenu = true;
+                Boomerang.init({
+                    app: sourceApp,
+                    addon: 'codekvast'
+                });
+            } else {
+                this.showHerokuIntegrationMenu = false;
+                Boomerang.reset();
+                // TODO: show something else
+            }
+            this.stateService.setLoggedInAs(payload.customerName, payload.email, payload.source, sourceApp);
+        } else {
+            this.stateService.setLoggedOut();
+            this.showHerokuIntegrationMenu = false;
+            Boomerang.reset();
+        }
 
-                if (this.showHerokuIntegrationMenu) {
-                    Boomerang.init({
-                        app: authData.sourceApp,
-                        addon: 'codekvast'
-                    });
-                } else {
-                    Boomerang.reset();
-                }
-            });
     }
 
     getVersion(): String {
@@ -78,5 +87,19 @@ export class AppComponent implements OnInit {
             'integration-menu-heroku': this.showHerokuIntegrationMenu,
             container: true
         }
+    }
+
+    private updateGoogleAnalytics(url: string) {
+        let ga = window['ga'];
+
+        if (!this.googleAnalyticsInitialized) {
+            console.log('[ck] Initializing GoogleAnalytics');
+            ga('create', this.googleAnalyticsId, 'auto');
+            this.googleAnalyticsInitialized = true;
+        }
+
+        console.log(`[ck] Sending ${url} to GoogleAnalytics`);
+        ga('set', 'page', url);
+        ga('send', 'pageview');
     }
 }

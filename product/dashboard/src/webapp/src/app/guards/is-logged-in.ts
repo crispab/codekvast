@@ -12,7 +12,7 @@ export class IsLoggedIn implements CanActivate {
         let result = this.stateService.isLoggedIn();
         if (!result) {
             // noinspection JSIgnoredPromiseFromCall
-            this.router.navigate(['/not-logged-in']);
+            this.router.navigateByUrl('not-logged-in');
         }
         return result;
     }
