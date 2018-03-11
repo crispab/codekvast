@@ -8,14 +8,14 @@ import io.codekvast.common.customer.LicenseViolationException;
 import io.codekvast.common.customer.PricePlanDefaults;
 import io.codekvast.dashboard.CodekvastDashboardApplication;
 import io.codekvast.dashboard.agent.AgentService;
+import io.codekvast.dashboard.dashboard.DashboardService;
+import io.codekvast.dashboard.dashboard.model.methods.GetMethodsRequest;
+import io.codekvast.dashboard.dashboard.model.methods.GetMethodsResponse;
+import io.codekvast.dashboard.dashboard.model.methods.MethodDescriptor;
+import io.codekvast.dashboard.dashboard.model.status.AgentDescriptor;
+import io.codekvast.dashboard.dashboard.model.status.GetStatusResponse;
 import io.codekvast.dashboard.file_import.CodeBaseImporter;
 import io.codekvast.dashboard.file_import.InvocationDataImporter;
-import io.codekvast.dashboard.webapp.WebappService;
-import io.codekvast.dashboard.webapp.model.methods.GetMethodsRequest;
-import io.codekvast.dashboard.webapp.model.methods.GetMethodsResponse;
-import io.codekvast.dashboard.webapp.model.methods.MethodDescriptor;
-import io.codekvast.dashboard.webapp.model.status.AgentDescriptor;
-import io.codekvast.dashboard.webapp.model.status.GetStatusResponse;
 import io.codekvast.javaagent.model.v1.CodeBaseEntry;
 import io.codekvast.javaagent.model.v1.CodeBasePublication;
 import io.codekvast.javaagent.model.v1.CommonPublicationData;
@@ -114,7 +114,7 @@ public class MariadbIntegrationTest {
     private CustomerService customerService;
 
     @Inject
-    private WebappService webappService;
+    private DashboardService dashboardService;
 
     @Inject
     private AgentService agentService;
@@ -420,7 +420,7 @@ public class MariadbIntegrationTest {
         // given
 
         // when query with too short signature
-        webappService.getMethods(GetMethodsRequest.defaults().toBuilder().signature("").build());
+        dashboardService.getMethods(GetMethodsRequest.defaults().toBuilder().signature("").build());
     }
 
     @Test
@@ -429,7 +429,7 @@ public class MariadbIntegrationTest {
         setSecurityContextCustomerId(1L);
 
         // when find exact signature
-        GetMethodsResponse response = webappService.getMethods(
+        GetMethodsResponse response = dashboardService.getMethods(
             GetMethodsRequest.defaults().toBuilder().signature("foobar").build());
 
         // then
@@ -444,7 +444,7 @@ public class MariadbIntegrationTest {
         // List<Long> validIds = jdbcTemplate.query("SELECT id FROM methods", (rs, rowNum) -> rs.getLong(1));
 
         // when
-        // Optional<MethodDescriptor> result = webappService.getMethodById(validIds.get(0));
+        // Optional<MethodDescriptor> result = dashboardService.getMethodById(validIds.get(0));
 
         // then
         // assertThat(result.isPresent(), is(true));
@@ -457,7 +457,7 @@ public class MariadbIntegrationTest {
         setSecurityContextCustomerId(1L);
 
         // when
-        Optional<MethodDescriptor> result = webappService.getMethodById(-1L);
+        Optional<MethodDescriptor> result = dashboardService.getMethodById(-1L);
 
         // then
         assertThat(result.isPresent(), is(false));
@@ -529,7 +529,7 @@ public class MariadbIntegrationTest {
         setSecurityContextCustomerId(1L);
 
         // when
-        GetStatusResponse status = webappService.getStatus();
+        GetStatusResponse status = dashboardService.getStatus();
 
         // then
         assertThat(status.getPricePlan(), is("DEMO"));

@@ -43,9 +43,7 @@ import org.springframework.security.web.authentication.www.NonceExpiredException
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.http.Cookie;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
@@ -100,22 +98,6 @@ public class SecurityServiceImpl implements SecurityService {
     public void removeAuthentication() {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
-
-    @Override
-    @SneakyThrows(UnsupportedEncodingException.class)
-    public Cookie createSessionTokenCookie(String token, String hostHeader) {
-        Cookie result = new Cookie(SESSION_TOKEN_COOKIE, URLEncoder.encode(token, "UTF-8"));
-        if (hostHeader != null && !hostHeader.isEmpty()) {
-            result.setDomain(hostHeader.replaceAll(":[0-9]+$", ""));
-        }
-        result.setPath("/");
-        result.setMaxAge(-1); // Remove when browser exits.
-        result.setHttpOnly(true); // Hide from JavaScript in the browser
-        logger.debug("Created {} cookie with domain={}, path={}, httpOnly={}", SESSION_TOKEN_COOKIE, result.getDomain(), result.getPath(),
-                     result.isHttpOnly());
-        return result;
-    }
-
 
     @Override
     public String createWebappToken(Long customerId, WebappCredentials credentials) {

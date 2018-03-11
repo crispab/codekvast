@@ -19,30 +19,45 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.common.security;
+package io.codekvast.dashboard.dashboard.model.methods;
 
 import lombok.Builder;
-import lombok.NonNull;
+import lombok.ToString;
 import lombok.Value;
 
+import java.util.List;
+
 /**
+ * Response to {@link GetMethodsRequest}.
+ *
  * @author olle.hallin@crisp.se
  */
 @Value
 @Builder
-public class WebappCredentials {
-    @NonNull
-    private final String customerName;
-    @NonNull
-    private final String email;
-    @NonNull
-    private final String source;
+@ToString(exclude = "methods")
+public class GetMethodsResponse {
+    /**
+     * When was the request received? Millis since epoch.
+     */
+    private final Long timestamp;
 
-    public static WebappCredentials sample() {
-        return builder()
-            .customerName("customerName")
-            .email("email")
-            .source("source")
-            .build();
-    }
+    /**
+     * What was the original request?
+     */
+    private final GetMethodsRequest request;
+
+    /**
+     * How long did it take to execute the request?
+     */
+    private final Long queryTimeMillis;
+
+    /**
+     * How many methods were found?
+     */
+    private final int numMethods;
+
+    /**
+     * The resulting methods.
+     */
+    private final List<MethodDescriptor> methods;
 }

@@ -19,9 +19,9 @@ export class GetMethodsRequest {
 @Injectable()
 export class DashboardApiService {
 
-    readonly METHODS_URL = '/webapp/v1/methods';
-    readonly METHOD_BY_ID_URL = '/webapp/v1/method/detail/';
-    readonly STATUS_URL = '/webapp/v1/status';
+    readonly METHODS_URL = '/dashboard/api/v1/methods';
+    readonly METHOD_BY_ID_URL = '/dashboard/api/v1/method/detail/';
+    readonly STATUS_URL = '/dashboard/api/v1/status';
     readonly HEADERS = new HttpHeaders().set('Content-type', 'application/json; charset=utf-8');
 
     constructor(private http: HttpClient, private configService: ConfigService) {

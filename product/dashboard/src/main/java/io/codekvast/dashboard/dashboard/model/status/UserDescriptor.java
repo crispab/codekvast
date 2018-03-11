@@ -19,30 +19,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.common.security;
+package io.codekvast.dashboard.dashboard.model.status;
 
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
 /**
+ * Describes one user for a certain customer.
+ *
  * @author olle.hallin@crisp.se
  */
 @Value
 @Builder
-public class WebappCredentials {
-    @NonNull
-    private final String customerName;
+public class UserDescriptor {
     @NonNull
     private final String email;
-    @NonNull
-    private final String source;
 
-    public static WebappCredentials sample() {
-        return builder()
-            .customerName("customerName")
-            .email("email")
-            .source("source")
-            .build();
-    }
+    @NonNull
+    private final String lastLoginSource;
+
+    @NonNull
+    private final Long firstLoginAtMillis;
+
+    @NonNull
+    private final Long lastLoginAtMillis;
+
+    @NonNull
+    private final Long lastActivityAtMillis;
+
+    @NonNull
+    private final Integer numberOfLogins;
 }

@@ -52,7 +52,7 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     @Transactional
-    public String getDashboardSsoLink(Long customerId) {
+    public String getDashboardLaunchLink(Long customerId) {
         User user = getUserFromAuthentication(SecurityContextHolder.getContext().getAuthentication());
 
         if (user.getCustomerData().stream().anyMatch(cd -> cd.getCustomerId().equals(customerId))) {
@@ -64,7 +64,7 @@ public class LoginServiceImpl implements LoginService {
                                             .build());
             CustomerData cd = customerService.getCustomerDataByCustomerId(customerId);
 
-            String token = securityService.createWebappToken(
+            String sessionToken = securityService.createWebappToken(
                 customerId,
                 WebappCredentials
                     .builder()
@@ -72,8 +72,7 @@ public class LoginServiceImpl implements LoginService {
                     .email(user.getEmail())
                     .source(cd.getSource())
                     .build());
-            String navData = "";
-            return String.format("%s/sso/%s/%s", settings.getDashboardUrl(), token, navData);
+            return String.format("%s/dashboard/launch?sessionToken=%s", settings.getDashboardUrl(), sessionToken);
         }
         return null;
     }

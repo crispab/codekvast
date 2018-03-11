@@ -21,8 +21,6 @@
  */
 package io.codekvast.common.security;
 
-import javax.servlet.http.Cookie;
-
 /**
  * Additional internal interface to the security service.
  *
@@ -30,7 +28,6 @@ import javax.servlet.http.Cookie;
  */
 public interface SecurityService extends CustomerIdProvider {
 
-    String SESSION_TOKEN_COOKIE = "sessionToken";
     String USER_ROLE = "USER";
 
     /**
@@ -58,16 +55,6 @@ public interface SecurityService extends CustomerIdProvider {
      * threads.
      */
     void removeAuthentication();
-
-    /**
-     * Creates a cookie with the name {@value SESSION_TOKEN_COOKIE}.
-     *
-     * @param token      The cookie value
-     * @param hostHeader The value of the HTTP header "Host". Is used for setting the cookie domain. The port number (if present) is
-     *                   ignored.
-     * @return A httpOnly session cookie with the path '/'.
-     */
-    Cookie createSessionTokenCookie(String token, String hostHeader);
 
     /**
      * Perform a Single-Sign On using the parameters given by Heroku.

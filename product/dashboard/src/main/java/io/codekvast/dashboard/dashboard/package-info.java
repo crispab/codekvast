@@ -19,30 +19,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.common.security;
-
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
-
 /**
+ * Things related to the webapp REST API.
+ *
  * @author olle.hallin@crisp.se
  */
-@Value
-@Builder
-public class WebappCredentials {
-    @NonNull
-    private final String customerName;
-    @NonNull
-    private final String email;
-    @NonNull
-    private final String source;
-
-    public static WebappCredentials sample() {
-        return builder()
-            .customerName("customerName")
-            .email("email")
-            .source("source")
-            .build();
-    }
-}
+package io.codekvast.dashboard.dashboard;

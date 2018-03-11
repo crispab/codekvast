@@ -30,11 +30,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import javax.servlet.http.HttpServletResponse;
 
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -64,17 +61,13 @@ public class HerokuSsoController {
         @RequestParam("timestamp") long timestampSeconds,
         @RequestParam("token") String token,
         @RequestParam("nav-data") String navData,
-        @RequestParam("email") String email,
-        @RequestHeader(name = "Host", required = false, defaultValue = "") String hostHeader,
-        HttpServletResponse response) throws AuthenticationException {
+        @RequestParam("email") String email) throws AuthenticationException {
 
-        logger.debug("headers['Host']={}, externalId={}, nav-data={}", hostHeader, externalId, navData);
+        logger.debug("externalId={}, nav-data={}", externalId, navData);
 
-        String jwt = securityService.doHerokuSingleSignOn(token, externalId, email, timestampSeconds);
+        String sessionToken = securityService.doHerokuSingleSignOn(token, externalId, email, timestampSeconds);
 
-        response.addCookie(securityService.createSessionTokenCookie(jwt, hostHeader));
-
-        return String.format("redirect:%s/sso/%s/%s", settings.getDashboardUrl(), jwt, navData);
+        return String.format("%s/dashboard/launch?sessionToken=%s", settings.getDashboardUrl(), sessionToken, navData);
     }
 
 }

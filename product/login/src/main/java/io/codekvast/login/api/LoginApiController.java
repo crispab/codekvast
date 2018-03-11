@@ -76,7 +76,7 @@ public class LoginApiController {
     public ResponseEntity<String> launchDashboard(@PathVariable("customerId") Long customerId,
                                                   Principal principal,
                                                   HttpServletResponse response) {
-        String link = loginService.getDashboardSsoLink(customerId);
+        String link = loginService.getDashboardLaunchLink(customerId);
 
         if (link != null) {
             logger.info("{} is launching dashboard for customerId {}", principal.getName(), customerId);

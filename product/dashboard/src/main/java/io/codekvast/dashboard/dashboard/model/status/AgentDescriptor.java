@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.codekvast.common.security;
+package io.codekvast.dashboard.dashboard.model.status;
 
 import lombok.Builder;
 import lombok.NonNull;
@@ -28,21 +28,70 @@ import lombok.Value;
 /**
  * @author olle.hallin@crisp.se
  */
+@SuppressWarnings("ClassWithTooManyFields")
 @Value
 @Builder
-public class WebappCredentials {
-    @NonNull
-    private final String customerName;
-    @NonNull
-    private final String email;
-    @NonNull
-    private final String source;
+public class AgentDescriptor {
 
-    public static WebappCredentials sample() {
-        return builder()
-            .customerName("customerName")
-            .email("email")
-            .source("source")
-            .build();
-    }
+    @NonNull
+    private final Long id;
+
+    @NonNull
+    private final String appName;
+
+    @NonNull
+    private final String appVersion;
+
+    @NonNull
+    private final String agentVersion;
+
+    @NonNull
+    private final String packages;
+
+    private final String excludePackages;
+
+    private final String environment;
+
+    @NonNull
+    private final String tags;
+
+    /**
+     * public, protected, package-private or private
+     */
+    @NonNull
+    private final String methodVisibility;
+
+    @NonNull
+    private final Long startedAtMillis;
+
+    @NonNull
+    private final Long publishedAtMillis;
+
+    /**
+     * When did we hear from this agent?
+     */
+    @NonNull
+    private final Long pollReceivedAtMillis;
+
+    /**
+     * When will we hear again from this agent?
+     */
+    @NonNull
+    private final Long nextPollExpectedAtMillis;
+
+    /**
+     * When will we get data again from this agent?
+     */
+    @NonNull
+    private final Long nextPublicationExpectedAtMillis;
+
+    /**
+     * Is this agent alive?
+     */
+    private final boolean agentAlive;
+
+    /**
+     * Is this agent live and enabled?
+     */
+    private final boolean agentLiveAndEnabled;
 }
